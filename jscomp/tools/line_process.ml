@@ -75,7 +75,7 @@ let rec process_line cwd filedir  line =
             (ml_exists, ml) @> (mli_exists , mli) @> []            
 
         | _ 
-          ->  Ext_pervasives.failwithf "invalid line %s" line
+          ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
       end
 
 (* example 

@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 05/23-09:55 *)
+(** Bundled by ocaml_pack 06/20-16:36 *)
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -446,7 +446,7 @@ val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
 
 val is_pos_pow : Int32.t -> int
 
-val failwithf : ('a, unit, string, 'b) format4 -> 'a
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
 
 val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
 
@@ -517,8 +517,9 @@ let  is_pos_pow n =
     else raise M.E in 
   try aux 0 n  with M.E -> -1
 
-let failwithf fmt = Format.ksprintf failwith fmt
-
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
 let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
 let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
@@ -612,7 +613,7 @@ let rec process_line cwd filedir  line =
             (ml_exists, ml) @> (mli_exists , mli) @> []            
 
         | _ 
-          ->  Ext_pervasives.failwithf "invalid line %s" line
+          ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
       end
 
 (* example 

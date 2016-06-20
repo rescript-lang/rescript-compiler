@@ -100,3 +100,5 @@ val set_debug_file : string -> unit
 val get_debug_file : unit -> string
 
 val is_same_file : unit -> bool 
+
+val tool_name : string

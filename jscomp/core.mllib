@@ -6,6 +6,9 @@ idents_analysis
 config_util
 
 
+ocaml_options
+ocaml_batch_compile
+ocaml_parse
 
 lam
 lam_iter

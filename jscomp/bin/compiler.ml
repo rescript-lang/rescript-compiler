@@ -1,4 +1,80 @@
-(** Bundled by ocaml_pack 06/16-10:29 *)
+(** Bundled by ocaml_pack 06/20-16:46 *)
+module String_map : sig 
+#1 "string_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.S with type key = string 
+
+val of_list : (key * 'a) list -> 'a t
+
+end = struct
+#1 "string_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.Make(String)
+
+let of_list (xs : ('a * 'b) list ) = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+end
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -121,4456 +197,6 @@ let setter_suffix_len = String.length setter_suffix
 let case = "case"
 let case_set = "case_set"
 let case_prefix = "case_"
-
-
-end
-module 
-Js_op
-= struct
-#1 "js_op.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-(** Define some basic types used in JS IR *)
-
-type binop =
-  | Eq  
-  (* acutally assignment ..
-     TODO: move it into statement, so that all expressions 
-     are side efffect free (except function calls)
-   *)
-
-  | Or
-  | And
-  | EqEqEq
-  | NotEqEq
-  | InstanceOf
-
-  | Lt
-  | Le
-  | Gt
-  | Ge
-
-  | Bor
-  | Bxor
-  | Band
-  | Lsl
-  | Lsr
-  | Asr
-
-  | Plus
-  | Minus
-  | Mul
-  | Div
-  | Mod
-
-(**
-note that we don't need raise [Div_by_zero] in BuckleScript
-
-{[
-let add x y = x + y  (* | 0 *)
-let minus x y = x - y (* | 0 *)
-let mul x y = x * y   (* caml_mul | Math.imul *)
-let div x y = x / y (* caml_div (x/y|0)*)
-let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
-
-let bor x y = x lor y   (* x  | y *)
-let bxor x y = x lxor y (* x ^ y *)
-let band x y = x land y (* x & y *)
-let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
-let ilsl x y = x lsl y (* x << y*)
-let ilsr x y = x lsr y  (* x >>> y | 0 *)
-let iasr  x y = x asr y (* x >> y *)
-]}
-
-
-Note that js treat unsigned shift 0 bits in a special way
-   Unsigned shifts convert their left-hand side to Uint32, 
-   signed shifts convert it to Int32.
-   Shifting by 0 digits returns the converted value.
-   {[
-    function ToUint32(x) {
-        return x >>> 0;
-    }
-    function ToInt32(x) {
-        return x >> 0;
-    }
-   ]}
-   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
-   and [-1 >>> 0 >> 0 ] will be [-1]
-*)
-type int_op = 
-    
-  | Bor
-  | Bxor
-  | Band
-  | Lsl
-  | Lsr
-  | Asr
-
-  | Plus
-      (* for [+], given two numbers 
-         x + y | 0
-       *)
-  | Minus
-      (* x - y | 0 *)
-  | Mul
-      (* *)
-  | Div
-      (* x / y | 0 *)
-  | Mod
-      (* x  % y *)
-
-(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Bitwise_operators
-    {[
-    ~
-    ]}
-    ~0xff -> -256
-    design; make sure each operation type is consistent
- *)
-type level = 
-  | Log 
-  | Info
-  | Warn
-  | Error
-
-type kind = 
-  | Ml
-  | Runtime 
-  | External of string
-
-type property = Lambda.let_kind = 
-  | Strict
-  | Alias
-  | StrictOpt 
-  | Variable
-
-
-type property_name = (* private *)
-  (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
-  | Key of string
-  | Int_key of int 
-  | Tag 
-  | Length
-
-type 'a access = 
-  | Getter
-  | Setter
-type jsint = Int32.t
-
-type int_or_char = 
-    { i : jsint; 
-      (* we can not use [int] on 32 bit platform, if we dont use 
-          [Int32.t], we need a configuration step          
-      *)
-      c : char option
-    }
-
- (* literal char *)
-type float_lit = { f :  string }
-type number = 
-  | Float of float_lit 
-  | Int of int_or_char
-  | Uint of int32
-  | Nint of nativeint
-  (* becareful when constant folding +/-, 
-     since we treat it as js nativeint, bitwise operators:
-     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
-     The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
-  *)      
-
-type mutable_flag = 
-  | Mutable
-  | Immutable
-  | NA
-
-(* 
-    {[
-    let rec x = 1 :: y 
-    and y = 1 :: x
-    ]}
- *)
-type recursive_info = 
-  | SingleRecursive 
-  | NonRecursie
-  | NA
-
-type used_stats = 
-  | Dead_pure 
-        (* only [Dead] should be taken serious, 
-            other status can be converted during
-            inlining
-            -- all exported symbols can not be dead
-            -- once a symbole is called Dead_pure, 
-            it can not be alive anymore, we should avoid iterating it
-            
-          *)
-  | Dead_non_pure 
-      (* we still need iterating it, 
-         just its bindings does not make sense any more *)
-  | Exported (* Once it's exported, shall we change its status anymore? *)
-      (* In general, we should count in one pass, and eliminate code in another 
-         pass, you can not do it in a single pass, however, some simple 
-         dead code can be detected in a single pass
-       *)
-  | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
-  | Used (**)
-  | Scanning_pure
-  | Scanning_non_pure
-  | NA
-
-
-type ident_info = {
-    (* mutable recursive_info : recursive_info; *)
-    mutable used_stats : used_stats;
-  }
-
-type exports = Ident.t list 
-
-type required_modules = (Ident.t * string) list
-
-
-type tag_info = Lambda.tag_info = 
-  | Blk_constructor of string * int
-  | Blk_tuple
-  | Blk_array
-  | Blk_variant of string 
-  | Blk_record of string array
-  | Blk_module of string list option
-  | Blk_na
-
-type length_object = 
-  | Array 
-  | String
-  | Bytes
-  | Function
-  | Caml_block
-
-type code_info = 
-  | Exp (* of int option *)
-  | Stmt
-(** TODO: define constant - for better constant folding  *)
-(* type constant =  *)
-(*   | Const_int of int *)
-(*   | Const_ *)
-
-end
-module Ext_format : sig 
-#1 "ext_format.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Simplified wrapper module for the standard library [Format] module. 
-  *) 
-
-type t = private Format.formatter
-
-val string : t -> string -> unit
-
-val break : t -> unit
-
-val break1 : t -> unit
-
-val space :  t -> unit
-
-val group : t -> int -> (unit -> 'a) -> 'a
-(** [group] will record current indentation 
-    and indent futher
- *)
-
-val vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val paren : t -> (unit -> 'a) -> 'a
-
-val paren_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val bracket_group : t -> int -> (unit -> 'a) -> 'a
-
-val newline : t -> unit
-
-val to_out_channel : out_channel -> t
-
-val flush : t -> unit -> unit
-
-end = struct
-#1 "ext_format.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-open Format
-
-type t = formatter
-
-let string = pp_print_string
-
-let break = fun fmt -> pp_print_break fmt 0 0
-
-let break1 =
-  fun fmt -> pp_print_break fmt 0 1 
-
-let space  fmt  = 
-  pp_print_break fmt 1 0
-
-let vgroup fmt indent u = 
-  pp_open_vbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-
-let group fmt indent u = 
-  pp_open_hovbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-  
-let paren fmt u = 
-  string fmt "(";
-  let v = u () in
-  string fmt ")";
-  v
-
-let brace fmt u = 
-  string fmt "{";
-  (* break1 fmt ; *)
-  let v = u () in
-  string fmt "}";
-  v 
-
-let bracket fmt u = 
-  string fmt "[";
-  let v = u () in
-  string fmt "]";
-  v 
-
-let paren_group st n action = 
-  group st n (fun _ -> paren st action)
-
-let brace_group st n action = 
-  group st n (fun _ -> brace st action )
-
-let brace_vgroup st n action = 
-  vgroup st n (fun _ -> 
-    string st "{";
-    pp_print_break st 0 2;
-    let v = vgroup st 0 action in
-    pp_print_break st 0 0;
-    string st "}";
-    v
-              )
-let bracket_group st n action = 
-  group st n (fun _ -> bracket st action)
-
-let newline fmt = pp_print_newline fmt ()
-
-let to_out_channel = formatter_of_out_channel
-
-(* let non_breaking_space  fmt = string fmt " " *)
-(* let set_needed_space_function _ _ = () *)
-let flush = pp_print_flush
-
-let list = pp_print_list
-
-end
-module Ident_set : sig 
-#1 "ident_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Set with key specialized as [Ident.t] type
- *)
-
-(** Original set module enhanced with some utilities, 
-    note that it's incompatible with [Lambda.IdentSet] 
- *)
-
-include Set.S with type elt = Ident.t
-
-val print : Ext_format.t -> t -> unit
-
-end = struct
-#1 "ident_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-(* TODO: 
-    when we do the union, it would be nice that 
-    we know which [delta] is there
- *)
-include Set.Make(struct 
-  type t = Ident.t 
-  let compare  = Pervasives.compare (* TODO: fix me *)
-end)
-
-let print ppf v =
-  Ext_format.(brace_vgroup ppf 0 (fun _ ->
-  iter (fun v -> 
-    string ppf  (Printf.sprintf "%s/%d" v.Ident.name v.stamp) ; Ext_format.space ppf  ) v ))
-
-end
-module Ext_list : sig 
-#1 "ext_list.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [List] module *)
-    
-(** TODO some function are no efficiently implemented. *) 
-
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
-
-val excludes : ('a -> bool) -> 'a list -> bool * 'a list
-val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
-val exclude_with_fact2 : 
-  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
-val same_length : 'a list -> 'b list -> bool
-
-val init : int -> (int -> 'a) -> 'a list
-
-val take : int -> 'a list -> 'a list * 'a list
-val try_take : int -> 'a list -> 'a list * int * 'a list 
-
-val exclude_tail : 'a list -> 'a list
-
-val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
-
-val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
-
-val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
-
-val flat_map2_last : (bool -> 'a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
-
-val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
-
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
-
-val drop : int -> 'a list -> 'a list 
-
-val for_all_ret : ('a -> bool) -> 'a list -> 'a option
-
-val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
-(** [for_all_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
- *)
-
-val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-(** same as [List.fold_left]. 
-    Provide an api so that list can be easily swapped by other containers  
- *)
-
-val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
-
-val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
-
-val rev_iter : ('a -> unit) -> 'a list -> unit
-
-val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option
-
-(** [f] is applied follow the list order *)
-val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
-
-val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
-
-end = struct
-#1 "ext_list.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let rec filter_map (f: 'a -> 'b option) xs = 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-      begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
-      end
-
-let excludes p l =
-  let excluded = ref false in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := true ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  if !excluded then true, v else false,l
-
-let exclude_with_fact p l =
-  let excluded = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := Some x ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded , if !excluded <> None then v else l 
-
-
-(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
-let exclude_with_fact2 p1 p2 l =
-  let excluded1 = ref None in 
-  let excluded2 = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p1 x then 
-      begin 
-        excluded1 := Some x ;
-        aux accu l
-      end
-    else if p2 x then 
-      begin 
-        excluded2 := Some x ; 
-        aux accu l 
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
-
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
-  | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
-
-let  filter_mapi (f: int -> 'a -> 'b option) xs = 
-  let rec aux i xs = 
-    match xs with 
-    | [] -> []
-    | y :: ys -> 
-        begin match f i y with 
-        | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-        end in
-  aux 0 xs 
-
-let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f u v with 
-      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2 f us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2"
-
-let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
-  let rec aux i xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f i u v with 
-      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: aux (i + 1) us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2i" in
-  aux 0 xs ys
-
-let rec rev_map_append  f l1 l2 =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append f l (f a :: l2)
-
-let flat_map2 f lx ly = 
-  let rec aux acc lx ly = 
-    match lx, ly with 
-    | [], [] 
-      -> List.rev acc
-    | x::xs, y::ys 
-      ->  aux (List.rev_append (f x y) acc) xs ys
-    | _, _ -> invalid_arg "Ext_list.flat_map2" in
-  aux [] lx ly
-        
-let flat_map f lx =
-  let rec aux acc lx =
-    match lx with
-    | [] -> List.rev acc
-    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
-  aux [] lx
-
-let rec map2_last f l1 l2 =
-  match (l1, l2) with
-  | ([], []) -> []
-  | [u], [v] -> [f true u v ]
-  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
-  | (_, _) -> invalid_arg "List.map2_last"
-
-let rec map_last f l1 =
-  match l1 with
-  | [] -> []
-  | [u]-> [f true u ]
-  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
-
-
-let flat_map2_last f lx ly = List.concat @@ map2_last f lx ly
-
-let init n f = 
-  Array.to_list (Array.init n f)
-
-let take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  < n then invalid_arg "Ext_list.take"
-  else (Array.to_list (Array.sub arr 0 n ), 
-        Array.to_list (Array.sub arr n (arr_length - n)))
-
-let try_take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  <= n then 
-    l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
-
-let exclude_tail (x : 'a list) : 'a list = 
-  let rec aux acc x = 
-    match x with 
-    | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ _ ] ->  List.rev acc
-    | y0::ys -> aux (y0::acc) ys in
-  aux [] x
-
-(* For small list, only need partial equality 
-   {[
-   group (=) [1;2;3;4;3]
-   ;;
-   - : int list list = [[3; 3]; [4]; [2]; [1]]
-   # group (=) [];;
-   - : 'a list list = []
-   ]}
- *)
-let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-      aux cmp x (group cmp xs )
-
-and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | y::ys -> 
-      if cmp x (List.hd y) (* cannot be null*) then
-        (x::y) :: ys 
-      else
-        y :: aux cmp x ys                                 
-  
-let stable_group cmp lst =  group cmp lst |> List.rev 
-
-let rec drop n h = 
-  if n < 0 then invalid_arg "Ext_list.drop"
-  else if n = 0 then h 
-  else if h = [] then invalid_arg "Ext_list.drop"
-  else 
-    drop (n - 1) (List.tl h)
-
-let rec for_all_ret  p = function
-  | [] -> None
-  | a::l -> 
-      if p a 
-      then for_all_ret p l
-      else Some a 
-
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-      match p a with
-      | None -> for_all_opt p l
-      | v -> v 
-
-let fold f l init = 
-  List.fold_left (fun acc i -> f  i init) init l 
-
-let rev_map_acc  acc f l = 
-  let rec rmap_f accu = function
-    | [] -> accu
-    | a::l -> rmap_f (f a :: accu) l
-  in
-  rmap_f acc l
-
-let rec rev_iter f xs =
-    match xs with    
-    | [] -> ()
-    | y :: ys -> 
-      rev_iter f ys ;
-      f y      
-      
-let rec for_all2_no_exn p l1 l2 = 
-  match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
-  | (_, _) -> false
-
-
-let rec find_no_exn p = function
-  | [] -> None
-  | x :: l -> if p x then Some x else find_no_exn p l
-
-
-let rec find_opt p = function
-  | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt p l
-
-
-let split_map 
-    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
-  let rec aux bs cs xs =
-    match xs with 
-    | [] -> List.rev bs, List.rev cs 
-    | u::us -> 
-      let b,c =  f u in aux (b::bs) (c ::cs) us in 
-
-  aux [] [] xs 
-
-
-(*
-   {[
-     reduce_from_right (-) [1;2;3];;
-     - : int = 2
-               # reduce_from_right (-) [1;2;3; 4];;
-     - : int = -2
-                # reduce_from_right (-) [1];;
-     - : int = 1
-               # reduce_from_right (-) [1;2;3; 4; 5];;
-     - : int = 3
-   ]} 
-*)
-let reduce_from_right fn lst = 
-  begin match List.rev lst with
-    | last :: rest -> 
-      List.fold_left  (fun x y -> fn y x) last rest 
-    | _ -> invalid_arg "Ext_list.reduce" 
-  end
-
-
-
-end
-module Js_fun_env : sig 
-#1 "js_fun_env.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Define type t used in JS IR to collect some meta data for a function, like its closures, etc 
-  *)
-
-type t 
-
-val empty :  ?immutable_mask:bool array  -> int -> t
-
-val is_tailcalled : t -> bool
-
-val is_empty : t -> bool 
-
-val set_bound :  t -> Ident_set.t -> unit
-
-val get_bound : t -> Ident_set.t 
-
-val set_lexical_scope : t -> Ident_set.t -> unit
-
-val get_lexical_scope : t -> Ident_set.t
-
-val to_string : t -> string
-
-val mark_unused : t -> int -> unit 
-
-val get_unused : t -> int -> bool
-
-val get_mutable_params : Ident.t list -> t -> Ident.t list
-
-val get_bound : t -> Ident_set.t
-
-val get_length : t -> int
-
-end = struct
-#1 "js_fun_env.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(* Make it mutable so that we can do
-   in-place change without constructing a new one
-  -- however, it's a design choice -- to be reviewed later
-*)
-
-type immutable_mask = 
-  | All_immutable_and_no_tail_call 
-     (** iff not tailcalled 
-         if tailcalled, in theory, it does not need change params, 
-         for example
-         {[
-         let rec f  (n : int ref) = 
-            if !n > 0 then decr n; print_endline "hi"
-            else  f n
-         ]}
-         in this case, we still create [Immutable_mask], 
-         since the inline behavior is slightly different
-      *)
-  | Immutable_mask of bool array
-
-type t = { 
-  mutable bound : Ident_set.t;
-  mutable bound_loop_mutable_values : Ident_set.t; 
-  used_mask : bool array;
-  immutable_mask : immutable_mask; 
-}
-(** Invariant: unused param has to be immutable *)
-
-let empty ?immutable_mask n = { 
-  bound =  Ident_set.empty ;
-  used_mask = Array.make n false;
-  immutable_mask = 
-    (match immutable_mask with 
-     | Some x -> Immutable_mask x 
-     | None -> All_immutable_and_no_tail_call
-    );
-  bound_loop_mutable_values =Ident_set.empty;
-}
-
-let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
-
-let mark_unused  t i = 
-  t.used_mask.(i) <- true
-
-let get_unused t i = 
-  t.used_mask.(i)
-
-let get_length t = Array.length t.used_mask
-
-let to_string env =  
-  String.concat "," 
-    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
-       (Ident_set.elements  env.bound ))
-
-let get_mutable_params (params : Ident.t list) (x : t ) = 
-  match x.immutable_mask with 
-  | All_immutable_and_no_tail_call -> []
-  | Immutable_mask xs -> 
-      Ext_list.filter_mapi 
-        (fun i p -> if not xs.(i) then Some p else None)  params
-
-let get_bound t = t.bound
-
-let set_bound env v = 
-  (* Ext_log.err "%s -- set @." (to_string env); *)
-  (* if Ident_set.is_empty env.bound then *)
-  env.bound <- v 
- (* else assert false *)
-
-let set_lexical_scope env bound_loop_mutable_values = 
-  env.bound_loop_mutable_values <- bound_loop_mutable_values
-
-let get_lexical_scope env =  
-  env.bound_loop_mutable_values
-
-(* TODO:  can be refined if it 
-    only enclose toplevel variables 
- *)
-let is_empty t = Ident_set.is_empty t.bound 
-
-end
-module Js_closure : sig 
-#1 "js_closure.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Define a type used in JS IR to help convert lexical scope to JS [var] 
-    based scope convention
- *)
-
-type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t 
-}
-
-val empty : unit -> t
-
-val get_lexical_scope : t -> Ident_set.t
-
-val set_lexical_scope : t -> Ident_set.t -> unit
-
-end = struct
-#1 "js_closure.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t ;
-}
-
-let empty () = {
-  outer_loop_mutable_values  = Ident_set.empty
-}
-
-let set_lexical_scope t v = t.outer_loop_mutable_values <- v 
-
-let get_lexical_scope t = t.outer_loop_mutable_values 
-
-end
-module Js_call_info : sig 
-#1 "js_call_info.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Type for collecting call site information, used in JS IR *) 
-
-type arity = 
-  | Full 
-  | NA 
-
-
-type call_info = 
-  | Call_ml (* called by plain ocaml expression *)
-  | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.call] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> f x y === f ]} when [f] is an atom     
-  *) 
-
-
-type t = { 
-  call_info : call_info;
-  arity : arity;
-
-}
-
-val dummy : t
-val builtin_runtime_call : t
-
-val ml_full_call : t 
-
-end = struct
-#1 "js_call_info.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type arity = 
-  | Full 
-  | NA 
-
-type call_info = 
-  | Call_ml (* called by plain ocaml expression *)
-  | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.call] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> (f x y) === f ]} when [f] is an atom     
-
-  *) 
-
-type t = { 
-  call_info : call_info;
-  arity : arity
-}
-
-let dummy = { arity = NA; call_info = Call_na }
-
-let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
-
-let ml_full_call = {arity = Full; call_info = Call_ml}
-
-end
-module 
-J
-= struct
-#1 "j.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Javascript IR
-  
-    It's a subset of Javascript AST specialized for OCaml lambda backend
-
-    Note it's not exactly the same as Javascript, the AST itself follows lexical
-    convention and [Block] is just a sequence of statements, which means it does 
-    not introduce new scope
-*)
-
-type label = string
-
-and binop = Js_op.binop
-
-and int_op = Js_op.int_op
- 
-and kind = Js_op.kind
-
-and property = Js_op.property
-
-and number = Js_op.number 
-
-and mutable_flag = Js_op.mutable_flag 
-
-and ident_info = Js_op.ident_info
-
-and exports = Js_op.exports
-
-and tag_info = Js_op.tag_info 
- 
-and required_modules = Js_op.required_modules
-
-and code_info = Js_op.code_info 
-(** object literal, if key is ident, in this case, it might be renamed by 
-    Google Closure  optimizer,
-    currently we always use quote
- *)
-and property_name =  Js_op.property_name
-and jsint = Js_op.jsint
-and ident = Ident.t 
-
-and vident = 
-  | Id of ident
-  | Qualified of ident * kind * string option
-    (* Since camldot is only available for toplevel module accessors,
-       we don't need print  `A.length$2`
-       just print `A.length` - it's guarateed to be unique
-       
-       when the third one is None, it means the whole module 
-
-       TODO: 
-       invariant, when [kind] is [Runtime], then we can ignore [ident], 
-       since all [runtime] functions are unique, when do the 
-       pattern match we can ignore the first one for simplicity
-       for example       
-       {[
-         Qualified (_, Runtime, Some "caml_int_compare")         
-       ]}       
-     *)
-
-and exception_ident = ident 
-
-and for_ident = ident 
-
-and for_direction = Asttypes.direction_flag
-
-and property_map = 
-    (property_name * expression) list
-and length_object = Js_op.length_object
-and expression_desc =
-  | Math of string * expression list
-  | Length of expression * length_object
-  | Char_of_int of expression
-  | Char_to_int of expression 
-  | Array_of_size of expression 
-    (* used in [js_create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
-  | Array_copy of expression (* shallow copy, like [x.slice] *)
-  | Array_append of expression * expression (* For [caml_array_append]*)
-  (* | Tag_ml_obj of expression *)
-  | String_append of expression * expression 
-
-  | Int_of_boolean of expression 
-  | Anything_to_number of expression
-  | Bool of bool (* js true/false*)
-  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
-     [typeof] is an operator     
-  *)
-  | Typeof of expression
-  | Not of expression (* !v *)
-  | String_of_small_int_array of expression 
-    (* String.fromCharCode.apply(null, args) *)
-    (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-  | Json_stringify of expression 
-  (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
-  | Anything_to_string of expression
-  (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)      
-  | Dump of Js_op.level * expression list
-  (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)              
-    (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
-
-  (* TODO: Add some primitives so that [js inliner] can do a better job *)  
-  | Seq of expression * expression
-  | Cond of expression * expression * expression
-  | Bin of binop * expression * expression
-
-  (* [int_op] will guarantee return [int32] bits 
-     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
-  (* | Int32_bin of int_op * expression * expression *)
-  | FlatCall of expression * expression 
-    (* f.apply(null,args) -- Fully applied guaranteed 
-       TODO: once we know args's shape --
-       if it's know at compile time, we can turn it into
-       f(args[0], args[1], ... )
-     *)
-  | Bind of expression * expression
-  (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
-  | Call of expression * expression list * Js_call_info.t
-    (* Analysze over J expression is hard since, 
-        some primitive  call is translated 
-        into a plain call, it's better to keep them
-    *) 
-  | String_access of expression * expression 
-  | Access of expression * expression 
-    (* Invariant: 
-       The second argument has to be type of [int],
-       This can be constructed either in a static way [E.index] or a dynamic way 
-       [E.access]
-     *)
-  | Dot of expression * string * bool
-    (* The third argument bool indicates whether we should 
-       print it as 
-       a["idd"] -- false
-       or 
-       a.idd  -- true
-       There are several kinds of properties
-       1. OCaml module dot (need to be escaped or not)
-          All exported declarations have to be OCaml identifiers
-       2. Javascript dot (need to be preserved/or using quote)
-     *)
-  | New of expression * expression list option (* TODO: option remove *)
-  | Var of vident
-  | Fun of ident list  * block * Js_fun_env.t
-  | Str of bool * string 
-    (* A string is UTF-8 encoded, the string may contain
-       escape sequences.
-       The first argument is used to mark it is non-pure, please
-       don't optimize it, since it does have side effec, 
-       examples like "use asm;" and our compiler may generate "error;..." 
-       which is better to leave it alone
-     *)
-  | Raw_js_code of string * code_info
-  (* literally raw JS code 
-  *)
-  | Array of expression list * mutable_flag
-  | Caml_block of expression list * mutable_flag * expression * tag_info 
-  (* The third argument is [tag] , forth is [tag_info] *)
-  | Caml_uninitialized_obj of expression * expression
-  (* [tag] and [size] tailed  for [Obj.new_block] *)
-
-  (* For setter, it still return the value of expression, 
-     we can not use 
-     {[
-       type 'a access = Get | Set of 'a
-     ]}
-     in another module, since it will break our code generator
-     [Caml_block_tag] can return [undefined], 
-     you have to use [E.tag] in a safe way     
-  *)
-  | Caml_block_tag of expression
-  | Caml_block_set_tag of expression * expression
-  | Caml_block_set_length of expression * expression
-  (* It will just fetch tag, to make it safe, when creating it, 
-     we need apply "|0", we don't do it in the 
-     last step since "|0" can potentially be optimized
-  *)      
-  | Number of number
-  | Object of property_map
-
-and for_ident_expression = expression (* pure*)
-
-and finish_ident_expression = expression (* pure *)
-(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
-   block can be nested, specified in ES3 
- *)
-
-(* Delay some units like [primitive] into JS layer ,
-   benefit: better cross module inlining, and smaller IR size?
- *)
-
-(* 
-  [closure] captured loop mutable values in the outer loop
-
-  check if it contains loop mutable values, happens in nested loop
-  when closured, it's no longer loop mutable value. 
-  which means the outer loop mutable value can not peek into the inner loop
-  {[
-  var i = f ();
-  for(var finish = 32; i < finish; ++i){
-  }
-  ]}
-  when [for_ident_expression] is [None], [var i] has to 
-  be initialized outside, so 
-
-  {[
-  var i = f ()
-  (function (xxx){
-  for(var finish = 32; i < finish; ++i)
-  }(..i))
-  ]}
-  This happens rare it's okay
-
-  this is because [i] has to be initialized outside, if [j] 
-  contains a block side effect
-  TODO: create such example
-*)
-
-(* Since in OCaml, 
-   
-  [for i = 0 to k end do done ]
-  k is only evaluated once , to encode this invariant in JS IR,
-  make sure [ident] is defined in the first b
-
-  TODO: currently we guarantee that [bound] was only 
-  excecuted once, should encode this in AST level
-*)
-
-(* Can be simplified to keep the semantics of OCaml
-   For (var i, e, ...){
-     let  j = ... 
-   }
-
-   if [i] or [j] is captured inside closure
-
-   for (var i , e, ...){
-     (function (){
-     })(i)
-   }
-*)
-
-(* Single return is good for ininling..
-   However, when you do tail-call optmization
-   you loose the expression oriented semantics
-   Block is useful for implementing goto
-   {[
-   xx:{
-   break xx;
-   }
-   ]}
-*)
-
-
-and statement_desc =
-  | Block of block
-  | Variable of variable_declaration
-        (* Function declaration and Variable declaration  *)
-  | Exp of expression
-  | If of expression * block * block option
-  | While of label option *  expression * block 
-        * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
-  | ForRange of for_ident_expression option * finish_ident_expression * 
-        for_ident  *  for_direction * block
-        * Js_closure.t  
-  | Continue of label 
-  | Break (* only used when inline a fucntion *)
-  | Return of return_expression   (* Here we need track back a bit ?, move Return to Function ...
-                              Then we can only have one Return, which is not good *)
-  | Int_switch of expression * int case_clause list * block option 
-  | String_switch of expression * string case_clause list * block option 
-  | Throw of expression
-  | Try of block * (exception_ident * block) option * block option
-  | Debugger
-and return_expression = {
- (* since in ocaml, it's expression oriented langauge, [return] in
-    general has no jumps, it only happens when we do 
-    tailcall conversion, in that case there is a jump.
-    However, currently  a single [break] is good to cover
-    our compilation strategy 
-
-    Attention: we should not insert [break] arbitrarily, otherwise 
-    it would break the semantics
-    A more robust signature would be 
-    {[ goto : label option ; ]}
-  *)
-  return_value : expression
-}   
-
-and expression = {
-  expression_desc : expression_desc; 
-  comment : string option;
-} 
-
-and statement = { 
-  statement_desc :  statement_desc; 
-  comment : string option;
-}
-
-and variable_declaration = { 
-  ident : ident ;
-  value : expression  option;
-  property : property;
-  ident_info : ident_info;
-}
-
-and 'a case_clause = { 
-  case : 'a ; 
-  body : block * bool ;  (* true means break *)
-}
-
-(* TODO: For efficency: block should not be a list, it should be able to 
-   be concatenated in both ways 
- *)
-and block =  statement list
-
-and program = {
-  name :  string;
-
-  block : block ;
-  exports : exports ;
-  export_set : Ident_set.t ;
-
-}
-and deps_program = 
-  {
-    program : program ; 
-    modules : required_modules ;
-    side_effect : string option (* None: no, Some reason  *)
-  }
-
-end
-module Lam_module_ident : sig 
-#1 "lam_module_ident.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-
-(** A type for qualified identifiers in Lambda IR 
- *)
-
-type t = private { id : Ident.t ; kind : Js_op.kind }
-
-val id : t -> Ident.t 
-
-val name : t -> string
-
-val mk : J.kind -> Ident.t -> t
-
-val of_ml : Ident.t -> t
-
-val of_external : Ident.t -> string -> t
-
-val of_runtime : Ident.t -> t 
-
-end = struct
-#1 "lam_module_ident.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-type t = { id : Ident.t ; kind : Js_op.kind }
-
-let id x = x.id 
-
-let of_ml id = { id ; kind =  Ml}
-
-let of_external id name =  {id ; kind = External name}
-
-let of_runtime id = { id ; kind = Runtime }
-
-let mk kind id = {id; kind}
-
-let name  x : string  = 
-  match (x.kind : J.kind) with 
-  | Ml  | Runtime ->  x.id.name
-  | External v -> v  
-  
-(* OCaml runtime written in JS *)
-type module_property = bool 
-
-end
-module Lam : sig 
-#1 "lam.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type primitive = Lambda.primitive
-
-
-type switch = Lambda.lambda_switch =
-  { sw_numconsts: int;
-    sw_consts: (int * t) list;
-    sw_numblocks: int;
-    sw_blocks: (int * t) list;
-    sw_failaction : t option}
-and  t = Lambda.lambda =  private
-  | Lvar of Ident.t
-  | Lconst of Lambda.structured_constant
-  | Lapply of t * t list * Lambda.apply_info
-  | Lfunction of Lambda.function_kind * Ident.t list * t
-  | Llet of Lambda.let_kind * Ident.t * t * t
-  | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list
-  | Lswitch of t * switch
-  | Lstringswitch of t * (string * t) list * t option
-  | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * Ident.t list) * t
-  | Ltrywith of t * Ident.t * t
-  | Lifthenelse of t * t * t
-  | Lsequence of t * t
-  | Lwhile of t * t
-  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
-  | Lassign of Ident.t * t
-  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Levent of t * Lambda.lambda_event
-  | Lifused of Ident.t * t
-
-
-module Prim : sig 
-  type t = primitive
-  val js_is_nil : t
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
-
-
-type binop = t -> t -> t 
-
-type triop = t -> t -> t -> t 
-
-type unop = t ->  t
-
-val var : Ident.t -> t
-val const : Lambda.structured_constant -> t
-val apply : t -> t list -> Lambda.apply_info -> t
-val function_ : Lambda.function_kind -> Ident.t list -> t -> t
-val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
-val letrec : (Ident.t * t) list -> t -> t
-val if_ : triop
-val switch : t -> switch  -> t 
-val stringswitch : t -> (string * t) list -> t option -> t 
-
-val true_ : t 
-val false_ : t 
-val unit : t 
-
-val sequor : binop
-val sequand : binop
-val not : unop
-val seq : binop
-val while_ : binop
-val event : t -> Lambda.lambda_event -> t  
-val try_ : t -> Ident.t -> t  -> t 
-val ifused : Ident.t -> t -> t
-val assign : Ident.t -> t -> t 
-
-val send : 
-  Lambda.meth_kind ->
-  t -> t -> t list -> 
-  Location.t -> t 
-val prim : Lambda.primitive -> t list -> t
-val staticcatch : 
-  t -> int * Ident.t list -> t -> t
-
-val staticraise : 
-  int -> t list -> t
-
-val for_ : 
-  Ident.t ->
-  t  ->
-  t -> Asttypes.direction_flag -> t -> t 
-
-val free_variables : t -> Lambda.IdentSet.t
-
-val subst_lambda : t Ident.tbl -> t -> t
-
-end = struct
-#1 "lam.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type primitive = Lambda.primitive
-type switch = Lambda.lambda_switch = 
-  { sw_numconsts: int;
-    sw_consts: (int * t) list;
-    sw_numblocks: int;
-    sw_blocks: (int * t) list;
-    sw_failaction : t option}
-and t = Lambda.lambda = 
-  | Lvar of Ident.t
-  | Lconst of Lambda.structured_constant
-  | Lapply of t * t list * Lambda.apply_info
-  | Lfunction of Lambda.function_kind * Ident.t list * t
-  | Llet of Lambda.let_kind * Ident.t * t * t
-  | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list
-  | Lswitch of t * switch
-  | Lstringswitch of t * (string * t) list * t option
-  | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * Ident.t list) * t
-  | Ltrywith of t * Ident.t * t
-  | Lifthenelse of t * t * t
-  | Lsequence of t * t
-  | Lwhile of t * t
-  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
-  | Lassign of Ident.t * t
-  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Levent of t * Lambda.lambda_event
-  | Lifused of Ident.t * t
-
-
-module Prim = struct 
-  type t = primitive
-  let js_is_nil : t = 
-    Pccall{ prim_name = "js_is_nil";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_nil";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
-  let js_is_undef : t = 
-    Pccall{ prim_name = "js_is_undef";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_undef";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
-  let js_is_nil_undef : t  = 
-    Pccall{ prim_name = "js_is_nil_undef";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_nil_undef";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
-end
-
-
-
-
-
-
-type binop = t -> t -> t 
-
-type triop = t -> t -> t -> t 
-
-type unop = t -> t 
-
-
-let var id : t = Lvar id
-let const ct : t = Lconst ct 
-let apply fn args info : t = Lapply(fn,args, info)
-let function_ kind ids body : t = 
-  Lfunction(kind, ids, body)
-
-let let_ kind id e body :  t 
-  = Llet (kind,id,e,body)
-let letrec bindings body : t = 
-  Lletrec(bindings,body)
-
-let if_ (a : t) (b : t) c = 
-  match a with
-  | Lconst v ->
-    begin match v with
-    | Const_pointer (x, _)  | Const_base(Const_int x)
-      ->
-      if x <> 0 then b else c
-    | Const_base (Const_char x) ->
-      if Char.code x <> 0 then b else c
-    | Const_base (Const_int32 x) ->
-      if x <> 0l then b else c
-    | Const_base (Const_int64 x) ->
-      if x <> 0L then b else c
-    | Const_base (Const_nativeint x) ->
-      if x <> 0n then b else c
-    | Const_base (Const_string _ | Const_float _ ) -> b
-    | Const_block _
-    | Const_float_array _
-    | Const_immstring _ -> b
-    end
-  | _ ->  Lifthenelse (a,b,c)
-
-let switch lam lam_switch : t = 
-  Lswitch(lam,lam_switch)
-
-let stringswitch (lam : t) cases default : t = 
-  match lam with
-  | Lconst (Const_base (Const_string (a,_))) ->
-    begin
-      try List.assoc a cases with Not_found ->
-        begin
-          match default with
-          | Some x -> x
-          | None -> assert false
-        end
-    end
-  | _ -> Lstringswitch(lam, cases, default)
-
-
-let true_ : t =
-  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
-
-let false_ : t =
-  Lconst (Const_pointer( 0, Pt_constructor "false"))
-
-let unit : t = 
-  Lconst (Const_pointer( 0, Pt_constructor "()"))
-
-
-(** [l || r ] *)
-let sequor l r = if_ l true_ r 
-
-(** [l && r ] *)
-let sequand l r = if_ l r false_
-
-let seq a b : t = 
-  Lsequence (a, b)
-
-let while_ a b : t  = 
-  Lwhile(a,b)
-
-let try_  body id  handler : t = 
-  Ltrywith(body,id,handler)
-
-let for_ v e1 e2 dir e3 : t  = 
-  Lfor(v,e1,e2,dir,e3)
-
-let event l (_event : Lambda.lambda_event) = l 
-
-let ifused v l : t  = 
-  Lifused (v,l)
-
-let assign v l : t = Lassign(v,l)
-
-let send u m o ll v : t = 
-  Lsend(u, m, o, ll, v)
-
-let staticcatch  a b c : t = Lstaticcatch(a,b,c)
-
-let staticraise a b : t = Lstaticraise(a,b)
-
-let comparison (cmp : Lambda.comparison) a b : bool = 
-  match cmp with 
-  | Ceq -> a = b 
-  | Cneq -> a <> b 
-  | Cgt -> a > b 
-  | Cle -> a <= b 
-  | Clt -> a < b 
-  | Cge -> a >= b 
-
-let lift_int i : t =
-  Lconst (Const_base (Const_int i))
-
-
-let int32 i : t =
-  Lconst (Const_base (Const_int32 i))
-
-let lift_bool b = if b then true_ else false_
-
-(* ATTENTION: [float, nativeint] constant propogaton is not done
-   yet , due to cross platform problem
-*) 
-let lift_float b  : t = 
-  Lconst (Const_base (Const_float b))
-
-let lift_nativeint b : t = 
-  Lconst (Const_base (Const_nativeint b))
-
-let lift_int32 b : t = 
-  Lconst (Const_base (Const_int32 b))
-
-let lift_int64 b : t =
-  Lconst (Const_base (Const_int64 b))
-
-let prim (prim : Prim.t) (ll : t list) : t = 
-  let default () : t = Lprim(prim,ll) in 
-  match ll with 
-  | [Lconst a] -> 
-    begin match prim, a  with 
-      | Pnegint, (Const_base (Const_int a))
-        -> lift_int (- a)
-      (* | Pfloatofint, (Const_base (Const_int a)) *)
-      (*   -> lift_float (float_of_int a) *)
-      | Pintoffloat, (Const_base (Const_float a))
-        -> 
-        lift_int (int_of_float (float_of_string a))
-        (* | Pnegfloat -> lift_float (-. a) *)
-        (* | Pabsfloat -> lift_float (abs_float a) *)
-      | Pstringlength, (Const_base (Const_string (a,_)) ) 
-        -> 
-        lift_int (String.length a)
-      (* | Pnegbint Pnativeint, (Const_base (Const_nativeint i)) *)
-      (*   ->   *)
-      (*   lift_nativeint (Nativeint.neg i) *)
-      | Pnegbint Pint32, (Const_base (Const_int32 a))
-        -> 
-        lift_int32 (Int32.neg a)
-      | Pnegbint Pint64, (Const_base (Const_int64 a))
-        -> 
-        lift_int64 (Int64.neg a)
-      | Pnot , Const_pointer (a,_) 
-        -> lift_bool (a = 0 )
-
-      | _ -> default ()
-    end
-
-
-  | [Lconst a ; Lconst b] -> 
-    begin match prim, a, b  with 
-      | Pbintcomp(_, cmp), Const_base (Const_int32 a), Const_base (Const_int32 b)
-        -> lift_bool (comparison cmp a b)
-      | Pbintcomp(_, cmp), Const_base (Const_int64 a), Const_base (Const_int64 b)
-        -> lift_bool (comparison cmp a b)
-      | Pbintcomp(_, cmp), Const_base (Const_nativeint a), Const_base (Const_nativeint b)
-        -> lift_bool (comparison cmp a b)
-      | Pfloatcomp  cmp, Const_base (Const_nativeint a), Const_base (Const_nativeint b)
-        -> lift_bool (comparison cmp a b)
-      | Pintcomp cmp , Const_base (Const_int a), Const_base (Const_int b)
-        -> lift_bool (comparison cmp a b)
-
-      | (Paddint
-        | Psubint
-        | Pmulint
-        | Pdivint
-        | Pmodint
-        | Pandint
-        | Porint
-        | Pxorint
-        | Plslint
-        | Plsrint
-        | Pasrint),Const_base (Const_int a),  Const_base (Const_int b)
-        ->
-            (* WE SHOULD keep it as [int], to preserve types *)
-            let aa,bb = Int32.of_int a, Int32.of_int  b in 
-            let int_ v = lift_int (Int32.to_int v ) in 
-            begin match prim with 
-              | Paddint -> int_ (Int32.add aa bb)
-              | Psubint -> int_ (Int32.sub aa bb)
-              | Pmulint -> int_ (Int32.mul aa  bb)
-              | Pdivint -> (try int_ (Int32.div aa  bb) with _ -> default ())
-              | Pmodint -> int_ (Int32.rem aa  bb)
-              | Pandint -> int_ (Int32.logand aa bb)
-              | Porint -> int_ (Int32.logor aa bb)
-              | Pxorint -> int_ (Int32.logxor aa bb)
-              | Plslint -> int_ (Int32.shift_left  aa b )
-              | Plsrint -> int_ (Int32.shift_right_logical aa  b)
-              | Pasrint -> int_ (Int32.shift_right aa b)
-              | _ -> default ()
-            end
-      | (Paddbint Pint32
-        | Psubbint Pint32
-        | Pmulbint Pint32
-        | Pdivbint Pint32
-        | Pmodbint Pint32
-        | Pandbint Pint32
-        | Porbint Pint32
-        | Pxorbint Pint32
-        ), Const_base (Const_int32 aa),  Const_base (Const_int32 bb)
-        -> 
-        begin match prim with 
-          | Paddbint _  -> lift_int32 (Int32.add aa bb)
-          | Psubbint _  -> lift_int32 (Int32.sub aa bb)
-          | Pmulbint _ -> lift_int32 (Int32.mul aa  bb)
-          | Pdivbint _ ->  (try lift_int32 (Int32.div aa  bb) with _  -> default ())
-          | Pmodbint _ -> lift_int32 (Int32.rem aa  bb)
-          | Pandbint _ -> lift_int32 (Int32.logand aa bb)
-          | Porbint _ -> lift_int32 (Int32.logor aa bb)
-          | Pxorbint _ -> lift_int32 (Int32.logxor aa bb)
-          | _ -> default ()
-        end
-      | Plslbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
-        -> lift_int32 (Int32.shift_left  aa b )
-      | Plsrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
-        -> lift_int32 (Int32.shift_right_logical  aa b )
-      | Pasrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
-        -> lift_int32 (Int32.shift_right  aa b )
-
-      | (Paddbint Pint64
-        | Psubbint Pint64
-        | Pmulbint Pint64
-        | Pdivbint Pint64
-        | Pmodbint Pint64
-        | Pandbint Pint64
-        | Porbint Pint64
-        | Pxorbint Pint64
-        ), Const_base (Const_int64 aa),  Const_base (Const_int64 bb)
-        -> 
-        begin match prim with 
-          | Paddbint _  -> lift_int64 (Int64.add aa bb)
-          | Psubbint _  -> lift_int64 (Int64.sub aa bb)
-          | Pmulbint _ -> lift_int64 (Int64.mul aa  bb)
-          | Pdivbint _ -> (try lift_int64 (Int64.div aa  bb) with _ -> default ())
-          | Pmodbint _ -> lift_int64 (Int64.rem aa  bb)
-          | Pandbint _ -> lift_int64 (Int64.logand aa bb)
-          | Porbint _ -> lift_int64 (Int64.logor aa bb)
-          | Pxorbint _ -> lift_int64 (Int64.logxor aa bb)
-          | _ -> default ()
-        end
-      | Plslbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
-        -> lift_int64 (Int64.shift_left  aa b )
-      | Plsrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
-        -> lift_int64 (Int64.shift_right_logical  aa b )
-      | Pasrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
-        -> lift_int64 (Int64.shift_right  aa b )
-      | Psequand, Const_pointer (a, _), Const_pointer( b, _)
-        -> 
-        lift_bool (a = 1 && b = 1)
-      | Psequor, Const_pointer (a, _), Const_pointer( b, _)
-        -> 
-        lift_bool (a = 1 || b = 1)
-      | _ -> default ()
-    end
-
-  | _ -> default ()
-
-
-let not x : t = 
-  prim Pnot [x]
-
-
-let free_variables  = Lambda.free_variables
-
-let subst_lambda = Lambda.subst_lambda
-
-end
-module Hash_set : sig 
-#1 "hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a hashset 
-
-val create : ?random: bool -> int -> 'a hashset
-
-val clear : 'a hashset -> unit
-
-val reset : 'a hashset -> unit
-
-val copy : 'a hashset -> 'a hashset
-
-val add : 'a hashset -> 'a  -> unit
-
-val mem : 'a hashset -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a hashset -> unit
-
-val elements : 'a hashset -> 'a list
-
-end = struct
-#1 "hash_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Hashtbl 
-
-(* type nonrec t = unit t  *)
-
-type  'a hashset = ('a,unit) Hashtbl.t
-
-let add tbl k  = replace tbl k ()
-(* use [Hashtbl.replace] instead  *)
-
-(* let replace tbl k  = replace tbl k () *)
-let iter f = iter (fun k _ -> f k )
-
-let elements set = 
-  fold  (fun k _ acc ->  k :: acc) set []
-
-end
-module Lam_stats : sig 
-#1 "lam_stats.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Types defined for lambda analysis *)
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  (** when the first argument is true, it is for sure 
-
-      approximation sound but not complete 
-      the last one means it can take any params later, 
-      for an exception: it is (Determin (true,[], true))
-   *)
-  | NA 
-
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
-(** Keep track of which identifiers are aliased
-  *)
-
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
-type rec_flag = 
-  | Rec 
-  | Non_rec
-
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : function_arities;
-  lambda  : Lam.t ;
-  (* TODO: This may contain some closure environment,
-     check how it will interact with dead code elimination
-  *)
-  rec_flag : rec_flag
-}
-
-type element = 
-  | NA 
-  | SimpleForm of Lam.t 
-
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
-
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array
-  | Constant of Lambda.structured_constant
-  | Module of Ident.t
-        (** TODO: static module vs first class module *)
-  | Function of function_id 
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-
-  | NA (** Not such information is associated with an identifier, it is immutable, 
-           if you only associate a property to an identifier 
-           we should consider [Lassign]
-        *)
-
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
-
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
-
-type meta = {
-  env : Env.t;
-  filename : string ;
-  export_idents : Ident_set.t ;
-  exports : Ident.t list ;
-  alias_tbl : alias_tbl; 
-  exit_codes : int Hash_set.hashset;
-
-  ident_tbl : ident_tbl;
-  (** we don't need count arities for all identifiers, for identifiers
-      for sure it's not a function, there is no need to count them
-   *)
-
-  mutable required_modules : Lam_module_ident.t list ;
-}
-
-end = struct
-#1 "lam_stats.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(* It can be useful for common sub expression elimination ? 
-    if two lambdas are not equal, it should return false, other wise, 
-    it might return true , this is only used as a way of optimizaton
-
-    Use case :
-    1. switch case -- common fall through
- *)
-
-(* lambda pass for alpha conversion 
-    and alias
-    we need think about the order of the pass, might be the alias pass can be done 
-    in the  beginning, when we do alpha conversion, we can instrument the table 
- *)
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  | NA 
-
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
-type rec_flag = 
-  | Rec 
-  | Non_rec
-
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : function_arities ;
-  lambda  : Lam.t ;
-  rec_flag : rec_flag
-}
-
-type element = 
-  | NA 
-  | SimpleForm of Lam.t
-
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
-
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array 
-  | Constant of Lambda.structured_constant
-  | Module of Ident.t
-        (** Global module, local module is treated as an array
-         *)
-  | Function of function_id (** True then functor *)
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-  | NA 
-  (* | Boxed_nullable of Ident.t  *)
-    (** 
-       {[ let v/2 =  js_from_nullable u]} 
-
-       {[ let v/2 = js_from_nullable exp]}
-       can be translated into 
-       {[
-         let v/1 = exp in 
-         let v/2 =a js_from_nullable exp 
-       ]}
-       so that [Pfield v/2 0] will be replaced by [v/1], 
-       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
-    *)
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
-
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
-
-type meta = {
-  env : Env.t;
-  filename : string ;
-  export_idents : Ident_set.t ;
-  exports : Ident.t list ;
-
-  alias_tbl : alias_tbl; 
-  exit_codes : int Hash_set.hashset;
-
-  ident_tbl : ident_tbl;
-  (** we don't need count arities for all identifiers, for identifiers
-      for sure it's not a function, there is no need to count them
-  *)
-  (** required modules completed by [alias_pass] *)
-  mutable required_modules : Lam_module_ident.t list ;
-}
-
-
-end
-module Lam_print : sig 
-#1 "lam_print.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val lambda : Format.formatter -> Lam.t -> unit
-
-val primitive: Format.formatter -> Lam.Prim.t -> unit
-
-val seriaize : 'a -> string -> Lam.t -> unit
-
-val env_lambda : Env.t -> Format.formatter -> Lam.t -> unit
-
-end = struct
-#1 "lam_print.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-[@@@ocaml.warning "-40"]
-open Format
-open Asttypes
-open Primitive
-open Types
-
-
-
-let rec struct_const ppf (cst : Lambda.structured_constant) =
-  match cst with 
-  | Const_base(Const_int n) -> fprintf ppf "%i" n
-  | Const_base(Const_char c) -> fprintf ppf "%C" c
-  | Const_base(Const_string (s, _)) -> fprintf ppf "%S" s
-  | Const_immstring s -> fprintf ppf "#%S" s
-  | Const_base(Const_float f) -> fprintf ppf "%s" f
-  | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
-  | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
-  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
-  | Const_pointer (n,_) -> fprintf ppf "%ia" n
-  | Const_block(tag,_, []) ->
-      fprintf ppf "[%i]" tag
-  | Const_block(tag,_, sc1::scl) ->
-      let sconsts ppf scl =
-        List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
-      fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
-  | Const_float_array [] ->
-      fprintf ppf "[| |]"
-  | Const_float_array (f1 :: fl) ->
-      let floats ppf fl =
-        List.iter (fun f -> fprintf ppf "@ %s" f) fl in
-      fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
-
-let boxed_integer_name (i : Lambda.boxed_integer) =
-  match i with 
-  | Pnativeint -> "nativeint"
-  | Pint32 -> "int32"
-  | Pint64 -> "int64"
-
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s_%s" (boxed_integer_name bi) name
-
-let print_boxed_integer_conversion ppf bi1 bi2 =
-  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
-
-let boxed_integer_mark name (i : Lambda.boxed_integer) = 
-  match i with 
-  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
-  | Pint32 -> Printf.sprintf "Int32.%s" name
-  | Pint64 -> Printf.sprintf "Int64.%s" name
-
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s" (boxed_integer_mark name bi);;
-
-let print_bigarray name unsafe (kind : Lambda.bigarray_kind) ppf 
-    (layout : Lambda.bigarray_layout) =
-  fprintf ppf "Bigarray.%s[%s,%s]"
-    (if unsafe then "unsafe_"^ name else name)
-    (match kind with
-     | Lambda.Pbigarray_unknown -> "generic"
-     | Pbigarray_float32 -> "float32"
-     | Pbigarray_float64 -> "float64"
-     | Pbigarray_sint8 -> "sint8"
-     | Pbigarray_uint8 -> "uint8"
-     | Pbigarray_sint16 -> "sint16"
-     | Pbigarray_uint16 -> "uint16"
-     | Pbigarray_int32 -> "int32"
-     | Pbigarray_int64 -> "int64"
-     | Pbigarray_caml_int -> "camlint"
-     | Pbigarray_native_int -> "nativeint"
-     | Pbigarray_complex32 -> "complex32"
-     | Pbigarray_complex64 -> "complex64")
-    (match layout with
-     | Lambda.Pbigarray_unknown_layout -> "unknown"
-     | Pbigarray_c_layout -> "C"
-     | Pbigarray_fortran_layout -> "Fortran")
-
-let record_rep ppf r =
-  match r with
-  | Record_regular -> fprintf ppf "regular"
-  | Record_float -> fprintf ppf "float"
-;;
-
-let string_of_loc_kind (loc : Lambda.loc_kind) =
-  match loc with 
-  | Loc_FILE -> "loc_FILE"
-  | Loc_LINE -> "loc_LINE"
-  | Loc_MODULE -> "loc_MODULE"
-  | Loc_POS -> "loc_POS"
-  | Loc_LOC -> "loc_LOC"
-
-let primitive ppf (prim : Lambda.primitive) = match prim with 
-  | Pidentity -> fprintf ppf "id"
-  | Pmark_ocaml_object -> fprintf ppf "mark_ocaml_object"
-  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
-  | Pbytes_of_string -> fprintf ppf "bytes_of_string"
-  | Pchar_to_int  -> fprintf ppf "char_to_int"
-  | Pchar_of_int -> fprintf ppf "char_of_int"
-  | Pignore -> fprintf ppf "ignore"
-  | Prevapply _ -> fprintf ppf "revapply"
-  | Pdirapply _ -> fprintf ppf "dirapply"
-  | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
-  | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
-  | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
-  | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
-  | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
-  | Pfield (n,_) -> fprintf ppf "field %i" n
-  | Psetfield(n, ptr, _) ->
-      let instr = if ptr then "setfield_ptr " else "setfield_imm " in
-      fprintf ppf "%s%i" instr n
-  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
-  | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
-  | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
-  | Plazyforce -> fprintf ppf "force"
-  | Pccall p -> fprintf ppf "%s" p.prim_name
-  | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
-  | Psequand -> fprintf ppf "&&"
-  | Psequor -> fprintf ppf "||"
-  | Pnot -> fprintf ppf "not"
-  | Pnegint -> fprintf ppf "~"
-  | Paddint -> fprintf ppf "+"
-  | Psubint -> fprintf ppf "-"
-  | Pmulint -> fprintf ppf "*"
-  | Pdivint -> fprintf ppf "/"
-  | Pmodint -> fprintf ppf "mod"
-  | Pandint -> fprintf ppf "and"
-  | Porint -> fprintf ppf "or"
-  | Pxorint -> fprintf ppf "xor"
-  | Plslint -> fprintf ppf "lsl"
-  | Plsrint -> fprintf ppf "lsr"
-  | Pasrint -> fprintf ppf "asr"
-  | Pintcomp(Ceq) -> fprintf ppf "=="
-  | Pintcomp(Cneq) -> fprintf ppf "!="
-  | Pintcomp(Clt) -> fprintf ppf "<"
-  | Pintcomp(Cle) -> fprintf ppf "<="
-  | Pintcomp(Cgt) -> fprintf ppf ">"
-  | Pintcomp(Cge) -> fprintf ppf ">="
-  | Poffsetint n -> fprintf ppf "%i+" n
-  | Poffsetref n -> fprintf ppf "+:=%i"n
-  | Pintoffloat -> fprintf ppf "int_of_float"
-  | Pfloatofint -> fprintf ppf "float_of_int"
-  | Pnegfloat -> fprintf ppf "~."
-  | Pabsfloat -> fprintf ppf "abs."
-  | Paddfloat -> fprintf ppf "+."
-  | Psubfloat -> fprintf ppf "-."
-  | Pmulfloat -> fprintf ppf "*."
-  | Pdivfloat -> fprintf ppf "/."
-  | Pfloatcomp(Ceq) -> fprintf ppf "==."
-  | Pfloatcomp(Cneq) -> fprintf ppf "!=."
-  | Pfloatcomp(Clt) -> fprintf ppf "<."
-  | Pfloatcomp(Cle) -> fprintf ppf "<=."
-  | Pfloatcomp(Cgt) -> fprintf ppf ">."
-  | Pfloatcomp(Cge) -> fprintf ppf ">=."
-  | Pstringlength -> fprintf ppf "string.length"
-  | Pstringrefu -> fprintf ppf "string.unsafe_get"
-  | Pstringsetu -> fprintf ppf "string.unsafe_set"
-  | Pstringrefs -> fprintf ppf "string.get"
-  | Pstringsets -> fprintf ppf "string.set"
-  | Pbyteslength -> fprintf ppf "bytes.length"
-  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
-  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
-  | Pbytesrefs -> fprintf ppf "bytes.get"
-  | Pbytessets -> fprintf ppf "bytes.set"
-
-  | Parraylength _ -> fprintf ppf "array.length"
-  | Pmakearray _ -> fprintf ppf "makearray "
-  | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
-  | Parraysetu _ -> fprintf ppf "array.unsafe_set"
-  | Parrayrefs _ -> fprintf ppf "array.get"
-  | Parraysets _ -> fprintf ppf "array.set"
-  | Pctconst c ->
-     let const_name = match c with
-       | Big_endian -> "big_endian"
-       | Word_size -> "word_size"
-       | Ostype_unix -> "ostype_unix"
-       | Ostype_win32 -> "ostype_win32"
-       | Ostype_cygwin -> "ostype_cygwin" in
-     fprintf ppf "sys.constant_%s" const_name
-  | Pisint -> fprintf ppf "isint"
-  | Pisout -> fprintf ppf "isout"
-  | Pbittest -> fprintf ppf "testbit"
-  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
-  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
-  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
-  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
-  | Paddbint bi -> print_boxed_integer "add" ppf bi
-  | Psubbint bi -> print_boxed_integer "sub" ppf bi
-  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
-  | Pdivbint bi -> print_boxed_integer "div" ppf bi
-  | Pmodbint bi -> print_boxed_integer "mod" ppf bi
-  | Pandbint bi -> print_boxed_integer "and" ppf bi
-  | Porbint bi -> print_boxed_integer "or" ppf bi
-  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
-  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
-  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
-  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
-  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
-  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
-  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
-  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
-  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
-  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
-  | Pbigarrayref(unsafe, n, kind, layout) ->
-      print_bigarray "get" unsafe kind ppf layout
-  | Pbigarrayset(unsafe, n, kind, layout) ->
-      print_bigarray "set" unsafe kind ppf layout
-  | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
-  | Pstring_load_16(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get16"
-     else fprintf ppf "string.get16"
-  | Pstring_load_32(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get32"
-     else fprintf ppf "string.get32"
-  | Pstring_load_64(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get64"
-     else fprintf ppf "string.get64"
-  | Pstring_set_16(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set16"
-     else fprintf ppf "string.set16"
-  | Pstring_set_32(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set32"
-     else fprintf ppf "string.set32"
-  | Pstring_set_64(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set64"
-     else fprintf ppf "string.set64"
-  | Pbigstring_load_16(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
-     else fprintf ppf "bigarray.array1.get16"
-  | Pbigstring_load_32(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
-     else fprintf ppf "bigarray.array1.get32"
-  | Pbigstring_load_64(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
-     else fprintf ppf "bigarray.array1.get64"
-  | Pbigstring_set_16(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
-     else fprintf ppf "bigarray.array1.set16"
-  | Pbigstring_set_32(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
-     else fprintf ppf "bigarray.array1.set32"
-  | Pbigstring_set_64(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
-     else fprintf ppf "bigarray.array1.set64"
-  | Pbswap16 -> fprintf ppf "bswap16"
-  | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
-  | Pint_as_pointer -> fprintf ppf "int_as_pointer"
-
-type print_kind = 
-  | Alias 
-  | Strict 
-  | StrictOpt 
-  | Variable 
-  | Recursive 
-
-let kind = function
-  | Alias -> "a"
-  | Strict -> ""
-  | StrictOpt -> "o"
-  | Variable -> "v" 
-  | Recursive -> "r"
-
-let to_print_kind (k : Lambda.let_kind) : print_kind = 
-  match k with 
-  | Alias -> Alias 
-  | Strict -> Strict
-  | StrictOpt -> StrictOpt
-  | Variable -> Variable
-  
-let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) = 
-  match lam with 
-  | Llet (str3, id3, arg3, body3) ->
-      aux ((to_print_kind str3,id3, arg3)::acc) body3
-  | Lletrec (bind_args, body) ->
-      aux 
-        (List.map (fun (id,l) -> (Recursive,id,l)) bind_args 
-         @ acc) body
-  | e ->  (acc , e) 
-
-type left_var = 
-    {
-     kind : print_kind ;
-     id : Ident.t
-   }
-
-type left = 
-  | Id of left_var
-  | Nop
-
-
-
-
-let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t = 
-  match lam with 
-  | Llet(str,id, arg, body) ->
-      aux [to_print_kind str, id, arg] body
-  | Lletrec(bind_args, body) ->
-      aux 
-        (List.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
-        body
-  | _ -> assert false
-
-        
-let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
-  match  Env.find_module (Pident id) env with 
-  | {md_type = Mty_signature signature  ; _ } -> 
-      (* Env.prefix_idents, could be cached  *)
-      let serializable_sigs = 
-        List.filter (fun x ->
-            match x with 
-            | Sig_typext _ 
-            | Sig_module _
-            | Sig_class _ -> true
-            | Sig_value(_, {val_kind = Val_prim _}) -> false
-            | Sig_value _ -> true
-            | _ -> false
-                    ) signature  in
-      (begin match List.nth  serializable_sigs  pos  with 
-      | Sig_value (i,_) 
-      | Sig_module (i,_,_) -> i 
-      | Sig_typext (i,_,_) -> i 
-      | Sig_modtype(i,_) -> i 
-      | Sig_class (i,_,_) -> i 
-      | Sig_class_type(i,_,_) -> i 
-      | Sig_type(i,_,_) -> i 
-      end).name
-  | _ -> assert false
-
-
-
-let lambda use_env env ppf v  =
-  let rec lam ppf (l : Lam.t) = match l with 
-  | Lvar id ->
-      Ident.print ppf id
-  | Lconst cst ->
-      struct_const ppf cst
-  | Lapply(lfun, largs, _) ->
-      let lams ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(apply@ %a%a)@]" lam lfun lams largs
-  | Lfunction(kind, params, body) ->
-      let pr_params ppf params =
-        match kind with
-        | Curried ->
-            List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-        | Tupled ->
-            fprintf ppf " (";
-            let first = ref true in
-            List.iter
-              (fun param ->
-                if !first then first := false else fprintf ppf ",@ ";
-                Ident.print ppf param)
-              params;
-            fprintf ppf ")" in
-      fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
-  | Llet _ | Lletrec _ as x ->
-      let args, body =   flatten x  in
-      let bindings ppf id_arg_list =
-        let spc = ref false in
-        List.iter
-          (fun (k, id, l) ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
-          id_arg_list in
-      fprintf ppf
-        "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
-      fprintf ppf ")@ %a)@]"  lam body
-  | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]) when use_env ->
-      fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
-
-  | Lprim(Psetfield (n,_,_), [ Lprim(Pgetglobal id,[]) ;  e ]) when use_env  ->
-      fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
-        lam e
-  | Lprim(prim, largs) ->
-      let lams ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
-  | Lswitch(larg, sw) ->
-      let switch ppf (sw : Lam.switch) =
-        let spc = ref false in
-        List.iter
-         (fun (n, l) ->
-           if !spc then fprintf ppf "@ " else spc := true;
-           fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
-         sw.sw_consts;
-        List.iter
-          (fun (n, l) ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
-          sw.sw_blocks ;
-        begin match sw.sw_failaction with
-        | None  -> ()
-        | Some l ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<hv 1>default:@ %a@]" lam l
-        end in
-      fprintf ppf
-       "@[<1>(%s %a@ @[<v 0>%a@])@]"
-       (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
-       lam larg switch sw
-  | Lstringswitch(arg, cases, default) ->
-      let switch ppf cases =
-        let spc = ref false in
-        List.iter
-         (fun (s, l) ->
-           if !spc then fprintf ppf "@ " else spc := true;
-           fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
-          cases;
-        begin match default with
-        | Some default ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<hv 1>default:@ %a@]" lam default
-        | None -> ()
-        end in
-      fprintf ppf
-       "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
-  | Lstaticraise (i, ls)  ->
-      let lams ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls;
-  | Lstaticcatch(lbody, (i, vars), lhandler) ->
-      fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]"
-        lam lbody i
-        (fun ppf vars -> match vars with
-          | [] -> ()
-          | _ ->
-              List.iter
-                (fun x -> fprintf ppf " %a" Ident.print x)
-                vars)
-        vars
-        lam lhandler
-  | Ltrywith(lbody, param, lhandler) ->
-      fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]"
-        lam lbody Ident.print param lam lhandler
-  | Lifthenelse(lcond, lif, lelse) ->
-      fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
-  | Lsequence(l1, l2) ->
-      fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
-  | Lwhile(lcond, lbody) ->
-      fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
-  | Lfor(param, lo, hi, dir, body) ->
-      fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]"
-       Ident.print param lam lo
-       (match dir with Upto -> "to" | Downto -> "downto")
-       lam hi lam body
-  | Lassign(id, expr) ->
-      fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
-  | Lsend (k, met, obj, largs, _) ->
-      let args ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      let kind =
-        if k = Self then "self" else if k = Cached then "cache" else "" in
-      fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
-  | Levent(expr, _ev) ->
-      lam ppf expr
-      (* let kind = *)
-      (*  match ev.lev_kind with *)
-      (*  | Lev_before -> "before" *)
-      (*  | Lev_after _  -> "after" *)
-      (*  | Lev_function -> "funct-body" in *)
-      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
-      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
-      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
-      (*         lam expr *)
-  | Lifused(id, expr) ->
-      fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
-
-and sequence ppf = function
-  | Lsequence(l1, l2) ->
-      fprintf ppf "%a@ %a" sequence l1 sequence l2
-  | l ->
-      lam ppf l
-  in 
-  lam ppf v
-
-let structured_constant = struct_const
-
-let env_lambda = lambda true 
-let lambda = lambda false Env.empty
-
-let rec flatten_seq acc (lam : Lam.t) =
-  match lam with 
-  | Lsequence(l1,l2) -> 
-      flatten_seq (flatten_seq acc l1) l2
-  | x -> x :: acc 
-
-exception Not_a_module
-
-let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) = 
-  match lam with 
-  | Llet (str,id,arg,body) ->
-      flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
-  | Lletrec (bind_args, body) ->
-      flat ( List.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args @ acc) body 
-  | Lsequence (l,r) -> 
-      flat (flat acc l) r
-  | x -> (Nop, x) :: acc 
-
-let lambda_as_module env  ppf (lam : Lam.t) = 
-  try
-  match lam with
-  | Lprim(Psetglobal(id), [biglambda])  (* might be wrong in toplevel *) ->
-      
-      begin match flat [] biglambda  with 
-      | (Nop, Lprim (Pmakeblock (_, _, _), toplevels)) :: rest ->
-          (* let spc = ref false in *)
-          List.iter
-            (fun (left, l) ->
-              match left with 
-              | Id { kind = k; id } ->
-                  fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
-              | Nop -> 
-
-                  fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
-            )
-
-            @@ List.rev rest
-          
-          
-      | _ -> raise Not_a_module
-      end
-  | _ -> raise Not_a_module
-  with _ -> 
-    env_lambda env ppf lam;
-    fprintf ppf "; lambda-failure"
-let seriaize env (filename : string) (lam : Lam.t) : unit =
-  let ou = open_out filename  in
-  let old = Format.get_margin () in
-  let () = Format.set_margin 10000 in
-  let fmt = Format.formatter_of_out_channel ou in
-  begin
-    (* lambda_as_module env fmt lambda; *)
-    lambda fmt lam;
-    Format.pp_print_flush fmt ();
-    close_out ou;
-    Format.set_margin old
-  end
-
-end
-module Ident_map : sig 
-#1 "ident_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-include Map.S with type key = Ident.t 
-
-val of_list  : (key * 'a) list -> 'a t
-
-val keys : 'a t -> key list
-
-val add_if_not_exist : key -> 'a -> 'a t -> 'a t
-
-val merge_disjoint : 'a t -> 'a t -> 'a t
-
-end = struct
-#1 "ident_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Map with key specialized as [Ident] type, enhanced with some utilities *)
-
-include Map.Make(struct 
-  type t = Ident.t 
-
-  let compare (x : t) (y : t) =
-    (* Can not overflow *)
-    let u = x.stamp - y.stamp in
-    if u = 0 then 
-      let u = String.compare x.name y.name in 
-      if u = 0 then 
-        x.flags - y.flags 
-      else  u 
-    else u 
-end)
-
-let of_list lst = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty lst
-
-let keys map = fold (fun k _ acc -> k::acc  ) map []
-
-(* TODO: have this in stdlib/map to save some time *)
-let add_if_not_exist key v m = 
-  if mem key m then m else add key v m
-
-let merge_disjoint m1 m2 = 
-  merge 
-    (fun k x0 y0 -> 
-       match x0, y0 with 
-         None, None -> None
-       | None, Some v | Some v, None -> Some v
-       | _, _ -> invalid_arg "merge_disjoint: maps are not disjoint")
-    m1 m2
-
-end
-module Lam_analysis : sig 
-#1 "lam_analysis.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** A module which provides some basic analysis over lambda expression *)
-
-(** No side effect, but it might depend on data store *)
-val no_side_effects : Lam.t -> bool 
-
-val size : Lam.t -> int
-
-val eq_lambda : Lam.t -> Lam.t -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
-
-(** [is_closed_by map lam]
-    return [true] if all unbound variables
-    belongs to the given [map] *)
-val is_closed_by : (* Lambda. *) Ident_set.t -> Lam.t -> bool
-
-val is_closed : Lam.t -> bool
-
-
-
-
-
-type stats = 
-  { 
-    mutable top : bool ; 
-    (* all appearances are in the top,  substitution is fine 
-       whether it is pure or not
-       {[
-         (fun x y          
-           ->  x + y + (f x )) (32) (console.log('hi'), 33)
-       ]}       
-       since in ocaml, the application order is intentionally undefined, 
-       note if [times] is not one, this field does not make sense       
-    *)    
-    mutable times : int ; 
-  }
-
-val is_closed_with_map : 
-  Ident_set.t ->
-  Ident.t list -> Lam.t -> bool * stats Ident_map.t
-
-val param_map_of_list : Ident.t list -> stats Ident_map.t
-
-val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
-
-val small_inline_size : int 
-val exit_inline_size : int 
-
-
-val safe_to_inline : Lam.t -> bool
-
-end = struct
-#1 "lam_analysis.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-let rec no_side_effects (lam : Lam.t) : bool = 
-  match lam with 
-  | Lvar _ 
-  | Lconst _ 
-  | Lfunction _ -> true
-  | Lprim (primitive, args) -> 
-    List.for_all no_side_effects args && 
-    (
-      match primitive with 
-      | Pccall {prim_name ; _} ->
-        begin 
-          match prim_name,args with 
-          | ("caml_register_named_value"
-            (* register to c runtime does not make sense  in ocaml *)
-            | "caml_set_oo_id" 
-            | "caml_is_js"
-            | "caml_int64_float_of_bits"
-             (* more safe to check if arguments are constant *)
-            (* non-observable side effect *)    
-            | "caml_sys_get_config"
-            | "caml_sys_get_argv" (* should be fine *)
-
-            | "caml_create_string" (* TODO: add more *)
-            | "caml_make_vect"
-            | "caml_obj_dup"
-            | "caml_obj_block"
-            | "js_from_nullable"
-            | "js_from_def"
-            | "js_from_nullable_def"
-            ), _  -> true 
-          | "caml_ml_open_descriptor_in", [Lconst (Const_base (Const_int 0))] -> true 
-          | "caml_ml_open_descriptor_out", 
-            [Lconst (Const_base (Const_int (1|2))) ]
-            -> true
-          (* we can not mark it pure
-             only when we guarantee this exception is caught...
-           *)
-          | _ , _-> false
-        end 
-
-      | Pidentity 
-      | Pbytes_to_string 
-      | Pbytes_of_string 
-      | Pchar_to_int (* might throw .. *)
-      | Pchar_of_int  
-      | Ploc _
-
-      | Pgetglobal _ 
-      | Pmakeblock _  (* whether it's mutable or not *)
-      | Pfield _
-      | Pfloatfield _ 
-      | Pduprecord _ 
-      (* Boolean operations *)
-      | Psequand | Psequor | Pnot
-      (* Integer operations *)
-      | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
-      | Pandint | Porint | Pxorint
-      | Plslint | Plsrint | Pasrint
-      | Pintcomp _ 
-      (* Float operations *)
-      | Pintoffloat | Pfloatofint
-      | Pnegfloat | Pabsfloat
-      | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
-      | Pfloatcomp _ 
-      (* String operations *)
-      | Pstringlength 
-      | Pstringrefu 
-      | Pstringrefs
-      | Pbyteslength
-      | Pbytesrefu
-      | Pbytesrefs
-      | Pmakearray _ 
-      | Parraylength _ 
-      | Parrayrefu _
-      | Parrayrefs _ 
-      (* Test if the argument is a block or an immediate integer *)
-      | Pisint
-      (* Test if the (integer) argument is outside an interval *)
-      | Pisout
-      | Pbintofint _
-      | Pintofbint _
-      | Pcvtbint _
-      | Pnegbint _
-      | Paddbint _
-      | Psubbint _
-      | Pmulbint _
-      | Pdivbint _
-      | Pmodbint _
-      | Pandbint _
-      | Porbint _
-      | Pxorbint _
-      | Plslbint _
-      | Plsrbint _
-      | Pasrbint _
-      | Pbintcomp _
-      (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-      | Pbigarrayref _ (* TODO it may raise an exception....*)
-      (* Compile time constants *)
-      | Pctconst _
-      (* Integer to external pointer *)
-      | Pint_as_pointer
-      | Poffsetint _
-      | Pignore 
-        -> true
-
-
-      | Prevapply _
-      | Pdirapply _
-
-      | Pstringsetu
-      | Pstringsets
-      | Pbytessetu 
-      | Pbytessets
-      (* Bitvect operations *)
-      | Pbittest
-      (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-      | Parraysets _
-      | Pbigarrayset _
-      (* size of the nth dimension of a big array *)
-      | Pbigarraydim _
-      (* load/set 16,32,64 bits from a string: (unsafe)*)
-      | Pstring_load_16 _
-      | Pstring_load_32 _
-      | Pstring_load_64 _
-      | Pstring_set_16 _
-      | Pstring_set_32 _
-      | Pstring_set_64 _
-      (* load/set 16,32,64 bits from a
-         (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
-      | Pbigstring_load_16 _
-      | Pbigstring_load_32 _
-      | Pbigstring_load_64 _
-      | Pbigstring_set_16 _
-      | Pbigstring_set_32 _
-      | Pbigstring_set_64 _
-      (* byte swap *)
-      | Pbswap16
-      | Pbbswap _
-      | Parraysetu _ 
-      | Poffsetref _ 
-      | Praise _ 
-      | Plazyforce 
-      | Pmark_ocaml_object  (* TODO*)
-      | Psetfield _ 
-      | Psetfloatfield _
-      | Psetglobal _ -> false 
-    )
-  | Llet (_,_, arg,body) -> no_side_effects arg && no_side_effects body 
-  | Lswitch (_,_) -> false 
-  | Lstringswitch (_,_,_) -> false
-  | Lstaticraise _ -> false
-  | Lstaticcatch _ -> false 
-
-  (* | "caml_sys_getenv" , [Lconst(Const_base(Const_string _))] *)
-  (*         -> true *)
-  (** not enough, we need know that 
-      if it [Not_found], there are no other exceptions 
-      can be thrown
-  *)
-  | Ltrywith (Lprim(Pccall{prim_name = "caml_sys_getenv"}, 
-                    [Lconst _]),exn,
-              Lifthenelse(Lprim(_, [Lvar exn1; 
-                                    Lprim(Pgetglobal ({name="Not_found"}),[])]),
-                          then_, _)) when Ident.same exn1 exn
-    (** we might put this in an optimization pass 
-        also make sure when we wrap this in [js] we 
-        should follow the same patten, raise [Not_found] 
-    *)
-    -> no_side_effects then_
-  (** It would be nice that we can also analysis some small functions 
-      for example [String.contains], 
-      [Format.make_queue_elem]
-  *)
-  | Ltrywith (body,exn,handler) 
-    -> no_side_effects body && no_side_effects handler
-
-  | Lifthenelse  (a,b,c) -> 
-    no_side_effects a && no_side_effects b && no_side_effects c
-  | Lsequence (e0,e1) -> no_side_effects e0 && no_side_effects e1 
-  | Lwhile (a,b) -> no_side_effects a && no_side_effects b 
-  | Lfor _ -> false 
-  | Lassign _ -> false (* actually it depends ... *)
-  | Lsend _ -> false 
-  | Levent (e,_) -> no_side_effects e 
-  | Lifused _ -> false 
-  | Lapply _ -> false (* we need purity analysis .. *)
-  | Lletrec (bindings, body) ->
-    List.for_all (fun (_,b) -> no_side_effects b) bindings && no_side_effects body
-
-
-(* 
-    Estimate the size of lambda for better inlining 
-    threshold is 1000 - so that we 
- *)
-exception Too_big_to_inline
-
-let really_big () = raise Too_big_to_inline
-
-let big_lambda = 1000
-
-let rec size (lam : Lam.t) = 
-  try 
-    match lam with 
-    | Lvar _ ->  1
-    | Lconst c -> size_constant c
-    | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
-    | Lletrec _ -> really_big ()
-    | Lprim(Pfield _, [Lprim(Pgetglobal _, [  ])])
-      -> 1
-    | Lprim (Praise _, [l ]) 
-      -> size l
-    | Lprim(_, ll) -> size_lams 1 ll
-
-    (** complicated 
-        1. inline this function
-        2. ...
-        exports.Make=
-        function(funarg)
-        {var $$let=Make(funarg);
-        return [0, $$let[5],... $$let[16]]}
-     *)      
-    | Lapply(f,
-             args, _) -> size_lams (size f) args
-    (* | Lfunction(_, params, l) -> really_big () *)
-    | Lfunction(_,_params,body) -> size body 
-    | Lswitch(_, _) -> really_big ()
-    | Lstringswitch(_,_,_) -> really_big ()
-    | Lstaticraise (i,ls) -> 
-        List.fold_left (fun acc x -> size x + acc) 1 ls 
-    | Lstaticcatch(l1, (i,x), l2) -> really_big () 
-    | Ltrywith(l1, v, l2) -> really_big ()
-    | Lifthenelse(l1, l2, l3) -> 1 + size  l1 + size  l2 +  size  l3
-    | Lsequence(l1, l2) -> size  l1  +  size  l2
-    | Lwhile(l1, l2) -> really_big ()
-    | Lfor(flag, l1, l2, dir, l3) -> really_big () 
-    | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
-    | Lsend _  ->  really_big ()
-    | Levent(l, _) -> size l 
-    | Lifused(v, l) -> size l 
-  with Too_big_to_inline ->  1000 
-and size_constant x = 
-  match x with 
-  | Const_base _
-  | Const_immstring _
-  | Const_pointer _ 
-    -> 1 
-  | Const_block (_, _, str) 
-    ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
-  | Const_float_array xs  -> List.length xs
-
-and size_lams acc (lams : Lam.t list) = 
-  List.fold_left (fun acc l -> acc  + size l ) acc lams
-
-let exit_inline_size = 7 
-let small_inline_size = 5
-(* compared two lambdas in case analysis, note that we only compare some small lambdas
-    Actually this patten is quite common in GADT, people have to write duplicated code 
-    due to the type system restriction
-*)
-let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
-  match (l1, l2) with
-  | Lvar i1, Lvar i2 -> Ident.same i1 i2
-  | Lconst c1, Lconst c2 -> c1 = c2 (* *)
-  | Lapply (l1,args1,_), Lapply(l2,args2,_) ->
-    eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
-  | Lfunction _ , Lfunction _ -> false (* TODO -- simple functions ?*)
-  | Lassign(v0,l0), Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
-  | Lstaticraise(id,ls), Lstaticraise(id1,ls1) -> 
-    id = id1 && List.for_all2 eq_lambda ls ls1 
-  | Llet (_,_,_,_), Llet (_,_,_,_) -> false 
-  | Lletrec _, Lletrec _ -> false 
-  | Lprim (p,ls), Lprim (p1,ls1) -> 
-    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
-  | Lswitch _, Lswitch _ -> false  
-  | Lstringswitch _ , Lstringswitch _ -> false 
-  | Lstaticcatch _, Lstaticcatch _ -> false 
-  | Ltrywith _, Ltrywith _ -> false 
-  | Lifthenelse (a,b,c), Lifthenelse (a0,b0,c0) ->
-    eq_lambda a a0 && eq_lambda b b0 && eq_lambda c c0
-  | Lsequence (a,b), Lsequence (a0,b0) ->
-    eq_lambda a a0 && eq_lambda b b0
-  | Lwhile (p,b) , Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
-  | Lfor (_,_,_,_,_), Lfor (_,_,_,_,_) -> false
-  | Lsend _, Lsend _ -> false
-  | Levent (v,_), Levent (v0,_) -> eq_lambda v v0
-  | Lifused _, Lifused _ -> false 
-  |  _,  _ -> false 
-and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) = 
-  match p, p1 with 
-  | Pccall {prim_name = n0 ; 
-            prim_attributes = [];
-           },  
-    Pccall {prim_name = n1; 
-            prim_attributes = [] ;
-
-           } -> 
-    n0 = n1 (* No attributes, should be class api, comparison by name is good *)
-  | Pfield (n0, _dbg_info0),  Pfield (n1, _dbg_info1) 
-    -> n0 = n1
-  | Psetfield(i0, b0, _dbg_info0), Psetfield(i1, b1, _dbg_info1)
-    -> i0 = i1 && b0 = b1 
-  | _ , _ -> 
-    (* FIXME: relies on structure equality
-    *) 
-    try p = p1 with _ -> false
-
-
-
-type stats = 
-  { 
-    mutable top : bool ; 
-    (* all appearances are in the top,  substitution is fine 
-       whether it is pure or not
-       {[
-         (fun x y          
-           ->  x + y + (f x )) (32) (console.log('hi'), 33)
-       ]}       
-       since in ocaml, the application order is intentionally undefined, 
-       note if [times] is not one, this field does not make sense       
-    *)    
-    mutable times : int ; 
-  }
-type env = 
-  { top  : bool ; 
-    loop : bool 
-  }
-
-let no_substitute = { top = false; loop = true }
-let fresh_env = {top = true; loop = false }
-let fresh_stats () = { top = true; times = 0 }
-
-let param_map_of_list lst = 
-  List.fold_left  (fun acc l -> Ident_map.add l (fresh_stats ()) acc) Ident_map.empty  lst 
-
-(** Sanity check, remove all varaibles in [local_set] in the last pass *)  
-
-let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) lam = 
-  let fv = ref params in
-  let local_set = ref export_idents in
-
-  let local_add k =
-    local_set := Ident_set.add k !local_set in
-  let local_add_list ks = 
-    local_set :=  
-      List.fold_left (fun acc k -> Ident_set.add k acc) !local_set ks 
-  in    
-  let loop_use = 100 in
-  let map_use {top; loop} v = 
-    (* relies on [identifier] uniquely bound *)    
-    let times = if loop then loop_use else 1 in
-    if Ident_set.mem v !local_set then ()    
-    else begin match Ident_map.find v !fv with 
-      | exception Not_found
-        -> fv := Ident_map.add v { top ; times } !fv
-      | v ->
-        v.times <- v.times + times ; 
-        v.top <- v.top && top          
-    end
-  in
-  let new_env lam (env : env) = 
-    if env.top then 
-      if no_side_effects lam 
-      then env 
-      else { env with top = false}
-    else env      
-  in    
-  let rec iter (top : env) (lam : Lam.t) =
-    match lam with 
-    | Lvar v -> map_use top v 
-    | Lconst _ -> ()
-    | Lapply(fn, args, _) ->
-      iter top  fn; 
-      let top = new_env fn top in
-      List.iter (iter top ) args  
-    | Lprim(_p, args) -> 
-      (* Check: can top be propoaged for all primitives *)
-      List.iter (iter top) args
-    | Lfunction(_kind, params, body) ->
-      local_add_list params;
-      iter no_substitute body 
-    | Llet(_let_kind, id, arg, body) ->
-      local_add id ;  
-      iter top  arg; iter no_substitute body
-    | Lletrec(decl, body) ->
-      local_set := List.fold_left (fun acc (id, _) -> 
-          Ident_set.add id acc) !local_set decl;        
-      List.iter (fun (_, exp) -> iter no_substitute exp) decl;
-      iter no_substitute body
-    | Lswitch(arg, sw) ->
-      iter top arg; 
-      let top = new_env arg top  in       
-      List.iter (fun (key, case) -> iter top case) sw.sw_consts;
-      List.iter (fun (key, case) -> iter top  case) sw.sw_blocks;
-  
-      begin match sw.sw_failaction with 
-        | None -> ()
-        | Some x ->
-          let nconsts = List.length sw.sw_consts in
-          let nblocks = List.length sw.sw_blocks in
-
-          if nconsts < sw.sw_numconsts  && nblocks < sw.sw_numblocks then
-            iter no_substitute x
-          else
-            iter top x
-      end
-
-    | Lstringswitch (arg,cases,default) ->
-      iter top arg ;
-      let top = new_env arg top  in       
-      List.iter (fun (_,act) -> iter top  act) cases ;
-      begin match default with 
-      | None -> ()
-      | Some x -> iter top x 
-      end
-    | Lstaticraise (_,args) ->
-      List.iter (iter no_substitute ) args
-    | Lstaticcatch(e1, (_,vars), e2) ->
-      iter no_substitute  e1; 
-      local_add_list vars;       
-      iter no_substitute e2
-    | Ltrywith(e1, exn, e2) ->
-      iter top  e1; iter no_substitute  e2
-    | Lifthenelse(e1, e2, e3) ->
-      iter top e1; 
-      let top = new_env e1 top  in
-      iter top e2; iter top e3
-    | Lsequence(e1, e2) ->
-      iter top e1; iter no_substitute e2
-    | Lwhile(e1, e2) ->
-      iter no_substitute e1; iter no_substitute e2 (* in the loop, no substitution any way *)
-    | Lfor(v, e1, e2, dir, e3) ->
-      local_add v ; 
-      iter no_substitute e1; iter no_substitute e2; iter no_substitute e3
-    | Lassign(id, e) ->
-      map_use top  id ; 
-      iter top e
-    | Lsend (_k, met, obj, args, _) ->
-      iter no_substitute met ; 
-      iter no_substitute obj;
-      List.iter (iter no_substitute) args
-    | Levent (lam, evt) ->
-      iter top  lam
-    | Lifused (v, e) ->
-      iter no_substitute e in
-  iter fresh_env  lam ; !fv 
-
-
-let is_closed_by set lam = 
-  Ident_map.is_empty (free_variables set (Ident_map.empty ) lam   )
-
-
-(** A bit consverative , it should be empty *)
-let is_closed  lam = 
-  Ident_map.for_all (fun k _ -> Ident.global k)
-    (free_variables Ident_set.empty Ident_map.empty lam)  
-
-
-let is_closed_with_map exports params body = 
-  let param_map = free_variables exports (param_map_of_list params) body in
-  let old_count = List.length params in
-  let new_count = Ident_map.cardinal param_map in
-  (old_count  = new_count, param_map)
-
-
-  
-(* TODO:  We can relax this a bit later,
-    but decide whether to inline it later in the call site
- *)
-let safe_to_inline (lam : Lam.t) = 
-  match lam with 
-  | Lfunction _ ->  true
-  | Lconst (Const_pointer _  | Const_immstring _ ) -> true
-  | _ -> false
-
-end
-module 
-Js_fold
-= struct
-#1 "js_fold.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
-(* Author: Hongbo Zhang  *)
-(** GENERATED CODE for fold visitor patten of JS IR  *)
-open J
-  
-class virtual fold =
-  object ((o : 'self_type))
-    method string : string -> 'self_type = o#unknown
-    method option :
-      'a. ('self_type -> 'a -> 'self_type) -> 'a option -> 'self_type =
-      fun _f_a -> function | None -> o | Some _x -> let o = _f_a o _x in o
-    method list :
-      'a. ('self_type -> 'a -> 'self_type) -> 'a list -> 'self_type =
-      fun _f_a ->
-        function
-        | [] -> o
-        | _x :: _x_i1 -> let o = _f_a o _x in let o = o#list _f_a _x_i1 in o
-    method int : int -> 'self_type = o#unknown
-    method bool : bool -> 'self_type = function | false -> o | true -> o
-    method vident : vident -> 'self_type =
-      function
-      | Id _x -> let o = o#ident _x in o
-      | Qualified (_x, _x_i1, _x_i2) ->
-          let o = o#ident _x in
-          let o = o#kind _x_i1 in
-          let o = o#option (fun o -> o#string) _x_i2 in o
-    method variable_declaration : variable_declaration -> 'self_type =
-      fun { ident = _x; value = _x_i1; property = _x_i2; ident_info = _x_i3 }
-        ->
-        let o = o#ident _x in
-        let o = o#option (fun o -> o#expression) _x_i1 in
-        let o = o#property _x_i2 in let o = o#ident_info _x_i3 in o
-    method tag_info : tag_info -> 'self_type = o#unknown
-    method statement_desc : statement_desc -> 'self_type =
-      function
-      | Block _x -> let o = o#block _x in o
-      | Variable _x -> let o = o#variable_declaration _x in o
-      | Exp _x -> let o = o#expression _x in o
-      | If (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o = o#block _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
-      | While (_x, _x_i1, _x_i2, _x_i3) ->
-          let o = o#option (fun o -> o#label) _x in
-          let o = o#expression _x_i1 in
-          let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
-      | ForRange (_x, _x_i1, _x_i2, _x_i3, _x_i4, _x_i5) ->
-          let o = o#option (fun o -> o#for_ident_expression) _x in
-          let o = o#finish_ident_expression _x_i1 in
-          let o = o#for_ident _x_i2 in
-          let o = o#for_direction _x_i3 in
-          let o = o#block _x_i4 in let o = o#unknown _x_i5 in o
-      | Continue _x -> let o = o#label _x in o
-      | Break -> o
-      | Return _x -> let o = o#return_expression _x in o
-      | Int_switch (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o =
-            o#list
-              (fun o ->
-                 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-                 (** Javascript IR
-  
-    It's a subset of Javascript AST specialized for OCaml lambda backend
-
-    Note it's not exactly the same as Javascript, the AST itself follows lexical
-    convention and [Block] is just a sequence of statements, which means it does 
-    not introduce new scope
-*)
-                 (** object literal, if key is ident, in this case, it might be renamed by 
-    Google Closure  optimizer,
-    currently we always use quote
- *)
-                 (* Since camldot is only available for toplevel module accessors,
-       we don't need print  `A.length$2`
-       just print `A.length` - it's guarateed to be unique
-       
-       when the third one is None, it means the whole module 
-
-       TODO: 
-       invariant, when [kind] is [Runtime], then we can ignore [ident], 
-       since all [runtime] functions are unique, when do the 
-       pattern match we can ignore the first one for simplicity
-       for example       
-       {[
-         Qualified (_, Runtime, Some "caml_int_compare")         
-       ]}       
-     *)
-                 (* used in [js_create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
-                 (* shallow copy, like [x.slice] *)
-                 (* For [caml_array_append]*)
-                 (* | Tag_ml_obj of expression *) (* js true/false*)
-                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
-     [typeof] is an operator     
-  *)
-                 (* !v *) (* String.fromCharCode.apply(null, args) *)
-                 (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-                 (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
-                 (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)
-                 (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)
-                 (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
-                 (* TODO: Add some primitives so that [js inliner] can do a better job *)
-                 (* [int_op] will guarantee return [int32] bits 
-     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
-                 (* | Int32_bin of int_op * expression * expression *)
-                 (* f.apply(null,args) -- Fully applied guaranteed 
-       TODO: once we know args's shape --
-       if it's know at compile time, we can turn it into
-       f(args[0], args[1], ... )
-     *)
-                 (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
-                 (* Analysze over J expression is hard since, 
-        some primitive  call is translated 
-        into a plain call, it's better to keep them
-    *)
-                 (* Invariant: 
-       The second argument has to be type of [int],
-       This can be constructed either in a static way [E.index] or a dynamic way 
-       [E.access]
-     *)
-                 (* The third argument bool indicates whether we should 
-       print it as 
-       a["idd"] -- false
-       or 
-       a.idd  -- true
-       There are several kinds of properties
-       1. OCaml module dot (need to be escaped or not)
-          All exported declarations have to be OCaml identifiers
-       2. Javascript dot (need to be preserved/or using quote)
-     *)
-                 (* TODO: option remove *)
-                 (* A string is UTF-8 encoded, the string may contain
-       escape sequences.
-       The first argument is used to mark it is non-pure, please
-       don't optimize it, since it does have side effec, 
-       examples like "use asm;" and our compiler may generate "error;..." 
-       which is better to leave it alone
-     *)
-                 (* literally raw JS code 
-  *)
-                 (* The third argument is [tag] , forth is [tag_info] *)
-                 (* [tag] and [size] tailed  for [Obj.new_block] *)
-                 (* For setter, it still return the value of expression, 
-     we can not use 
-     {[
-       type 'a access = Get | Set of 'a
-     ]}
-     in another module, since it will break our code generator
-     [Caml_block_tag] can return [undefined], 
-     you have to use [E.tag] in a safe way     
-  *)
-                 (* It will just fetch tag, to make it safe, when creating it, 
-     we need apply "|0", we don't do it in the 
-     last step since "|0" can potentially be optimized
-  *)
-                 (* pure*) (* pure *)
-                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
-   block can be nested, specified in ES3 
- *)
-                 (* Delay some units like [primitive] into JS layer ,
-   benefit: better cross module inlining, and smaller IR size?
- *)
-                 (* 
-  [closure] captured loop mutable values in the outer loop
-
-  check if it contains loop mutable values, happens in nested loop
-  when closured, it's no longer loop mutable value. 
-  which means the outer loop mutable value can not peek into the inner loop
-  {[
-  var i = f ();
-  for(var finish = 32; i < finish; ++i){
-  }
-  ]}
-  when [for_ident_expression] is [None], [var i] has to 
-  be initialized outside, so 
-
-  {[
-  var i = f ()
-  (function (xxx){
-  for(var finish = 32; i < finish; ++i)
-  }(..i))
-  ]}
-  This happens rare it's okay
-
-  this is because [i] has to be initialized outside, if [j] 
-  contains a block side effect
-  TODO: create such example
-*)
-                 (* Since in OCaml, 
-   
-  [for i = 0 to k end do done ]
-  k is only evaluated once , to encode this invariant in JS IR,
-  make sure [ident] is defined in the first b
-
-  TODO: currently we guarantee that [bound] was only 
-  excecuted once, should encode this in AST level
-*)
-                 (* Can be simplified to keep the semantics of OCaml
-   For (var i, e, ...){
-     let  j = ... 
-   }
-
-   if [i] or [j] is captured inside closure
-
-   for (var i , e, ...){
-     (function (){
-     })(i)
-   }
-*)
-                 (* Single return is good for ininling..
-   However, when you do tail-call optmization
-   you loose the expression oriented semantics
-   Block is useful for implementing goto
-   {[
-   xx:{
-   break xx;
-   }
-   ]}
-*)
-                 (* Function declaration and Variable declaration  *)
-                 (* check if it contains loop mutable values, happens in nested loop *)
-                 (* only used when inline a fucntion *)
-                 (* Here we need track back a bit ?, move Return to Function ...
-                              Then we can only have one Return, which is not good *)
-                 o#case_clause (fun o -> o#int))
-              _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
-      | String_switch (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o =
-            o#list (fun o -> o#case_clause (fun o -> o#string)) _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
-      | Throw _x -> let o = o#expression _x in o
-      | Try (_x, _x_i1, _x_i2) ->
-          let o = o#block _x in
-          let o =
-            o#option
-              (fun o (_x, _x_i1) ->
-                 let o = o#exception_ident _x in let o = o#block _x_i1 in o)
-              _x_i1 in
-          let o = o#option (fun o -> o#block) _x_i2 in o
-      | Debugger -> o
-    method statement : statement -> 'self_type =
-      fun { statement_desc = _x; comment = _x_i1 } ->
-        let o = o#statement_desc _x in
-        let o = o#option (fun o -> o#string) _x_i1 in o
-    method return_expression : return_expression -> 'self_type =
-      fun { return_value = _x } -> let o = o#expression _x in o
-    method required_modules : required_modules -> 'self_type = o#unknown
-    method property_name : property_name -> 'self_type = o#unknown
-    method property_map : property_map -> 'self_type =
-      o#list
-        (fun o (_x, _x_i1) ->
-           let o = o#property_name _x in let o = o#expression _x_i1 in o)
-    method property : property -> 'self_type = o#unknown
-    method program : program -> 'self_type =
-      fun { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3 }
-        ->
-        let o = o#string _x in
-        let o = o#block _x_i1 in
-        let o = o#exports _x_i2 in let o = o#unknown _x_i3 in o
-    method number : number -> 'self_type = o#unknown
-    method mutable_flag : mutable_flag -> 'self_type = o#unknown
-    method length_object : length_object -> 'self_type = o#unknown
-    method label : label -> 'self_type = o#string
-    method kind : kind -> 'self_type = o#unknown
-    method jsint : jsint -> 'self_type = o#unknown
-    method int_op : int_op -> 'self_type = o#unknown
-    method ident_info : ident_info -> 'self_type = o#unknown
-    method ident : ident -> 'self_type = o#unknown
-    method for_ident_expression : for_ident_expression -> 'self_type =
-      o#expression
-    method for_ident : for_ident -> 'self_type = o#ident
-    method for_direction : for_direction -> 'self_type = o#unknown
-    method finish_ident_expression : finish_ident_expression -> 'self_type =
-      o#expression
-    method expression_desc : expression_desc -> 'self_type =
-      function
-      | Math (_x, _x_i1) ->
-          let o = o#string _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in o
-      | Length (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#length_object _x_i1 in o
-      | Char_of_int _x -> let o = o#expression _x in o
-      | Char_to_int _x -> let o = o#expression _x in o
-      | Array_of_size _x -> let o = o#expression _x in o
-      | Array_copy _x -> let o = o#expression _x in o
-      | Array_append (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | String_append (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Int_of_boolean _x -> let o = o#expression _x in o
-      | Anything_to_number _x -> let o = o#expression _x in o
-      | Bool _x -> let o = o#bool _x in o
-      | Typeof _x -> let o = o#expression _x in o
-      | Not _x -> let o = o#expression _x in o
-      | String_of_small_int_array _x -> let o = o#expression _x in o
-      | Json_stringify _x -> let o = o#expression _x in o
-      | Anything_to_string _x -> let o = o#expression _x in o
-      | Dump (_x, _x_i1) ->
-          let o = o#unknown _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in o
-      | Seq (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Cond (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o = o#expression _x_i1 in let o = o#expression _x_i2 in o
-      | Bin (_x, _x_i1, _x_i2) ->
-          let o = o#binop _x in
-          let o = o#expression _x_i1 in let o = o#expression _x_i2 in o
-      | FlatCall (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Bind (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Call (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in
-          let o = o#unknown _x_i2 in o
-      | String_access (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Access (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Dot (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o = o#string _x_i1 in let o = o#bool _x_i2 in o
-      | New (_x, _x_i1) ->
-          let o = o#expression _x in
-          let o = o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
-          in o
-      | Var _x -> let o = o#vident _x in o
-      | Fun (_x, _x_i1, _x_i2) ->
-          let o = o#list (fun o -> o#ident) _x in
-          let o = o#block _x_i1 in let o = o#unknown _x_i2 in o
-      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
-      | Raw_js_code (_x, _x_i1) ->
-          let o = o#string _x in let o = o#code_info _x_i1 in o
-      | Array (_x, _x_i1) ->
-          let o = o#list (fun o -> o#expression) _x in
-          let o = o#mutable_flag _x_i1 in o
-      | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
-          let o = o#list (fun o -> o#expression) _x in
-          let o = o#mutable_flag _x_i1 in
-          let o = o#expression _x_i2 in let o = o#tag_info _x_i3 in o
-      | Caml_uninitialized_obj (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Caml_block_tag _x -> let o = o#expression _x in o
-      | Caml_block_set_tag (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Caml_block_set_length (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Number _x -> let o = o#number _x in o
-      | Object _x -> let o = o#property_map _x in o
-    method expression : expression -> 'self_type =
-      fun { expression_desc = _x; comment = _x_i1 } ->
-        let o = o#expression_desc _x in
-        let o = o#option (fun o -> o#string) _x_i1 in o
-    method exports : exports -> 'self_type = o#unknown
-    method exception_ident : exception_ident -> 'self_type = o#ident
-    method deps_program : deps_program -> 'self_type =
-      fun { program = _x; modules = _x_i1; side_effect = _x_i2 } ->
-        let o = o#program _x in
-        let o = o#required_modules _x_i1 in
-        let o = o#option (fun o -> o#string) _x_i2 in o
-    method code_info : code_info -> 'self_type = o#unknown
-    method case_clause :
-      (* since in ocaml, it's expression oriented langauge, [return] in
-    general has no jumps, it only happens when we do 
-    tailcall conversion, in that case there is a jump.
-    However, currently  a single [break] is good to cover
-    our compilation strategy 
-
-    Attention: we should not insert [break] arbitrarily, otherwise 
-    it would break the semantics
-    A more robust signature would be 
-    {[ goto : label option ; ]}
-  *)
-        'a. ('self_type -> 'a -> 'self_type) -> 'a case_clause -> 'self_type =
-      fun _f_a { case = _x; body = _x_i1 } ->
-        let o = _f_a o _x in
-        let o =
-          (fun (_x, _x_i1) -> let o = o#block _x in let o = o#bool _x_i1 in o)
-            _x_i1
-        in o
-    method block : block -> 'self_type = (* true means break *)
-      (* TODO: For efficency: block should not be a list, it should be able to 
-   be concatenated in both ways 
- *)
-      o#list (fun o -> o#statement)
-    method binop : binop -> 'self_type = o#unknown
-    method unknown : 'a. 'a -> 'self_type = fun _ -> o
-  end
-  
 
 
 end
@@ -5621,6 +1247,8 @@ val get_debug_file : unit -> string
 
 val is_same_file : unit -> bool 
 
+val tool_name : string
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5882,6 +1510,6077 @@ let get_debug_file  () = !debug_file
 
 let is_same_file () = 
   !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+end
+module Ext_ref : sig 
+#1 "ext_ref.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+
+val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
+
+end = struct
+#1 "ext_ref.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let protect r v body =
+  let old = !r in
+  try
+    r := v;
+    let res = body() in
+    r := old;
+    res
+  with x ->
+    r := old;
+    raise x
+
+
+let protect2 r1 r2 v1 v2 body =
+  let old1 = !r1 in
+  let old2 = !r2 in  
+  try
+    r1 := v1;
+    r2 := v2;
+    let res = body() in
+    r1 := old1;
+    r2 := old2;
+    res
+  with x ->
+    r1 := old1;
+    r2 := old2;
+    raise x
+
+end
+module Ext_list : sig 
+#1 "ext_list.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [List] module *)
+    
+(** TODO some function are no efficiently implemented. *) 
+
+val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
+
+val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+val exclude_with_fact2 : 
+  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+val same_length : 'a list -> 'b list -> bool
+
+val init : int -> (int -> 'a) -> 'a list
+
+val take : int -> 'a list -> 'a list * 'a list
+val try_take : int -> 'a list -> 'a list * int * 'a list 
+
+val exclude_tail : 'a list -> 'a list
+
+val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
+
+val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+
+val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
+
+val flat_map2_last : (bool -> 'a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+
+val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
+
+val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
+
+val drop : int -> 'a list -> 'a list 
+
+val for_all_ret : ('a -> bool) -> 'a list -> 'a option
+
+val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
+(** [for_all_opt f l] returns [None] if all return [None],  
+    otherwise returns the first one. 
+ *)
+
+val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+(** same as [List.fold_left]. 
+    Provide an api so that list can be easily swapped by other containers  
+ *)
+
+val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
+
+val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
+val rev_iter : ('a -> unit) -> 'a list -> unit
+
+val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** [f] is applied follow the list order *)
+val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
+
+
+val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+
+type 'a t = 'a list ref
+
+val create_ref_empty : unit -> 'a t
+
+val ref_top : 'a t -> 'a 
+
+val ref_empty : 'a t -> bool
+
+val ref_push : 'a -> 'a t -> unit
+
+val ref_pop : 'a t -> 'a
+
+end = struct
+#1 "ext_list.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let rec filter_map (f: 'a -> 'b option) xs = 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+      begin match f y with 
+      | None -> filter_map f ys
+      | Some z -> z :: filter_map f ys
+      end
+
+let excludes p l =
+  let excluded = ref false in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := true ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  if !excluded then true, v else false,l
+
+let exclude_with_fact p l =
+  let excluded = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := Some x ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded , if !excluded <> None then v else l 
+
+
+(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
+let exclude_with_fact2 p1 p2 l =
+  let excluded1 = ref None in 
+  let excluded2 = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p1 x then 
+      begin 
+        excluded1 := Some x ;
+        aux accu l
+      end
+    else if p2 x then 
+      begin 
+        excluded2 := Some x ; 
+        aux accu l 
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
+
+
+
+let rec same_length xs ys = 
+  match xs, ys with 
+  | [], [] -> true
+  | _::xs, _::ys -> same_length xs ys 
+  | _, _ -> false 
+
+let  filter_mapi (f: int -> 'a -> 'b option) xs = 
+  let rec aux i xs = 
+    match xs with 
+    | [] -> []
+    | y :: ys -> 
+        begin match f i y with 
+        | None -> aux (i + 1) ys
+        | Some z -> z :: aux (i + 1) ys
+        end in
+  aux 0 xs 
+
+let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f u v with 
+      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2 f us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2"
+
+let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
+  let rec aux i xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f i u v with 
+      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: aux (i + 1) us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2i" in
+  aux 0 xs ys
+
+let rec rev_map_append  f l1 l2 =
+  match l1 with
+  | [] -> l2
+  | a :: l -> rev_map_append f l (f a :: l2)
+
+let flat_map2 f lx ly = 
+  let rec aux acc lx ly = 
+    match lx, ly with 
+    | [], [] 
+      -> List.rev acc
+    | x::xs, y::ys 
+      ->  aux (List.rev_append (f x y) acc) xs ys
+    | _, _ -> invalid_arg "Ext_list.flat_map2" in
+  aux [] lx ly
+        
+let flat_map f lx =
+  let rec aux acc lx =
+    match lx with
+    | [] -> List.rev acc
+    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
+  aux [] lx
+
+let rec map2_last f l1 l2 =
+  match (l1, l2) with
+  | ([], []) -> []
+  | [u], [v] -> [f true u v ]
+  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
+  | (_, _) -> invalid_arg "List.map2_last"
+
+let rec map_last f l1 =
+  match l1 with
+  | [] -> []
+  | [u]-> [f true u ]
+  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
+
+
+let flat_map2_last f lx ly = List.concat @@ map2_last f lx ly
+
+let init n f = 
+  Array.to_list (Array.init n f)
+
+let take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  < n then invalid_arg "Ext_list.take"
+  else (Array.to_list (Array.sub arr 0 n ), 
+        Array.to_list (Array.sub arr n (arr_length - n)))
+
+let try_take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  <= n then 
+    l,  arr_length, []
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+
+let exclude_tail (x : 'a list) : 'a list = 
+  let rec aux acc x = 
+    match x with 
+    | [] -> invalid_arg "Ext_list.exclude_tail"
+    | [ _ ] ->  List.rev acc
+    | y0::ys -> aux (y0::acc) ys in
+  aux [] x
+
+(* For small list, only need partial equality 
+   {[
+   group (=) [1;2;3;4;3]
+   ;;
+   - : int list list = [[3; 3]; [4]; [2]; [1]]
+   # group (=) [];;
+   - : 'a list list = []
+   ]}
+ *)
+let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
+  match lst with 
+  | [] -> []
+  | x::xs -> 
+      aux cmp x (group cmp xs )
+
+and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
+  match xss with 
+  | [] -> [[x]]
+  | y::ys -> 
+      if cmp x (List.hd y) (* cannot be null*) then
+        (x::y) :: ys 
+      else
+        y :: aux cmp x ys                                 
+  
+let stable_group cmp lst =  group cmp lst |> List.rev 
+
+let rec drop n h = 
+  if n < 0 then invalid_arg "Ext_list.drop"
+  else if n = 0 then h 
+  else if h = [] then invalid_arg "Ext_list.drop"
+  else 
+    drop (n - 1) (List.tl h)
+
+let rec for_all_ret  p = function
+  | [] -> None
+  | a::l -> 
+      if p a 
+      then for_all_ret p l
+      else Some a 
+
+let rec for_all_opt  p = function
+  | [] -> None
+  | a::l -> 
+      match p a with
+      | None -> for_all_opt p l
+      | v -> v 
+
+let fold f l init = 
+  List.fold_left (fun acc i -> f  i init) init l 
+
+let rev_map_acc  acc f l = 
+  let rec rmap_f accu = function
+    | [] -> accu
+    | a::l -> rmap_f (f a :: accu) l
+  in
+  rmap_f acc l
+
+let rec rev_iter f xs =
+    match xs with    
+    | [] -> ()
+    | y :: ys -> 
+      rev_iter f ys ;
+      f y      
+      
+let rec for_all2_no_exn p l1 l2 = 
+  match (l1, l2) with
+  | ([], []) -> true
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
+  | (_, _) -> false
+
+
+let rec find_no_exn p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_no_exn p l
+
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt p l
+
+
+let split_map 
+    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
+  let rec aux bs cs xs =
+    match xs with 
+    | [] -> List.rev bs, List.rev cs 
+    | u::us -> 
+      let b,c =  f u in aux (b::bs) (c ::cs) us in 
+
+  aux [] [] xs 
+
+
+(*
+   {[
+     reduce_from_right (-) [1;2;3];;
+     - : int = 2
+               # reduce_from_right (-) [1;2;3; 4];;
+     - : int = -2
+                # reduce_from_right (-) [1];;
+     - : int = 1
+               # reduce_from_right (-) [1;2;3; 4; 5];;
+     - : int = 3
+   ]} 
+*)
+let reduce_from_right fn lst = 
+  begin match List.rev lst with
+    | last :: rest -> 
+      List.fold_left  (fun x y -> fn y x) last rest 
+    | _ -> invalid_arg "Ext_list.reduce" 
+  end
+
+type 'a t = 'a list ref
+
+let create_ref_empty () = ref []
+
+let ref_top x = 
+  match !x with 
+  | y::_ -> y 
+  | _ -> invalid_arg "Ext_list.ref_top"
+
+let ref_empty x = 
+  match !x with [] -> true | _ -> false 
+
+let ref_push x refs = 
+  refs := x :: !refs
+
+let ref_pop refs = 
+  match !refs with 
+  | [] -> invalid_arg "Ext_list.ref_pop"
+  | x::rest -> 
+    refs := rest ; 
+    x     
+
+end
+module Ast_payload : sig 
+#1 "ast_payload.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(** A utility module used when destructuring parsetree attributes, used for 
+    compiling FFI attributes and built-in ppx  *)
+
+type t = Parsetree.payload
+
+val is_single_string : t -> string option
+val as_string_exp : t -> Parsetree.expression option 
+val as_empty_structure :  t -> bool 
+val is_string_or_strings : 
+  t -> [ `None | `Single of string | `Some of string list ]
+val as_record_and_process : 
+  Location.t ->
+  t -> (Longident.t Asttypes.loc * Parsetree.expression -> unit) -> unit
+
+val assert_bool_lit : Parsetree.expression -> bool
+
+end = struct
+#1 "ast_payload.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.payload
+
+let is_single_string (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (name,_));
+           _},_);
+      _}] -> Some name
+  | _  -> None
+
+let as_string_exp (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (_,_));
+           _} as e ,_);
+      _}] -> Some e
+  | _  -> None
+
+let as_empty_structure (x : t ) = 
+  match x with 
+  | PStr ([]) -> true
+  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
+
+
+let as_record_and_process 
+    loc
+    ( x : t ) (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
+  match  x with 
+  | PStr [ {pstr_desc = Pstr_eval
+                ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
+            _
+           }]
+    -> 
+    begin match with_obj with
+    | None ->
+      List.iter action label_exprs
+    | Some _ -> 
+      Location.raise_errorf ~loc "with is not supported"
+    end
+  | _ -> 
+    Location.raise_errorf ~loc "this is not a valid record config"
+
+let is_string_or_strings (x : t) : 
+  [ `None | `Single of string | `Some of string list ] = 
+  let module M = struct exception Not_str end  in 
+  match x with 
+  | PStr [ {pstr_desc =  
+              Pstr_eval (
+                {pexp_desc = 
+                   Pexp_apply
+                     ({pexp_desc = Pexp_constant (Const_string (name,_)); _},
+                      args
+                     );
+                 _},_);
+            _}] ->
+    (try 
+       `Some (name :: (args |> List.map (fun (_label,e) ->
+           match (e : Parsetree.expression) with
+           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
+             name
+           | _ -> raise M.Not_str)))
+
+     with M.Not_str -> `None )
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (name,_));
+           _},_);
+      _}] -> `Single name 
+  | _ -> `None
+
+let assert_bool_lit  (e : Parsetree.expression) = 
+  match e.pexp_desc with
+  | Pexp_construct ({txt = Lident "true" }, None)
+    -> true
+  | Pexp_construct ({txt = Lident "false" }, None)
+    -> false 
+  | _ ->
+    Location.raise_errorf ~loc:e.pexp_loc "expect `true` or `false` in this field"
+
+end
+module Ast_literal : sig 
+#1 "ast_literal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+module Lid : sig
+  type t = Longident.t 
+  val val_unit : t 
+  val type_unit : t 
+  val pervasives_js_obj : t 
+  val pervasives_uncurry : t 
+  val js_obj : t 
+  val js_fn : t 
+  val ignore_id : t 
+end
+
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+val val_unit : expression_lit
+
+val type_unit : core_type_lit
+
+val type_string : core_type_lit
+
+val type_any : core_type_lit
+
+val pat_unit : pattern_lit
+
+end = struct
+#1 "ast_literal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+module Lid = struct 
+  type t = Longident.t 
+  let val_unit : t = Lident "()"
+  let type_unit : t = Lident "unit"
+  let type_string : t = Lident "string"
+  (* TODO should be renamed in to {!Js.fn} *)
+  (* TODO should be moved into {!Js.t} Later *)
+  let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
+  let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
+  let js_obj = Longident.Ldot (Lident "Js", "t") 
+  let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+end
+
+module No_loc = struct 
+  let loc = Location.none
+  let val_unit = 
+    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+  let type_unit =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+  let type_string =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+  let type_any = Ast_helper.Typ.any ()
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
+end 
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+let val_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.val_unit
+  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
+
+
+let type_unit ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_unit
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+
+let type_string ?loc () = 
+  match loc with 
+  | None -> No_loc.type_string 
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_any ?loc () = 
+  match loc with 
+  | None -> No_loc.type_any
+  | Some loc -> Ast_helper.Typ.any ~loc ()
+
+let pat_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.pat_unit
+  | Some loc -> 
+    Pat.construct ~loc {txt = Lid.val_unit; loc} None
+
+end
+module Ast_comb : sig 
+#1 "ast_comb.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val create_local_external : Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Asttypes.label * Parsetree.expression) list -> Parsetree.expression_desc
+
+val exp_apply_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+
+val fun_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+
+val arrow_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression
+
+end = struct
+#1 "ast_comb.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let create_local_external loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim = [pval_prim];
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+open Ast_helper 
+
+let exp_apply_no_label ?loc ?attrs a b = 
+  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+
+let fun_no_label ?loc ?attrs  pat body = 
+  Exp.fun_ ?loc ?attrs "" None pat body
+
+let arrow_no_label ?loc ?attrs b c = 
+  Typ.arrow ?loc ?attrs "" b c 
+
+let discard_exp_as_unit loc e = 
+  exp_apply_no_label ~loc     
+    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
+    [Exp.constraint_ ~loc e 
+       (Ast_literal.type_unit ~loc ())]
+
+end
+module Ppx_entry : sig 
+#1 "ppx_entry.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+val rewrite_signature :   (Parsetree.signature -> Parsetree.signature) ref
+
+val rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref
+
+end = struct
+#1 "ppx_entry.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(* When we design a ppx, we should keep it simple, and also think about 
+   how it would work with other tools like merlin and ocamldep  *)
+
+(**
+1. extension point 
+   {[ 
+     [%unsafe{| blabla |}]
+   ]}
+   will be desugared into 
+   {[ 
+     let module Js = 
+     struct unsafe_js : string -> 'a end 
+     in Js.unsafe_js {| blabla |}
+   ]}
+   The major benefit is to better error reporting (with locations).
+   Otherwise
+
+   {[
+
+     let f u = Js.unsafe_js u 
+     let _ = f (1 + 2)
+   ]}
+   And if it is inlined some where   
+*)
+
+
+
+
+
+
+
+
+let js_obj_type_id () = 
+  if Js_config.get_env () = Browser then
+    Ast_literal.Lid.pervasives_js_obj
+  else Ast_literal.Lid.js_obj 
+    
+let curry_type_id () = 
+  if Js_config.get_env () = Browser then 
+    Ast_literal.Lid.pervasives_uncurry
+  else 
+    Ast_literal.Lid.js_fn 
+
+
+open Ast_helper 
+let arrow = Ast_helper.Typ.arrow
+
+let record_as_js_object = ref None (* otherwise has an attribute *)
+let obj_type_as_js_obj_type = ref false
+let uncurry_type = ref false 
+let obj_type_auto_uncurry =  ref false
+let non_export = ref false 
+
+let reset () = 
+  record_as_js_object := None ;
+  obj_type_as_js_obj_type := false ;
+  uncurry_type := false ;
+  obj_type_auto_uncurry := false ;
+  non_export  :=  false
+
+
+let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
+let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
+
+let handle_record_as_js_object 
+    loc 
+    attr
+    (label_exprs : (Longident.t Asttypes.loc * Parsetree.expression) list)
+    (mapper : Ast_mapper.mapper) : Parsetree.expression_desc = 
+  let labels, args = 
+    Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
+        match txt with
+        | Longident.Lident x -> (x, (x, mapper.expr mapper e))
+        | Ldot _ | Lapply _ ->  
+          Location.raise_errorf ~loc "invalid js label "
+  ) label_exprs in 
+  let pval_prim = "" in 
+  let pval_attributes = [attr] in 
+  let pval_type = 
+    let arity = List.length labels in 
+    let tyvars = (Ext_list.init arity (fun i ->      
+        Typ.var ~loc ("a" ^ string_of_int i))) in 
+
+    let result_type =
+      lift_js_type ~loc  
+        @@ Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed
+
+    in 
+    List.fold_right2 
+      (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
+  in 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  Ast_comb.create_local_external loc 
+    ~pval_prim
+    ~pval_type ~pval_attributes 
+    ~local_module_name 
+    ~local_fun_name
+    args 
+
+let gen_fn_run loc arity args  : Parsetree.expression_desc = 
+  let pval_prim = Printf.sprintf "js_fn_run_%02d" arity  in
+  let tyvars =
+    Ext_list.init (arity + 1) 
+      (fun i -> Typ.var ~loc ("a" ^ string_of_int i)) in
+  let tuple_type_desc = 
+    if arity = 0 then 
+      (List.hd tyvars).ptyp_desc
+      (* avoid single tuple *)
+    else 
+      Parsetree.Ptyp_tuple tyvars
+  in 
+  let uncurry_fn = 
+    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc in
+  (** could be optimized *)
+  let pval_type = 
+    Ext_list.reduce_from_right (fun a b -> arrow ~loc "" a b) (uncurry_fn :: tyvars) in 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    ~local_module_name ~local_fun_name args 
+
+let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
+  let open Parsetree in 
+  let ptyp_attributes = [] in 
+  let pval_prim = Printf.sprintf "js_fn_mk_%02d" arity  in
+  let tyvars =
+        (Ext_list.init (arity + 1) (fun i -> 
+             {ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
+              ptyp_attributes ;
+              ptyp_loc = loc})) in
+  let tuple_type_desc = 
+    if arity = 0 then 
+      (List.hd tyvars).ptyp_desc
+      (* avoid single tuple *)
+    else 
+      Parsetree.Ptyp_tuple tyvars
+  in 
+  let uncurry_fn = 
+    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc
+  in 
+  let arrow = arrow ~loc "" in
+  (** could be optimized *)
+  let pval_type = 
+    if arity = 0 then 
+      arrow  (arrow  (Ast_literal.type_unit ~loc ()) (List.hd tyvars) ) uncurry_fn
+    else 
+      arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    args 
+        
+
+let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
+  Ext_list.exclude_with_fact (function 
+    | ({Location.txt  = "uncurry"}, _) -> true 
+    | _ -> false ) attrs 
+
+
+let uncurry_fn_type loc ty attrs
+    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
+
+  let fn_type : Parsetree.core_type =
+    match args with
+    | {ptyp_desc = 
+         Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
+      ->
+      Typ.tuple ~loc ~attrs [ arg ; body]
+      
+    | {ptyp_desc = Ptyp_tuple args; _} ->
+      Typ.tuple ~loc ~attrs (List.rev (body :: List.rev args))
+      
+    | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
+    | v -> 
+      Typ.tuple ~loc ~attrs [v ; body]
+  in
+  lift_curry_type ~loc fn_type
+
+
+
+
+(*
+  Attributes are very hard to attribute
+  (since ptyp_attributes could happen in so many places), 
+  and write ppx extensions correctly, 
+  we can only use it locally
+*)
+
+let handle_typ 
+    (super : Ast_mapper.mapper) 
+    (self : Ast_mapper.mapper)
+    (ty : Parsetree.core_type) = 
+  match ty with
+  | {ptyp_attributes ;
+     ptyp_desc = Ptyp_arrow ("", args, body);
+     ptyp_loc = loc
+   } ->
+    begin match  find_uncurry_attrs_and_remove ptyp_attributes with 
+    | Some _, ptyp_attributes ->
+        let args = self.typ self args in
+        let body = self.typ self body in
+        uncurry_fn_type loc ty ptyp_attributes args body 
+    | None, _ -> 
+        let args = self.typ self args in
+        let body = self.typ self body in
+        if !uncurry_type then 
+          uncurry_fn_type loc ty ptyp_attributes args body 
+        else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
+    end
+  | {
+    ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
+    ptyp_attributes ;
+    ptyp_loc = loc 
+    } -> 
+    begin match Ext_list.exclude_with_fact2 
+                  (function 
+                    | {Location.txt = "bs.obj" ; _}, _  -> true 
+                    | _  -> false ) 
+                  (function 
+                    | {Location.txt = "uncurry"; _}, _ -> true
+                    | _ -> false)
+                  ptyp_attributes with 
+    |  None, None, _  ->
+      let check_auto_uncurry core_type = 
+        if  !obj_type_auto_uncurry then
+          Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+        else self.typ self core_type in 
+  
+      let methods = 
+        List.map (fun (label, ptyp_attrs, core_type ) -> 
+            match find_uncurry_attrs_and_remove ptyp_attrs with 
+            | None, _ -> 
+              label, ptyp_attrs , check_auto_uncurry  core_type
+            | Some v, ptyp_attrs -> 
+              label , ptyp_attrs, 
+              check_auto_uncurry
+                { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+          ) methods 
+      in           
+      if !obj_type_as_js_obj_type then 
+        lift_js_type ~loc { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                               ptyp_attributes }
+
+      else 
+        {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
+    | fact1 , fact2,  ptyp_attributes -> 
+      let obj_type_as_js_obj_type_cxt =  fact1 <> None || !obj_type_as_js_obj_type in
+      let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
+      let methods = 
+        Ext_ref.protect2
+          obj_type_as_js_obj_type
+          uncurry_type 
+          obj_type_as_js_obj_type_cxt 
+          uncurry_type_cxt begin fun _ -> 
+          List.map (fun (label, ptyp_attrs, core_type ) -> 
+              match find_uncurry_attrs_and_remove ptyp_attrs with 
+              | None, _ -> label, ptyp_attrs , self.typ self core_type
+              | Some v, ptyp_attrs -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+            ) methods 
+        end
+      in           
+      let inner_type = { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                                 ptyp_attributes } in
+      if obj_type_as_js_obj_type_cxt then       
+        {ptyp_desc = 
+           Ptyp_constr ({ txt = js_obj_type_id () ; loc},
+                        [inner_type]);
+         ptyp_attributes = [];
+         ptyp_loc = loc }
+      else inner_type
+    end
+  | _ -> super.typ self ty
+
+let handle_class_obj_typ 
+    (super : Ast_mapper.mapper) 
+    (self : Ast_mapper.mapper)
+    (ty : Parsetree.class_type) = 
+  match ty with
+  | {pcty_attributes ;
+     pcty_desc ; (* we won't have [ class type v = u -> object[@uncurry] ]*)
+     pcty_loc = loc
+   } ->
+    begin match  find_uncurry_attrs_and_remove pcty_attributes with 
+    | Some _, pcty_attributes' ->
+      Ext_ref.protect uncurry_type true begin fun () -> 
+        self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
+      end
+    | None, _ -> 
+      if !obj_type_auto_uncurry then 
+        Ext_ref.protect uncurry_type true begin fun () -> 
+          super.class_type self ty
+        end
+      else 
+        super.class_type self ty
+    end
+
+
+let handle_debugger loc payload = 
+  if Ast_payload.as_empty_structure payload then
+    let predef_unit_type = Ast_literal.type_unit ~loc () in
+    let pval_prim = "js_debugger" in
+    Ast_comb.create_local_external loc 
+      ~pval_prim
+      ~pval_type:(arrow "" predef_unit_type predef_unit_type)
+      [("",  Ast_literal.val_unit ~loc ())]
+  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+
+(** TODO: Future 
+    {[ fun%bs this (a,b,c) -> 
+    ]}
+
+    [function] can only take one argument, that is the reason we did not adopt it
+*)
+let handle_uncurry_generation  loc 
+    (pat : Parsetree.pattern)
+    (body : Parsetree.expression) 
+    (e : Parsetree.expression) (mapper : Ast_mapper.mapper) = 
+  let args = 
+    match pat with 
+    | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
+      [arg]
+    | {ppat_desc = Ppat_tuple args; _} -> args
+    | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
+    | v -> [v]
+  in
+  let len = List.length args in 
+  let body = mapper.expr mapper body in 
+  let fun_ = 
+    if len = 0 then 
+      Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) body
+    else 
+      List.fold_right (fun arg body -> 
+          let arg = mapper.pat mapper arg in 
+          Ast_comb.fun_no_label ~loc arg body 
+          ) args body in
+  {e with pexp_desc = gen_fn_mk loc len [("", fun_)]}
+let handle_uncurry_application 
+    loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
+    (self : Ast_mapper.mapper) 
+  : Parsetree.expression = 
+  let args = 
+    match pat with 
+    | {Parsetree.pexp_desc = 
+         Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]
+      ; _} -> 
+      [arg]
+    | {pexp_desc = Pexp_tuple args; _} -> args
+    | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
+    | v -> [v]
+  in
+
+  let fn = self.expr self fn in 
+  let args = List.map (self.expr self) args in 
+  let len = List.length args in 
+  { e with pexp_desc = gen_fn_run loc len (("", fn) :: List.map (fun x -> "", x) args)}
+
+let handle_obj_property loc obj name e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
+  let obj = mapper.expr mapper obj in 
+  let var = Typ.var ~loc "a" in 
+  let down = Ast_comb.create_local_external loc  
+
+    ~pval_prim:"js_unsafe_downgrade"
+    ~pval_type:(
+      Ast_comb.arrow_no_label ~loc
+        (lift_js_type ~loc var) var)
+    ["", obj] in 
+  { e with pexp_desc =
+     Pexp_send
+               ({pexp_desc = down ;
+                 pexp_loc = loc;
+                 pexp_attributes = []},
+                name);
+  }
+
+
+type method_kind = 
+  | Case_setter
+  | Setter
+  | Normal of string 
+let handle_obj_method loc (obj : Parsetree.expression) 
+    name (value : Parsetree.expression) e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let method_kind = 
+    if name = Literals.case_set then Case_setter
+    else if Ext_string.ends_with name Literals.setter_suffix then Setter
+    else Normal name in 
+  let args = 
+    match method_kind with 
+    | Setter -> 
+      [value]
+    | (Case_setter | Normal _) -> 
+      let arity, args = 
+        match value with 
+        | {pexp_desc = 
+             Pexp_tuple 
+               [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
+           _} -> 
+          1, [arg]
+        | {pexp_desc = Pexp_tuple args; _} -> List.length args, args
+        | {pexp_desc = 
+             Pexp_construct ({txt = Lident "()"}, None);
+           _} -> 0, []
+        | v -> 1, [v] in 
+      if method_kind = Case_setter && arity <> 2 then 
+        Location.raise_errorf "case_set would expect arity of 2 "
+      else  args 
+  in
+  let len = List.length args in 
+  let obj = mapper.expr mapper obj in 
+  let args = List.map (mapper.expr mapper ) args in 
+  let var = Typ.var ~loc "a" in 
+  let down = Ast_comb.create_local_external loc  
+    ~pval_prim:"js_unsafe_downgrade"
+    ~pval_type:(Ast_comb.arrow_no_label ~loc
+                  (lift_js_type ~loc var)
+                  var )
+    ~local_module_name:"Tmp"
+    ~local_fun_name:"cast" ["", obj] in 
+  {e with pexp_desc = gen_fn_run loc len 
+    (("", Exp.send ~loc (Exp.mk ~loc down) name) :: 
+     List.map (fun x -> "", x) args
+    )}
+        (** TODO: 
+            More syntax sanity check for [case_set] 
+            case_set: arity 2
+            _set : arity 1            
+            case:
+        *)
+
+
+(** object 
+    for setter : we can push more into [Lsend] and enclose it with a unit type
+
+    for getter :
+
+    (* Invariant: we expect the typechecker & lambda emitter  
+       will not do agressive inlining
+       Worst things could happen
+    {[
+      let x = y## case 3  in 
+      x 2
+    ]}
+       in normal case, it should be compiled into Lambda
+    {[
+      let x = Lsend(y,case, [3]) in 
+      Lapp(x,2)
+    ]}
+
+       worst:
+    {[ Lsend(y, case, [3,2])
+    ]}               
+       for setter(include case setter), this could 
+       be prevented by type system, for getter.
+
+       solution: we can prevent this by rewrite into 
+    {[
+      Fn.run1  (!x# case) v 
+      ]}
+       *)
+
+      *)
+
+
+let rec unsafe_mapper : Ast_mapper.mapper =   
+  { Ast_mapper.default_mapper with 
+    expr = (fun mapper e -> 
+        match e.pexp_desc with 
+        (** Begin rewriting [bs.raw], its output should not be rewritten anymore
+        *)        
+        | Pexp_extension (
+            {txt = "bs.raw"; loc} , payload)
+          -> 
+          begin match Ast_payload.as_string_exp payload with 
+            | None -> 
+              Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+            | Some exp -> 
+              let pval_prim = "js_pure_expr" in
+              { exp with pexp_desc = Ast_comb.create_local_external loc 
+                           ~pval_prim
+                           ~pval_type:(arrow "" 
+                                         (Ast_literal.type_string ~loc ()) 
+                                         (Ast_literal.type_any ~loc ()) )
+
+                           ["",exp]}
+          end
+
+        (** End rewriting [bs.raw] *)
+
+        (** Begin rewriting [bs.debugger], its output should not be rewritten any more*)
+        | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
+          -> {e with pexp_desc = handle_debugger loc payload}
+        (** End rewriting *)
+        | Pexp_fun ("", None, pat , body)
+          ->
+          let loc = e.pexp_loc in 
+          begin match Ext_list.exclude_with_fact (function 
+              | {Location.txt = "uncurry"; _}, _ -> true 
+              | _ -> false) e.pexp_attributes with 
+          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+          | Some _, attrs 
+            -> 
+            begin match body.pexp_desc with 
+              | Pexp_fun _ -> 
+                Location.raise_errorf ~loc 
+                  {| `fun [@uncurry] (param0, param1) -> `
+                     instead of `fun [@uncurry] param0 param1 ->` |}
+              | _ -> 
+                handle_uncurry_generation loc pat body 
+                  {e with pexp_attributes = attrs } mapper
+            end
+          end
+
+        | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
+                      [("", fn);
+                       ("", pat)])
+          -> 
+          handle_uncurry_application loc fn pat e mapper
+
+        | Pexp_apply
+            ({pexp_desc = 
+               Pexp_apply (
+                 {pexp_desc = 
+                    Pexp_ident  {txt = Lident "##" ; loc} ; _},
+                 [("", obj) ;
+                  ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                 ]);
+              _
+             }, args  )
+          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
+          begin match args with 
+          | [ "", value] -> 
+              handle_obj_method loc obj name value e mapper
+          | _ -> 
+            Location.raise_errorf 
+              "Js object ## expect only one argument when it is a method "
+          end
+        (* TODO: design: shall we allow 
+                               {[ x #.Capital ]}
+        *)
+        | Pexp_apply ({pexp_desc = 
+                         Pexp_ident  {txt = Lident ("#." | "##") ; loc} ; _},
+                      [("", obj) ;
+                       ("", 
+                        ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
+                        |{pexp_desc = Pexp_construct ({txt = Lident name;_ }, None) ; _}
+                        ) )
+                      ])
+          -> handle_obj_property loc obj name e mapper
+        | Pexp_apply (fn,
+                      [("", pat)]) -> 
+          let loc = e.pexp_loc in 
+          begin match Ext_list.exclude_with_fact (function 
+              | {Location.txt = "uncurry"; _}, _ -> true 
+              | _ -> false) e.pexp_attributes with 
+          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+          | Some _, attrs -> 
+            handle_uncurry_application loc fn pat 
+              {e with pexp_attributes = attrs} mapper
+          end
+
+        | Pexp_record (label_exprs, None)   -> 
+          begin match  (* exclude {[ u with ..]} syntax currently *)
+              Ext_list.exclude_with_fact 
+                (function({Location.txt  = "bs.obj"}, _)  -> true | _ -> false) 
+                e.pexp_attributes
+            with 
+          | Some attr, pexp_attributes -> 
+            Ext_ref.protect record_as_js_object (Some attr) begin fun () -> 
+              { e with
+                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
+                pexp_attributes 
+              }
+            end
+          | None , _ -> 
+            begin match !record_as_js_object with 
+            | Some attr 
+              -> 
+              { e with
+                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
+              }
+            | None -> 
+              Ast_mapper.default_mapper.expr  mapper e
+            end
+          end
+        | _ ->  Ast_mapper.default_mapper.expr  mapper e
+      );
+    typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
+    class_type = (fun self ctyp -> handle_class_obj_typ Ast_mapper.default_mapper self ctyp);
+    structure_item = (fun mapper (str : Parsetree.structure_item) -> 
+        begin match str.pstr_desc with 
+        | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
+          -> 
+            begin match Ast_payload.as_string_exp payload with 
+              | Some exp 
+                -> 
+                let pval_prim = "js_pure_stmt" in 
+                Ast_helper.Str.eval 
+                  { exp with pexp_desc =
+                             Ast_comb.create_local_external loc 
+                               ~pval_prim
+                               ~pval_type:(arrow ""
+                                             (Ast_literal.type_string ~loc ())
+                                             (Ast_literal.type_any ~loc ()))
+                               ["",exp]}
+              | None
+                -> 
+                Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+            end
+        | _ -> Ast_mapper.default_mapper.structure_item mapper str 
+        end
+      )
+  }
+
+
+let common_actions_table : 
+  (string *  (Parsetree.expression -> unit)) list = 
+  [ "obj_type_auto_uncurry", 
+    (fun e -> 
+       obj_type_auto_uncurry := Ast_payload.assert_bool_lit e
+    )
+  ]
+
+
+let structural_config_table  = 
+  String_map.of_list 
+    (( "non_export" , 
+      (fun e -> non_export := Ast_payload.assert_bool_lit e ))
+      :: common_actions_table)
+
+let signature_config_table = 
+  String_map.of_list common_actions_table
+
+
+let make_call_back table ((x : Longident.t Asttypes.loc) , y) = 
+  match x with 
+  | {txt = Lident name; loc  } -> 
+    begin match String_map.find name table with 
+    | fn -> fn y
+    | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
+    end
+  | {loc} -> 
+    Location.raise_errorf ~loc "invalid label for config"
+
+let rewrite_signature : (Parsetree.signature -> Parsetree.signature) ref = 
+  ref (fun  x -> 
+      let result = 
+        match (x : Parsetree.signature) with 
+        | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
+          -> 
+          begin 
+            Ast_payload.as_record_and_process loc payload 
+              (make_call_back signature_config_table) ; 
+            unsafe_mapper.signature unsafe_mapper rest
+          end
+        | _ -> 
+          unsafe_mapper.signature  unsafe_mapper x in 
+      reset (); result 
+    )
+
+let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref = 
+  ref (fun (x : Parsetree.structure) -> 
+      let result = 
+        match x with 
+        | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
+          -> 
+          begin 
+            Ast_payload.as_record_and_process loc payload 
+              (make_call_back structural_config_table) ; 
+            let rest = unsafe_mapper.structure unsafe_mapper rest in
+            if !non_export then
+              [Str.include_ ~loc  
+                 (Incl.mk ~loc 
+                    (Mod.constraint_ ~loc
+                       (Mod.structure ~loc rest  )
+                       (Mty.signature ~loc [])
+                    ))]
+            else rest 
+          end
+        | _ -> 
+          unsafe_mapper.structure  unsafe_mapper x  in 
+      reset (); result )
+
+
+end
+module Ocaml_parse : sig 
+#1 "ocaml_parse.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val parse_interface : Format.formatter -> string -> Parsetree.signature
+
+val parse_implementation : Format.formatter -> string -> Parsetree.structure
+
+val check_suffix :  string -> [> `Ml | `Mli ] * string
+
+end = struct
+#1 "ocaml_parse.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let parse_interface ppf sourcefile = 
+  let ast = Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile in
+  if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast
+
+let parse_implementation ppf sourcefile = 
+  let ast = 
+    Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile in 
+  if !Js_config.no_builtin_ppx_ml then ast else
+    !Ppx_entry.rewrite_implementation ast 
+
+let check_suffix  name  = 
+  if Filename.check_suffix name ".ml"
+  || Filename.check_suffix name ".mlt" then 
+    `Ml,  Compenv.output_prefix name 
+  else if Filename.check_suffix name !Config.interface_suffix then 
+    `Mli,  Compenv.output_prefix name 
+  else 
+    raise(Arg.Bad("don't know what to do with " ^ name))
+
+end
+module 
+Js_op
+= struct
+#1 "js_op.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+
+(** Define some basic types used in JS IR *)
+
+type binop =
+  | Eq  
+  (* acutally assignment ..
+     TODO: move it into statement, so that all expressions 
+     are side efffect free (except function calls)
+   *)
+
+  | Or
+  | And
+  | EqEqEq
+  | NotEqEq
+  | InstanceOf
+
+  | Lt
+  | Le
+  | Gt
+  | Ge
+
+  | Bor
+  | Bxor
+  | Band
+  | Lsl
+  | Lsr
+  | Asr
+
+  | Plus
+  | Minus
+  | Mul
+  | Div
+  | Mod
+
+(**
+note that we don't need raise [Div_by_zero] in BuckleScript
+
+{[
+let add x y = x + y  (* | 0 *)
+let minus x y = x - y (* | 0 *)
+let mul x y = x * y   (* caml_mul | Math.imul *)
+let div x y = x / y (* caml_div (x/y|0)*)
+let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
+
+let bor x y = x lor y   (* x  | y *)
+let bxor x y = x lxor y (* x ^ y *)
+let band x y = x land y (* x & y *)
+let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
+let ilsl x y = x lsl y (* x << y*)
+let ilsr x y = x lsr y  (* x >>> y | 0 *)
+let iasr  x y = x asr y (* x >> y *)
+]}
+
+
+Note that js treat unsigned shift 0 bits in a special way
+   Unsigned shifts convert their left-hand side to Uint32, 
+   signed shifts convert it to Int32.
+   Shifting by 0 digits returns the converted value.
+   {[
+    function ToUint32(x) {
+        return x >>> 0;
+    }
+    function ToInt32(x) {
+        return x >> 0;
+    }
+   ]}
+   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
+   and [-1 >>> 0 >> 0 ] will be [-1]
+*)
+type int_op = 
+    
+  | Bor
+  | Bxor
+  | Band
+  | Lsl
+  | Lsr
+  | Asr
+
+  | Plus
+      (* for [+], given two numbers 
+         x + y | 0
+       *)
+  | Minus
+      (* x - y | 0 *)
+  | Mul
+      (* *)
+  | Div
+      (* x / y | 0 *)
+  | Mod
+      (* x  % y *)
+
+(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Bitwise_operators
+    {[
+    ~
+    ]}
+    ~0xff -> -256
+    design; make sure each operation type is consistent
+ *)
+type level = 
+  | Log 
+  | Info
+  | Warn
+  | Error
+
+type kind = 
+  | Ml
+  | Runtime 
+  | External of string
+
+type property = Lambda.let_kind = 
+  | Strict
+  | Alias
+  | StrictOpt 
+  | Variable
+
+
+type property_name = (* private *)
+  (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
+  | Key of string
+  | Int_key of int 
+  | Tag 
+  | Length
+
+type 'a access = 
+  | Getter
+  | Setter
+type jsint = Int32.t
+
+type int_or_char = 
+    { i : jsint; 
+      (* we can not use [int] on 32 bit platform, if we dont use 
+          [Int32.t], we need a configuration step          
+      *)
+      c : char option
+    }
+
+ (* literal char *)
+type float_lit = { f :  string }
+type number = 
+  | Float of float_lit 
+  | Int of int_or_char
+  | Uint of int32
+  | Nint of nativeint
+  (* becareful when constant folding +/-, 
+     since we treat it as js nativeint, bitwise operators:
+     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
+     The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
+  *)      
+
+type mutable_flag = 
+  | Mutable
+  | Immutable
+  | NA
+
+(* 
+    {[
+    let rec x = 1 :: y 
+    and y = 1 :: x
+    ]}
+ *)
+type recursive_info = 
+  | SingleRecursive 
+  | NonRecursie
+  | NA
+
+type used_stats = 
+  | Dead_pure 
+        (* only [Dead] should be taken serious, 
+            other status can be converted during
+            inlining
+            -- all exported symbols can not be dead
+            -- once a symbole is called Dead_pure, 
+            it can not be alive anymore, we should avoid iterating it
+            
+          *)
+  | Dead_non_pure 
+      (* we still need iterating it, 
+         just its bindings does not make sense any more *)
+  | Exported (* Once it's exported, shall we change its status anymore? *)
+      (* In general, we should count in one pass, and eliminate code in another 
+         pass, you can not do it in a single pass, however, some simple 
+         dead code can be detected in a single pass
+       *)
+  | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
+  | Used (**)
+  | Scanning_pure
+  | Scanning_non_pure
+  | NA
+
+
+type ident_info = {
+    (* mutable recursive_info : recursive_info; *)
+    mutable used_stats : used_stats;
+  }
+
+type exports = Ident.t list 
+
+type required_modules = (Ident.t * string) list
+
+
+type tag_info = Lambda.tag_info = 
+  | Blk_constructor of string * int
+  | Blk_tuple
+  | Blk_array
+  | Blk_variant of string 
+  | Blk_record of string array
+  | Blk_module of string list option
+  | Blk_na
+
+type length_object = 
+  | Array 
+  | String
+  | Bytes
+  | Function
+  | Caml_block
+
+type code_info = 
+  | Exp (* of int option *)
+  | Stmt
+(** TODO: define constant - for better constant folding  *)
+(* type constant =  *)
+(*   | Const_int of int *)
+(*   | Const_ *)
+
+end
+module Ext_format : sig 
+#1 "ext_format.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Simplified wrapper module for the standard library [Format] module. 
+  *) 
+
+type t = private Format.formatter
+
+val string : t -> string -> unit
+
+val break : t -> unit
+
+val break1 : t -> unit
+
+val space :  t -> unit
+
+val group : t -> int -> (unit -> 'a) -> 'a
+(** [group] will record current indentation 
+    and indent futher
+ *)
+
+val vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val paren : t -> (unit -> 'a) -> 'a
+
+val paren_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val bracket_group : t -> int -> (unit -> 'a) -> 'a
+
+val newline : t -> unit
+
+val to_out_channel : out_channel -> t
+
+val flush : t -> unit -> unit
+
+end = struct
+#1 "ext_format.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+open Format
+
+type t = formatter
+
+let string = pp_print_string
+
+let break = fun fmt -> pp_print_break fmt 0 0
+
+let break1 =
+  fun fmt -> pp_print_break fmt 0 1 
+
+let space  fmt  = 
+  pp_print_break fmt 1 0
+
+let vgroup fmt indent u = 
+  pp_open_vbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+
+let group fmt indent u = 
+  pp_open_hovbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+  
+let paren fmt u = 
+  string fmt "(";
+  let v = u () in
+  string fmt ")";
+  v
+
+let brace fmt u = 
+  string fmt "{";
+  (* break1 fmt ; *)
+  let v = u () in
+  string fmt "}";
+  v 
+
+let bracket fmt u = 
+  string fmt "[";
+  let v = u () in
+  string fmt "]";
+  v 
+
+let paren_group st n action = 
+  group st n (fun _ -> paren st action)
+
+let brace_group st n action = 
+  group st n (fun _ -> brace st action )
+
+let brace_vgroup st n action = 
+  vgroup st n (fun _ -> 
+    string st "{";
+    pp_print_break st 0 2;
+    let v = vgroup st 0 action in
+    pp_print_break st 0 0;
+    string st "}";
+    v
+              )
+let bracket_group st n action = 
+  group st n (fun _ -> bracket st action)
+
+let newline fmt = pp_print_newline fmt ()
+
+let to_out_channel = formatter_of_out_channel
+
+(* let non_breaking_space  fmt = string fmt " " *)
+(* let set_needed_space_function _ _ = () *)
+let flush = pp_print_flush
+
+let list = pp_print_list
+
+end
+module Ident_set : sig 
+#1 "ident_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Set with key specialized as [Ident.t] type
+ *)
+
+(** Original set module enhanced with some utilities, 
+    note that it's incompatible with [Lambda.IdentSet] 
+ *)
+
+include Set.S with type elt = Ident.t
+
+val print : Ext_format.t -> t -> unit
+
+end = struct
+#1 "ident_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+(* TODO: 
+    when we do the union, it would be nice that 
+    we know which [delta] is there
+ *)
+include Set.Make(struct 
+  type t = Ident.t 
+  let compare  = Pervasives.compare (* TODO: fix me *)
+end)
+
+let print ppf v =
+  Ext_format.(brace_vgroup ppf 0 (fun _ ->
+  iter (fun v -> 
+    string ppf  (Printf.sprintf "%s/%d" v.Ident.name v.stamp) ; Ext_format.space ppf  ) v ))
+
+end
+module Js_fun_env : sig 
+#1 "js_fun_env.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Define type t used in JS IR to collect some meta data for a function, like its closures, etc 
+  *)
+
+type t 
+
+val empty :  ?immutable_mask:bool array  -> int -> t
+
+val is_tailcalled : t -> bool
+
+val is_empty : t -> bool 
+
+val set_bound :  t -> Ident_set.t -> unit
+
+val get_bound : t -> Ident_set.t 
+
+val set_lexical_scope : t -> Ident_set.t -> unit
+
+val get_lexical_scope : t -> Ident_set.t
+
+val to_string : t -> string
+
+val mark_unused : t -> int -> unit 
+
+val get_unused : t -> int -> bool
+
+val get_mutable_params : Ident.t list -> t -> Ident.t list
+
+val get_bound : t -> Ident_set.t
+
+val get_length : t -> int
+
+end = struct
+#1 "js_fun_env.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(* Make it mutable so that we can do
+   in-place change without constructing a new one
+  -- however, it's a design choice -- to be reviewed later
+*)
+
+type immutable_mask = 
+  | All_immutable_and_no_tail_call 
+     (** iff not tailcalled 
+         if tailcalled, in theory, it does not need change params, 
+         for example
+         {[
+         let rec f  (n : int ref) = 
+            if !n > 0 then decr n; print_endline "hi"
+            else  f n
+         ]}
+         in this case, we still create [Immutable_mask], 
+         since the inline behavior is slightly different
+      *)
+  | Immutable_mask of bool array
+
+type t = { 
+  mutable bound : Ident_set.t;
+  mutable bound_loop_mutable_values : Ident_set.t; 
+  used_mask : bool array;
+  immutable_mask : immutable_mask; 
+}
+(** Invariant: unused param has to be immutable *)
+
+let empty ?immutable_mask n = { 
+  bound =  Ident_set.empty ;
+  used_mask = Array.make n false;
+  immutable_mask = 
+    (match immutable_mask with 
+     | Some x -> Immutable_mask x 
+     | None -> All_immutable_and_no_tail_call
+    );
+  bound_loop_mutable_values =Ident_set.empty;
+}
+
+let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
+
+let mark_unused  t i = 
+  t.used_mask.(i) <- true
+
+let get_unused t i = 
+  t.used_mask.(i)
+
+let get_length t = Array.length t.used_mask
+
+let to_string env =  
+  String.concat "," 
+    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
+       (Ident_set.elements  env.bound ))
+
+let get_mutable_params (params : Ident.t list) (x : t ) = 
+  match x.immutable_mask with 
+  | All_immutable_and_no_tail_call -> []
+  | Immutable_mask xs -> 
+      Ext_list.filter_mapi 
+        (fun i p -> if not xs.(i) then Some p else None)  params
+
+let get_bound t = t.bound
+
+let set_bound env v = 
+  (* Ext_log.err "%s -- set @." (to_string env); *)
+  (* if Ident_set.is_empty env.bound then *)
+  env.bound <- v 
+ (* else assert false *)
+
+let set_lexical_scope env bound_loop_mutable_values = 
+  env.bound_loop_mutable_values <- bound_loop_mutable_values
+
+let get_lexical_scope env =  
+  env.bound_loop_mutable_values
+
+(* TODO:  can be refined if it 
+    only enclose toplevel variables 
+ *)
+let is_empty t = Ident_set.is_empty t.bound 
+
+end
+module Js_closure : sig 
+#1 "js_closure.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Define a type used in JS IR to help convert lexical scope to JS [var] 
+    based scope convention
+ *)
+
+type t = {
+  mutable outer_loop_mutable_values :  Ident_set.t 
+}
+
+val empty : unit -> t
+
+val get_lexical_scope : t -> Ident_set.t
+
+val set_lexical_scope : t -> Ident_set.t -> unit
+
+end = struct
+#1 "js_closure.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type t = {
+  mutable outer_loop_mutable_values :  Ident_set.t ;
+}
+
+let empty () = {
+  outer_loop_mutable_values  = Ident_set.empty
+}
+
+let set_lexical_scope t v = t.outer_loop_mutable_values <- v 
+
+let get_lexical_scope t = t.outer_loop_mutable_values 
+
+end
+module Js_call_info : sig 
+#1 "js_call_info.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Type for collecting call site information, used in JS IR *) 
+
+type arity = 
+  | Full 
+  | NA 
+
+
+type call_info = 
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na 
+  (* either from [@@bs.call] or not available, 
+     such calls does not follow such rules
+     {[ fun x y -> f x y === f ]} when [f] is an atom     
+  *) 
+
+
+type t = { 
+  call_info : call_info;
+  arity : arity;
+
+}
+
+val dummy : t
+val builtin_runtime_call : t
+
+val ml_full_call : t 
+
+end = struct
+#1 "js_call_info.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type arity = 
+  | Full 
+  | NA 
+
+type call_info = 
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na 
+  (* either from [@@bs.call] or not available, 
+     such calls does not follow such rules
+     {[ fun x y -> (f x y) === f ]} when [f] is an atom     
+
+  *) 
+
+type t = { 
+  call_info : call_info;
+  arity : arity
+}
+
+let dummy = { arity = NA; call_info = Call_na }
+
+let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
+
+let ml_full_call = {arity = Full; call_info = Call_ml}
+
+end
+module 
+J
+= struct
+#1 "j.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Javascript IR
+  
+    It's a subset of Javascript AST specialized for OCaml lambda backend
+
+    Note it's not exactly the same as Javascript, the AST itself follows lexical
+    convention and [Block] is just a sequence of statements, which means it does 
+    not introduce new scope
+*)
+
+type label = string
+
+and binop = Js_op.binop
+
+and int_op = Js_op.int_op
+ 
+and kind = Js_op.kind
+
+and property = Js_op.property
+
+and number = Js_op.number 
+
+and mutable_flag = Js_op.mutable_flag 
+
+and ident_info = Js_op.ident_info
+
+and exports = Js_op.exports
+
+and tag_info = Js_op.tag_info 
+ 
+and required_modules = Js_op.required_modules
+
+and code_info = Js_op.code_info 
+(** object literal, if key is ident, in this case, it might be renamed by 
+    Google Closure  optimizer,
+    currently we always use quote
+ *)
+and property_name =  Js_op.property_name
+and jsint = Js_op.jsint
+and ident = Ident.t 
+
+and vident = 
+  | Id of ident
+  | Qualified of ident * kind * string option
+    (* Since camldot is only available for toplevel module accessors,
+       we don't need print  `A.length$2`
+       just print `A.length` - it's guarateed to be unique
+       
+       when the third one is None, it means the whole module 
+
+       TODO: 
+       invariant, when [kind] is [Runtime], then we can ignore [ident], 
+       since all [runtime] functions are unique, when do the 
+       pattern match we can ignore the first one for simplicity
+       for example       
+       {[
+         Qualified (_, Runtime, Some "caml_int_compare")         
+       ]}       
+     *)
+
+and exception_ident = ident 
+
+and for_ident = ident 
+
+and for_direction = Asttypes.direction_flag
+
+and property_map = 
+    (property_name * expression) list
+and length_object = Js_op.length_object
+and expression_desc =
+  | Math of string * expression list
+  | Length of expression * length_object
+  | Char_of_int of expression
+  | Char_to_int of expression 
+  | Array_of_size of expression 
+    (* used in [js_create_array] primitive, note having
+       uninitilized array is not as bad as in ocaml, 
+       since GC does not rely on it
+     *)
+  | Array_copy of expression (* shallow copy, like [x.slice] *)
+  | Array_append of expression * expression (* For [caml_array_append]*)
+  (* | Tag_ml_obj of expression *)
+  | String_append of expression * expression 
+
+  | Int_of_boolean of expression 
+  | Anything_to_number of expression
+  | Bool of bool (* js true/false*)
+  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
+     [typeof] is an operator     
+  *)
+  | Typeof of expression
+  | Not of expression (* !v *)
+  | String_of_small_int_array of expression 
+    (* String.fromCharCode.apply(null, args) *)
+    (* Convert JS boolean into OCaml boolean 
+       like [+true], note this ast talks using js
+       terminnology unless explicity stated                       
+     *)
+  | Json_stringify of expression 
+  (* TODO: in the future, it might make sense to group primitivie by type,
+     which makes optimizations easier
+     {[ JSON.stringify(value, replacer[, space]) ]}
+  *)
+  | Anything_to_string of expression
+  (* for debugging utitlites, 
+     TODO:  [Dump] is not necessary with this primitive 
+     Note that the semantics is slightly different from [JSON.stringify]     
+     {[
+       JSON.stringify("x")       
+     ]}
+     {[
+       ""x""       
+     ]}     
+     {[
+       JSON.stringify(undefined)       
+     ]}     
+     {[
+       undefined       
+     ]}
+     {[ '' + undefined
+     ]}     
+     {[ 'undefined'
+     ]}     
+  *)      
+  | Dump of Js_op.level * expression list
+  (* TODO: 
+     add 
+     {[ Assert of bool * expression ]}     
+  *)              
+    (* to support 
+       val log1 : 'a -> unit
+       val log2 : 'a -> 'b -> unit 
+       val log3 : 'a -> 'b -> 'c -> unit 
+     *)
+
+  (* TODO: Add some primitives so that [js inliner] can do a better job *)  
+  | Seq of expression * expression
+  | Cond of expression * expression * expression
+  | Bin of binop * expression * expression
+
+  (* [int_op] will guarantee return [int32] bits 
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
+  (* | Int32_bin of int_op * expression * expression *)
+  | FlatCall of expression * expression 
+    (* f.apply(null,args) -- Fully applied guaranteed 
+       TODO: once we know args's shape --
+       if it's know at compile time, we can turn it into
+       f(args[0], args[1], ... )
+     *)
+  | Bind of expression * expression
+  (* {[ Bind (a,b) ]}
+     is literally
+     {[ a.bind(b) ]}
+  *)
+  | Call of expression * expression list * Js_call_info.t
+    (* Analysze over J expression is hard since, 
+        some primitive  call is translated 
+        into a plain call, it's better to keep them
+    *) 
+  | String_access of expression * expression 
+  | Access of expression * expression 
+    (* Invariant: 
+       The second argument has to be type of [int],
+       This can be constructed either in a static way [E.index] or a dynamic way 
+       [E.access]
+     *)
+  | Dot of expression * string * bool
+    (* The third argument bool indicates whether we should 
+       print it as 
+       a["idd"] -- false
+       or 
+       a.idd  -- true
+       There are several kinds of properties
+       1. OCaml module dot (need to be escaped or not)
+          All exported declarations have to be OCaml identifiers
+       2. Javascript dot (need to be preserved/or using quote)
+     *)
+  | New of expression * expression list option (* TODO: option remove *)
+  | Var of vident
+  | Fun of ident list  * block * Js_fun_env.t
+  | Str of bool * string 
+    (* A string is UTF-8 encoded, the string may contain
+       escape sequences.
+       The first argument is used to mark it is non-pure, please
+       don't optimize it, since it does have side effec, 
+       examples like "use asm;" and our compiler may generate "error;..." 
+       which is better to leave it alone
+     *)
+  | Raw_js_code of string * code_info
+  (* literally raw JS code 
+  *)
+  | Array of expression list * mutable_flag
+  | Caml_block of expression list * mutable_flag * expression * tag_info 
+  (* The third argument is [tag] , forth is [tag_info] *)
+  | Caml_uninitialized_obj of expression * expression
+  (* [tag] and [size] tailed  for [Obj.new_block] *)
+
+  (* For setter, it still return the value of expression, 
+     we can not use 
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined], 
+     you have to use [E.tag] in a safe way     
+  *)
+  | Caml_block_tag of expression
+  | Caml_block_set_tag of expression * expression
+  | Caml_block_set_length of expression * expression
+  (* It will just fetch tag, to make it safe, when creating it, 
+     we need apply "|0", we don't do it in the 
+     last step since "|0" can potentially be optimized
+  *)      
+  | Number of number
+  | Object of property_map
+
+and for_ident_expression = expression (* pure*)
+
+and finish_ident_expression = expression (* pure *)
+(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
+   block can be nested, specified in ES3 
+ *)
+
+(* Delay some units like [primitive] into JS layer ,
+   benefit: better cross module inlining, and smaller IR size?
+ *)
+
+(* 
+  [closure] captured loop mutable values in the outer loop
+
+  check if it contains loop mutable values, happens in nested loop
+  when closured, it's no longer loop mutable value. 
+  which means the outer loop mutable value can not peek into the inner loop
+  {[
+  var i = f ();
+  for(var finish = 32; i < finish; ++i){
+  }
+  ]}
+  when [for_ident_expression] is [None], [var i] has to 
+  be initialized outside, so 
+
+  {[
+  var i = f ()
+  (function (xxx){
+  for(var finish = 32; i < finish; ++i)
+  }(..i))
+  ]}
+  This happens rare it's okay
+
+  this is because [i] has to be initialized outside, if [j] 
+  contains a block side effect
+  TODO: create such example
+*)
+
+(* Since in OCaml, 
+   
+  [for i = 0 to k end do done ]
+  k is only evaluated once , to encode this invariant in JS IR,
+  make sure [ident] is defined in the first b
+
+  TODO: currently we guarantee that [bound] was only 
+  excecuted once, should encode this in AST level
+*)
+
+(* Can be simplified to keep the semantics of OCaml
+   For (var i, e, ...){
+     let  j = ... 
+   }
+
+   if [i] or [j] is captured inside closure
+
+   for (var i , e, ...){
+     (function (){
+     })(i)
+   }
+*)
+
+(* Single return is good for ininling..
+   However, when you do tail-call optmization
+   you loose the expression oriented semantics
+   Block is useful for implementing goto
+   {[
+   xx:{
+   break xx;
+   }
+   ]}
+*)
+
+
+and statement_desc =
+  | Block of block
+  | Variable of variable_declaration
+        (* Function declaration and Variable declaration  *)
+  | Exp of expression
+  | If of expression * block * block option
+  | While of label option *  expression * block 
+        * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
+  | ForRange of for_ident_expression option * finish_ident_expression * 
+        for_ident  *  for_direction * block
+        * Js_closure.t  
+  | Continue of label 
+  | Break (* only used when inline a fucntion *)
+  | Return of return_expression   (* Here we need track back a bit ?, move Return to Function ...
+                              Then we can only have one Return, which is not good *)
+  | Int_switch of expression * int case_clause list * block option 
+  | String_switch of expression * string case_clause list * block option 
+  | Throw of expression
+  | Try of block * (exception_ident * block) option * block option
+  | Debugger
+and return_expression = {
+ (* since in ocaml, it's expression oriented langauge, [return] in
+    general has no jumps, it only happens when we do 
+    tailcall conversion, in that case there is a jump.
+    However, currently  a single [break] is good to cover
+    our compilation strategy 
+
+    Attention: we should not insert [break] arbitrarily, otherwise 
+    it would break the semantics
+    A more robust signature would be 
+    {[ goto : label option ; ]}
+  *)
+  return_value : expression
+}   
+
+and expression = {
+  expression_desc : expression_desc; 
+  comment : string option;
+} 
+
+and statement = { 
+  statement_desc :  statement_desc; 
+  comment : string option;
+}
+
+and variable_declaration = { 
+  ident : ident ;
+  value : expression  option;
+  property : property;
+  ident_info : ident_info;
+}
+
+and 'a case_clause = { 
+  case : 'a ; 
+  body : block * bool ;  (* true means break *)
+}
+
+(* TODO: For efficency: block should not be a list, it should be able to 
+   be concatenated in both ways 
+ *)
+and block =  statement list
+
+and program = {
+  name :  string;
+
+  block : block ;
+  exports : exports ;
+  export_set : Ident_set.t ;
+
+}
+and deps_program = 
+  {
+    program : program ; 
+    modules : required_modules ;
+    side_effect : string option (* None: no, Some reason  *)
+  }
+
+end
+module Lam_module_ident : sig 
+#1 "lam_module_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+
+
+(** A type for qualified identifiers in Lambda IR 
+ *)
+
+type t = private { id : Ident.t ; kind : Js_op.kind }
+
+val id : t -> Ident.t 
+
+val name : t -> string
+
+val mk : J.kind -> Ident.t -> t
+
+val of_ml : Ident.t -> t
+
+val of_external : Ident.t -> string -> t
+
+val of_runtime : Ident.t -> t 
+
+end = struct
+#1 "lam_module_ident.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+type t = { id : Ident.t ; kind : Js_op.kind }
+
+let id x = x.id 
+
+let of_ml id = { id ; kind =  Ml}
+
+let of_external id name =  {id ; kind = External name}
+
+let of_runtime id = { id ; kind = Runtime }
+
+let mk kind id = {id; kind}
+
+let name  x : string  = 
+  match (x.kind : J.kind) with 
+  | Ml  | Runtime ->  x.id.name
+  | External v -> v  
+  
+(* OCaml runtime written in JS *)
+type module_property = bool 
+
+end
+module Lam : sig 
+#1 "lam.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type primitive = Lambda.primitive
+
+
+type switch  =
+  { sw_numconsts: int;
+    sw_consts: (int * t) list;
+    sw_numblocks: int;
+    sw_blocks: (int * t) list;
+    sw_failaction : t option}
+and apply_info = private
+  { fn : t ; 
+    args : t list ; 
+    loc : Location.t;
+    status : Lambda.apply_status
+  }
+
+and prim_info = private
+  { primitive : primitive ; 
+    args : t list ; 
+  }
+and function_info = private
+  { arity : int ; 
+   kind : Lambda.function_kind ; 
+   params : Ident.t list ;
+   body : t 
+  }
+and  t =  private
+  | Lvar of Ident.t
+  | Lconst of Lambda.structured_constant
+  | Lapply of apply_info
+  | Lfunction of function_info
+  | Llet of Lambda.let_kind * Ident.t * t * t
+  | Lletrec of (Ident.t * t) list * t
+  | Lprim of prim_info
+  | Lswitch of t * switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * Ident.t list) * t
+  | Ltrywith of t * Ident.t * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
+  | Lassign of Ident.t * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Levent of t * Lambda.lambda_event
+  | Lifused of Ident.t * t
+
+
+module Prim : sig 
+  type t = primitive
+  val js_is_nil : t
+  val js_is_undef : t 
+  val js_is_nil_undef : t 
+end
+
+
+type binop = t -> t -> t 
+
+type triop = t -> t -> t -> t 
+
+type unop = t ->  t
+
+val var : Ident.t -> t
+val const : Lambda.structured_constant -> t
+
+val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
+val function_ : 
+  arity:int ->
+  kind:Lambda.function_kind -> params:Ident.t list -> body:t -> t
+
+val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
+val letrec : (Ident.t * t) list -> t -> t
+val if_ : triop
+val switch : t -> switch  -> t 
+val stringswitch : t -> (string * t) list -> t option -> t 
+
+val true_ : t 
+val false_ : t 
+val unit : t 
+
+val sequor : binop
+val sequand : binop
+val not : unop
+val seq : binop
+val while_ : binop
+val event : t -> Lambda.lambda_event -> t  
+val try_ : t -> Ident.t -> t  -> t 
+val ifused : Ident.t -> t -> t
+val assign : Ident.t -> t -> t 
+
+val send : 
+  Lambda.meth_kind ->
+  t -> t -> t list -> 
+  Location.t -> t 
+
+val prim : primitive:Lambda.primitive -> args:t list ->  t
+
+val staticcatch : 
+  t -> int * Ident.t list -> t -> t
+
+val staticraise : 
+  int -> t list -> t
+
+val for_ : 
+  Ident.t ->
+  t  ->
+  t -> Asttypes.direction_flag -> t -> t 
+
+
+
+
+
+val convert : Lambda.lambda -> t 
+
+end = struct
+#1 "lam.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type primitive = Lambda.primitive
+type switch = 
+  { sw_numconsts: int;
+    sw_consts: (int * t) list;
+    sw_numblocks: int;
+    sw_blocks: (int * t) list;
+    sw_failaction : t option}
+and prim_info = 
+  { primitive : primitive ; 
+    args : t list ; 
+  }
+and apply_info = 
+  { fn : t ; 
+    args : t list ; 
+    loc : Location.t;
+    status : Lambda.apply_status
+  }
+and function_info = 
+  { arity : int ; 
+   kind : Lambda.function_kind ; 
+   params : Ident.t list ;
+   body : t 
+  }
+and t = 
+  | Lvar of Ident.t
+  | Lconst of Lambda.structured_constant
+  | Lapply of apply_info
+  | Lfunction of function_info
+  | Llet of Lambda.let_kind * Ident.t * t * t
+  | Lletrec of (Ident.t * t) list * t
+  | Lprim of prim_info
+  | Lswitch of t * switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * Ident.t list) * t
+  | Ltrywith of t * Ident.t * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
+  | Lassign of Ident.t * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Levent of t * Lambda.lambda_event
+  | Lifused of Ident.t * t
+
+
+module Prim = struct 
+  type t = primitive
+  let js_is_nil : t = 
+    Pccall{ prim_name = "js_is_nil";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_nil";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+  let js_is_undef : t = 
+    Pccall{ prim_name = "js_is_undef";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_undef";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+  let js_is_nil_undef : t  = 
+    Pccall{ prim_name = "js_is_nil_undef";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_nil_undef";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+end
+
+
+
+
+
+
+type binop = t -> t -> t 
+
+type triop = t -> t -> t -> t 
+
+type unop = t -> t 
+
+
+let var id : t = Lvar id
+let const ct : t = Lconst ct 
+let apply fn args loc status : t = 
+  Lapply { fn; args;  loc  ;
+           status }
+let function_ ~arity ~kind ~params ~body : t = 
+  Lfunction { arity; kind; params ; body}
+
+let let_ kind id e body :  t 
+  = Llet (kind,id,e,body)
+let letrec bindings body : t = 
+  Lletrec(bindings,body)
+
+let if_ (a : t) (b : t) c = 
+  match a with
+  | Lconst v ->
+    begin match v with
+    | Const_pointer (x, _)  | Const_base(Const_int x)
+      ->
+      if x <> 0 then b else c
+    | Const_base (Const_char x) ->
+      if Char.code x <> 0 then b else c
+    | Const_base (Const_int32 x) ->
+      if x <> 0l then b else c
+    | Const_base (Const_int64 x) ->
+      if x <> 0L then b else c
+    | Const_base (Const_nativeint x) ->
+      if x <> 0n then b else c
+    | Const_base (Const_string _ | Const_float _ ) -> b
+    | Const_block _
+    | Const_float_array _
+    | Const_immstring _ -> b
+    end
+  | _ ->  Lifthenelse (a,b,c)
+
+let switch lam lam_switch : t = 
+  Lswitch(lam,lam_switch)
+
+let stringswitch (lam : t) cases default : t = 
+  match lam with
+  | Lconst (Const_base (Const_string (a,_))) ->
+    begin
+      try List.assoc a cases with Not_found ->
+        begin
+          match default with
+          | Some x -> x
+          | None -> assert false
+        end
+    end
+  | _ -> Lstringswitch(lam, cases, default)
+
+
+let true_ : t =
+  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
+
+let false_ : t =
+  Lconst (Const_pointer( 0, Pt_constructor "false"))
+
+let unit : t = 
+  Lconst (Const_pointer( 0, Pt_constructor "()"))
+
+
+(** [l || r ] *)
+let sequor l r = if_ l true_ r 
+
+(** [l && r ] *)
+let sequand l r = if_ l r false_
+
+let seq a b : t = 
+  Lsequence (a, b)
+
+let while_ a b : t  = 
+  Lwhile(a,b)
+
+let try_  body id  handler : t = 
+  Ltrywith(body,id,handler)
+
+let for_ v e1 e2 dir e3 : t  = 
+  Lfor(v,e1,e2,dir,e3)
+
+let event l (_event : Lambda.lambda_event) = l 
+
+let ifused v l : t  = 
+  Lifused (v,l)
+
+let assign v l : t = Lassign(v,l)
+
+let send u m o ll v : t = 
+  Lsend(u, m, o, ll, v)
+
+let staticcatch  a b c : t = Lstaticcatch(a,b,c)
+
+let staticraise a b : t = Lstaticraise(a,b)
+
+let comparison (cmp : Lambda.comparison) a b : bool = 
+  match cmp with 
+  | Ceq -> a = b 
+  | Cneq -> a <> b 
+  | Cgt -> a > b 
+  | Cle -> a <= b 
+  | Clt -> a < b 
+  | Cge -> a >= b 
+
+let lift_int i : t =
+  Lconst (Const_base (Const_int i))
+
+
+let int32 i : t =
+  Lconst (Const_base (Const_int32 i))
+
+let lift_bool b = if b then true_ else false_
+
+(* ATTENTION: [float, nativeint] constant propogaton is not done
+   yet , due to cross platform problem
+*) 
+let lift_float b  : t = 
+  Lconst (Const_base (Const_float b))
+
+let lift_nativeint b : t = 
+  Lconst (Const_base (Const_nativeint b))
+
+let lift_int32 b : t = 
+  Lconst (Const_base (Const_int32 b))
+
+let lift_int64 b : t =
+  Lconst (Const_base (Const_int64 b))
+
+let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t = 
+  let default () : t = Lprim { primitive = prim ;args =  ll } in 
+  match ll with 
+  | [Lconst a] -> 
+    begin match prim, a  with 
+      | Pnegint, (Const_base (Const_int a))
+        -> lift_int (- a)
+      (* | Pfloatofint, (Const_base (Const_int a)) *)
+      (*   -> lift_float (float_of_int a) *)
+      | Pintoffloat, (Const_base (Const_float a))
+        -> 
+        lift_int (int_of_float (float_of_string a))
+        (* | Pnegfloat -> lift_float (-. a) *)
+        (* | Pabsfloat -> lift_float (abs_float a) *)
+      | Pstringlength, (Const_base (Const_string (a,_)) ) 
+        -> 
+        lift_int (String.length a)
+      (* | Pnegbint Pnativeint, (Const_base (Const_nativeint i)) *)
+      (*   ->   *)
+      (*   lift_nativeint (Nativeint.neg i) *)
+      | Pnegbint Pint32, (Const_base (Const_int32 a))
+        -> 
+        lift_int32 (Int32.neg a)
+      | Pnegbint Pint64, (Const_base (Const_int64 a))
+        -> 
+        lift_int64 (Int64.neg a)
+      | Pnot , Const_pointer (a,_) 
+        -> lift_bool (a = 0 )
+
+      | _ -> default ()
+    end
+
+
+  | [Lconst a ; Lconst b] -> 
+    begin match prim, a, b  with 
+      | Pbintcomp(_, cmp), Const_base (Const_int32 a), Const_base (Const_int32 b)
+        -> lift_bool (comparison cmp a b)
+      | Pbintcomp(_, cmp), Const_base (Const_int64 a), Const_base (Const_int64 b)
+        -> lift_bool (comparison cmp a b)
+      | Pbintcomp(_, cmp), Const_base (Const_nativeint a), Const_base (Const_nativeint b)
+        -> lift_bool (comparison cmp a b)
+      | Pfloatcomp  cmp, Const_base (Const_nativeint a), Const_base (Const_nativeint b)
+        -> lift_bool (comparison cmp a b)
+      | Pintcomp cmp , Const_base (Const_int a), Const_base (Const_int b)
+        -> lift_bool (comparison cmp a b)
+
+      | (Paddint
+        | Psubint
+        | Pmulint
+        | Pdivint
+        | Pmodint
+        | Pandint
+        | Porint
+        | Pxorint
+        | Plslint
+        | Plsrint
+        | Pasrint),Const_base (Const_int a),  Const_base (Const_int b)
+        ->
+            (* WE SHOULD keep it as [int], to preserve types *)
+            let aa,bb = Int32.of_int a, Int32.of_int  b in 
+            let int_ v = lift_int (Int32.to_int v ) in 
+            begin match prim with 
+              | Paddint -> int_ (Int32.add aa bb)
+              | Psubint -> int_ (Int32.sub aa bb)
+              | Pmulint -> int_ (Int32.mul aa  bb)
+              | Pdivint -> (try int_ (Int32.div aa  bb) with _ -> default ())
+              | Pmodint -> int_ (Int32.rem aa  bb)
+              | Pandint -> int_ (Int32.logand aa bb)
+              | Porint -> int_ (Int32.logor aa bb)
+              | Pxorint -> int_ (Int32.logxor aa bb)
+              | Plslint -> int_ (Int32.shift_left  aa b )
+              | Plsrint -> int_ (Int32.shift_right_logical aa  b)
+              | Pasrint -> int_ (Int32.shift_right aa b)
+              | _ -> default ()
+            end
+      | (Paddbint Pint32
+        | Psubbint Pint32
+        | Pmulbint Pint32
+        | Pdivbint Pint32
+        | Pmodbint Pint32
+        | Pandbint Pint32
+        | Porbint Pint32
+        | Pxorbint Pint32
+        ), Const_base (Const_int32 aa),  Const_base (Const_int32 bb)
+        -> 
+        begin match prim with 
+          | Paddbint _  -> lift_int32 (Int32.add aa bb)
+          | Psubbint _  -> lift_int32 (Int32.sub aa bb)
+          | Pmulbint _ -> lift_int32 (Int32.mul aa  bb)
+          | Pdivbint _ ->  (try lift_int32 (Int32.div aa  bb) with _  -> default ())
+          | Pmodbint _ -> lift_int32 (Int32.rem aa  bb)
+          | Pandbint _ -> lift_int32 (Int32.logand aa bb)
+          | Porbint _ -> lift_int32 (Int32.logor aa bb)
+          | Pxorbint _ -> lift_int32 (Int32.logxor aa bb)
+          | _ -> default ()
+        end
+      | Plslbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+        -> lift_int32 (Int32.shift_left  aa b )
+      | Plsrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+        -> lift_int32 (Int32.shift_right_logical  aa b )
+      | Pasrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+        -> lift_int32 (Int32.shift_right  aa b )
+
+      | (Paddbint Pint64
+        | Psubbint Pint64
+        | Pmulbint Pint64
+        | Pdivbint Pint64
+        | Pmodbint Pint64
+        | Pandbint Pint64
+        | Porbint Pint64
+        | Pxorbint Pint64
+        ), Const_base (Const_int64 aa),  Const_base (Const_int64 bb)
+        -> 
+        begin match prim with 
+          | Paddbint _  -> lift_int64 (Int64.add aa bb)
+          | Psubbint _  -> lift_int64 (Int64.sub aa bb)
+          | Pmulbint _ -> lift_int64 (Int64.mul aa  bb)
+          | Pdivbint _ -> (try lift_int64 (Int64.div aa  bb) with _ -> default ())
+          | Pmodbint _ -> lift_int64 (Int64.rem aa  bb)
+          | Pandbint _ -> lift_int64 (Int64.logand aa bb)
+          | Porbint _ -> lift_int64 (Int64.logor aa bb)
+          | Pxorbint _ -> lift_int64 (Int64.logxor aa bb)
+          | _ -> default ()
+        end
+      | Plslbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+        -> lift_int64 (Int64.shift_left  aa b )
+      | Plsrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+        -> lift_int64 (Int64.shift_right_logical  aa b )
+      | Pasrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+        -> lift_int64 (Int64.shift_right  aa b )
+      | Psequand, Const_pointer (a, _), Const_pointer( b, _)
+        -> 
+        lift_bool (a = 1 && b = 1)
+      | Psequor, Const_pointer (a, _), Const_pointer( b, _)
+        -> 
+        lift_bool (a = 1 || b = 1)
+      | _ -> default ()
+    end
+
+  | _ -> default ()
+
+
+let not x : t = 
+  prim Pnot [x] 
+
+
+let rec convert (lam : Lambda.lambda) : t = 
+  match lam with 
+  | Lvar x -> Lvar x 
+  | Lconst x -> 
+    Lconst x 
+  | Lapply (fn,args,info) 
+    ->  apply (convert fn) (List.map convert args) 
+          info.apply_loc info.apply_status
+  | Lfunction (kind,  params,body)
+    ->  function_ 
+          ~arity:(List.length params) ~kind ~params 
+          ~body:(convert body)
+  | Llet (kind,id,e,body) 
+    -> Llet(kind,id,convert e, convert body)
+  | Lletrec (bindings,body)
+    -> 
+    Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
+  | Lprim (primitive,args) 
+    -> 
+    Lprim {primitive ; args = List.map convert args }
+  | Lswitch (e,s) -> 
+    Lswitch (convert e, convert_switch s)
+  | Lstringswitch (e, cases, default) -> 
+    Lstringswitch (convert e, List.map (fun (x, b) -> x, convert b ) cases, 
+                   match default with 
+                   | None -> None
+                   | Some x -> Some (convert x)
+                  )    
+
+  | Lstaticraise (id, args) -> 
+    Lstaticraise (id, List.map convert args)
+  | Lstaticcatch (b, (i, ids), handler) -> 
+    Lstaticcatch (convert b, (i,ids), convert handler)
+  | Ltrywith (b, id, handler) -> 
+    Ltrywith (convert b, id, convert handler)
+  | Lifthenelse (b,then_,else_) -> 
+    Lifthenelse (convert b, convert then_, convert else_)
+  | Lsequence (a,b) 
+    -> Lsequence (convert a, convert b)
+  | Lwhile (b,body) -> 
+    Lwhile (convert b, convert body)
+  | Lfor (id, from_, to_, dir, loop) -> 
+    Lfor (id, convert from_, convert to_, dir, convert loop)
+  | Lassign (id, body) -> 
+    Lassign (id, convert body)    
+  | Lsend (kind, a,b,ls, loc) -> 
+    Lsend(kind, convert a, convert b, List.map convert ls, loc )
+
+  | Levent (e, event) -> 
+    Levent (convert e, event)
+  | Lifused (id, e) -> Lifused(id, convert e)
+
+and convert_switch (s : Lambda.lambda_switch) : switch = 
+  { sw_numconsts = s.sw_numconsts ; 
+    sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;
+    sw_numblocks = s.sw_numblocks;
+    sw_blocks = List.map (fun (i,lam) -> i, convert lam ) s.sw_blocks;
+    sw_failaction = 
+      match s.sw_failaction with 
+      | None -> None 
+      | Some a -> Some (convert a)
+  }  
+
+end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
+
+type   'a hashset 
+
+val create : ?random: bool -> int -> 'a hashset
+
+val clear : 'a hashset -> unit
+
+val reset : 'a hashset -> unit
+
+val copy : 'a hashset -> 'a hashset
+
+val add : 'a hashset -> 'a  -> unit
+
+val mem : 'a hashset -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a hashset -> unit
+
+val elements : 'a hashset -> 'a list
+
+val length : 'a hashset -> int 
+
+end = struct
+#1 "hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Hashtbl 
+
+(* type nonrec t = unit t  *)
+
+type  'a hashset = ('a,unit) Hashtbl.t
+
+let add tbl k  = replace tbl k ()
+(* use [Hashtbl.replace] instead  *)
+
+(* let replace tbl k  = replace tbl k () *)
+let iter f = iter (fun k _ -> f k )
+
+let elements set = 
+  fold  (fun k _ acc ->  k :: acc) set []
+
+end
+module Lam_stats : sig 
+#1 "lam_stats.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Types defined for lambda analysis *)
+
+type function_arities = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+  (** when the first argument is true, it is for sure 
+
+      approximation sound but not complete 
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))
+   *)
+  | NA 
+
+type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
+(** Keep track of which identifiers are aliased
+  *)
+
+type state = 
+  | Live (** Globals are always live *)
+  | Dead  (** removed after elimination *)
+  | NA
+
+type function_kind = 
+  | Functor 
+  | Function
+  | NA
+
+type rec_flag = 
+  | Rec 
+  | Non_rec
+
+type function_id = {
+  kind : function_kind ; 
+  mutable arity : function_arities;
+  lambda  : Lam.t ;
+  (* TODO: This may contain some closure environment,
+     check how it will interact with dead code elimination
+  *)
+  rec_flag : rec_flag
+}
+
+type element = 
+  | NA 
+  | SimpleForm of Lam.t 
+
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Null_undefined
+  | Normal 
+
+type kind = 
+  | ImmutableBlock of element array * boxed_nullable
+  | MutableBlock of element array
+  | Constant of Lambda.structured_constant
+  | Module of Ident.t
+        (** TODO: static module vs first class module *)
+  | Function of function_id 
+  | Exception 
+  | Parameter
+      (** For this case, it can help us determine whether it should be inlined or not *)
+
+  | NA (** Not such information is associated with an identifier, it is immutable, 
+           if you only associate a property to an identifier 
+           we should consider [Lassign]
+        *)
+
+type ident_tbl = (Ident.t, kind) Hashtbl.t 
+
+type ident_info = {
+  kind : kind ; 
+  state : state
+}
+
+type meta = {
+  env : Env.t;
+  filename : string ;
+  export_idents : Ident_set.t ;
+  exports : Ident.t list ;
+  alias_tbl : alias_tbl; 
+  exit_codes : int Hash_set.hashset;
+
+  ident_tbl : ident_tbl;
+  (** we don't need count arities for all identifiers, for identifiers
+      for sure it's not a function, there is no need to count them
+   *)
+
+  mutable required_modules : Lam_module_ident.t list ;
+}
+
+end = struct
+#1 "lam_stats.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(* It can be useful for common sub expression elimination ? 
+    if two lambdas are not equal, it should return false, other wise, 
+    it might return true , this is only used as a way of optimizaton
+
+    Use case :
+    1. switch case -- common fall through
+ *)
+
+(* lambda pass for alpha conversion 
+    and alias
+    we need think about the order of the pass, might be the alias pass can be done 
+    in the  beginning, when we do alpha conversion, we can instrument the table 
+ *)
+
+type function_arities = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+  | NA 
+
+type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
+
+type function_kind = 
+  | Functor 
+  | Function
+  | NA
+
+type rec_flag = 
+  | Rec 
+  | Non_rec
+
+type function_id = {
+  kind : function_kind ; 
+  mutable arity : function_arities ;
+  lambda  : Lam.t ;
+  rec_flag : rec_flag
+}
+
+type element = 
+  | NA 
+  | SimpleForm of Lam.t
+
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Null_undefined
+  | Normal 
+
+type kind = 
+  | ImmutableBlock of element array * boxed_nullable
+  | MutableBlock of element array 
+  | Constant of Lambda.structured_constant
+  | Module of Ident.t
+        (** Global module, local module is treated as an array
+         *)
+  | Function of function_id (** True then functor *)
+  | Exception 
+  | Parameter
+      (** For this case, it can help us determine whether it should be inlined or not *)
+  | NA 
+  (* | Boxed_nullable of Ident.t  *)
+    (** 
+       {[ let v/2 =  js_from_nullable u]} 
+
+       {[ let v/2 = js_from_nullable exp]}
+       can be translated into 
+       {[
+         let v/1 = exp in 
+         let v/2 =a js_from_nullable exp 
+       ]}
+       so that [Pfield v/2 0] will be replaced by [v/1], 
+       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
+    *)
+type ident_tbl = (Ident.t, kind) Hashtbl.t 
+
+type state = 
+  | Live (** Globals are always live *)
+  | Dead  (** removed after elimination *)
+  | NA
+
+type ident_info = {
+  kind : kind ; 
+  state : state
+}
+
+type meta = {
+  env : Env.t;
+  filename : string ;
+  export_idents : Ident_set.t ;
+  exports : Ident.t list ;
+
+  alias_tbl : alias_tbl; 
+  exit_codes : int Hash_set.hashset;
+
+  ident_tbl : ident_tbl;
+  (** we don't need count arities for all identifiers, for identifiers
+      for sure it's not a function, there is no need to count them
+  *)
+  (** required modules completed by [alias_pass] *)
+  mutable required_modules : Lam_module_ident.t list ;
+}
+
+
+end
+module Lam_print : sig 
+#1 "lam_print.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val lambda : Format.formatter -> Lam.t -> unit
+
+val primitive: Format.formatter -> Lam.Prim.t -> unit
+
+val seriaize : 'a -> string -> Lam.t -> unit
+
+val env_lambda : Env.t -> Format.formatter -> Lam.t -> unit
+
+end = struct
+#1 "lam_print.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+[@@@ocaml.warning "-40"]
+open Format
+open Asttypes
+open Primitive
+open Types
+
+
+
+let rec struct_const ppf (cst : Lambda.structured_constant) =
+  match cst with 
+  | Const_base(Const_int n) -> fprintf ppf "%i" n
+  | Const_base(Const_char c) -> fprintf ppf "%C" c
+  | Const_base(Const_string (s, _)) -> fprintf ppf "%S" s
+  | Const_immstring s -> fprintf ppf "#%S" s
+  | Const_base(Const_float f) -> fprintf ppf "%s" f
+  | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
+  | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
+  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
+  | Const_pointer (n,_) -> fprintf ppf "%ia" n
+  | Const_block(tag,_, []) ->
+      fprintf ppf "[%i]" tag
+  | Const_block(tag,_, sc1::scl) ->
+      let sconsts ppf scl =
+        List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
+      fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
+  | Const_float_array [] ->
+      fprintf ppf "[| |]"
+  | Const_float_array (f1 :: fl) ->
+      let floats ppf fl =
+        List.iter (fun f -> fprintf ppf "@ %s" f) fl in
+      fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
+
+let boxed_integer_name (i : Lambda.boxed_integer) =
+  match i with 
+  | Pnativeint -> "nativeint"
+  | Pint32 -> "int32"
+  | Pint64 -> "int64"
+
+let print_boxed_integer name ppf bi =
+  fprintf ppf "%s_%s" (boxed_integer_name bi) name
+
+let print_boxed_integer_conversion ppf bi1 bi2 =
+  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
+
+let boxed_integer_mark name (i : Lambda.boxed_integer) = 
+  match i with 
+  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
+  | Pint32 -> Printf.sprintf "Int32.%s" name
+  | Pint64 -> Printf.sprintf "Int64.%s" name
+
+let print_boxed_integer name ppf bi =
+  fprintf ppf "%s" (boxed_integer_mark name bi);;
+
+let print_bigarray name unsafe (kind : Lambda.bigarray_kind) ppf 
+    (layout : Lambda.bigarray_layout) =
+  fprintf ppf "Bigarray.%s[%s,%s]"
+    (if unsafe then "unsafe_"^ name else name)
+    (match kind with
+     | Lambda.Pbigarray_unknown -> "generic"
+     | Pbigarray_float32 -> "float32"
+     | Pbigarray_float64 -> "float64"
+     | Pbigarray_sint8 -> "sint8"
+     | Pbigarray_uint8 -> "uint8"
+     | Pbigarray_sint16 -> "sint16"
+     | Pbigarray_uint16 -> "uint16"
+     | Pbigarray_int32 -> "int32"
+     | Pbigarray_int64 -> "int64"
+     | Pbigarray_caml_int -> "camlint"
+     | Pbigarray_native_int -> "nativeint"
+     | Pbigarray_complex32 -> "complex32"
+     | Pbigarray_complex64 -> "complex64")
+    (match layout with
+     | Lambda.Pbigarray_unknown_layout -> "unknown"
+     | Pbigarray_c_layout -> "C"
+     | Pbigarray_fortran_layout -> "Fortran")
+
+let record_rep ppf r =
+  match r with
+  | Record_regular -> fprintf ppf "regular"
+  | Record_float -> fprintf ppf "float"
+;;
+
+let string_of_loc_kind (loc : Lambda.loc_kind) =
+  match loc with 
+  | Loc_FILE -> "loc_FILE"
+  | Loc_LINE -> "loc_LINE"
+  | Loc_MODULE -> "loc_MODULE"
+  | Loc_POS -> "loc_POS"
+  | Loc_LOC -> "loc_LOC"
+
+let primitive ppf (prim : Lambda.primitive) = match prim with 
+  | Pidentity -> fprintf ppf "id"
+  | Pmark_ocaml_object -> fprintf ppf "mark_ocaml_object"
+  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
+  | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pchar_to_int  -> fprintf ppf "char_to_int"
+  | Pchar_of_int -> fprintf ppf "char_of_int"
+  | Pignore -> fprintf ppf "ignore"
+  | Prevapply _ -> fprintf ppf "revapply"
+  | Pdirapply _ -> fprintf ppf "dirapply"
+  | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
+  | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
+  | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
+  | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
+  | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
+  | Pfield (n,_) -> fprintf ppf "field %i" n
+  | Psetfield(n, ptr, _) ->
+      let instr = if ptr then "setfield_ptr " else "setfield_imm " in
+      fprintf ppf "%s%i" instr n
+  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
+  | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
+  | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
+  | Plazyforce -> fprintf ppf "force"
+  | Pccall p -> fprintf ppf "%s" p.prim_name
+  | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
+  | Psequand -> fprintf ppf "&&"
+  | Psequor -> fprintf ppf "||"
+  | Pnot -> fprintf ppf "not"
+  | Pnegint -> fprintf ppf "~"
+  | Paddint -> fprintf ppf "+"
+  | Psubint -> fprintf ppf "-"
+  | Pmulint -> fprintf ppf "*"
+  | Pdivint -> fprintf ppf "/"
+  | Pmodint -> fprintf ppf "mod"
+  | Pandint -> fprintf ppf "and"
+  | Porint -> fprintf ppf "or"
+  | Pxorint -> fprintf ppf "xor"
+  | Plslint -> fprintf ppf "lsl"
+  | Plsrint -> fprintf ppf "lsr"
+  | Pasrint -> fprintf ppf "asr"
+  | Pintcomp(Ceq) -> fprintf ppf "=="
+  | Pintcomp(Cneq) -> fprintf ppf "!="
+  | Pintcomp(Clt) -> fprintf ppf "<"
+  | Pintcomp(Cle) -> fprintf ppf "<="
+  | Pintcomp(Cgt) -> fprintf ppf ">"
+  | Pintcomp(Cge) -> fprintf ppf ">="
+  | Poffsetint n -> fprintf ppf "%i+" n
+  | Poffsetref n -> fprintf ppf "+:=%i"n
+  | Pintoffloat -> fprintf ppf "int_of_float"
+  | Pfloatofint -> fprintf ppf "float_of_int"
+  | Pnegfloat -> fprintf ppf "~."
+  | Pabsfloat -> fprintf ppf "abs."
+  | Paddfloat -> fprintf ppf "+."
+  | Psubfloat -> fprintf ppf "-."
+  | Pmulfloat -> fprintf ppf "*."
+  | Pdivfloat -> fprintf ppf "/."
+  | Pfloatcomp(Ceq) -> fprintf ppf "==."
+  | Pfloatcomp(Cneq) -> fprintf ppf "!=."
+  | Pfloatcomp(Clt) -> fprintf ppf "<."
+  | Pfloatcomp(Cle) -> fprintf ppf "<=."
+  | Pfloatcomp(Cgt) -> fprintf ppf ">."
+  | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pstringlength -> fprintf ppf "string.length"
+  | Pstringrefu -> fprintf ppf "string.unsafe_get"
+  | Pstringsetu -> fprintf ppf "string.unsafe_set"
+  | Pstringrefs -> fprintf ppf "string.get"
+  | Pstringsets -> fprintf ppf "string.set"
+  | Pbyteslength -> fprintf ppf "bytes.length"
+  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
+  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
+  | Pbytesrefs -> fprintf ppf "bytes.get"
+  | Pbytessets -> fprintf ppf "bytes.set"
+
+  | Parraylength _ -> fprintf ppf "array.length"
+  | Pmakearray _ -> fprintf ppf "makearray "
+  | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
+  | Parraysetu _ -> fprintf ppf "array.unsafe_set"
+  | Parrayrefs _ -> fprintf ppf "array.get"
+  | Parraysets _ -> fprintf ppf "array.set"
+  | Pctconst c ->
+     let const_name = match c with
+       | Big_endian -> "big_endian"
+       | Word_size -> "word_size"
+       | Ostype_unix -> "ostype_unix"
+       | Ostype_win32 -> "ostype_win32"
+       | Ostype_cygwin -> "ostype_cygwin" in
+     fprintf ppf "sys.constant_%s" const_name
+  | Pisint -> fprintf ppf "isint"
+  | Pisout -> fprintf ppf "isout"
+  | Pbittest -> fprintf ppf "testbit"
+  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
+  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
+  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
+  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
+  | Paddbint bi -> print_boxed_integer "add" ppf bi
+  | Psubbint bi -> print_boxed_integer "sub" ppf bi
+  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
+  | Pdivbint bi -> print_boxed_integer "div" ppf bi
+  | Pmodbint bi -> print_boxed_integer "mod" ppf bi
+  | Pandbint bi -> print_boxed_integer "and" ppf bi
+  | Porbint bi -> print_boxed_integer "or" ppf bi
+  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
+  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
+  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
+  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
+  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
+  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
+  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
+  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
+  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
+  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
+  | Pbigarrayref(unsafe, n, kind, layout) ->
+      print_bigarray "get" unsafe kind ppf layout
+  | Pbigarrayset(unsafe, n, kind, layout) ->
+      print_bigarray "set" unsafe kind ppf layout
+  | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
+  | Pstring_load_16(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get16"
+     else fprintf ppf "string.get16"
+  | Pstring_load_32(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get32"
+     else fprintf ppf "string.get32"
+  | Pstring_load_64(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get64"
+     else fprintf ppf "string.get64"
+  | Pstring_set_16(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set16"
+     else fprintf ppf "string.set16"
+  | Pstring_set_32(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set32"
+     else fprintf ppf "string.set32"
+  | Pstring_set_64(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set64"
+     else fprintf ppf "string.set64"
+  | Pbigstring_load_16(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
+     else fprintf ppf "bigarray.array1.get16"
+  | Pbigstring_load_32(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
+     else fprintf ppf "bigarray.array1.get32"
+  | Pbigstring_load_64(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
+     else fprintf ppf "bigarray.array1.get64"
+  | Pbigstring_set_16(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
+     else fprintf ppf "bigarray.array1.set16"
+  | Pbigstring_set_32(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
+     else fprintf ppf "bigarray.array1.set32"
+  | Pbigstring_set_64(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
+     else fprintf ppf "bigarray.array1.set64"
+  | Pbswap16 -> fprintf ppf "bswap16"
+  | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
+  | Pint_as_pointer -> fprintf ppf "int_as_pointer"
+
+type print_kind = 
+  | Alias 
+  | Strict 
+  | StrictOpt 
+  | Variable 
+  | Recursive 
+
+let kind = function
+  | Alias -> "a"
+  | Strict -> ""
+  | StrictOpt -> "o"
+  | Variable -> "v" 
+  | Recursive -> "r"
+
+let to_print_kind (k : Lambda.let_kind) : print_kind = 
+  match k with 
+  | Alias -> Alias 
+  | Strict -> Strict
+  | StrictOpt -> StrictOpt
+  | Variable -> Variable
+  
+let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) = 
+  match lam with 
+  | Llet (str3, id3, arg3, body3) ->
+      aux ((to_print_kind str3,id3, arg3)::acc) body3
+  | Lletrec (bind_args, body) ->
+      aux 
+        (List.map (fun (id,l) -> (Recursive,id,l)) bind_args 
+         @ acc) body
+  | e ->  (acc , e) 
+
+type left_var = 
+    {
+     kind : print_kind ;
+     id : Ident.t
+   }
+
+type left = 
+  | Id of left_var
+  | Nop
+
+
+
+
+let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t = 
+  match lam with 
+  | Llet(str,id, arg, body) ->
+      aux [to_print_kind str, id, arg] body
+  | Lletrec(bind_args, body) ->
+      aux 
+        (List.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
+        body
+  | _ -> assert false
+
+        
+let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
+  match  Env.find_module (Pident id) env with 
+  | {md_type = Mty_signature signature  ; _ } -> 
+      (* Env.prefix_idents, could be cached  *)
+      let serializable_sigs = 
+        List.filter (fun x ->
+            match x with 
+            | Sig_typext _ 
+            | Sig_module _
+            | Sig_class _ -> true
+            | Sig_value(_, {val_kind = Val_prim _}) -> false
+            | Sig_value _ -> true
+            | _ -> false
+                    ) signature  in
+      (begin match List.nth  serializable_sigs  pos  with 
+      | Sig_value (i,_) 
+      | Sig_module (i,_,_) -> i 
+      | Sig_typext (i,_,_) -> i 
+      | Sig_modtype(i,_) -> i 
+      | Sig_class (i,_,_) -> i 
+      | Sig_class_type(i,_,_) -> i 
+      | Sig_type(i,_,_) -> i 
+      end).name
+  | _ -> assert false
+
+
+
+let lambda use_env env ppf v  =
+  let rec lam ppf (l : Lam.t) = match l with 
+  | Lvar id ->
+      Ident.print ppf id
+  | Lconst cst ->
+      struct_const ppf cst
+  | Lapply { fn; args; } ->
+      let lams ppf args =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
+      fprintf ppf "@[<2>(apply@ %a%a)@]" lam fn lams args
+  | Lfunction{ kind; params; body; _} ->
+      let pr_params ppf params =
+        match kind with
+        | Curried ->
+            List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
+        | Tupled ->
+            fprintf ppf " (";
+            let first = ref true in
+            List.iter
+              (fun param ->
+                if !first then first := false else fprintf ppf ",@ ";
+                Ident.print ppf param)
+              params;
+            fprintf ppf ")" in
+      fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
+  | Llet _ | Lletrec _ as x ->
+      let args, body =   flatten x  in
+      let bindings ppf id_arg_list =
+        let spc = ref false in
+        List.iter
+          (fun (k, id, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
+          id_arg_list in
+      fprintf ppf
+        "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
+      fprintf ppf ")@ %a)@]"  lam body
+  | Lprim { 
+      primitive = Pfield (n,_); 
+      args = [ Lprim { primitive = Pgetglobal id; args = [] ; _}]
+      ;  _} when use_env ->
+      fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
+
+  | Lprim { 
+      primitive  = Psetfield (n,_,_); 
+      args = [ Lprim { primitive = Pgetglobal id; args = [];  _} ;
+               e ]
+      ;  _} when use_env  ->
+      fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
+        lam e
+  | Lprim{primitive = prim; args = largs;  _} ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
+  | Lswitch(larg, sw) ->
+      let switch ppf (sw : Lam.switch) =
+        let spc = ref false in
+        List.iter
+         (fun (n, l) ->
+           if !spc then fprintf ppf "@ " else spc := true;
+           fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
+         sw.sw_consts;
+        List.iter
+          (fun (n, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
+          sw.sw_blocks ;
+        begin match sw.sw_failaction with
+        | None  -> ()
+        | Some l ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>default:@ %a@]" lam l
+        end in
+      fprintf ppf
+       "@[<1>(%s %a@ @[<v 0>%a@])@]"
+       (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
+       lam larg switch sw
+  | Lstringswitch(arg, cases, default) ->
+      let switch ppf cases =
+        let spc = ref false in
+        List.iter
+         (fun (s, l) ->
+           if !spc then fprintf ppf "@ " else spc := true;
+           fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
+          cases;
+        begin match default with
+        | Some default ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>default:@ %a@]" lam default
+        | None -> ()
+        end in
+      fprintf ppf
+       "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
+  | Lstaticraise (i, ls)  ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls;
+  | Lstaticcatch(lbody, (i, vars), lhandler) ->
+      fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]"
+        lam lbody i
+        (fun ppf vars -> match vars with
+          | [] -> ()
+          | _ ->
+              List.iter
+                (fun x -> fprintf ppf " %a" Ident.print x)
+                vars)
+        vars
+        lam lhandler
+  | Ltrywith(lbody, param, lhandler) ->
+      fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]"
+        lam lbody Ident.print param lam lhandler
+  | Lifthenelse(lcond, lif, lelse) ->
+      fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
+  | Lsequence(l1, l2) ->
+      fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
+  | Lwhile(lcond, lbody) ->
+      fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
+  | Lfor(param, lo, hi, dir, body) ->
+      fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]"
+       Ident.print param lam lo
+       (match dir with Upto -> "to" | Downto -> "downto")
+       lam hi lam body
+  | Lassign(id, expr) ->
+      fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
+  | Lsend (k, met, obj, largs, _) ->
+      let args ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      let kind =
+        if k = Self then "self" else if k = Cached then "cache" else "" in
+      fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
+  | Levent(expr, _ev) ->
+      lam ppf expr
+      (* let kind = *)
+      (*  match ev.lev_kind with *)
+      (*  | Lev_before -> "before" *)
+      (*  | Lev_after _  -> "after" *)
+      (*  | Lev_function -> "funct-body" in *)
+      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
+      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
+      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
+      (*         lam expr *)
+  | Lifused(id, expr) ->
+      fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
+
+and sequence ppf = function
+  | Lsequence(l1, l2) ->
+      fprintf ppf "%a@ %a" sequence l1 sequence l2
+  | l ->
+      lam ppf l
+  in 
+  lam ppf v
+
+let structured_constant = struct_const
+
+let env_lambda = lambda true 
+let lambda = lambda false Env.empty
+
+let rec flatten_seq acc (lam : Lam.t) =
+  match lam with 
+  | Lsequence(l1,l2) -> 
+      flatten_seq (flatten_seq acc l1) l2
+  | x -> x :: acc 
+
+exception Not_a_module
+
+let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) = 
+  match lam with 
+  | Llet (str,id,arg,body) ->
+      flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
+  | Lletrec (bind_args, body) ->
+      flat ( List.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args @ acc) body 
+  | Lsequence (l,r) -> 
+      flat (flat acc l) r
+  | x -> (Nop, x) :: acc 
+
+let lambda_as_module env  ppf (lam : Lam.t) = 
+  try
+  match lam with
+  | Lprim {primitive = Psetglobal id ; args =  [biglambda]; _}
+  (* might be wrong in toplevel *) ->
+      
+      begin match flat [] biglambda  with 
+      | (Nop, Lprim {primitive = Pmakeblock (_, _, _); args =  toplevels; _})
+        :: rest ->
+          (* let spc = ref false in *)
+          List.iter
+            (fun (left, l) ->
+              match left with 
+              | Id { kind = k; id } ->
+                  fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
+              | Nop -> 
+
+                  fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
+            )
+
+            @@ List.rev rest
+          
+          
+      | _ -> raise Not_a_module
+      end
+  | _ -> raise Not_a_module
+  with _ -> 
+    env_lambda env ppf lam;
+    fprintf ppf "; lambda-failure"
+let seriaize env (filename : string) (lam : Lam.t) : unit =
+  let ou = open_out filename  in
+  let old = Format.get_margin () in
+  let () = Format.set_margin 10000 in
+  let fmt = Format.formatter_of_out_channel ou in
+  begin
+    (* lambda_as_module env fmt lambda; *)
+    lambda fmt lam;
+    Format.pp_print_flush fmt ();
+    close_out ou;
+    Format.set_margin old
+  end
+
+end
+module Lam_iter : sig 
+#1 "lam_iter.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val inner_iter : (Lam.t -> unit) -> Lam.t -> unit
+
+end = struct
+#1 "lam_iter.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let inner_iter f l = 
+  match (l : Lam.t) with 
+    Lvar _
+  | Lconst _ -> ()
+  | Lapply{fn; args; _} ->
+      f fn; List.iter f args
+  | Lfunction{body;_} ->
+      f body
+  | Llet(str, id, arg, body) ->
+      f arg; f body
+  | Lletrec(decl, body) ->
+      f body;
+      List.iter (fun (id, exp) -> f exp) decl
+  | Lprim {args; _} ->
+      List.iter f args
+  | Lswitch(arg, sw) ->
+      f arg;
+      List.iter (fun (key, case) -> f case) sw.sw_consts;
+      List.iter (fun (key, case) -> f case) sw.sw_blocks;
+      begin match sw.sw_failaction with 
+      | None -> ()
+      | Some a -> f a 
+      end
+  | Lstringswitch (arg,cases,default) ->
+      f arg ;
+      List.iter (fun (_,act) -> f act) cases ;
+      begin match default with 
+      | None -> ()
+      | Some a -> f a 
+      end
+  | Lstaticraise (_,args) ->
+      List.iter f args
+  | Lstaticcatch(e1, (_,vars), e2) ->
+      f e1; f e2
+  | Ltrywith(e1, exn, e2) ->
+      f e1; f e2
+  | Lifthenelse(e1, e2, e3) ->
+      f e1; f e2; f e3
+  | Lsequence(e1, e2) ->
+      f e1; f e2
+  | Lwhile(e1, e2) ->
+      f e1; f e2
+  | Lfor(v, e1, e2, dir, e3) ->
+      f e1; f e2; f e3
+  | Lassign(id, e) ->
+      f e
+  | Lsend (k, met, obj, args, _) ->
+      List.iter f (met::obj::args)
+  | Levent (lam, evt) ->
+      f lam
+  | Lifused (v, e) ->
+      f e
+
+
+end
+module Ident_map : sig 
+#1 "ident_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Map.S with type key = Ident.t 
+
+val of_list  : (key * 'a) list -> 'a t
+
+val keys : 'a t -> key list
+
+val add_if_not_exist : key -> 'a -> 'a t -> 'a t
+
+val merge_disjoint : 'a t -> 'a t -> 'a t
+
+end = struct
+#1 "ident_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Map with key specialized as [Ident] type, enhanced with some utilities *)
+
+include Map.Make(struct 
+  type t = Ident.t 
+
+  let compare (x : t) (y : t) =
+    (* Can not overflow *)
+    let u = x.stamp - y.stamp in
+    if u = 0 then 
+      let u = String.compare x.name y.name in 
+      if u = 0 then 
+        x.flags - y.flags 
+      else  u 
+    else u 
+end)
+
+let of_list lst = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty lst
+
+let keys map = fold (fun k _ acc -> k::acc  ) map []
+
+(* TODO: have this in stdlib/map to save some time *)
+let add_if_not_exist key v m = 
+  if mem key m then m else add key v m
+
+let merge_disjoint m1 m2 = 
+  merge 
+    (fun k x0 y0 -> 
+       match x0, y0 with 
+         None, None -> None
+       | None, Some v | Some v, None -> Some v
+       | _, _ -> invalid_arg "merge_disjoint: maps are not disjoint")
+    m1 m2
+
+end
+module Lam_analysis : sig 
+#1 "lam_analysis.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** A module which provides some basic analysis over lambda expression *)
+
+(** No side effect, but it might depend on data store *)
+val no_side_effects : Lam.t -> bool 
+
+val size : Lam.t -> int
+
+val eq_lambda : Lam.t -> Lam.t -> bool 
+(** a conservative version of comparing two lambdas, mostly 
+    for looking for similar cases in switch
+ *)
+
+(** [is_closed_by map lam]
+    return [true] if all unbound variables
+    belongs to the given [map] *)
+val is_closed_by : (* Lambda. *) Ident_set.t -> Lam.t -> bool
+
+val is_closed : Lam.t -> bool
+
+
+
+
+
+type stats = 
+  { 
+    mutable top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    mutable times : int ; 
+  }
+
+val is_closed_with_map : 
+  Ident_set.t ->
+  Ident.t list -> Lam.t -> bool * stats Ident_map.t
+
+val param_map_of_list : Ident.t list -> stats Ident_map.t
+
+val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
+
+val small_inline_size : int 
+val exit_inline_size : int 
+
+
+val safe_to_inline : Lam.t -> bool
+
+end = struct
+#1 "lam_analysis.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+let rec no_side_effects (lam : Lam.t) : bool = 
+  match lam with 
+  | Lvar _ 
+  | Lconst _ 
+  | Lfunction _ -> true
+  | Lprim {primitive;  args; _} -> 
+    List.for_all no_side_effects args && 
+    (
+      match primitive with 
+      | Pccall {prim_name ; _} ->
+        begin 
+          match prim_name,args with 
+          | ("caml_register_named_value"
+            (* register to c runtime does not make sense  in ocaml *)
+            | "caml_set_oo_id" 
+            | "caml_is_js"
+            | "caml_int64_float_of_bits"
+             (* more safe to check if arguments are constant *)
+            (* non-observable side effect *)    
+            | "caml_sys_get_config"
+            | "caml_sys_get_argv" (* should be fine *)
+
+            | "caml_create_string" (* TODO: add more *)
+            | "caml_make_vect"
+            | "caml_obj_dup"
+            | "caml_obj_block"
+            | "js_from_nullable"
+            | "js_from_def"
+            | "js_from_nullable_def"
+            ), _  -> true 
+          | "caml_ml_open_descriptor_in", [Lconst (Const_base (Const_int 0))] -> true 
+          | "caml_ml_open_descriptor_out", 
+            [Lconst (Const_base (Const_int (1|2))) ]
+            -> true
+          (* we can not mark it pure
+             only when we guarantee this exception is caught...
+           *)
+          | _ , _-> false
+        end 
+
+      | Pidentity 
+      | Pbytes_to_string 
+      | Pbytes_of_string 
+      | Pchar_to_int (* might throw .. *)
+      | Pchar_of_int  
+      | Ploc _
+
+      | Pgetglobal _ 
+      | Pmakeblock _  (* whether it's mutable or not *)
+      | Pfield _
+      | Pfloatfield _ 
+      | Pduprecord _ 
+      (* Boolean operations *)
+      | Psequand | Psequor | Pnot
+      (* Integer operations *)
+      | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+      | Pandint | Porint | Pxorint
+      | Plslint | Plsrint | Pasrint
+      | Pintcomp _ 
+      (* Float operations *)
+      | Pintoffloat | Pfloatofint
+      | Pnegfloat | Pabsfloat
+      | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+      | Pfloatcomp _ 
+      (* String operations *)
+      | Pstringlength 
+      | Pstringrefu 
+      | Pstringrefs
+      | Pbyteslength
+      | Pbytesrefu
+      | Pbytesrefs
+      | Pmakearray _ 
+      | Parraylength _ 
+      | Parrayrefu _
+      | Parrayrefs _ 
+      (* Test if the argument is a block or an immediate integer *)
+      | Pisint
+      (* Test if the (integer) argument is outside an interval *)
+      | Pisout
+      | Pbintofint _
+      | Pintofbint _
+      | Pcvtbint _
+      | Pnegbint _
+      | Paddbint _
+      | Psubbint _
+      | Pmulbint _
+      | Pdivbint _
+      | Pmodbint _
+      | Pandbint _
+      | Porbint _
+      | Pxorbint _
+      | Plslbint _
+      | Plsrbint _
+      | Pasrbint _
+      | Pbintcomp _
+      (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
+      | Pbigarrayref _ (* TODO it may raise an exception....*)
+      (* Compile time constants *)
+      | Pctconst _
+      (* Integer to external pointer *)
+      | Pint_as_pointer
+      | Poffsetint _
+      | Pignore 
+        -> true
+
+
+      | Prevapply _
+      | Pdirapply _
+
+      | Pstringsetu
+      | Pstringsets
+      | Pbytessetu 
+      | Pbytessets
+      (* Bitvect operations *)
+      | Pbittest
+      (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+      | Parraysets _
+      | Pbigarrayset _
+      (* size of the nth dimension of a big array *)
+      | Pbigarraydim _
+      (* load/set 16,32,64 bits from a string: (unsafe)*)
+      | Pstring_load_16 _
+      | Pstring_load_32 _
+      | Pstring_load_64 _
+      | Pstring_set_16 _
+      | Pstring_set_32 _
+      | Pstring_set_64 _
+      (* load/set 16,32,64 bits from a
+         (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+      | Pbigstring_load_16 _
+      | Pbigstring_load_32 _
+      | Pbigstring_load_64 _
+      | Pbigstring_set_16 _
+      | Pbigstring_set_32 _
+      | Pbigstring_set_64 _
+      (* byte swap *)
+      | Pbswap16
+      | Pbbswap _
+      | Parraysetu _ 
+      | Poffsetref _ 
+      | Praise _ 
+      | Plazyforce 
+      | Pmark_ocaml_object  (* TODO*)
+      | Psetfield _ 
+      | Psetfloatfield _
+      | Psetglobal _ -> false 
+    )
+  | Llet (_,_, arg,body) -> no_side_effects arg && no_side_effects body 
+  | Lswitch (_,_) -> false 
+  | Lstringswitch (_,_,_) -> false
+  | Lstaticraise _ -> false
+  | Lstaticcatch _ -> false 
+
+  (* | "caml_sys_getenv" , [Lconst(Const_base(Const_string _))] *)
+  (*         -> true *)
+  (** not enough, we need know that 
+      if it [Not_found], there are no other exceptions 
+      can be thrown
+  *)
+  | Ltrywith (Lprim { primitive = Pccall{prim_name = "caml_sys_getenv"};
+                    args = [Lconst _]; _},exn,
+              Lifthenelse(Lprim{args =  
+                                  [Lvar exn1; 
+                                   Lprim {primitive = Pgetglobal ({name="Not_found"}); args = []; _}]
+                               ; _},
+                          then_, _)) when Ident.same exn1 exn
+    (** we might put this in an optimization pass 
+        also make sure when we wrap this in [js] we 
+        should follow the same patten, raise [Not_found] 
+    *)
+    -> no_side_effects then_
+  (** It would be nice that we can also analysis some small functions 
+      for example [String.contains], 
+      [Format.make_queue_elem]
+  *)
+  | Ltrywith (body,exn,handler) 
+    -> no_side_effects body && no_side_effects handler
+
+  | Lifthenelse  (a,b,c) -> 
+    no_side_effects a && no_side_effects b && no_side_effects c
+  | Lsequence (e0,e1) -> no_side_effects e0 && no_side_effects e1 
+  | Lwhile (a,b) -> no_side_effects a && no_side_effects b 
+  | Lfor _ -> false 
+  | Lassign _ -> false (* actually it depends ... *)
+  | Lsend _ -> false 
+  | Levent (e,_) -> no_side_effects e 
+  | Lifused _ -> false 
+  | Lapply _ -> false (* we need purity analysis .. *)
+  | Lletrec (bindings, body) ->
+    List.for_all (fun (_,b) -> no_side_effects b) bindings && no_side_effects body
+
+
+(* 
+    Estimate the size of lambda for better inlining 
+    threshold is 1000 - so that we 
+ *)
+exception Too_big_to_inline
+
+let really_big () = raise Too_big_to_inline
+
+let big_lambda = 1000
+
+let rec size (lam : Lam.t) = 
+  try 
+    match lam with 
+    | Lvar _ ->  1
+    | Lconst c -> size_constant c
+    | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
+    | Lletrec _ -> really_big ()
+    | Lprim{primitive = Pfield _; 
+            args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
+           ;  _}
+      -> 1
+    | Lprim {primitive = Praise _; args =  [l ];  _} 
+      -> size l
+    | Lprim {args = ll; _} -> size_lams 1 ll
+
+    (** complicated 
+        1. inline this function
+        2. ...
+        exports.Make=
+        function(funarg)
+        {var $$let=Make(funarg);
+        return [0, $$let[5],... $$let[16]]}
+     *)      
+    | Lapply{ fn;
+             args; _} -> size_lams (size fn) args
+    (* | Lfunction(_, params, l) -> really_big () *)
+    | Lfunction {body} -> size body 
+    | Lswitch(_, _) -> really_big ()
+    | Lstringswitch(_,_,_) -> really_big ()
+    | Lstaticraise (i,ls) -> 
+        List.fold_left (fun acc x -> size x + acc) 1 ls 
+    | Lstaticcatch(l1, (i,x), l2) -> really_big () 
+    | Ltrywith(l1, v, l2) -> really_big ()
+    | Lifthenelse(l1, l2, l3) -> 1 + size  l1 + size  l2 +  size  l3
+    | Lsequence(l1, l2) -> size  l1  +  size  l2
+    | Lwhile(l1, l2) -> really_big ()
+    | Lfor(flag, l1, l2, dir, l3) -> really_big () 
+    | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
+    | Lsend _  ->  really_big ()
+    | Levent(l, _) -> size l 
+    | Lifused(v, l) -> size l 
+  with Too_big_to_inline ->  1000 
+and size_constant x = 
+  match x with 
+  | Const_base _
+  | Const_immstring _
+  | Const_pointer _ 
+    -> 1 
+  | Const_block (_, _, str) 
+    ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
+  | Const_float_array xs  -> List.length xs
+
+and size_lams acc (lams : Lam.t list) = 
+  List.fold_left (fun acc l -> acc  + size l ) acc lams
+
+let exit_inline_size = 7 
+let small_inline_size = 5
+(* compared two lambdas in case analysis, note that we only compare some small lambdas
+    Actually this patten is quite common in GADT, people have to write duplicated code 
+    due to the type system restriction
+*)
+let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
+  match (l1, l2) with
+  | Lvar i1, Lvar i2 -> Ident.same i1 i2
+  | Lconst c1, Lconst c2 -> c1 = c2 (* *)
+  | Lapply {fn = l1; args = args1; _}, Lapply {fn = l2; args = args2; _} ->
+    eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
+  | Lfunction _ , Lfunction _ -> false (* TODO -- simple functions ?*)
+  | Lassign(v0,l0), Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
+  | Lstaticraise(id,ls), Lstaticraise(id1,ls1) -> 
+    id = id1 && List.for_all2 eq_lambda ls ls1 
+  | Llet (_,_,_,_), Llet (_,_,_,_) -> false 
+  | Lletrec _, Lletrec _ -> false 
+  | Lprim {primitive = p; args = ls; } ,
+    Lprim {primitive = p1; args = ls1} -> 
+    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+  | Lswitch _, Lswitch _ -> false  
+  | Lstringswitch _ , Lstringswitch _ -> false 
+  | Lstaticcatch _, Lstaticcatch _ -> false 
+  | Ltrywith _, Ltrywith _ -> false 
+  | Lifthenelse (a,b,c), Lifthenelse (a0,b0,c0) ->
+    eq_lambda a a0 && eq_lambda b b0 && eq_lambda c c0
+  | Lsequence (a,b), Lsequence (a0,b0) ->
+    eq_lambda a a0 && eq_lambda b b0
+  | Lwhile (p,b) , Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
+  | Lfor (_,_,_,_,_), Lfor (_,_,_,_,_) -> false
+  | Lsend _, Lsend _ -> false
+  | Levent (v,_), Levent (v0,_) -> eq_lambda v v0
+  | Lifused _, Lifused _ -> false 
+  |  _,  _ -> false 
+and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) = 
+  match p, p1 with 
+  | Pccall {prim_name = n0 ; 
+            prim_attributes = [];
+           },  
+    Pccall {prim_name = n1; 
+            prim_attributes = [] ;
+
+           } -> 
+    n0 = n1 (* No attributes, should be class api, comparison by name is good *)
+  | Pfield (n0, _dbg_info0),  Pfield (n1, _dbg_info1) 
+    -> n0 = n1
+  | Psetfield(i0, b0, _dbg_info0), Psetfield(i1, b1, _dbg_info1)
+    -> i0 = i1 && b0 = b1 
+  | _ , _ -> 
+    (* FIXME: relies on structure equality
+    *) 
+    try p = p1 with _ -> false
+
+
+
+type stats = 
+  { 
+    mutable top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    mutable times : int ; 
+  }
+type env = 
+  { top  : bool ; 
+    loop : bool 
+  }
+
+let no_substitute = { top = false; loop = true }
+let fresh_env = {top = true; loop = false }
+let fresh_stats () = { top = true; times = 0 }
+
+let param_map_of_list lst = 
+  List.fold_left  (fun acc l -> Ident_map.add l (fresh_stats ()) acc) Ident_map.empty  lst 
+
+(** Sanity check, remove all varaibles in [local_set] in the last pass *)  
+
+let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) lam = 
+  let fv = ref params in
+  let local_set = ref export_idents in
+
+  let local_add k =
+    local_set := Ident_set.add k !local_set in
+  let local_add_list ks = 
+    local_set :=  
+      List.fold_left (fun acc k -> Ident_set.add k acc) !local_set ks 
+  in    
+  let loop_use = 100 in
+  let map_use {top; loop} v = 
+    (* relies on [identifier] uniquely bound *)    
+    let times = if loop then loop_use else 1 in
+    if Ident_set.mem v !local_set then ()    
+    else begin match Ident_map.find v !fv with 
+      | exception Not_found
+        -> fv := Ident_map.add v { top ; times } !fv
+      | v ->
+        v.times <- v.times + times ; 
+        v.top <- v.top && top          
+    end
+  in
+  let new_env lam (env : env) = 
+    if env.top then 
+      if no_side_effects lam 
+      then env 
+      else { env with top = false}
+    else env      
+  in    
+  let rec iter (top : env) (lam : Lam.t) =
+    match lam with 
+    | Lvar v -> map_use top v 
+    | Lconst _ -> ()
+    | Lapply {fn; args; _} ->
+      iter top  fn; 
+      let top = new_env fn top in
+      List.iter (iter top ) args  
+    | Lprim {args ; _} -> 
+      (* Check: can top be propoaged for all primitives *)
+      List.iter (iter top) args
+    | Lfunction{ params; body} ->
+      local_add_list params;
+      iter no_substitute body 
+    | Llet(_let_kind, id, arg, body) ->
+      local_add id ;  
+      iter top  arg; iter no_substitute body
+    | Lletrec(decl, body) ->
+      local_set := List.fold_left (fun acc (id, _) -> 
+          Ident_set.add id acc) !local_set decl;        
+      List.iter (fun (_, exp) -> iter no_substitute exp) decl;
+      iter no_substitute body
+    | Lswitch(arg, sw) ->
+      iter top arg; 
+      let top = new_env arg top  in       
+      List.iter (fun (key, case) -> iter top case) sw.sw_consts;
+      List.iter (fun (key, case) -> iter top  case) sw.sw_blocks;
+  
+      begin match sw.sw_failaction with 
+        | None -> ()
+        | Some x ->
+          let nconsts = List.length sw.sw_consts in
+          let nblocks = List.length sw.sw_blocks in
+
+          if nconsts < sw.sw_numconsts  && nblocks < sw.sw_numblocks then
+            iter no_substitute x
+          else
+            iter top x
+      end
+
+    | Lstringswitch (arg,cases,default) ->
+      iter top arg ;
+      let top = new_env arg top  in       
+      List.iter (fun (_,act) -> iter top  act) cases ;
+      begin match default with 
+      | None -> ()
+      | Some x -> iter top x 
+      end
+    | Lstaticraise (_,args) ->
+      List.iter (iter no_substitute ) args
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      iter no_substitute  e1; 
+      local_add_list vars;       
+      iter no_substitute e2
+    | Ltrywith(e1, exn, e2) ->
+      iter top  e1; iter no_substitute  e2
+    | Lifthenelse(e1, e2, e3) ->
+      iter top e1; 
+      let top = new_env e1 top  in
+      iter top e2; iter top e3
+    | Lsequence(e1, e2) ->
+      iter top e1; iter no_substitute e2
+    | Lwhile(e1, e2) ->
+      iter no_substitute e1; iter no_substitute e2 (* in the loop, no substitution any way *)
+    | Lfor(v, e1, e2, dir, e3) ->
+      local_add v ; 
+      iter no_substitute e1; iter no_substitute e2; iter no_substitute e3
+    | Lassign(id, e) ->
+      map_use top  id ; 
+      iter top e
+    | Lsend (_k, met, obj, args, _) ->
+      iter no_substitute met ; 
+      iter no_substitute obj;
+      List.iter (iter no_substitute) args
+    | Levent (lam, evt) ->
+      iter top  lam
+    | Lifused (v, e) ->
+      iter no_substitute e in
+  iter fresh_env  lam ; !fv 
+
+
+let is_closed_by set lam = 
+  Ident_map.is_empty (free_variables set (Ident_map.empty ) lam   )
+
+
+(** A bit consverative , it should be empty *)
+let is_closed  lam = 
+  Ident_map.for_all (fun k _ -> Ident.global k)
+    (free_variables Ident_set.empty Ident_map.empty lam)  
+
+
+let is_closed_with_map exports params body = 
+  let param_map = free_variables exports (param_map_of_list params) body in
+  let old_count = List.length params in
+  let new_count = Ident_map.cardinal param_map in
+  (old_count  = new_count, param_map)
+
+
+  
+(* TODO:  We can relax this a bit later,
+    but decide whether to inline it later in the call site
+ *)
+let safe_to_inline (lam : Lam.t) = 
+  match lam with 
+  | Lfunction _ ->  true
+  | Lconst (Const_pointer _  | Const_immstring _ ) -> true
+  | _ -> false
+
+end
+module 
+Js_fold
+= struct
+#1 "js_fold.ml"
+(* BuckleScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+(* Author: Hongbo Zhang  *)
+(** GENERATED CODE for fold visitor patten of JS IR  *)
+open J
+  
+class virtual fold =
+  object ((o : 'self_type))
+    method string : string -> 'self_type = o#unknown
+    method option :
+      'a. ('self_type -> 'a -> 'self_type) -> 'a option -> 'self_type =
+      fun _f_a -> function | None -> o | Some _x -> let o = _f_a o _x in o
+    method list :
+      'a. ('self_type -> 'a -> 'self_type) -> 'a list -> 'self_type =
+      fun _f_a ->
+        function
+        | [] -> o
+        | _x :: _x_i1 -> let o = _f_a o _x in let o = o#list _f_a _x_i1 in o
+    method int : int -> 'self_type = o#unknown
+    method bool : bool -> 'self_type = function | false -> o | true -> o
+    method vident : vident -> 'self_type =
+      function
+      | Id _x -> let o = o#ident _x in o
+      | Qualified (_x, _x_i1, _x_i2) ->
+          let o = o#ident _x in
+          let o = o#kind _x_i1 in
+          let o = o#option (fun o -> o#string) _x_i2 in o
+    method variable_declaration : variable_declaration -> 'self_type =
+      fun { ident = _x; value = _x_i1; property = _x_i2; ident_info = _x_i3 }
+        ->
+        let o = o#ident _x in
+        let o = o#option (fun o -> o#expression) _x_i1 in
+        let o = o#property _x_i2 in let o = o#ident_info _x_i3 in o
+    method tag_info : tag_info -> 'self_type = o#unknown
+    method statement_desc : statement_desc -> 'self_type =
+      function
+      | Block _x -> let o = o#block _x in o
+      | Variable _x -> let o = o#variable_declaration _x in o
+      | Exp _x -> let o = o#expression _x in o
+      | If (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o = o#block _x_i1 in
+          let o = o#option (fun o -> o#block) _x_i2 in o
+      | While (_x, _x_i1, _x_i2, _x_i3) ->
+          let o = o#option (fun o -> o#label) _x in
+          let o = o#expression _x_i1 in
+          let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
+      | ForRange (_x, _x_i1, _x_i2, _x_i3, _x_i4, _x_i5) ->
+          let o = o#option (fun o -> o#for_ident_expression) _x in
+          let o = o#finish_ident_expression _x_i1 in
+          let o = o#for_ident _x_i2 in
+          let o = o#for_direction _x_i3 in
+          let o = o#block _x_i4 in let o = o#unknown _x_i5 in o
+      | Continue _x -> let o = o#label _x in o
+      | Break -> o
+      | Return _x -> let o = o#return_expression _x in o
+      | Int_switch (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o =
+            o#list
+              (fun o ->
+                 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+                 (** Javascript IR
+  
+    It's a subset of Javascript AST specialized for OCaml lambda backend
+
+    Note it's not exactly the same as Javascript, the AST itself follows lexical
+    convention and [Block] is just a sequence of statements, which means it does 
+    not introduce new scope
+*)
+                 (** object literal, if key is ident, in this case, it might be renamed by 
+    Google Closure  optimizer,
+    currently we always use quote
+ *)
+                 (* Since camldot is only available for toplevel module accessors,
+       we don't need print  `A.length$2`
+       just print `A.length` - it's guarateed to be unique
+       
+       when the third one is None, it means the whole module 
+
+       TODO: 
+       invariant, when [kind] is [Runtime], then we can ignore [ident], 
+       since all [runtime] functions are unique, when do the 
+       pattern match we can ignore the first one for simplicity
+       for example       
+       {[
+         Qualified (_, Runtime, Some "caml_int_compare")         
+       ]}       
+     *)
+                 (* used in [js_create_array] primitive, note having
+       uninitilized array is not as bad as in ocaml, 
+       since GC does not rely on it
+     *)
+                 (* shallow copy, like [x.slice] *)
+                 (* For [caml_array_append]*)
+                 (* | Tag_ml_obj of expression *) (* js true/false*)
+                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
+     [typeof] is an operator     
+  *)
+                 (* !v *) (* String.fromCharCode.apply(null, args) *)
+                 (* Convert JS boolean into OCaml boolean 
+       like [+true], note this ast talks using js
+       terminnology unless explicity stated                       
+     *)
+                 (* TODO: in the future, it might make sense to group primitivie by type,
+     which makes optimizations easier
+     {[ JSON.stringify(value, replacer[, space]) ]}
+  *)
+                 (* for debugging utitlites, 
+     TODO:  [Dump] is not necessary with this primitive 
+     Note that the semantics is slightly different from [JSON.stringify]     
+     {[
+       JSON.stringify("x")       
+     ]}
+     {[
+       ""x""       
+     ]}     
+     {[
+       JSON.stringify(undefined)       
+     ]}     
+     {[
+       undefined       
+     ]}
+     {[ '' + undefined
+     ]}     
+     {[ 'undefined'
+     ]}     
+  *)
+                 (* TODO: 
+     add 
+     {[ Assert of bool * expression ]}     
+  *)
+                 (* to support 
+       val log1 : 'a -> unit
+       val log2 : 'a -> 'b -> unit 
+       val log3 : 'a -> 'b -> 'c -> unit 
+     *)
+                 (* TODO: Add some primitives so that [js inliner] can do a better job *)
+                 (* [int_op] will guarantee return [int32] bits 
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
+                 (* | Int32_bin of int_op * expression * expression *)
+                 (* f.apply(null,args) -- Fully applied guaranteed 
+       TODO: once we know args's shape --
+       if it's know at compile time, we can turn it into
+       f(args[0], args[1], ... )
+     *)
+                 (* {[ Bind (a,b) ]}
+     is literally
+     {[ a.bind(b) ]}
+  *)
+                 (* Analysze over J expression is hard since, 
+        some primitive  call is translated 
+        into a plain call, it's better to keep them
+    *)
+                 (* Invariant: 
+       The second argument has to be type of [int],
+       This can be constructed either in a static way [E.index] or a dynamic way 
+       [E.access]
+     *)
+                 (* The third argument bool indicates whether we should 
+       print it as 
+       a["idd"] -- false
+       or 
+       a.idd  -- true
+       There are several kinds of properties
+       1. OCaml module dot (need to be escaped or not)
+          All exported declarations have to be OCaml identifiers
+       2. Javascript dot (need to be preserved/or using quote)
+     *)
+                 (* TODO: option remove *)
+                 (* A string is UTF-8 encoded, the string may contain
+       escape sequences.
+       The first argument is used to mark it is non-pure, please
+       don't optimize it, since it does have side effec, 
+       examples like "use asm;" and our compiler may generate "error;..." 
+       which is better to leave it alone
+     *)
+                 (* literally raw JS code 
+  *)
+                 (* The third argument is [tag] , forth is [tag_info] *)
+                 (* [tag] and [size] tailed  for [Obj.new_block] *)
+                 (* For setter, it still return the value of expression, 
+     we can not use 
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined], 
+     you have to use [E.tag] in a safe way     
+  *)
+                 (* It will just fetch tag, to make it safe, when creating it, 
+     we need apply "|0", we don't do it in the 
+     last step since "|0" can potentially be optimized
+  *)
+                 (* pure*) (* pure *)
+                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
+   block can be nested, specified in ES3 
+ *)
+                 (* Delay some units like [primitive] into JS layer ,
+   benefit: better cross module inlining, and smaller IR size?
+ *)
+                 (* 
+  [closure] captured loop mutable values in the outer loop
+
+  check if it contains loop mutable values, happens in nested loop
+  when closured, it's no longer loop mutable value. 
+  which means the outer loop mutable value can not peek into the inner loop
+  {[
+  var i = f ();
+  for(var finish = 32; i < finish; ++i){
+  }
+  ]}
+  when [for_ident_expression] is [None], [var i] has to 
+  be initialized outside, so 
+
+  {[
+  var i = f ()
+  (function (xxx){
+  for(var finish = 32; i < finish; ++i)
+  }(..i))
+  ]}
+  This happens rare it's okay
+
+  this is because [i] has to be initialized outside, if [j] 
+  contains a block side effect
+  TODO: create such example
+*)
+                 (* Since in OCaml, 
+   
+  [for i = 0 to k end do done ]
+  k is only evaluated once , to encode this invariant in JS IR,
+  make sure [ident] is defined in the first b
+
+  TODO: currently we guarantee that [bound] was only 
+  excecuted once, should encode this in AST level
+*)
+                 (* Can be simplified to keep the semantics of OCaml
+   For (var i, e, ...){
+     let  j = ... 
+   }
+
+   if [i] or [j] is captured inside closure
+
+   for (var i , e, ...){
+     (function (){
+     })(i)
+   }
+*)
+                 (* Single return is good for ininling..
+   However, when you do tail-call optmization
+   you loose the expression oriented semantics
+   Block is useful for implementing goto
+   {[
+   xx:{
+   break xx;
+   }
+   ]}
+*)
+                 (* Function declaration and Variable declaration  *)
+                 (* check if it contains loop mutable values, happens in nested loop *)
+                 (* only used when inline a fucntion *)
+                 (* Here we need track back a bit ?, move Return to Function ...
+                              Then we can only have one Return, which is not good *)
+                 o#case_clause (fun o -> o#int))
+              _x_i1 in
+          let o = o#option (fun o -> o#block) _x_i2 in o
+      | String_switch (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o =
+            o#list (fun o -> o#case_clause (fun o -> o#string)) _x_i1 in
+          let o = o#option (fun o -> o#block) _x_i2 in o
+      | Throw _x -> let o = o#expression _x in o
+      | Try (_x, _x_i1, _x_i2) ->
+          let o = o#block _x in
+          let o =
+            o#option
+              (fun o (_x, _x_i1) ->
+                 let o = o#exception_ident _x in let o = o#block _x_i1 in o)
+              _x_i1 in
+          let o = o#option (fun o -> o#block) _x_i2 in o
+      | Debugger -> o
+    method statement : statement -> 'self_type =
+      fun { statement_desc = _x; comment = _x_i1 } ->
+        let o = o#statement_desc _x in
+        let o = o#option (fun o -> o#string) _x_i1 in o
+    method return_expression : return_expression -> 'self_type =
+      fun { return_value = _x } -> let o = o#expression _x in o
+    method required_modules : required_modules -> 'self_type = o#unknown
+    method property_name : property_name -> 'self_type = o#unknown
+    method property_map : property_map -> 'self_type =
+      o#list
+        (fun o (_x, _x_i1) ->
+           let o = o#property_name _x in let o = o#expression _x_i1 in o)
+    method property : property -> 'self_type = o#unknown
+    method program : program -> 'self_type =
+      fun { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3 }
+        ->
+        let o = o#string _x in
+        let o = o#block _x_i1 in
+        let o = o#exports _x_i2 in let o = o#unknown _x_i3 in o
+    method number : number -> 'self_type = o#unknown
+    method mutable_flag : mutable_flag -> 'self_type = o#unknown
+    method length_object : length_object -> 'self_type = o#unknown
+    method label : label -> 'self_type = o#string
+    method kind : kind -> 'self_type = o#unknown
+    method jsint : jsint -> 'self_type = o#unknown
+    method int_op : int_op -> 'self_type = o#unknown
+    method ident_info : ident_info -> 'self_type = o#unknown
+    method ident : ident -> 'self_type = o#unknown
+    method for_ident_expression : for_ident_expression -> 'self_type =
+      o#expression
+    method for_ident : for_ident -> 'self_type = o#ident
+    method for_direction : for_direction -> 'self_type = o#unknown
+    method finish_ident_expression : finish_ident_expression -> 'self_type =
+      o#expression
+    method expression_desc : expression_desc -> 'self_type =
+      function
+      | Math (_x, _x_i1) ->
+          let o = o#string _x in
+          let o = o#list (fun o -> o#expression) _x_i1 in o
+      | Length (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#length_object _x_i1 in o
+      | Char_of_int _x -> let o = o#expression _x in o
+      | Char_to_int _x -> let o = o#expression _x in o
+      | Array_of_size _x -> let o = o#expression _x in o
+      | Array_copy _x -> let o = o#expression _x in o
+      | Array_append (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | String_append (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Int_of_boolean _x -> let o = o#expression _x in o
+      | Anything_to_number _x -> let o = o#expression _x in o
+      | Bool _x -> let o = o#bool _x in o
+      | Typeof _x -> let o = o#expression _x in o
+      | Not _x -> let o = o#expression _x in o
+      | String_of_small_int_array _x -> let o = o#expression _x in o
+      | Json_stringify _x -> let o = o#expression _x in o
+      | Anything_to_string _x -> let o = o#expression _x in o
+      | Dump (_x, _x_i1) ->
+          let o = o#unknown _x in
+          let o = o#list (fun o -> o#expression) _x_i1 in o
+      | Seq (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Cond (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o = o#expression _x_i1 in let o = o#expression _x_i2 in o
+      | Bin (_x, _x_i1, _x_i2) ->
+          let o = o#binop _x in
+          let o = o#expression _x_i1 in let o = o#expression _x_i2 in o
+      | FlatCall (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Bind (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Call (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o = o#list (fun o -> o#expression) _x_i1 in
+          let o = o#unknown _x_i2 in o
+      | String_access (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Access (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Dot (_x, _x_i1, _x_i2) ->
+          let o = o#expression _x in
+          let o = o#string _x_i1 in let o = o#bool _x_i2 in o
+      | New (_x, _x_i1) ->
+          let o = o#expression _x in
+          let o = o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
+          in o
+      | Var _x -> let o = o#vident _x in o
+      | Fun (_x, _x_i1, _x_i2) ->
+          let o = o#list (fun o -> o#ident) _x in
+          let o = o#block _x_i1 in let o = o#unknown _x_i2 in o
+      | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Raw_js_code (_x, _x_i1) ->
+          let o = o#string _x in let o = o#code_info _x_i1 in o
+      | Array (_x, _x_i1) ->
+          let o = o#list (fun o -> o#expression) _x in
+          let o = o#mutable_flag _x_i1 in o
+      | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
+          let o = o#list (fun o -> o#expression) _x in
+          let o = o#mutable_flag _x_i1 in
+          let o = o#expression _x_i2 in let o = o#tag_info _x_i3 in o
+      | Caml_uninitialized_obj (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Caml_block_tag _x -> let o = o#expression _x in o
+      | Caml_block_set_tag (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Caml_block_set_length (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Number _x -> let o = o#number _x in o
+      | Object _x -> let o = o#property_map _x in o
+    method expression : expression -> 'self_type =
+      fun { expression_desc = _x; comment = _x_i1 } ->
+        let o = o#expression_desc _x in
+        let o = o#option (fun o -> o#string) _x_i1 in o
+    method exports : exports -> 'self_type = o#unknown
+    method exception_ident : exception_ident -> 'self_type = o#ident
+    method deps_program : deps_program -> 'self_type =
+      fun { program = _x; modules = _x_i1; side_effect = _x_i2 } ->
+        let o = o#program _x in
+        let o = o#required_modules _x_i1 in
+        let o = o#option (fun o -> o#string) _x_i2 in o
+    method code_info : code_info -> 'self_type = o#unknown
+    method case_clause :
+      (* since in ocaml, it's expression oriented langauge, [return] in
+    general has no jumps, it only happens when we do 
+    tailcall conversion, in that case there is a jump.
+    However, currently  a single [break] is good to cover
+    our compilation strategy 
+
+    Attention: we should not insert [break] arbitrarily, otherwise 
+    it would break the semantics
+    A more robust signature would be 
+    {[ goto : label option ; ]}
+  *)
+        'a. ('self_type -> 'a -> 'self_type) -> 'a case_clause -> 'self_type =
+      fun _f_a { case = _x; body = _x_i1 } ->
+        let o = _f_a o _x in
+        let o =
+          (fun (_x, _x_i1) -> let o = o#block _x in let o = o#bool _x_i1 in o)
+            _x_i1
+        in o
+    method block : block -> 'self_type = (* true means break *)
+      (* TODO: For efficency: block should not be a list, it should be able to 
+   be concatenated in both ways 
+ *)
+      o#list (fun o -> o#statement)
+    method binop : binop -> 'self_type = o#unknown
+    method unknown : 'a. 'a -> 'self_type = fun _ -> o
+  end
+  
+
 
 end
 module Ext_ident : sig 
@@ -6428,8 +8127,6 @@ val ident_set_of_list : Ident.t list -> Ident_set.t
 
 val print_ident_set : Format.formatter -> Ident_set.t -> unit
 
-val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
-
 
 
 val not_function : Lam.t -> bool 
@@ -6438,10 +8135,15 @@ val is_function : Lam.t -> bool
 
 val eta_conversion : 
   int ->
-  Lambda.apply_info -> Lam.t -> Lam.t list -> Lam.t
+  Location.t -> Lambda.apply_status -> Lam.t -> Lam.t list -> Lam.t
 
-val default_apply_info : Lambda.apply_info
 
+
+val subst_lambda : Lam.t Ident_map.t -> Lam.t -> Lam.t
+
+
+(* TODO; check {!Lam_analysis.free_variables} *)
+val free_variables : Lam.t -> Ident_set.t
 
 end = struct
 #1 "lam_util.ml"
@@ -6531,23 +8233,24 @@ let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) =
    Assumes that the image of the substitution is out of reach
    of the bound variables of the lambda-term (no capture). *)
 
-let subst_lambda s lam =
-  let rec subst (x : Lam.t) =
+let subst_lambda (s : Lam.t Ident_map.t) lam =
+  let rec subst (x : Lam.t) : Lam.t =
     match x with 
     | Lvar id as l ->
       begin 
         try Ident_map.find id s with Not_found -> l 
       end
     | Lconst sc as l -> l
-    | Lapply(fn, args, loc) -> 
-      Lam.apply (subst fn) (List.map subst args) loc
-    | Lfunction(kind, params, body) -> 
-      Lam.function_ kind  params (subst body)
+    | Lapply{fn; args; loc; status} -> 
+      Lam.apply (subst fn) (List.map subst args) loc status
+    | Lfunction {arity; kind; params; body} -> 
+      Lam.function_ ~arity ~kind  ~params ~body:(subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
       Lam.letrec (List.map subst_decl decl) (subst body)
-    | Lprim(p, args) -> Lam.prim p (List.map subst args)
+    | Lprim { primitive ; args; _} -> 
+      Lam.prim ~primitive ~args:(List.map subst args)
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -6599,10 +8302,10 @@ let refine_let
   match (kind : Lambda.let_kind option), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
-  | _, _, Lprim (fn, [Lvar w]) when Ident.same w param 
-                                 &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) fn
+  | _, _, Lprim {primitive ; args =  [Lvar w];  _} when Ident.same w param 
+                                 &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
-    ->  Lam.prim fn [arg]
+    ->  Lam.prim ~primitive ~args:[arg] 
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -6610,16 +8313,18 @@ let refine_let
   (*     let v= subst_lambda (Ident_map.singleton param arg ) l in *)
   (*     Ext_log.err "@[substitution << @]@."; *)
   (* v *)
-  | _, _, Lapply (fn, [Lvar w],info) when Ident.same w param -> 
+  | _, _, Lapply {fn; args = [Lvar w]; loc; status} when Ident.same w param -> 
     (** does not work for multiple args since 
         evaluation order unspecified, does not apply 
         for [js] in general, since the scope of js ir is loosen
 
         here we remove the definition of [param]
     *)
-    Lam.apply fn [arg] info
+    Lam.apply fn [arg] loc status
   | (Some (Strict | StrictOpt ) | None ),
-    ( Lvar _    | Lconst  _ | Lprim (Pfield _ , [Lprim (Pgetglobal _ , [])])) , _ ->
+    ( Lvar _    | Lconst  _ | 
+      Lprim {primitive = Pfield _ ;  
+             args = [Lprim {primitive = Pgetglobal _ ; args =  []; _}]; _}) , _ ->
     (* (match arg with  *)
     (* | Lconst _ ->  *)
     (*     Ext_log.err "@[%a %s@]@."  *)
@@ -6717,7 +8422,9 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   match lam with 
   | Lvar _ 
   | Lconst _ 
-  | Lprim (Pfield _ , [ Lprim (Pgetglobal _, [])]) -> SimpleForm lam
+  | Lprim {primitive = Pfield _ ; 
+           args =  [ Lprim { primitive = Pgetglobal _; args =  []; _}];
+           _} -> SimpleForm lam
   (* | Lfunction _  *)
   | _ -> NA 
 
@@ -6729,8 +8436,8 @@ let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind =
 let get lam v i tbl : Lam.t =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
-    Lam.prim (Pfield (i, Lambda.Fld_na)) 
-      [Lam.prim (Pgetglobal g) []]
+    Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
+      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] ]
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
@@ -6777,12 +8484,11 @@ let ident_set_of_list ls =
 let print_ident_set fmt s = 
   Format.fprintf fmt   "@[<v>{%a}@]@."
     (fun fmt s   -> 
-       Ident_set.iter (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
+       Ident_set.iter 
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
     )
     s     
 
-let mk_apply_info ?(loc = Location.none)  apply_status : Lambda.apply_info =
-  { apply_loc = loc; apply_status }
 
 
 
@@ -6803,29 +8509,14 @@ let not_function (lam : Lam.t) =
      lapply (let a = 3 in let b = 4 in fun x y -> x + y) 2 3 
    ]}   
 *)
-let (* rec *) lapply (fn : Lam.t) args info =
-  (* match fn with *)
-  (* | Lambda.Lfunction(kind, params, body) -> *)
-  (*   let rec aux acc params args = *)
-  (*     match params, args with *)
-  (*     | [], [] -> acc, body *)
-  (*     | [], args' -> acc, lapply body args' info *)
-  (*     | params' , [] -> *)
-  (*       acc, Lambda.Lfunction(kind, params', body) *)
-  (*     | x::xs, y::ys -> aux ((x,y)::acc) xs ys in *)
-  (*   let env, rest = aux [] params args in *)
-  (*   List.fold_left *)
-  (*     (fun acc (v,e) -> *)
-  (*        Lambda.Llet (Strict,v,e ,acc) ) rest env *)
 
-  (* | _ -> *)  Lam.apply fn args info
 (*
   let f x y =  x + y 
   Invariant: there is no currying 
   here since f's arity is 2, no side effect 
   f 3 --> function(y) -> f 3 y 
 *)
-let eta_conversion n info fn args = 
+let eta_conversion n loc status fn args = 
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
   let extra_lambdas = List.map (fun x -> Lam.var x) extra_args in
@@ -6833,7 +8524,8 @@ let eta_conversion n info fn args =
       match lam with
       | Lvar _
       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
-      | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
+      | Lprim {primitive = Pfield _;
+               args =  [Lprim {primitive = Pgetglobal _; _}]; _ }
       | Lfunction _ 
         ->
         (lam :: acc, bind)
@@ -6844,8 +8536,11 @@ let eta_conversion n info fn args =
   | fn::args , bindings ->
 
     let rest : Lam.t = 
-      Lam.function_ Curried extra_args
-                (lapply fn (args @ extra_lambdas) info) in
+      Lam.function_ ~arity:n ~kind:Curried ~params:extra_args
+                ~body:(Lam.apply fn (args @ extra_lambdas) 
+                   loc 
+                   status
+                ) in
     List.fold_left (fun lam (id,x) ->
         Lam.let_ Strict id x lam
       ) rest bindings
@@ -6853,10 +8548,33 @@ let eta_conversion n info fn args =
   end
 
 
-(* FIXME: application location is important for error message *)
-let default_apply_info : Lambda.apply_info = 
-  { apply_status = App_na ; apply_loc = Location.none }
 
+
+let free_variables l =
+  let fv = ref Ident_set.empty in
+  let rec free (l : Lam.t) =
+    Lam_iter.inner_iter free l;
+    match l with
+    | Lvar id -> fv := Ident_set.add id !fv
+    | Lfunction{ params;} -> 
+      List.iter (fun param -> fv := Ident_set.remove param !fv) params
+    | Llet(str, id, arg, body) ->
+      fv := Ident_set.remove id !fv
+    | Lletrec(decl, body) ->
+      List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+    | Ltrywith(e1, exn, e2) ->
+      fv := Ident_set.remove exn !fv
+    | Lfor(v, e1, e2, dir, e3) ->
+      fv := Ident_set.remove v !fv
+    | Lassign(id, e) ->
+      fv := Ident_set.add id !fv
+    | Lconst _ | Lapply _
+    | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
+    | Lifthenelse _ | Lsequence _ | Lwhile _
+    | Lsend _ | Levent _ | Lifused _ -> ()
+  in free l; !fv
 
 end
 module Js_number : sig 
@@ -7176,26 +8894,29 @@ let deep_flatten
     match lam with 
     | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
-            (Lprim (Pccall 
+            (Lprim {primitive = Pccall 
                       {prim_name = 
                          ("js_from_nullable" 
                          | "js_from_def"
                          |"js_from_nullable_def"); _ }
-                   , [Lvar _]) as arg), body)
+                   ; args  =  [Lvar _]} as arg), body)
       -> 
       flatten (Single(str, id, (aux arg) ) :: acc) body
     | Llet (str, id, 
-            Lprim (Pccall 
+            Lprim {primitive = Pccall 
                      ({prim_name = 
                          ("js_from_nullable"
                          | "js_from_def"
-                         | "js_from_nullable_def"); _ } as p ),
-                            [arg]), body)
+                         | "js_from_nullable_def"); _ } as p );
+                   args = [arg]}, body)
       -> 
       let id' = Ident.rename id in 
       flatten acc 
         (Lam.let_ str id' arg 
-               (Lam.let_ Alias id (Lam.prim (Pccall p)  [Lam.var id'])
+               (Lam.let_ Alias id 
+                  (Lam.prim 
+                     ~primitive:(Pccall p)
+                     ~args: [Lam.var id'])
                   body)
               )
     | Llet (str,id,arg,body) -> 
@@ -7249,7 +8970,7 @@ let deep_flatten
               fun n -> if n ==0  then true else odd (n - 1)
           ]}
       *)
-      let module Ident_set = Lambda.IdentSet in
+      (* let module Ident_set = Lambda.IdentSet in *)
       let rec iter bind_args acc =
         match bind_args with
         | [] ->   acc
@@ -7300,7 +9021,7 @@ let deep_flatten
             | Single (_, id, ( Lvar bid)) -> 
               (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
             | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
+              let variables = Lam_util.free_variables  lam in
               if Ident_set.(is_empty (inter variables collections)) 
               then 
                 (acc, set, g :: wrap )
@@ -7339,45 +9060,45 @@ let deep_flatten
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
 
-    | Lapply(l1, ll, info) -> 
-      Lam.apply (aux l1) (List.map aux ll) info
+    | Lapply{fn = l1; args  = ll; loc; status} -> 
+      Lam.apply (aux l1) (List.map aux ll) loc status
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
 
-    | Lprim(Pidentity, [l]) -> l 
-    | Lprim(Pccall{prim_name = "caml_int64_float_of_bits"; _},
-            [ Lconst (Const_base (Const_int64 i))]) 
+    | Lprim {primitive = Pidentity; args =  [l]; _ } -> l 
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
+            args = [ Lconst (Const_base (Const_int64 i))]; _} 
       ->  
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
-    | Lprim(Pccall{prim_name = "caml_int64_to_float"; _},
-            [ Lconst (Const_base (Const_int64 i))]) 
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
+             args = [ Lconst (Const_base (Const_int64 i))]; _} 
       -> 
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim(p, ll)
+    | Lprim {primitive ; args }
       -> 
       begin
-        let ll = List.map aux ll in
-        match p, ll with
+        let args = List.map aux args in
+        match primitive, args with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply (f, args, _)]
-        | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; Lapply {fn = f;  args; _}]
+        | Prevapply loc, [x; Levent (Lapply {fn = f;  args; _},_)] ->
+          Lam.apply f (args@[x]) loc App_na
         | Prevapply loc, [x; f] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          Lam.apply f [x] loc App_na
         (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply(f, args, _); x]
-        | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [Lapply{fn = f;  args; _}; x]
+        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
+          Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
-        | _ -> Lam.prim p ll
+          Lam.apply f [x] loc App_na
+        | _ -> Lam.prim ~primitive ~args
       end
-    | Lfunction(kind, params, l) -> 
-      Lam.function_ kind params  (aux  l)
+    | Lfunction{arity; kind; params;  body = l} -> 
+      Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -7600,7 +9321,7 @@ module Idents_analysis : sig
  *)
 
 val calculate_used_idents :
-    (Ident.t, Lambda.IdentSet.t) Hashtbl.t -> Ident.t list -> Lambda.IdentSet.t
+    (Ident.t, Ident_set.t) Hashtbl.t -> Ident.t list -> Ident_set.t
 
 end = struct
 #1 "idents_analysis.ml"
@@ -7635,7 +9356,7 @@ end = struct
 
 
 
-module Ident_set = Lambda.IdentSet 
+
 
 (* 
     We have a current ident set 
@@ -7747,7 +9468,7 @@ end = struct
 
 
 
-module I = Lambda.IdentSet
+module I = Ident_set
 
 let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
   let ident_free_vars = Hashtbl.create 17 in
@@ -7758,7 +9479,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
       | Single(kind, id,lam) -> (* assert false *)
           begin
             Hashtbl.add ident_free_vars id 
-              (Lam.free_variables  lam);
+              (Lam_util.free_variables  lam);
             match kind with
             | Alias | StrictOpt -> []
             | Strict | Variable -> [id]
@@ -7767,7 +9488,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           begin
             bindings |> Ext_list.flat_map (fun (id,lam) ->
               begin
-                Hashtbl.add ident_free_vars id (Lam.free_variables lam);
+                Hashtbl.add ident_free_vars id (Lam_util.free_variables lam);
                 match (lam : Lam.t) with
                 | Lfunction _ -> []
                 | _ -> [id]
@@ -7777,7 +9498,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           if Lam_analysis.no_side_effects lam then []
           else 
             (** its free varaibles here will be defined above *)
-            I.elements ( Lam.free_variables lam)) rest  @ export_idents
+            I.elements ( Lam_util.free_variables lam)) rest  @ export_idents
   in
   let current_ident_sets = 
     Idents_analysis.calculate_used_idents ident_free_vars 
@@ -7987,82 +9708,6 @@ let is_unit (x : Types.type_desc) =
   match x with
   | Tconstr(p,_,_) when Path.same p Predef.path_unit -> true
   | _ -> false    
-
-end
-module String_map : sig 
-#1 "string_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.S with type key = string 
-
-val of_list : (key * 'a) list -> 'a t
-
-end = struct
-#1 "string_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.Make(String)
-
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
 
 end
 module Lam_compile_util : sig 
@@ -8758,17 +10403,18 @@ module Js_exp_make : sig
                          if(e){print_int(3)}
     ]}
 *)
-
-val extract_non_pure : J.expression -> J.expression option
-
-type binary_op =   ?comment:string -> J.expression -> J.expression -> J.expression 
-
-type unary_op =  ?comment:string -> J.expression -> J.expression
-
-
-
 type t = J.expression 
+val extract_non_pure : t -> t option
 
+type binary_op =   ?comment:string -> t -> t -> t 
+
+type unary_op =  ?comment:string -> t -> t
+
+
+
+
+
+val bin : ?comment:string -> J.binop -> t -> t -> t
 val mk :
   ?comment:string -> J.expression_desc -> t
 
@@ -14246,6 +15892,604 @@ let from_file filename =
   
 
 end
+module Depend : sig 
+#1 "depend.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Module dependencies. *)
+
+module StringSet : Set.S with type elt = string
+
+val free_structure_names : StringSet.t ref
+
+val open_module : StringSet.t -> Longident.t -> unit
+
+val add_use_file : StringSet.t -> Parsetree.toplevel_phrase list -> unit
+
+val add_signature : StringSet.t -> Parsetree.signature -> unit
+
+val add_implementation : StringSet.t -> Parsetree.structure -> unit
+
+end = struct
+#1 "depend.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Asttypes
+open Location
+open Longident
+open Parsetree
+
+module StringSet = Set.Make(struct type t = string let compare = compare end)
+
+(* Collect free module identifiers in the a.s.t. *)
+
+let free_structure_names = ref StringSet.empty
+
+let rec add_path bv = function
+  | Lident s ->
+      if not (StringSet.mem s bv)
+      then free_structure_names := StringSet.add s !free_structure_names
+  | Ldot(l, _s) -> add_path bv l
+  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
+
+let open_module bv lid = add_path bv lid
+
+let add bv lid =
+  match lid.txt with
+    Ldot(l, _s) -> add_path bv l
+  | _ -> ()
+
+let addmodule bv lid = add_path bv lid.txt
+
+let rec add_type bv ty =
+  match ty.ptyp_desc with
+    Ptyp_any -> ()
+  | Ptyp_var _ -> ()
+  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
+  | Ptyp_tuple tl -> List.iter (add_type bv) tl
+  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_object (fl, _) -> List.iter (fun (_, _, t) -> add_type bv t) fl
+  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_alias(t, _) -> add_type bv t
+  | Ptyp_variant(fl, _, _) ->
+      List.iter
+        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
+          | Rinherit sty -> add_type bv sty)
+        fl
+  | Ptyp_poly(_, t) -> add_type bv t
+  | Ptyp_package pt -> add_package_type bv pt
+  | Ptyp_extension _ -> ()
+
+and add_package_type bv (lid, l) =
+  add bv lid;
+  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
+
+let add_opt add_fn bv = function
+    None -> ()
+  | Some x -> add_fn bv x
+
+let add_constructor_decl bv pcd =
+  List.iter (add_type bv) pcd.pcd_args; Misc.may (add_type bv) pcd.pcd_res
+
+let add_type_declaration bv td =
+  List.iter
+    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
+    td.ptype_cstrs;
+  add_opt add_type bv td.ptype_manifest;
+  let add_tkind = function
+    Ptype_abstract -> ()
+  | Ptype_variant cstrs ->
+      List.iter (add_constructor_decl bv) cstrs
+  | Ptype_record lbls ->
+      List.iter (fun pld -> add_type bv pld.pld_type) lbls
+  | Ptype_open -> () in
+  add_tkind td.ptype_kind
+
+let add_extension_constructor bv ext =
+  match ext.pext_kind with
+      Pext_decl(args, rty) ->
+        List.iter (add_type bv) args; Misc.may (add_type bv) rty
+    | Pext_rebind lid -> add bv lid
+
+let add_type_extension bv te =
+  add bv te.ptyext_path;
+  List.iter (add_extension_constructor bv) te.ptyext_constructors
+
+let rec add_class_type bv cty =
+  match cty.pcty_desc with
+    Pcty_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
+      add_type bv ty;
+      List.iter (add_class_type_field bv) fieldl
+  | Pcty_arrow(_, ty1, cty2) ->
+      add_type bv ty1; add_class_type bv cty2
+  | Pcty_extension _ -> ()
+
+and add_class_type_field bv pctf =
+  match pctf.pctf_desc with
+    Pctf_inherit cty -> add_class_type bv cty
+  | Pctf_val(_, _, _, ty) -> add_type bv ty
+  | Pctf_method(_, _, _, ty) -> add_type bv ty
+  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pctf_attribute _ -> ()
+  | Pctf_extension _ -> ()
+
+let add_class_description bv infos =
+  add_class_type bv infos.pci_expr
+
+let add_class_type_declaration = add_class_description
+
+let pattern_bv = ref StringSet.empty
+
+let rec add_pattern bv pat =
+  match pat.ppat_desc with
+    Ppat_any -> ()
+  | Ppat_var _ -> ()
+  | Ppat_alias(p, _) -> add_pattern bv p
+  | Ppat_interval _
+  | Ppat_constant _ -> ()
+  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
+  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
+  | Ppat_record(pl, _) ->
+      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
+  | Ppat_array pl -> List.iter (add_pattern bv) pl
+  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
+  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
+  | Ppat_variant(_, op) -> add_opt add_pattern bv op
+  | Ppat_type li -> add bv li
+  | Ppat_lazy p -> add_pattern bv p
+  | Ppat_unpack id -> pattern_bv := StringSet.add id.txt !pattern_bv
+  | Ppat_exception p -> add_pattern bv p
+  | Ppat_extension _ -> ()
+
+let add_pattern bv pat =
+  pattern_bv := bv;
+  add_pattern bv pat;
+  !pattern_bv
+
+let rec add_expr bv exp =
+  match exp.pexp_desc with
+    Pexp_ident l -> add bv l
+  | Pexp_constant _ -> ()
+  | Pexp_let(rf, pel, e) ->
+      let bv = add_bindings rf bv pel in add_expr bv e
+  | Pexp_fun (_, opte, p, e) ->
+      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
+  | Pexp_function pel ->
+      add_cases bv pel
+  | Pexp_apply(e, el) ->
+      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
+  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_tuple el -> List.iter (add_expr bv) el
+  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
+  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
+  | Pexp_record(lblel, opte) ->
+      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
+      add_opt add_expr bv opte
+  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
+  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
+  | Pexp_array el -> List.iter (add_expr bv) el
+  | Pexp_ifthenelse(e1, e2, opte3) ->
+      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
+  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_for( _, e1, e2, _, e3) ->
+      add_expr bv e1; add_expr bv e2; add_expr bv e3
+  | Pexp_coerce(e1, oty2, ty3) ->
+      add_expr bv e1;
+      add_opt add_type bv oty2;
+      add_type bv ty3
+  | Pexp_constraint(e1, ty2) ->
+      add_expr bv e1;
+      add_type bv ty2
+  | Pexp_send(e, _m) -> add_expr bv e
+  | Pexp_new li -> add bv li
+  | Pexp_setinstvar(_v, e) -> add_expr bv e
+  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
+  | Pexp_letmodule(id, m, e) ->
+      add_module bv m; add_expr (StringSet.add id.txt bv) e
+  | Pexp_assert (e) -> add_expr bv e
+  | Pexp_lazy (e) -> add_expr bv e
+  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
+  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pexp_newtype (_, e) -> add_expr bv e
+  | Pexp_pack m -> add_module bv m
+  | Pexp_open (_ovf, m, e) -> open_module bv m.txt; add_expr bv e
+  | Pexp_extension _ -> ()
+
+and add_cases bv cases =
+  List.iter (add_case bv) cases
+
+and add_case bv {pc_lhs; pc_guard; pc_rhs} =
+  let bv = add_pattern bv pc_lhs in
+  add_opt add_expr bv pc_guard;
+  add_expr bv pc_rhs
+
+and add_bindings recf bv pel =
+  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
+  let bv = if recf = Recursive then bv' else bv in
+  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
+  bv'
+
+and add_modtype bv mty =
+  match mty.pmty_desc with
+    Pmty_ident l -> add bv l
+  | Pmty_alias l -> addmodule bv l
+  | Pmty_signature s -> add_signature bv s
+  | Pmty_functor(id, mty1, mty2) ->
+      Misc.may (add_modtype bv) mty1;
+      add_modtype (StringSet.add id.txt bv) mty2
+  | Pmty_with(mty, cstrl) ->
+      add_modtype bv mty;
+      List.iter
+        (function
+          | Pwith_type (_, td) -> add_type_declaration bv td
+          | Pwith_module (_, lid) -> addmodule bv lid
+          | Pwith_typesubst td -> add_type_declaration bv td
+          | Pwith_modsubst (_, lid) -> addmodule bv lid
+        )
+        cstrl
+  | Pmty_typeof m -> add_module bv m
+  | Pmty_extension _ -> ()
+
+and add_signature bv = function
+    [] -> ()
+  | item :: rem -> add_signature (add_sig_item bv item) rem
+
+and add_sig_item bv item =
+  match item.psig_desc with
+    Psig_value vd ->
+      add_type bv vd.pval_type; bv
+  | Psig_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Psig_typext te ->
+      add_type_extension bv te; bv
+  | Psig_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Psig_module pmd ->
+      add_modtype bv pmd.pmd_type; StringSet.add pmd.pmd_name.txt bv
+  | Psig_recmodule decls ->
+      let bv' =
+        List.fold_right StringSet.add
+                        (List.map (fun pmd -> pmd.pmd_name.txt) decls) bv
+      in
+      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
+      bv'
+  | Psig_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Psig_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Psig_include incl ->
+      add_modtype bv incl.pincl_mod; bv
+  | Psig_class cdl ->
+      List.iter (add_class_description bv) cdl; bv
+  | Psig_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Psig_attribute _ | Psig_extension _ ->
+      bv
+
+and add_module bv modl =
+  match modl.pmod_desc with
+    Pmod_ident l -> addmodule bv l
+  | Pmod_structure s -> ignore (add_structure bv s)
+  | Pmod_functor(id, mty, modl) ->
+      Misc.may (add_modtype bv) mty;
+      add_module (StringSet.add id.txt bv) modl
+  | Pmod_apply(mod1, mod2) ->
+      add_module bv mod1; add_module bv mod2
+  | Pmod_constraint(modl, mty) ->
+      add_module bv modl; add_modtype bv mty
+  | Pmod_unpack(e) ->
+      add_expr bv e
+  | Pmod_extension _ ->
+      ()
+
+and add_structure bv item_list =
+  List.fold_left add_struct_item bv item_list
+
+and add_struct_item bv item =
+  match item.pstr_desc with
+    Pstr_eval (e, _attrs) ->
+      add_expr bv e; bv
+  | Pstr_value(rf, pel) ->
+      let bv = add_bindings rf bv pel in bv
+  | Pstr_primitive vd ->
+      add_type bv vd.pval_type; bv
+  | Pstr_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Pstr_typext te ->
+      add_type_extension bv te;
+      bv
+  | Pstr_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Pstr_module x ->
+      add_module bv x.pmb_expr; StringSet.add x.pmb_name.txt bv
+  | Pstr_recmodule bindings ->
+      let bv' =
+        List.fold_right StringSet.add
+          (List.map (fun x -> x.pmb_name.txt) bindings) bv in
+      List.iter
+        (fun x -> add_module bv' x.pmb_expr)
+        bindings;
+      bv'
+  | Pstr_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Pstr_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Pstr_class cdl ->
+      List.iter (add_class_declaration bv) cdl; bv
+  | Pstr_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Pstr_include incl ->
+      add_module bv incl.pincl_mod; bv
+  | Pstr_attribute _ | Pstr_extension _ ->
+      bv
+
+and add_use_file bv top_phrs =
+  ignore (List.fold_left add_top_phrase bv top_phrs)
+
+and add_implementation bv l =
+  ignore (add_structure bv l)
+
+and add_top_phrase bv = function
+  | Ptop_def str -> add_structure bv str
+  | Ptop_dir (_, _) -> bv
+
+and add_class_expr bv ce =
+  match ce.pcl_desc with
+    Pcl_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pcl_fun(_, opte, pat, ce) ->
+      add_opt add_expr bv opte;
+      let bv = add_pattern bv pat in add_class_expr bv ce
+  | Pcl_apply(ce, exprl) ->
+      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
+  | Pcl_let(rf, pel, ce) ->
+      let bv = add_bindings rf bv pel in add_class_expr bv ce
+  | Pcl_constraint(ce, ct) ->
+      add_class_expr bv ce; add_class_type bv ct
+  | Pcl_extension _ -> ()
+
+and add_class_field bv pcf =
+  match pcf.pcf_desc with
+    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
+  | Pcf_val(_, _, Cfk_concrete (_, e))
+  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
+  | Pcf_val(_, _, Cfk_virtual ty)
+  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
+  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pcf_initializer e -> add_expr bv e
+  | Pcf_attribute _ | Pcf_extension _ -> ()
+
+and add_class_declaration bv decl =
+  add_class_expr bv decl.pci_expr
+
+end
+module Ast_extract : sig 
+#1 "ast_extract.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type ast = 
+  | Ml of Parsetree.structure * string  (* outputprefix *)
+  | Mli of Parsetree.signature * string (* outputprefix *)
+
+type  info = 
+  { source_file : string ; 
+    ast : ast
+  }
+
+(** 
+   {[ let stack,mapping = prepare ast_table ]}
+
+   {[ 
+     [ast_table] : (string, ast) Hashtbl.t 
+   ]}
+
+   key  is the filename,
+   [stack] is the reverse order 
+   for mapping, the key is the module and value is filename
+*)
+
+val prepare : 
+  (string, ast) Hashtbl.t -> string list * (string, string) Hashtbl.t
+
+
+
+end = struct
+#1 "ast_extract.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let read_parse_and_extract ast extract_function : Depend.StringSet.t =
+  Depend.free_structure_names := Depend.StringSet.empty;
+  (let bound_vars = Depend.StringSet.empty in
+  List.iter
+    (fun modname  ->
+      Depend.open_module bound_vars (Longident.Lident modname))
+    (!Clflags.open_modules);
+  extract_function bound_vars ast;
+  !Depend.free_structure_names)
+
+
+
+
+type ast = 
+  | Ml of Parsetree.structure * string 
+  | Mli of Parsetree.signature * string 
+
+type  info = 
+  { source_file : string ; 
+    ast : ast
+  }
+
+let file_dependencies (files : (info * Depend.StringSet.t) list ref)
+    source_file ast  =
+  let extracted_deps =
+    read_parse_and_extract ast 
+     (  match ast with
+     | Ml (ast,_) -> fun set _ ->  Depend.add_implementation set ast 
+     | Mli (ast,_) -> fun set _ ->   Depend.add_signature set ast ) in
+  files := ({source_file ; ast }, extracted_deps) :: !files
+
+
+let normalize tbl file  =
+  let module_name = 
+    String.capitalize 
+      (Filename.chop_extension @@ Filename.basename file)  in
+  Hashtbl.add tbl module_name file;
+  (* could have both mli and ml *)
+  module_name 
+
+let merge tbl (files : (info * Depend.StringSet.t) list ) : 
+  (string, Depend.StringSet.t) Hashtbl.t  
+  =
+
+
+  let domain = 
+    Depend.StringSet.of_list 
+      (List.map (fun ({ source_file },_)-> normalize tbl source_file) files) in
+  let local_tbl = Hashtbl.create 31 in 
+  List.iter 
+    (fun  ({source_file = file; _}, deps) ->
+       let modname = String.capitalize 
+           (Filename.chop_extension @@ Filename.basename file) in
+       match Hashtbl.find local_tbl modname with 
+       | new_deps -> 
+         Hashtbl.replace local_tbl modname 
+           (Depend.StringSet.inter domain 
+              (Depend.StringSet.union deps new_deps))
+       | exception Not_found -> 
+         Hashtbl.add local_tbl  modname (Depend.StringSet.inter deps domain)
+    ) files  ;
+  local_tbl
+
+
+let sort_files_by_dependencies tbl files
+    =
+  let h = merge tbl files in
+  let worklist = Ext_list.create_ref_empty () in
+  let ()= 
+    Hashtbl.iter (fun key _     ->  Ext_list.ref_push key worklist) h in
+  let result = Ext_list.create_ref_empty () in
+  let visited = Hashtbl.create 31 in
+  while not @@ Ext_list.ref_empty worklist do 
+    let current = Ext_list.ref_top worklist  in 
+    if Hashtbl.mem visited current then
+      ignore (Ext_list.ref_pop worklist)
+    else 
+      match Depend.StringSet.elements (Hashtbl.find h current) with 
+      | depends -> 
+          let really_depends = 
+            List.filter 
+              (fun x ->  (Hashtbl.mem h x && (not (Hashtbl.mem visited x ))))
+              depends in
+          begin match really_depends with 
+          |[] -> 
+            begin
+              let v = Ext_list.ref_pop worklist in 
+              Hashtbl.add visited  v () ;
+              Ext_list.ref_push current result 
+            end
+          | _ -> 
+              List.iter  (fun x -> Ext_list.ref_push x worklist) really_depends
+          end
+      | exception Not_found ->  assert false 
+  done;
+  result
+;;
+
+
+
+let prepare  ast_table = 
+  let tbl = Hashtbl.create 31 in 
+  let files = ref [] in
+  Hashtbl.iter (fun sourcefile ast  -> file_dependencies files sourcefile ast) ast_table;
+  let stack = sort_files_by_dependencies tbl !files in 
+  !stack, tbl 
+
+
+end
 module Lam_methname : sig 
 #1 "lam_methname.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14403,7 +16647,7 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
   | Lconst _ 
   | Lfunction _ (* static exit can not across function boundary *)
     -> false
-  | Lapply (l,args,_apply_info) 
+  | Lapply {fn = l; args; _ } 
     -> has_exit_code exits l || List.exists (fun x -> has_exit_code exits x ) args 
 
   | Llet (_kind,_id,v,body) 
@@ -14411,8 +16655,8 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
   | Lletrec (binding,body) ->
     List.exists (fun (_, l) -> has_exit_code exits l ) binding ||
     has_exit_code exits body    
-  | Lprim (_,ls) 
-    -> List.exists (fun x -> has_exit_code exits x) ls
+  | Lprim {args; _} 
+    -> List.exists (fun x -> has_exit_code exits x) args
   | Lswitch (l,lam_switch) 
     -> has_exit_code exits l || has_exit_code_lam_switch exits lam_switch
 
@@ -14764,13 +17008,19 @@ let query_lambda id env =
   Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) 
     (Has_env env)
     ~not_found:(fun id -> assert false)
-    ~found:(fun {signature = sigs; _} -> 
-        Lam.prim (Pmakeblock(0, Blk_module None, Immutable))  
-                      (List.mapi (fun i _ -> 
-                           Lam.prim (Pfield (i, Lambda.Fld_na)) 
-                             [Lam.prim (Pgetglobal id) [] ])
-                        sigs)
-      )
+    ~found:(fun {signature = sigs; _} 
+             -> 
+               Lam.prim
+                 ~primitive:(Pmakeblock(0, Blk_module None, Immutable))  
+                 ~args:(
+                   List.mapi (fun i _ -> 
+                       Lam.prim
+                         ~primitive:(Pfield (i, Lambda.Fld_na)) 
+                         ~args:[
+                           Lam.prim 
+                             ~primitive:(Pgetglobal id)
+                             ~args:[]])
+                     sigs))
 
 
 (* Given an module name and position, find its corresponding name  *)  
@@ -16145,6 +18395,24 @@ let query (prim : Lam_compile_env.primitive_description)
         -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
       | _ -> call Js_config.string
       end
+  | "js_unsafe_lt" 
+    -> 
+    begin match args with 
+      | [l; r] -> E.bin Lt l r 
+      | _ -> assert false 
+    end
+  | "js_unsafe_le" 
+    -> begin match args with 
+    | [l; r] -> E.bin Le l r 
+    | _ -> assert false end 
+  | "js_unsafe_gt" 
+    -> begin match args with 
+    | [l;r] -> E.bin Gt l r 
+    | _ ->  assert false end 
+  | "js_unsafe_ge" -> 
+    begin match args with 
+    | [l ; r] -> E.bin Ge l r 
+    | _ -> assert false end
   | "js_boolean_to_bool"
     -> 
     begin match args with 
@@ -16394,167 +18662,6 @@ let set_array  e e0 e1 =
 
 let ref_array  e e0 = 
   E.access  e  e0
-
-end
-module Ast_payload : sig 
-#1 "ast_payload.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(** A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI attributes and built-in ppx  *)
-
-type t = Parsetree.payload
-
-val is_single_string : t -> string option
-val as_string_exp : t -> Parsetree.expression option 
-val as_empty_structure :  t -> bool 
-val is_string_or_strings : 
-  t -> [ `None | `Single of string | `Some of string list ]
-val as_record_and_process : 
-  Location.t ->
-  t -> (Longident.t Asttypes.loc * Parsetree.expression -> unit) -> unit
-
-val assert_bool_lit : Parsetree.expression -> bool
-
-end = struct
-#1 "ast_payload.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.payload
-
-let is_single_string (x : t ) = 
-  match x with  (** TODO also need detect empty phrase case *)
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] -> Some name
-  | _  -> None
-
-let as_string_exp (x : t ) = 
-  match x with  (** TODO also need detect empty phrase case *)
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (_,_));
-           _} as e ,_);
-      _}] -> Some e
-  | _  -> None
-
-let as_empty_structure (x : t ) = 
-  match x with 
-  | PStr ([]) -> true
-  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
-
-
-let as_record_and_process 
-    loc
-    ( x : t ) (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
-  match  x with 
-  | PStr [ {pstr_desc = Pstr_eval
-                ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
-            _
-           }]
-    -> 
-    begin match with_obj with
-    | None ->
-      List.iter action label_exprs
-    | Some _ -> 
-      Location.raise_errorf ~loc "with is not supported"
-    end
-  | _ -> 
-    Location.raise_errorf ~loc "this is not a valid record config"
-
-let is_string_or_strings (x : t) : 
-  [ `None | `Single of string | `Some of string list ] = 
-  let module M = struct exception Not_str end  in 
-  match x with 
-  | PStr [ {pstr_desc =  
-              Pstr_eval (
-                {pexp_desc = 
-                   Pexp_apply
-                     ({pexp_desc = Pexp_constant (Const_string (name,_)); _},
-                      args
-                     );
-                 _},_);
-            _}] ->
-    (try 
-       `Some (name :: (args |> List.map (fun (_label,e) ->
-           match (e : Parsetree.expression) with
-           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
-             name
-           | _ -> raise M.Not_str)))
-
-     with M.Not_str -> `None )
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] -> `Single name 
-  | _ -> `None
-
-let assert_bool_lit  (e : Parsetree.expression) = 
-  match e.pexp_desc with
-  | Pexp_construct ({txt = Lident "true" }, None)
-    -> true
-  | Pexp_construct ({txt = Lident "false" }, None)
-    -> false 
-  | _ ->
-    Location.raise_errorf ~loc:e.pexp_loc "expect `true` or `false` in this field"
 
 end
 module Lam_compile_external_call : sig 
@@ -18620,7 +20727,7 @@ let simple_beta_reduce params body args =
     | _ :: _ -> raise E.Not_simple_apply 
   in 
   match (body : Lam.t) with 
-  | Lprim ( primitive , args' )  (* There is no lambda in primitive *)
+  | Lprim { primitive ; args =  args' ; _}  (* There is no lambda in primitive *)
     -> (* catch a special case of primitives *)
     (* Note in a very special case we can avoid any allocation
        {[
@@ -18634,19 +20741,19 @@ let simple_beta_reduce params body args =
       List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
     in 
     begin match aux [] args' with 
-    | us -> 
+    | args -> 
       let result = 
         Hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
-            else code) param_hash (Lam.prim primitive us) in 
+            else code) param_hash (Lam.prim ~primitive ~args) in 
       Hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
       Hashtbl.clear param_hash ;
       None
     end
-  | Lapply (Lvar fn_name as f , args', info)
+  | Lapply { fn = Lvar fn_name as f ; args =  args';  loc; status}
     ->  
     let () = 
       List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
@@ -18665,7 +20772,7 @@ let simple_beta_reduce params body args =
                if not used then 
                  Lam.seq lambda code
                else code )
-            param_hash (Lam.apply  f us  info) in
+            param_hash (Lam.apply  f us  loc status) in
         Hashtbl.clear param_hash;
         Some result 
       | exception _ -> 
@@ -18956,10 +21063,10 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
-    | Lfunction(kind, params, body) -> 
+    | Lfunction{arity; kind; params; body} -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lam.function_ kind params body
+      Lam.function_ ~arity ~kind ~params ~body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in
@@ -18972,13 +21079,13 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let l3 = aux l3 in
       Lam.for_ ident (aux  l1)  l2 dir  l3
     | Lconst _ -> lam
-    | Lprim(prim, ll) ->
+    | Lprim {primitive; args } ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam.prim prim (List.map aux  ll)
-    | Lapply(fn, args, info) ->
+      Lam.prim ~primitive ~args:(List.map aux  args)
+    | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 
-      Lam.apply fn  args info
+      Lam.apply fn  args loc status
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -19091,13 +21198,13 @@ let propogate_beta_reduce
                Hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim (Pgetglobal ident, []) -> 
+         | Lprim {primitive = Pgetglobal ident;  args = [];  _} -> 
            (* It's not completeness, its to make it sound.. *)
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
-         | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
+         | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
            Hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block Normal ls ); (** *)
+             (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
        Lam_util.refine_let param arg l) 
@@ -19114,7 +21221,7 @@ let propogate_beta_reduce_with_map
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
-         | Lprim (Pgetglobal ident, [])
+         | Lprim {primitive = Pgetglobal ident; args = []}
            (* TODO: we can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
@@ -19149,13 +21256,13 @@ let propogate_beta_reduce_with_map
                Hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim (Pgetglobal ident, []) -> 
+         | Lprim {primitive = Pgetglobal ident; args =  []} -> 
            (* It's not completeness, its to make it sound.. *)
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
-         | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
+         | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
            Hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block Normal ls ); (** *)
+             (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
        Lam_util.refine_let param arg l) 
@@ -19472,7 +21579,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           List.fold_right 
             (fun (x : Lam.t) (args_code, args)  ->
                match x with 
-               | Lprim (Pgetglobal i, [] ) -> 
+               | Lprim {primitive = Pgetglobal i; args =  [];_ } -> 
                  (* when module is passed as an argument - unpack to an array
                      for the function, generative module or functor can be a function,
                      however it can not be global -- global can only module
@@ -19488,7 +21595,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
             ) args_lambda ([], []) in
 
         match closed_lambda with 
-        | Some (Lfunction (_, params, body)) 
+        | Some (Lfunction{ params; body; _}) 
           when Ext_list.same_length params args_lambda -> 
           (* TODO: serialize it when exporting to save compile time *)
           let (_, param_map)  = 
@@ -19572,7 +21679,7 @@ and compile_recursive_let
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
-  |  Lfunction (kind, params, body)  -> 
+  |  Lfunction { kind; params; body; _}  -> 
     (* Invariant:  jmp_table can not across function boundary,
        here we share env *)
 
@@ -19620,7 +21727,7 @@ and compile_recursive_let
         else            (* TODO:  save computation of length several times *)
           E.fun_ params (Js_output.to_block output )
       ), [] 
-  | Lprim (Pmakeblock (0, _, _) , ls)
+  | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
@@ -19637,7 +21744,7 @@ and compile_recursive_let
          ) ls)
     ), []
 
-  | Lprim(Pmakeblock _ , _)   -> 
+  | Lprim{primitive = Pmakeblock _ ; _}   ->
     (* FIXME: also should fill tag *)
     (* Lconst should not appear here if we do [scc]
        optimization, since it's faked recursive value,
@@ -19795,7 +21902,7 @@ and
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
-    | Lfunction(kind, params, body) ->
+    | Lfunction{ kind; params; body} ->
       Js_output.handle_name_tail st should_return lam 
         (E.fun_
            params
@@ -19809,26 +21916,29 @@ and
                              jmp_table = Lam_compile_defs.empty_handler_map}  body)))
 
 
-    | Lapply(
-        Lapply(an, args', ({apply_status = App_na} as _info1)),
-        args, 
-        ({apply_status = App_na} as _info2))
+    | Lapply{
+        fn = Lapply{ fn = an; args =  args'; status = App_na ; };
+        args;  
+        status = App_na; loc }
       ->    
       (* After inlining we can generate such code, 
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lam.apply an (args' @ args) (Lam_util.mk_apply_info App_na))
+        (Lam.apply an (args' @ args)  loc  App_na )
     (* External function calll *)
-    | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,
-             {apply_status = App_na | App_ml_full}) ->
+    | Lapply{ fn = 
+                Lprim{primitive = Pfield (n,_); 
+                      args = [ Lprim {primitive = Pgetglobal id; args = []}];_};
+             args = args_lambda;
+             status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
          this information, we should fix [get_exp_with_args]
       *)
       get_exp_with_args cxt lam  args_lambda id n  env
 
 
-    | Lapply(fn,args_lambda,  info) -> 
+    | Lapply{ fn; args = args_lambda;   status} -> 
       (* TODO: --- 
          1. check arity, can be simplified for pure expression
          2. no need create names
@@ -19837,7 +21947,7 @@ and
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
           List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match x with             
-              | Lprim (Pgetglobal ident, []) -> 
+              | Lprim {primitive = Pgetglobal ident; args =  []} -> 
                 (* when module is passed as an argument - unpack to an array
                     for the function, generative module or functor can be a function, 
                     however it can not be global -- global can only module 
@@ -19930,12 +22040,12 @@ and
           | _ -> 
 
             Js_output.handle_block_return st should_return lam args_code 
-              (E.call ~info:(match fn, info with 
-                   | _, { apply_status = App_ml_full} -> 
+              (E.call ~info:(match fn, status with 
+                   | _,  App_ml_full -> 
                      {arity = Full ; call_info = Call_ml}
-                   | _, { apply_status = App_js_full} -> 
+                   | _,  App_js_full -> 
                      {arity = Full ; call_info = Call_na}
-                   | _,  { apply_status = App_na} -> 
+                   | _,   App_na -> 
                      {arity = NA; call_info = Call_ml }
                  ) fn_code args) 
         end;
@@ -19967,10 +22077,12 @@ and
     | Lconst c -> 
       Js_output.handle_name_tail st should_return lam (Lam_compile_const.translate c)
 
-    | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]) -> (* should be before Pgetglobal *)
+    | Lprim {primitive = Pfield (n,_); 
+             args = [ Lprim {primitive = Pgetglobal id; args = [] ; _}]; _} 
+      -> (* should be before Pgetglobal *)
         get_exp_with_index cxt lam  (id,n, env)
 
-    | Lprim(Praise _raise_kind, [ e ]) -> 
+    | Lprim {primitive = Praise _raise_kind; args =  [ e ]; _} -> 
       begin
         match compile_lambda {
             cxt with should_return = False; st = NeedValue} e with 
@@ -19983,7 +22095,7 @@ and
         *)
         | {value =  None; _} -> assert false 
       end
-    | Lprim(Psequand , [l;r] )
+    | Lprim{primitive = Psequand ; args =  [l;r] ; _}
       ->
       begin match cxt with 
         | {should_return = True _ } 
@@ -20006,7 +22118,7 @@ and
           Js_output.handle_block_return st should_return lam args_code exp           
       end
 
-    | Lprim(Psequor, [l;r])
+    | Lprim {primitive = Psequor; args =  [l;r]}
       ->
       begin match cxt with
         | {should_return = True _ }
@@ -20028,7 +22140,7 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-    | Lprim (Pccall {prim_name = "js_debugger"; _}, _) 
+    | Lprim {primitive = Pccall {prim_name = "js_debugger"; _} ; _}
       -> 
       (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer      *)
@@ -20042,8 +22154,8 @@ and
     *)
 
     | Lsend(Public (Some name), _label, 
-            Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                         [obj]), [] , loc) 
+            Lprim {primitive = Pccall {prim_name = "js_unsafe_downgrade"; _}; 
+                   args = [obj]}, [] , loc) 
       when not (Ext_string.ends_with name Literals.setter_suffix) 
       (* TODO: more not a setter/case/case_setter *)
       -> 
@@ -20068,7 +22180,7 @@ and
           end
         | _ -> assert false 
       end
-    | Lprim (Pccall {prim_name; _}, args_lambda) 
+    | Lprim {primitive = Pccall {prim_name; _};  args = args_lambda}
       when Ext_string.starts_with prim_name "js_fn_" ->
       let arity, kind  = 
         let mk =  Ext_string.starts_with_and_number prim_name ~offset:6 "mk_" in 
@@ -20087,8 +22199,8 @@ and
       if kind = `Run then 
         match args_lambda with  
         | [Lsend(Public (Some "case_set"), _label,
-                 Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _},
-                       [obj]), [] , loc) ; key ;  value] ->
+                 Lprim{primitive = Pccall {prim_name = "js_unsafe_downgrade"; _};
+                       args = [obj]}, [] , loc) ; key ;  value] ->
           let obj_block =
             compile_lambda {cxt with st = NeedValue; should_return = False} obj
           in
@@ -20125,8 +22237,9 @@ and
           end
 
         | [(Lsend(meth_kind, _label, 
-                  Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                        [obj]), [] , loc) as fn);
+                  Lprim{primitive = 
+                          Pccall {prim_name = "js_unsafe_downgrade"; _};
+                        args = [obj]}, [] , loc) as fn);
            arg]
           -> 
           begin 
@@ -20167,8 +22280,8 @@ and
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
                 compile_lambda cxt @@ 
                 Lam.apply fn [arg]  
-                  {apply_loc = Location.none;
-                   apply_status = App_js_full}
+                   Location.none (* TODO *)
+                   App_js_full
               else 
                 let property =
                   String.sub setter 0 
@@ -20188,8 +22301,8 @@ and
         | fn :: rest -> 
           compile_lambda cxt 
             (Lam.apply fn rest 
-                     {apply_loc = Location.none;
-                      apply_status = App_js_full})
+                      Location.none (*TODO*)
+                      App_js_full)
         | _ -> assert false 
       else 
         begin match args_lambda with 
@@ -20213,32 +22326,43 @@ and
               *)
               begin 
                 match fn with 
-                | Lfunction (_, [_], body)
-                  -> compile_lambda cxt (Lam.function_ Curried [] body)
+                | Lfunction {params =  [_]; body}
+                  ->
+                  compile_lambda cxt 
+                    (Lam.function_ 
+                       ~arity:0 
+                       ~kind:Curried
+                       ~params:[]
+                       ~body)
                 | _ -> 
                   compile_lambda cxt  
-                    (Lam.function_ Lambda.Curried [] 
-                     @@ 
-                       Lam.apply fn
-                         [Lam.unit]
-                     Lam_util.default_apply_info
-                    )
+                    (Lam.function_ ~arity:0 
+                       ~kind:Curried ~params:[] 
+                       ~body:(
+                         Lam.apply fn
+                           [Lam.unit]
+                           Location.none App_na
+                       ))
               end
             else 
               begin match fn with
-                | Lam.Lfunction(kind,args, body) 
+                | Lam.Lfunction{arity = len; kind; params = args; body}
                   ->
-                  let len =  List.length args in 
                   if len = arity then
                     compile_lambda cxt fn 
                   else if len > arity then 
-                    let first, rest  = Ext_list.take arity args  in 
+                    let params, rest  = Ext_list.take arity args  in 
                     compile_lambda cxt 
-                      (Lam.function_
-                         kind first (Lam.function_ kind rest body))
+                      (Lam.function_ 
+                         ~arity
+                         ~kind ~params
+                         ~body:(Lam.function_ ~arity:(len - arity)
+                                  ~kind ~params:rest ~body)
+                      )
                   else 
                     compile_lambda cxt 
-                      (Lam_util.eta_conversion arity Lam_util.default_apply_info  
+                      (Lam_util.eta_conversion arity 
+                         Location.none App_na
                          fn  [] )
                 (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
                 (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
@@ -20257,11 +22381,12 @@ and
                 *)
                 | _ -> 
                   compile_lambda cxt 
-                    (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
+                    (Lam_util.eta_conversion arity
+                       Location.none App_na  fn  [] )
               end
           | _ -> assert false 
         end
-    | Lprim(prim, args_lambda) -> 
+    | Lprim{primitive = prim; args =  args_lambda} -> 
       let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = False} x 
@@ -20757,7 +22882,8 @@ and
     | Lassign(id,lambda) -> 
       let block = 
         match lambda with
-        | Lprim(Poffsetint  v, [Lvar id']) when Ident.same id id' ->
+        | Lprim {primitive = Poffsetint  v; args =  [Lvar id']}
+          when Ident.same id id' ->
           [ S.exp (E.assign (E.var id) 
                      (E.int32_add (E.var id) (E.small_int  v)))
           ]
@@ -20785,17 +22911,22 @@ and
           Js_output.make block ~value:E.unit
       end
     | (Ltrywith(
-        (Lprim (Pccall {prim_name = "caml_sys_getenv"; _}, [Lconst _]) as body),
+        (Lprim {primitive = Pccall {prim_name = "caml_sys_getenv"; _};
+                args = [Lconst _]} as body),
         id, 
-        Lifthenelse(Lprim(Pintcomp(Ceq), 
-                          [Lvar id2 ; Lprim(Pgetglobal {name = "Not_found"}, _)]),
-                    cont, _reraise )
+        Lifthenelse
+          (Lprim{primitive = Pintcomp(Ceq);
+                 args = [Lvar id2 ; 
+                         Lprim{primitive = Pgetglobal {name = "Not_found"}; _}]},
+           cont, _reraise )
       )
       | Ltrywith(
-          (Lprim (Pccall {prim_name = "caml_sys_getenv"; _}, [Lconst _]) as body),
+          (Lprim {primitive = Pccall {prim_name = "caml_sys_getenv"; _};
+                  args = [Lconst _]} as body),
           id, 
-          Lifthenelse(Lprim(Pintcomp(Ceq), 
-                            [ Lprim(Pgetglobal {name = "Not_found"; _}, _); Lvar id2 ]),
+          Lifthenelse(Lprim{primitive = Pintcomp(Ceq);
+                            args = [ 
+                              Lprim { primitive = Pgetglobal {name = "Not_found"; _}; _}; Lvar id2 ]},
                       cont, _reraise )
         )) when Ident.same id id2 
       -> 
@@ -20887,9 +23018,10 @@ and
         (met :: obj :: args) 
         |> Ext_list.split_map (fun (x : Lam.t) -> 
             match x with 
-            | Lprim (Pgetglobal i, []) -> 
+            | Lprim {primitive = Pgetglobal i; args =  []} -> 
               [], Lam_compile_global.get_exp  (i, env, true)
-            | Lprim (Pccall {prim_name ; _}, []) (* nullary external call*)
+            | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
+              (* nullary external call*)
               -> 
               [], E.var (Ext_ident.create_js prim_name)
             | _ -> 
@@ -21117,13 +23249,14 @@ let rec get_arity
   (*       Determin(false, [arity, None], false) *)
   (*     | None -> NA *)
   (*   end *)
-  | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[])]) ->
+  | Lprim {primitive = Pfield (n,_); 
+           args =  [Lprim {primitive = Pgetglobal id; args = []; _}]; _} ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
       ~found:(fun x -> x.arity )
-  | Lprim (Pfield _, _ ) -> NA (** TODO *)
-  | Lprim (Praise _, _ ) -> Determin(true,[], true)
-  | Lprim (Pccall _, _) -> Determin(false, [], false)
+  | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
+  | Lprim {primitive = Praise _;  _} -> Determin(true,[], true)
+  | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
   | Lprim _  -> Determin(true,[] ,false)
   (* shall we handle primitive in a direct way, 
       since we know all the information
@@ -21142,7 +23275,7 @@ let rec get_arity
   (* | Lapply(Lprim( p, _), _args, _info) -> *)
   (*     Determin(true, [], false) (\** Invariant : primtive application is always complete.. *\) *)
 
-  | Lapply(app, args, _info) -> (* detect functor application *)
+  | Lapply{fn = app;  args; _ } -> (* detect functor application *)
     let fn = get_arity meta app in 
     begin match fn with 
       | NA -> NA 
@@ -21173,9 +23306,8 @@ let rec get_arity
         in
         take xs (List.length args) 
     end
-  | Lfunction(kind, params, l) -> 
-    let n = List.length params in 
-    merge (n, Some params)  (get_arity meta l)
+  | Lfunction {arity; kind; params; body = l} -> 
+    merge (arity, Some params)  (get_arity meta l)
   | Lswitch(l, {sw_failaction; 
                 sw_consts; 
                 sw_blocks;
@@ -21321,44 +23453,21 @@ end = struct
 
 
 
+(* TODO: add a context, like 
+    [args]
+    [Lfunction(params,body)]
+ *)
 
 
 let maybe_functor (name : string) = 
   name.[0] >= 'A' && name.[0] <= 'Z'
 
 
-let should_be_functor (name : string) lam = 
-  maybe_functor name  && 
-  (function | Lam.Lfunction _ -> true | _ -> false) lam
+let should_be_functor (name : string) (lam : Lam.t) = 
+  maybe_functor name  &&
+  (match lam with Lfunction _ -> true | _ -> false)
 
-(* TODO: add a context, like 
-    [args]
-    [Lfunction(params,body)]
- *)
 
-(* HONGBO .. doe snot look like this function is used (not in .mli) *) 
-(* let app_definitely_inlined (body : Lam.t) =  *)
-(*   match body with  *)
-(*   | Lvar _  *)
-(*   | Lconst _ *)
-(*   | Lprim _  *)
-(*   | Lapply _ -> true  *)
-(*   | Llet _  *)
-(*   | Lletrec  _ *)
-(*   | Lstringswitch _  *)
-(*   | Lswitch _  *)
-(*   | Lstaticraise _ *)
-(*   | Lfunction _  *)
-(*   | Lstaticcatch _  *)
-(*   | Ltrywith _  *)
-(*   | Lifthenelse _  *)
-(*   | Lsequence _  *)
-(*   | Lwhile _ *)
-(*   | Lfor _  *)
-(*   | Lassign _  *)
-(*   | Lsend _  *)
-(*   | Levent _ *)
-(*   | Lifused _ -> false *)
 
 end
 module Ext_option : sig 
@@ -21738,7 +23847,8 @@ let simplify_alias
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
       (try Lam.var (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
-    | Llet(kind, k, (Lprim (Pgetglobal i,[]) as g), l ) -> 
+    | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
+           l ) -> 
       (* This is detection of MODULE ALIAS 
           we need track all global module aliases, when it's
           passed as a parameter(escaped), we need do the expansion
@@ -21754,7 +23864,7 @@ let simplify_alias
             for the inner expression
         *)
       else v
-    | Lprim (Pfield (i,_), [Lvar v]) -> 
+    | Lprim {primitive = Pfield (i,_); args =  [Lvar v]; _} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
       Lam_util.get lam v  i meta.ident_tbl 
@@ -21769,14 +23879,14 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam.not ( Lam.prim Lam.Prim.js_is_nil [l]) 
+            -> Lam.not ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
           | Undefined 
             -> 
-            Lam.not (Lam.prim Lam.Prim.js_is_undef [l])
+            Lam.not (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
           | Null_undefined
             -> 
             Lam.not
-              ( Lam.prim Lam.Prim.js_is_nil_undef  [l]) 
+              ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l]) 
           | Normal ->  l1 
         in 
         Lam.if_ l1 (simpl l2) (simpl l3)
@@ -21793,7 +23903,8 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim(prim, ll) -> Lam.prim prim (List.map simpl  ll)
+    | Lprim {primitive; args } 
+      -> Lam.prim ~primitive ~args:(List.map simpl  args)
 
     (* complicated 
         1. inline this function
@@ -21803,14 +23914,17 @@ let simplify_alias
       {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
     *)      
-    | Lapply(Lprim(Pfield (index, _) , [Lprim (Pgetglobal ident, [])]) as l1,
-                                                                     args, info) ->
+    | Lapply{fn = 
+               Lprim {primitive = Pfield (index, _) ;
+                      args = [Lprim {primitive = Pgetglobal ident; args =  []}];
+                      _} as l1;
+             args; loc ; status} ->
       begin
         Lam_compile_env.find_and_add_if_not_exist (ident,index) meta.env
           ~not_found:(fun _ -> assert false)
           ~found:(fun i ->
               match i with
-              | {closed_lambda=Some Lfunction(Curried, params, body) } 
+              | {closed_lambda=Some Lfunction{params; body; _} } 
                 (** be more cautious when do cross module inlining *)
                 when
                   ( Ext_list.same_length params args &&
@@ -21827,7 +23941,7 @@ let simplify_alias
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
               | _ -> 
-                Lam.apply (simpl l1) (List.map simpl args) info
+                Lam.apply (simpl l1) (List.map simpl args) loc status
             )
 
       end
@@ -21837,17 +23951,19 @@ let simplify_alias
         - scope issues 
         - code bloat 
     *)      
-    | Lapply((Lvar v as l1), args, info) -> (* Check info for always inlining *)
+    | Lapply{fn = (Lvar v as fn);  args; loc ; status} ->
+      (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
-
+      let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
       begin 
         match Hashtbl.find meta.ident_tbl v with
-        | Function {lambda = (Lfunction(_, params, body) as _m);
+        | Function {lambda = Lfunction {params; body} as _m;
                     rec_flag;                     
                     _ }
           -> 
           let lam_size = Lam_analysis.size body in            
+        
           if Ext_list.same_length args params (* && false *)
           then               
             if Lam_inline_util.maybe_functor v.name  
@@ -21893,45 +24009,31 @@ let simplify_alias
                       simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
 
                     end
-                | _ -> 
-                  Lam.apply ( simpl l1) (List.map simpl args) info
+                | _ -> normal ()
               else 
-                begin
-                  (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
-                  (*   v.name v.stamp lam_size *)
-                  (* ;     *)
-                  Lam.apply ( simpl l1) (List.map simpl args) info
-                end
+                normal ()
           else
-            begin
-              (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
-              Lam.apply ( simpl l1) (List.map simpl args) info
-            end
+            normal ()
+        | _ -> normal ()
+        | exception Not_found -> normal ()
 
-        | _ -> 
-          begin
-            (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
-            Lam.apply ( simpl l1) (List.map simpl args) info
-          end
-        | exception Not_found -> 
-            (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
-          Lam.apply ( simpl l1) (List.map simpl args) info
       end
 
-    | Lapply(Lfunction(Curried, params, body), args, _)
+    | Lapply{ fn = Lfunction{ kind = Curried ; params; body}; args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply{ fn = Lfunction{kind =  Tupled;  params; body}; 
+             args = [Lprim {primitive = Pmakeblock _; args; _}]; _}
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
-    | Lapply (l1, ll, info) ->
-      Lam.apply (simpl  l1) (List.map simpl  ll) info
-    | Lfunction (kind, params, l) 
-      -> Lam.function_ kind params  (simpl  l)
+    | Lapply {fn = l1; args =  ll;  loc ; status} ->
+      Lam.apply (simpl  l1) (List.map simpl  ll) loc status
+    | Lfunction {arity; kind; params; body = l}
+      -> Lam.function_ ~arity ~kind ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;
@@ -21962,7 +24064,7 @@ let simplify_alias
       Lam.staticcatch (simpl  l1) ids (simpl  l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
 
-    | Lsequence (Lprim (Pgetglobal (id),[]), l2)
+    | Lsequence (Lprim {primitive = Pgetglobal (id); args = []}, l2)
       when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) 
       -> simpl l2
     | Lsequence(l1, l2)
@@ -22049,10 +24151,10 @@ let rec eliminate_ref id (lam : Lam.t) =
   match lam with  (** we can do better escape analysis in Javascript backend *)
   | Lvar v ->
     if Ident.same v id then raise Real_reference else lam
-  | Lprim(Pfield (0,_), [Lvar v]) when Ident.same v id ->
+  | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->
     Lam.var id
-  | Lfunction(kind, params, body) as lam ->
-    if Lambda.IdentSet.mem id (Lam.free_variables  lam)
+  | Lfunction{ kind; params; body} as lam ->
+    if Ident_set.mem id (Lam_util.free_variables  lam)
     then raise Real_reference
     else lam
   (* In Javascript backend, its okay, we can reify it later
@@ -22078,21 +24180,26 @@ let rec eliminate_ref id (lam : Lam.t) =
      TODO: we can refine analysis in later
   *)
   (* Lfunction(kind, params, eliminate_ref id body) *)
-  | Lprim(Psetfield(0, _,_), [Lvar v; e]) when Ident.same v id ->
+  | Lprim {primitive = Psetfield(0, _,_); 
+           args =  [Lvar v; e]} when Ident.same v id ->
     Lam.assign id (eliminate_ref id e)
-  | Lprim(Poffsetref delta, [Lvar v]) when Ident.same v id ->
-    Lam.assign id (Lam.prim (Poffsetint delta) [Lam.var id])
+  | Lprim {primitive = Poffsetref delta ; 
+           args =  [Lvar v]} when Ident.same v id ->
+    Lam.assign id (Lam.prim ~primitive:(Poffsetint delta) ~args:[Lam.var id])
   | Lconst _  -> lam
-  | Lapply(e1, el, loc) ->
-    Lam.apply (eliminate_ref id e1) (List.map (eliminate_ref id) el) loc
+  | Lapply{fn = e1; args =  el;  loc; status} ->
+    Lam.apply 
+      (eliminate_ref id e1)
+      (List.map (eliminate_ref id) el)
+      loc status
   | Llet(str, v, e1, e2) ->
     Lam.let_ str v (eliminate_ref id e1) (eliminate_ref id e2)
   | Lletrec(idel, e2) ->
     Lam.letrec
       (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
       (eliminate_ref id e2)
-  | Lprim(p, el) ->
-    Lam.prim p (List.map (eliminate_ref id) el)
+  | Lprim {primitive ; args } ->
+    Lam.prim  ~primitive ~args:(List.map (eliminate_ref id) args)
   | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
             {sw_numconsts = sw.sw_numconsts;
@@ -22174,7 +24281,9 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       Hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet((Strict | StrictOpt as kind) ,
-           v, (Lprim((Pmakeblock(0, tag_info, Mutable) as prim), [linit])), lbody)
+           v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
+                                   as primitive); 
+                      args = [linit]}), lbody)
       ->
       let slinit = simplif linit in
       let slbody = simplif lbody in
@@ -22184,7 +24293,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
             ~kind:Variable v slinit (eliminate_ref v slbody)
         with Real_reference ->
           Lam_util.refine_let 
-            ~kind v (Lam.prim prim [slinit])
+            ~kind v (Lam.prim ~primitive ~args:[slinit])
             slbody
       end
     | Llet(Alias, v, l1, l2) ->
@@ -22201,7 +24310,8 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
                      Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
                      | Const_nativeint _ )
                  | Lambda.Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
-              | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
+              | Lprim {primitive = Pfield (_);
+                       args = [Lprim {primitive = Pgetglobal _;  _}]}
             ) 
           (* Const_int64 is no longer primitive
              Note for some constant which is not 
@@ -22245,26 +24355,28 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       else simplif l2
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
-    | Lapply(Lfunction(Curried, params, body), args, _)
+    | Lapply{fn = Lfunction{kind =  Curried; params; body};  args; _}
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply{ fn = Lfunction{kind = Tupled; params; body};
+             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
       when  Ext_list.same_length params  args ->
       simplif (Lam_beta_reduce.beta_reduce params body args)
 
-    | Lapply(l1, ll, loc) -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc
-    | Lfunction(kind, params, l) ->
-      Lam.function_ kind params (simplif l)
+    | Lapply{fn = l1;args =  ll; loc; status} -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc status
+    | Lfunction{arity; kind; params; body = l} ->
+      Lam.function_ ~arity ~kind ~params ~body:(simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 
         (List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim(p, ll) -> Lam.prim p (List.map simplif ll)
+    | Lprim {primitive; args } 
+      -> Lam.prim ~primitive ~args:(List.map simplif args)
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
@@ -22364,7 +24476,7 @@ let collect_occurs  lam : occ_tbl =
 
   let rec count (bv : local_tbl) (lam : Lam.t) = 
     match lam with 
-    | Lfunction(kind, params, l) ->
+    | Lfunction{body = l} ->
       count Ident_map.empty l
     (** when entering a function local [bv] 
         is cleaned up, so that all closure variables will not be
@@ -22392,18 +24504,19 @@ let collect_occurs  lam : occ_tbl =
       (* If v is unused, l1 will be removed, so don't count its variables *)
       if kind = Strict || used v then count bv l1
 
-    | Lprim(_, ll) -> List.iter (count bv ) ll
+    | Lprim {args; _} -> List.iter (count bv ) args
 
     | Lletrec(bindings, body) ->
       List.iter (fun (v, l) -> count bv l) bindings;
       count bv body
-    | Lapply(Lfunction(Curried, params, body), args, _)
+    | Lapply{fn = Lfunction{kind= Curried; params; body};  args; _}
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply{fn = Lfunction{kind = Tupled; params; body};
+             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
       when  Ext_list.same_length params  args ->
       count bv (Lam_beta_reduce.beta_reduce   params body args)
-    | Lapply(l1, ll, _) ->
+    | Lapply{fn = l1; args= ll; _} ->
       count bv l1; List.iter (count bv) ll
     | Lassign(_, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
@@ -22582,14 +24695,14 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
           (* end *)
       end
     | Lvar _| Lconst _ -> ()
-    | Lapply(l1, ll, _) -> count l1; List.iter count ll
-    | Lfunction(_, _, l) -> count l
+    | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
+    | Lfunction {body = l} -> count l
     | Llet(_, _, l1, l2) ->
       count l2; count l1
     | Lletrec(bindings, body) ->
       List.iter (fun (_, l) -> count l) bindings;
       count body
-    | Lprim(_, ll) -> List.iter count ll
+    | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
       count l;
@@ -22672,12 +24785,12 @@ let subst_helper (subst : subst_tbl) query lam =
           let ys = List.map Ident.rename xs in
           let env =
             List.fold_right2
-              (fun x y t -> Ident.add x (Lam.var y) t)
-              xs ys Ident.empty in
+              (fun x y t -> Ident_map.add x (Lam.var y) t)
+              xs ys Ident_map.empty in
           List.fold_right2
             (fun y l r -> Lam.let_ Alias y l r)
             ys ls 
-               (Lam.subst_lambda  env  handler)
+               (Lam_util.subst_lambda  env  handler)
         | exception Not_found -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
@@ -22748,33 +24861,33 @@ let subst_helper (subst : subst_tbl) query lam =
       end
 
     | Lvar _|Lconst _  -> lam
-    | Lapply (l1, ll, loc) -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc
-    | Lfunction (kind, params, l) -> 
-      Lam.function_ kind params (simplif l)
+    | Lapply {fn = l1; args =  ll;  loc; status } -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc status
+    | Lfunction {arity; kind; params; body =  l} -> 
+      Lam.function_ ~arity ~kind ~params ~body:(simplif l)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
       Lam.letrec
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim (p, ll) -> 
+    | Lprim {primitive; args; _} -> 
       begin
-        let ll = List.map simplif ll in
-        match p, ll with
+        let args = List.map simplif args in
+        match primitive, args with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply (f, args, _)]
-        | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; Lapply {fn = f;  args;  _}]
+        | Prevapply loc, [x; Levent (Lapply {fn = f; args;  _},_)] ->
+          Lam.apply f (args@[x]) loc App_na
         | Prevapply loc, [x; f] 
-          -> Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          -> Lam.apply f [x] loc App_na
         (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply(f, args, _); x]
-        | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [Lapply{fn = f;  args;  _}; x]
+        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
+          Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
-        | _ -> Lam.prim p ll
+          Lam.apply f [x] loc App_na
+        | _ -> Lam.prim primitive args
       end
     | Lswitch(l, sw) ->
       let new_l = simplif l
@@ -22983,26 +25096,29 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lconst v 
       -> 
       Hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
-    | Lprim (Pmakeblock (_, _, Immutable ) , ls)
+    | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args=  ls}
       -> 
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls 
 
-    | Lprim (Pccall {prim_name = "js_from_nullable"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_nullable"; _}; 
+             args = ([ Lvar _] as ls) ; _}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null ls )
-    | Lprim (Pccall {prim_name = "js_from_def"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_def"; _}; 
+             args = ([ Lvar _] as ls); _}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Undefined ls )
-    | Lprim (Pccall {prim_name = "js_from_nullable_def"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_nullable_def"; _};
+             args = ([ Lvar _] as ls);}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null_undefined ls )
       
-    | Lprim (Pgetglobal v,[]) 
+    | Lprim {primitive = Pgetglobal v; args = []; _} 
       -> 
       begin 
         Lam_util.alias meta  ident v (Module  v) kind; 
@@ -23020,7 +25136,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
            (* enven for not subsitution, it still propogate some properties *)
            (* else () *)
         )
-    | Lfunction(_, params,l)
+    | Lfunction{ params; body = l}
         (** TODO record parameters ident ?, but it will be broken after inlining *)  
       -> 
         (** TODO could be optimized in one pass? 
@@ -23057,9 +25173,9 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
          *)
     | Lconst _ -> ()
     | Lvar _ -> ()
-    | Lapply(l1, ll, _) ->
+    | Lapply{fn = l1; args =  ll; _} ->
         collect  l1; List.iter collect  ll
-    | Lfunction(_kind, params, l) -> (* functor ? *)
+    | Lfunction { params; body =  l} -> (* functor ? *)
         List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
         collect  l
     | Llet (kind,ident,arg,body) -> 
@@ -23067,7 +25183,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lletrec (bindings, body) -> 
         List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
         collect body
-    | Lprim(_p, ll) -> List.iter collect  ll
+    | Lprim {args; _} -> List.iter collect  args
     | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
         collect  l;
         List.iter (fun (_, l) -> collect  l) sw_consts;
@@ -23196,11 +25312,12 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
     match lam with 
     | Lconst _ -> lam
     | Lvar _ -> lam 
-    | Lapply (l1, ll, info) -> (* detect functor application *)
+    | Lapply {fn = l1; args =  ll;  loc ; status} 
+      -> (* detect functor application *)
       begin 
         match Lam_stats_util.get_arity meta l1 with 
         | NA -> 
-          Lam.apply (simpl  l1) (List.map simpl  ll) info
+          Lam.apply (simpl  l1) (List.map simpl  ll) loc status
         | Determin (b, args, tail) -> 
           let len = List.length ll in 
           let rec take args = 
@@ -23209,25 +25326,22 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
               if x = len 
               then 
                 Lam.apply (simpl l1)
-                  (List.map simpl ll)
-                  {info with apply_status = App_ml_full} 
+                  (List.map simpl ll) loc App_ml_full
               else if x > len  
               then 
                 let fn = simpl l1 in
                 let args = List.map simpl ll in
-                Lam_util.eta_conversion (x - len) 
-                  {info with  apply_status = App_ml_full}
+                Lam_util.eta_conversion (x - len) loc App_ml_full
                   fn args 
               else 
                 let first,rest = Ext_list.take x ll in 
                 Lam.apply (
                   Lam.apply (simpl l1) 
                          (List.map simpl first) 
-                         {
-                           info with apply_status = App_ml_full
-                         })
-                  (List.map simpl rest) info (* TODO refien *)
-            | _ -> Lam.apply (simpl l1) (List.map simpl ll)  info 
+                         loc App_ml_full
+                )
+                  (List.map simpl rest) loc status (* TODO refien *)
+            | _ -> Lam.apply (simpl l1) (List.map simpl ll)  loc status
           in take args
       end
 
@@ -23236,10 +25350,11 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
     | Lletrec (bindings, body) ->
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim (prim, ll) -> Lam.prim prim (List.map simpl  ll)
-    | Lfunction (kind, params, l) ->
+    | Lprim {primitive; args } -> 
+      Lam.prim ~primitive ~args:(List.map simpl  args)
+    | Lfunction {arity; kind; params; body = l} ->
       (* Lam_mk.lfunction kind params (simpl l) *)
-      Lam.function_ kind params  (simpl  l)
+      Lam.function_ ~arity ~kind ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -25476,13 +27591,13 @@ val compile :
   bool -> 
   Env.t -> 
   Types.signature -> 
-  Lam.t -> 
+  Lambda.lambda -> 
   J.deps_program
 
 val lambda_as_module :  
   Env.t ->
   Types.signature -> string -> 
-  string  -> Lam.t -> unit
+  string  -> Lambda.lambda -> unit
 
 end = struct
 #1 "lam_compile_group.ml"
@@ -25665,7 +27780,8 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     it's used or not 
     [non_export] is only used in playground
 *)
-let compile  ~filename output_prefix non_export env _sigs lam   = 
+let compile  ~filename output_prefix non_export env _sigs 
+    (lam : Lambda.lambda)   = 
   let export_idents = 
     if non_export then
       []    
@@ -25675,8 +27791,12 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
   in
-  let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
-  let ()   = Lam_compile_env.reset ()  in
+  (* To make toplevel happy - reentrant for js-demo *)
+  let ()   = 
+    Translmod.reset () ; 
+    Lam_compile_env.reset () ;
+  in 
+  let lam = Lam.convert lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
@@ -25734,7 +27854,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
 
   begin 
     match (lam : Lam.t) with
-    | Lprim(Psetglobal id, [biglambda])
+    | Lprim{primitive = Psetglobal id; args =  [biglambda]; _}
       -> 
       (* Invariant: The last one is always [exports]
          Compile definitions
@@ -25747,7 +27867,8 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
 
       begin 
         match Lam_group.flatten [] biglambda with 
-        | Lprim( (Pmakeblock (_,_,_), lambda_exports)),  rest ->
+        | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
+          rest ->
           let coercion_groups, new_exports, new_export_set,  export_map = 
             if non_export then 
               [], [], Ident_set.empty, Ident_map.empty
@@ -25904,7 +28025,7 @@ let lambda_as_module
     (sigs : Types.signature)
     (filename : string) 
     (output_prefix : string)
-    (lam : Lam.t) = 
+    (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "tuple_alloc.ml";
@@ -25997,6 +28118,276 @@ module Make( S : Map.OrderedType) = struct
   let of_list (xs : ('a * 'b) list ) = 
     List.fold_left (fun acc (k,v) -> add k v acc) empty xs     
 end
+
+end
+module Js_implementation : sig 
+#1 "js_implementation.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** High level compilation module *) 
+
+(** This module defines a function to compile the program directly into [js]
+    given [filename] and [outputprefix], 
+    it will be useful if we don't care about bytecode output(generating js only).
+ *)
+val interface : Format.formatter -> string -> string -> unit
+
+val after_parsing_sig : Format.formatter -> string -> string -> Parsetree.signature -> unit
+
+val implementation : Format.formatter -> string -> string -> unit
+(** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
+
+val after_parsing_impl : Format.formatter -> string -> string -> Parsetree.structure -> unit
+
+end = struct
+#1 "js_implementation.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* adapted by bucklescript from [driver/compile.ml] for convenience    *)
+
+open Format
+open Typedtree
+open Compenv
+
+
+
+let fprintf = Format.fprintf
+
+
+
+let print_if ppf flag printer arg =
+  if !flag then fprintf ppf "%a@." printer arg;
+  arg
+
+let after_parsing_sig ppf sourcefile outputprefix ast  = 
+  let modulename = module_of_filename ppf sourcefile outputprefix in
+  let initial_env = Compmisc.initial_env () in
+  Env.set_unit_name modulename;
+  let tsg = Typemod.type_interface initial_env ast in
+  if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
+  let sg = tsg.sig_type in
+  if !Clflags.print_types then
+    Printtyp.wrap_printing_env initial_env (fun () ->
+        fprintf std_formatter "%a@."
+          Printtyp.signature (Typemod.simplify_signature sg));
+  ignore (Includemod.signatures initial_env sg sg);
+  Typecore.force_delayed_checks ();
+  Warnings.check_fatal ();
+  if not !Clflags.print_types then begin
+    let sg = Env.save_signature sg modulename (outputprefix ^ ".cmi") in
+    Typemod.save_signature modulename tsg outputprefix sourcefile
+      initial_env sg ;
+  end
+
+let interface ppf sourcefile outputprefix =
+  Compmisc.init_path false;
+  Ocaml_parse.parse_interface ppf sourcefile
+  |> print_if ppf Clflags.dump_parsetree Printast.interface
+  |> print_if ppf Clflags.dump_source Pprintast.signature 
+  |> after_parsing_sig ppf sourcefile outputprefix 
+
+let after_parsing_impl ppf sourcefile outputprefix ast =
+  let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
+  let env = Compmisc.initial_env() in
+  Env.set_unit_name modulename;
+  try
+    let (typedtree, coercion, finalenv, current_signature) =
+      ast 
+      |> Typemod.type_implementation_more sourcefile outputprefix modulename env 
+      |> print_if ppf Clflags.dump_typedtree
+        (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
+    in
+    if !Clflags.print_types then begin
+      Warnings.check_fatal ();
+    end else begin
+      (typedtree, coercion)
+      |> Translmod.transl_implementation modulename
+      |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
+      |> (fun lambda -> 
+          match           
+            Lam_compile_group.lambda_as_module
+              finalenv current_signature 
+              sourcefile  outputprefix lambda  with
+          | e -> e 
+          | exception e -> 
+            (* Save to a file instead so that it will not scare user *)            
+            let file = "bsc.dump" in
+            Ext_pervasives.with_file_as_chan file
+              (fun ch -> output_string ch @@             
+                Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
+            Ext_log.err __LOC__
+              "Compilation fatal error, stacktrace saved into %s when compiling %s"
+              file sourcefile;             
+            raise e             
+        );
+    end;
+    Stypes.dump (Some (outputprefix ^ ".annot"));
+  with x ->
+    Stypes.dump (Some (outputprefix ^ ".annot"));
+    raise x
+
+let implementation ppf sourcefile outputprefix =
+  Compmisc.init_path false;
+  Ocaml_parse.parse_implementation ppf sourcefile
+  |> print_if ppf Clflags.dump_parsetree Printast.implementation
+  |> print_if ppf Clflags.dump_source Pprintast.structure
+  |> after_parsing_impl ppf sourcefile outputprefix 
+
+end
+module Ocaml_batch_compile : sig 
+#1 "ocaml_batch_compile.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val batch_compile : Format.formatter -> string list -> unit
+
+end = struct
+#1 "ocaml_batch_compile.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let batch_compile ppf files =
+  if files <> [] then 
+    begin 
+      Compenv.readenv ppf Before_compile; 
+      Compmisc.init_path  false;
+      let batch_files  : (string, Ast_extract.ast) Hashtbl.t =
+        Hashtbl.create 31 in 
+      files |> List.iter begin fun name -> 
+        match Ocaml_parse.check_suffix name with 
+        | `Ml, opref -> 
+          Hashtbl.add batch_files 
+            name
+            (Ml (Ocaml_parse.parse_implementation ppf name, opref) )
+        | `Mli, opref -> 
+          Hashtbl.add batch_files name
+            (Mli (Ocaml_parse.parse_interface ppf name, opref))
+
+      end;
+      let stack,mapping = Ast_extract.prepare batch_files in 
+      stack |> Ext_list.rev_iter (fun modname -> 
+          (* prerr_endline ("compiling " ^ modname);  *)
+          match Hashtbl.find_all mapping modname with
+          | [] -> ()
+          | [sourcefile] -> 
+            begin match Hashtbl.find batch_files sourcefile with
+              | exception _ -> assert false 
+              | Ml (ast,opref) 
+                ->
+                Js_implementation.after_parsing_impl ppf sourcefile 
+                  opref ast 
+              | Mli (ast,opref)  
+                ->
+                Js_implementation.after_parsing_sig ppf sourcefile 
+                  opref ast 
+            end
+          | [sourcefile1;sourcefile2] 
+            -> (* TODO: check duplicated names *)
+            begin match Hashtbl.find batch_files sourcefile1 with 
+              | exception _ -> assert false 
+              | Mli (ast,opref) -> 
+                Js_implementation.after_parsing_sig ppf sourcefile1 opref ast ;
+                begin match Hashtbl.find batch_files sourcefile2 with 
+                  | Ml (ast,opref) -> 
+                    Js_implementation.after_parsing_impl ppf sourcefile2 
+                      opref ast ;
+                  | _ -> assert false 
+                end
+              | Ml (ast0,opref0) -> 
+                begin match Hashtbl.find batch_files sourcefile2 with 
+                  | Mli (ast,opref) -> 
+                    Js_implementation.after_parsing_sig ppf sourcefile2 opref ast ;
+                    Js_implementation.after_parsing_impl ppf sourcefile1 
+                      opref0 ast0 ;
+
+                  | _ -> assert false
+                end
+            end
+          | _ -> assert false 
+        )
+    end
 
 end
 module 
@@ -26133,406 +28524,8 @@ let builtin_modules =
  ]
 
 end
-module Ext_ref : sig 
-#1 "ext_ref.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-
-val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-end = struct
-#1 "ext_ref.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let protect r v body =
-  let old = !r in
-  try
-    r := v;
-    let res = body() in
-    r := old;
-    res
-  with x ->
-    r := old;
-    raise x
-
-
-let protect2 r1 r2 v1 v2 body =
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  try
-    r1 := v1;
-    r2 := v2;
-    let res = body() in
-    r1 := old1;
-    r2 := old2;
-    res
-  with x ->
-    r1 := old1;
-    r2 := old2;
-    raise x
-
-end
-module Ast_literal : sig 
-#1 "ast_literal.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-module Lid : sig
-  type t = Longident.t 
-  val val_unit : t 
-  val type_unit : t 
-  val pervasives_js_obj : t 
-  val pervasives_uncurry : t 
-  val js_obj : t 
-  val js_fn : t 
-  val ignore_id : t 
-end
-
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-val val_unit : expression_lit
-
-val type_unit : core_type_lit
-
-val type_string : core_type_lit
-
-val type_any : core_type_lit
-
-val pat_unit : pattern_lit
-
-end = struct
-#1 "ast_literal.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-module Lid = struct 
-  type t = Longident.t 
-  let val_unit : t = Lident "()"
-  let type_unit : t = Lident "unit"
-  let type_string : t = Lident "string"
-  (* TODO should be renamed in to {!Js.fn} *)
-  (* TODO should be moved into {!Js.t} Later *)
-  let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
-  let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
-  let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let js_fn = Longident.Ldot (Lident "Js", "fn")
-  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
-end
-
-module No_loc = struct 
-  let loc = Location.none
-  let val_unit = 
-    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
-  let type_unit =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-  let type_string =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-  let type_any = Ast_helper.Typ.any ()
-  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
-end 
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-let val_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.val_unit
-  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
-
-
-let type_unit ?loc () = 
-  match loc with
-  | None ->     
-    No_loc.type_unit
-  | Some loc -> 
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-
-let type_string ?loc () = 
-  match loc with 
-  | None -> No_loc.type_string 
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-let type_any ?loc () = 
-  match loc with 
-  | None -> No_loc.type_any
-  | Some loc -> Ast_helper.Typ.any ~loc ()
-
-let pat_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.pat_unit
-  | Some loc -> 
-    Pat.construct ~loc {txt = Lid.val_unit; loc} None
-
-end
-module Ast_comb : sig 
-#1 "ast_comb.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val create_local_external : Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Asttypes.label * Parsetree.expression) list -> Parsetree.expression_desc
-
-val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
-
-val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
-
-val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
-
-end = struct
-#1 "ast_comb.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let create_local_external loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim = [pval_prim];
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
-
-open Ast_helper 
-
-let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
-
-let fun_no_label ?loc ?attrs  pat body = 
-  Exp.fun_ ?loc ?attrs "" None pat body
-
-let arrow_no_label ?loc ?attrs b c = 
-  Typ.arrow ?loc ?attrs "" b c 
-
-let discard_exp_as_unit loc e = 
-  exp_apply_no_label ~loc     
-    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
-    [Exp.constraint_ ~loc e 
-       (Ast_literal.type_unit ~loc ())]
-
-end
-module Ppx_entry : sig 
-#1 "ppx_entry.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val rewrite_signature :   (Parsetree.signature -> Parsetree.signature) ref
-
-val rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref
-
-end = struct
-#1 "ppx_entry.ml"
+module Ocaml_options : sig 
+#1 "ocaml_options.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -26559,833 +28552,19 @@ end = struct
 
 
 
-
-
-
-(* When we design a ppx, we should keep it simple, and also think about 
-   how it would work with other tools like merlin and ocamldep  *)
-
+val mk_impl : (string -> unit) -> string * Arg.spec * string
+val mk_intf : (string -> unit) -> string * Arg.spec * string
+val mk__ : (string -> unit) -> string * Arg.spec * string
 (**
-1. extension point 
-   {[ 
-     [%unsafe{| blabla |}]
-   ]}
-   will be desugared into 
-   {[ 
-     let module Js = 
-     struct unsafe_js : string -> 'a end 
-     in Js.unsafe_js {| blabla |}
-   ]}
-   The major benefit is to better error reporting (with locations).
-   Otherwise
-
-   {[
-
-     let f u = Js.unsafe_js u 
-     let _ = f (1 + 2)
-   ]}
-   And if it is inlined some where   
+   [ocaml_options] are command options inherited from ocaml 
+   bytecode compiler except three options 
+   [impl] [intf] and [annoymous] which is in another module 
+   due to  dependencies
 *)
-
-
-
-
-
-
-
-
-let js_obj_type_id () = 
-  if Js_config.get_env () = Browser then
-    Ast_literal.Lid.pervasives_js_obj
-  else Ast_literal.Lid.js_obj 
-    
-let curry_type_id () = 
-  if Js_config.get_env () = Browser then 
-    Ast_literal.Lid.pervasives_uncurry
-  else 
-    Ast_literal.Lid.js_fn 
-
-
-open Ast_helper 
-let arrow = Ast_helper.Typ.arrow
-
-let record_as_js_object = ref None (* otherwise has an attribute *)
-let obj_type_as_js_obj_type = ref false
-let uncurry_type = ref false 
-let obj_type_auto_uncurry =  ref false
-let non_export = ref false 
-let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
-let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
-
-let handle_record_as_js_object 
-    loc 
-    attr
-    (label_exprs : (Longident.t Asttypes.loc * Parsetree.expression) list)
-    (mapper : Ast_mapper.mapper) : Parsetree.expression_desc = 
-  let labels, args = 
-    Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
-        match txt with
-        | Longident.Lident x -> (x, (x, mapper.expr mapper e))
-        | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label "
-  ) label_exprs in 
-  let pval_prim = "" in 
-  let pval_attributes = [attr] in 
-  let pval_type = 
-    let arity = List.length labels in 
-    let tyvars = (Ext_list.init arity (fun i ->      
-        Typ.var ~loc ("a" ^ string_of_int i))) in 
-
-    let result_type =
-      lift_js_type ~loc  
-        @@ Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed
-
-    in 
-    List.fold_right2 
-      (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
-  in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
-  Ast_comb.create_local_external loc 
-    ~pval_prim
-    ~pval_type ~pval_attributes 
-    ~local_module_name 
-    ~local_fun_name
-    args 
-
-let gen_fn_run loc arity args  : Parsetree.expression_desc = 
-  let pval_prim = Printf.sprintf "js_fn_run_%02d" arity  in
-  let tyvars =
-    Ext_list.init (arity + 1) 
-      (fun i -> Typ.var ~loc ("a" ^ string_of_int i)) in
-  let tuple_type_desc = 
-    if arity = 0 then 
-      (List.hd tyvars).ptyp_desc
-      (* avoid single tuple *)
-    else 
-      Parsetree.Ptyp_tuple tyvars
-  in 
-  let uncurry_fn = 
-    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc in
-  (** could be optimized *)
-  let pval_type = 
-    Ext_list.reduce_from_right (fun a b -> arrow ~loc "" a b) (uncurry_fn :: tyvars) in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    ~local_module_name ~local_fun_name args 
-
-let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
-  let open Parsetree in 
-  let ptyp_attributes = [] in 
-  let pval_prim = Printf.sprintf "js_fn_mk_%02d" arity  in
-  let tyvars =
-        (Ext_list.init (arity + 1) (fun i -> 
-             {ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
-              ptyp_attributes ;
-              ptyp_loc = loc})) in
-  let tuple_type_desc = 
-    if arity = 0 then 
-      (List.hd tyvars).ptyp_desc
-      (* avoid single tuple *)
-    else 
-      Parsetree.Ptyp_tuple tyvars
-  in 
-  let uncurry_fn = 
-    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc
-  in 
-  let arrow = arrow ~loc "" in
-  (** could be optimized *)
-  let pval_type = 
-    if arity = 0 then 
-      arrow  (arrow  (Ast_literal.type_unit ~loc ()) (List.hd tyvars) ) uncurry_fn
-    else 
-      arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    args 
-        
-
-let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
-  Ext_list.exclude_with_fact (function 
-    | ({Location.txt  = "uncurry"}, _) -> true 
-    | _ -> false ) attrs 
-
-
-let uncurry_fn_type loc ty attrs
-    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
-
-  let fn_type : Parsetree.core_type =
-    match args with
-    | {ptyp_desc = 
-         Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
-      ->
-      Typ.tuple ~loc ~attrs [ arg ; body]
-      
-    | {ptyp_desc = Ptyp_tuple args; _} ->
-      Typ.tuple ~loc ~attrs (List.rev (body :: List.rev args))
-      
-    | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
-    | v -> 
-      Typ.tuple ~loc ~attrs [v ; body]
-  in
-  lift_curry_type ~loc fn_type
-
-
-
-
-(*
-  Attributes are very hard to attribute
-  (since ptyp_attributes could happen in so many places), 
-  and write ppx extensions correctly, 
-  we can only use it locally
-*)
-
-let handle_typ 
-    (super : Ast_mapper.mapper) 
-    (self : Ast_mapper.mapper)
-    (ty : Parsetree.core_type) = 
-  match ty with
-  | {ptyp_attributes ;
-     ptyp_desc = Ptyp_arrow ("", args, body);
-     ptyp_loc = loc
-   } ->
-    begin match  find_uncurry_attrs_and_remove ptyp_attributes with 
-    | Some _, ptyp_attributes ->
-        let args = self.typ self args in
-        let body = self.typ self body in
-        uncurry_fn_type loc ty ptyp_attributes args body 
-    | None, _ -> 
-        let args = self.typ self args in
-        let body = self.typ self body in
-        if !uncurry_type then 
-          uncurry_fn_type loc ty ptyp_attributes args body 
-        else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
-    end
-  | {
-    ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
-    ptyp_attributes ;
-    ptyp_loc = loc 
-    } -> 
-    begin match Ext_list.exclude_with_fact2 
-                  (function 
-                    | {Location.txt = "bs.obj" ; _}, _  -> true 
-                    | _  -> false ) 
-                  (function 
-                    | {Location.txt = "uncurry"; _}, _ -> true
-                    | _ -> false)
-                  ptyp_attributes with 
-    |  None, None, _  ->
-      let check_auto_uncurry core_type = 
-        if  !obj_type_auto_uncurry then
-          Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
-        else self.typ self core_type in 
-  
-      let methods = 
-        List.map (fun (label, ptyp_attrs, core_type ) -> 
-            match find_uncurry_attrs_and_remove ptyp_attrs with 
-            | None, _ -> 
-              label, ptyp_attrs , check_auto_uncurry  core_type
-            | Some v, ptyp_attrs -> 
-              label , ptyp_attrs, 
-              check_auto_uncurry
-                { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-          ) methods 
-      in           
-      if !obj_type_as_js_obj_type then 
-        lift_js_type ~loc { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                               ptyp_attributes }
-
-      else 
-        {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
-    | fact1 , fact2,  ptyp_attributes -> 
-      let obj_type_as_js_obj_type_cxt =  fact1 <> None || !obj_type_as_js_obj_type in
-      let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
-      let methods = 
-        Ext_ref.protect2
-          obj_type_as_js_obj_type
-          uncurry_type 
-          obj_type_as_js_obj_type_cxt 
-          uncurry_type_cxt begin fun _ -> 
-          List.map (fun (label, ptyp_attrs, core_type ) -> 
-              match find_uncurry_attrs_and_remove ptyp_attrs with 
-              | None, _ -> label, ptyp_attrs , self.typ self core_type
-              | Some v, ptyp_attrs -> 
-                label , ptyp_attrs, self.typ self 
-                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-            ) methods 
-        end
-      in           
-      let inner_type = { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                                 ptyp_attributes } in
-      if obj_type_as_js_obj_type_cxt then       
-        {ptyp_desc = 
-           Ptyp_constr ({ txt = js_obj_type_id () ; loc},
-                        [inner_type]);
-         ptyp_attributes = [];
-         ptyp_loc = loc }
-      else inner_type
-    end
-  | _ -> super.typ self ty
-
-let handle_class_obj_typ 
-    (super : Ast_mapper.mapper) 
-    (self : Ast_mapper.mapper)
-    (ty : Parsetree.class_type) = 
-  match ty with
-  | {pcty_attributes ;
-     pcty_desc ; (* we won't have [ class type v = u -> object[@uncurry] ]*)
-     pcty_loc = loc
-   } ->
-    begin match  find_uncurry_attrs_and_remove pcty_attributes with 
-    | Some _, pcty_attributes' ->
-      Ext_ref.protect uncurry_type true begin fun () -> 
-        self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
-      end
-    | None, _ -> 
-      if !obj_type_auto_uncurry then 
-        Ext_ref.protect uncurry_type true begin fun () -> 
-          super.class_type self ty
-        end
-      else 
-        super.class_type self ty
-    end
-
-
-let handle_debugger loc payload = 
-  if Ast_payload.as_empty_structure payload then
-    let predef_unit_type = Ast_literal.type_unit ~loc () in
-    let pval_prim = "js_debugger" in
-    Ast_comb.create_local_external loc 
-      ~pval_prim
-      ~pval_type:(arrow "" predef_unit_type predef_unit_type)
-      [("",  Ast_literal.val_unit ~loc ())]
-  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-
-(** TODO: Future 
-    {[ fun%bs this (a,b,c) -> 
-    ]}
-
-    [function] can only take one argument, that is the reason we did not adopt it
-*)
-let handle_uncurry_generation  loc 
-    (pat : Parsetree.pattern)
-    (body : Parsetree.expression) 
-    (e : Parsetree.expression) (mapper : Ast_mapper.mapper) = 
-  let args = 
-    match pat with 
-    | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
-      [arg]
-    | {ppat_desc = Ppat_tuple args; _} -> args
-    | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
-    | v -> [v]
-  in
-  let len = List.length args in 
-  let body = mapper.expr mapper body in 
-  let fun_ = 
-    if len = 0 then 
-      Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) body
-    else 
-      List.fold_right (fun arg body -> 
-          let arg = mapper.pat mapper arg in 
-          Ast_comb.fun_no_label ~loc arg body 
-          ) args body in
-  {e with pexp_desc = gen_fn_mk loc len [("", fun_)]}
-let handle_uncurry_application 
-    loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
-    (self : Ast_mapper.mapper) 
-  : Parsetree.expression = 
-  let args = 
-    match pat with 
-    | {Parsetree.pexp_desc = 
-         Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]
-      ; _} -> 
-      [arg]
-    | {pexp_desc = Pexp_tuple args; _} -> args
-    | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
-    | v -> [v]
-  in
-
-  let fn = self.expr self fn in 
-  let args = List.map (self.expr self) args in 
-  let len = List.length args in 
-  { e with pexp_desc = gen_fn_run loc len (("", fn) :: List.map (fun x -> "", x) args)}
-
-let handle_obj_property loc obj name e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
-  let obj = mapper.expr mapper obj in 
-  let var = Typ.var ~loc "a" in 
-  let down = Ast_comb.create_local_external loc  
-
-    ~pval_prim:"js_unsafe_downgrade"
-    ~pval_type:(
-      Ast_comb.arrow_no_label ~loc
-        (lift_js_type ~loc var) var)
-    ["", obj] in 
-  { e with pexp_desc =
-     Pexp_send
-               ({pexp_desc = down ;
-                 pexp_loc = loc;
-                 pexp_attributes = []},
-                name);
-  }
-
-
-type method_kind = 
-  | Case_setter
-  | Setter
-  | Normal of string 
-let handle_obj_method loc (obj : Parsetree.expression) 
-    name (value : Parsetree.expression) e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let method_kind = 
-    if name = Literals.case_set then Case_setter
-    else if Ext_string.ends_with name Literals.setter_suffix then Setter
-    else Normal name in 
-  let args = 
-    match method_kind with 
-    | Setter -> 
-      [value]
-    | (Case_setter | Normal _) -> 
-      let arity, args = 
-        match value with 
-        | {pexp_desc = 
-             Pexp_tuple 
-               [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
-           _} -> 
-          1, [arg]
-        | {pexp_desc = Pexp_tuple args; _} -> List.length args, args
-        | {pexp_desc = 
-             Pexp_construct ({txt = Lident "()"}, None);
-           _} -> 0, []
-        | v -> 1, [v] in 
-      if method_kind = Case_setter && arity <> 2 then 
-        Location.raise_errorf "case_set would expect arity of 2 "
-      else  args 
-  in
-  let len = List.length args in 
-  let obj = mapper.expr mapper obj in 
-  let args = List.map (mapper.expr mapper ) args in 
-  let var = Typ.var ~loc "a" in 
-  let down = Ast_comb.create_local_external loc  
-    ~pval_prim:"js_unsafe_downgrade"
-    ~pval_type:(Ast_comb.arrow_no_label ~loc
-                  (lift_js_type ~loc var)
-                  var )
-    ~local_module_name:"Tmp"
-    ~local_fun_name:"cast" ["", obj] in 
-  {e with pexp_desc = gen_fn_run loc len 
-    (("", Exp.send ~loc (Exp.mk ~loc down) name) :: 
-     List.map (fun x -> "", x) args
-    )}
-        (** TODO: 
-            More syntax sanity check for [case_set] 
-            case_set: arity 2
-            _set : arity 1            
-            case:
-        *)
-
-
-(** object 
-    for setter : we can push more into [Lsend] and enclose it with a unit type
-
-    for getter :
-
-    (* Invariant: we expect the typechecker & lambda emitter  
-       will not do agressive inlining
-       Worst things could happen
-    {[
-      let x = y## case 3  in 
-      x 2
-    ]}
-       in normal case, it should be compiled into Lambda
-    {[
-      let x = Lsend(y,case, [3]) in 
-      Lapp(x,2)
-    ]}
-
-       worst:
-    {[ Lsend(y, case, [3,2])
-    ]}               
-       for setter(include case setter), this could 
-       be prevented by type system, for getter.
-
-       solution: we can prevent this by rewrite into 
-    {[
-      Fn.run1  (!x# case) v 
-      ]}
-       *)
-
-      *)
-
-
-let rec unsafe_mapper : Ast_mapper.mapper =   
-  { Ast_mapper.default_mapper with 
-    expr = (fun mapper e -> 
-        match e.pexp_desc with 
-        (** Begin rewriting [bs.raw], its output should not be rewritten anymore
-        *)        
-        | Pexp_extension (
-            {txt = "bs.raw"; loc} , payload)
-          -> 
-          begin match Ast_payload.as_string_exp payload with 
-            | None -> 
-              Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-            | Some exp -> 
-              let pval_prim = "js_pure_expr" in
-              { exp with pexp_desc = Ast_comb.create_local_external loc 
-                           ~pval_prim
-                           ~pval_type:(arrow "" 
-                                         (Ast_literal.type_string ~loc ()) 
-                                         (Ast_literal.type_any ~loc ()) )
-
-                           ["",exp]}
-          end
-
-        (** End rewriting [bs.raw] *)
-
-        (** Begin rewriting [bs.debugger], its output should not be rewritten any more*)
-        | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
-          -> {e with pexp_desc = handle_debugger loc payload}
-        (** End rewriting *)
-        | Pexp_fun ("", None, pat , body)
-          ->
-          let loc = e.pexp_loc in 
-          begin match Ext_list.exclude_with_fact (function 
-              | {Location.txt = "uncurry"; _}, _ -> true 
-              | _ -> false) e.pexp_attributes with 
-          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
-          | Some _, attrs 
-            -> 
-            begin match body.pexp_desc with 
-              | Pexp_fun _ -> 
-                Location.raise_errorf ~loc 
-                  {| `fun [@uncurry] (param0, param1) -> `
-                     instead of `fun [@uncurry] param0 param1 ->` |}
-              | _ -> 
-                handle_uncurry_generation loc pat body 
-                  {e with pexp_attributes = attrs } mapper
-            end
-          end
-
-        | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
-                      [("", fn);
-                       ("", pat)])
-          -> 
-          handle_uncurry_application loc fn pat e mapper
-
-        | Pexp_apply
-            ({pexp_desc = 
-               Pexp_apply (
-                 {pexp_desc = 
-                    Pexp_ident  {txt = Lident "##" ; loc} ; _},
-                 [("", obj) ;
-                  ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-                 ]);
-              _
-             }, args  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
-          begin match args with 
-          | [ "", value] -> 
-              handle_obj_method loc obj name value e mapper
-          | _ -> 
-            Location.raise_errorf 
-              "Js object ## expect only one argument when it is a method "
-          end
-        (* TODO: design: shall we allow 
-                               {[ x #.Capital ]}
-        *)
-        | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident ("#." | "##") ; loc} ; _},
-                      [("", obj) ;
-                       ("", 
-                        ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
-                        |{pexp_desc = Pexp_construct ({txt = Lident name;_ }, None) ; _}
-                        ) )
-                      ])
-          -> handle_obj_property loc obj name e mapper
-        | Pexp_apply (fn,
-                      [("", pat)]) -> 
-          let loc = e.pexp_loc in 
-          begin match Ext_list.exclude_with_fact (function 
-              | {Location.txt = "uncurry"; _}, _ -> true 
-              | _ -> false) e.pexp_attributes with 
-          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
-          | Some _, attrs -> 
-            handle_uncurry_application loc fn pat 
-              {e with pexp_attributes = attrs} mapper
-          end
-
-        | Pexp_record (label_exprs, None)   -> 
-          begin match  (* exclude {[ u with ..]} syntax currently *)
-              Ext_list.exclude_with_fact 
-                (function({Location.txt  = "bs.obj"}, _)  -> true | _ -> false) 
-                e.pexp_attributes
-            with 
-          | Some attr, pexp_attributes -> 
-            Ext_ref.protect record_as_js_object (Some attr) begin fun () -> 
-              { e with
-                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
-                pexp_attributes 
-              }
-            end
-          | None , _ -> 
-            begin match !record_as_js_object with 
-            | Some attr 
-              -> 
-              { e with
-                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
-              }
-            | None -> 
-              Ast_mapper.default_mapper.expr  mapper e
-            end
-          end
-        | _ ->  Ast_mapper.default_mapper.expr  mapper e
-      );
-    typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
-    class_type = (fun self ctyp -> handle_class_obj_typ Ast_mapper.default_mapper self ctyp);
-    structure_item = (fun mapper (str : Parsetree.structure_item) -> 
-        begin match str.pstr_desc with 
-        | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
-          -> 
-            begin match Ast_payload.as_string_exp payload with 
-              | Some exp 
-                -> 
-                let pval_prim = "js_pure_stmt" in 
-                Ast_helper.Str.eval 
-                  { exp with pexp_desc =
-                             Ast_comb.create_local_external loc 
-                               ~pval_prim
-                               ~pval_type:(arrow ""
-                                             (Ast_literal.type_string ~loc ())
-                                             (Ast_literal.type_any ~loc ()))
-                               ["",exp]}
-              | None
-                -> 
-                Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-            end
-        | _ -> Ast_mapper.default_mapper.structure_item mapper str 
-        end
-      )
-  }
-
-
-let common_actions_table : 
-  (string *  (Parsetree.expression -> unit)) list = 
-  [ "obj_type_auto_uncurry", 
-    (fun e -> 
-       obj_type_auto_uncurry := Ast_payload.assert_bool_lit e
-    )
-  ]
-
-
-let structural_config_table  = 
-  String_map.of_list 
-    (( "non_export" , 
-      (fun e -> non_export := Ast_payload.assert_bool_lit e ))
-      :: common_actions_table)
-
-let signature_config_table = 
-  String_map.of_list common_actions_table
-
-
-let make_call_back table ((x : Longident.t Asttypes.loc) , y) = 
-  match x with 
-  | {txt = Lident name; loc  } -> 
-    begin match String_map.find name table with 
-    | fn -> fn y
-    | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
-    end
-  | {loc} -> 
-    Location.raise_errorf ~loc "invalid label for config"
-
-let rewrite_signature : (Parsetree.signature -> Parsetree.signature) ref = 
-  ref (fun  x -> 
-      match (x : Parsetree.signature) with 
-      | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
-        -> 
-        begin 
-          Ast_payload.as_record_and_process loc payload 
-            (make_call_back signature_config_table) ; 
-          unsafe_mapper.signature unsafe_mapper rest
-        end
-      | _ -> 
-        unsafe_mapper.signature  unsafe_mapper x
-       )
-
-let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref = 
-  ref (fun (x : Parsetree.structure) -> 
-      match x with 
-      | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
-        -> 
-        begin 
-          Ast_payload.as_record_and_process loc payload 
-            (make_call_back structural_config_table) ; 
-          let rest = unsafe_mapper.structure unsafe_mapper rest in
-          if !non_export then
-            [Str.include_ ~loc  
-               (Incl.mk ~loc 
-                  (Mod.constraint_ ~loc
-                     (Mod.structure ~loc rest  )
-                     (Mty.signature ~loc [])
-                  ))]
-          else rest 
-
-        end
-      | _ -> 
-        unsafe_mapper.structure  unsafe_mapper x )
-
-
-end
-module Js_implementation : sig 
-#1 "js_implementation.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** High level compilation module *) 
-
-(** This module defines a function to compile the program directly into [js]
-    given [filename] and [outputprefix], 
-    it will be useful if we don't care about bytecode output(generating js only).
- *)
-val interface : Format.formatter -> string -> string -> unit
-
-
-val implementation : Format.formatter -> string -> string -> unit
-(** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
+val ocaml_options : (string * Arg.spec * string) list
 
 end = struct
-#1 "js_implementation.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2002 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* adapted by bucklescript from [driver/compile.ml] for convenience    *)
-
-open Format
-open Typedtree
-open Compenv
-
-
-
-let fprintf = Format.fprintf
-
-let tool_name = "BuckleScript"
-
-let print_if ppf flag printer arg =
-  if !flag then fprintf ppf "%a@." printer arg;
-  arg
-
-let interface ppf sourcefile outputprefix =
-  Compmisc.init_path false;
-  let modulename = module_of_filename ppf sourcefile outputprefix in
-  Env.set_unit_name modulename;
-  let initial_env = Compmisc.initial_env () in
-  let ast = Pparse.parse_interface ~tool_name ppf sourcefile in
-  let ast = if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast in
-  if !Clflags.dump_parsetree then fprintf ppf "%a@." Printast.interface ast;
-  if !Clflags.dump_source then fprintf ppf "%a@." Pprintast.signature ast;
-  let tsg = Typemod.type_interface initial_env ast in
-  if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
-  let sg = tsg.sig_type in
-  if !Clflags.print_types then
-    Printtyp.wrap_printing_env initial_env (fun () ->
-        fprintf std_formatter "%a@."
-          Printtyp.signature (Typemod.simplify_signature sg));
-  ignore (Includemod.signatures initial_env sg sg);
-  Typecore.force_delayed_checks ();
-  Warnings.check_fatal ();
-  if not !Clflags.print_types then begin
-    let sg = Env.save_signature sg modulename (outputprefix ^ ".cmi") in
-    Typemod.save_signature modulename tsg outputprefix sourcefile
-      initial_env sg ;
-  end
-
-let implementation ppf sourcefile outputprefix =
-  Compmisc.init_path false;
-  let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
-  Env.set_unit_name modulename;
-  let env = Compmisc.initial_env() in
-  try
-    let (typedtree, coercion, finalenv, current_signature) =
-      Pparse.parse_implementation ~tool_name ppf sourcefile
-      |> print_if ppf Clflags.dump_parsetree Printast.implementation
-      |> (fun x -> if !Js_config.no_builtin_ppx_ml then x else  !Ppx_entry.rewrite_implementation x )
-      |> print_if ppf Clflags.dump_source Pprintast.structure
-      |> Typemod.type_implementation_more sourcefile outputprefix modulename env 
-      |> print_if ppf Clflags.dump_typedtree
-          (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
-    in
-    if !Clflags.print_types then begin
-      Warnings.check_fatal ();
-    end else begin
-      (typedtree, coercion)
-      |> Translmod.transl_implementation modulename
-      |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
-      |> (fun lambda -> 
-          match           
-          Lam_compile_group.lambda_as_module
-            finalenv current_signature 
-            sourcefile  outputprefix ((* Obj.magic *) lambda ) with
-          | e -> e 
-          | exception e -> 
-            (* Save to a file instead so that it will not scare user *)            
-            let file = "bsc.dump" in
-            Ext_pervasives.with_file_as_chan file
-              (fun ch -> output_string ch @@             
-                Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
-            Ext_log.err __LOC__
-              "Compilation fatal error, stacktrace saved into %s when compiling %s"
-              file sourcefile;             
-            raise e             
-        );
-    end;
-    Stypes.dump (Some (outputprefix ^ ".annot"));
-  with x ->
-    Stypes.dump (Some (outputprefix ^ ".annot"));
-    raise x
-
-end
-module 
-Js_main
-= struct
-#1 "js_main.ml"
+#1 "ocaml_options.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -27398,71 +28577,9 @@ Js_main
 (*                                                                     *)
 (***********************************************************************)
 
-open Config
-open Clflags
-(* open Compenv *)
-
-let output_prefix = Compenv.output_prefix
-let readenv = Compenv.readenv
-let first_ccopts = Compenv.first_ccopts
-let first_ppx = Compenv.first_ppx
-
-let bs_version_string = 
-  "BuckleScript " ^ Js_config.version ^
-  " (Using OCaml" ^ Config.version ^ " )"
-
-let print_version_and_library compiler =
-  Printf.printf "The OCaml %s, version " compiler;
-  print_string bs_version_string; print_newline();
-  print_string "Standard library directory: ";
-  print_string Config.standard_library; print_newline();
-  exit 0
-
-let print_standard_library = Compenv.print_standard_library
-
-let print_version_string () = 
-  print_string bs_version_string;
-  print_newline (); 
-  exit 0 
-
-
-
-let process_interface_file ppf name =
-  Js_implementation.interface ppf name (output_prefix name)
-
-let process_implementation_file ppf name =
-  let opref = output_prefix name in
-  Js_implementation.implementation ppf name opref
-
-let process_file ppf name =
-  if Filename.check_suffix name ".ml"
-  || Filename.check_suffix name ".mlt" then begin
-    let opref = output_prefix name in
-    Js_implementation.implementation ppf name opref
-  end
-  else if Filename.check_suffix name !Config.interface_suffix then begin
-    let opref = output_prefix name in
-    Js_implementation.interface ppf name opref
-  end
-  else
-    raise(Arg.Bad("don't know what to do with " ^ name))
-
-let usage = "Usage: bsc <options> <files>\nOptions are:"
-
-let ppf = Format.err_formatter
-
-(* Error messages to standard error formatter *)
-let anonymous filename =
-  readenv ppf Before_compile; process_file ppf filename;;
-let impl filename =
-  readenv ppf Before_compile; process_implementation_file ppf filename;;
-let intf filename =
-  readenv ppf Before_compile; process_interface_file ppf filename;;
-
-let show_config () =
-  Config.print_config stdout;
-  exit 0;
-;;
+open Clflags 
+open Config 
+open Compenv
 
 let mk_absname f =
   "-absname", Arg.Unit f, " Show absolute filenames in error messages"
@@ -27684,6 +28801,203 @@ let mk__ f =
   "<file>  Treat <file> as a file name (even if it starts with `-')"
 ;;
 
+let show_config () =
+  Config.print_config stdout;
+  exit 0;
+;;
+
+let ocaml_options = 
+  let bs_version_string = 
+    "BuckleScript " ^ Js_config.version ^
+    " (Using OCaml" ^ Config.version ^ " )" in
+
+  let print_version_and_library compiler =
+    Printf.printf "The OCaml %s, version " compiler;
+    print_string bs_version_string; print_newline();
+    print_string "Standard library directory: ";
+    print_string Config.standard_library; print_newline();
+    exit 0 in
+
+  let print_standard_library = Compenv.print_standard_library in
+
+  let print_version_string () = 
+    print_string bs_version_string;
+    print_newline (); 
+    exit 0 in
+
+  let set r () = r := true in 
+  let unset r () = r := false in 
+  let _absname = set Location.absname in 
+  let _annot = set annotations in 
+  let _binannot = set binary_annotations in 
+  let _c = set compile_only in 
+  let _config = show_config in 
+  let _g = set debug in 
+  let _i () = print_types := true; compile_only := true in 
+  let _I s = include_dirs := s :: !include_dirs in 
+  (* let _impl = impl in  *)
+  (* let _intf = intf in  *)
+  let _intf_suffix s = Config.interface_suffix := s in 
+  let _keep_docs = set keep_docs in 
+  let _keep_locs = set keep_locs in 
+  let _labels = unset classic in 
+  let _no_alias_deps = set transparent_modules in 
+  let _no_app_funct = unset applicative_functors in 
+  let _noassert = set noassert in 
+  let _nolabels = set classic in 
+  let _nostdlib = set no_std_include in 
+  let _o s = output_name := Some s in 
+  let _open s = open_modules := s :: !open_modules in 
+  let _pp s = preprocessor := Some s in 
+  let _ppx s = first_ppx := s :: !first_ppx in 
+  let _principal = set principal in 
+  let _rectypes = set recursive_types in 
+  let _safe_string = unset unsafe_string in 
+  let _short_paths = unset real_paths in 
+  let _strict_sequence = set strict_sequence in 
+  let _strict_formats = set strict_formats in 
+  let _unsafe = set fast in 
+  let _unsafe_string = set unsafe_string in 
+  let _v () = print_version_and_library "compiler" in 
+  let _version = print_version_string in 
+  let _vnum = print_version_string in 
+  let _w = (Warnings.parse_options false) in
+  let _warn_error = (Warnings.parse_options true) in
+  let _warn_help = Warnings.help_warnings in
+  let _where = print_standard_library in 
+  let _verbose = set verbose in 
+  let _nopervasives = set nopervasives in
+  let _dsource = set dump_source in 
+  let _dparsetree = set dump_parsetree in 
+  let _dtypedtree = set dump_typedtree in
+  let _drawlambda = set dump_rawlambda in
+  let _dlambda = set dump_lambda in
+  (* let anonymous = anonymous in *)
+
+  [ mk_absname _absname;
+    mk_annot _annot;
+    mk_binannot _binannot;
+    mk_c _c;
+    mk_config _config;
+    mk_g_byt _g;
+    mk_i _i;
+    mk_I _I;
+    (* mk_impl _impl; *)
+    (* mk_intf _intf; *)
+    mk_intf_suffix _intf_suffix;
+    mk_keep_docs _keep_docs;
+    mk_keep_locs _keep_locs;
+    mk_labels _labels;
+    mk_no_alias_deps _no_alias_deps;
+    mk_no_app_funct _no_app_funct;
+    mk_noassert _noassert;
+    mk_nolabels _nolabels;
+    mk_nostdlib _nostdlib;
+    mk_o _o;
+    mk_open _open;
+    mk_pp _pp;
+    mk_ppx _ppx;
+    mk_principal _principal;
+    mk_rectypes _rectypes;
+    mk_safe_string _safe_string;
+    mk_short_paths _short_paths;
+    mk_strict_sequence _strict_sequence;
+    mk_strict_formats _strict_formats;
+    mk_unsafe _unsafe;
+    mk_v _v;
+    mk_verbose _verbose;
+    mk_version _version;
+    mk_vnum _vnum;
+    mk_w _w;
+    mk_warn_error _warn_error;
+    mk_warn_help _warn_help;
+    mk_where _where;
+    (* mk__ anonymous; *)
+    mk_nopervasives _nopervasives;
+    mk_dsource _dsource;
+    mk_dparsetree _dparsetree;
+    mk_dtypedtree _dtypedtree;
+    mk_drawlambda _drawlambda;
+    mk_dlambda _dlambda ]
+
+
+end
+module Js_main : sig 
+#1 "js_main.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+end = struct
+#1 "js_main.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+
+let process_interface_file ppf name =
+  Js_implementation.interface ppf name (Compenv.output_prefix name)
+let process_implementation_file ppf name =
+  Js_implementation.implementation ppf name (Compenv.output_prefix name)
+
+
+let process_file ppf name =
+  match Ocaml_parse.check_suffix  name with 
+  | `Ml, opref ->
+    Js_implementation.implementation ppf name opref 
+  | `Mli, opref -> 
+    Js_implementation.interface ppf name opref 
+
+
+let usage = "Usage: bsc <options> <files>\nOptions are:"
+
+let ppf = Format.err_formatter
+
+(* Error messages to standard error formatter *)
+let anonymous filename =
+  Compenv.readenv ppf Before_compile; process_file ppf filename;;
+let impl filename =
+  Compenv.readenv ppf Before_compile; process_implementation_file ppf filename;;
+let intf filename =
+  Compenv.readenv ppf Before_compile; process_interface_file ppf filename;;
+
+let batch_files  = ref []
+
+let collect_file name = 
+  batch_files := name :: !batch_files
+
+
+
+
 
 
 
@@ -27716,127 +29030,13 @@ let buckle_script_flags =
     " set will generate `.d.ts` file for typescript (experimental)")
   :: ("-bs-diagnose", Arg.Set Js_config.diagnose, 
       " More verbose output")
-  :: (
-    let module F = struct
-      let set r () = r := true
-      let unset r () = r := false
-      let _a = set make_archive
-      let _absname = set Location.absname
-      let _annot = set annotations
-      let _binannot = set binary_annotations
-      let _c = set compile_only
-      let _cc s = c_compiler := Some s
-      let _cclib s = ccobjs := Misc.rev_split_words s @ !ccobjs
-      let _ccopt s = first_ccopts := s :: !first_ccopts
-      let _compat_32 = set bytecode_compatible_32
-      let _config = show_config
-      let _custom = set custom_runtime
-      let _no_check_prims = set no_check_prims
-      let _dllib s = dllibs := Misc.rev_split_words s @ !dllibs
-      let _dllpath s = dllpaths := !dllpaths @ [s]
-      let _for_pack s = for_package := Some s
-      let _g = set debug
-      let _i () = print_types := true; compile_only := true
-      let _I s = include_dirs := s :: !include_dirs
-      let _impl = impl
-      let _intf = intf
-      let _intf_suffix s = Config.interface_suffix := s
-      let _keep_docs = set keep_docs
-      let _keep_locs = set keep_locs
-      let _labels = unset classic
-      let _linkall = set link_everything
-      let _make_runtime () =
-        custom_runtime := true; make_runtime := true; link_everything := true
-      let _no_alias_deps = set transparent_modules
-      let _no_app_funct = unset applicative_functors
-      let _noassert = set noassert
-      let _nolabels = set classic
-      let _noautolink = set no_auto_link
-      let _nostdlib = set no_std_include
-      let _o s = output_name := Some s
-      let _open s = open_modules := s :: !open_modules
-      let _output_obj () = output_c_object := true; custom_runtime := true
-      let _output_complete_obj () =
-        output_c_object := true; output_complete_object := true; custom_runtime := true
-      let _pack = set make_package
-      let _pp s = preprocessor := Some s
-      let _ppx s = first_ppx := s :: !first_ppx
-      let _principal = set principal
-      let _rectypes = set recursive_types
-      let _runtime_variant s = runtime_variant := s
-      let _safe_string = unset unsafe_string
-      let _short_paths = unset real_paths
-      let _strict_sequence = set strict_sequence
-      let _strict_formats = set strict_formats
-      let _thread = set use_threads
-      let _vmthread = set use_vmthreads
-      let _unsafe = set fast
-      let _unsafe_string = set unsafe_string
-      let _use_prims s = use_prims := s
-      let _use_runtime s = use_runtime := s
-      let _v () = print_version_and_library "compiler"
-      let _version = print_version_string
-      let _vnum = print_version_string
-      let _w = (Warnings.parse_options false)
-      let _warn_error = (Warnings.parse_options true)
-      let _warn_help = Warnings.help_warnings
-      let _where = print_standard_library
-      let _verbose = set verbose
-      let _nopervasives = set nopervasives
-      let _dsource = set dump_source
-      let _dparsetree = set dump_parsetree
-      let _dtypedtree = set dump_typedtree
-      let _drawlambda = set dump_rawlambda
-      let _dlambda = set dump_lambda
-      let _dinstr = set dump_instr
-      let anonymous = anonymous
-    end in 
-    [ mk_absname F._absname;
-      mk_annot F._annot;
-      mk_binannot F._binannot;
-      mk_c F._c;
-      mk_config F._config;
-      mk_g_byt F._g;
-      mk_i F._i;
-      mk_I F._I;
-      mk_impl F._impl;
-      mk_intf F._intf;
-      mk_intf_suffix F._intf_suffix;
-      mk_keep_docs F._keep_docs;
-      mk_keep_locs F._keep_locs;
-      mk_labels F._labels;
-      mk_no_alias_deps F._no_alias_deps;
-      mk_no_app_funct F._no_app_funct;
-      mk_noassert F._noassert;
-      mk_nolabels F._nolabels;
-      mk_nostdlib F._nostdlib;
-      mk_o F._o;
-      mk_open F._open;
-      mk_pp F._pp;
-      mk_ppx F._ppx;
-      mk_principal F._principal;
-      mk_rectypes F._rectypes;
-      mk_safe_string F._safe_string;
-      mk_short_paths F._short_paths;
-      mk_strict_sequence F._strict_sequence;
-      mk_strict_formats F._strict_formats;
-      mk_unsafe F._unsafe;
-      mk_v F._v;
-      mk_verbose F._verbose;
-      mk_version F._version;
-      mk_vnum F._vnum;
-      mk_w F._w;
-      mk_warn_error F._warn_error;
-      mk_warn_help F._warn_help;
-      mk_where F._where;
-      mk__ F.anonymous;
-      mk_nopervasives F._nopervasives;
-      mk_dsource F._dsource;
-      mk_dparsetree F._dparsetree;
-      mk_dtypedtree F._dtypedtree;
-      mk_drawlambda F._drawlambda;
-      mk_dlambda F._dlambda ]
-  )
+  :: ("-bs-rest-files", Arg.Rest collect_file, 
+      " Provide batch of files, the compiler will sort it before compiling"
+     )
+  :: Ocaml_options.mk_impl impl
+  :: Ocaml_options.mk_intf intf 
+  :: Ocaml_options.mk__ anonymous
+  :: Ocaml_options.ocaml_options
 
 let () = 
   Clflags.unsafe_string := false;
@@ -27844,8 +29044,9 @@ let () =
 
 let main () =
   try
-    readenv ppf Before_args;
+    Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
+    Ocaml_batch_compile.batch_compile ppf !batch_files; 
     exit 0
   with x ->
     Location.report_exception ppf x;
@@ -27854,89 +29055,6 @@ let main () =
 let _ = main ()
 
 
-
-
-
-end
-module Lam_mk : sig 
-#1 "lam_mk.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** A module prepared for smart constructors of {!Lam.t}*)
-
-val lfunction : 
-  Lambda.function_kind -> Ident.t list -> Lam.t -> Lam.t
-
-end = struct
-#1 "lam_mk.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-(* Note this function could change the arity of an lambda, 
-   we need update its meta data as well
-*)
-
-let lfunction kind params (body : Lam.t) =
-  if params = [] then body else
-    match body with
-    | Lfunction (kind', params', body') when kind = kind' ->
-      Lam.function_ kind' (params @ params') body'
-    |  _ ->
-      Lam.function_ kind params body
 
 
 

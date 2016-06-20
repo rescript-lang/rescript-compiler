@@ -91,4 +91,18 @@ val find_opt : ('a -> 'b option) -> 'a list -> 'b option
 (** [f] is applied follow the list order *)
 val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
 
+
 val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+
+type 'a t = 'a list ref
+
+val create_ref_empty : unit -> 'a t
+
+val ref_top : 'a t -> 'a 
+
+val ref_empty : 'a t -> bool
+
+val ref_push : 'a -> 'a t -> unit
+
+val ref_pop : 'a t -> 'a
