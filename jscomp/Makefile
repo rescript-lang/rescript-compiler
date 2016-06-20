@@ -37,7 +37,7 @@ release:snapshot
 # Carefully check the stored data if it is platform independent
 
 ./bin/ocaml_pack: ./bin/ocaml_pack.mli ./bin/ocaml_pack.ml 
-	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  ./bin/ocaml_pack.mli ./bin/ocaml_pack.ml -o $@
+	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
 
 snapshot: ./bin/ocaml_pack snapshotcmj
 	$(MAKE) snapshotml

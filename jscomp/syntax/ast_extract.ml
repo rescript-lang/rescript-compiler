@@ -93,16 +93,15 @@ let merge tbl (files : (info * Depend.StringSet.t) list ) :
 let sort_files_by_dependencies tbl files
     =
   let h = merge tbl files in
-  let worklist = ref [] in
+  let worklist = Ext_list.create_ref_empty () in
   let ()= 
-    Hashtbl.iter (fun key _     ->  worklist := key :: !worklist ) h in
-  let result = ref [] in
+    Hashtbl.iter (fun key _     ->  Ext_list.ref_push key worklist) h in
+  let result = Ext_list.create_ref_empty () in
   let visited = Hashtbl.create 31 in
-
-  while not @@ (function [] -> true | _ ->  false) !worklist do 
-    let current = List.hd !worklist  in 
+  while not @@ Ext_list.ref_empty worklist do 
+    let current = Ext_list.ref_top worklist  in 
     if Hashtbl.mem visited current then
-      worklist := List.tl !worklist
+      ignore (Ext_list.ref_pop worklist)
     else 
       match Depend.StringSet.elements (Hashtbl.find h current) with 
       | depends -> 
@@ -113,13 +112,12 @@ let sort_files_by_dependencies tbl files
           begin match really_depends with 
           |[] -> 
             begin
-              let v = List.hd !worklist in 
-              worklist := List.tl !worklist ; 
+              let v = Ext_list.ref_pop worklist in 
               Hashtbl.add visited  v () ;
               Ext_list.ref_push current result 
             end
           | _ -> 
-              List.iter  (fun x -> worklist :=  x :: ! worklist) really_depends
+              List.iter  (fun x -> Ext_list.ref_push x worklist) really_depends
           end
       | exception Not_found ->  assert false 
   done;

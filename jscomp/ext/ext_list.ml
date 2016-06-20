@@ -306,6 +306,17 @@ let reduce_from_right fn lst =
     | _ -> invalid_arg "Ext_list.reduce" 
   end
 
+type 'a t = 'a list ref
+
+let create_ref_empty () = ref []
+
+let ref_top x = 
+  match !x with 
+  | y::_ -> y 
+  | _ -> invalid_arg "Ext_list.ref_top"
+
+let ref_empty x = 
+  match !x with [] -> true | _ -> false 
 
 let ref_push x refs = 
   refs := x :: !refs
