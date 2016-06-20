@@ -20,21 +20,16 @@ open Compenv
 
 let fprintf = Format.fprintf
 
-let tool_name = "BuckleScript"
+
 
 let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg;
   arg
 
-let interface ppf sourcefile outputprefix =
-  Compmisc.init_path false;
+let after_parsing_sig ppf sourcefile outputprefix ast  = 
   let modulename = module_of_filename ppf sourcefile outputprefix in
-  Env.set_unit_name modulename;
   let initial_env = Compmisc.initial_env () in
-  let ast = Pparse.parse_interface ~tool_name ppf sourcefile in
-  let ast = if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast in
-  if !Clflags.dump_parsetree then fprintf ppf "%a@." Printast.interface ast;
-  if !Clflags.dump_source then fprintf ppf "%a@." Pprintast.signature ast;
+  Env.set_unit_name modulename;
   let tsg = Typemod.type_interface initial_env ast in
   if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
   let sg = tsg.sig_type in
@@ -51,20 +46,23 @@ let interface ppf sourcefile outputprefix =
       initial_env sg ;
   end
 
-let implementation ppf sourcefile outputprefix =
+let interface ppf sourcefile outputprefix =
   Compmisc.init_path false;
+  Ocaml_parse.parse_interface ppf sourcefile
+  |> print_if ppf Clflags.dump_parsetree Printast.interface
+  |> print_if ppf Clflags.dump_source Pprintast.signature 
+  |> after_parsing_sig ppf sourcefile outputprefix 
+
+let after_parsing_impl ppf sourcefile outputprefix ast =
   let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
-  Env.set_unit_name modulename;
   let env = Compmisc.initial_env() in
+  Env.set_unit_name modulename;
   try
     let (typedtree, coercion, finalenv, current_signature) =
-      Pparse.parse_implementation ~tool_name ppf sourcefile
-      |> print_if ppf Clflags.dump_parsetree Printast.implementation
-      |> (fun x -> if !Js_config.no_builtin_ppx_ml then x else  !Ppx_entry.rewrite_implementation x )
-      |> print_if ppf Clflags.dump_source Pprintast.structure
+      ast 
       |> Typemod.type_implementation_more sourcefile outputprefix modulename env 
       |> print_if ppf Clflags.dump_typedtree
-          (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
+        (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
     in
     if !Clflags.print_types then begin
       Warnings.check_fatal ();
@@ -74,9 +72,9 @@ let implementation ppf sourcefile outputprefix =
       |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
       |> (fun lambda -> 
           match           
-          Lam_compile_group.lambda_as_module
-            finalenv current_signature 
-            sourcefile  outputprefix ((* Obj.magic *) lambda ) with
+            Lam_compile_group.lambda_as_module
+              finalenv current_signature 
+              sourcefile  outputprefix lambda  with
           | e -> e 
           | exception e -> 
             (* Save to a file instead so that it will not scare user *)            
@@ -94,3 +92,10 @@ let implementation ppf sourcefile outputprefix =
   with x ->
     Stypes.dump (Some (outputprefix ^ ".annot"));
     raise x
+
+let implementation ppf sourcefile outputprefix =
+  Compmisc.init_path false;
+  Ocaml_parse.parse_implementation ppf sourcefile
+  |> print_if ppf Clflags.dump_parsetree Printast.implementation
+  |> print_if ppf Clflags.dump_source Pprintast.structure
+  |> after_parsing_impl ppf sourcefile outputprefix 

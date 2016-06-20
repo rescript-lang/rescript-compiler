@@ -24,29 +24,13 @@
 
 
 
-
-
-
-
-
-(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a hashset 
-
-val create : ?random: bool -> int -> 'a hashset
-
-val clear : 'a hashset -> unit
-
-val reset : 'a hashset -> unit
-
-val copy : 'a hashset -> 'a hashset
-
-val add : 'a hashset -> 'a  -> unit
-
-val mem : 'a hashset -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a hashset -> unit
-
-val elements : 'a hashset -> 'a list
-
-val length : 'a hashset -> int 
+val mk_impl : (string -> unit) -> string * Arg.spec * string
+val mk_intf : (string -> unit) -> string * Arg.spec * string
+val mk__ : (string -> unit) -> string * Arg.spec * string
+(**
+   [ocaml_options] are command options inherited from ocaml 
+   bytecode compiler except three options 
+   [impl] [intf] and [annoymous] which is in another module 
+   due to  dependencies
+*)
+val ocaml_options : (string * Arg.spec * string) list

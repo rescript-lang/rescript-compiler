@@ -23,30 +23,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type ast = 
+  | Ml of Parsetree.structure * string  (* outputprefix *)
+  | Mli of Parsetree.signature * string (* outputprefix *)
+
+type  info = 
+  { source_file : string ; 
+    ast : ast
+  }
+
+(** 
+   {[ let stack,mapping = prepare ast_table ]}
+
+   {[ 
+     [ast_table] : (string, ast) Hashtbl.t 
+   ]}
+
+   key  is the filename,
+   [stack] is the reverse order 
+   for mapping, the key is the module and value is filename
+*)
+
+val prepare : 
+  (string, ast) Hashtbl.t -> string list * (string, string) Hashtbl.t
 
 
-
-
-
-
-(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a hashset 
-
-val create : ?random: bool -> int -> 'a hashset
-
-val clear : 'a hashset -> unit
-
-val reset : 'a hashset -> unit
-
-val copy : 'a hashset -> 'a hashset
-
-val add : 'a hashset -> 'a  -> unit
-
-val mem : 'a hashset -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a hashset -> unit
-
-val elements : 'a hashset -> 'a list
-
-val length : 'a hashset -> int 

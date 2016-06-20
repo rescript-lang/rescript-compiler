@@ -22,31 +22,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let parse_interface ppf sourcefile = 
+  let ast = Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile in
+  if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast
 
+let parse_implementation ppf sourcefile = 
+  let ast = 
+    Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile in 
+  if !Js_config.no_builtin_ppx_ml then ast else
+    !Ppx_entry.rewrite_implementation ast 
 
-
-
-
-
-
-(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a hashset 
-
-val create : ?random: bool -> int -> 'a hashset
-
-val clear : 'a hashset -> unit
-
-val reset : 'a hashset -> unit
-
-val copy : 'a hashset -> 'a hashset
-
-val add : 'a hashset -> 'a  -> unit
-
-val mem : 'a hashset -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a hashset -> unit
-
-val elements : 'a hashset -> 'a list
-
-val length : 'a hashset -> int 
+let check_suffix  name  = 
+  if Filename.check_suffix name ".ml"
+  || Filename.check_suffix name ".mlt" then 
+    `Ml,  Compenv.output_prefix name 
+  else if Filename.check_suffix name !Config.interface_suffix then 
+    `Mli,  Compenv.output_prefix name 
+  else 
+    raise(Arg.Bad("don't know what to do with " ^ name))

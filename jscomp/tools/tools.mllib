@@ -1,9 +1,7 @@
-include deps.mllib
-
-# ../ext_pervasives
-# ../ext_bytes
-# ../ext_string
-# ../../ocaml/tools/depend
+../ext/ext_pervasives
+../ext/ext_bytes
+../ext/ext_string
+../syntax/depend
 
 line_process
 ocaml_extract

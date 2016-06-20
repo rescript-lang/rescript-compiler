@@ -92,3 +92,7 @@ val find_opt : ('a -> 'b option) -> 'a list -> 'b option
 val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
 
 val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+val ref_push : 'a -> 'a list ref -> unit
+
+val ref_pop : 'a list ref -> 'a
