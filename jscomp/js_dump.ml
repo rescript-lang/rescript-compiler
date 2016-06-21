@@ -238,8 +238,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
 ;;
 
 let property_string f s = 
-  let s' = Ext_ident.convert false s in 
-  if s == s' then 
+  if Ext_ident.property_no_need_convert s  then 
     P.string f s
   else 
     pp_string f ~utf:true ~quote:(best_string_quote s) s
@@ -930,29 +929,24 @@ and
     if l > 15 then P.paren_group f 1 action else action ()
 
   | Dot (e, s,normal) ->
-    if normal then 
-      begin 
-        let action () = 
-          let cxt = expression 15 cxt f e in
+    let action () = 
+      let cxt = expression 15 cxt f e in
+      if Ext_ident.property_no_need_convert s  then
+        begin 
           P.string f L.dot;
-          P.string f (Ext_ident.convert true s); 
-          (* See [Js_program_loader.obj_of_exports] 
-             maybe in the ast level we should have 
-             refer and export
-          *)
-          cxt in
-        if l > 15 then P.paren_group f 1 action else action ()
-      end
-    else begin
-      let action () = 
-        P.group f 1 @@ fun _ -> 
-          let cxt = expression 15 cxt f e in
-          (P.bracket_group f 1 @@ fun _ -> 
-              pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote s) s);
-          cxt 
-      in
-      if l > 15 then P.paren_group f 1 action else action ()
-    end
+          P.string f s; 
+        end
+      else
+        begin 
+          P.bracket_group f 1 @@ fun _ ->
+          pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote s) s
+        end;
+      (* See [Js_program_loader.obj_of_exports] 
+         maybe in the ast level we should have 
+         refer and export
+      *)
+      cxt in
+    if l > 15 then P.paren_group f 1 action else action ()
 
   | New (e,  el) ->
     let action () = 

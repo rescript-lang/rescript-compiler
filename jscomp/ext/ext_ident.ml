@@ -212,11 +212,10 @@ let convert keyword (name : string) =
      let len = String.length name  in
      try
        for i  = 0 to len - 1 do 
-         let c = String.unsafe_get name i in
-         if 
-           not ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$' )
-         then
-           raise (E.Not_normal_letter i)
+         match String.unsafe_get name i with 
+         | 'a' .. 'z' | 'A' .. 'Z'
+         | '0' .. '9' | '_' | '$' -> ()
+         | _ -> raise (E.Not_normal_letter i)
        done;
        name
      with E.Not_normal_letter i ->
@@ -244,6 +243,8 @@ let convert keyword (name : string) =
           | _ -> Buffer.add_string buffer "$unknown"
         done; Buffer.contents buffer)
 
+let property_no_need_convert s = 
+  s == convert false s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
