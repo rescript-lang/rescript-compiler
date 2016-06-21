@@ -334,3 +334,4 @@ test_unsafe_cmp
 gpr_441
 gpr_459_test
 promise
+chain_code_test

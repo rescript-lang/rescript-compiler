@@ -82,6 +82,8 @@ caml_format_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
     ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
     ../stdlib/format.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
+chain_code_test.cmj : ../runtime/js.cmj
+chain_code_test.cmx : ../runtime/js.cmx
 class3_test.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj \
     ../stdlib/array.cmi
 class3_test.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx \
@@ -750,6 +752,8 @@ caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
     ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
+chain_code_test.cmo : ../runtime/js.cmo
+chain_code_test.cmj : ../runtime/js.cmj
 class3_test.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo \
     ../stdlib/array.cmi
 class3_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \

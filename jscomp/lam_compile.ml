@@ -754,7 +754,11 @@ and
           (* TODO: if [b] contains computation, compute it first *)
           let cont obj_code = 
             Js_output.handle_block_return st should_return lam 
-              (match obj_code with None -> block | Some x -> x :: block)
+              (match obj_code with 
+              | None -> block 
+              | Some x ->  
+                block @ [x]
+              )
           in 
 
           begin match Js_ast_util.named_expression  b with 
@@ -836,9 +840,9 @@ and
             let cont block0 block1 obj_code = 
               Js_output.handle_block_return st should_return lam 
                 (
-                 match obj_code with
-                 | None -> block0 @ block1
-                 | Some obj_code -> block0 @ obj_code :: block1
+                  match obj_code with
+                  | None -> block0 @ block1
+                  | Some obj_code -> block0 @ obj_code :: block1
                 )
             in 
             match 
@@ -864,8 +868,8 @@ and
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
                 compile_lambda cxt @@ 
                 Lam.apply fn [arg]  
-                   Location.none (* TODO *)
-                   App_js_full
+                  Location.none (* TODO *)
+                  App_js_full
               else 
                 let property =
                   String.sub setter 0 
@@ -885,8 +889,8 @@ and
         | fn :: rest -> 
           compile_lambda cxt 
             (Lam.apply fn rest 
-                      Location.none (*TODO*)
-                      App_js_full)
+               Location.none (*TODO*)
+               App_js_full)
         | _ -> assert false 
       else 
         begin match args_lambda with 
