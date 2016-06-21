@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 06/21-10:50 *)
+(** Bundled by ocaml_pack 06/21-15:00 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1466,7 +1466,7 @@ let gc = "Caml_gc"
 let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
-let version = "0.5.5"
+let version = "0.6.0"
 let runtime_set = 
   [
     js_primitive;
@@ -7639,7 +7639,12 @@ val make_unused : unit -> Ident.t
 
 val is_unused_ident : Ident.t -> bool 
 
-val convert : string -> string
+(**
+   if name is not converted, the reference should be equal
+*)
+val convert : bool -> string -> string
+val property_no_need_convert : string -> bool 
+
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
 val nil : Ident.t
@@ -7751,7 +7756,7 @@ let reserved_words =
     "debugger";"default";"delete";"do";
     "else";
     "finally";"for";"function";
-    "if"; "in";"instanceof";
+    "if"; "then"; "in";"instanceof";
     "new";
     "return";
     "switch";
@@ -7842,6 +7847,10 @@ let reserved_map =
   List.fold_left (fun acc x -> String_set.add x acc) String_set.empty 
     reserved_words
 
+
+
+
+
 (* TODO:
     check name conflicts with javascript conventions
     {[
@@ -7849,43 +7858,46 @@ let reserved_map =
     - : string = "$caret"
     ]}
  *)
-let convert (name : string) = 
-   let module E = struct exception Not_normal_letter of int end in
-   let len = String.length name  in
-   if String_set.mem name reserved_map then "$$" ^ name 
+let convert keyword (name : string) = 
+   if keyword && String_set.mem name reserved_map then "$$" ^ name 
    else 
-   try
-   for i  = 0 to len - 1 do 
-   let c = String.unsafe_get name i in
-   if not ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$' ) then
-       raise (E.Not_normal_letter i)
-    else ()
-    done;
-     name
-  with E.Not_normal_letter i ->
-   String.sub name 0 i ^ 
-   (let buffer = Buffer.create len in 
-   for j = i to  len - 1 do 
-     let c = String.unsafe_get name j in
-     match c with 
-     | '*' -> Buffer.add_string buffer "$star"
-     | '\'' -> Buffer.add_string buffer "$prime"
-     | '!' -> Buffer.add_string buffer "$bang"
-     | '>' -> Buffer.add_string buffer "$great"
-     | '<' -> Buffer.add_string buffer "$less"
-     | '=' -> Buffer.add_string buffer "$eq"
-     | '+' -> Buffer.add_string buffer "$plus"
-     | '-' -> Buffer.add_string buffer "$neg"
-     | '@' -> Buffer.add_string buffer "$at"
-     | '^' -> Buffer.add_string buffer "$caret"
-     | '/' -> Buffer.add_string buffer "$slash"
-     | '|' -> Buffer.add_string buffer "$pipe"
-     | '.' -> Buffer.add_string buffer "$dot"
-     | '%' -> Buffer.add_string buffer "$percent"
-     | '~' -> Buffer.add_string buffer "$tilde"
-     | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
-     | _ -> Buffer.add_string buffer "$unknown"
-   done; Buffer.contents buffer)
+     let module E = struct exception Not_normal_letter of int end in
+     let len = String.length name  in
+     try
+       for i  = 0 to len - 1 do 
+         match String.unsafe_get name i with 
+         | 'a' .. 'z' | 'A' .. 'Z'
+         | '0' .. '9' | '_' | '$' -> ()
+         | _ -> raise (E.Not_normal_letter i)
+       done;
+       name
+     with E.Not_normal_letter i ->
+       String.sub name 0 i ^ 
+       (let buffer = Buffer.create len in 
+        for j = i to  len - 1 do 
+          let c = String.unsafe_get name j in
+          match c with 
+          | '*' -> Buffer.add_string buffer "$star"
+          | '\'' -> Buffer.add_string buffer "$prime"
+          | '!' -> Buffer.add_string buffer "$bang"
+          | '>' -> Buffer.add_string buffer "$great"
+          | '<' -> Buffer.add_string buffer "$less"
+          | '=' -> Buffer.add_string buffer "$eq"
+          | '+' -> Buffer.add_string buffer "$plus"
+          | '-' -> Buffer.add_string buffer "$neg"
+          | '@' -> Buffer.add_string buffer "$at"
+          | '^' -> Buffer.add_string buffer "$caret"
+          | '/' -> Buffer.add_string buffer "$slash"
+          | '|' -> Buffer.add_string buffer "$pipe"
+          | '.' -> Buffer.add_string buffer "$dot"
+          | '%' -> Buffer.add_string buffer "$percent"
+          | '~' -> Buffer.add_string buffer "$tilde"
+          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
+          | _ -> Buffer.add_string buffer "$unknown"
+        done; Buffer.contents buffer)
+
+let property_no_need_convert s = 
+  s == convert false s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
@@ -13166,7 +13178,7 @@ let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t)   =
        [Printf.sprintf "%s$%d" name id.stamp] which is 
        not relevant to the context       
     *)    
-    let name = Ext_ident.convert id.name in
+    let name = Ext_ident.convert true id.name in
     let i,new_cxt = Ext_pp_scope.add_ident  id cxt in
     (* Attention: 
        $$Array.length, due to the fact that global module is 
@@ -13255,6 +13267,11 @@ let pp_string f ?(quote='"') ?(utf=false) s =
   P.string f quote_s
 ;;
 
+let property_string f s = 
+  if Ext_ident.property_no_need_convert s  then 
+    P.string f s
+  else 
+    pp_string f ~utf:true ~quote:(best_string_quote s) s
 
 (* TODO: check utf's correct semantics *)
 let pp_quote_string f s = 
@@ -13463,7 +13480,7 @@ and vident cxt f  (v : J.vident) =
   | Qualified (id,_, Some name) ->
       let cxt = ident cxt f id in
       P.string f L.dot;
-      P.string f (Ext_ident.convert name);
+      P.string f (Ext_ident.convert true name);
       cxt
   end
 
@@ -13537,17 +13554,6 @@ and
         (Call ({expression_desc = Dot(a,L.bind, true); comment = None }, [b], 
                {arity = Full; call_info = Call_na}))
     end    
-  (* | Tag_ml_obj e ->  *)
-  (*   P.group f 1 (fun _ ->  *)
-  (*       P.string f "Object.defineProperty"; *)
-  (*       P.paren_group f 1 (fun _ -> *)
-  (*           let cxt = expression 1 cxt f e in *)
-  (*           P.string f L.comma; *)
-  (*           P.space f ;  *)
-  (*           P.string f {|"##ml"|}; *)
-  (*           P.string f L.comma; *)
-  (*           P.string f {|{"value" : true, "writable" : false}|} ;  *)
-  (*           cxt )) *)
 
   | FlatCall(e,el) -> 
     P.group f 1 (fun _ -> 
@@ -13952,30 +13958,25 @@ and
       cxt  in
     if l > 15 then P.paren_group f 1 action else action ()
 
-  | Dot (e, nm,normal) ->
-    if normal then 
-      begin 
-        let action () = 
-          let cxt = expression 15 cxt f e in
+  | Dot (e, s,normal) ->
+    let action () = 
+      let cxt = expression 15 cxt f e in
+      if Ext_ident.property_no_need_convert s  then
+        begin 
           P.string f L.dot;
-          P.string f (Ext_ident.convert nm); 
-          (* See [Js_program_loader.obj_of_exports] 
-             maybe in the ast level we should have 
-             refer and export
-          *)
-          cxt in
-        if l > 15 then P.paren_group f 1 action else action ()
-      end
-    else begin
-      let action () = 
-        P.group f 1 @@ fun _ -> 
-          let cxt = expression 15 cxt f e in
-          (P.bracket_group f 1 @@ fun _ -> 
-              pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote nm) nm);
-          cxt 
-      in
-      if l > 15 then P.paren_group f 1 action else action ()
-    end
+          P.string f s; 
+        end
+      else
+        begin 
+          P.bracket_group f 1 @@ fun _ ->
+          pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote s) s
+        end;
+      (* See [Js_program_loader.obj_of_exports] 
+         maybe in the ast level we should have 
+         refer and export
+      *)
+      cxt in
+    if l > 15 then P.paren_group f 1 action else action ()
 
   | New (e,  el) ->
     let action () = 
@@ -14032,7 +14033,7 @@ and property_name cxt f (s : J.property_name) : unit =
   | Tag -> P.string f L.tag
   | Length -> P.string f L.length
   | Key s -> 
-    pp_string f ~utf:true ~quote:(best_string_quote s) s
+    property_string  f s 
   | Int_key i -> P.string f (string_of_int i)
 
 and property_name_and_value_list cxt f l : Ext_pp_scope.t =
@@ -14508,7 +14509,7 @@ and block cxt f b =
 let exports cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert id.name in        
+        let s = Ext_ident.convert true id.name in        
         let str,cxt  = str_of_ident cxt id in         
         cxt, ( (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
@@ -23758,7 +23759,7 @@ let pp = Format.fprintf
 let meaningless_names  = ["*opt*"; "param";]
 
 let rec dump_ident fmt (id : Ident.t) (arity : Lam_stats.function_arities)  = 
-  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name ) dump_arity arity
+  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert true id.name ) dump_arity arity
 
 and dump_arity fmt (arity : Lam_stats.function_arities) = 
   match arity with 
@@ -23775,7 +23776,7 @@ and dump_arity fmt (arity : Lam_stats.function_arities) =
              Format.pp_print_space fmt ();
            )
          (fun fmt ident -> pp fmt "@[%s@ :@ any@]" 
-             (Ext_ident.convert @@ Ident.name ident))
+             (Ext_ident.convert true  @@ Ident.name ident))
       ) args 
 
 
