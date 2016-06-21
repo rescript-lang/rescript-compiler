@@ -31,17 +31,23 @@ module E = Js_exp_make
 
 module S = Js_stmt_make  
 
-let named_expression (e : J.expression)
-  :  (J.statement  * Ident.t) option = 
-  match e.expression_desc with 
+let rec is_simple_expression (e : J.expression) = 
+  match e.expression_desc with  
   | Var _ 
   | Bool _ 
   | Str _ 
-  | Number _ -> None 
-  | _ ->  
+  | Number _ -> true
+  | Dot (e, _, _) -> is_simple_expression e 
+  | _ -> false 
+
+let rec named_expression (e : J.expression)
+  :  (J.statement  * Ident.t) option = 
+  if is_simple_expression e then 
+    None 
+  else 
     let obj = Ext_ident.create Literals.tmp in
     let obj_code = 
       S.define
         ~kind:Strict obj e in 
-    
+
     Some (obj_code, obj)
