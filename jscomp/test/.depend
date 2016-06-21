@@ -384,6 +384,8 @@ printf_sim.cmj : ../stdlib/printf.cmi
 printf_sim.cmx : ../stdlib/printf.cmx
 printf_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
 printf_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/format.cmx
+promise.cmj : ../runtime/js.cmj
+promise.cmx : ../runtime/js.cmx
 qcc.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi
@@ -1050,6 +1052,8 @@ printf_sim.cmo : ../stdlib/printf.cmi
 printf_sim.cmj : ../stdlib/printf.cmj
 printf_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
 printf_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj
+promise.cmo : ../runtime/js.cmo
+promise.cmj : ../runtime/js.cmj
 qcc.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi

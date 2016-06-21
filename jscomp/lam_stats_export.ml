@@ -33,7 +33,7 @@ let pp = Format.fprintf
 let meaningless_names  = ["*opt*"; "param";]
 
 let rec dump_ident fmt (id : Ident.t) (arity : Lam_stats.function_arities)  = 
-  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name ) dump_arity arity
+  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert true id.name ) dump_arity arity
 
 and dump_arity fmt (arity : Lam_stats.function_arities) = 
   match arity with 
@@ -50,7 +50,7 @@ and dump_arity fmt (arity : Lam_stats.function_arities) =
              Format.pp_print_space fmt ();
            )
          (fun fmt ident -> pp fmt "@[%s@ :@ any@]" 
-             (Ext_ident.convert @@ Ident.name ident))
+             (Ext_ident.convert true  @@ Ident.name ident))
       ) args 
 
 
