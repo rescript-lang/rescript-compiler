@@ -224,6 +224,8 @@ gpr_405_test.cmj : ../stdlib/hashtbl.cmi gpr_405_test.cmi
 gpr_405_test.cmx : ../stdlib/hashtbl.cmx gpr_405_test.cmi
 gpr_441.cmj :
 gpr_441.cmx :
+gpr_459_test.cmj : mt.cmi
+gpr_459_test.cmx : mt.cmx
 guide_for_ext.cmj :
 guide_for_ext.cmx :
 hamming_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
@@ -384,8 +386,6 @@ printf_sim.cmj : ../stdlib/printf.cmi
 printf_sim.cmx : ../stdlib/printf.cmx
 printf_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
 printf_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/format.cmx
-promise.cmj : ../runtime/js.cmj
-promise.cmx : ../runtime/js.cmx
 qcc.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi
@@ -892,6 +892,8 @@ gpr_405_test.cmo : ../stdlib/hashtbl.cmi gpr_405_test.cmi
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmo :
 gpr_441.cmj :
+gpr_459_test.cmo : mt.cmi
+gpr_459_test.cmj : mt.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
 hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
@@ -1052,8 +1054,6 @@ printf_sim.cmo : ../stdlib/printf.cmi
 printf_sim.cmj : ../stdlib/printf.cmj
 printf_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
 printf_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj
-promise.cmo : ../runtime/js.cmo
-promise.cmj : ../runtime/js.cmj
 qcc.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi
