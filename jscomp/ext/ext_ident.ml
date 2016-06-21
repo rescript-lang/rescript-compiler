@@ -103,7 +103,7 @@ let reserved_words =
     "debugger";"default";"delete";"do";
     "else";
     "finally";"for";"function";
-    "if"; "in";"instanceof";
+    "if"; "then"; "in";"instanceof";
     "new";
     "return";
     "switch";
@@ -194,6 +194,10 @@ let reserved_map =
   List.fold_left (fun acc x -> String_set.add x acc) String_set.empty 
     reserved_words
 
+
+
+
+
 (* TODO:
     check name conflicts with javascript conventions
     {[
@@ -201,43 +205,46 @@ let reserved_map =
     - : string = "$caret"
     ]}
  *)
-let convert (name : string) = 
-   let module E = struct exception Not_normal_letter of int end in
-   let len = String.length name  in
-   if String_set.mem name reserved_map then "$$" ^ name 
+let convert keyword (name : string) = 
+   if keyword && String_set.mem name reserved_map then "$$" ^ name 
    else 
-   try
-   for i  = 0 to len - 1 do 
-   let c = String.unsafe_get name i in
-   if not ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$' ) then
-       raise (E.Not_normal_letter i)
-    else ()
-    done;
-     name
-  with E.Not_normal_letter i ->
-   String.sub name 0 i ^ 
-   (let buffer = Buffer.create len in 
-   for j = i to  len - 1 do 
-     let c = String.unsafe_get name j in
-     match c with 
-     | '*' -> Buffer.add_string buffer "$star"
-     | '\'' -> Buffer.add_string buffer "$prime"
-     | '!' -> Buffer.add_string buffer "$bang"
-     | '>' -> Buffer.add_string buffer "$great"
-     | '<' -> Buffer.add_string buffer "$less"
-     | '=' -> Buffer.add_string buffer "$eq"
-     | '+' -> Buffer.add_string buffer "$plus"
-     | '-' -> Buffer.add_string buffer "$neg"
-     | '@' -> Buffer.add_string buffer "$at"
-     | '^' -> Buffer.add_string buffer "$caret"
-     | '/' -> Buffer.add_string buffer "$slash"
-     | '|' -> Buffer.add_string buffer "$pipe"
-     | '.' -> Buffer.add_string buffer "$dot"
-     | '%' -> Buffer.add_string buffer "$percent"
-     | '~' -> Buffer.add_string buffer "$tilde"
-     | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
-     | _ -> Buffer.add_string buffer "$unknown"
-   done; Buffer.contents buffer)
+     let module E = struct exception Not_normal_letter of int end in
+     let len = String.length name  in
+     try
+       for i  = 0 to len - 1 do 
+         match String.unsafe_get name i with 
+         | 'a' .. 'z' | 'A' .. 'Z'
+         | '0' .. '9' | '_' | '$' -> ()
+         | _ -> raise (E.Not_normal_letter i)
+       done;
+       name
+     with E.Not_normal_letter i ->
+       String.sub name 0 i ^ 
+       (let buffer = Buffer.create len in 
+        for j = i to  len - 1 do 
+          let c = String.unsafe_get name j in
+          match c with 
+          | '*' -> Buffer.add_string buffer "$star"
+          | '\'' -> Buffer.add_string buffer "$prime"
+          | '!' -> Buffer.add_string buffer "$bang"
+          | '>' -> Buffer.add_string buffer "$great"
+          | '<' -> Buffer.add_string buffer "$less"
+          | '=' -> Buffer.add_string buffer "$eq"
+          | '+' -> Buffer.add_string buffer "$plus"
+          | '-' -> Buffer.add_string buffer "$neg"
+          | '@' -> Buffer.add_string buffer "$at"
+          | '^' -> Buffer.add_string buffer "$caret"
+          | '/' -> Buffer.add_string buffer "$slash"
+          | '|' -> Buffer.add_string buffer "$pipe"
+          | '.' -> Buffer.add_string buffer "$dot"
+          | '%' -> Buffer.add_string buffer "$percent"
+          | '~' -> Buffer.add_string buffer "$tilde"
+          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
+          | _ -> Buffer.add_string buffer "$unknown"
+        done; Buffer.contents buffer)
+
+let property_no_need_convert s = 
+  s == convert false s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files

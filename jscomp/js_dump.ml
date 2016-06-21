@@ -148,7 +148,7 @@ let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t)   =
        [Printf.sprintf "%s$%d" name id.stamp] which is 
        not relevant to the context       
     *)    
-    let name = Ext_ident.convert id.name in
+    let name = Ext_ident.convert true id.name in
     let i,new_cxt = Ext_pp_scope.add_ident  id cxt in
     (* Attention: 
        $$Array.length, due to the fact that global module is 
@@ -237,6 +237,11 @@ let pp_string f ?(quote='"') ?(utf=false) s =
   P.string f quote_s
 ;;
 
+let property_string f s = 
+  if Ext_ident.property_no_need_convert s  then 
+    P.string f s
+  else 
+    pp_string f ~utf:true ~quote:(best_string_quote s) s
 
 (* TODO: check utf's correct semantics *)
 let pp_quote_string f s = 
@@ -445,7 +450,7 @@ and vident cxt f  (v : J.vident) =
   | Qualified (id,_, Some name) ->
       let cxt = ident cxt f id in
       P.string f L.dot;
-      P.string f (Ext_ident.convert name);
+      P.string f (Ext_ident.convert true name);
       cxt
   end
 
@@ -519,17 +524,6 @@ and
         (Call ({expression_desc = Dot(a,L.bind, true); comment = None }, [b], 
                {arity = Full; call_info = Call_na}))
     end    
-  (* | Tag_ml_obj e ->  *)
-  (*   P.group f 1 (fun _ ->  *)
-  (*       P.string f "Object.defineProperty"; *)
-  (*       P.paren_group f 1 (fun _ -> *)
-  (*           let cxt = expression 1 cxt f e in *)
-  (*           P.string f L.comma; *)
-  (*           P.space f ;  *)
-  (*           P.string f {|"##ml"|}; *)
-  (*           P.string f L.comma; *)
-  (*           P.string f {|{"value" : true, "writable" : false}|} ;  *)
-  (*           cxt )) *)
 
   | FlatCall(e,el) -> 
     P.group f 1 (fun _ -> 
@@ -934,30 +928,25 @@ and
       cxt  in
     if l > 15 then P.paren_group f 1 action else action ()
 
-  | Dot (e, nm,normal) ->
-    if normal then 
-      begin 
-        let action () = 
-          let cxt = expression 15 cxt f e in
+  | Dot (e, s,normal) ->
+    let action () = 
+      let cxt = expression 15 cxt f e in
+      if Ext_ident.property_no_need_convert s  then
+        begin 
           P.string f L.dot;
-          P.string f (Ext_ident.convert nm); 
-          (* See [Js_program_loader.obj_of_exports] 
-             maybe in the ast level we should have 
-             refer and export
-          *)
-          cxt in
-        if l > 15 then P.paren_group f 1 action else action ()
-      end
-    else begin
-      let action () = 
-        P.group f 1 @@ fun _ -> 
-          let cxt = expression 15 cxt f e in
-          (P.bracket_group f 1 @@ fun _ -> 
-              pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote nm) nm);
-          cxt 
-      in
-      if l > 15 then P.paren_group f 1 action else action ()
-    end
+          P.string f s; 
+        end
+      else
+        begin 
+          P.bracket_group f 1 @@ fun _ ->
+          pp_string f (* ~utf:(kind = `Utf8) *) ~quote:( best_string_quote s) s
+        end;
+      (* See [Js_program_loader.obj_of_exports] 
+         maybe in the ast level we should have 
+         refer and export
+      *)
+      cxt in
+    if l > 15 then P.paren_group f 1 action else action ()
 
   | New (e,  el) ->
     let action () = 
@@ -1014,7 +1003,7 @@ and property_name cxt f (s : J.property_name) : unit =
   | Tag -> P.string f L.tag
   | Length -> P.string f L.length
   | Key s -> 
-    pp_string f ~utf:true ~quote:(best_string_quote s) s
+    property_string  f s 
   | Int_key i -> P.string f (string_of_int i)
 
 and property_name_and_value_list cxt f l : Ext_pp_scope.t =
@@ -1490,7 +1479,7 @@ and block cxt f b =
 let exports cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list, margin = 
     List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
-        let s = Ext_ident.convert id.name in        
+        let s = Ext_ident.convert true id.name in        
         let str,cxt  = str_of_ident cxt id in         
         cxt, ( (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    

@@ -332,3 +332,5 @@ noassert
 test_unsafe_cmp
 
 gpr_441
+
+promise
