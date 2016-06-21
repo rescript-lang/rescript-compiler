@@ -32,80 +32,36 @@
 module E = Js_exp_make
 
 
+(** 
+   [@@bs.module "react"]
+   [@@bs.module "react"]
+   ---
+   [@@bs.module "@" "react"]
+   [@@bs.module "@" "react"]
+   
+   They should have the same module name 
 
-type external_module_name = 
-  | Single of string 
-  | Bind of string * string 
+   TODO: we should emit an warning if we bind 
+   two external files to the same module name
+*)
 
-type 'a external_module = {
-  txt : 'a ;
-  external_module_name : external_module_name option;
-}
-
-let handle_external module_name = 
-  begin 
+let handle_external (module_name : Lam_external_def.external_module_name option) = 
     match module_name with 
-    | Some module_name -> 
-      (* 
-         [@@bs.module "react"]
-         [@@bs.module "react"]
-         ---
-         [@@bs.module "@" "react"]
-         [@@bs.module "@" "react"]
-         They should have the same module name 
-
-         TODO: we should emit an warning if we bind 
-         two external files to the same module name
-       *)
+    | Some {bundle ; bind_name} -> 
       let id  = 
-        match module_name with 
-        | Single module_name -> 
-          (Lam_compile_env.add_js_module module_name , module_name)
-        | Bind (module_name, name) -> 
-          (Lam_compile_env.add_js_module 
-             ~id:(Ext_ident.create_js_module name) module_name,
-           module_name)
+        match bind_name with 
+        | None -> 
+          Lam_compile_env.add_js_module bundle , bundle
+        | Some bind_name -> 
+          Lam_compile_env.add_js_module 
+             ~id:(Ext_ident.create_js_module bind_name) bundle,
+           bundle
       in Some id 
     | None -> None 
-  end
 
-type js_call = { 
-  splice : bool ;
-  qualifiers : string list;
-  name : string;
-}
 
-type js_send = { 
-  splice : bool ; 
-  name : string 
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_val = { 
-  name : string ;
-  external_module_name : external_module_name option;
-  
-} 
-
-type js_new = {  name : string }
-type js_set = { name : string }
-type js_get = { name : string }
-
-type ffi = 
-  | Obj_create 
-  | Js_global of js_val 
-  | Js_global_as_var of  external_module_name
-  | Js_call of js_call external_module
-  | Js_send of js_send
-  | Js_new of js_new external_module
-  | Js_set of js_set
-  | Js_get of js_get
-  | Js_get_index
-  | Js_set_index
-  | Normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
-type prim = Types.type_expr option Primitive.description
-
-let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Location.t option * ffi  = 
+let handle_attributes ({prim_attributes ; prim_name} as _prim  : Lam_external_def.prim )
+  : Location.t option * Lam_external_def.ffi  = 
   let qualifiers = ref [] in
   let call_name = ref None in
   let external_module_name  = ref None in
@@ -145,19 +101,15 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
              | Some name -> 
                js_val := `Value name 
              | None -> 
-               js_val := `Value _prim.prim_name
+               js_val := `Value prim_name
                 (* we can report error here ... *)
            end
          | "bs.val_of_module" 
            (* {[ [@@bs.val_of_module]]}
            *)
            -> 
-           begin match Ast_payload.is_single_string pay_load with 
-           | Some name ->
-             js_val_of_module := `Value(Bind (name, prim_name))
-           | None -> 
-             js_val_of_module := `Value (Single prim_name)
-           end
+           js_val_of_module := 
+             `Value (Lam_external_def.{bundle = prim_name ; bind_name = Ast_payload.is_single_string pay_load})
          |"bs.splice"
            -> 
            js_splice := true
@@ -166,19 +118,19 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
            ->
            begin match Ast_payload.is_single_string pay_load with 
              | Some name -> js_send := `Value name
-             | None -> js_send := `Value _prim.prim_name
+             | None -> js_send := `Value prim_name
            end
          | "bs.set"
            ->
            begin match Ast_payload.is_single_string pay_load with
              | Some name -> js_set := `Value name
-             | None -> js_set := `Value _prim.prim_name
+             | None -> js_set := `Value prim_name
            end
          | "bs.get"
            ->
            begin match Ast_payload.is_single_string pay_load with
              | Some name -> js_get := `Value name
-             | None -> js_get := `Value _prim.prim_name
+             | None -> js_get := `Value prim_name
            end
 
          | "bs.call"
@@ -188,12 +140,15 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
            ->
            begin match Ast_payload.is_single_string pay_load with 
              | Some name -> call_name :=  Some (x.loc, name)
-             | None -> call_name := Some(x.loc, _prim.prim_name)
+             | None -> call_name := Some(x.loc, prim_name)
            end
          | "bs.module" -> 
            begin match Ast_payload.is_string_or_strings pay_load with 
-             | `Single name -> external_module_name:= Some (Single name)
-             | `Some [a;b] -> external_module_name := Some (Bind (a,b))
+             | `Single name ->
+               external_module_name:= Some (Lam_external_def.{ bundle =  name; bind_name = None})
+             | `Some [bundle;bind_name] -> 
+               external_module_name := 
+                 Some (Lam_external_def.{bundle ; bind_name = Some bind_name})
              | `Some _ -> ()
              | `None -> () (* should emit a warning instead *)
            end
@@ -201,7 +156,7 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
          | "bs.new" -> 
            begin match Ast_payload.is_single_string pay_load with 
              | Some x -> js_new := Some x 
-             | None -> js_new := Some _prim.prim_name
+             | None -> js_new := Some prim_name
            end
          | "bs.set_index" 
            -> js_set_index := true
@@ -324,6 +279,7 @@ let translate
     (args : J.expression list) = 
   begin 
     let loc, ffi = handle_attributes prim in
+    let () = Lam_external_def.check_ffi ?loc ffi in 
     match ffi with 
     | Obj_create -> 
       begin 

@@ -13,6 +13,7 @@ ocaml_parse
 lam
 lam_iter
 lam_print
+lam_external_def
 lam_compile_env
 lam_dispatch_primitive
 lam_stats

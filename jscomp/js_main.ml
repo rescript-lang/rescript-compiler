@@ -77,7 +77,7 @@ let buckle_script_flags =
     " set will generate `.d.ts` file for typescript (experimental)")
   :: ("-bs-diagnose", Arg.Set Js_config.diagnose, 
       " More verbose output")
-  :: ("-bs-rest-files", Arg.Rest collect_file, 
+  :: ("-bs-files", Arg.Rest collect_file, 
       " Provide batch of files, the compiler will sort it before compiling"
      )
   :: Ocaml_options.mk_impl impl
