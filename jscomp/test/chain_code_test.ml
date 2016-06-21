@@ -1,3 +1,10 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+
 let f h = 
   let open Js.Unsafe in 
   !(!(!h#x)#y)#z
@@ -16,4 +23,7 @@ let f4 h x y =
 (*   h##(draw (x,y)) *)
 (*   ##(draw (x,y)) *)
 (*   ##(draw(x,y)) *)
+let () = 
+  eq __LOC__ 32  (f2 ({ x = {y = {z = 32}}} [@bs.obj]))
 
+let () = Mt.from_pair_suites __FILE__ !suites

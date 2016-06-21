@@ -82,8 +82,8 @@ caml_format_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
     ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
     ../stdlib/format.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
-chain_code_test.cmj : ../runtime/js.cmj
-chain_code_test.cmx : ../runtime/js.cmx
+chain_code_test.cmj : mt.cmi ../runtime/js.cmj
+chain_code_test.cmx : mt.cmx ../runtime/js.cmx
 class3_test.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj \
     ../stdlib/array.cmi
 class3_test.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx \
@@ -388,6 +388,8 @@ printf_sim.cmj : ../stdlib/printf.cmi
 printf_sim.cmx : ../stdlib/printf.cmx
 printf_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
 printf_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/format.cmx
+promise.cmj : ../runtime/js.cmj
+promise.cmx : ../runtime/js.cmx
 qcc.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi
@@ -752,8 +754,8 @@ caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
     ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
-chain_code_test.cmo : ../runtime/js.cmo
-chain_code_test.cmj : ../runtime/js.cmj
+chain_code_test.cmo : mt.cmi ../runtime/js.cmo
+chain_code_test.cmj : mt.cmj ../runtime/js.cmj
 class3_test.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo \
     ../stdlib/array.cmi
 class3_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
@@ -1058,6 +1060,8 @@ printf_sim.cmo : ../stdlib/printf.cmi
 printf_sim.cmj : ../stdlib/printf.cmj
 printf_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
 printf_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj
+promise.cmo : ../runtime/js.cmo
+promise.cmj : ../runtime/js.cmj
 qcc.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi
