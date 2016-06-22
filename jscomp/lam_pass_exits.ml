@@ -260,18 +260,8 @@ let subst_helper (subst : subst_tbl) query lam =
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
     | Lprim {primitive; args; _} -> 
-      begin
-        let args = List.map simplif args in
-        match primitive, args with
-        (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply {fn = f;  args;  _}]
-        | Prevapply loc, [x; Levent (Lapply {fn = f; args;  _},_)] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Prevapply loc, [x; f] 
-          -> Lam.apply f [x] loc App_na
-        (* Simplify %apply, for n-ary functions with n > 1 *)
-        | _ -> Lam.prim primitive args
-      end
+      let args = List.map simplif args in
+      Lam.prim primitive args
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts

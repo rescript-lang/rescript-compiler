@@ -104,7 +104,6 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pchar_to_int  -> fprintf ppf "char_to_int"
   | Pchar_of_int -> fprintf ppf "char_of_int"
-  | Prevapply _ -> fprintf ppf "revapply"
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag

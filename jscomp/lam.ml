@@ -40,7 +40,6 @@ type primitive =
   | Pbytes_of_string
   | Pchar_to_int
   | Pchar_of_int
-  | Prevapply of Location.t
   (* Globals *)
   | Pgetglobal of Ident.t
   | Psetglobal of Ident.t
@@ -520,7 +519,15 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pignore -> (* Pignore means return unit, it is not an nop *)
     begin match args with [x] -> seq x unit | _ -> assert false end
   | Prevapply loc 
-    -> prim ~primitive:(Prevapply loc) ~args  
+    -> 
+    begin match args with 
+    | [x ; Lapply{fn; args}]
+    | [x ; Levent (Lapply{fn; args},_)]
+      -> apply fn (args @[x]) loc App_na
+    | [x; f] ->  apply f [x] loc App_na
+    | _ -> assert false 
+    end
+
   | Pdirapply loc ->
     begin match args with 
     | [Lapply{fn ; args }; x ] 

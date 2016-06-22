@@ -306,18 +306,9 @@ let deep_flatten
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
     | Lprim {primitive ; args }
       -> 
-      begin
-        let args = List.map aux args in
-        match primitive, args with
-        (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply {fn = f;  args; _}]
-        | Prevapply loc, [x; Levent (Lapply {fn = f;  args; _},_)] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Prevapply loc, [x; f] -> 
-          Lam.apply f [x] loc App_na
+      let args = List.map aux args in
+      Lam.prim ~primitive ~args
 
-        | _ -> Lam.prim ~primitive ~args
-      end
     | Lfunction{arity; kind; params;  body = l} -> 
       Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
     | Lswitch(l, {sw_failaction; 

@@ -40,8 +40,6 @@ type primitive (* = Lambda.primitive *) =
   | Pbytes_of_string
   | Pchar_to_int
   | Pchar_of_int
-  | Prevapply of Location.t
-
   | Pgetglobal of Ident.t
   | Psetglobal of Ident.t
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag

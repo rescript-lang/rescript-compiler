@@ -130,11 +130,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Poffsetint _
 
         -> true
-
-
-      | Prevapply _
-
-
       | Pstringsetu
       | Pstringsets
       | Pbytessetu 
