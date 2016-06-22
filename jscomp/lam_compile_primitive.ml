@@ -46,6 +46,7 @@ let translate
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  | Pdebugger -> assert false (* already handled by {!Lam_compile} *)
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 

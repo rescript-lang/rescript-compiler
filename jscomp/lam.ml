@@ -140,7 +140,7 @@ type primitive =
   | Pbbswap of boxed_integer
   (* Integer to external pointer *)
   | Pint_as_pointer
-
+  | Pdebugger 
 
 type switch = 
   { sw_numconsts: int;
@@ -554,7 +554,12 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     -> prim ~primitive:(Pduprecord(repr,i)) ~args
   | Plazyforce -> prim ~primitive:Plazyforce ~args
 
-  | Pccall a -> prim ~primitive:(Pccall a) ~args
+  | Pccall a -> 
+    begin match a with 
+    | {prim_name = "js_debugger"}
+      -> prim ~primitive:Pdebugger ~args 
+    | _ -> prim ~primitive:(Pccall a) ~args
+    end
   | Praise _ -> prim ~primitive:Praise ~args
   | Psequand -> prim ~primitive:Psequand ~args 
   | Psequor -> prim ~primitive:Psequor ~args

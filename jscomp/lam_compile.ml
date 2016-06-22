@@ -724,7 +724,7 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-    | Lprim {primitive = Pccall {prim_name = "js_debugger"; _} ; _}
+    | Lprim {primitive = Pdebugger ; _}
       -> 
       (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer      *)

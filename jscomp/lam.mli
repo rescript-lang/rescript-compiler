@@ -132,7 +132,7 @@ type primitive (* = Lambda.primitive *) =
   | Pbbswap of boxed_integer
   (* Integer to external pointer *)
   | Pint_as_pointer
-
+  | Pdebugger
 
 
 type switch  =
