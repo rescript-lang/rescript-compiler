@@ -751,21 +751,17 @@ and
         match compile_lambda {cxt with st = NeedValue; should_return = False} obj
         with 
         | {block; value = Some b } -> 
-          (* TODO: if [b] contains computation, compute it first *)
-          let cont obj_code = 
-            Js_output.handle_block_return st should_return lam 
-              (match obj_code with 
-              | None -> block 
-              | Some x ->  
-                block @ [x]
+          let blocks, ret  = 
+            if block = [] then [],  E.dot b property
+            else 
+              (match Js_ast_util.named_expression b  with 
+               | None -> block,  E.dot b property
+               | Some (x, b) ->  
+                 (block @ [x]),  E.dot (E.var b) property
               )
           in 
-
-          begin match Js_ast_util.named_expression  b with 
-            | None -> cont None (E.dot b property)
-            | Some (obj_code, b)
-              -> cont  (Some obj_code) (E.dot (E.var b) property)
-          end
+          Js_output.handle_block_return st should_return lam 
+            blocks ret 
         | _ -> assert false 
       end
     | Lprim {primitive = Pccall {prim_name; _};  args = args_lambda}
