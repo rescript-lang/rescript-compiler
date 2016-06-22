@@ -410,6 +410,10 @@ rec_value_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi
 rec_value_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/lazy.cmx
 record_with_test.cmj : mt.cmi
 record_with_test.cmx : mt.cmx
+recursive_module.cmj :
+recursive_module.cmx :
+recursive_module_test.cmj : mt.cmi
+recursive_module_test.cmx : mt.cmx
 regression_print.cmj :
 regression_print.cmx :
 runtime_encoding_test.cmj :
@@ -1084,6 +1088,10 @@ rec_value_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi
 rec_value_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj
 record_with_test.cmo : mt.cmi
 record_with_test.cmj : mt.cmj
+recursive_module.cmo :
+recursive_module.cmj :
+recursive_module_test.cmo : mt.cmi
+recursive_module_test.cmj : mt.cmj
 regression_print.cmo :
 regression_print.cmj :
 runtime_encoding_test.cmo :
