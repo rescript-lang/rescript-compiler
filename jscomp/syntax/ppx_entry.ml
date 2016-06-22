@@ -191,7 +191,9 @@ let uncurry_fn_type loc ty attrs
   let fn_type : Parsetree.core_type =
     match args with
     | {ptyp_desc = 
-         Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
+         Ptyp_tuple 
+           [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; 
+       _} 
       ->
       Typ.tuple ~loc ~attrs [ arg ; body]
       
@@ -569,8 +571,26 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (* TODO: design: shall we allow 
                                {[ x #.Capital ]}
         *)
+        | Pexp_apply (
+            {pexp_desc = 
+               Pexp_ident  {txt = Lident "#." ; loc} ; _}, args
+          )
+          -> (* f#.(paint (1,2))*)
+          begin match args with 
+          | [("", obj) ;
+             ("", {pexp_desc = Pexp_apply(
+                  {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
+                  ["", value]
+                ) })
+            ] -> 
+            handle_obj_method loc obj name value e mapper
+          | _ -> 
+            Location.raise_errorf 
+              "Js object #. expect syntax like obj#.(paint (a,b)) "
+
+          end
         | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident ("#." | "##") ; loc} ; _},
+                         Pexp_ident  {txt = Lident ("##") ; loc} ; _},
                       [("", obj) ;
                        ("", 
                         ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}

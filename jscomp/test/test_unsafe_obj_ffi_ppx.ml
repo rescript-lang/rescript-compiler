@@ -2,15 +2,15 @@
 
 
 let  f x = 
-  x #. length +. x #. width
+  x##length +. x##width
 let i () =  ()
 
 let h x : unit = 
-  x ## height_set 3 ;
-  i @@ x ## width_set 3 
+  x ##height_set 3 ;
+  i @@ x ##width_set 3 
 
 let chain x = 
-  x #. element #. length + x #.element #. length
+  x##element##length + x##element##length
 
 
 (* current error message : 
