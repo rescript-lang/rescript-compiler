@@ -738,7 +738,7 @@ and
     *)
 
     | Lsend(Public (Some name), _label, 
-            Lprim {primitive = Pccall {prim_name = "js_unsafe_downgrade"; _}; 
+            Lprim {primitive = Pjs_unsafe_downgrade; 
                    args = [obj]}, [] , loc) 
       when not (Ext_string.ends_with name Literals.setter_suffix) 
       (* TODO: more not a setter/case/case_setter *)
@@ -783,7 +783,7 @@ and
       if kind = `Run then 
         match args_lambda with  
         | [Lsend(Public (Some "case_set"), _label,
-                 Lprim{primitive = Pccall {prim_name = "js_unsafe_downgrade"; _};
+                 Lprim{primitive = Pjs_unsafe_downgrade;
                        args = [obj]}, [] , loc) ; key ;  value] ->
           let obj_block =
             compile_lambda {cxt with st = NeedValue; should_return = False} obj
@@ -822,7 +822,7 @@ and
 
         | [(Lsend(meth_kind, _label, 
                   Lprim{primitive = 
-                          Pccall {prim_name = "js_unsafe_downgrade"; _};
+                          Pjs_unsafe_downgrade;
                         args = [obj]}, [] , loc) as fn);
            arg]
           -> 

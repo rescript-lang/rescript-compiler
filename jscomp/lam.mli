@@ -133,6 +133,7 @@ type primitive (* = Lambda.primitive *) =
   (* Integer to external pointer *)
   | Pint_as_pointer
   | Pdebugger
+  | Pjs_unsafe_downgrade
 
 
 type switch  =

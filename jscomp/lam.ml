@@ -141,7 +141,7 @@ type primitive =
   (* Integer to external pointer *)
   | Pint_as_pointer
   | Pdebugger 
-
+  | Pjs_unsafe_downgrade
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -558,6 +558,9 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     begin match a with 
     | {prim_name = "js_debugger"}
       -> prim ~primitive:Pdebugger ~args 
+    | {prim_name = "js_unsafe_downgrade" }
+      -> 
+      prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
     | _ -> prim ~primitive:(Pccall a) ~args
     end
   | Praise _ -> prim ~primitive:Praise ~args
