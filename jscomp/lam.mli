@@ -33,50 +33,39 @@ type tag_info = Lambda.tag_info
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info 
 type set_field_dbg_info = Lambda.set_field_dbg_info
-type raise_kind = Lambda.raise_kind
+
 
 type primitive (* = Lambda.primitive *) = 
   | Pbytes_to_string
   | Pbytes_of_string
   | Pchar_to_int
   | Pchar_of_int
-  | Pmark_ocaml_object
-  | Pignore
   | Prevapply of Location.t
   | Pdirapply of Location.t
-  | Ploc of Lambda.loc_kind
-  (* Globals *)
   | Pgetglobal of Ident.t
   | Psetglobal of Ident.t
-  (* Operations on heap blocks *)
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int * bool * Lambda.set_field_dbg_info
-  (* could have field info at least for record *)
   | Pfloatfield of int * Lambda.field_dbg_info
   | Psetfloatfield of int * Lambda.set_field_dbg_info
   | Pduprecord of Types.record_representation * int
-  (* Force lazy values *)
   | Plazyforce
-  (* External call *)
   | Pccall of Types.type_expr option Primitive.description
-  (* Exceptions *)
-  | Praise of Lambda.raise_kind
-  (* Boolean operations *)
+  | Praise 
   | Psequand | Psequor | Pnot
-  (* Integer operations *)
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
   | Pintcomp of Lambda.comparison
   | Poffsetint of int
   | Poffsetref of int
-  (* Float operations *)
+
   | Pintoffloat | Pfloatofint
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
-  (* String operations *)
+
   | Pstringlength 
   | Pstringrefu 
   | Pstringsetu

@@ -382,12 +382,6 @@ let translate
       | [range; e] -> E.is_out e range
       | _ -> assert false
     end
-  | Pmark_ocaml_object -> 
-    begin 
-      match args with 
-      | [e] ->   e 
-      | _ -> assert false
-    end
   | Pchar_of_int -> 
     begin match args with 
       | [e] -> Js_of_lam_string.caml_char_of_int e 
@@ -461,12 +455,6 @@ let translate
       | [e;e1] -> Js_of_lam_string.ref_string e e1 
       | _ -> assert false
       end
-  | Pignore -> 
-      begin 
-        match args with 
-        | [e] -> E.seq e E.unit
-        | _ -> assert false 
-      end
   | Pgetglobal i   -> 
     (* TODO -- check args, case by case -- 
         1. include Array --> let include  = Array 
@@ -475,7 +463,7 @@ let translate
     Lam_compile_global.get_exp (i,env,true)
   
     (** only when Lapply -> expand = true*)
-  | Praise _raise_kind -> assert false (* handled before here *)
+  | Praise  -> assert false (* handled before here *)
   | Prevapply _  -> 
     (* In pracice, this should be optmized away in earlier passes *)
     begin 
@@ -490,7 +478,7 @@ let translate
       | [f; arg] -> E.call ~info:Js_call_info.dummy f [arg]
       | _ -> assert false 
     end
-  | Ploc kind ->   assert false (* already compiled away here*)
+
 
 (* Runtime encoding relevant *)
   | Parraylength Pgenarray

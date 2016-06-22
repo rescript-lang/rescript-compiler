@@ -666,7 +666,7 @@ and
       -> (* should be before Pgetglobal *)
         get_exp_with_index cxt lam  (id,n, env)
 
-    | Lprim {primitive = Praise _raise_kind; args =  [ e ]; _} -> 
+    | Lprim {primitive = Praise ; args =  [ e ]; _} -> 
       begin
         match compile_lambda {
             cxt with should_return = False; st = NeedValue} e with 

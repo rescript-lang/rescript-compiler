@@ -71,7 +71,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbytes_of_string 
       | Pchar_to_int (* might throw .. *)
       | Pchar_of_int  
-      | Ploc _
+
 
       | Pgetglobal _ 
       | Pmakeblock _  (* whether it's mutable or not *)
@@ -128,7 +128,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Integer to external pointer *)
       | Pint_as_pointer
       | Poffsetint _
-      | Pignore 
+
         -> true
 
 
@@ -166,9 +166,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbbswap _
       | Parraysetu _ 
       | Poffsetref _ 
-      | Praise _ 
+      | Praise
       | Plazyforce 
-      | Pmark_ocaml_object  (* TODO*)
       | Psetfield _ 
       | Psetfloatfield _
       | Psetglobal _ -> false 
@@ -239,7 +238,7 @@ let rec size (lam : Lam.t) =
             args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
            ;  _}
       -> 1
-    | Lprim {primitive = Praise _; args =  [l ];  _} 
+    | Lprim {primitive = Praise ; args =  [l ];  _} 
       -> size l
     | Lprim {args = ll; _} -> size_lams 1 ll
 
