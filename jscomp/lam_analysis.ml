@@ -67,12 +67,11 @@ let rec no_side_effects (lam : Lam.t) : bool =
           | _ , _-> false
         end 
 
-      | Pidentity 
       | Pbytes_to_string 
       | Pbytes_of_string 
       | Pchar_to_int (* might throw .. *)
       | Pchar_of_int  
-      | Ploc _
+
 
       | Pgetglobal _ 
       | Pmakeblock _  (* whether it's mutable or not *)
@@ -129,12 +128,11 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Integer to external pointer *)
       | Pint_as_pointer
       | Poffsetint _
-      | Pignore 
+
         -> true
 
-
-      | Prevapply _
-      | Pdirapply _
+      | Pjs_unsafe_downgrade
+      | Pdebugger (* TODO *)
 
       | Pstringsetu
       | Pstringsets
@@ -167,9 +165,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbbswap _
       | Parraysetu _ 
       | Poffsetref _ 
-      | Praise _ 
+      | Praise
       | Plazyforce 
-      | Pmark_ocaml_object  (* TODO*)
       | Psetfield _ 
       | Psetfloatfield _
       | Psetglobal _ -> false 
@@ -240,7 +237,7 @@ let rec size (lam : Lam.t) =
             args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
            ;  _}
       -> 1
-    | Lprim {primitive = Praise _; args =  [l ];  _} 
+    | Lprim {primitive = Praise ; args =  [l ];  _} 
       -> size l
     | Lprim {args = ll; _} -> size_lams 1 ll
 
@@ -319,7 +316,7 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   | Levent (v,_), Levent (v0,_) -> eq_lambda v v0
   | Lifused _, Lifused _ -> false 
   |  _,  _ -> false 
-and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) = 
+and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
   match p, p1 with 
   | Pccall {prim_name = n0 ; 
             prim_attributes = [];

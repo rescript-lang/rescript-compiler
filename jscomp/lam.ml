@@ -22,7 +22,126 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type primitive = Lambda.primitive
+type array_kind = Lambda.array_kind
+type boxed_integer = Lambda.boxed_integer
+type comparison = Lambda.comparison 
+type bigarray_kind = Lambda.bigarray_kind
+type bigarray_layout = Lambda.bigarray_layout
+type compile_time_constant = Lambda.compile_time_constant
+
+type tag_info = Lambda.tag_info
+type mutable_flag = Asttypes.mutable_flag
+type field_dbg_info = Lambda.field_dbg_info 
+type set_field_dbg_info = Lambda.set_field_dbg_info
+
+
+type primitive = 
+  | Pbytes_to_string
+  | Pbytes_of_string
+  | Pchar_to_int
+  | Pchar_of_int
+  (* Globals *)
+  | Pgetglobal of Ident.t
+  | Psetglobal of Ident.t
+  (* Operations on heap blocks *)
+  | Pmakeblock of int * tag_info * mutable_flag
+  | Pfield of int * field_dbg_info
+  | Psetfield of int * bool * set_field_dbg_info
+  (* could have field info at least for record *)
+  | Pfloatfield of int * field_dbg_info
+  | Psetfloatfield of int * set_field_dbg_info
+  | Pduprecord of Types.record_representation * int
+  (* Force lazy values *)
+  | Plazyforce
+  (* External call *)
+  | Pccall of Types.type_expr option Primitive.description
+  (* Exceptions *)
+  | Praise
+  (* Boolean operations *)
+  | Psequand | Psequor | Pnot
+  (* Integer operations *)
+  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of comparison
+  | Poffsetint of int
+  | Poffsetref of int
+  (* Float operations *)
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of comparison
+  (* String operations *)
+  | Pstringlength 
+  | Pstringrefu 
+  | Pstringsetu
+  | Pstringrefs
+  | Pstringsets
+
+  | Pbyteslength
+  | Pbytesrefu
+  | Pbytessetu 
+  | Pbytesrefs
+  | Pbytessets
+  (* Array operations *)
+  | Pmakearray of array_kind
+  | Parraylength of array_kind
+  | Parrayrefu of array_kind
+  | Parraysetu of array_kind
+  | Parrayrefs of array_kind
+  | Parraysets of array_kind
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  (* Bitvect operations *)
+  | Pbittest
+  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of boxed_integer
+  | Pmodbint of boxed_integer
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
+  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  (* size of the nth dimension of a big array *)
+  | Pbigarraydim of int
+  (* load/set 16,32,64 bits from a string: (unsafe)*)
+  | Pstring_load_16 of bool
+  | Pstring_load_32 of bool
+  | Pstring_load_64 of bool
+  | Pstring_set_16 of bool
+  | Pstring_set_32 of bool
+  | Pstring_set_64 of bool
+  (* load/set 16,32,64 bits from a
+     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+  | Pbigstring_load_16 of bool
+  | Pbigstring_load_32 of bool
+  | Pbigstring_load_64 of bool
+  | Pbigstring_set_16 of bool
+  | Pbigstring_set_32 of bool
+  | Pbigstring_set_64 of bool
+  (* Compile time constants *)
+  | Pctconst of compile_time_constant
+  (* byte swap *)
+  | Pbswap16
+  | Pbbswap of boxed_integer
+  (* Integer to external pointer *)
+  | Pint_as_pointer
+  | Pdebugger 
+  | Pjs_unsafe_downgrade
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -386,6 +505,147 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
 let not x : t = 
   prim Pnot [x] 
 
+let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t = 
+  match p with 
+  | Pidentity ->  
+    begin match args with [x] -> x | _ -> assert false end
+  | Pbytes_to_string 
+    -> prim ~primitive:Pbytes_to_string ~args
+  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args
+  | Pchar_to_int -> prim ~primitive:Pchar_to_int ~args
+  | Pchar_of_int -> prim ~primitive:Pchar_of_int ~args
+  | Pmark_ocaml_object -> 
+    begin match args with [l] -> l | _ -> assert false end
+  | Pignore -> (* Pignore means return unit, it is not an nop *)
+    begin match args with [x] -> seq x unit | _ -> assert false end
+  | Prevapply loc 
+    -> 
+    begin match args with 
+    | [x ; Lapply{fn; args}]
+    | [x ; Levent (Lapply{fn; args},_)]
+      -> apply fn (args @[x]) loc App_na
+    | [x; f] ->  apply f [x] loc App_na
+    | _ -> assert false 
+    end
+
+  | Pdirapply loc ->
+    begin match args with 
+    | [Lapply{fn ; args }; x ] 
+    | [Levent (Lapply {fn; args}, _); x]-> 
+      apply fn (args @ [x]) loc App_na
+    | [f;x] -> apply f [x] loc App_na
+    | _ -> assert false 
+    end
+  | Ploc loc -> assert false (* already compiled away here*)
+  | Pgetglobal id -> prim ~primitive:(Pgetglobal id) ~args
+  | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args
+  | Pmakeblock (tag,info, mutable_flag) 
+    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args
+  | Pfield (id,info) 
+    -> prim ~primitive:(Pfield (id,info)) ~args
+  | Psetfield (id,b,info)
+    -> prim ~primitive:(Psetfield (id,b,info)) ~args
+
+  | Pfloatfield (id,info)
+    -> prim ~primitive:(Pfloatfield (id,info)) ~args
+  | Psetfloatfield (id,info) 
+    -> prim ~primitive:(Psetfloatfield (id,info)) ~args
+  | Pduprecord (repr,i) 
+    -> prim ~primitive:(Pduprecord(repr,i)) ~args
+  | Plazyforce -> prim ~primitive:Plazyforce ~args
+
+  | Pccall a -> 
+    begin match a with 
+    | {prim_name = "js_debugger"}
+      -> prim ~primitive:Pdebugger ~args 
+    | {prim_name = "js_unsafe_downgrade" }
+      -> 
+      prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
+    | _ -> prim ~primitive:(Pccall a) ~args
+    end
+  | Praise _ -> prim ~primitive:Praise ~args
+  | Psequand -> prim ~primitive:Psequand ~args 
+  | Psequor -> prim ~primitive:Psequor ~args
+  | Pnot -> prim ~primitive:Pnot ~args
+  | Pnegint -> prim ~primitive:Pnegint ~args 
+  | Paddint -> prim ~primitive:Paddint ~args
+  | Psubint -> prim ~primitive:Psubint ~args
+  | Pmulint -> prim ~primitive:Pmulint ~args
+  | Pdivint -> prim ~primitive:Pdivint ~args
+  | Pmodint -> prim ~primitive:Pmodint ~args
+  | Pandint -> prim ~primitive:Pandint ~args
+  | Porint -> prim ~primitive:Porint ~args
+  | Pxorint -> prim ~primitive:Pxorint ~args
+  | Plslint -> prim ~primitive:Plslint ~args
+  | Plsrint -> prim ~primitive:Plsrint ~args
+  | Pasrint -> prim ~primitive:Pasrint ~args
+  | Pstringlength -> prim ~primitive:Pstringlength ~args 
+  | Pstringrefu -> prim ~primitive:Pstringrefu ~args 
+  | Pstringsetu -> prim ~primitive:Pstringsetu ~args
+  | Pstringrefs -> prim ~primitive:Pstringrefs ~args
+  | Pstringsets -> prim ~primitive:Pstringsets ~args
+  | Pbyteslength -> prim ~primitive:Pbyteslength ~args
+  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args
+  | Pbytessetu -> prim ~primitive:Pbytessetu ~args 
+  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args
+  | Pbytessets -> prim ~primitive:Pbytessets ~args
+  | Pisint -> prim ~primitive:Pisint ~args
+  | Pisout -> prim ~primitive:Pisout ~args
+  | Pbittest -> prim ~primitive:Pbittest ~args
+  | Pintoffloat -> prim ~primitive:Pintoffloat ~args
+  | Pfloatofint -> prim ~primitive:Pfloatofint ~args
+  | Pnegfloat -> prim ~primitive:Pnegfloat ~args
+  | Pabsfloat -> prim ~primitive:Pabsfloat ~args
+  | Paddfloat -> prim ~primitive:Paddfloat ~args
+  | Psubfloat -> prim ~primitive:Psubfloat ~args
+  | Pmulfloat -> prim ~primitive:Pmulfloat ~args
+  | Pdivfloat -> prim ~primitive:Pdivfloat ~args
+  | Pint_as_pointer -> prim ~primitive:Pint_as_pointer ~args
+  | Pbswap16 -> prim ~primitive:Pbswap16 ~args
+  | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args
+  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args
+  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args 
+  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args
+  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args
+  | Parraylength x -> prim ~primitive:(Parraylength x) ~args
+  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args
+  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args
+  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args
+  | Parraysets x -> prim ~primitive:(Parraysets x) ~args
+  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args
+  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args
+  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args
+  | Paddbint x -> prim ~primitive:(Paddbint x) ~args
+  | Psubbint x -> prim ~primitive:(Psubbint x) ~args
+  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args
+  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args
+  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args
+  | Pandbint x -> prim ~primitive:(Pandbint x) ~args
+  | Porbint x -> prim ~primitive:(Porbint x) ~args
+  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args
+  | Plslbint x -> prim ~primitive:(Plslbint x) ~args
+  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args
+  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args
+  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args
+  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args
+  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args
+  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args
+  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args
+  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args
+  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args
+  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args
+  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args
+  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args
+  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args
+  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args
+  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args
+  | Pctconst x -> prim ~primitive:(Pctconst x) ~args
+  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args
+  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args
+  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args
+  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args
+  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args
+
 
 let rec convert (lam : Lambda.lambda) : t = 
   match lam with 
@@ -405,8 +665,8 @@ let rec convert (lam : Lambda.lambda) : t =
     -> 
     Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
   | Lprim (primitive,args) 
-    -> 
-    Lprim {primitive ; args = List.map convert args }
+    -> convert_primitive primitive args 
+    (* Lprim {primitive ; args = List.map convert args } *)
   | Lswitch (e,s) -> 
     Lswitch (convert e, convert_switch s)
   | Lstringswitch (e, cases, default) -> 
@@ -438,7 +698,8 @@ let rec convert (lam : Lambda.lambda) : t =
   | Levent (e, event) -> 
     Levent (convert e, event)
   | Lifused (id, e) -> Lifused(id, convert e)
-
+and convert_primitive (primitive : Lambda.primitive) args = 
+  lam_prim ~primitive ~args:(List.map convert args)
 and convert_switch (s : Lambda.lambda_switch) : switch = 
   { sw_numconsts = s.sw_numconsts ; 
     sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;

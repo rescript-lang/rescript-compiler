@@ -293,7 +293,6 @@ let deep_flatten
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
 
-    | Lprim {primitive = Pidentity; args =  [l]; _ } -> l 
     | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
             args = [ Lconst (Const_base (Const_int64 i))]; _} 
       ->  
@@ -307,23 +306,9 @@ let deep_flatten
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
     | Lprim {primitive ; args }
       -> 
-      begin
-        let args = List.map aux args in
-        match primitive, args with
-        (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply {fn = f;  args; _}]
-        | Prevapply loc, [x; Levent (Lapply {fn = f;  args; _},_)] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Prevapply loc, [x; f] -> 
-          Lam.apply f [x] loc App_na
-        (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply{fn = f;  args; _}; x]
-        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] loc App_na
-        | _ -> Lam.prim ~primitive ~args
-      end
+      let args = List.map aux args in
+      Lam.prim ~primitive ~args
+
     | Lfunction{arity; kind; params;  body = l} -> 
       Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
     | Lswitch(l, {sw_failaction; 

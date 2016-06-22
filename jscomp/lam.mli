@@ -22,7 +22,118 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type primitive = Lambda.primitive
+type array_kind = Lambda.array_kind
+type boxed_integer = Lambda.boxed_integer
+type comparison = Lambda.comparison 
+type bigarray_kind = Lambda.bigarray_kind
+type bigarray_layout = Lambda.bigarray_layout
+type compile_time_constant = Lambda.compile_time_constant
+
+type tag_info = Lambda.tag_info
+type mutable_flag = Asttypes.mutable_flag
+type field_dbg_info = Lambda.field_dbg_info 
+type set_field_dbg_info = Lambda.set_field_dbg_info
+
+
+type primitive (* = Lambda.primitive *) = 
+  | Pbytes_to_string
+  | Pbytes_of_string
+  | Pchar_to_int
+  | Pchar_of_int
+  | Pgetglobal of Ident.t
+  | Psetglobal of Ident.t
+  | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
+  | Pfield of int * Lambda.field_dbg_info
+  | Psetfield of int * bool * Lambda.set_field_dbg_info
+  | Pfloatfield of int * Lambda.field_dbg_info
+  | Psetfloatfield of int * Lambda.set_field_dbg_info
+  | Pduprecord of Types.record_representation * int
+  | Plazyforce
+  | Pccall of Types.type_expr option Primitive.description
+  | Praise 
+  | Psequand | Psequor | Pnot
+  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of Lambda.comparison
+  | Poffsetint of int
+  | Poffsetref of int
+
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of Lambda.comparison
+
+  | Pstringlength 
+  | Pstringrefu 
+  | Pstringsetu
+  | Pstringrefs
+  | Pstringsets
+
+  | Pbyteslength
+  | Pbytesrefu
+  | Pbytessetu 
+  | Pbytesrefs
+  | Pbytessets
+  (* Array operations *)
+  | Pmakearray of array_kind
+  | Parraylength of array_kind
+  | Parrayrefu of array_kind
+  | Parraysetu of array_kind
+  | Parrayrefs of array_kind
+  | Parraysets of array_kind
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  (* Bitvect operations *)
+  | Pbittest
+  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of boxed_integer
+  | Pmodbint of boxed_integer
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
+  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  (* size of the nth dimension of a big array *)
+  | Pbigarraydim of int
+  (* load/set 16,32,64 bits from a string: (unsafe)*)
+  | Pstring_load_16 of bool
+  | Pstring_load_32 of bool
+  | Pstring_load_64 of bool
+  | Pstring_set_16 of bool
+  | Pstring_set_32 of bool
+  | Pstring_set_64 of bool
+  (* load/set 16,32,64 bits from a
+     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+  | Pbigstring_load_16 of bool
+  | Pbigstring_load_32 of bool
+  | Pbigstring_load_64 of bool
+  | Pbigstring_set_16 of bool
+  | Pbigstring_set_32 of bool
+  | Pbigstring_set_64 of bool
+  (* Compile time constants *)
+  | Pctconst of compile_time_constant
+  (* byte swap *)
+  | Pbswap16
+  | Pbbswap of boxed_integer
+  (* Integer to external pointer *)
+  | Pint_as_pointer
+  | Pdebugger
+  | Pjs_unsafe_downgrade
 
 
 type switch  =
@@ -118,7 +229,7 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : primitive:Lambda.primitive -> args:t list ->  t
+val prim : primitive:primitive -> args:t list ->  t
 
 val staticcatch : 
   t -> int * Ident.t list -> t -> t

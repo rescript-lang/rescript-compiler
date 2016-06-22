@@ -108,7 +108,7 @@ let rec get_arity
       ~not_found:(fun _ -> assert false)
       ~found:(fun x -> x.arity )
   | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
-  | Lprim {primitive = Praise _;  _} -> Determin(true,[], true)
+  | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
   | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
   | Lprim _  -> Determin(true,[] ,false)
   (* shall we handle primitive in a direct way, 

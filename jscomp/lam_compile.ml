@@ -666,7 +666,7 @@ and
       -> (* should be before Pgetglobal *)
         get_exp_with_index cxt lam  (id,n, env)
 
-    | Lprim {primitive = Praise _raise_kind; args =  [ e ]; _} -> 
+    | Lprim {primitive = Praise ; args =  [ e ]; _} -> 
       begin
         match compile_lambda {
             cxt with should_return = False; st = NeedValue} e with 
@@ -724,7 +724,7 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-    | Lprim {primitive = Pccall {prim_name = "js_debugger"; _} ; _}
+    | Lprim {primitive = Pdebugger ; _}
       -> 
       (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer      *)
@@ -738,7 +738,7 @@ and
     *)
 
     | Lsend(Public (Some name), _label, 
-            Lprim {primitive = Pccall {prim_name = "js_unsafe_downgrade"; _}; 
+            Lprim {primitive = Pjs_unsafe_downgrade; 
                    args = [obj]}, [] , loc) 
       when not (Ext_string.ends_with name Literals.setter_suffix) 
       (* TODO: more not a setter/case/case_setter *)
@@ -783,7 +783,7 @@ and
       if kind = `Run then 
         match args_lambda with  
         | [Lsend(Public (Some "case_set"), _label,
-                 Lprim{primitive = Pccall {prim_name = "js_unsafe_downgrade"; _};
+                 Lprim{primitive = Pjs_unsafe_downgrade;
                        args = [obj]}, [] , loc) ; key ;  value] ->
           let obj_block =
             compile_lambda {cxt with st = NeedValue; should_return = False} obj
@@ -822,7 +822,7 @@ and
 
         | [(Lsend(meth_kind, _label, 
                   Lprim{primitive = 
-                          Pccall {prim_name = "js_unsafe_downgrade"; _};
+                          Pjs_unsafe_downgrade;
                         args = [obj]}, [] , loc) as fn);
            arg]
           -> 

@@ -336,3 +336,5 @@ gpr_459_test
 promise
 chain_code_test
 method_chain
+recursive_module
+recursive_module_test

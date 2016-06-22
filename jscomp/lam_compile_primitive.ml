@@ -43,9 +43,11 @@ let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t 
 
 let translate 
     ({ meta = { env; _}; _} as cxt : Lam_compile_defs.cxt) 
-    (prim : Lambda.primitive)
+    (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  | Pjs_unsafe_downgrade
+  | Pdebugger -> assert false (* already handled by {!Lam_compile} *)
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
@@ -382,16 +384,6 @@ let translate
       | [range; e] -> E.is_out e range
       | _ -> assert false
     end
-  | Pidentity ->
-    begin 
-      match args with [e] -> e | _ -> assert false  
-    end
-  | Pmark_ocaml_object -> 
-    begin 
-      match args with 
-      | [e] ->   e 
-      | _ -> assert false
-    end
   | Pchar_of_int -> 
     begin match args with 
       | [e] -> Js_of_lam_string.caml_char_of_int e 
@@ -465,12 +457,6 @@ let translate
       | [e;e1] -> Js_of_lam_string.ref_string e e1 
       | _ -> assert false
       end
-  | Pignore -> 
-      begin 
-        match args with 
-        | [e] -> E.seq e E.unit
-        | _ -> assert false 
-      end
   | Pgetglobal i   -> 
     (* TODO -- check args, case by case -- 
         1. include Array --> let include  = Array 
@@ -479,22 +465,7 @@ let translate
     Lam_compile_global.get_exp (i,env,true)
   
     (** only when Lapply -> expand = true*)
-  | Praise _raise_kind -> assert false (* handled before here *)
-  | Prevapply _  -> 
-    (* In pracice, this should be optmized away in earlier passes *)
-    begin 
-      match args with 
-      | [arg;f] -> E.call ~info:Js_call_info.dummy f [arg]
-      | _ -> assert  false
-    end
-  | Pdirapply _ -> 
-    (* In pracice, this should be optmized away in earlier passes *)
-    begin 
-      match args with 
-      | [f; arg] -> E.call ~info:Js_call_info.dummy f [arg]
-      | _ -> assert false 
-    end
-  | Ploc kind ->   assert false (* already compiled away here*)
+  | Praise  -> assert false (* handled before here *)
 
 (* Runtime encoding relevant *)
   | Parraylength Pgenarray
