@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 06/21-15:00 *)
+(** Bundled by ocaml_pack 06/22-13:52 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1466,7 +1466,7 @@ let gc = "Caml_gc"
 let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
-let version = "0.6.0"
+let version = "0.6.1"
 let runtime_set = 
   [
     js_primitive;
@@ -2714,7 +2714,9 @@ let uncurry_fn_type loc ty attrs
   let fn_type : Parsetree.core_type =
     match args with
     | {ptyp_desc = 
-         Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
+         Ptyp_tuple 
+           [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; 
+       _} 
       ->
       Typ.tuple ~loc ~attrs [ arg ; body]
       
@@ -3092,8 +3094,26 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (* TODO: design: shall we allow 
                                {[ x #.Capital ]}
         *)
+        | Pexp_apply (
+            {pexp_desc = 
+               Pexp_ident  {txt = Lident "#." ; loc} ; _}, args
+          )
+          -> (* f#.(paint (1,2))*)
+          begin match args with 
+          | [("", obj) ;
+             ("", {pexp_desc = Pexp_apply(
+                  {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
+                  ["", value]
+                ) })
+            ] -> 
+            handle_obj_method loc obj name value e mapper
+          | _ -> 
+            Location.raise_errorf 
+              "Js object #. expect syntax like obj#.(paint (a,b)) "
+
+          end
         | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident ("#." | "##") ; loc} ; _},
+                         Pexp_ident  {txt = Lident ("##") ; loc} ; _},
                       [("", obj) ;
                        ("", 
                         ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
@@ -21488,19 +21508,25 @@ module E = Js_exp_make
 
 module S = Js_stmt_make  
 
-let named_expression (e : J.expression)
-  :  (J.statement  * Ident.t) option = 
-  match e.expression_desc with 
+let rec is_simple_expression (e : J.expression) = 
+  match e.expression_desc with  
   | Var _ 
   | Bool _ 
   | Str _ 
-  | Number _ -> None 
-  | _ ->  
+  | Number _ -> true
+  | Dot (e, _, _) -> is_simple_expression e 
+  | _ -> false 
+
+let rec named_expression (e : J.expression)
+  :  (J.statement  * Ident.t) option = 
+  if is_simple_expression e then 
+    None 
+  else 
     let obj = Ext_ident.create Literals.tmp in
     let obj_code = 
       S.define
         ~kind:Strict obj e in 
-    
+
     Some (obj_code, obj)
 
 end
@@ -22305,17 +22331,17 @@ and
         match compile_lambda {cxt with st = NeedValue; should_return = False} obj
         with 
         | {block; value = Some b } -> 
-          (* TODO: if [b] contains computation, compute it first *)
-          let cont obj_code = 
-            Js_output.handle_block_return st should_return lam 
-              (match obj_code with None -> block | Some x -> x :: block)
+          let blocks, ret  = 
+            if block = [] then [],  E.dot b property
+            else 
+              (match Js_ast_util.named_expression b  with 
+               | None -> block,  E.dot b property
+               | Some (x, b) ->  
+                 (block @ [x]),  E.dot (E.var b) property
+              )
           in 
-
-          begin match Js_ast_util.named_expression  b with 
-            | None -> cont None (E.dot b property)
-            | Some (obj_code, b)
-              -> cont  (Some obj_code) (E.dot (E.var b) property)
-          end
+          Js_output.handle_block_return st should_return lam 
+            blocks ret 
         | _ -> assert false 
       end
     | Lprim {primitive = Pccall {prim_name; _};  args = args_lambda}
@@ -22390,9 +22416,9 @@ and
             let cont block0 block1 obj_code = 
               Js_output.handle_block_return st should_return lam 
                 (
-                 match obj_code with
-                 | None -> block0 @ block1
-                 | Some obj_code -> block0 @ obj_code :: block1
+                  match obj_code with
+                  | None -> block0 @ block1
+                  | Some obj_code -> block0 @ obj_code :: block1
                 )
             in 
             match 
@@ -22418,8 +22444,8 @@ and
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
                 compile_lambda cxt @@ 
                 Lam.apply fn [arg]  
-                   Location.none (* TODO *)
-                   App_js_full
+                  Location.none (* TODO *)
+                  App_js_full
               else 
                 let property =
                   String.sub setter 0 
@@ -22439,8 +22465,8 @@ and
         | fn :: rest -> 
           compile_lambda cxt 
             (Lam.apply fn rest 
-                      Location.none (*TODO*)
-                      App_js_full)
+               Location.none (*TODO*)
+               App_js_full)
         | _ -> assert false 
       else 
         begin match args_lambda with 
