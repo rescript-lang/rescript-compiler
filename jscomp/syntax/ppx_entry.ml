@@ -191,7 +191,9 @@ let uncurry_fn_type loc ty attrs
   let fn_type : Parsetree.core_type =
     match args with
     | {ptyp_desc = 
-         Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
+         Ptyp_tuple 
+           [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; 
+       _} 
       ->
       Typ.tuple ~loc ~attrs [ arg ; body]
       
@@ -570,7 +572,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                                {[ x #.Capital ]}
         *)
         | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident ("#." | "##") ; loc} ; _},
+                         Pexp_ident  {txt = Lident ("##") ; loc} ; _},
                       [("", obj) ;
                        ("", 
                         ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}

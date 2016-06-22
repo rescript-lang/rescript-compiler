@@ -206,7 +206,7 @@ let ui_layout
     button##minHeight_set 20;
     button##on ("click", (fun [@uncurry] _event -> (* FIXME both [_] and () should work*)
       try 
-        let hot_function = compile inputCode#.text in
+        let hot_function = compile inputCode##text in
         computeFunction := fun env ->  hot_function (fun key -> lookup env key) 
       with  e -> ()));
     let fmt v = to_fixed v 2 in

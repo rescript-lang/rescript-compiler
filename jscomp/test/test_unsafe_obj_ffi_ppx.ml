@@ -2,7 +2,7 @@
 
 
 let  f x = 
-  x #. length +. x #. width
+  x##length +. x##width
 let i () =  ()
 
 let h x : unit = 
@@ -10,7 +10,7 @@ let h x : unit =
   i @@ x ## width_set 3 
 
 let chain x = 
-  x #. element #. length + x #.element #. length
+  x##element##length + x##element##length
 
 
 (* current error message : 
