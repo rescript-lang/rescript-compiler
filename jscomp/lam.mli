@@ -35,8 +35,7 @@ type field_dbg_info = Lambda.field_dbg_info
 type set_field_dbg_info = Lambda.set_field_dbg_info
 type raise_kind = Lambda.raise_kind
 
-type primitive = Lambda.primitive = 
-  | Pidentity
+type primitive (* = Lambda.primitive *) = 
   | Pbytes_to_string
   | Pbytes_of_string
   | Pchar_to_int
@@ -242,7 +241,7 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : primitive:Lambda.primitive -> args:t list ->  t
+val prim : primitive:primitive -> args:t list ->  t
 
 val staticcatch : 
   t -> int * Ident.t list -> t -> t

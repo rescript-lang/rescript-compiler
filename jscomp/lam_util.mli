@@ -31,7 +31,7 @@
 
 val string_of_lambda : Lam.t -> string 
 
-val string_of_primitive : Lambda.primitive -> string
+val string_of_primitive : Lam.primitive -> string
 
 val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
 

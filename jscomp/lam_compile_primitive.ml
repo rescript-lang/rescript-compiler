@@ -43,7 +43,7 @@ let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t 
 
 let translate 
     ({ meta = { env; _}; _} as cxt : Lam_compile_defs.cxt) 
-    (prim : Lambda.primitive)
+    (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
@@ -381,10 +381,6 @@ let translate
       *)
       | [range; e] -> E.is_out e range
       | _ -> assert false
-    end
-  | Pidentity ->
-    begin 
-      match args with [e] -> e | _ -> assert false  
     end
   | Pmark_ocaml_object -> 
     begin 

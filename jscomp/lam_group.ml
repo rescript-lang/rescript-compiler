@@ -293,7 +293,6 @@ let deep_flatten
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
 
-    | Lprim {primitive = Pidentity; args =  [l]; _ } -> l 
     | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
             args = [ Lconst (Const_base (Const_int64 i))]; _} 
       ->  

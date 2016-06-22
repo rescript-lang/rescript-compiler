@@ -67,7 +67,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
           | _ , _-> false
         end 
 
-      | Pidentity 
       | Pbytes_to_string 
       | Pbytes_of_string 
       | Pchar_to_int (* might throw .. *)
@@ -319,7 +318,7 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   | Levent (v,_), Levent (v0,_) -> eq_lambda v v0
   | Lifused _, Lifused _ -> false 
   |  _,  _ -> false 
-and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) = 
+and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
   match p, p1 with 
   | Pccall {prim_name = n0 ; 
             prim_attributes = [];

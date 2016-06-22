@@ -154,7 +154,7 @@ let refine_let
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w];  _} when Ident.same w param 
-                                 &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) primitive
+                                 &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
     ->  Lam.prim ~primitive ~args:[arg] 
   (* we can not do this substitution when capttured *)

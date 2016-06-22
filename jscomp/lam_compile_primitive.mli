@@ -36,4 +36,4 @@
  *)
 
 val translate : 
-  Lam_compile_defs.cxt  -> Lambda.primitive -> J.expression list -> J.expression
+  Lam_compile_defs.cxt  -> Lam.primitive -> J.expression list -> J.expression

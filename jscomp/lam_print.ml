@@ -99,8 +99,7 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_POS -> "loc_POS"
   | Loc_LOC -> "loc_LOC"
 
-let primitive ppf (prim : Lambda.primitive) = match prim with 
-  | Pidentity -> fprintf ppf "id"
+let primitive ppf (prim : Lam.primitive) = match prim with 
   | Pmark_ocaml_object -> fprintf ppf "mark_ocaml_object"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
