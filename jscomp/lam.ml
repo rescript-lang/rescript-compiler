@@ -28,7 +28,7 @@ type comparison = Lambda.comparison
 type bigarray_kind = Lambda.bigarray_kind
 type bigarray_layout = Lambda.bigarray_layout
 type compile_time_constant = Lambda.compile_time_constant
-type loc_kind = Lambda.loc_kind
+
 type tag_info = Lambda.tag_info
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info 
@@ -41,8 +41,6 @@ type primitive =
   | Pchar_to_int
   | Pchar_of_int
   | Prevapply of Location.t
-  | Pdirapply of Location.t
-
   (* Globals *)
   | Pgetglobal of Ident.t
   | Psetglobal of Ident.t
@@ -523,7 +521,14 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     begin match args with [x] -> seq x unit | _ -> assert false end
   | Prevapply loc 
     -> prim ~primitive:(Prevapply loc) ~args  
-  | Pdirapply loc -> prim ~primitive:(Pdirapply loc) ~args 
+  | Pdirapply loc ->
+    begin match args with 
+    | [Lapply{fn ; args }; x ] 
+    | [Levent (Lapply {fn; args}, _); x]-> 
+      apply fn (args @ [x]) loc App_na
+    | [f;x] -> apply f [x] loc App_na
+    | _ -> assert false 
+    end
   | Ploc loc -> assert false (* already compiled away here*)
   | Pgetglobal id -> prim ~primitive:(Pgetglobal id) ~args
   | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args

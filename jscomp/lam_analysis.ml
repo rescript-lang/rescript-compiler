@@ -133,7 +133,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
 
       | Prevapply _
-      | Pdirapply _
+
 
       | Pstringsetu
       | Pstringsets

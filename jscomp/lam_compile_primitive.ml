@@ -471,13 +471,6 @@ let translate
       | [arg;f] -> E.call ~info:Js_call_info.dummy f [arg]
       | _ -> assert  false
     end
-  | Pdirapply _ -> 
-    (* In pracice, this should be optmized away in earlier passes *)
-    begin 
-      match args with 
-      | [f; arg] -> E.call ~info:Js_call_info.dummy f [arg]
-      | _ -> assert false 
-    end
 
 
 (* Runtime encoding relevant *)

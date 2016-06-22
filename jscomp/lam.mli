@@ -28,7 +28,7 @@ type comparison = Lambda.comparison
 type bigarray_kind = Lambda.bigarray_kind
 type bigarray_layout = Lambda.bigarray_layout
 type compile_time_constant = Lambda.compile_time_constant
-type loc_kind = Lambda.loc_kind
+
 type tag_info = Lambda.tag_info
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info 
@@ -41,7 +41,7 @@ type primitive (* = Lambda.primitive *) =
   | Pchar_to_int
   | Pchar_of_int
   | Prevapply of Location.t
-  | Pdirapply of Location.t
+
   | Pgetglobal of Ident.t
   | Psetglobal of Ident.t
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag

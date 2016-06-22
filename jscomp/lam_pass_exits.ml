@@ -270,11 +270,6 @@ let subst_helper (subst : subst_tbl) query lam =
         | Prevapply loc, [x; f] 
           -> Lam.apply f [x] loc App_na
         (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply{fn = f;  args;  _}; x]
-        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] loc App_na
         | _ -> Lam.prim primitive args
       end
     | Lswitch(l, sw) ->
