@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 06/22-13:52 *)
+(** Bundled by ocaml_pack 06/23-17:22 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1234,7 +1234,7 @@ val md5 : string
 val hash : string
 val weak : string
 val js_primitive : string
-
+val module_ : string
 
 (** Debugging utilies *)
 val set_current_file : string -> unit 
@@ -1466,9 +1466,12 @@ let gc = "Caml_gc"
 let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
-let version = "0.6.1"
+let module_ = "Caml_module"
+let version = "0.6.2"
+
 let runtime_set = 
   [
+    module_;
     js_primitive;
     block;
     int32;
@@ -2598,6 +2601,10 @@ open Ast_helper
 let arrow = Ast_helper.Typ.arrow
 
 let record_as_js_object = ref None (* otherwise has an attribute *)
+
+let as_js_object_attribute  : Parsetree.attribute
+  = {txt = "bs.obj" ; loc = Location.none}, PStr []
+
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
 let obj_type_auto_uncurry =  ref false
@@ -2744,6 +2751,9 @@ let handle_typ
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
+  | {ptyp_desc = Ptyp_extension({txt = "bs.obj"}, PTyp ty)}
+    -> 
+    Ext_ref.protect obj_type_as_js_obj_type true (fun _ -> self.typ self ty )
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
@@ -2765,65 +2775,53 @@ let handle_typ
     ptyp_attributes ;
     ptyp_loc = loc 
     } -> 
-    begin match Ext_list.exclude_with_fact2 
-                  (function 
-                    | {Location.txt = "bs.obj" ; _}, _  -> true 
-                    | _  -> false ) 
-                  (function 
-                    | {Location.txt = "uncurry"; _}, _ -> true
-                    | _ -> false)
-                  ptyp_attributes with 
-    |  None, None, _  ->
-      let check_auto_uncurry core_type = 
-        if  !obj_type_auto_uncurry then
-          Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
-        else self.typ self core_type in 
-  
-      let methods = 
-        List.map (fun (label, ptyp_attrs, core_type ) -> 
-            match find_uncurry_attrs_and_remove ptyp_attrs with 
-            | None, _ -> 
-              label, ptyp_attrs , check_auto_uncurry  core_type
-            | Some v, ptyp_attrs -> 
-              label , ptyp_attrs, 
-              check_auto_uncurry
-                { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-          ) methods 
-      in           
-      if !obj_type_as_js_obj_type then 
-        lift_js_type ~loc { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                               ptyp_attributes }
+    let inner_type =
+      begin match Ext_list.exclude_with_fact
+                    (function 
+                      | {Location.txt = "uncurry"; _}, _ -> true
+                      | _ -> false)
+                    ptyp_attributes with 
+      |   None, _  ->
+        let check_auto_uncurry core_type = 
+          if  !obj_type_auto_uncurry then
+            Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+          else self.typ self core_type in 
 
-      else 
-        {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
-    | fact1 , fact2,  ptyp_attributes -> 
-      let obj_type_as_js_obj_type_cxt =  fact1 <> None || !obj_type_as_js_obj_type in
-      let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
-      let methods = 
-        Ext_ref.protect2
-          obj_type_as_js_obj_type
-          uncurry_type 
-          obj_type_as_js_obj_type_cxt 
-          uncurry_type_cxt begin fun _ -> 
+        let methods = 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
               match find_uncurry_attrs_and_remove ptyp_attrs with 
-              | None, _ -> label, ptyp_attrs , self.typ self core_type
+              | None, _ -> 
+                label, ptyp_attrs , check_auto_uncurry  core_type
               | Some v, ptyp_attrs -> 
-                label , ptyp_attrs, self.typ self 
+                label , ptyp_attrs, 
+                check_auto_uncurry
                   { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
             ) methods 
-        end
-      in           
-      let inner_type = { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                                 ptyp_attributes } in
-      if obj_type_as_js_obj_type_cxt then       
-        {ptyp_desc = 
-           Ptyp_constr ({ txt = js_obj_type_id () ; loc},
-                        [inner_type]);
-         ptyp_attributes = [];
-         ptyp_loc = loc }
-      else inner_type
-    end
+        in   
+        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                  ptyp_attributes } 
+
+      |  fact2,  ptyp_attributes -> 
+
+        let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
+        let methods = 
+          Ext_ref.protect uncurry_type uncurry_type_cxt begin fun _ -> 
+            List.map (fun (label, ptyp_attrs, core_type ) -> 
+                match find_uncurry_attrs_and_remove ptyp_attrs with 
+                | None, _ -> label, ptyp_attrs , self.typ self core_type
+                | Some v, ptyp_attrs -> 
+                  label , ptyp_attrs, self.typ self 
+                    { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+              ) methods 
+          end
+        in           
+        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                  ptyp_attributes } 
+      end
+    in          
+    if !obj_type_as_js_obj_type then 
+      lift_js_type ~loc  inner_type
+    else inner_type
   | _ -> super.typ self ty
 
 let handle_class_obj_typ 
@@ -3046,6 +3044,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (** Begin rewriting [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> {e with pexp_desc = handle_debugger loc payload}
+        | Pexp_extension ({txt = "bs.obj"; loc},  payload)
+          -> 
+            begin match payload with 
+            | PStr [{pstr_desc = Pstr_eval (e,_)}]
+              -> 
+              Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
+                (Some as_js_object_attribute ) true
+                (fun ()-> mapper.expr mapper e ) 
+            | _ -> Location.raise_errorf ~loc "Expect an expression here"
+            end
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
@@ -3133,22 +3141,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               {e with pexp_attributes = attrs} mapper
           end
 
-        | Pexp_record (label_exprs, None)   -> 
-          begin match  (* exclude {[ u with ..]} syntax currently *)
-              Ext_list.exclude_with_fact 
-                (function({Location.txt  = "bs.obj"}, _)  -> true | _ -> false) 
-                e.pexp_attributes
-            with 
-          | Some attr, pexp_attributes -> 
-            Ext_ref.protect record_as_js_object (Some attr) begin fun () -> 
-              { e with
-                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
-                pexp_attributes 
-              }
-            end
-          | None , _ -> 
+        | Pexp_record (label_exprs, None)  -> 
             begin match !record_as_js_object with 
             | Some attr 
+              (* TODO better error message when [with] detected in [%bs.obj] *)
               -> 
               { e with
                 pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
@@ -3156,7 +3152,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | None -> 
               Ast_mapper.default_mapper.expr  mapper e
             end
-          end
+
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
@@ -4791,8 +4787,116 @@ module Lam : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type primitive = Lambda.primitive
+type array_kind = Lambda.array_kind
+type boxed_integer = Lambda.boxed_integer
+type comparison = Lambda.comparison 
+type bigarray_kind = Lambda.bigarray_kind
+type bigarray_layout = Lambda.bigarray_layout
+type compile_time_constant = Lambda.compile_time_constant
 
+type tag_info = Lambda.tag_info
+type mutable_flag = Asttypes.mutable_flag
+type field_dbg_info = Lambda.field_dbg_info 
+type set_field_dbg_info = Lambda.set_field_dbg_info
+
+type ident = Ident.t
+
+type primitive = 
+  | Pbytes_to_string
+  | Pbytes_of_string
+  | Pchar_to_int
+  | Pchar_of_int
+  | Pgetglobal of ident
+  | Psetglobal of ident
+  | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
+  | Pfield of int * Lambda.field_dbg_info
+  | Psetfield of int * bool * Lambda.set_field_dbg_info
+  | Pfloatfield of int * Lambda.field_dbg_info
+  | Psetfloatfield of int * Lambda.set_field_dbg_info
+  | Pduprecord of Types.record_representation * int
+  | Plazyforce
+  | Pccall of Types.type_expr option Primitive.description
+  | Praise 
+  | Psequand | Psequor | Pnot
+  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of Lambda.comparison
+  | Poffsetint of int
+  | Poffsetref of int
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of Lambda.comparison
+  | Pstringlength 
+  | Pstringrefu 
+  | Pstringrefs
+  | Pbyteslength
+  | Pbytesrefu
+  | Pbytessetu 
+  | Pbytesrefs
+  | Pbytessets
+  (* Array operations *)
+  | Pmakearray of array_kind
+  | Parraylength of array_kind
+  | Parrayrefu of array_kind
+  | Parraysetu of array_kind
+  | Parrayrefs of array_kind
+  | Parraysets of array_kind
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  (* Bitvect operations *)
+  | Pbittest
+  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of boxed_integer
+  | Pmodbint of boxed_integer
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
+  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  (* size of the nth dimension of a big array *)
+  | Pbigarraydim of int
+  (* load/set 16,32,64 bits from a string: (unsafe)*)
+  | Pstring_load_16 of bool
+  | Pstring_load_32 of bool
+  | Pstring_load_64 of bool
+  | Pstring_set_16 of bool
+  | Pstring_set_32 of bool
+  | Pstring_set_64 of bool
+  (* load/set 16,32,64 bits from a
+     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+  | Pbigstring_load_16 of bool
+  | Pbigstring_load_32 of bool
+  | Pbigstring_load_64 of bool
+  | Pbigstring_set_16 of bool
+  | Pbigstring_set_32 of bool
+  | Pbigstring_set_64 of bool
+  (* Compile time constants *)
+  | Pctconst of compile_time_constant
+  (* byte swap *)
+  | Pbswap16
+  | Pbbswap of boxed_integer
+  (* Integer to external pointer *)
+
+  | Pdebugger
+  | Pjs_unsafe_downgrade
+  | Pinit_mod
+  | Pupdate_mod
 
 type switch  =
   { sw_numconsts: int;
@@ -4814,30 +4918,30 @@ and prim_info = private
 and function_info = private
   { arity : int ; 
    kind : Lambda.function_kind ; 
-   params : Ident.t list ;
+   params : ident list ;
    body : t 
   }
 and  t =  private
-  | Lvar of Ident.t
+  | Lvar of ident
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of Lambda.let_kind * Ident.t * t * t
-  | Lletrec of (Ident.t * t) list * t
+  | Llet of Lambda.let_kind * ident * t * t
+  | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * Ident.t list) * t
-  | Ltrywith of t * Ident.t * t
+  | Lstaticcatch of t * (int * ident list) * t
+  | Ltrywith of t * ident * t
   | Lifthenelse of t * t * t
   | Lsequence of t * t
   | Lwhile of t * t
-  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
-  | Lassign of Ident.t * t
+  | Lfor of ident * t * t * Asttypes.direction_flag * t
+  | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
   | Levent of t * Lambda.lambda_event
-  | Lifused of Ident.t * t
+  | Lifused of ident * t
 
 
 module Prim : sig 
@@ -4854,16 +4958,16 @@ type triop = t -> t -> t -> t
 
 type unop = t ->  t
 
-val var : Ident.t -> t
+val var : ident -> t
 val const : Lambda.structured_constant -> t
 
 val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
 val function_ : 
   arity:int ->
-  kind:Lambda.function_kind -> params:Ident.t list -> body:t -> t
+  kind:Lambda.function_kind -> params:ident list -> body:t -> t
 
-val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
-val letrec : (Ident.t * t) list -> t -> t
+val let_ : Lambda.let_kind -> ident -> t -> t -> t
+val letrec : (ident * t) list -> t -> t
 val if_ : triop
 val switch : t -> switch  -> t 
 val stringswitch : t -> (string * t) list -> t option -> t 
@@ -4878,25 +4982,25 @@ val not : unop
 val seq : binop
 val while_ : binop
 val event : t -> Lambda.lambda_event -> t  
-val try_ : t -> Ident.t -> t  -> t 
-val ifused : Ident.t -> t -> t
-val assign : Ident.t -> t -> t 
+val try_ : t -> ident -> t  -> t 
+val ifused : ident -> t -> t
+val assign : ident -> t -> t 
 
 val send : 
   Lambda.meth_kind ->
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : primitive:Lambda.primitive -> args:t list ->  t
+val prim : primitive:primitive -> args:t list ->  t
 
 val staticcatch : 
-  t -> int * Ident.t list -> t -> t
+  t -> int * ident list -> t -> t
 
 val staticraise : 
   int -> t list -> t
 
 val for_ : 
-  Ident.t ->
+  ident ->
   t  ->
   t -> Asttypes.direction_flag -> t -> t 
 
@@ -4932,7 +5036,125 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type primitive = Lambda.primitive
+type array_kind = Lambda.array_kind
+type boxed_integer = Lambda.boxed_integer
+type comparison = Lambda.comparison 
+type bigarray_kind = Lambda.bigarray_kind
+type bigarray_layout = Lambda.bigarray_layout
+type compile_time_constant = Lambda.compile_time_constant
+
+type tag_info = Lambda.tag_info
+type mutable_flag = Asttypes.mutable_flag
+type field_dbg_info = Lambda.field_dbg_info 
+type set_field_dbg_info = Lambda.set_field_dbg_info
+
+type ident = Ident.t
+type primitive = 
+  | Pbytes_to_string
+  | Pbytes_of_string
+  | Pchar_to_int
+  | Pchar_of_int
+  (* Globals *)
+  | Pgetglobal of ident
+  | Psetglobal of ident
+  (* Operations on heap blocks *)
+  | Pmakeblock of int * tag_info * mutable_flag
+  | Pfield of int * field_dbg_info
+  | Psetfield of int * bool * set_field_dbg_info
+  (* could have field info at least for record *)
+  | Pfloatfield of int * field_dbg_info
+  | Psetfloatfield of int * set_field_dbg_info
+  | Pduprecord of Types.record_representation * int
+  (* Force lazy values *)
+  | Plazyforce
+  (* External call *)
+  | Pccall of Types.type_expr option Primitive.description
+  (* Exceptions *)
+  | Praise
+  (* Boolean operations *)
+  | Psequand | Psequor | Pnot
+  (* Integer operations *)
+  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of comparison
+  | Poffsetint of int
+  | Poffsetref of int
+  (* Float operations *)
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of comparison
+  (* String operations *)
+  | Pstringlength 
+  | Pstringrefu 
+  | Pstringrefs
+  | Pbyteslength
+  | Pbytesrefu
+  | Pbytessetu 
+  | Pbytesrefs
+  | Pbytessets
+  (* Array operations *)
+  | Pmakearray of array_kind
+  | Parraylength of array_kind
+  | Parrayrefu of array_kind
+  | Parraysetu of array_kind
+  | Parrayrefs of array_kind
+  | Parraysets of array_kind
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  (* Bitvect operations *)
+  | Pbittest
+  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of boxed_integer
+  | Pmodbint of boxed_integer
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
+  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  (* size of the nth dimension of a big array *)
+  | Pbigarraydim of int
+  (* load/set 16,32,64 bits from a string: (unsafe)*)
+  | Pstring_load_16 of bool
+  | Pstring_load_32 of bool
+  | Pstring_load_64 of bool
+  | Pstring_set_16 of bool
+  | Pstring_set_32 of bool
+  | Pstring_set_64 of bool
+  (* load/set 16,32,64 bits from a
+     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+  | Pbigstring_load_16 of bool
+  | Pbigstring_load_32 of bool
+  | Pbigstring_load_64 of bool
+  | Pbigstring_set_16 of bool
+  | Pbigstring_set_32 of bool
+  | Pbigstring_set_64 of bool
+  (* Compile time constants *)
+  | Pctconst of compile_time_constant
+  (* byte swap *)
+  | Pbswap16
+  | Pbbswap of boxed_integer
+  (* Integer to external pointer *)
+
+  | Pdebugger 
+  | Pjs_unsafe_downgrade
+  | Pinit_mod
+  | Pupdate_mod
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -4952,30 +5174,30 @@ and apply_info =
 and function_info = 
   { arity : int ; 
    kind : Lambda.function_kind ; 
-   params : Ident.t list ;
+   params : ident list ;
    body : t 
   }
 and t = 
-  | Lvar of Ident.t
+  | Lvar of ident
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of Lambda.let_kind * Ident.t * t * t
-  | Lletrec of (Ident.t * t) list * t
+  | Llet of Lambda.let_kind * ident * t * t
+  | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * Ident.t list) * t
-  | Ltrywith of t * Ident.t * t
+  | Lstaticcatch of t * (int * ident list) * t
+  | Ltrywith of t * ident * t
   | Lifthenelse of t * t * t
   | Lsequence of t * t
   | Lwhile of t * t
-  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
-  | Lassign of Ident.t * t
+  | Lfor of ident * t * t * Asttypes.direction_flag * t
+  | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
   | Levent of t * Lambda.lambda_event
-  | Lifused of Ident.t * t
+  | Lifused of ident * t
 
 
 module Prim = struct 
@@ -5296,6 +5518,150 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
 let not x : t = 
   prim Pnot [x] 
 
+let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t = 
+  match p with 
+  | Pint_as_pointer 
+  | Pidentity ->  
+    begin match args with [x] -> x | _ -> assert false end
+  | Pbytes_to_string 
+    -> prim ~primitive:Pbytes_to_string ~args
+  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args
+  | Pchar_to_int -> prim ~primitive:Pchar_to_int ~args
+  | Pchar_of_int -> prim ~primitive:Pchar_of_int ~args
+  | Pmark_ocaml_object -> 
+    begin match args with [l] -> l | _ -> assert false end
+  | Pignore -> (* Pignore means return unit, it is not an nop *)
+    begin match args with [x] -> seq x unit | _ -> assert false end
+  | Prevapply loc 
+    -> 
+    begin match args with 
+    | [x ; Lapply{fn; args}]
+    | [x ; Levent (Lapply{fn; args},_)]
+      -> apply fn (args @[x]) loc App_na
+    | [x; f] ->  apply f [x] loc App_na
+    | _ -> assert false 
+    end
+
+  | Pdirapply loc ->
+    begin match args with 
+    | [Lapply{fn ; args }; x ] 
+    | [Levent (Lapply {fn; args}, _); x]-> 
+      apply fn (args @ [x]) loc App_na
+    | [f;x] -> apply f [x] loc App_na
+    | _ -> assert false 
+    end
+  | Ploc loc -> assert false (* already compiled away here*)
+  | Pgetglobal id -> prim ~primitive:(Pgetglobal id) ~args
+  | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args
+  | Pmakeblock (tag,info, mutable_flag) 
+    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args
+  | Pfield (id,info) 
+    -> prim ~primitive:(Pfield (id,info)) ~args
+
+  | Psetfield (id,b,info)
+    -> prim ~primitive:(Psetfield (id,b,info)) ~args
+
+  | Pfloatfield (id,info)
+    -> prim ~primitive:(Pfloatfield (id,info)) ~args
+  | Psetfloatfield (id,info) 
+    -> prim ~primitive:(Psetfloatfield (id,info)) ~args
+  | Pduprecord (repr,i) 
+    -> prim ~primitive:(Pduprecord(repr,i)) ~args
+  | Plazyforce -> prim ~primitive:Plazyforce ~args
+
+  | Pccall a -> 
+    begin match a with 
+    | {prim_name = "js_debugger"}
+      -> prim ~primitive:Pdebugger ~args 
+    | {prim_name = "js_unsafe_downgrade" }
+      -> 
+      prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
+    | _ -> prim ~primitive:(Pccall a) ~args
+    end
+  | Praise _ -> prim ~primitive:Praise ~args
+  | Psequand -> prim ~primitive:Psequand ~args 
+  | Psequor -> prim ~primitive:Psequor ~args
+  | Pnot -> prim ~primitive:Pnot ~args
+  | Pnegint -> prim ~primitive:Pnegint ~args 
+  | Paddint -> prim ~primitive:Paddint ~args
+  | Psubint -> prim ~primitive:Psubint ~args
+  | Pmulint -> prim ~primitive:Pmulint ~args
+  | Pdivint -> prim ~primitive:Pdivint ~args
+  | Pmodint -> prim ~primitive:Pmodint ~args
+  | Pandint -> prim ~primitive:Pandint ~args
+  | Porint -> prim ~primitive:Porint ~args
+  | Pxorint -> prim ~primitive:Pxorint ~args
+  | Plslint -> prim ~primitive:Plslint ~args
+  | Plsrint -> prim ~primitive:Plsrint ~args
+  | Pasrint -> prim ~primitive:Pasrint ~args
+  | Pstringlength -> prim ~primitive:Pstringlength ~args 
+  | Pstringrefu -> prim ~primitive:Pstringrefu ~args 
+  | Pstringsetu 
+  | Pstringsets -> assert false
+  | Pstringrefs -> prim ~primitive:Pstringrefs ~args
+
+  | Pbyteslength -> prim ~primitive:Pbyteslength ~args
+  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args
+  | Pbytessetu -> prim ~primitive:Pbytessetu ~args 
+  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args
+  | Pbytessets -> prim ~primitive:Pbytessets ~args
+  | Pisint -> prim ~primitive:Pisint ~args
+  | Pisout -> prim ~primitive:Pisout ~args
+  | Pbittest -> prim ~primitive:Pbittest ~args
+  | Pintoffloat -> prim ~primitive:Pintoffloat ~args
+  | Pfloatofint -> prim ~primitive:Pfloatofint ~args
+  | Pnegfloat -> prim ~primitive:Pnegfloat ~args
+  | Pabsfloat -> prim ~primitive:Pabsfloat ~args
+  | Paddfloat -> prim ~primitive:Paddfloat ~args
+  | Psubfloat -> prim ~primitive:Psubfloat ~args
+  | Pmulfloat -> prim ~primitive:Pmulfloat ~args
+  | Pdivfloat -> prim ~primitive:Pdivfloat ~args
+
+  | Pbswap16 -> prim ~primitive:Pbswap16 ~args
+  | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args
+  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args
+  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args 
+  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args
+  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args
+  | Parraylength x -> prim ~primitive:(Parraylength x) ~args
+  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args
+  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args
+  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args
+  | Parraysets x -> prim ~primitive:(Parraysets x) ~args
+  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args
+  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args
+  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args
+  | Paddbint x -> prim ~primitive:(Paddbint x) ~args
+  | Psubbint x -> prim ~primitive:(Psubbint x) ~args
+  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args
+  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args
+  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args
+  | Pandbint x -> prim ~primitive:(Pandbint x) ~args
+  | Porbint x -> prim ~primitive:(Porbint x) ~args
+  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args
+  | Plslbint x -> prim ~primitive:(Plslbint x) ~args
+  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args
+  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args
+  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args
+  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args
+  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args
+  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args
+  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args
+  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args
+  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args
+  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args
+  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args
+  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args
+  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args
+  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args
+  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args
+  | Pctconst x -> prim ~primitive:(Pctconst x) ~args
+  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args
+  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args
+  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args
+  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args
+  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args
+
 
 let rec convert (lam : Lambda.lambda) : t = 
   match lam with 
@@ -5303,8 +5669,44 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lconst x -> 
     Lconst x 
   | Lapply (fn,args,info) 
-    ->  apply (convert fn) (List.map convert args) 
+    ->  
+    begin match fn with 
+    | Lprim (
+         Pfield (id, _),
+         [
+          Lprim (
+            Pgetglobal { name = "CamlinternalMod" },
+            _
+          )
+        ]
+      ) -> (* replace all {!CamlinternalMod} function *)
+      let args = List.map convert args in
+      if id = 0 then 
+        match args with 
+        | [_loc ; shape]  -> 
+          begin match shape with 
+            | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
+              -> unit  (* see {!Translmod.init_shape}*)
+            | _ ->  prim ~primitive:Pinit_mod ~args 
+          end
+        | _ -> assert false 
+      else       
+        begin 
+          assert (id = 1);
+          match args with 
+          | [shape ;  _obj1; _obj2] -> 
+            (* here array access will have side effect .. *)
+            begin match shape with 
+            | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
+              -> unit (* see {!Translmod.init_shape}*)
+            | _ -> prim ~primitive:Pupdate_mod ~args 
+            end
+          | _ -> assert false
+        end
+    | _ -> 
+        apply (convert fn) (List.map convert args) 
           info.apply_loc info.apply_status
+    end
   | Lfunction (kind,  params,body)
     ->  function_ 
           ~arity:(List.length params) ~kind ~params 
@@ -5315,8 +5717,8 @@ let rec convert (lam : Lambda.lambda) : t =
     -> 
     Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
   | Lprim (primitive,args) 
-    -> 
-    Lprim {primitive ; args = List.map convert args }
+    -> convert_primitive primitive args 
+    (* Lprim {primitive ; args = List.map convert args } *)
   | Lswitch (e,s) -> 
     Lswitch (convert e, convert_switch s)
   | Lstringswitch (e, cases, default) -> 
@@ -5348,7 +5750,8 @@ let rec convert (lam : Lambda.lambda) : t =
   | Levent (e, event) -> 
     Levent (convert e, event)
   | Lifused (id, e) -> Lifused(id, convert e)
-
+and convert_primitive (primitive : Lambda.primitive) args = 
+  lam_prim ~primitive ~args:(List.map convert args)
 and convert_switch (s : Lambda.lambda_switch) : switch = 
   { sw_numconsts = s.sw_numconsts ; 
     sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;
@@ -5861,17 +6264,15 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_POS -> "loc_POS"
   | Loc_LOC -> "loc_LOC"
 
-let primitive ppf (prim : Lambda.primitive) = match prim with 
-  | Pidentity -> fprintf ppf "id"
-  | Pmark_ocaml_object -> fprintf ppf "mark_ocaml_object"
+let primitive ppf (prim : Lam.primitive) = match prim with 
+  | Pinit_mod -> fprintf ppf "init_mod!"
+  | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pjs_unsafe_downgrade -> fprintf ppf "js_unsafe_downgrade"
+  | Pdebugger -> fprintf ppf "debugger"
   | Pchar_to_int  -> fprintf ppf "char_to_int"
   | Pchar_of_int -> fprintf ppf "char_of_int"
-  | Pignore -> fprintf ppf "ignore"
-  | Prevapply _ -> fprintf ppf "revapply"
-  | Pdirapply _ -> fprintf ppf "dirapply"
-  | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
@@ -5885,7 +6286,7 @@ let primitive ppf (prim : Lambda.primitive) = match prim with
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
-  | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
+  | Praise  -> fprintf ppf "raise"
   | Psequand -> fprintf ppf "&&"
   | Psequor -> fprintf ppf "||"
   | Pnot -> fprintf ppf "not"
@@ -5925,9 +6326,7 @@ let primitive ppf (prim : Lambda.primitive) = match prim with
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
-  | Pstringsetu -> fprintf ppf "string.unsafe_set"
   | Pstringrefs -> fprintf ppf "string.get"
-  | Pstringsets -> fprintf ppf "string.set"
   | Pbyteslength -> fprintf ppf "bytes.length"
   | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
   | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
@@ -6015,7 +6414,7 @@ let primitive ppf (prim : Lambda.primitive) = match prim with
      else fprintf ppf "bigarray.array1.set64"
   | Pbswap16 -> fprintf ppf "bswap16"
   | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
-  | Pint_as_pointer -> fprintf ppf "int_as_pointer"
+  
 
 type print_kind = 
   | Alias 
@@ -6688,12 +7087,11 @@ let rec no_side_effects (lam : Lam.t) : bool =
           | _ , _-> false
         end 
 
-      | Pidentity 
       | Pbytes_to_string 
       | Pbytes_of_string 
       | Pchar_to_int (* might throw .. *)
       | Pchar_of_int  
-      | Ploc _
+
 
       | Pgetglobal _ 
       | Pmakeblock _  (* whether it's mutable or not *)
@@ -6748,17 +7146,15 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Compile time constants *)
       | Pctconst _
       (* Integer to external pointer *)
-      | Pint_as_pointer
+
       | Poffsetint _
-      | Pignore 
+
         -> true
+      | Pinit_mod
+      | Pupdate_mod
+      | Pjs_unsafe_downgrade
+      | Pdebugger (* TODO *)
 
-
-      | Prevapply _
-      | Pdirapply _
-
-      | Pstringsetu
-      | Pstringsets
       | Pbytessetu 
       | Pbytessets
       (* Bitvect operations *)
@@ -6788,9 +7184,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbbswap _
       | Parraysetu _ 
       | Poffsetref _ 
-      | Praise _ 
+      | Praise
       | Plazyforce 
-      | Pmark_ocaml_object  (* TODO*)
       | Psetfield _ 
       | Psetfloatfield _
       | Psetglobal _ -> false 
@@ -6861,7 +7256,7 @@ let rec size (lam : Lam.t) =
             args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
            ;  _}
       -> 1
-    | Lprim {primitive = Praise _; args =  [l ];  _} 
+    | Lprim {primitive = Praise ; args =  [l ];  _} 
       -> size l
     | Lprim {args = ll; _} -> size_lams 1 ll
 
@@ -6940,7 +7335,7 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   | Levent (v,_), Levent (v0,_) -> eq_lambda v v0
   | Lifused _, Lifused _ -> false 
   |  _,  _ -> false 
-and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) = 
+and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
   match p, p1 with 
   | Pccall {prim_name = n0 ; 
             prim_attributes = [];
@@ -8124,7 +8519,7 @@ module Lam_util : sig
 
 val string_of_lambda : Lam.t -> string 
 
-val string_of_primitive : Lambda.primitive -> string
+val string_of_primitive : Lam.primitive -> string
 
 val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
 
@@ -8335,7 +8730,7 @@ let refine_let
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w];  _} when Ident.same w param 
-                                 &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) primitive
+                                 &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
     ->  Lam.prim ~primitive ~args:[arg] 
   (* we can not do this substitution when capttured *)
@@ -9098,7 +9493,6 @@ let deep_flatten
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
 
-    | Lprim {primitive = Pidentity; args =  [l]; _ } -> l 
     | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
             args = [ Lconst (Const_base (Const_int64 i))]; _} 
       ->  
@@ -9112,23 +9506,9 @@ let deep_flatten
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
     | Lprim {primitive ; args }
       -> 
-      begin
-        let args = List.map aux args in
-        match primitive, args with
-        (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply {fn = f;  args; _}]
-        | Prevapply loc, [x; Levent (Lapply {fn = f;  args; _},_)] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Prevapply loc, [x; f] -> 
-          Lam.apply f [x] loc App_na
-        (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply{fn = f;  args; _}; x]
-        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] loc App_na
-        | _ -> Lam.prim ~primitive ~args
-      end
+      let args = List.map aux args in
+      Lam.prim ~primitive ~args
+
     | Lfunction{arity; kind; params;  body = l} -> 
       Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
     | Lswitch(l, {sw_failaction; 
@@ -16768,8 +17148,6 @@ val make :
   ?comment:string ->
   J.expression list -> J.expression
 
-val is_empty_shape : 
-  J.expression -> bool
 
 end = struct
 #1 "js_of_lam_module.ml"
@@ -16809,15 +17187,6 @@ let make ?comment (args : J.expression list) =
     ?comment E.zero_int_literal
     (Blk_module None) args Immutable
 
-let is_empty_shape (shape : J.expression) =
-  match shape with 
-  | {expression_desc = 
-       Caml_block([ 
-           {expression_desc = 
-              Caml_block ([],_,_,_) ; _ }
-         ],_,_,_) ; _}
-    -> true
-  | _ -> false
 
 end
 module Js_of_lam_exception : sig 
@@ -19965,7 +20334,7 @@ module Lam_compile_primitive : sig
  *)
 
 val translate : 
-  Lam_compile_defs.cxt  -> Lambda.primitive -> J.expression list -> J.expression
+  Lam_compile_defs.cxt  -> Lam.primitive -> J.expression list -> J.expression
 
 end = struct
 #1 "lam_compile_primitive.ml"
@@ -20014,9 +20383,15 @@ let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t 
 
 let translate 
     ({ meta = { env; _}; _} as cxt : Lam_compile_defs.cxt) 
-    (prim : Lambda.primitive)
+    (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
+  | Pjs_unsafe_downgrade
+  | Pdebugger -> assert false (* already handled by {!Lam_compile} *)
+  | Pinit_mod -> 
+    E.runtime_call Js_config.module_ "init_mod" args
+  | Pupdate_mod ->
+    E.runtime_call Js_config.module_ "update_mod" args
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
@@ -20353,16 +20728,6 @@ let translate
       | [range; e] -> E.is_out e range
       | _ -> assert false
     end
-  | Pidentity ->
-    begin 
-      match args with [e] -> e | _ -> assert false  
-    end
-  | Pmark_ocaml_object -> 
-    begin 
-      match args with 
-      | [e] ->   e 
-      | _ -> assert false
-    end
   | Pchar_of_int -> 
     begin match args with 
       | [e] -> Js_of_lam_string.caml_char_of_int e 
@@ -20410,14 +20775,6 @@ let translate
 
       | _ -> assert false
       end
-  | Pstringsetu 
-  | Pstringsets ->
-    begin
-      Ext_log.err __LOC__ "string is immutable, %s is not available" "string.unsafe_set" ;     
-      assert false (* string is immutable *)  
-    end
-
-
   | Pbytesrefu 
   | Pbytesrefs ->
       begin match args with
@@ -20436,12 +20793,6 @@ let translate
       | [e;e1] -> Js_of_lam_string.ref_string e e1 
       | _ -> assert false
       end
-  | Pignore -> 
-      begin 
-        match args with 
-        | [e] -> E.seq e E.unit
-        | _ -> assert false 
-      end
   | Pgetglobal i   -> 
     (* TODO -- check args, case by case -- 
         1. include Array --> let include  = Array 
@@ -20450,22 +20801,7 @@ let translate
     Lam_compile_global.get_exp (i,env,true)
   
     (** only when Lapply -> expand = true*)
-  | Praise _raise_kind -> assert false (* handled before here *)
-  | Prevapply _  -> 
-    (* In pracice, this should be optmized away in earlier passes *)
-    begin 
-      match args with 
-      | [arg;f] -> E.call ~info:Js_call_info.dummy f [arg]
-      | _ -> assert  false
-    end
-  | Pdirapply _ -> 
-    (* In pracice, this should be optmized away in earlier passes *)
-    begin 
-      match args with 
-      | [f; arg] -> E.call ~info:Js_call_info.dummy f [arg]
-      | _ -> assert false 
-    end
-  | Ploc kind ->   assert false (* already compiled away here*)
+  | Praise  -> assert false (* handled before here *)
 
 (* Runtime encoding relevant *)
   | Parraylength Pgenarray
@@ -20630,7 +20966,7 @@ let translate
   (*               Matching.inline_lazy_force (Lvar parm) Location.none) *)
   (* It is inlined, this should not appear here *)    
   | Pbittest 
-  | Pint_as_pointer 
+  
   | Pstring_set_16 _
   | Pstring_set_32 _
   | Pstring_set_64 _
@@ -21776,28 +22112,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              E.seq (E.dump Log args) E.unit
            | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
              E.seq (E.dump Error args) E.unit
-           | {name = "CamlinternalMod"; _}, "update_mod" ,
-             [  shape  ;
-                _module ; 
-                _ ] when Js_of_lam_module.is_empty_shape shape
-             ->
-             E.unit
-           | {name = "CamlinternalMod"; _}, "init_mod" ,
-             [ 
-               _ ;
-               shape  ;
-               (* Module []
-                  TODO: add a function [empty_shape]
-                  This pattern match is fragile, since it depends 
-                  on how we compile [Lconst]
-               *)
-             ] when Js_of_lam_module.is_empty_shape shape
-             ->
-             E.dummy_obj () (* purely type definition*)
-
            | _ -> 
-
-
              let rec aux (acc : J.expression)
                  (arity : Lam_stats.function_arities) args (len : int)  =
                match arity, len with
@@ -22246,7 +22561,7 @@ and
       -> (* should be before Pgetglobal *)
         get_exp_with_index cxt lam  (id,n, env)
 
-    | Lprim {primitive = Praise _raise_kind; args =  [ e ]; _} -> 
+    | Lprim {primitive = Praise ; args =  [ e ]; _} -> 
       begin
         match compile_lambda {
             cxt with should_return = False; st = NeedValue} e with 
@@ -22304,7 +22619,7 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-    | Lprim {primitive = Pccall {prim_name = "js_debugger"; _} ; _}
+    | Lprim {primitive = Pdebugger ; _}
       -> 
       (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer      *)
@@ -22318,7 +22633,7 @@ and
     *)
 
     | Lsend(Public (Some name), _label, 
-            Lprim {primitive = Pccall {prim_name = "js_unsafe_downgrade"; _}; 
+            Lprim {primitive = Pjs_unsafe_downgrade; 
                    args = [obj]}, [] , loc) 
       when not (Ext_string.ends_with name Literals.setter_suffix) 
       (* TODO: more not a setter/case/case_setter *)
@@ -22363,7 +22678,7 @@ and
       if kind = `Run then 
         match args_lambda with  
         | [Lsend(Public (Some "case_set"), _label,
-                 Lprim{primitive = Pccall {prim_name = "js_unsafe_downgrade"; _};
+                 Lprim{primitive = Pjs_unsafe_downgrade;
                        args = [obj]}, [] , loc) ; key ;  value] ->
           let obj_block =
             compile_lambda {cxt with st = NeedValue; should_return = False} obj
@@ -22402,7 +22717,7 @@ and
 
         | [(Lsend(meth_kind, _label, 
                   Lprim{primitive = 
-                          Pccall {prim_name = "js_unsafe_downgrade"; _};
+                          Pjs_unsafe_downgrade;
                         args = [obj]}, [] , loc) as fn);
            arg]
           -> 
@@ -23419,7 +23734,7 @@ let rec get_arity
       ~not_found:(fun _ -> assert false)
       ~found:(fun x -> x.arity )
   | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
-  | Lprim {primitive = Praise _;  _} -> Determin(true,[], true)
+  | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
   | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
   | Lprim _  -> Determin(true,[] ,false)
   (* shall we handle primitive in a direct way, 
@@ -25036,23 +25351,8 @@ let subst_helper (subst : subst_tbl) query lam =
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
     | Lprim {primitive; args; _} -> 
-      begin
-        let args = List.map simplif args in
-        match primitive, args with
-        (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply {fn = f;  args;  _}]
-        | Prevapply loc, [x; Levent (Lapply {fn = f; args;  _},_)] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Prevapply loc, [x; f] 
-          -> Lam.apply f [x] loc App_na
-        (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply{fn = f;  args;  _}; x]
-        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
-          Lam.apply f (args@[x]) loc App_na
-        | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] loc App_na
-        | _ -> Lam.prim primitive args
-      end
+      let args = List.map simplif args in
+      Lam.prim primitive args
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
