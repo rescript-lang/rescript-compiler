@@ -34,14 +34,15 @@ type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info 
 type set_field_dbg_info = Lambda.set_field_dbg_info
 
+type ident = Ident.t
 
-type primitive (* = Lambda.primitive *) = 
+type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
   | Pchar_to_int
   | Pchar_of_int
-  | Pgetglobal of Ident.t
-  | Psetglobal of Ident.t
+  | Pgetglobal of ident
+  | Psetglobal of ident
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int * bool * Lambda.set_field_dbg_info
@@ -58,18 +59,13 @@ type primitive (* = Lambda.primitive *) =
   | Pintcomp of Lambda.comparison
   | Poffsetint of int
   | Poffsetref of int
-
   | Pintoffloat | Pfloatofint
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lambda.comparison
-
   | Pstringlength 
   | Pstringrefu 
-  | Pstringsetu
   | Pstringrefs
-  | Pstringsets
-
   | Pbyteslength
   | Pbytesrefu
   | Pbytessetu 
@@ -131,10 +127,11 @@ type primitive (* = Lambda.primitive *) =
   | Pbswap16
   | Pbbswap of boxed_integer
   (* Integer to external pointer *)
-  | Pint_as_pointer
+
   | Pdebugger
   | Pjs_unsafe_downgrade
-
+  | Pinit_mod
+  | Pupdate_mod
 
 type switch  =
   { sw_numconsts: int;
@@ -156,30 +153,30 @@ and prim_info = private
 and function_info = private
   { arity : int ; 
    kind : Lambda.function_kind ; 
-   params : Ident.t list ;
+   params : ident list ;
    body : t 
   }
 and  t =  private
-  | Lvar of Ident.t
+  | Lvar of ident
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of Lambda.let_kind * Ident.t * t * t
-  | Lletrec of (Ident.t * t) list * t
+  | Llet of Lambda.let_kind * ident * t * t
+  | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * Ident.t list) * t
-  | Ltrywith of t * Ident.t * t
+  | Lstaticcatch of t * (int * ident list) * t
+  | Ltrywith of t * ident * t
   | Lifthenelse of t * t * t
   | Lsequence of t * t
   | Lwhile of t * t
-  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
-  | Lassign of Ident.t * t
+  | Lfor of ident * t * t * Asttypes.direction_flag * t
+  | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
   | Levent of t * Lambda.lambda_event
-  | Lifused of Ident.t * t
+  | Lifused of ident * t
 
 
 module Prim : sig 
@@ -196,16 +193,16 @@ type triop = t -> t -> t -> t
 
 type unop = t ->  t
 
-val var : Ident.t -> t
+val var : ident -> t
 val const : Lambda.structured_constant -> t
 
 val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
 val function_ : 
   arity:int ->
-  kind:Lambda.function_kind -> params:Ident.t list -> body:t -> t
+  kind:Lambda.function_kind -> params:ident list -> body:t -> t
 
-val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
-val letrec : (Ident.t * t) list -> t -> t
+val let_ : Lambda.let_kind -> ident -> t -> t -> t
+val letrec : (ident * t) list -> t -> t
 val if_ : triop
 val switch : t -> switch  -> t 
 val stringswitch : t -> (string * t) list -> t option -> t 
@@ -220,9 +217,9 @@ val not : unop
 val seq : binop
 val while_ : binop
 val event : t -> Lambda.lambda_event -> t  
-val try_ : t -> Ident.t -> t  -> t 
-val ifused : Ident.t -> t -> t
-val assign : Ident.t -> t -> t 
+val try_ : t -> ident -> t  -> t 
+val ifused : ident -> t -> t
+val assign : ident -> t -> t 
 
 val send : 
   Lambda.meth_kind ->
@@ -232,13 +229,13 @@ val send :
 val prim : primitive:primitive -> args:t list ->  t
 
 val staticcatch : 
-  t -> int * Ident.t list -> t -> t
+  t -> int * ident list -> t -> t
 
 val staticraise : 
   int -> t list -> t
 
 val for_ : 
-  Ident.t ->
+  ident ->
   t  ->
   t -> Asttypes.direction_flag -> t -> t 
 

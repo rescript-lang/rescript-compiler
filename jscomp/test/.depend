@@ -436,6 +436,8 @@ shift_test.cmj : ../stdlib/nativeint.cmi
 shift_test.cmx : ../stdlib/nativeint.cmx
 simple_lexer_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/lexing.cmx
+simplify_lambda_632o.cmj :
+simplify_lambda_632o.cmx :
 small_inline_test.cmj :
 small_inline_test.cmx :
 sprintf_reg_test.cmj : ../stdlib/printf.cmi mt_global.cmi mt.cmi
@@ -1114,6 +1116,8 @@ shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmj : ../stdlib/nativeint.cmj
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
+simplify_lambda_632o.cmo :
+simplify_lambda_632o.cmj :
 small_inline_test.cmo :
 small_inline_test.cmj :
 sprintf_reg_test.cmo : ../stdlib/printf.cmi mt_global.cmi mt.cmi

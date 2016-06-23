@@ -54,6 +54,8 @@ caml_lexer.cmj : caml_lexer.cmi
 caml_lexer.cmx : caml_lexer.cmi
 caml_md5.cmj : js.cmj caml_md5.cmi
 caml_md5.cmx : js.cmx caml_md5.cmi
+caml_module.cmj :
+caml_module.cmx :
 caml_obj.cmj : js.cmj caml_obj.cmi
 caml_obj.cmx : js.cmx caml_obj.cmi
 caml_oo.cmj : js.cmj caml_oo.cmi
@@ -112,6 +114,8 @@ caml_lexer.cmo : caml_lexer.cmi
 caml_lexer.cmj : caml_lexer.cmi
 caml_md5.cmo : js.cmo caml_md5.cmi
 caml_md5.cmj : js.cmj caml_md5.cmi
+caml_module.cmo :
+caml_module.cmj :
 caml_obj.cmo : js.cmo caml_obj.cmi
 caml_obj.cmj : js.cmj caml_obj.cmi
 caml_oo.cmo : js.cmo caml_oo.cmi

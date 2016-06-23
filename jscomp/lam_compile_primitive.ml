@@ -48,6 +48,10 @@ let translate
   match prim with
   | Pjs_unsafe_downgrade
   | Pdebugger -> assert false (* already handled by {!Lam_compile} *)
+  | Pinit_mod -> 
+    E.runtime_call Js_config.module_ "init_mod" args
+  | Pupdate_mod ->
+    E.runtime_call Js_config.module_ "update_mod" args
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
@@ -431,14 +435,6 @@ let translate
 
       | _ -> assert false
       end
-  | Pstringsetu 
-  | Pstringsets ->
-    begin
-      Ext_log.err __LOC__ "string is immutable, %s is not available" "string.unsafe_set" ;     
-      assert false (* string is immutable *)  
-    end
-
-
   | Pbytesrefu 
   | Pbytesrefs ->
       begin match args with
@@ -630,7 +626,7 @@ let translate
   (*               Matching.inline_lazy_force (Lvar parm) Location.none) *)
   (* It is inlined, this should not appear here *)    
   | Pbittest 
-  | Pint_as_pointer 
+  
   | Pstring_set_16 _
   | Pstring_set_32 _
   | Pstring_set_64 _

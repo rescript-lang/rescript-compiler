@@ -126,16 +126,15 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Compile time constants *)
       | Pctconst _
       (* Integer to external pointer *)
-      | Pint_as_pointer
+
       | Poffsetint _
 
         -> true
-
+      | Pinit_mod
+      | Pupdate_mod
       | Pjs_unsafe_downgrade
       | Pdebugger (* TODO *)
 
-      | Pstringsetu
-      | Pstringsets
       | Pbytessetu 
       | Pbytessets
       (* Bitvect operations *)
