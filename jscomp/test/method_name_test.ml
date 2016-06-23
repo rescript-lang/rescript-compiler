@@ -28,9 +28,9 @@ let ff x i v =
 *)
 
 
-let u = { _Content'type = "x" } [@bs.obj]
+let u = [%bs.obj { _Content'type = "x" }]
 
-let h = { open_ = 3 ; end_ = 32 } [@bs.obj]
+let h = [%bs.obj { open_ = 3 ; end_ = 32 } ]
 
 let hg x = 
   x##open_ + x ##end_

@@ -9,16 +9,16 @@ let eq loc x y =
 
 
 
-let uu = {
+let uu = [%bs.obj{
   _'x_ = 3;
 
-} [@bs.obj]
+} ]
 
-let uu2 = {
+let uu2 = [%bs.obj{
   then_ = 1;
   catch = 2;
   _'x_ = 3 
-} [@bs.obj]
+}]
 
 let hh = uu##_'x_
 

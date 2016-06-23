@@ -4,9 +4,9 @@
 
 
 
-let f (x : < case : int ->  'a ; 
+let f (x : [%bs.obj: < case : int ->  'a ; 
             case_set : int * int -> unit ;
-            .. > [@uncurry] [@bs.obj])
+            .. > [@uncurry] ] )
  = 
   x ## case_set (3, 2) ;
   x ## case 3 
@@ -24,16 +24,16 @@ let ff (x : int case  Js.t)
 
 
 let h (x : 
-         < case : (int ->  (int -> 'a ) ); .. >  [@uncurry] [@bs.obj]) = 
+         [%bs.obj:< case : (int ->  (int -> 'a ) ); .. >  [@uncurry] ]) = 
   let a = x##case 3 in 
   a 2 [@uncurry]   
 
 
 type x_obj =  
-  < 
+  [%bs.obj: < 
     case : int ->  int ; 
     case_set : int * int -> unit ;
-  >  [@uncurry] [@bs.obj]
+  >  [@uncurry] ]
 
 let f_ext 
     (x : x_obj)
@@ -42,9 +42,9 @@ let f_ext
   x ## case 3 
 
 type 'a h_obj = 
-  < 
+  [%bs.obj: < 
     case : int ->  (int -> 'a)
-  > [@uncurry] [@bs.obj]
+  > [@uncurry] ]
 
 let h_ext  (x : 'a h_obj) = 
   let  a = x ##case 3 in 
