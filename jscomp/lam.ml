@@ -34,15 +34,15 @@ type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info 
 type set_field_dbg_info = Lambda.set_field_dbg_info
 
-
+type ident = Ident.t
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
   | Pchar_to_int
   | Pchar_of_int
   (* Globals *)
-  | Pgetglobal of Ident.t
-  | Psetglobal of Ident.t
+  | Pgetglobal of ident
+  | Psetglobal of ident
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag
   | Pfield of int * field_dbg_info
@@ -74,10 +74,7 @@ type primitive =
   (* String operations *)
   | Pstringlength 
   | Pstringrefu 
-  | Pstringsetu
   | Pstringrefs
-  | Pstringsets
-
   | Pbyteslength
   | Pbytesrefu
   | Pbytessetu 
@@ -139,7 +136,7 @@ type primitive =
   | Pbswap16
   | Pbbswap of boxed_integer
   (* Integer to external pointer *)
-  | Pint_as_pointer
+
   | Pdebugger 
   | Pjs_unsafe_downgrade
   | Pinit_mod
@@ -163,30 +160,30 @@ and apply_info =
 and function_info = 
   { arity : int ; 
    kind : Lambda.function_kind ; 
-   params : Ident.t list ;
+   params : ident list ;
    body : t 
   }
 and t = 
-  | Lvar of Ident.t
+  | Lvar of ident
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of Lambda.let_kind * Ident.t * t * t
-  | Lletrec of (Ident.t * t) list * t
+  | Llet of Lambda.let_kind * ident * t * t
+  | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * Ident.t list) * t
-  | Ltrywith of t * Ident.t * t
+  | Lstaticcatch of t * (int * ident list) * t
+  | Ltrywith of t * ident * t
   | Lifthenelse of t * t * t
   | Lsequence of t * t
   | Lwhile of t * t
-  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
-  | Lassign of Ident.t * t
+  | Lfor of ident * t * t * Asttypes.direction_flag * t
+  | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
   | Levent of t * Lambda.lambda_event
-  | Lifused of Ident.t * t
+  | Lifused of ident * t
 
 
 module Prim = struct 
@@ -509,6 +506,7 @@ let not x : t =
 
 let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t = 
   match p with 
+  | Pint_as_pointer 
   | Pidentity ->  
     begin match args with [x] -> x | _ -> assert false end
   | Pbytes_to_string 
@@ -544,16 +542,8 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pmakeblock (tag,info, mutable_flag) 
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args
   | Pfield (id,info) 
-    -> 
-    begin match args with 
-    | [Lprim{primitive = Pgetglobal {name = "CamlinternalMod"}; _}]
-      -> 
-      if id = 0 then prim ~primitive:Pinit_mod ~args:[] 
-      else prim ~primitive:Pupdate_mod ~args:[]
-    | _ 
-      -> 
-        prim ~primitive:(Pfield (id,info)) ~args
-    end
+    -> prim ~primitive:(Pfield (id,info)) ~args
+
   | Psetfield (id,b,info)
     -> prim ~primitive:(Psetfield (id,b,info)) ~args
 
@@ -592,9 +582,10 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pasrint -> prim ~primitive:Pasrint ~args
   | Pstringlength -> prim ~primitive:Pstringlength ~args 
   | Pstringrefu -> prim ~primitive:Pstringrefu ~args 
-  | Pstringsetu -> prim ~primitive:Pstringsetu ~args
+  | Pstringsetu 
+  | Pstringsets -> assert false
   | Pstringrefs -> prim ~primitive:Pstringrefs ~args
-  | Pstringsets -> prim ~primitive:Pstringsets ~args
+
   | Pbyteslength -> prim ~primitive:Pbyteslength ~args
   | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args
   | Pbytessetu -> prim ~primitive:Pbytessetu ~args 
@@ -611,7 +602,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Psubfloat -> prim ~primitive:Psubfloat ~args
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args
   | Pdivfloat -> prim ~primitive:Pdivfloat ~args
-  | Pint_as_pointer -> prim ~primitive:Pint_as_pointer ~args
+
   | Pbswap16 -> prim ~primitive:Pbswap16 ~args
   | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args
@@ -680,7 +671,6 @@ let rec convert (lam : Lambda.lambda) : t =
         match args with 
         | [_loc ; shape]  -> 
           begin match shape with 
-
             | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
               -> unit  (* see {!Translmod.init_shape}*)
             | _ ->  prim ~primitive:Pinit_mod ~args 

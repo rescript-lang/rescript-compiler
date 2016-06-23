@@ -34,12 +34,3 @@ let make ?comment (args : J.expression list) =
     ?comment E.zero_int_literal
     (Blk_module None) args Immutable
 
-let is_empty_shape (shape : J.expression) =
-  match shape with 
-  | {expression_desc = 
-       Caml_block([ 
-           {expression_desc = 
-              Caml_block ([],_,_,_) ; _ }
-         ],_,_,_) ; _}
-    -> true
-  | _ -> false

@@ -161,9 +161,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pfloatcomp(Cge) -> fprintf ppf ">=."
   | Pstringlength -> fprintf ppf "string.length"
   | Pstringrefu -> fprintf ppf "string.unsafe_get"
-  | Pstringsetu -> fprintf ppf "string.unsafe_set"
   | Pstringrefs -> fprintf ppf "string.get"
-  | Pstringsets -> fprintf ppf "string.set"
   | Pbyteslength -> fprintf ppf "bytes.length"
   | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
   | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
@@ -251,7 +249,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
      else fprintf ppf "bigarray.array1.set64"
   | Pbswap16 -> fprintf ppf "bswap16"
   | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
-  | Pint_as_pointer -> fprintf ppf "int_as_pointer"
+  
 
 type print_kind = 
   | Alias 

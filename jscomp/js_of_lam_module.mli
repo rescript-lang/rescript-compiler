@@ -31,5 +31,3 @@ val make :
   ?comment:string ->
   J.expression list -> J.expression
 
-val is_empty_shape : 
-  J.expression -> bool

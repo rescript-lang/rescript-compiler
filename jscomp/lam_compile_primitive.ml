@@ -435,14 +435,6 @@ let translate
 
       | _ -> assert false
       end
-  | Pstringsetu 
-  | Pstringsets ->
-    begin
-      Ext_log.err __LOC__ "string is immutable, %s is not available" "string.unsafe_set" ;     
-      assert false (* string is immutable *)  
-    end
-
-
   | Pbytesrefu 
   | Pbytesrefs ->
       begin match args with
@@ -634,7 +626,7 @@ let translate
   (*               Matching.inline_lazy_force (Lvar parm) Location.none) *)
   (* It is inlined, this should not appear here *)    
   | Pbittest 
-  | Pint_as_pointer 
+  
   | Pstring_set_16 _
   | Pstring_set_32 _
   | Pstring_set_64 _

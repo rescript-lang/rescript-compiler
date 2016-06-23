@@ -22,13 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type shape = CamlinternalMod.shape
 (** Note that we have to provide a drop in replacement, since compiler internally will
     spit out ("CamlinternalMod".[init_mod|update_mod] unless we intercept it 
     in the lambda layer
  *)
-let init_mod (loc : string * int * int) (shape : CamlinternalMod.shape) =  
+let init_mod (loc : string * int * int) (shape : shape) =  
   let undef_module _ = raise (Undefined_recursive_module loc) in
-  let rec loop (shape : CamlinternalMod.shape) (struct_ : Obj.t array) idx = 
+  let rec loop (shape : shape) (struct_ : Obj.t array) idx = 
     match shape with 
     | Function -> struct_.(idx)<-(Obj.magic undef_module)
     | Lazy -> struct_.(idx)<- (Obj.magic (lazy undef_module))
@@ -56,8 +57,8 @@ external caml_update_dummy : Obj.t -> Obj.t -> unit = "caml_update_dummy"
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
  *)
-let update_mod (shape : CamlinternalMod.shape)  (o : Obj.t)  (n : Obj.t) :  unit = 
-  let rec aux (shape : CamlinternalMod.shape) o n parent i  =
+let update_mod (shape : shape)  (o : Obj.t)  (n : Obj.t) :  unit = 
+  let rec aux (shape : shape) o n parent i  =
     match shape with
     | Function 
       -> Obj.set_field parent i n 
