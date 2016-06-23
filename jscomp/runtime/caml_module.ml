@@ -32,7 +32,12 @@ let init_mod (loc : string * int * int) (shape : CamlinternalMod.shape) =
     match shape with 
     | Function -> struct_.(idx)<-(Obj.magic undef_module)
     | Lazy -> struct_.(idx)<- (Obj.magic (lazy undef_module))
-    | Class ->  struct_.(idx)<- (Obj.magic (CamlinternalOO.dummy_class loc))
+    | Class ->  
+      struct_.(idx)<- 
+        (Obj.magic (*ref {!CamlinternalOO.dummy_class loc} *)
+           (undef_module, undef_module, undef_module,  0)
+           (* depends on dummy class representation *)
+        )
     | Module comps 
       -> 
       let v =  (Obj.magic [||]) in
