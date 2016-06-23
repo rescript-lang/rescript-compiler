@@ -48,6 +48,10 @@ let translate
   match prim with
   | Pjs_unsafe_downgrade
   | Pdebugger -> assert false (* already handled by {!Lam_compile} *)
+  | Pinit_mod -> 
+    E.runtime_call Js_config.module_ "init_mod" args
+  | Pupdate_mod ->
+    E.runtime_call Js_config.module_ "update_mod" args
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 

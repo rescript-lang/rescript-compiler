@@ -130,7 +130,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Poffsetint _
 
         -> true
-
+      | Pinit_mod
+      | Pupdate_mod
       | Pjs_unsafe_downgrade
       | Pdebugger (* TODO *)
 

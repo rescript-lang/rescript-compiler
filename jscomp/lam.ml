@@ -142,6 +142,8 @@ type primitive =
   | Pint_as_pointer
   | Pdebugger 
   | Pjs_unsafe_downgrade
+  | Pinit_mod
+  | Pupdate_mod
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -542,7 +544,16 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pmakeblock (tag,info, mutable_flag) 
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args
   | Pfield (id,info) 
-    -> prim ~primitive:(Pfield (id,info)) ~args
+    -> 
+    begin match args with 
+    | [Lprim{primitive = Pgetglobal {name = "CamlinternalMod"}; _}]
+      -> 
+      if id = 0 then prim ~primitive:Pinit_mod ~args:[] 
+      else prim ~primitive:Pupdate_mod ~args:[]
+    | _ 
+      -> 
+        prim ~primitive:(Pfield (id,info)) ~args
+    end
   | Psetfield (id,b,info)
     -> prim ~primitive:(Psetfield (id,b,info)) ~args
 
@@ -653,8 +664,45 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lconst x -> 
     Lconst x 
   | Lapply (fn,args,info) 
-    ->  apply (convert fn) (List.map convert args) 
+    ->  
+    begin match fn with 
+    | Lprim (
+         Pfield (id, _),
+         [
+          Lprim (
+            Pgetglobal { name = "CamlinternalMod" },
+            _
+          )
+        ]
+      ) -> (* replace all {!CamlinternalMod} function *)
+      let args = List.map convert args in
+      if id = 0 then 
+        match args with 
+        | [_loc ; shape]  -> 
+          begin match shape with 
+
+            | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
+              -> unit  (* see {!Translmod.init_shape}*)
+            | _ ->  prim ~primitive:Pinit_mod ~args 
+          end
+        | _ -> assert false 
+      else       
+        begin 
+          assert (id = 1);
+          match args with 
+          | [shape ;  _obj1; _obj2] -> 
+            (* here array access will have side effect .. *)
+            begin match shape with 
+            | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
+              -> unit (* see {!Translmod.init_shape}*)
+            | _ -> prim ~primitive:Pupdate_mod ~args 
+            end
+          | _ -> assert false
+        end
+    | _ -> 
+        apply (convert fn) (List.map convert args) 
           info.apply_loc info.apply_status
+    end
   | Lfunction (kind,  params,body)
     ->  function_ 
           ~arity:(List.length params) ~kind ~params 

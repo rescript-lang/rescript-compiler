@@ -134,7 +134,8 @@ type primitive (* = Lambda.primitive *) =
   | Pint_as_pointer
   | Pdebugger
   | Pjs_unsafe_downgrade
-
+  | Pinit_mod
+  | Pupdate_mod
 
 type switch  =
   { sw_numconsts: int;

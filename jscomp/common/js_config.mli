@@ -88,7 +88,7 @@ val md5 : string
 val hash : string
 val weak : string
 val js_primitive : string
-
+val module_ : string
 
 (** Debugging utilies *)
 val set_current_file : string -> unit 

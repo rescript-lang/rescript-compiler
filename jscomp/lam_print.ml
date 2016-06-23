@@ -100,6 +100,8 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
+  | Pinit_mod -> fprintf ppf "init_mod!"
+  | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pjs_unsafe_downgrade -> fprintf ppf "js_unsafe_downgrade"

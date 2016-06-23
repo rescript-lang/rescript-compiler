@@ -196,28 +196,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              E.seq (E.dump Log args) E.unit
            | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
              E.seq (E.dump Error args) E.unit
-           | {name = "CamlinternalMod"; _}, "update_mod" ,
-             [  shape  ;
-                _module ; 
-                _ ] when Js_of_lam_module.is_empty_shape shape
-             ->
-             E.unit
-           | {name = "CamlinternalMod"; _}, "init_mod" ,
-             [ 
-               _ ;
-               shape  ;
-               (* Module []
-                  TODO: add a function [empty_shape]
-                  This pattern match is fragile, since it depends 
-                  on how we compile [Lconst]
-               *)
-             ] when Js_of_lam_module.is_empty_shape shape
-             ->
-             E.dummy_obj () (* purely type definition*)
-
            | _ -> 
-
-
              let rec aux (acc : J.expression)
                  (arity : Lam_stats.function_arities) args (len : int)  =
                match arity, len with
