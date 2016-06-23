@@ -84,11 +84,11 @@ class type grid  =
   object [@uncurry]
     inherit widget
     inherit measure
-    method columns_set : (<width : int; .. > [@bs.obj])  array -> unit 
+    method columns_set : [%bs.obj: <width : int; .. >  ]  array -> unit 
     method titleRows_set : 
-      (<label : <text : string; .. >   ; ..>  [@bs.obj])   array -> unit 
+      [%bs.obj: <label : <text : string; .. >   ; ..> ]   array -> unit 
     method dataSource_set :
-      (<label : <text : string; .. >   ; ..> [@bs.obj])  array array -> unit  
+      [%bs.obj: <label : <text : string; .. >   ; ..>  ]  array array -> unit  
   end
 
 external set_interval : (unit -> unit [@uncurry]) -> float -> unit  =  "setInterval"
@@ -186,11 +186,8 @@ let ui_layout
     stackPanel##addChild grid;
     stackPanel##addChild inputCode;
     stackPanel##addChild button;
-    (* {label =  {text } [@bs.obj] }[@bs.obj] 
-       should also work 
-    *)
-    let mk_titleRow text = {label =  {text }  }[@bs.obj] in
-    let u = {width =  200} [@bs.obj] in
+    let mk_titleRow text = [%bs.obj {label =  {text }  } ] in
+    let u =  [%bs.obj {width =  200} ]  in
     grid##minHeight_set 300;
     grid##titleRows_set
         [| mk_titleRow "Ticker";

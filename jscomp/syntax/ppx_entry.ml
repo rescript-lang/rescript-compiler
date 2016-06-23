@@ -75,6 +75,10 @@ open Ast_helper
 let arrow = Ast_helper.Typ.arrow
 
 let record_as_js_object = ref None (* otherwise has an attribute *)
+
+let as_js_object_attribute  : Parsetree.attribute
+  = {txt = "bs.obj" ; loc = Location.none}, PStr []
+
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
 let obj_type_auto_uncurry =  ref false
@@ -221,6 +225,9 @@ let handle_typ
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
+  | {ptyp_desc = Ptyp_extension({txt = "bs.obj"}, PTyp ty)}
+    -> 
+    Ext_ref.protect obj_type_as_js_obj_type true (fun _ -> self.typ self ty )
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
@@ -242,65 +249,53 @@ let handle_typ
     ptyp_attributes ;
     ptyp_loc = loc 
     } -> 
-    begin match Ext_list.exclude_with_fact2 
-                  (function 
-                    | {Location.txt = "bs.obj" ; _}, _  -> true 
-                    | _  -> false ) 
-                  (function 
-                    | {Location.txt = "uncurry"; _}, _ -> true
-                    | _ -> false)
-                  ptyp_attributes with 
-    |  None, None, _  ->
-      let check_auto_uncurry core_type = 
-        if  !obj_type_auto_uncurry then
-          Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
-        else self.typ self core_type in 
-  
-      let methods = 
-        List.map (fun (label, ptyp_attrs, core_type ) -> 
-            match find_uncurry_attrs_and_remove ptyp_attrs with 
-            | None, _ -> 
-              label, ptyp_attrs , check_auto_uncurry  core_type
-            | Some v, ptyp_attrs -> 
-              label , ptyp_attrs, 
-              check_auto_uncurry
-                { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-          ) methods 
-      in           
-      if !obj_type_as_js_obj_type then 
-        lift_js_type ~loc { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                               ptyp_attributes }
+    let inner_type =
+      begin match Ext_list.exclude_with_fact
+                    (function 
+                      | {Location.txt = "uncurry"; _}, _ -> true
+                      | _ -> false)
+                    ptyp_attributes with 
+      |   None, _  ->
+        let check_auto_uncurry core_type = 
+          if  !obj_type_auto_uncurry then
+            Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+          else self.typ self core_type in 
 
-      else 
-        {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
-    | fact1 , fact2,  ptyp_attributes -> 
-      let obj_type_as_js_obj_type_cxt =  fact1 <> None || !obj_type_as_js_obj_type in
-      let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
-      let methods = 
-        Ext_ref.protect2
-          obj_type_as_js_obj_type
-          uncurry_type 
-          obj_type_as_js_obj_type_cxt 
-          uncurry_type_cxt begin fun _ -> 
+        let methods = 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
               match find_uncurry_attrs_and_remove ptyp_attrs with 
-              | None, _ -> label, ptyp_attrs , self.typ self core_type
+              | None, _ -> 
+                label, ptyp_attrs , check_auto_uncurry  core_type
               | Some v, ptyp_attrs -> 
-                label , ptyp_attrs, self.typ self 
+                label , ptyp_attrs, 
+                check_auto_uncurry
                   { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
             ) methods 
-        end
-      in           
-      let inner_type = { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                                 ptyp_attributes } in
-      if obj_type_as_js_obj_type_cxt then       
-        {ptyp_desc = 
-           Ptyp_constr ({ txt = js_obj_type_id () ; loc},
-                        [inner_type]);
-         ptyp_attributes = [];
-         ptyp_loc = loc }
-      else inner_type
-    end
+        in   
+        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                  ptyp_attributes } 
+
+      |  fact2,  ptyp_attributes -> 
+
+        let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
+        let methods = 
+          Ext_ref.protect uncurry_type uncurry_type_cxt begin fun _ -> 
+            List.map (fun (label, ptyp_attrs, core_type ) -> 
+                match find_uncurry_attrs_and_remove ptyp_attrs with 
+                | None, _ -> label, ptyp_attrs , self.typ self core_type
+                | Some v, ptyp_attrs -> 
+                  label , ptyp_attrs, self.typ self 
+                    { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+              ) methods 
+          end
+        in           
+        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                  ptyp_attributes } 
+      end
+    in          
+    if !obj_type_as_js_obj_type then 
+      lift_js_type ~loc  inner_type
+    else inner_type
   | _ -> super.typ self ty
 
 let handle_class_obj_typ 
@@ -523,6 +518,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (** Begin rewriting [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> {e with pexp_desc = handle_debugger loc payload}
+        | Pexp_extension ({txt = "bs.obj"; loc},  payload)
+          -> 
+            begin match payload with 
+            | PStr [{pstr_desc = Pstr_eval (e,_)}]
+              -> 
+              Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
+                (Some as_js_object_attribute ) true
+                (fun ()-> mapper.expr mapper e ) 
+            | _ -> Location.raise_errorf ~loc "Expect an expression here"
+            end
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
@@ -610,22 +615,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               {e with pexp_attributes = attrs} mapper
           end
 
-        | Pexp_record (label_exprs, None)   -> 
-          begin match  (* exclude {[ u with ..]} syntax currently *)
-              Ext_list.exclude_with_fact 
-                (function({Location.txt  = "bs.obj"}, _)  -> true | _ -> false) 
-                e.pexp_attributes
-            with 
-          | Some attr, pexp_attributes -> 
-            Ext_ref.protect record_as_js_object (Some attr) begin fun () -> 
-              { e with
-                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
-                pexp_attributes 
-              }
-            end
-          | None , _ -> 
+        | Pexp_record (label_exprs, None)  -> 
             begin match !record_as_js_object with 
             | Some attr 
+              (* TODO better error message when [with] detected in [%bs.obj] *)
               -> 
               { e with
                 pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
@@ -633,7 +626,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | None -> 
               Ast_mapper.default_mapper.expr  mapper e
             end
-          end
+
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);

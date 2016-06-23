@@ -14,14 +14,14 @@ class type v2 = object
 end 
 
 type vv = 
-  < 
+  [%bs.obj: < 
     hey : int * int -> int 
-  > [@bs.obj] [@uncurry]
+  >  [@uncurry] ]
 
 type vv2 = 
-  < 
+  [%bs.obj: < 
     hey : int * int -> int 
-  > [@bs.obj] 
+  > ] 
 
 
 let hh (x : v) : v2 = x 

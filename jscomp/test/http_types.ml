@@ -15,23 +15,23 @@
 type req 
 
 type resp = 
-  <
+  [%bs.obj: <
    statusCode_set : int -> unit  ;
    setHeader : string * string -> unit ;
    end_ : string ->  unit 
-  > [@bs.obj] [@uncurry]
+  >  [@uncurry] ]
 
 type server = 
-  <
+  [%bs.obj: <
     listen : int * string *  (unit -> unit) -> unit 
-  > [@bs.obj] [@uncurry]
+  >  [@uncurry] ]
 
 
 
 type http = 
-  <
+  [%bs.obj: <
    createServer : (req  * resp  -> unit ) ->  server
-  > [@bs.obj] [@uncurry]
+  >  [@uncurry] ]
 
 
 external http : http  = "http"  [@@bs.val_of_module ]

@@ -21,14 +21,14 @@ let () =
 
 
 let u = 
-  { then_ = 3 ; 
+  [%bs.obj{ then_ = 3 ; 
     catch  = 32
-  }  [@bs.obj]
+  }]
 
 
-let uu = {
+let uu = [%bs.obj{
   _'x_ = 3
-} [@bs.obj]
+}]
 
 
 let hh = uu##_'x_

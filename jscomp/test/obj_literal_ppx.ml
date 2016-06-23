@@ -1,8 +1,9 @@
 
 
-let a = { x = 3 ; y = [| 1|]} [@bs.obj]
+let a = [%bs.obj { x = 3 ; y = [| 1|]} ]
 
-let b = { x = 3 ; y = [| 1 |]; z = 3; u = fun [@uncurry] (x,y) -> x + y } [@bs.obj]
+let b = 
+  [%bs.obj { x = 3 ; y = [| 1 |]; z = 3; u = fun [@uncurry] (x,y) -> x + y } ]
 
 let f obj = 
   obj ## x + Array.length (obj ## y)
