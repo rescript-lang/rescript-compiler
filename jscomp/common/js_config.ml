@@ -262,3 +262,8 @@ let is_same_file () =
   !debug_file <> "" &&  !debug_file = !current_file
 
 let tool_name = "BuckleScript"
+let check_div_by_zero = ref true
+
+let get_check_div_by_zero () = !check_div_by_zero 
+
+

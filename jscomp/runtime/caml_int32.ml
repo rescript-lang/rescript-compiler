@@ -28,12 +28,12 @@
 
 
 
-let idiv (x:nativeint) (y:nativeint) = 
+let div (x:nativeint) (y:nativeint) = 
   if y = 0n  then
     raise Division_by_zero
   else Nativeint.div x y
 
-let imod (x : nativeint) (y:nativeint) = 
+let mod_ (x : nativeint) (y:nativeint) = 
   if y = 0n then
     raise Division_by_zero
   else Nativeint.rem x  y

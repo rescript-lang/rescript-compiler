@@ -21,7 +21,7 @@ $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 
 
-COMPFLAGS += $(MODULE_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -w -40 -bs-npm-output-path $(npm_package_name):lib/js -bs-cross-module-opt -bs-diagnose
+COMPFLAGS += $(MODULE_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -w -40 -bs-npm-output-path $(npm_package_name):lib/js -bs-no-check-div-by-zero -bs-cross-module-opt -bs-diagnose
 
 
 

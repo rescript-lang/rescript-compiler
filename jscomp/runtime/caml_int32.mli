@@ -27,9 +27,9 @@
 
 
 
-val idiv : nativeint -> nativeint -> nativeint
+val div : nativeint -> nativeint -> nativeint
 
-val imod : nativeint -> nativeint -> nativeint
+val mod_ : nativeint -> nativeint -> nativeint
 
 val caml_bswap16 : nativeint -> nativeint
 
