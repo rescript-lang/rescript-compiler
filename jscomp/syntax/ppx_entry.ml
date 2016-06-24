@@ -107,7 +107,7 @@ let handle_record_as_js_object
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label "
   ) label_exprs in 
-  let pval_prim = "" in 
+  let pval_prim = [ "" ] in 
   let pval_attributes = [attr] in 
   let pval_type = 
     let arity = List.length labels in 
@@ -132,7 +132,7 @@ let handle_record_as_js_object
     args 
 
 let gen_fn_run loc arity args  : Parsetree.expression_desc = 
-  let pval_prim = Printf.sprintf "js_fn_run_%02d" arity  in
+  let pval_prim = ["js_fn_run" ; string_of_int arity]  in
   let tyvars =
     Ext_list.init (arity + 1) 
       (fun i -> Typ.var ~loc ("a" ^ string_of_int i)) in
@@ -156,7 +156,7 @@ let gen_fn_run loc arity args  : Parsetree.expression_desc =
 let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
   let ptyp_attributes = [] in 
-  let pval_prim = Printf.sprintf "js_fn_mk_%02d" arity  in
+  let pval_prim = [ "js_fn_mk"; string_of_int arity]  in
   let tyvars =
         (Ext_list.init (arity + 1) (fun i -> 
              {ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
@@ -325,7 +325,7 @@ let handle_class_obj_typ
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
     let predef_unit_type = Ast_literal.type_unit ~loc () in
-    let pval_prim = "js_debugger" in
+    let pval_prim = ["js_debugger"] in
     Ast_comb.create_local_external loc 
       ~pval_prim
       ~pval_type:(arrow "" predef_unit_type predef_unit_type)
@@ -388,7 +388,7 @@ let handle_obj_property loc obj name e
   let var = Typ.var ~loc "a" in 
   let down = Ast_comb.create_local_external loc  
 
-    ~pval_prim:"js_unsafe_downgrade"
+    ~pval_prim:["js_unsafe_downgrade"]
     ~pval_type:(
       Ast_comb.arrow_no_label ~loc
         (lift_js_type ~loc var) var)
@@ -439,7 +439,7 @@ let handle_obj_method loc (obj : Parsetree.expression)
   let args = List.map (mapper.expr mapper ) args in 
   let var = Typ.var ~loc "a" in 
   let down = Ast_comb.create_local_external loc  
-    ~pval_prim:"js_unsafe_downgrade"
+    ~pval_prim:["js_unsafe_downgrade"]
     ~pval_type:(Ast_comb.arrow_no_label ~loc
                   (lift_js_type ~loc var)
                   var )
@@ -503,7 +503,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | None -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
             | Some exp -> 
-              let pval_prim = "js_pure_expr" in
+              let pval_prim = ["js_pure_expr"] in
               { exp with pexp_desc = Ast_comb.create_local_external loc 
                            ~pval_prim
                            ~pval_type:(arrow "" 
@@ -638,7 +638,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             begin match Ast_payload.as_string_exp payload with 
               | Some exp 
                 -> 
-                let pval_prim = "js_pure_stmt" in 
+                let pval_prim = ["js_pure_stmt"] in 
                 Ast_helper.Str.eval 
                   { exp with pexp_desc =
                              Ast_comb.create_local_external loc 

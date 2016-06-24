@@ -568,21 +568,14 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     | {prim_name = "js_unsafe_downgrade" }
       -> 
       prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
+    | {prim_name = "js_fn_run" ; prim_native_name = arity} 
+      -> 
+      prim ~primitive:(Pjs_fn_run (int_of_string arity)) ~args 
+    | {prim_name = "js_fn_mk" ; prim_native_name = arity }
+      -> 
+      prim ~primitive:(Pjs_fn_make (int_of_string arity)) ~args           
     | _ -> 
-      if Ext_string.starts_with a.prim_name "js_fn_" then 
-        let arity, kind = 
-          let mk =  Ext_string.starts_with_and_number a.prim_name ~offset:6 "mk_" in 
-          if mk < 0 then 
-            let run = Ext_string.starts_with_and_number a.prim_name ~offset:6 "run_" in 
-            run , `Run
-          else mk, `Mk
-        in 
-        if kind = `Run then 
-          prim ~primitive:(Pjs_fn_run arity) ~args 
-        else 
-          prim ~primitive:(Pjs_fn_make arity) ~args           
-      else 
-        prim ~primitive:(Pccall a) ~args
+      prim ~primitive:(Pccall a) ~args
     end
   | Praise _ -> prim ~primitive:Praise ~args
   | Psequand -> prim ~primitive:Psequand ~args 

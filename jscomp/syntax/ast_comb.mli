@@ -24,7 +24,7 @@
 
 val create_local_external : Location.t ->
   ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string ->
+  pval_prim:string list ->
   pval_type:Parsetree.core_type ->
   ?local_module_name:string ->
   ?local_fun_name:string ->
