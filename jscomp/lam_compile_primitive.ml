@@ -47,7 +47,9 @@ let translate
     (args : J.expression list) : J.expression = 
   match prim with
   | Pjs_unsafe_downgrade
-  | Pdebugger -> assert false (* already handled by {!Lam_compile} *)
+  | Pdebugger 
+  | Pjs_fn_run _ 
+  | Pjs_fn_make _ -> assert false (* already handled by {!Lam_compile} *)
   | Pinit_mod -> 
     E.runtime_call Js_config.module_ "init_mod" args
   | Pupdate_mod ->

@@ -132,6 +132,8 @@ type primitive =
   | Pjs_unsafe_downgrade
   | Pinit_mod
   | Pupdate_mod
+  | Pjs_fn_make of int 
+  | Pjs_fn_run of int 
 
 type switch  =
   { sw_numconsts: int;

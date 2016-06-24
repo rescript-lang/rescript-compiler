@@ -141,6 +141,8 @@ type primitive =
   | Pjs_unsafe_downgrade
   | Pinit_mod
   | Pupdate_mod
+  | Pjs_fn_make of int 
+  | Pjs_fn_run of int 
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -566,7 +568,21 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     | {prim_name = "js_unsafe_downgrade" }
       -> 
       prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
-    | _ -> prim ~primitive:(Pccall a) ~args
+    | _ -> 
+      if Ext_string.starts_with a.prim_name "js_fn_" then 
+        let arity, kind = 
+          let mk =  Ext_string.starts_with_and_number a.prim_name ~offset:6 "mk_" in 
+          if mk < 0 then 
+            let run = Ext_string.starts_with_and_number a.prim_name ~offset:6 "run_" in 
+            run , `Run
+          else mk, `Mk
+        in 
+        if kind = `Run then 
+          prim ~primitive:(Pjs_fn_run arity) ~args 
+        else 
+          prim ~primitive:(Pjs_fn_make arity) ~args           
+      else 
+        prim ~primitive:(Pccall a) ~args
     end
   | Praise _ -> prim ~primitive:Praise ~args
   | Psequand -> prim ~primitive:Psequand ~args 
