@@ -339,3 +339,4 @@ method_chain
 recursive_module
 recursive_module_test
 simplify_lambda_632o
+div_by_zero_test

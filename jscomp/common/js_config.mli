@@ -102,3 +102,7 @@ val get_debug_file : unit -> string
 val is_same_file : unit -> bool 
 
 val tool_name : string
+
+val check_div_by_zero : bool ref 
+
+val get_check_div_by_zero : unit -> bool 

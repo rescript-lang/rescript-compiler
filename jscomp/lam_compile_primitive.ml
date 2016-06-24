@@ -186,25 +186,31 @@ let translate
       | [e1;e2] -> E.float_div  e1  e2
       | _ -> assert false 
     end
-  | Pdivint 
-  | Pdivbint Lambda.Pnativeint
-  | Pdivbint Lambda.Pint32
+  | Pdivbint Pnativeint
     -> 
     begin match args with 
       | [e1;e2] ->
-        E.int32_div e1 e2
+        E.int32_div ~checked:false e1 e2
+      | _ -> assert false
+    end
+  | Pdivint 
+  | Pdivbint Pint32
+    -> 
+    begin match args with 
+      | [e1;e2] ->
+        E.int32_div ~checked:(!Js_config.check_div_by_zero) e1 e2
       | _ -> assert false
     end
 
-  | Pdivbint Lambda.Pint64 
+  | Pdivbint Pint64 
     -> Js_long.div args 
   | Pmodint 
-  | Pmodbint Lambda.Pnativeint
-  | Pmodbint Lambda.Pint32
+  | Pmodbint Pnativeint
+  | Pmodbint Pint32
     ->
     begin match args with
       | [e1; e2] ->
-        E.int32_mod   e1  e2
+        E.int32_mod   ~checked:(!Js_config.check_div_by_zero) e1  e2
       | _ -> assert false 
     end
   | Pmodbint Lambda.Pint64 

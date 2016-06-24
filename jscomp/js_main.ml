@@ -77,9 +77,12 @@ let buckle_script_flags =
     " set will generate `.d.ts` file for typescript (experimental)")
   :: ("-bs-diagnose", Arg.Set Js_config.diagnose, 
       " More verbose output")
+  :: ("-bs-no-check-div-by-zero", Arg.Clear Js_config.check_div_by_zero, 
+      " unsafe mode, don't check div by zero and mod by zero")
   :: ("-bs-files", Arg.Rest collect_file, 
       " Provide batch of files, the compiler will sort it before compiling"
      )
+
   :: Ocaml_options.mk_impl impl
   :: Ocaml_options.mk_intf intf 
   :: Ocaml_options.mk__ anonymous

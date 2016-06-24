@@ -1044,25 +1044,47 @@ let float_div ?comment e1 e2 =
 let float_notequal ?comment e1 e2 = 
   bin ?comment NotEqEq e1 e2
 
-(** Division by zero is undefined behavior*)
-let unchecked_int32_div ?comment e1 e2 : J.expression = 
-  to_int32 (float_div ?comment e1 e2)
 
 let int32_asr ?comment e1 e2 : J.expression = 
   { comment ; 
     expression_desc = Bin (Asr, e1,e2)
   }
 
-let int32_div ?comment (e1 : J.expression) (e2 : J.expression)
-  : J.expression = 
+(** Division by zero is undefined behavior*)
+let int32_div ~checked ?comment 
+    (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
   | Length _ , Number (Int {i = 2l} | Uint 2l | Nint 2n)
     -> int32_asr e1 one_int_literal 
-  | Number(Int {i = i0}) , Number (Int {i = i1} ) when i1 <> 0l
-    -> int (Int32.div i0 i1)
+  | e1_desc , Number (Int {i = i1} ) when i1 <> 0l
+    -> 
+    begin match e1_desc with 
+    | Number(Int {i = i0})
+      -> 
+      int (Int32.div i0 i1)
+    | _ -> to_int32 (float_div ?comment e1 e2)
+    end
   | _, _ -> 
-    to_int32 (float_div ?comment e1 e2)
+    if checked  then 
+      runtime_call Js_config.int32 "div" [e1; e2]
+    else to_int32 (float_div ?comment e1 e2)
 
+
+let int32_mod ~checked ?comment e1 (e2 : t) : J.expression = 
+  match e2.expression_desc with 
+  | Number (Int {i }) when i <> 0l 
+    -> 
+    { comment ; 
+      expression_desc = Bin (Mod, e1,e2)
+    }
+
+  | _ -> 
+    if checked then 
+      runtime_call Js_config.int32 "mod_" [e1;e2]
+    else 
+      { comment ; 
+        expression_desc = Bin (Mod, e1,e2)
+      }
 
 
 let float_mul ?comment e1 e2 = 
@@ -1070,11 +1092,6 @@ let float_mul ?comment e1 e2 =
 
 
 
-(* TODO: check division by zero *)                
-let int32_mod ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Mod, e1,e2)
-  }
 
 let int32_lsl ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
   match e1, e2  with 

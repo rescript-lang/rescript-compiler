@@ -179,13 +179,21 @@ let query (prim : Lam_compile_env.primitive_description)
     | [e0;e1] -> E.unchecked_int32_add e0 e1 
     | _ -> assert false 
     end
-  | "caml_int32_div"
+  | "caml_int32_div" 
+    -> 
+    begin match args with 
+      | [e0;e1] -> 
+        E.int32_div  ~checked:(!Js_config.check_div_by_zero) e0 e1
+      | _ -> assert false 
+    end
+
   | "caml_nativeint_div" 
     -> (* nativeint behaves exactly the same as js numbers except division *)
     begin match args with 
-    | [e0;e1] -> E.int32_div e0 e1
+    | [e0;e1] -> E.int32_div  ~checked:false e0 e1
     | _ -> assert false 
     end
+
   | "caml_int32_mul"
     -> 
     begin match args with 

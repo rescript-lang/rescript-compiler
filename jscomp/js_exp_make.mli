@@ -162,11 +162,14 @@ val unchecked_int32_minus : binary_op
 val int32_minus : binary_op
 val int32_mul : binary_op
 val unchecked_int32_mul : binary_op
-val int32_div : binary_op
+
+val int32_div : checked:bool -> binary_op
+val int32_mod : checked:bool -> binary_op
+
 val int32_lsl : binary_op
 val int32_lsr : binary_op
 val int32_asr : binary_op
-val int32_mod : binary_op
+
 val int32_bxor : binary_op
 val int32_band : binary_op
 val int32_bor : binary_op
