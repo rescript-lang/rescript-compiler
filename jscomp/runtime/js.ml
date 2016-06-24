@@ -31,82 +31,82 @@ module Unsafe = struct
   external (!)  : 'a t -> 'a = "js_unsafe_downgrade"
 
   external mk0 : (unit -> 'a0) -> 'a0 fn = 
-    "js_fn_mk_00" 
+    "js_fn_mk" "0"
 
-  external run0 : 'a0 fn  -> 'a0 = "js_fn_run_00"
+  external run0 : 'a0 fn  -> 'a0 = "js_fn_run" "0"
 
   external mk1 : ('a0 -> 'a1) -> ('a0 * 'a1) fn  = 
-    "js_fn_mk_01"
+    "js_fn_mk" "1"
 
   external run1 : ('a0 * 'a1) fn -> 'a0 -> 'a1  = 
-    "js_fn_run_01"
+    "js_fn_run" "1"
 
   external mk2 : ('a0 -> 'a1 -> 'a2 ) -> ('a0 *  'a1 * 'a2) fn = 
-    "js_fn_mk_02"
+    "js_fn_mk" "2"
 
   external run2 : ('a0 * 'a1 * 'a2 )fn -> 'a0 -> 'a1 -> 'a2  = 
-    "js_fn_run_02"
+    "js_fn_run" "2"
 
   external mk3 : 
     ('a0 -> 'a1 -> 'a2 -> 'a3 ) -> ('a0 *  'a1 * 'a2 * 'a3)  fn = 
-    "js_fn_mk_03"
+    "js_fn_mk" "3"
 
   external run3 : 
     ('a0 * 'a1 * 'a2 * 'a3) fn -> 'a0 -> 'a1 -> 'a2 -> 'a3 = 
-    "js_fn_run_03"
+    "js_fn_run" "3"
 
   external mk4 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 ) 
     -> ('a0 *  'a1 * 'a2 * 'a3 * 'a4) fn = 
-    "js_fn_mk_04"
+    "js_fn_mk" "4"
 
   external run4 : ('a0 *  'a1 * 'a2 * 'a3 * 'a4) fn -> 
     'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 = 
-    "js_fn_run_04"
+    "js_fn_run" "4"
 
   external mk5 : 
     ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 ) ->
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5) fn =
-    "js_fn_mk_05"
+    "js_fn_mk" "5"
 
   external run5 : 
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5) fn
     -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 = 
-    "js_fn_run_05"
+    "js_fn_run" "5"
 
   external mk6 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6) -> 
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6) fn =
-    "js_fn_mk_06"
+    "js_fn_mk" "6"
   external run6 : ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6) fn
     -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 = 
-    "js_fn_run_06"
+    "js_fn_run" "6"
 
   external mk7 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) -> 
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 ) fn =
-    "js_fn_mk_07"
+    "js_fn_mk" "7"
 
   external run7 : ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 ) fn
     -> 'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 = 
-    "js_fn_run_07"
+    "js_fn_run" "7"
 
   external mk8 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 ) ->
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 ) fn =
-    "js_fn_mk_08"
+    "js_fn_mk" "8"
 
   external run8 :   
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 ) fn -> 
     'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 
     = 
-    "js_fn_run_08"
+    "js_fn_run" "8"
 
   external mk9 : 
     ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9) ->
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 * 'a9 ) fn =
-    "js_fn_mk_09"
+    "js_fn_mk" "9"
 
   external run9 : 
     ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 * 'a9 ) fn -> 
     'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 = 
-    "js_fn_run_09"
+    "js_fn_run" "9"
 
 end 
 

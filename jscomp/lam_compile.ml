@@ -743,24 +743,16 @@ and
             blocks ret 
         | _ -> assert false 
       end
-    | Lprim {primitive = Pccall {prim_name; _};  args = args_lambda}
-      when Ext_string.starts_with prim_name "js_fn_" ->
-      let arity, kind  = 
-        let mk =  Ext_string.starts_with_and_number prim_name ~offset:6 "mk_" in 
-        if mk < 0 then 
-          let run = Ext_string.starts_with_and_number prim_name ~offset:6 "run_" in 
-          run , `Run
-        else mk, `Mk
-      in 
-
+    | Lprim {primitive = Pjs_fn_run arity;  args = args_lambda}
+      ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
          2. invariant: `external` declaration will guarantee
          the function application is saturated
          3. we need a location for Pccall in the call site
       *)
-      if kind = `Run then 
-        match args_lambda with  
+
+        begin match args_lambda with  
         | [Lsend(Public (Some "case_set"), _label,
                  Lprim{primitive = Pjs_unsafe_downgrade;
                        args = [obj]}, [] , loc) ; key ;  value] ->
@@ -867,7 +859,9 @@ and
                Location.none (*TODO*)
                App_js_full)
         | _ -> assert false 
-      else 
+        end
+    | Lprim {primitive = Pjs_fn_make arity;  args = args_lambda} -> 
+
         begin match args_lambda with 
           | [fn] -> 
             if arity = 0 then 

@@ -133,7 +133,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pinit_mod
       | Pupdate_mod
       | Pjs_unsafe_downgrade
-      | Pdebugger (* TODO *)
+      | Pdebugger 
+      | Pjs_fn_run _ | Pjs_fn_make _
+      (* TODO *)
 
       | Pbytessetu 
       | Pbytessets

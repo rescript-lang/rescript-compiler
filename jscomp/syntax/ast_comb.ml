@@ -39,7 +39,7 @@ let create_local_external loc
                 {pval_name = {txt = local_fun_name; loc};
                  pval_type ;
                  pval_loc = loc;
-                 pval_prim = [pval_prim];
+                 pval_prim ;
                  pval_attributes };
             pstr_loc = loc;
            }];
