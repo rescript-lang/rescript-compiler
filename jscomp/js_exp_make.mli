@@ -88,7 +88,7 @@ val runtime_ref : string -> string -> t
 
 val str : ?pure:bool -> ?comment:string -> string -> t 
 
-val fun_ : ?comment:string ->
+val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
 val econd : ?comment:string -> t -> t -> t -> t

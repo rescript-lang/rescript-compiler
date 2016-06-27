@@ -218,6 +218,9 @@ class virtual map =
        2. Javascript dot (need to be preserved/or using quote)
      *)
                  (* TODO: option remove *)
+                 (* The first parameter by default is false, 
+     it will be true when it's a method
+  *)
                  (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
@@ -444,10 +447,11 @@ class virtual map =
             o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
           in New (_x, _x_i1)
       | Var _x -> let _x = o#vident _x in Var _x
-      | Fun (_x, _x_i1, _x_i2) ->
-          let _x = o#list (fun o -> o#ident) _x in
-          let _x_i1 = o#block _x_i1 in
-          let _x_i2 = o#unknown _x_i2 in Fun (_x, _x_i1, _x_i2)
+      | Fun (_x, _x_i1, _x_i2, _x_i3) ->
+          let _x = o#bool _x in
+          let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
+          let _x_i2 = o#block _x_i2 in
+          let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
       | Str (_x, _x_i1) ->
           let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
       | Raw_js_code (_x, _x_i1) ->

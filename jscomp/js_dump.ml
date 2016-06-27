@@ -81,6 +81,7 @@ module L = struct
   let semi = ";"
   let else_ = "else"
   let if_ = "if"
+  let this = "this"
   let while_ = "while"
   let empty_block = "empty_block"
   let start_block = "start_block"
@@ -247,6 +248,38 @@ let property_string f s =
 let pp_quote_string f s = 
   pp_string f ~utf:false ~quote:(best_string_quote s ) s 
 
+let rec comma_idents  cxt f (ls : Ident.t list)  =
+  match ls with
+  | [] -> cxt
+  | [x] -> ident cxt f x
+  | y :: ys ->
+    let cxt = ident cxt f y in
+    P.string f L.comma;
+    comma_idents cxt f ys  
+let ipp_ident cxt f id un_used = 
+  if un_used then 
+    ident cxt f (Ext_ident.make_unused ())
+  else 
+    ident cxt f id  
+let rec formal_parameter_list cxt (f : P.t) l env =
+  let rec aux i cxt l = 
+    match l with
+    | []     -> cxt
+    | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
+    | id :: r -> 
+      let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
+      P.string f L.comma; P.space f;
+      aux (i + 1) cxt  r
+  in
+  match l with 
+  | [] -> cxt 
+  | [i] -> 
+    (** necessary, since some js libraries like [mocha]...*)
+    if Js_fun_env.get_unused env 0 then cxt else ident cxt f i 
+  | _ -> 
+    aux 0 cxt l  
+
+
 (* IdentMap *)
 (*
 f/122 --> 
@@ -266,7 +299,7 @@ f/122 -->
              else check last bumped id, increase it and register
 *)
 
-let rec pp_function 
+let rec pp_function method_
     cxt (f : P.t) ?name  return 
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
   match b, (name,  return)  with 
@@ -279,8 +312,9 @@ let rec pp_function
                             (* TODO: need a case to justify it*)
                             call_info = 
                               (Call_builtin_runtime | Call_ml )})}}}],
-    ((_, false) | (None, true))  when
-
+    ((_, false) | (None, true))  
+    when
+      not method_ && 
       Ext_list.for_all2_no_exn (fun a b -> 
           match b.J.expression_desc with 
           | Var (Id i) -> Ident.same a i 
@@ -303,43 +337,12 @@ let rec pp_function
         vident cxt f v 
     end
   | _, _  -> 
-    let ipp_ident cxt f id un_used = 
-      if un_used then 
-        ident cxt f (Ext_ident.make_unused ())
-      else 
-        ident cxt f id  in
-    let rec formal_parameter_list cxt (f : P.t) l =
-      let rec aux i cxt l = 
-        match l with
-        | []     -> cxt
-        | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
-        | id :: r -> 
-          let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
-          P.string f L.comma; P.space f;
-          aux (i + 1) cxt  r
-      in
-      match l with 
-      | [] -> cxt 
-      | [i] -> 
-        (** necessary, since some js libraries like [mocha]...*)
-        if Js_fun_env.get_unused env 0 then cxt else ident cxt f i 
-      | _ -> 
-        aux 0 cxt l  in
 
-    let rec aux  cxt f ls  =
-      match ls with
-      | [] -> cxt
-      | [x] -> ident cxt f x
-      | y :: ys ->
-        let cxt = ident cxt f y in
-        P.string f L.comma;
-        aux cxt f ys  in
-
-    let set_env = (** identifiers will be printed following*)
+    let set_env : Ident_set.t = (** identifiers will be printed following*)
       match name with 
       | None ->
-        Js_fun_env.get_bound env 
-      | Some id -> Ident_set.add id (Js_fun_env.get_bound env )
+        Js_fun_env.get_unbounded env 
+      | Some id -> Ident_set.add id (Js_fun_env.get_unbounded env )
     in
     (* the context will be continued after this function *)
     let outer_cxt = Ext_pp_scope.merge set_env cxt in  
@@ -363,19 +366,45 @@ let rec pp_function
         end ;
       P.string f L.function_;
       P.space f ;
-      (match name with None  -> () | Some x -> ignore (ident inner_cxt f x));
-      let body_cxt = P.paren_group f 1 (fun _ -> 
-          formal_parameter_list inner_cxt  f l )
-      in
-      P.space f ;
-      ignore @@ P.brace_vgroup f 1 (fun _ -> statement_list false body_cxt f b );
+      (match name with 
+      | None  -> () 
+      | Some x -> ignore (ident inner_cxt f x));
+      if method_ then begin
+        let cxt = P.paren_group f 1 (fun _ -> 
+            formal_parameter_list inner_cxt  f (List.tl l) env )
+        in
+        P.space f ;
+        ignore @@ P.brace_vgroup f 1 (fun _ -> 
+            P.string f L.var ; 
+            P.space f; 
+            let cxt = ident cxt f (List.hd l) in 
+            P.space f ; 
+            P.string f L.eq ; 
+            P.space f ;
+            P.string f L.this;
+            P.newline f ;
+            statement_list false cxt f b 
+          );
+
+      end
+      else begin  
+        let cxt = P.paren_group f 1 (fun _ -> 
+            formal_parameter_list inner_cxt  f l env )
+        in
+        P.space f ;
+        ignore @@ P.brace_vgroup f 1 (fun _ -> statement_list false cxt f b );
+      end
     in
     let lexical = Js_fun_env.get_lexical_scope env in
+
     let enclose action lexical  return = 
       if  Ident_set.is_empty lexical  
-      then
+      then 
         action return 
       else
+        (* print as 
+           {[(function(x,y){...} (x,y))]}           
+        *)
         let lexical = Ident_set.elements lexical in
         if return then
           begin 
@@ -385,11 +414,11 @@ let rec pp_function
         P.string f L.lparen;
         P.string f L.function_; 
         P.string f L.lparen;
-        ignore @@ aux inner_cxt f lexical;
+        ignore @@ comma_idents inner_cxt f lexical;
         P.string f L.rparen;
         P.brace_vgroup f 0  (fun _ -> action true);
         P.string f L.lparen;
-        ignore @@ aux inner_cxt f lexical;
+        ignore @@ comma_idents inner_cxt f lexical;
         P.string f L.rparen;
         P.string f L.rparen
     in
@@ -475,8 +504,8 @@ and
       P.paren_group f 1 action
     else action ()
 
-  | Fun (l, b, env) ->  (* TODO: dump for comments *)
-    pp_function cxt f false  l b env
+  | Fun (method_, l, b, env) ->  (* TODO: dump for comments *)
+      pp_function method_ cxt f false  l b env
   (* TODO: 
      when [e] is [Js_raw_code] with arity
      print it in a more precise way
@@ -1055,7 +1084,7 @@ and variable_declaration top cxt f
         semi f ; 
         cxt
       end 
-  | { ident = i ; value =  Some e; ident_info = {used_stats; _}} ->
+  | { ident = name; value =  Some e; ident_info = {used_stats; _}} ->
     begin match used_stats with
       | Dead_pure -> 
         cxt 
@@ -1064,12 +1093,12 @@ and variable_declaration top cxt f
         statement_desc top cxt f (J.Exp e)
       | _ -> 
         begin match e, top  with 
-          | {expression_desc = Fun (params, b, env ); comment = _}, true -> 
-            pp_function cxt f ~name:i false params b env 
+          | {expression_desc = Fun (method_, params, b, env ); comment = _}, true -> 
+            pp_function method_ cxt f ~name false params b env 
           | _, _ -> 
               P.string f L.var;
               P.space f;
-              let cxt = ident cxt f i in
+              let cxt = ident cxt f name in
               P.space f ;
               P.string f L.eq;
               P.space f ;
@@ -1376,8 +1405,9 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
 
   | Return {return_value = e} ->
     begin match e with
-      | {expression_desc = Fun ( l, b, env); _} ->
-        let cxt = pp_function cxt f true l b env in
+      | {expression_desc = Fun (method_,  l, b, env); _} ->
+        let cxt =
+          pp_function method_ cxt f true l b env in
         semi f ; cxt 
       | e ->
         P.string f L.return ;
