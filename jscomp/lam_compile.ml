@@ -812,43 +812,36 @@ and
                   | Some obj_code -> block0 @ obj_code :: block1
                 )
             in 
-            match 
-              obj_block, value_block, meth_kind
-            with 
+            match obj_block, value_block, meth_kind with 
             | {block = block0; value = Some obj }, 
               {block = block1; value = Some value}, 
               Public (Some method_name )
-              when method_name = Literals.case 
+              ->
+              if method_name = Literals.case 
                 || Ext_string.starts_with method_name 
-                     Literals.case_prefix -> 
+                     Literals.case_prefix then 
               (* TODO: if [b] contains computation, compute it first *)
-              begin match Js_ast_util.named_expression  obj with 
+                match Js_ast_util.named_expression  obj with 
                 | None -> 
                   cont block0 block1 None (E.access obj value)
                 | Some (obj_code, obj)
                   -> 
                   cont  block0 block1 (Some obj_code) (E.access (E.var obj) value)
-              end
-            | {block = block0; value = Some obj }, 
-              {block = block1; value = Some value}, Public (Some setter) 
-              ->
-              if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
-                compile_lambda cxt @@ 
-                Lam.apply fn [arg]  
-                  Location.none (* TODO *)
-                  App_js_full
-              else 
+              else if  Ext_string.ends_with method_name Literals.setter_suffix then 
                 let property =
-                  String.sub setter 0 
-                    (String.length setter - Literals.setter_suffix_len) in 
-                begin match Js_ast_util.named_expression  obj with
+                  String.sub method_name 0 
+                    (String.length method_name - Literals.setter_suffix_len) in 
+                match Js_ast_util.named_expression  obj with
                   | None ->
                     cont block0 block1 None (E.assign (E.dot obj property) value)
                   | Some (obj_code, obj)
                     ->
                     cont block0 block1 (Some obj_code)
                       (E.assign (E.dot (E.var obj) property) value)
-                end
+              else 
+                compile_lambda cxt
+                  (Lam.apply fn [arg]  
+                     Location.none (* TODO *) App_js_full)
             | _ -> 
               assert false 
           end
