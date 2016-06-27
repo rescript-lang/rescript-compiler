@@ -57,12 +57,13 @@ let free_variables used_idents defined_idents =
     method! expression exp = 
 
       match exp.expression_desc with
-      | Fun(_,_, env)
+      | Fun(_, _,_, env)
       (** a optimization to avoid walking into funciton again
           if it's already comuted
       *)
         ->
-        {< used_idents = Ident_set.union (Js_fun_env.get_bound env) used_idents  >}
+        {< used_idents = 
+             Ident_set.union (Js_fun_env.get_unbounded env) used_idents  >}
 
       | _
         ->

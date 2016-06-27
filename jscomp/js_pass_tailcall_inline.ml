@@ -197,7 +197,11 @@ let subst name export_set stats  =
           | exception Not_found 
             ->  self#statement st :: self#block rest 
 
-          | { value = Some {expression_desc = Fun (params, block, _env) ; comment = _}; 
+          | { value = 
+                Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
+              (*TODO: don't inline method tail call yet, 
+                [this] semantics are weird 
+              *)              
               property = (Alias | StrictOpt | Strict);
               ident_info = {used_stats = Once_pure };
               ident = _

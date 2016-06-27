@@ -189,11 +189,14 @@ let int_to_string ?comment (e : t) : t =
 
 (* Attention: Shared *mutable state* is evil, [Js_fun_env.empty] is a mutable state ..
 *)    
-let fun_ ?comment  ?immutable_mask
+let ocaml_fun 
+    ?comment  
+    ?immutable_mask
     params block  : t = 
   let len = List.length params in
   {
-    expression_desc = Fun ( params,block, Js_fun_env.empty ?immutable_mask len ); 
+    expression_desc = 
+      Fun (false, params,block, Js_fun_env.empty ?immutable_mask len ); 
     comment
   }
 
@@ -363,7 +366,13 @@ let bytes_length ?comment (e : t) : t =
 
 let function_length ?comment (e : t) : t = 
   match e.expression_desc with 
-  | Fun(params, _, _) -> int ?comment (Int32.of_int @@ List.length params)
+  | Fun(b, params, _, _) -> 
+    let params_length = 
+      List.length params in
+    int ?comment 
+      (Int32.of_int 
+         (if b then params_length - 1 
+          else params_length))
   (* TODO: optimize if [e] is know at compile time *)
   | _ -> { expression_desc = Length (e, Function) ; comment }
 
@@ -1173,7 +1182,7 @@ let of_block ?comment block e : t =
     {
       comment ;
       expression_desc = 
-        Fun ([], (block @ [{J.statement_desc = Return {return_value = e } ;
+        Fun (false, [], (block @ [{J.statement_desc = Return {return_value = e } ;
                             comment}]) , Js_fun_env.empty 0)
     } []
 
@@ -1192,7 +1201,7 @@ let not_implemented ?comment (s : string) =
     {
       comment ;
       expression_desc = 
-        Fun ([], (
+        Fun (false,[], (
             [{J.statement_desc =
                 Throw (str ?comment 
                          (s ^ " not implemented by bucklescript yet\n")) ;

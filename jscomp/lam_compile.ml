@@ -271,7 +271,12 @@ and compile_recursive_let
               jmp_table = Lam_compile_defs.empty_handler_map}  body in
         if ret.triggered then 
           let body_block = Js_output.to_block output in
-          E.fun_ (* TODO:  save computation of length several times *)
+          E.ocaml_fun
+            (* TODO:  save computation of length several times 
+               Here we always create [ocaml_fun], 
+               it will be renamed into [method] 
+               when it is detected by a primitive
+            *)
             ~immutable_mask:ret.immutable_mask
             (List.map (fun x -> 
                  try Ident_map.find x ret.new_params with  Not_found -> x)
@@ -288,7 +293,7 @@ and compile_recursive_let
             ]
 
         else            (* TODO:  save computation of length several times *)
-          E.fun_ params (Js_output.to_block output )
+          E.ocaml_fun params (Js_output.to_block output )
       ), [] 
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
@@ -467,7 +472,7 @@ and
     match lam with 
     | Lfunction{ kind; params; body} ->
       Js_output.handle_name_tail st should_return lam 
-        (E.fun_
+        (E.ocaml_fun
            params
            (* Invariant:  jmp_table can not across function boundary,
               here we share env

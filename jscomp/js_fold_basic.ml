@@ -35,7 +35,7 @@ class count_deps (add : Ident.t -> unit )  =
     inherit  Js_fold.fold as super
     method! expression lam = 
       match lam.expression_desc with 
-      | Fun (_, block, _) -> self#block block
+      | Fun (_, _, block, _) -> self#block block
       (** Call 
           actually depends on parameter, 
           since closure 

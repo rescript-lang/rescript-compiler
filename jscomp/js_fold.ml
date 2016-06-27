@@ -205,6 +205,9 @@ class virtual fold =
        2. Javascript dot (need to be preserved/or using quote)
      *)
                  (* TODO: option remove *)
+                 (* The first parameter by default is false, 
+     it will be true when it's a method
+  *)
                  (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
@@ -404,9 +407,10 @@ class virtual fold =
           let o = o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
           in o
       | Var _x -> let o = o#vident _x in o
-      | Fun (_x, _x_i1, _x_i2) ->
-          let o = o#list (fun o -> o#ident) _x in
-          let o = o#block _x_i1 in let o = o#unknown _x_i2 in o
+      | Fun (_x, _x_i1, _x_i2, _x_i3) ->
+          let o = o#bool _x in
+          let o = o#list (fun o -> o#ident) _x_i1 in
+          let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
       | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o

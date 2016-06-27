@@ -156,7 +156,7 @@ let scope_pass  =
 
     method! expression x = 
       match x.expression_desc with 
-      | Fun (params, block , env) -> 
+      | Fun (_method_, params, block , env) -> 
         (* Function is the only place to introduce a new scope in 
             ES5
             TODO: check 
@@ -188,7 +188,7 @@ let scope_pass  =
         (* Noe that we don't know which variables are exactly mutable yet ..
            due to the recursive thing
          *)
-        Js_fun_env.set_bound env closured_idents'   ; 
+        Js_fun_env.set_unbounded env closured_idents'   ; 
         let lexical_scopes = Ident_set.(inter closured_idents' self#get_loop_mutable_values) in
         Js_fun_env.set_lexical_scope env lexical_scopes;
         (* tailcall , note that these varibles are used in another pass *)
