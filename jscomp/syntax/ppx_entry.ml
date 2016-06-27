@@ -565,7 +565,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                  ]);
               _
              }, args  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
+          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one 
+                 f ## xx (a,b)
+                 f #.(xx (a,b))
+             *)
           begin match args with 
           | [ "", value] -> 
               handle_obj_method loc obj name value e mapper
@@ -578,7 +581,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         *)
         | Pexp_apply (
             {pexp_desc = 
-               Pexp_ident  {txt = Lident "#." ; loc} ; _}, args
+               Pexp_ident  {txt = Lident "##" ; loc} ; _}, args
           )
           -> (* f#.(paint (1,2))*)
           begin match args with 
@@ -589,20 +592,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 ) })
             ] -> 
             handle_obj_method loc obj name value e mapper
+          | [("", obj) ;
+                       ("", 
+                       {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
+                         )
+                      ] -> handle_obj_property loc obj name e mapper
           | _ -> 
             Location.raise_errorf 
               "Js object #. expect syntax like obj#.(paint (a,b)) "
 
           end
-        | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident ("##") ; loc} ; _},
-                      [("", obj) ;
-                       ("", 
-                        ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
-                        |{pexp_desc = Pexp_construct ({txt = Lident name;_ }, None) ; _}
-                        ) )
-                      ])
-          -> handle_obj_property loc obj name e mapper
         | Pexp_apply (fn,
                       [("", pat)]) -> 
           let loc = e.pexp_loc in 

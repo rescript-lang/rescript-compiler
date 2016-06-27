@@ -767,7 +767,6 @@ and
           in
           begin match obj_block, key_block, value_block with
             | {block = block0; value = Some obj },
-
               {block = block1; value = Some key},
               {block = block2; value = Some value}
               ->
