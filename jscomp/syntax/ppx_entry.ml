@@ -103,12 +103,12 @@ let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
 let lift_js_meth ~loc (obj,meth) 
   = Typ.constr ~loc {txt = meth_type_id () ; loc} [obj; meth]
 
-let downgrade ~loc () = 
-  let var = Typ.var ~loc "a" in 
-  Ast_comb.arrow_no_label ~loc
-    (lift_js_type ~loc var) var
-
 let down_with_name ~loc obj name =
+  let downgrade ~loc () = 
+    let var = Typ.var ~loc "a" in 
+    Ast_comb.arrow_no_label ~loc
+      (lift_js_type ~loc var) var
+  in
   Ast_comb.local_extern_cont loc  
     ~pval_prim:["js_unsafe_downgrade"] 
     ~pval_type:(downgrade ~loc ())
