@@ -169,9 +169,6 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let o = aux o in 
       let ll = List.map aux ll in
       Lam.send u  m  o  ll v
-    | Levent(l, event) ->
-      let l = aux l in
-      Lam.event  l event
     | Lifused(v, l) -> 
       let l = aux l in 
       Lam.ifused v  l

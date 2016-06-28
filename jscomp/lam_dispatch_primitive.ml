@@ -1039,7 +1039,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
     | _ -> 
 
-      let comment = "Missing primitve" in       
+      let comment = "Missing primitive" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
         (Js_config.get_current_file ()) ;
       E.not_implemented prim_name

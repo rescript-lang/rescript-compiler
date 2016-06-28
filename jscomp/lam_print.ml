@@ -104,7 +104,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
-  | Pjs_unsafe_downgrade -> fprintf ppf "js_unsafe_downgrade"
+  | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
   | Pjs_fn_run i -> fprintf ppf "js_fn_run_%i" i 
   | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
@@ -467,20 +467,6 @@ let lambda use_env env ppf v  =
       let kind =
         if k = Self then "self" else if k = Cached then "cache" else "" in
       fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
-  | Levent(expr, _ev) ->
-      lam ppf expr
-      (* let kind = *)
-      (*  match ev.lev_kind with *)
-      (*  | Lev_before -> "before" *)
-      (*  | Lev_after _  -> "after" *)
-      (*  | Lev_function -> "funct-body" in *)
-      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
-      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
-      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
-      (*         lam expr *)
   | Lifused(id, expr) ->
       fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
 

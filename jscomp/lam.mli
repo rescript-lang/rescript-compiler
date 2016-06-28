@@ -129,7 +129,7 @@ type primitive =
   (* Integer to external pointer *)
 
   | Pdebugger
-  | Pjs_unsafe_downgrade
+  | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
   | Pjs_fn_make of int 
@@ -179,8 +179,11 @@ and  t =  private
   | Lfor of ident * t * t * Asttypes.direction_flag * t
   | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Levent of t * Lambda.lambda_event
   | Lifused of ident * t
+  (* | Levent of t * Lambda.lambda_event 
+     [Levent] in the branch hurt pattern match, 
+     we should use record for trivial debugger info
+  *)
 
 
 module Prim : sig 

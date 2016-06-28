@@ -59,7 +59,6 @@ let rec flatten
     (acc :  t list ) 
     (lam : Lam.t) :  Lam.t *  t list = 
   match lam with 
-  | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
   | Llet (str,id,arg,body) -> 
     let (res,l) = flatten acc arg  in
     flatten (Single(str, id, res ) :: l) body
@@ -67,7 +66,6 @@ let rec flatten
   (*   match res with *)
   (*   | Llet _ -> assert false *)
   (*   | Lletrec _-> assert false *)
-  (*   | Levent _ -> assert false *)
   (*   | _ ->  *)
   (*       Format.fprintf  Format.err_formatter "%a@." Printlambda.lambda res ; *)
   (*       Format.pp_print_flush Format.err_formatter (); *)
@@ -119,7 +117,6 @@ let deep_flatten
       (acc :  t list ) 
       (lam : Lam.t) :  Lam.t *  t list = 
     match lam with 
-    | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
             (Lprim {primitive = Pccall 
                       {prim_name = 
@@ -175,7 +172,6 @@ let deep_flatten
 
   and aux  (lam : Lam.t) : Lam.t= 
     match lam with 
-    | Levent (e,_) -> aux  e (* TODO: We stripped event in the beginning*)
     | Llet _ -> 
       let res, groups = flatten [] lam  
       in lambda_of_groups res groups
@@ -359,6 +355,5 @@ let deep_flatten
     | Lsend(u, m, o, ll, v) -> 
       Lam.send u (aux m) (aux o) (List.map aux ll) v
 
-    (* Levent(aux  l, event) *)
     | Lifused(v, l) -> Lam.ifused v (aux  l)
   in aux lam

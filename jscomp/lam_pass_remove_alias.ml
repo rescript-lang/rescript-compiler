@@ -273,9 +273,6 @@ let simplify_alias
     | Lsend (u, m, o, ll, v) 
       -> 
       Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
-    | Levent (l, event) 
-      ->
-      Lam.event (simpl  l) event
     | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam

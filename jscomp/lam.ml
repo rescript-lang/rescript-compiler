@@ -138,7 +138,7 @@ type primitive =
   (* Integer to external pointer *)
 
   | Pdebugger 
-  | Pjs_unsafe_downgrade
+  | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
   | Pjs_fn_make of int 
@@ -186,9 +186,11 @@ and t =
   | Lfor of ident * t * t * Asttypes.direction_flag * t
   | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Levent of t * Lambda.lambda_event
   | Lifused of ident * t
-
+  (* | Levent of t * Lambda.lambda_event 
+     [Levent] in the branch hurt pattern match, 
+     we should use record for trivial debugger info
+  *)
 
 module Prim = struct 
   type t = primitive
@@ -530,7 +532,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     -> 
     begin match args with 
     | [x ; Lapply{fn; args}]
-    | [x ; Levent (Lapply{fn; args},_)]
       -> apply fn (args @[x]) loc App_na
     | [x; f] ->  apply f [x] loc App_na
     | _ -> assert false 
@@ -539,8 +540,8 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pdirapply loc ->
     begin match args with 
     | [Lapply{fn ; args }; x ] 
-    | [Levent (Lapply {fn; args}, _); x]-> 
-      apply fn (args @ [x]) loc App_na
+      -> 
+        apply fn (args @ [x]) loc App_na
     | [f;x] -> apply f [x] loc App_na
     | _ -> assert false 
     end
@@ -568,9 +569,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     begin match prim_name with 
     |  "js_debugger"
       -> prim ~primitive:Pdebugger ~args 
-    | "js_unsafe_downgrade" 
-      -> 
-      prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
     | "js_fn_run" 
       -> 
       prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args 
@@ -583,7 +581,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     | "js_fn_runmethod"
       ->
       prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args           
-
     | _ -> 
       prim ~primitive:(Pccall a) ~args
     end
@@ -754,11 +751,23 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lassign (id, body) -> 
     Lassign (id, convert body)    
   | Lsend (kind, a,b,ls, loc) -> 
-    Lsend(kind, convert a, convert b, List.map convert ls, loc )
-
-  | Levent (e, event) -> 
-    Levent (convert e, event)
-  | Lifused (id, e) -> Lifused(id, convert e)
+    (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
+    begin match convert b with 
+      | Lprim {primitive =  Pccall {prim_name = "js_unsafe_downgrade"};  args}
+        -> 
+        begin match kind, ls with 
+          | Public (Some name), [] -> 
+            prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
+              ~args
+          | _ -> assert false 
+        end
+      | b ->     
+        (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
+        Lsend(kind, convert a,  b, List.map convert ls, loc )
+    end
+  | Levent (e, event) -> convert e 
+  | Lifused (id, e) -> 
+    Lifused(id, convert e) (* TODO: remove it ASAP *)
 and convert_primitive (primitive : Lambda.primitive) args = 
   lam_prim ~primitive ~args:(List.map convert args)
 and convert_switch (s : Lambda.lambda_switch) : switch = 

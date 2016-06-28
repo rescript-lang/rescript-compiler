@@ -108,6 +108,15 @@ let downgrade ~loc () =
   Ast_comb.arrow_no_label ~loc
     (lift_js_type ~loc var) var
 
+let down_with_name ~loc obj name =
+  Ast_comb.local_extern_cont loc  
+    ~pval_prim:["js_unsafe_downgrade"] 
+    ~pval_type:(downgrade ~loc ())
+    ~local_fun_name:"cast" 
+    (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
+       
+
+
 let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
   let pval_prim = ["js_fn_run" ; string_of_int arity]  in
   let fn_type, tuple_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
@@ -404,18 +413,8 @@ type method_kind =
 let handle_obj_property loc obj name e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
   let obj = mapper.expr mapper obj in 
+  { e with pexp_desc = down_with_name ~loc obj name
 
-  let down = Ast_comb.create_local_external loc  
-
-    ~pval_prim:["js_unsafe_downgrade"]
-    ~pval_type:(downgrade ~loc ())
-    ["", obj] in 
-  { e with pexp_desc =
-     Pexp_send
-               ({pexp_desc = down ;
-                 pexp_loc = loc;
-                 pexp_attributes = []},
-                name);
   }
 
 
@@ -441,11 +440,10 @@ let handle_obj_fn loc (obj : Parsetree.expression)
   let obj = mapper.expr mapper obj in 
   let args = List.map (mapper.expr mapper ) args in 
 
-  let down = Ast_comb.create_local_external loc  
-    ~pval_prim:["js_unsafe_downgrade"]
-    ~pval_type:(downgrade ~loc ()) ~local_fun_name:"cast" ["", obj] in 
-  {e with pexp_desc = gen_fn_run loc len 
-              ( Exp.send ~loc (Exp.mk ~loc down) name) args
+
+  {e with pexp_desc = 
+            gen_fn_run loc len (Exp.mk ~loc @@ down_with_name ~loc obj name)
+              args
     }
         (** TODO: 
             More syntax sanity check for [case_set] 
@@ -461,13 +459,9 @@ let handle_obj_method loc (obj : Parsetree.expression)
   let len = List.length args in 
   let obj = mapper.expr mapper obj in 
   let args = List.map (mapper.expr mapper ) args in 
-
-  let down_obj = Exp.mk ~loc @@ Ast_comb.create_local_external loc  
-    ~pval_prim:["js_unsafe_downgrade"]
-    ~pval_type:(downgrade ~loc ()) ~local_fun_name:"cast" ["", obj] in 
   {e with pexp_desc =
             gen_method_run loc len 
-              ( Exp.send ~loc down_obj name) (obj::args)
+              (Exp.mk ~loc (down_with_name ~loc obj name )) (obj::args)
   }
 
 (** object 

@@ -46,7 +46,7 @@ let translate
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
-  | Pjs_unsafe_downgrade
+  | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
   | Pjs_fn_make _
@@ -649,7 +649,7 @@ let translate
   | Pbigstring_set_32 _
   | Pbigstring_set_64 _
     -> 
-      let comment = "Missing primitve" in       
+      let comment = "Missing primitive" in       
       let s = Lam_util.string_of_primitive prim in
       let warn = Printf.sprintf  "%s: %s\n" comment s in
       Ext_log.warn __LOC__ "%s"  warn;
