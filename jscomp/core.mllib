@@ -59,7 +59,6 @@ js_fold_basic
 js_fun_env
 js_pass_flatten_and_mark_dead
 js_pass_scope
-
 js_call_info
 js_pass_debug
 

@@ -1096,5 +1096,6 @@ val do_at_exit : unit -> unit
 (** Mark Js object, please use {!Js.t} instead *)
 type + 'a js_obj 
 
+type (-'obj, +'a) meth
 (** Mark uncurried function, please use {!Js.fn} instead *)
-type + 'a uncurry 
+type + 'a uncurry = (< > js_obj, 'a) meth

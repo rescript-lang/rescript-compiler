@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+type (-'obj, +'a) meth = ('obj, 'a) Pervasives.meth
 
 type +'a t = 'a Pervasives.js_obj(** Js object type *)
 type +'a fn = 'a Pervasives.uncurry (** Js uncurried function *)
@@ -40,6 +40,14 @@ module Unsafe = struct
 
   external run1 : ('a0 * 'a1) fn -> 'a0 -> 'a1  = 
     "js_fn_run" "1"
+
+  external mk_method0 : ('obj -> 'a0) -> ('obj, 'a0) meth 
+    = 
+    "js_fn_meth" "0"
+  external mk_method1 : ('obj -> 'a0 -> 'a1) -> ('obj, 'a0 * 'a1) meth = 
+    "js_fn_meth" "1"
+  external run_method1 : 'obj -> ('obj , 'a0 * 'a1) meth -> 'a0 -> 'a1 
+    = "js_fn_runmethod" "1"
 
   external mk2 : ('a0 -> 'a1 -> 'a2 ) -> ('a0 *  'a1 * 'a2) fn = 
     "js_fn_mk" "2"

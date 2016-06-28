@@ -49,7 +49,11 @@ let translate
   | Pjs_unsafe_downgrade
   | Pdebugger 
   | Pjs_fn_run _ 
-  | Pjs_fn_make _ -> assert false (* already handled by {!Lam_compile} *)
+  | Pjs_fn_make _
+
+  | Pjs_fn_runmethod _ 
+    -> assert false (* already handled by {!Lam_compile} *)
+  | Pjs_fn_method _ -> assert false
   | Pinit_mod -> 
     E.runtime_call Js_config.module_ "init_mod" args
   | Pupdate_mod ->

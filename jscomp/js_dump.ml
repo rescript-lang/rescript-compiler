@@ -382,6 +382,8 @@ let rec pp_function method_
             P.string f L.eq ; 
             P.space f ;
             P.string f L.this;
+            P.space f ; 
+            semi f ; 
             P.newline f ;
             statement_list false cxt f b 
           );

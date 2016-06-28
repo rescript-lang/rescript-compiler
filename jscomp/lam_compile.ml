@@ -857,6 +857,42 @@ and
                App_js_full)
         | _ -> assert false 
         end
+    | Lprim {primitive = Pjs_fn_runmethod arity ; args }
+      -> 
+      begin match args with 
+      | (Lsend(Public(Some name), _label, 
+              Lprim{primitive = Pjs_unsafe_downgrade;
+                    args = [ _ ]},[], loc) as fn) :: _obj :: rest -> 
+        (* assert (Ident.same id2 id) ;  *)
+        (* we ignore the computation of [_obj], 
+           since our ast writer 
+           {[ obj#.f (x,y)
+           ]}
+           -->
+           {[ runmethod2 f obj#.f x y]}           
+        *)
+        compile_lambda cxt (Lam.apply fn rest loc App_js_full)
+      | _ -> assert false               
+      end
+    | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} -> 
+      begin match args_lambda with 
+        | [Lfunction{arity = len; kind; params = args; body} as fn] when len = arity + 1 -> 
+          
+          begin 
+            match compile_lambda {cxt with st = NeedValue; should_return = False}  fn
+            with 
+          | {block ; value = Some ({expression_desc = Fun (_, params, b, env)} as f)}
+            as out
+            -> 
+            {out with value = Some {f with expression_desc = Fun(true, params, b, env)}
+            }
+          | _ -> assert false 
+          end
+            
+        | _ -> assert false 
+      end
+
+
     | Lprim {primitive = Pjs_fn_make arity;  args = args_lambda} -> 
 
         begin match args_lambda with 
@@ -878,8 +914,7 @@ and
                  ]}
                  when it is passed as a function directly
               *)
-              begin 
-                match fn with 
+              begin match fn with 
                 | Lfunction {params =  [_]; body}
                   ->
                   compile_lambda cxt 
@@ -889,6 +924,7 @@ and
                        ~params:[]
                        ~body)
                 | _ -> 
+
                   compile_lambda cxt  
                     (Lam.function_ ~arity:0 
                        ~kind:Curried ~params:[] 

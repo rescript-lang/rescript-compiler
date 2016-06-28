@@ -135,6 +135,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_unsafe_downgrade
       | Pdebugger 
       | Pjs_fn_run _ | Pjs_fn_make _
+      | Pjs_fn_method _ | Pjs_fn_runmethod _
       (* TODO *)
 
       | Pbytessetu 

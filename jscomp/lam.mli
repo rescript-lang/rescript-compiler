@@ -134,6 +134,8 @@ type primitive =
   | Pupdate_mod
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
+  | Pjs_fn_method of int 
+  | Pjs_fn_runmethod of int 
 
 type switch  =
   { sw_numconsts: int;
