@@ -183,7 +183,6 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
            v's refcollect *)
         collect  l
     | Lsend(_, m, o, ll, _) -> List.iter collect  (m::o::ll)
-    | Levent(l, _) -> collect  l
     | Lifused(_, l) -> collect  l in collect lam 
 
 

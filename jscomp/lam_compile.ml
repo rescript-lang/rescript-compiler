@@ -721,9 +721,8 @@ and
        we need mark something that such eta-conversion can not be simplified in some cases 
     *)
 
-    | Lsend(Public (Some name), _label, 
-            Lprim {primitive = Pjs_unsafe_downgrade; 
-                   args = [obj]}, [] , loc) 
+    | Lprim {primitive = Pjs_unsafe_downgrade (name,loc); 
+             args = [obj]}
       when not (Ext_string.ends_with name Literals.setter_suffix) 
       (* TODO: more not a setter/case/case_setter *)
       -> 
@@ -758,9 +757,8 @@ and
       *)
 
         begin match args_lambda with  
-        | [Lsend(Public (Some "case_set"), _label,
-                 Lprim{primitive = Pjs_unsafe_downgrade;
-                       args = [obj]}, [] , loc) ; key ;  value] ->
+        | [Lprim{primitive = Pjs_unsafe_downgrade("case_set",loc);
+                       args = [obj]} ; key ;  value] ->
           let obj_block =
             compile_lambda {cxt with st = NeedValue; should_return = False} obj
           in
@@ -795,10 +793,10 @@ and
             | _ -> assert false
           end
 
-        | [(Lsend(meth_kind, _label, 
-                  Lprim{primitive = 
-                          Pjs_unsafe_downgrade;
-                        args = [obj]}, [] , loc) as fn);
+        | [Lprim{
+            primitive = 
+              Pjs_unsafe_downgrade(method_name,loc);
+            args = [obj]} as fn;
            arg]
           -> 
           begin 
@@ -816,10 +814,9 @@ and
                   | Some obj_code -> block0 @ obj_code :: block1
                 )
             in 
-            match obj_block, value_block, meth_kind with 
+            match obj_block, value_block with 
             | {block = block0; value = Some obj }, 
-              {block = block1; value = Some value}, 
-              Public (Some method_name )
+              {block = block1; value = Some value}
               ->
               if method_name = Literals.case 
                 || Ext_string.starts_with method_name 
@@ -860,9 +857,10 @@ and
     | Lprim {primitive = Pjs_fn_runmethod arity ; args }
       -> 
       begin match args with 
-      | (Lsend(Public(Some name), _label, 
-              Lprim{primitive = Pjs_unsafe_downgrade;
-                    args = [ _ ]},[], loc) as fn) :: _obj :: rest -> 
+        | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
+                 args = [ _ ]} as fn) 
+          :: _obj
+          :: rest -> 
         (* assert (Ident.same id2 id) ;  *)
         (* we ignore the computation of [_obj], 
            since our ast writer 
@@ -1676,8 +1674,7 @@ and
 
         end
       end
-    (* TODO: object layer *)
-    | Levent (lam,_lam_event) -> compile_lambda cxt lam
+
     (* [J.Empty,J.N] *)  (* TODO debugging, sourcemap, ignore lambda_event currently *)
     (* 
         seems to be an optimization trick for [translclass]

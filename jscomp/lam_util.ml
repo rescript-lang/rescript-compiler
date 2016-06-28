@@ -128,8 +128,6 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Lam.assign id (subst e)
     | Lsend (k, met, obj, args, loc) ->
       Lam.send k (subst met) (subst obj) (List.map subst args) loc
-    | Levent (lam, evt)
-      -> Lam.event (subst lam) evt
     | Lifused (v, e) -> Lam.ifused v (subst e)
   and subst_decl (id, exp) = (id, subst exp)
   and subst_case (key, case) = (key, subst case)
@@ -424,5 +422,5 @@ let free_variables l =
     | Lconst _ | Lapply _
     | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
     | Lifthenelse _ | Lsequence _ | Lwhile _
-    | Lsend _ | Levent _ | Lifused _ -> ()
+    | Lsend _  | Lifused _ -> ()
   in free l; !fv

@@ -183,7 +183,6 @@ let rec get_arity
     all_lambdas meta [l2;l3]
   | Lsequence(_, l2) -> get_arity meta l2 
   | Lsend(u, m, o, ll, v) -> NA
-  | Levent(l, event) -> NA
   | Lifused(v, l) -> NA 
   | Lwhile _ 
   | Lfor _  

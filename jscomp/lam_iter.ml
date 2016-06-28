@@ -71,8 +71,6 @@ let inner_iter f l =
       f e
   | Lsend (k, met, obj, args, _) ->
       List.iter f (met::obj::args)
-  | Levent (lam, evt) ->
-      f lam
   | Lifused (v, e) ->
       f e
 

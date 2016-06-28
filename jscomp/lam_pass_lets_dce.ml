@@ -108,8 +108,6 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.send k 
       (eliminate_ref id m) (eliminate_ref id o)
       (List.map (eliminate_ref id) el) loc
-  | Levent(l, ev) ->
-    Lam.event (eliminate_ref id l) ev
   | Lifused(v, e) ->
     Lam.ifused v (eliminate_ref id e)
 
@@ -274,8 +272,6 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
     | Lassign(v, l) -> Lam.assign v (simplif l)
     | Lsend(k, m, o, ll, loc) ->
       Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
-    | Levent(l, ev) 
-      -> Lam.event (simplif l) ev
   in simplif lam ;;
 
 
@@ -420,7 +416,6 @@ let collect_occurs  lam : occ_tbl =
       count bv l2; 
       count Ident_map.empty l3
     | Lsend(_, m, o, ll, _) -> List.iter (count bv) (m::o::ll)
-    | Levent(l, _) -> count bv l
     | Lifused(v, l) ->
       if used v then count bv l
 

@@ -132,7 +132,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
         -> true
       | Pinit_mod
       | Pupdate_mod
-      | Pjs_unsafe_downgrade
+      | Pjs_unsafe_downgrade _
       | Pdebugger 
       | Pjs_fn_run _ | Pjs_fn_make _
       | Pjs_fn_method _ | Pjs_fn_runmethod _
@@ -211,7 +211,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lfor _ -> false 
   | Lassign _ -> false (* actually it depends ... *)
   | Lsend _ -> false 
-  | Levent (e,_) -> no_side_effects e 
   | Lifused _ -> false 
   | Lapply _ -> false (* we need purity analysis .. *)
   | Lletrec (bindings, body) ->
@@ -267,7 +266,6 @@ let rec size (lam : Lam.t) =
     | Lfor(flag, l1, l2, dir, l3) -> really_big () 
     | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
     | Lsend _  ->  really_big ()
-    | Levent(l, _) -> size l 
     | Lifused(v, l) -> size l 
   with Too_big_to_inline ->  1000 
 and size_constant x = 
@@ -315,7 +313,6 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   | Lwhile (p,b) , Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
   | Lfor (_,_,_,_,_), Lfor (_,_,_,_,_) -> false
   | Lsend _, Lsend _ -> false
-  | Levent (v,_), Levent (v0,_) -> eq_lambda v v0
   | Lifused _, Lifused _ -> false 
   |  _,  _ -> false 
 and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
@@ -471,8 +468,6 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       iter no_substitute met ; 
       iter no_substitute obj;
       List.iter (iter no_substitute) args
-    | Levent (lam, evt) ->
-      iter top  lam
     | Lifused (v, e) ->
       iter no_substitute e in
   iter fresh_env  lam ; !fv 
