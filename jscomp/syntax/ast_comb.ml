@@ -73,3 +73,44 @@ let discard_exp_as_unit loc e =
     (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
     [Exp.constraint_ ~loc e 
        (Ast_literal.type_unit ~loc ())]
+
+
+let tuple_type_pair ?loc kind arity = 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    match kind with 
+    | `Run -> ty, ty 
+    | `Make -> 
+      (Typ.arrow "" ?loc
+         (Ast_literal.type_unit ?loc ())
+         ty ,
+       ty)
+  else
+    let tys = Ext_list.init (arity + 1) (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int i)
+      )  in
+    (Ext_list.reduce_from_right (fun x y -> Typ.arrow "" ?loc x y) tys,
+     Typ.tuple ?loc  tys)
+    
+
+
+let obj_type_pair ?loc arity = 
+  let obj = Typ.var ?loc "obj" in 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    (Typ.arrow "" ?loc
+       obj
+       ty ,
+     (obj, ty))
+  else
+    let tys = Ext_list.init (arity + 1) (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int i)
+      )  in
+    (Typ.arrow "" ?loc obj 
+       (Ext_list.reduce_from_right (fun x y -> Typ.arrow "" ?loc x y) tys),
+     (obj, Typ.tuple ?loc  tys))
+    
+
+

@@ -143,6 +143,8 @@ type primitive =
   | Pupdate_mod
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
+  | Pjs_fn_method of int 
+  | Pjs_fn_runmethod of int 
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -562,18 +564,26 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Plazyforce -> prim ~primitive:Plazyforce ~args
 
   | Pccall a -> 
-    begin match a with 
-    | {prim_name = "js_debugger"}
+    let prim_name = a.prim_name in
+    begin match prim_name with 
+    |  "js_debugger"
       -> prim ~primitive:Pdebugger ~args 
-    | {prim_name = "js_unsafe_downgrade" }
+    | "js_unsafe_downgrade" 
       -> 
       prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
-    | {prim_name = "js_fn_run" ; prim_native_name = arity} 
+    | "js_fn_run" 
       -> 
-      prim ~primitive:(Pjs_fn_run (int_of_string arity)) ~args 
-    | {prim_name = "js_fn_mk" ; prim_native_name = arity }
+      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args 
+    |  "js_fn_mk"  
       -> 
-      prim ~primitive:(Pjs_fn_make (int_of_string arity)) ~args           
+      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args           
+    | "js_fn_method"
+      ->
+      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args           
+    | "js_fn_runmethod"
+      ->
+      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args           
+
     | _ -> 
       prim ~primitive:(Pccall a) ~args
     end

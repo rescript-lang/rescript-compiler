@@ -189,6 +189,7 @@ let int_to_string ?comment (e : t) : t =
 
 (* Attention: Shared *mutable state* is evil, [Js_fun_env.empty] is a mutable state ..
 *)    
+
 let ocaml_fun 
     ?comment  
     ?immutable_mask

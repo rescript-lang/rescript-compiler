@@ -67,8 +67,8 @@ let pass_beta =
           self#block (bs @  rest )
       | {statement_desc = Exp (
          {expression_desc = Call (
-          {expression_desc = Fun (params, body, env) },
-          args, _info) ; _ }) ; _ } :: rest 
+          {expression_desc = Fun (false, params, body, env) },
+          args, _info) ; _ }) ; _ } :: rest (* TODO: don't inline tailcall for method yet*)
            when Ext_list.same_length args  params ->
              let body = self#block body in
              (List.fold_right2
@@ -80,7 +80,7 @@ let pass_beta =
          {expression_desc = Bin (Eq,
                                  e,
                                   {expression_desc = Call (
-                                  {expression_desc = Fun (params, body, env) },
+                                  {expression_desc = Fun (false, params, body, env) },
                                   args, _info) ; _ }); _
         }) ; _ } :: rest when Ext_list.same_length args params ->
 
@@ -93,7 +93,7 @@ let pass_beta =
 
       | {statement_desc = Return (
          {return_value = {expression_desc = Call (
-          {expression_desc = Fun (params, body, _) },
+          {expression_desc = Fun (false,params, body, _) },
           args, _info) ; _ }}) ; _ } :: rest 
         when Ext_list.same_length args  params -> 
           let body = self#block body in

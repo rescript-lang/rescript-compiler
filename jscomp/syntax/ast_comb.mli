@@ -53,3 +53,15 @@ val arrow_no_label :
 *)
 val discard_exp_as_unit : 
   Location.t -> Parsetree.expression -> Parsetree.expression
+
+
+val tuple_type_pair : 
+  ?loc:Ast_helper.loc ->
+  [`Make | `Run ] -> 
+  int  ->
+  Parsetree.core_type * Parsetree.core_type
+
+
+val obj_type_pair : 
+  ?loc:Ast_helper.loc ->
+  int -> Parsetree.core_type * (Parsetree.core_type * Parsetree.core_type)
