@@ -152,13 +152,24 @@ let handle_typ
 
         let methods = 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
-              match Ast_util.find_uncurry_attrs_and_remove ptyp_attrs with 
-              | None, _ -> 
+
+              match Ast_util.process_attributes_rev ptyp_attrs with 
+              | _, `Nothing -> 
                 label, ptyp_attrs , check_auto_uncurry  core_type
-              | Some v, ptyp_attrs -> 
+              | ptyp_attrs, `Uncurry  -> 
                 label , ptyp_attrs, 
                 check_auto_uncurry
-                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+              | ptyp_attrs, `Meth 
+                ->  
+                label , ptyp_attrs, 
+                check_auto_uncurry
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
+
             ) methods 
         in   
         { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
@@ -170,11 +181,18 @@ let handle_typ
         let methods = 
           Ext_ref.protect uncurry_type uncurry_type_cxt begin fun _ -> 
             List.map (fun (label, ptyp_attrs, core_type ) -> 
-                match Ast_util.find_uncurry_attrs_and_remove ptyp_attrs with 
-                | None, _ -> label, ptyp_attrs , self.typ self core_type
-                | Some v, ptyp_attrs -> 
+                match Ast_util.process_attributes_rev ptyp_attrs with 
+                |  _, `Nothing -> label, ptyp_attrs , self.typ self core_type
+                | ptyp_attrs, `Uncurry -> 
                   label , ptyp_attrs, self.typ self 
-                    { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+                    { core_type with 
+                      ptyp_attributes = 
+                       Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+                | ptyp_attrs, `Meth -> 
+                  label , ptyp_attrs, self.typ self 
+                    { core_type with 
+                      ptyp_attributes = 
+                       Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
               ) methods 
           end
         in           
@@ -196,12 +214,12 @@ let handle_class_obj_typ
      pcty_desc ; (* we won't have [ class type v = u -> object[@uncurry] ]*)
      pcty_loc = loc
    } ->
-    begin match  Ast_util.find_uncurry_attrs_and_remove pcty_attributes with 
-    | Some _, pcty_attributes' ->
+    begin match  Ast_util.process_attributes_rev pcty_attributes with 
+    |  pcty_attributes', `Uncurry ->
       Ext_ref.protect uncurry_type true begin fun () -> 
         self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
       end
-    | None, _ -> 
+    |  _, (`Meth | `Nothing) -> 
       if !obj_type_auto_uncurry then 
         Ext_ref.protect uncurry_type true begin fun () -> 
           super.class_type self ty

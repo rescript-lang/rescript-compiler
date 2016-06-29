@@ -64,6 +64,7 @@ val destruct_arrow :
 
 val bs_object_attribute : Parsetree.attribute
 val bs_uncurry_attribute :  Parsetree.attribute
+val bs_meth_attribute : Parsetree.attribute 
 
 val destruct_arrow_as_meth : 
   Ast_helper.loc ->
@@ -79,9 +80,6 @@ val destruct_tuple_exp :
 val lift_js_type : 
   loc:Ast_helper.loc -> Parsetree.core_type -> Parsetree.core_type
 
-val find_uncurry_attrs_and_remove : 
-  Parsetree.attributes ->
-  Parsetree.attribute option * Parsetree.attribute list
 
 val from_labels : loc:Ast_helper.loc -> Asttypes.label list -> Parsetree.core_type
 

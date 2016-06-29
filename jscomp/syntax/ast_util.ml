@@ -148,11 +148,9 @@ let bs_object_attribute  : Parsetree.attribute
 
 let bs_uncurry_attribute : Parsetree.attribute        
   =  {txt = "uncurry" ; loc = Location.none}, empty_payload
+let bs_meth_attribute : Parsetree.attribute        
+  =  {txt = "meth" ; loc = Location.none}, empty_payload
 
-let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
-  Ext_list.exclude_with_fact (function 
-    | ({Location.txt  = "uncurry"}, _) -> true 
-    | _ -> false ) attrs 
 
 
 let process_attributes_rev (attrs : Parsetree.attributes) = 
