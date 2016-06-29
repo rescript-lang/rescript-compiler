@@ -1098,4 +1098,4 @@ type + 'a js_obj
 
 type (-'obj, +'a) meth
 (** Mark uncurried function, please use {!Js.fn} instead *)
-type + 'a uncurry = (< > js_obj, 'a) meth
+type + 'a uncurry 

@@ -497,4 +497,10 @@ type + 'a js_obj
 
 type (-'obj, +'a) meth
 (** Mark uncurried function, please use {!Js.fn} instead *)
-type + 'a uncurry = (< > js_obj, 'a) meth
+type + 'a uncurry 
+(** = (< > js_obj, 'a) meth, 
+    instead of relying on type system to do the checking 
+    we provide a function to do this, the reason is that 
+    OCaml's type system requires user to explicitly write 
+    ( x : ty :> ty1) in this case
+ *)
