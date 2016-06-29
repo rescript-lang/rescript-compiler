@@ -176,13 +176,23 @@ let process_attributes_rev (attrs : Parsetree.attributes) =
 let destruct_arrow loc (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
   let rec aux acc (typ : Parsetree.core_type) = 
-    match typ.ptyp_desc with 
-    | Ptyp_arrow (label, arg, body)
-      -> 
-      if label <> "" then
-        Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
-      aux (mapper.typ mapper arg :: acc) body 
-    | _ -> mapper.typ mapper typ, acc in 
+    (* in general, 
+       we should collect [typ] in [int -> typ] before transformation, 
+       however: when attributes [uncurry] and [meth] found in typ, 
+       we should stop 
+    *)
+    match process_attributes_rev typ.ptyp_attributes with 
+    | _ , `Nothing -> 
+      begin match typ.ptyp_desc with 
+      | Ptyp_arrow (label, arg, body)
+        -> 
+        if label <> "" then
+          Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+        aux (mapper.typ mapper arg :: acc) body 
+      | _ -> mapper.typ mapper typ, acc 
+      end
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
   let first_arg = mapper.typ mapper first_arg in
   let result, rev_extra_args = 
     aux  [first_arg] typ in 
@@ -196,17 +206,25 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
 let destruct_arrow_as_meth loc (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
   let rec aux acc (typ : Parsetree.core_type) = 
-    match typ.ptyp_desc with 
-    | Ptyp_arrow (label, arg, body)
-      -> 
-      if label <> "" then
-        Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
-      aux (mapper.typ mapper arg :: acc) body 
-    | _ -> mapper.typ mapper typ, acc in 
+    match process_attributes_rev typ.ptyp_attributes with 
+    | _ , `Nothing -> 
+      begin match typ.ptyp_desc with 
+        | Ptyp_arrow (label, arg, body)
+          -> 
+          if label <> "" then
+            Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+          aux (mapper.typ mapper arg :: acc) body 
+        | _ -> mapper.typ mapper typ, acc 
+      end 
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
   let first_arg = mapper.typ mapper first_arg in 
   let result, rev_extra_args = aux  [] typ in 
   lift_js_meth ~loc 
-    (first_arg, Typ.tuple ~loc  (List.rev_append rev_extra_args [result]))
+    (first_arg, 
+     if rev_extra_args = [] then result 
+     else Typ.tuple ~loc  (List.rev_append rev_extra_args [result])
+    )
 
 
 let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 

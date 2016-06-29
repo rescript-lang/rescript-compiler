@@ -41,6 +41,9 @@ is different from
 type 'a u = int -> string -> int -> 'a [@fn]
 ```
 
+```ocaml
+type 'a u = int -> string -> (int -> 'a [@fn]) [@fn]
+```
 - application 
 
 ```ocaml

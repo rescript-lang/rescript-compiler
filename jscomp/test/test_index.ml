@@ -24,7 +24,7 @@ let ff (x : int case  Js.t)
 
 type 'a return = int -> 'a [@uncurry]
 let h (x : 
-         [%bs.obj:< case : (int ->  'a return  ); .. >  [@uncurry] ]) = 
+         [%bs.obj:< case : (int -> 'a return  ); .. >  [@uncurry] ]) = 
   let a = x##case 3 in 
   a 2 [@uncurry]   
 
