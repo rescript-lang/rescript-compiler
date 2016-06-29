@@ -65,8 +65,6 @@ type method_kind =
 
 let record_as_js_object = ref None (* otherwise has an attribute *)
 
-let as_js_object_attribute  : Parsetree.attribute
-  = {txt = "bs.obj" ; loc = Location.none}, PStr []
 
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
@@ -124,16 +122,14 @@ let handle_typ
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
    } ->
-    (* let args = self.typ self args in *)
-    (* let body = self.typ self body in *)
-    begin match  Ast_util.find_uncurry_attrs_and_remove ptyp_attributes with 
-      | Some _, ptyp_attributes ->
+    begin match  Ast_util.process_attributes_rev ptyp_attributes with 
+      | ptyp_attributes, `Uncurry ->
         Ast_util.destruct_arrow loc args body self 
-        (* Ast_util.uncurry_fn_type loc ty ptyp_attributes args body  *)
-      | None, _ -> 
+      | ptyp_attributes, `Meth -> 
+        Ast_util.destruct_arrow_as_meth loc args body self         
+      | _, `Nothing -> 
         if !uncurry_type then 
           Ast_util.destruct_arrow loc args body self 
-          (* Ast_util.uncurry_fn_type loc ty ptyp_attributes args body  *)
         else 
           Ast_mapper.default_mapper.typ self ty
     end
@@ -328,7 +324,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
               Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
-                (Some as_js_object_attribute ) true
+                (Some Ast_util.bs_object_attribute ) true
                 (fun ()-> mapper.expr mapper e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end

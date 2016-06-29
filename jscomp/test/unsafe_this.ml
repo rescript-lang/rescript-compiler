@@ -71,7 +71,7 @@ let uu : 'self =
         <
         x : int ; 
       y : int ;
-      bark : _ ; 
+      bark : ('self -> int -> int -> _ [@meth]); 
       length : int >       )
   ]
 

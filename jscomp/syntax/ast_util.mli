@@ -53,13 +53,22 @@ val uncurry_method_gen :
   Parsetree.expression -> Parsetree.expression_desc
 
 
-
+val process_attributes_rev : 
+  Parsetree.attributes ->
+  Parsetree.attributes * [ `Meth | `Nothing | `Uncurry ]
 
 val destruct_arrow : 
   Ast_helper.loc ->
   Parsetree.core_type ->
   Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
 
+val bs_object_attribute : Parsetree.attribute
+val bs_uncurry_attribute :  Parsetree.attribute
+
+val destruct_arrow_as_meth : 
+  Ast_helper.loc ->
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
 
 val destruct_tuple_pat : 
   Parsetree.pattern -> Parsetree.pattern list

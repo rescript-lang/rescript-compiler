@@ -589,8 +589,8 @@ test_nullary.cmj :
 test_nullary.cmx :
 test_obj.cmj :
 test_obj.cmx :
-test_obj_simple_ffi.cmj :
-test_obj_simple_ffi.cmx :
+test_obj_simple_ffi.cmj : ../runtime/js.cmj
+test_obj_simple_ffi.cmx : ../runtime/js.cmx
 test_order.cmj : ../stdlib/pervasives.cmi
 test_order.cmx : ../stdlib/pervasives.cmx
 test_order_tailcall.cmj :
@@ -1279,8 +1279,8 @@ test_nullary.cmo :
 test_nullary.cmj :
 test_obj.cmo :
 test_obj.cmj :
-test_obj_simple_ffi.cmo :
-test_obj_simple_ffi.cmj :
+test_obj_simple_ffi.cmo : ../runtime/js.cmo
+test_obj_simple_ffi.cmj : ../runtime/js.cmj
 test_order.cmo : ../stdlib/pervasives.cmi
 test_order.cmj : ../stdlib/pervasives.cmj
 test_order_tailcall.cmo :
