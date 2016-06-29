@@ -28,6 +28,19 @@ val f0 : unit -> string [@fn] (* arity of 0 *)
 val f1 : int -> int -> string [@fn] (* arity of 1 *)
 val f2 : int -> string -> int [@fn] (* arity of 2 *)
 ```
+
+Caveat: when return function you have to write separately
+
+```ocaml
+type 'a return = int -> 'a [@fn]
+type u = int -> string -> 'a return  [@fn]
+```
+is different from
+
+```ocaml
+type 'a u = int -> string -> int -> 'a [@fn]
+```
+
 - application 
 
 ```ocaml
@@ -59,9 +72,9 @@ f#.meth1 a
 f#.meth2 a b
 ```
 ```ocaml
-val meth0 : [%meth: 'obj * (unit -> int)]
-val meth1 : [%meth1: 'obj * ('a -> int)]
-val meth2 : [%meth2: 'obj *('a -> 'b -> int')]
+val meth0 : 'obj  -> int [@meth]
+val meth1 : 'obj  -> 'a -> int [@meth]
+val meth2 : 'obj -> 'a -> 'b -> int [@meth]
 ```
 
 - object method chaining

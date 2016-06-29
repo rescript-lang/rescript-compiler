@@ -2,7 +2,7 @@
 
 class type widget = 
   object [@uncurry]
-      method on : string * (event -> unit ) -> unit 
+      method on : string ->  (event -> unit ) -> unit 
   end
 and  event = 
   object 

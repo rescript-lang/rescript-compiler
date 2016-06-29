@@ -124,15 +124,18 @@ let handle_typ
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
    } ->
-    let args = self.typ self args in
-    let body = self.typ self body in
+    (* let args = self.typ self args in *)
+    (* let body = self.typ self body in *)
     begin match  Ast_util.find_uncurry_attrs_and_remove ptyp_attributes with 
       | Some _, ptyp_attributes ->
-        Ast_util.uncurry_fn_type loc ty ptyp_attributes args body 
+        Ast_util.destruct_arrow loc args body self 
+        (* Ast_util.uncurry_fn_type loc ty ptyp_attributes args body  *)
       | None, _ -> 
         if !uncurry_type then 
-          Ast_util.uncurry_fn_type loc ty ptyp_attributes args body 
-        else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
+          Ast_util.destruct_arrow loc args body self 
+          (* Ast_util.uncurry_fn_type loc ty ptyp_attributes args body  *)
+        else 
+          Ast_mapper.default_mapper.typ self ty
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;

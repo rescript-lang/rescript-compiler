@@ -14,7 +14,7 @@ let u : 'self =
         <
         x : int ; 
       y : int ;
-      bark : 'self * int * int -> unit [@uncurry]; 
+      bark : 'self -> int ->  int -> unit [@uncurry]; 
       length : int >       )
   ]
 

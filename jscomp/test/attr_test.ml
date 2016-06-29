@@ -19,8 +19,8 @@ class type date =
     method getTime : unit ->  number 
     method setMilliseconds : number ->  number 
     method setSeconds : number -> number
-    method setSeconds__2 :  number * number ->  number
-    method setUTCFullYear__3 : number * number *  number -> number
+    method setSeconds__2 :  number -> number ->  number
+    method setUTCFullYear__3 : number -> number ->   number -> number
     method toUTCString : unit -> string
     method toISOString : unit -> string
     method toJSON__ : unit -> string 
@@ -28,7 +28,7 @@ class type date =
   end
 
 
-let max2 : float * float -> float [@uncurry] = fun [@uncurry] (x,y) -> 
+let max2 : float -> float -> float [@uncurry] = fun [@uncurry] (x,y) -> 
   x +. y 
 
 let hh = max2 (1., 2.) [@uncurry]

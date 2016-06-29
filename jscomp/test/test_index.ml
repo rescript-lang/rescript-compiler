@@ -5,7 +5,7 @@
 
 
 let f (x : [%bs.obj: < case : int ->  'a ; 
-            case_set : int * int -> unit ;
+            case_set : int ->  int -> unit ;
             .. > [@uncurry] ] )
  = 
   x ## case_set (3, 2) ;
@@ -13,7 +13,7 @@ let f (x : [%bs.obj: < case : int ->  'a ;
 
 class type ['a] case = object [@uncurry]
   method case : int -> 'a 
-  method case_set : int * 'a -> unit 
+  method case_set : int -> 'a -> unit 
 end
 
 let ff (x : int case  Js.t)
@@ -22,9 +22,9 @@ let ff (x : int case  Js.t)
   x##case 3 
 
 
-
+type 'a return = int -> 'a [@uncurry]
 let h (x : 
-         [%bs.obj:< case : (int ->  (int -> 'a ) ); .. >  [@uncurry] ]) = 
+         [%bs.obj:< case : (int ->  'a return  ); .. >  [@uncurry] ]) = 
   let a = x##case 3 in 
   a 2 [@uncurry]   
 
@@ -32,7 +32,7 @@ let h (x :
 type x_obj =  
   [%bs.obj: < 
     case : int ->  int ; 
-    case_set : int * int -> unit ;
+    case_set : int -> int -> unit ;
   >  [@uncurry] ]
 
 let f_ext 
@@ -41,9 +41,10 @@ let f_ext
   x ## case_set (3, 2) ;
   x ## case 3 
 
+
 type 'a h_obj = 
   [%bs.obj: < 
-    case : int ->  (int -> 'a)
+    case : int ->  'a return 
   > [@uncurry] ]
 
 let h_ext  (x : 'a h_obj) = 

@@ -17,20 +17,20 @@ type req
 type resp = 
   [%bs.obj: <
    statusCode_set : int -> unit  ;
-   setHeader : string * string -> unit ;
+   setHeader : string -> string -> unit ;
    end_ : string ->  unit 
   >  [@uncurry] ]
 
 type server = 
   [%bs.obj: <
-    listen : int * string *  (unit -> unit) -> unit 
+    listen : int ->  string -> (unit -> unit) -> unit 
   >  [@uncurry] ]
 
 
 
 type http = 
   [%bs.obj: <
-   createServer : (req  * resp  -> unit ) ->  server
+   createServer : (req  -> resp  -> unit ) ->  server
   >  [@uncurry] ]
 
 

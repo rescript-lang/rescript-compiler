@@ -77,17 +77,9 @@ let destruct_tuple_pat (pat : Parsetree.pattern) : Parsetree.pattern list =
   | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
   | v -> [v]
 
-let destruct_tuple_typ (args : Parsetree.core_type)  = 
-  match args with
-  | {ptyp_desc = 
-       Ptyp_tuple 
-         [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; 
-     _} 
-    -> [ arg]
-  | {ptyp_desc = Ptyp_tuple args; _} -> args 
 
-  | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> []
-  | v -> [v]
+
+
 
 
 let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
@@ -158,16 +150,27 @@ let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) =
     | _ -> false ) attrs 
 
 
-(** 
-   Turn {[ int -> int -> int ]} 
-   into {[ (int *  int * int) fn ]}
-*)
-let uncurry_fn_type loc ty attrs
-    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
-  let tyvars = destruct_tuple_typ args in 
-  let arity = List.length tyvars in 
-  if arity = 0 then lift_curry_type ~loc body 
-  else lift_curry_type ~loc (Typ.tuple ~loc ~attrs (tyvars @ [body]))
+
+
+(** TODO: how to handle attributes *)
+let destruct_arrow loc (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
+  let rec aux acc (typ : Parsetree.core_type) = 
+    match typ.ptyp_desc with 
+    | Ptyp_arrow (label, arg, body)
+      -> 
+      if label <> "" then
+        Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+      aux (mapper.typ mapper arg :: acc) body 
+    | _ -> mapper.typ mapper typ, acc in 
+  let result, rev_extra_args = 
+    aux  [mapper.typ mapper first_arg] typ in 
+  match rev_extra_args, first_arg with 
+  | [ _ ], {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}
+    -> lift_curry_type ~loc result 
+  | _ -> 
+    lift_curry_type ~loc 
+      (Typ.tuple ~loc  (List.rev_append rev_extra_args [result]))
 
 
 let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 

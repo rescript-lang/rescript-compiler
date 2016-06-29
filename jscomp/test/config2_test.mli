@@ -2,21 +2,21 @@
 
 
 class type v = object [@uncurry]
-  method hey : int * int -> int 
+  method hey : int -> int -> int 
 end 
 
 class type v2 = object
-  method hey : int * int -> int 
+  method hey : int -> int -> int 
 end 
 
 type vv = 
   [%bs.obj: < 
-    hey : int * int -> int 
+    hey : int -> int -> int 
   >  [@uncurry]]
 
 type vv2 = 
   [%bs.obj: < 
-    hey : int * int -> int 
+    hey : int -> int -> int 
   > ]
 
 

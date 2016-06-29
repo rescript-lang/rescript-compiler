@@ -54,14 +54,12 @@ val uncurry_method_gen :
 
 
 
-val uncurry_fn_type : 
-  Ast_helper.loc ->
-  'a ->
-  Ast_helper.attrs ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
 
-val destruct_tuple_typ : 
-  Parsetree.core_type -> Parsetree.core_type list
+val destruct_arrow : 
+  Ast_helper.loc ->
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+
 
 val destruct_tuple_pat : 
   Parsetree.pattern -> Parsetree.pattern list
