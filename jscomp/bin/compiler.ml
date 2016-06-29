@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 06/23-17:22 *)
+(** Bundled by ocaml_pack 06/29-08:57 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1249,6 +1249,10 @@ val is_same_file : unit -> bool
 
 val tool_name : string
 
+val check_div_by_zero : bool ref 
+
+val get_check_div_by_zero : unit -> bool 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1515,6 +1519,11 @@ let is_same_file () =
   !debug_file <> "" &&  !debug_file = !current_file
 
 let tool_name = "BuckleScript"
+let check_div_by_zero = ref true
+
+let get_check_div_by_zero () = !check_div_by_zero 
+
+
 
 end
 module Ext_ref : sig 
@@ -2240,6 +2249,8 @@ module Lid : sig
   val type_unit : t 
   val pervasives_js_obj : t 
   val pervasives_uncurry : t 
+  val pervasives_meth : t
+  val js_meth : t 
   val js_obj : t 
   val js_fn : t 
   val ignore_id : t 
@@ -2296,8 +2307,10 @@ module Lid = struct
   (* TODO should be moved into {!Js.t} Later *)
   let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
   let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
+  let pervasives_meth = Longident.Ldot (Lident "Pervasives", "meth")
   let js_obj = Longident.Ldot (Lident "Js", "t") 
   let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let js_meth = Longident.Ldot (Lident "Js", "meth")
   let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
 end
 
@@ -2380,11 +2393,20 @@ module Ast_comb : sig
 
 val create_local_external : Location.t ->
   ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string ->
+  pval_prim:string list ->
   pval_type:Parsetree.core_type ->
   ?local_module_name:string ->
   ?local_fun_name:string ->
   (Asttypes.label * Parsetree.expression) list -> Parsetree.expression_desc
+
+val local_extern_cont : 
+  Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
 
 val exp_apply_no_label : 
   ?loc:Location.t ->
@@ -2409,6 +2431,18 @@ val arrow_no_label :
 *)
 val discard_exp_as_unit : 
   Location.t -> Parsetree.expression -> Parsetree.expression
+
+
+val tuple_type_pair : 
+  ?loc:Ast_helper.loc ->
+  [`Make | `Run ] -> 
+  int  ->
+  Parsetree.core_type * Parsetree.core_type
+
+
+val obj_type_pair : 
+  ?loc:Ast_helper.loc ->
+  int -> Parsetree.core_type * (Parsetree.core_type * Parsetree.core_type)
 
 end = struct
 #1 "ast_comb.ml"
@@ -2453,7 +2487,7 @@ let create_local_external loc
                 {pval_name = {txt = local_fun_name; loc};
                  pval_type ;
                  pval_loc = loc;
-                 pval_prim = [pval_prim];
+                 pval_prim ;
                  pval_attributes };
             pstr_loc = loc;
            }];
@@ -2471,6 +2505,35 @@ let create_local_external loc
        pexp_loc = loc
      })
 
+let local_extern_cont loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     (cb : Parsetree.expression -> 'a) 
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                 loc};
+         pexp_attributes = [] ;
+         pexp_loc = loc}
+)
+
 open Ast_helper 
 
 let exp_apply_no_label ?loc ?attrs a b = 
@@ -2487,6 +2550,47 @@ let discard_exp_as_unit loc e =
     (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
     [Exp.constraint_ ~loc e 
        (Ast_literal.type_unit ~loc ())]
+
+
+let tuple_type_pair ?loc kind arity = 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    match kind with 
+    | `Run -> ty, ty 
+    | `Make -> 
+      (Typ.arrow "" ?loc
+         (Ast_literal.type_unit ?loc ())
+         ty ,
+       ty)
+  else
+    let tys = Ext_list.init (arity + 1) (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int i)
+      )  in
+    (Ext_list.reduce_from_right (fun x y -> Typ.arrow "" ?loc x y) tys,
+     Typ.tuple ?loc  tys)
+    
+
+
+let obj_type_pair ?loc arity = 
+  let obj = Typ.var ?loc "obj" in 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    (Typ.arrow "" ?loc
+       obj
+       ty ,
+     (obj, ty))
+  else
+    let tys = Ext_list.init (arity + 1) (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int i)
+      )  in
+    (Typ.arrow "" ?loc obj 
+       (Ext_list.reduce_from_right (fun x y -> Typ.arrow "" ?loc x y) tys),
+     (obj, Typ.tuple ?loc  tys))
+    
+
+
 
 end
 module Ppx_entry : sig 
@@ -2596,6 +2700,11 @@ let curry_type_id () =
   else 
     Ast_literal.Lid.js_fn 
 
+let meth_type_id () = 
+  if Js_config.get_env () = Browser then 
+    Ast_literal.Lid.pervasives_meth
+  else 
+    Ast_literal.Lid.js_meth
 
 open Ast_helper 
 let arrow = Ast_helper.Typ.arrow
@@ -2621,6 +2730,116 @@ let reset () =
 let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
 
+let lift_js_meth ~loc (obj,meth) 
+  = Typ.constr ~loc {txt = meth_type_id () ; loc} [obj; meth]
+
+let downgrade ~loc () = 
+  let var = Typ.var ~loc "a" in 
+  Ast_comb.arrow_no_label ~loc
+    (lift_js_type ~loc var) var
+
+let down_with_name ~loc obj name =
+  Ast_comb.local_extern_cont loc  
+    ~pval_prim:["js_unsafe_downgrade"] 
+    ~pval_type:(downgrade ~loc ())
+    ~local_fun_name:"cast" 
+    (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
+       
+
+
+let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
+  let pval_prim = ["js_fn_run" ; string_of_int arity]  in
+  let fn_type, tuple_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
+  let pval_type =
+    arrow ~loc "" (lift_curry_type ~loc tuple_type) fn_type in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    (("", fn) :: List.map (fun x -> "",x) args )
+
+(** The first argument is object itself which is only 
+    for typing checking*)
+let gen_method_run loc arity fn args : Parsetree.expression_desc = 
+  let pval_prim = ["js_fn_runmethod" ; string_of_int arity]  in
+  let fn_type, (obj_type, tuple_type) = Ast_comb.obj_type_pair ~loc  arity  in 
+  let pval_type =
+    arrow ~loc "" (lift_js_meth ~loc (obj_type, tuple_type)) fn_type in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    (("", fn) :: List.map (fun x -> "",x) args )
+
+
+let gen_fn_mk loc arity arg  : Parsetree.expression_desc = 
+  let pval_prim = [ "js_fn_mk"; string_of_int arity]  in
+  let fn_type , tuple_type = Ast_comb.tuple_type_pair ~loc `Make arity  in 
+  let pval_type = arrow ~loc "" fn_type (lift_curry_type ~loc tuple_type)in
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
+
+let gen_method_mk loc arity arg  : Parsetree.expression_desc = 
+  let pval_prim = [ "js_fn_method"; string_of_int arity]  in
+  let fn_type , (obj_type, tuple_type) = Ast_comb.obj_type_pair ~loc  arity  in 
+  let pval_type = 
+    arrow ~loc "" fn_type (lift_js_meth ~loc (obj_type, tuple_type))
+  in
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
+        
+
+let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
+  Ext_list.exclude_with_fact (function 
+    | ({Location.txt  = "uncurry"}, _) -> true 
+    | _ -> false ) attrs 
+
+let destruct_tuple_exp (exp : Parsetree.expression) : Parsetree.expression list = 
+    match exp with 
+    | {pexp_desc = 
+         Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]
+      ; _} -> 
+      [arg]
+    | {pexp_desc = Pexp_tuple args; _} -> args
+    | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
+    | v -> [v]
+let destruct_tuple_pat (pat : Parsetree.pattern) : Parsetree.pattern list = 
+    match pat with 
+    | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
+      [arg]
+    | {ppat_desc = Ppat_tuple args; _} -> args
+    | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
+    | v -> [v]
+
+let destruct_tuple_typ (args : Parsetree.core_type)  = 
+    match args with
+    | {ptyp_desc = 
+         Ptyp_tuple 
+           [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; 
+       _} 
+      -> [ arg]
+    | {ptyp_desc = Ptyp_tuple args; _} -> args 
+      
+    | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> []
+    | v -> [v]
+
+(** 
+   Turn {[ int -> int -> int ]} 
+   into {[ (int *  int * int) fn ]}
+*)
+let uncurry_fn_type loc ty attrs
+    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
+  let tyvars = destruct_tuple_typ args in 
+  let arity = List.length tyvars in 
+  if arity = 0 then lift_curry_type ~loc body 
+  else lift_curry_type ~loc (Typ.tuple ~loc ~attrs (tyvars @ [body]))
+
+
+let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 
+  let arity = List.length labels in 
+  let tyvars = (Ext_list.init arity (fun i ->      
+      Typ.var ~loc ("a" ^ string_of_int i))) in 
+
+  let result_type =
+    lift_js_type ~loc  
+    @@ Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed
+
+  in 
+  List.fold_right2 
+    (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
+
 let handle_record_as_js_object 
     loc 
     attr
@@ -2633,109 +2852,13 @@ let handle_record_as_js_object
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label "
   ) label_exprs in 
-  let pval_prim = "" in 
+  let pval_prim = [ "" ] in 
   let pval_attributes = [attr] in 
-  let pval_type = 
-    let arity = List.length labels in 
-    let tyvars = (Ext_list.init arity (fun i ->      
-        Typ.var ~loc ("a" ^ string_of_int i))) in 
-
-    let result_type =
-      lift_js_type ~loc  
-        @@ Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed
-
-    in 
-    List.fold_right2 
-      (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
-  in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
+  let pval_type = from_labels ~loc labels in 
   Ast_comb.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
-    ~local_module_name 
-    ~local_fun_name
     args 
-
-let gen_fn_run loc arity args  : Parsetree.expression_desc = 
-  let pval_prim = Printf.sprintf "js_fn_run_%02d" arity  in
-  let tyvars =
-    Ext_list.init (arity + 1) 
-      (fun i -> Typ.var ~loc ("a" ^ string_of_int i)) in
-  let tuple_type_desc = 
-    if arity = 0 then 
-      (List.hd tyvars).ptyp_desc
-      (* avoid single tuple *)
-    else 
-      Parsetree.Ptyp_tuple tyvars
-  in 
-  let uncurry_fn = 
-    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc in
-  (** could be optimized *)
-  let pval_type = 
-    Ext_list.reduce_from_right (fun a b -> arrow ~loc "" a b) (uncurry_fn :: tyvars) in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    ~local_module_name ~local_fun_name args 
-
-let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
-  let open Parsetree in 
-  let ptyp_attributes = [] in 
-  let pval_prim = Printf.sprintf "js_fn_mk_%02d" arity  in
-  let tyvars =
-        (Ext_list.init (arity + 1) (fun i -> 
-             {ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
-              ptyp_attributes ;
-              ptyp_loc = loc})) in
-  let tuple_type_desc = 
-    if arity = 0 then 
-      (List.hd tyvars).ptyp_desc
-      (* avoid single tuple *)
-    else 
-      Parsetree.Ptyp_tuple tyvars
-  in 
-  let uncurry_fn = 
-    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc
-  in 
-  let arrow = arrow ~loc "" in
-  (** could be optimized *)
-  let pval_type = 
-    if arity = 0 then 
-      arrow  (arrow  (Ast_literal.type_unit ~loc ()) (List.hd tyvars) ) uncurry_fn
-    else 
-      arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    args 
-        
-
-let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
-  Ext_list.exclude_with_fact (function 
-    | ({Location.txt  = "uncurry"}, _) -> true 
-    | _ -> false ) attrs 
-
-
-let uncurry_fn_type loc ty attrs
-    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
-
-  let fn_type : Parsetree.core_type =
-    match args with
-    | {ptyp_desc = 
-         Ptyp_tuple 
-           [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; 
-       _} 
-      ->
-      Typ.tuple ~loc ~attrs [ arg ; body]
-      
-    | {ptyp_desc = Ptyp_tuple args; _} ->
-      Typ.tuple ~loc ~attrs (List.rev (body :: List.rev args))
-      
-    | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
-    | v -> 
-      Typ.tuple ~loc ~attrs [v ; body]
-  in
-  lift_curry_type ~loc fn_type
-
 
 
 
@@ -2851,12 +2974,13 @@ let handle_class_obj_typ
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
     let predef_unit_type = Ast_literal.type_unit ~loc () in
-    let pval_prim = "js_debugger" in
+    let pval_prim = ["js_debugger"] in
     Ast_comb.create_local_external loc 
       ~pval_prim
       ~pval_type:(arrow "" predef_unit_type predef_unit_type)
       [("",  Ast_literal.val_unit ~loc ())]
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+
 
 (** TODO: Future 
     {[ fun%bs this (a,b,c) -> 
@@ -2864,18 +2988,11 @@ let handle_debugger loc payload =
 
     [function] can only take one argument, that is the reason we did not adopt it
 *)
-let handle_uncurry_generation  loc 
+let handle_uncurry_fn_generation  loc 
     (pat : Parsetree.pattern)
     (body : Parsetree.expression) 
     (e : Parsetree.expression) (mapper : Ast_mapper.mapper) = 
-  let args = 
-    match pat with 
-    | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
-      [arg]
-    | {ppat_desc = Ppat_tuple args; _} -> args
-    | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
-    | v -> [v]
-  in
+  let args = destruct_tuple_pat pat in 
   let len = List.length args in 
   let body = mapper.expr mapper body in 
   let fun_ = 
@@ -2886,95 +3003,78 @@ let handle_uncurry_generation  loc
           let arg = mapper.pat mapper arg in 
           Ast_comb.fun_no_label ~loc arg body 
           ) args body in
-  {e with pexp_desc = gen_fn_mk loc len [("", fun_)]}
+  {e with pexp_desc = gen_fn_mk loc len fun_}
+
+
+let handle_uncurry_method_generation  loc 
+    (pat : Parsetree.pattern)
+    (body : Parsetree.expression) 
+    (e : Parsetree.expression) (mapper : Ast_mapper.mapper) = 
+  let args = destruct_tuple_pat pat in 
+  let len = List.length args in 
+  let body = mapper.expr mapper body in 
+  let fun_ = 
+    if len = 0 then 
+      Location.raise_errorf ~loc "method expect at least one argument"
+    else 
+      List.fold_right (fun arg body -> 
+          let arg = mapper.pat mapper arg in 
+          Ast_comb.fun_no_label ~loc arg body 
+          ) args body in
+  {e with pexp_desc = gen_method_mk loc (len - 1) fun_}
+
 let handle_uncurry_application 
-    loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
+    loc fn (exp : Parsetree.expression) (e : Parsetree.expression)
     (self : Ast_mapper.mapper) 
   : Parsetree.expression = 
-  let args = 
-    match pat with 
-    | {Parsetree.pexp_desc = 
-         Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]
-      ; _} -> 
-      [arg]
-    | {pexp_desc = Pexp_tuple args; _} -> args
-    | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
-    | v -> [v]
-  in
-
+  let args = destruct_tuple_exp exp in
   let fn = self.expr self fn in 
   let args = List.map (self.expr self) args in 
   let len = List.length args in 
-  { e with pexp_desc = gen_fn_run loc len (("", fn) :: List.map (fun x -> "", x) args)}
-
-let handle_obj_property loc obj name e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
-  let obj = mapper.expr mapper obj in 
-  let var = Typ.var ~loc "a" in 
-  let down = Ast_comb.create_local_external loc  
-
-    ~pval_prim:"js_unsafe_downgrade"
-    ~pval_type:(
-      Ast_comb.arrow_no_label ~loc
-        (lift_js_type ~loc var) var)
-    ["", obj] in 
-  { e with pexp_desc =
-     Pexp_send
-               ({pexp_desc = down ;
-                 pexp_loc = loc;
-                 pexp_attributes = []},
-                name);
-  }
+  { e with pexp_desc = gen_fn_run loc len fn args}
 
 
 type method_kind = 
   | Case_setter
   | Setter
   | Normal of string 
-let handle_obj_method loc (obj : Parsetree.expression) 
+
+(* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
+let handle_obj_property loc obj name e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let obj = mapper.expr mapper obj in 
+  { e with pexp_desc = down_with_name ~loc obj name
+
+  }
+
+
+
+let handle_obj_fn loc (obj : Parsetree.expression) 
     name (value : Parsetree.expression) e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
   let method_kind = 
     if name = Literals.case_set then Case_setter
     else if Ext_string.ends_with name Literals.setter_suffix then Setter
     else Normal name in 
-  let args = 
+  let len, args = 
     match method_kind with 
     | Setter -> 
-      [value]
+      1, [value]
     | (Case_setter | Normal _) -> 
-      let arity, args = 
-        match value with 
-        | {pexp_desc = 
-             Pexp_tuple 
-               [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
-           _} -> 
-          1, [arg]
-        | {pexp_desc = Pexp_tuple args; _} -> List.length args, args
-        | {pexp_desc = 
-             Pexp_construct ({txt = Lident "()"}, None);
-           _} -> 0, []
-        | v -> 1, [v] in 
+      let args = destruct_tuple_exp value in 
+      let arity = List.length args in  
       if method_kind = Case_setter && arity <> 2 then 
         Location.raise_errorf "case_set would expect arity of 2 "
-      else  args 
+      else  arity, args 
   in
-  let len = List.length args in 
   let obj = mapper.expr mapper obj in 
   let args = List.map (mapper.expr mapper ) args in 
-  let var = Typ.var ~loc "a" in 
-  let down = Ast_comb.create_local_external loc  
-    ~pval_prim:"js_unsafe_downgrade"
-    ~pval_type:(Ast_comb.arrow_no_label ~loc
-                  (lift_js_type ~loc var)
-                  var )
-    ~local_module_name:"Tmp"
-    ~local_fun_name:"cast" ["", obj] in 
-  {e with pexp_desc = gen_fn_run loc len 
-    (("", Exp.send ~loc (Exp.mk ~loc down) name) :: 
-     List.map (fun x -> "", x) args
-    )}
+
+
+  {e with pexp_desc = 
+            gen_fn_run loc len (Exp.mk ~loc @@ down_with_name ~loc obj name)
+              args
+    }
         (** TODO: 
             More syntax sanity check for [case_set] 
             case_set: arity 2
@@ -2982,6 +3082,17 @@ let handle_obj_method loc (obj : Parsetree.expression)
             case:
         *)
 
+let handle_obj_method loc (obj : Parsetree.expression) 
+    name (value : Parsetree.expression) e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let args = destruct_tuple_exp value in 
+  let len = List.length args in 
+  let obj = mapper.expr mapper obj in 
+  let args = List.map (mapper.expr mapper ) args in 
+  {e with pexp_desc =
+            gen_method_run loc len 
+              (Exp.mk ~loc (down_with_name ~loc obj name )) (obj::args)
+  }
 
 (** object 
     for setter : we can push more into [Lsend] and enclose it with a unit type
@@ -3029,7 +3140,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | None -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
             | Some exp -> 
-              let pval_prim = "js_pure_expr" in
+              let pval_prim = ["js_pure_expr"] in
               { exp with pexp_desc = Ast_comb.create_local_external loc 
                            ~pval_prim
                            ~pval_type:(arrow "" 
@@ -3054,6 +3165,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 (fun ()-> mapper.expr mapper e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
+        | Pexp_extension ({txt = "meth"; loc}, payload) 
+          -> 
+          begin match payload with 
+            | PStr [{pstr_desc = 
+                       Pstr_eval ({pexp_desc = Pexp_fun("", None, pat, body)} as e, _)
+                    }]
+              -> handle_uncurry_method_generation loc pat body e mapper 
+            | _ -> Location.raise_errorf ~loc "Expect an fun expression here"
+          end
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
@@ -3070,7 +3190,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                   {| `fun [@uncurry] (param0, param1) -> `
                      instead of `fun [@uncurry] param0 param1 ->` |}
               | _ -> 
-                handle_uncurry_generation loc pat body 
+                handle_uncurry_fn_generation loc pat body 
                   {e with pexp_attributes = attrs } mapper
             end
           end
@@ -3091,10 +3211,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                  ]);
               _
              }, args  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
+          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one 
+                 f ## xx (a,b)
+                 f #.(xx (a,b))
+             *)
           begin match args with 
           | [ "", value] -> 
-              handle_obj_method loc obj name value e mapper
+              handle_obj_fn loc obj name value e mapper
           | _ -> 
             Location.raise_errorf 
               "Js object ## expect only one argument when it is a method "
@@ -3104,9 +3227,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         *)
         | Pexp_apply (
             {pexp_desc = 
-               Pexp_ident  {txt = Lident "#." ; loc} ; _}, args
+               Pexp_ident  {txt = Lident "##" ; loc} ; _}, args
           )
-          -> (* f#.(paint (1,2))*)
+          -> (* f##(paint (1,2)) or f##paint *)
           begin match args with 
           | [("", obj) ;
              ("", {pexp_desc = Pexp_apply(
@@ -3114,21 +3237,58 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                   ["", value]
                 ) })
             ] -> 
-            handle_obj_method loc obj name value e mapper
+            handle_obj_fn loc obj name value e mapper
+          | [("", obj) ;
+                       ("", 
+                       {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
+                         )
+                      ] -> handle_obj_property loc obj name e mapper
           | _ -> 
             Location.raise_errorf 
+              "Js object ## expect syntax like obj##(paint (a,b)) "
+
+          end
+
+        | Pexp_apply
+            ({pexp_desc = 
+               Pexp_apply (
+                 {pexp_desc = 
+                    Pexp_ident  {txt = Lident "#." ; loc} ; _},
+                 [("", obj) ;
+                  ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                 ]);
+              _
+             }, args  )
+          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one 
+                 f #.xx (a,b)
+             *)
+          begin match args with 
+          | [ "", value] -> 
+              handle_obj_method loc obj name value e mapper
+          | _ -> 
+            Location.raise_errorf 
+              "Js object ## expect only one argument when it is a method "
+          end
+        | Pexp_apply (
+            {pexp_desc =
+               Pexp_ident  {txt = Lident "#." ; loc} ; _}, args
+          )
+          -> (* f##(paint (1,2)) or f##paint *)
+          begin match args with
+          | [("", obj) ;
+             ("", {pexp_desc = Pexp_apply(
+                  {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
+                  ["", value]
+                ) })
+            ] ->
+            handle_obj_method loc obj name value e mapper
+          | _ ->
+            Location.raise_errorf
               "Js object #. expect syntax like obj#.(paint (a,b)) "
 
           end
-        | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident ("##") ; loc} ; _},
-                      [("", obj) ;
-                       ("", 
-                        ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
-                        |{pexp_desc = Pexp_construct ({txt = Lident name;_ }, None) ; _}
-                        ) )
-                      ])
-          -> handle_obj_property loc obj name e mapper
+
+
         | Pexp_apply (fn,
                       [("", pat)]) -> 
           let loc = e.pexp_loc in 
@@ -3164,7 +3324,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             begin match Ast_payload.as_string_exp payload with 
               | Some exp 
                 -> 
-                let pval_prim = "js_pure_stmt" in 
+                let pval_prim = ["js_pure_stmt"] in 
                 Ast_helper.Str.eval 
                   { exp with pexp_desc =
                              Ast_comb.create_local_external loc 
@@ -3905,9 +4065,9 @@ val is_tailcalled : t -> bool
 
 val is_empty : t -> bool 
 
-val set_bound :  t -> Ident_set.t -> unit
+val set_unbounded :  t -> Ident_set.t -> unit
 
-val get_bound : t -> Ident_set.t 
+
 
 val set_lexical_scope : t -> Ident_set.t -> unit
 
@@ -3921,7 +4081,7 @@ val get_unused : t -> int -> bool
 
 val get_mutable_params : Ident.t list -> t -> Ident.t list
 
-val get_bound : t -> Ident_set.t
+val get_unbounded : t -> Ident_set.t
 
 val get_length : t -> int
 
@@ -3979,7 +4139,7 @@ type immutable_mask =
   | Immutable_mask of bool array
 
 type t = { 
-  mutable bound : Ident_set.t;
+  mutable unbounded : Ident_set.t;
   mutable bound_loop_mutable_values : Ident_set.t; 
   used_mask : bool array;
   immutable_mask : immutable_mask; 
@@ -3987,7 +4147,7 @@ type t = {
 (** Invariant: unused param has to be immutable *)
 
 let empty ?immutable_mask n = { 
-  bound =  Ident_set.empty ;
+  unbounded =  Ident_set.empty ;
   used_mask = Array.make n false;
   immutable_mask = 
     (match immutable_mask with 
@@ -4010,7 +4170,7 @@ let get_length t = Array.length t.used_mask
 let to_string env =  
   String.concat "," 
     (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
-       (Ident_set.elements  env.bound ))
+       (Ident_set.elements  env.unbounded ))
 
 let get_mutable_params (params : Ident.t list) (x : t ) = 
   match x.immutable_mask with 
@@ -4019,12 +4179,13 @@ let get_mutable_params (params : Ident.t list) (x : t ) =
       Ext_list.filter_mapi 
         (fun i p -> if not xs.(i) then Some p else None)  params
 
-let get_bound t = t.bound
 
-let set_bound env v = 
+let get_unbounded t = t.unbounded
+
+let set_unbounded env v = 
   (* Ext_log.err "%s -- set @." (to_string env); *)
   (* if Ident_set.is_empty env.bound then *)
-  env.bound <- v 
+  env.unbounded <- v 
  (* else assert false *)
 
 let set_lexical_scope env bound_loop_mutable_values = 
@@ -4036,7 +4197,7 @@ let get_lexical_scope env =
 (* TODO:  can be refined if it 
     only enclose toplevel variables 
  *)
-let is_empty t = Ident_set.is_empty t.bound 
+let is_empty t = Ident_set.is_empty t.unbounded
 
 end
 module Js_closure : sig 
@@ -4465,7 +4626,10 @@ and expression_desc =
      *)
   | New of expression * expression list option (* TODO: option remove *)
   | Var of vident
-  | Fun of ident list  * block * Js_fun_env.t
+  | Fun of bool * ident list  * block * Js_fun_env.t
+  (* The first parameter by default is false, 
+     it will be true when it's a method
+  *)
   | Str of bool * string 
     (* A string is UTF-8 encoded, the string may contain
        escape sequences.
@@ -4894,9 +5058,13 @@ type primitive =
   (* Integer to external pointer *)
 
   | Pdebugger
-  | Pjs_unsafe_downgrade
+  | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
+  | Pjs_fn_make of int 
+  | Pjs_fn_run of int 
+  | Pjs_fn_method of int 
+  | Pjs_fn_runmethod of int 
 
 type switch  =
   { sw_numconsts: int;
@@ -4940,8 +5108,11 @@ and  t =  private
   | Lfor of ident * t * t * Asttypes.direction_flag * t
   | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Levent of t * Lambda.lambda_event
   | Lifused of ident * t
+  (* | Levent of t * Lambda.lambda_event 
+     [Levent] in the branch hurt pattern match, 
+     we should use record for trivial debugger info
+  *)
 
 
 module Prim : sig 
@@ -5152,9 +5323,13 @@ type primitive =
   (* Integer to external pointer *)
 
   | Pdebugger 
-  | Pjs_unsafe_downgrade
+  | Pjs_unsafe_downgrade of string * Location.t
   | Pinit_mod
   | Pupdate_mod
+  | Pjs_fn_make of int 
+  | Pjs_fn_run of int 
+  | Pjs_fn_method of int 
+  | Pjs_fn_runmethod of int 
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -5196,9 +5371,11 @@ and t =
   | Lfor of ident * t * t * Asttypes.direction_flag * t
   | Lassign of ident * t
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Levent of t * Lambda.lambda_event
   | Lifused of ident * t
-
+  (* | Levent of t * Lambda.lambda_event 
+     [Levent] in the branch hurt pattern match, 
+     we should use record for trivial debugger info
+  *)
 
 module Prim = struct 
   type t = primitive
@@ -5438,8 +5615,12 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
               | Paddint -> int_ (Int32.add aa bb)
               | Psubint -> int_ (Int32.sub aa bb)
               | Pmulint -> int_ (Int32.mul aa  bb)
-              | Pdivint -> (try int_ (Int32.div aa  bb) with _ -> default ())
-              | Pmodint -> int_ (Int32.rem aa  bb)
+              | Pdivint -> 
+                if bb = 0l then default ()
+                else int_ (Int32.div aa bb)
+              | Pmodint ->
+                if bb = 0l then default ()
+                else int_ (Int32.rem aa bb)
               | Pandint -> int_ (Int32.logand aa bb)
               | Porint -> int_ (Int32.logor aa bb)
               | Pxorint -> int_ (Int32.logxor aa bb)
@@ -5463,7 +5644,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
           | Psubbint _  -> lift_int32 (Int32.sub aa bb)
           | Pmulbint _ -> lift_int32 (Int32.mul aa  bb)
           | Pdivbint _ ->  (try lift_int32 (Int32.div aa  bb) with _  -> default ())
-          | Pmodbint _ -> lift_int32 (Int32.rem aa  bb)
+          | Pmodbint _ -> (try lift_int32 (Int32.rem aa  bb) with _ -> default ())
           | Pandbint _ -> lift_int32 (Int32.logand aa bb)
           | Porbint _ -> lift_int32 (Int32.logor aa bb)
           | Pxorbint _ -> lift_int32 (Int32.logxor aa bb)
@@ -5491,7 +5672,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
           | Psubbint _  -> lift_int64 (Int64.sub aa bb)
           | Pmulbint _ -> lift_int64 (Int64.mul aa  bb)
           | Pdivbint _ -> (try lift_int64 (Int64.div aa  bb) with _ -> default ())
-          | Pmodbint _ -> lift_int64 (Int64.rem aa  bb)
+          | Pmodbint _ -> (try lift_int64 (Int64.rem aa  bb) with _ -> default ())
           | Pandbint _ -> lift_int64 (Int64.logand aa bb)
           | Porbint _ -> lift_int64 (Int64.logor aa bb)
           | Pxorbint _ -> lift_int64 (Int64.logxor aa bb)
@@ -5536,7 +5717,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     -> 
     begin match args with 
     | [x ; Lapply{fn; args}]
-    | [x ; Levent (Lapply{fn; args},_)]
       -> apply fn (args @[x]) loc App_na
     | [x; f] ->  apply f [x] loc App_na
     | _ -> assert false 
@@ -5545,8 +5725,8 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pdirapply loc ->
     begin match args with 
     | [Lapply{fn ; args }; x ] 
-    | [Levent (Lapply {fn; args}, _); x]-> 
-      apply fn (args @ [x]) loc App_na
+      -> 
+        apply fn (args @ [x]) loc App_na
     | [f;x] -> apply f [x] loc App_na
     | _ -> assert false 
     end
@@ -5570,13 +5750,24 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Plazyforce -> prim ~primitive:Plazyforce ~args
 
   | Pccall a -> 
-    begin match a with 
-    | {prim_name = "js_debugger"}
+    let prim_name = a.prim_name in
+    begin match prim_name with 
+    |  "js_debugger"
       -> prim ~primitive:Pdebugger ~args 
-    | {prim_name = "js_unsafe_downgrade" }
+    | "js_fn_run" 
       -> 
-      prim ~primitive:Pjs_unsafe_downgrade ~args (* TODO: with location *)
-    | _ -> prim ~primitive:(Pccall a) ~args
+      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args 
+    |  "js_fn_mk"  
+      -> 
+      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args           
+    | "js_fn_method"
+      ->
+      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args           
+    | "js_fn_runmethod"
+      ->
+      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args           
+    | _ -> 
+      prim ~primitive:(Pccall a) ~args
     end
   | Praise _ -> prim ~primitive:Praise ~args
   | Psequand -> prim ~primitive:Psequand ~args 
@@ -5745,11 +5936,23 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lassign (id, body) -> 
     Lassign (id, convert body)    
   | Lsend (kind, a,b,ls, loc) -> 
-    Lsend(kind, convert a, convert b, List.map convert ls, loc )
-
-  | Levent (e, event) -> 
-    Levent (convert e, event)
-  | Lifused (id, e) -> Lifused(id, convert e)
+    (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
+    begin match convert b with 
+      | Lprim {primitive =  Pccall {prim_name = "js_unsafe_downgrade"};  args}
+        -> 
+        begin match kind, ls with 
+          | Public (Some name), [] -> 
+            prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
+              ~args
+          | _ -> assert false 
+        end
+      | b ->     
+        (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
+        Lsend(kind, convert a,  b, List.map convert ls, loc )
+    end
+  | Levent (e, event) -> convert e 
+  | Lifused (id, e) -> 
+    Lifused(id, convert e) (* TODO: remove it ASAP *)
 and convert_primitive (primitive : Lambda.primitive) args = 
   lam_prim ~primitive ~args:(List.map convert args)
 and convert_switch (s : Lambda.lambda_switch) : switch = 
@@ -6269,7 +6472,11 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
-  | Pjs_unsafe_downgrade -> fprintf ppf "js_unsafe_downgrade"
+  | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
+  | Pjs_fn_run i -> fprintf ppf "js_fn_run_%i" i 
+  | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
+  | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
+  | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
   | Pchar_to_int  -> fprintf ppf "char_to_int"
   | Pchar_of_int -> fprintf ppf "char_of_int"
@@ -6628,20 +6835,6 @@ let lambda use_env env ppf v  =
       let kind =
         if k = Self then "self" else if k = Cached then "cache" else "" in
       fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
-  | Levent(expr, _ev) ->
-      lam ppf expr
-      (* let kind = *)
-      (*  match ev.lev_kind with *)
-      (*  | Lev_before -> "before" *)
-      (*  | Lev_after _  -> "after" *)
-      (*  | Lev_function -> "funct-body" in *)
-      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
-      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
-      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
-      (*         lam expr *)
   | Lifused(id, expr) ->
       fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
 
@@ -6822,8 +7015,6 @@ let inner_iter f l =
       f e
   | Lsend (k, met, obj, args, _) ->
       List.iter f (met::obj::args)
-  | Levent (lam, evt) ->
-      f lam
   | Lifused (v, e) ->
       f e
 
@@ -7152,8 +7343,11 @@ let rec no_side_effects (lam : Lam.t) : bool =
         -> true
       | Pinit_mod
       | Pupdate_mod
-      | Pjs_unsafe_downgrade
-      | Pdebugger (* TODO *)
+      | Pjs_unsafe_downgrade _
+      | Pdebugger 
+      | Pjs_fn_run _ | Pjs_fn_make _
+      | Pjs_fn_method _ | Pjs_fn_runmethod _
+      (* TODO *)
 
       | Pbytessetu 
       | Pbytessets
@@ -7228,7 +7422,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lfor _ -> false 
   | Lassign _ -> false (* actually it depends ... *)
   | Lsend _ -> false 
-  | Levent (e,_) -> no_side_effects e 
   | Lifused _ -> false 
   | Lapply _ -> false (* we need purity analysis .. *)
   | Lletrec (bindings, body) ->
@@ -7284,7 +7477,6 @@ let rec size (lam : Lam.t) =
     | Lfor(flag, l1, l2, dir, l3) -> really_big () 
     | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
     | Lsend _  ->  really_big ()
-    | Levent(l, _) -> size l 
     | Lifused(v, l) -> size l 
   with Too_big_to_inline ->  1000 
 and size_constant x = 
@@ -7332,7 +7524,6 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   | Lwhile (p,b) , Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
   | Lfor (_,_,_,_,_), Lfor (_,_,_,_,_) -> false
   | Lsend _, Lsend _ -> false
-  | Levent (v,_), Levent (v0,_) -> eq_lambda v v0
   | Lifused _, Lifused _ -> false 
   |  _,  _ -> false 
 and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
@@ -7488,8 +7679,6 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       iter no_substitute met ; 
       iter no_substitute obj;
       List.iter (iter no_substitute) args
-    | Levent (lam, evt) ->
-      iter top  lam
     | Lifused (v, e) ->
       iter no_substitute e in
   iter fresh_env  lam ; !fv 
@@ -7734,6 +7923,9 @@ class virtual fold =
        2. Javascript dot (need to be preserved/or using quote)
      *)
                  (* TODO: option remove *)
+                 (* The first parameter by default is false, 
+     it will be true when it's a method
+  *)
                  (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
@@ -7933,9 +8125,10 @@ class virtual fold =
           let o = o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
           in o
       | Var _x -> let o = o#vident _x in o
-      | Fun (_x, _x_i1, _x_i2) ->
-          let o = o#list (fun o -> o#ident) _x in
-          let o = o#block _x_i1 in let o = o#unknown _x_i2 in o
+      | Fun (_x, _x_i1, _x_i2, _x_i3) ->
+          let o = o#bool _x in
+          let o = o#list (fun o -> o#ident) _x_i1 in
+          let o = o#block _x_i2 in let o = o#unknown _x_i3 in o
       | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
       | Raw_js_code (_x, _x_i1) ->
           let o = o#string _x in let o = o#code_info _x_i1 in o
@@ -8409,7 +8602,7 @@ class count_deps (add : Ident.t -> unit )  =
     inherit  Js_fold.fold as super
     method! expression lam = 
       match lam.expression_desc with 
-      | Fun (_, block, _) -> self#block block
+      | Fun (_, _, block, _) -> self#block block
       (** Call 
           actually depends on parameter, 
           since closure 
@@ -8704,8 +8897,6 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Lam.assign id (subst e)
     | Lsend (k, met, obj, args, loc) ->
       Lam.send k (subst met) (subst obj) (List.map subst args) loc
-    | Levent (lam, evt)
-      -> Lam.event (subst lam) evt
     | Lifused (v, e) -> Lam.ifused v (subst e)
   and subst_decl (id, exp) = (id, subst exp)
   and subst_case (key, case) = (key, subst case)
@@ -9000,7 +9191,7 @@ let free_variables l =
     | Lconst _ | Lapply _
     | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
     | Lifthenelse _ | Lsequence _ | Lwhile _
-    | Lsend _ | Levent _ | Lifused _ -> ()
+    | Lsend _  | Lifused _ -> ()
   in free l; !fv
 
 end
@@ -9259,7 +9450,6 @@ let rec flatten
     (acc :  t list ) 
     (lam : Lam.t) :  Lam.t *  t list = 
   match lam with 
-  | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
   | Llet (str,id,arg,body) -> 
     let (res,l) = flatten acc arg  in
     flatten (Single(str, id, res ) :: l) body
@@ -9267,7 +9457,6 @@ let rec flatten
   (*   match res with *)
   (*   | Llet _ -> assert false *)
   (*   | Lletrec _-> assert false *)
-  (*   | Levent _ -> assert false *)
   (*   | _ ->  *)
   (*       Format.fprintf  Format.err_formatter "%a@." Printlambda.lambda res ; *)
   (*       Format.pp_print_flush Format.err_formatter (); *)
@@ -9319,7 +9508,6 @@ let deep_flatten
       (acc :  t list ) 
       (lam : Lam.t) :  Lam.t *  t list = 
     match lam with 
-    | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
             (Lprim {primitive = Pccall 
                       {prim_name = 
@@ -9375,7 +9563,6 @@ let deep_flatten
 
   and aux  (lam : Lam.t) : Lam.t= 
     match lam with 
-    | Levent (e,_) -> aux  e (* TODO: We stripped event in the beginning*)
     | Llet _ -> 
       let res, groups = flatten [] lam  
       in lambda_of_groups res groups
@@ -9559,7 +9746,6 @@ let deep_flatten
     | Lsend(u, m, o, ll, v) -> 
       Lam.send u (aux m) (aux o) (List.map aux ll) v
 
-    (* Levent(aux  l, event) *)
     | Lifused(v, l) -> Lam.ifused v (aux  l)
   in aux lam
 
@@ -10569,12 +10755,13 @@ let free_variables used_idents defined_idents =
     method! expression exp = 
 
       match exp.expression_desc with
-      | Fun(_,_, env)
+      | Fun(_, _,_, env)
       (** a optimization to avoid walking into funciton again
           if it's already comuted
       *)
         ->
-        {< used_idents = Ident_set.union (Js_fun_env.get_bound env) used_idents  >}
+        {< used_idents = 
+             Ident_set.union (Js_fun_env.get_unbounded env) used_idents  >}
 
       | _
         ->
@@ -10854,7 +11041,7 @@ val runtime_ref : string -> string -> t
 
 val str : ?pure:bool -> ?comment:string -> string -> t 
 
-val fun_ : ?comment:string ->
+val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
 val econd : ?comment:string -> t -> t -> t -> t
@@ -10928,11 +11115,14 @@ val unchecked_int32_minus : binary_op
 val int32_minus : binary_op
 val int32_mul : binary_op
 val unchecked_int32_mul : binary_op
-val int32_div : binary_op
+
+val int32_div : checked:bool -> binary_op
+val int32_mod : checked:bool -> binary_op
+
 val int32_lsl : binary_op
 val int32_lsr : binary_op
 val int32_asr : binary_op
-val int32_mod : binary_op
+
 val int32_bxor : binary_op
 val int32_band : binary_op
 val int32_bor : binary_op
@@ -11234,11 +11424,15 @@ let int_to_string ?comment (e : t) : t =
 
 (* Attention: Shared *mutable state* is evil, [Js_fun_env.empty] is a mutable state ..
 *)    
-let fun_ ?comment  ?immutable_mask
+
+let ocaml_fun 
+    ?comment  
+    ?immutable_mask
     params block  : t = 
   let len = List.length params in
   {
-    expression_desc = Fun ( params,block, Js_fun_env.empty ?immutable_mask len ); 
+    expression_desc = 
+      Fun (false, params,block, Js_fun_env.empty ?immutable_mask len ); 
     comment
   }
 
@@ -11408,7 +11602,13 @@ let bytes_length ?comment (e : t) : t =
 
 let function_length ?comment (e : t) : t = 
   match e.expression_desc with 
-  | Fun(params, _, _) -> int ?comment (Int32.of_int @@ List.length params)
+  | Fun(b, params, _, _) -> 
+    let params_length = 
+      List.length params in
+    int ?comment 
+      (Int32.of_int 
+         (if b then params_length - 1 
+          else params_length))
   (* TODO: optimize if [e] is know at compile time *)
   | _ -> { expression_desc = Length (e, Function) ; comment }
 
@@ -12089,25 +12289,47 @@ let float_div ?comment e1 e2 =
 let float_notequal ?comment e1 e2 = 
   bin ?comment NotEqEq e1 e2
 
-(** Division by zero is undefined behavior*)
-let unchecked_int32_div ?comment e1 e2 : J.expression = 
-  to_int32 (float_div ?comment e1 e2)
 
 let int32_asr ?comment e1 e2 : J.expression = 
   { comment ; 
     expression_desc = Bin (Asr, e1,e2)
   }
 
-let int32_div ?comment (e1 : J.expression) (e2 : J.expression)
-  : J.expression = 
+(** Division by zero is undefined behavior*)
+let int32_div ~checked ?comment 
+    (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
   | Length _ , Number (Int {i = 2l} | Uint 2l | Nint 2n)
     -> int32_asr e1 one_int_literal 
-  | Number(Int {i = i0}) , Number (Int {i = i1} ) when i1 <> 0l
-    -> int (Int32.div i0 i1)
+  | e1_desc , Number (Int {i = i1} ) when i1 <> 0l
+    -> 
+    begin match e1_desc with 
+    | Number(Int {i = i0})
+      -> 
+      int (Int32.div i0 i1)
+    | _ -> to_int32 (float_div ?comment e1 e2)
+    end
   | _, _ -> 
-    to_int32 (float_div ?comment e1 e2)
+    if checked  then 
+      runtime_call Js_config.int32 "div" [e1; e2]
+    else to_int32 (float_div ?comment e1 e2)
 
+
+let int32_mod ~checked ?comment e1 (e2 : t) : J.expression = 
+  match e2.expression_desc with 
+  | Number (Int {i }) when i <> 0l 
+    -> 
+    { comment ; 
+      expression_desc = Bin (Mod, e1,e2)
+    }
+
+  | _ -> 
+    if checked then 
+      runtime_call Js_config.int32 "mod_" [e1;e2]
+    else 
+      { comment ; 
+        expression_desc = Bin (Mod, e1,e2)
+      }
 
 
 let float_mul ?comment e1 e2 = 
@@ -12115,11 +12337,6 @@ let float_mul ?comment e1 e2 =
 
 
 
-(* TODO: check division by zero *)                
-let int32_mod ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Mod, e1,e2)
-  }
 
 let int32_lsl ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
   match e1, e2  with 
@@ -12201,7 +12418,7 @@ let of_block ?comment block e : t =
     {
       comment ;
       expression_desc = 
-        Fun ([], (block @ [{J.statement_desc = Return {return_value = e } ;
+        Fun (false, [], (block @ [{J.statement_desc = Return {return_value = e } ;
                             comment}]) , Js_fun_env.empty 0)
     } []
 
@@ -12220,7 +12437,7 @@ let not_implemented ?comment (s : string) =
     {
       comment ;
       expression_desc = 
-        Fun ([], (
+        Fun (false,[], (
             [{J.statement_desc =
                 Throw (str ?comment 
                          (s ^ " not implemented by bucklescript yet\n")) ;
@@ -13511,6 +13728,7 @@ module L = struct
   let semi = ";"
   let else_ = "else"
   let if_ = "if"
+  let this = "this"
   let while_ = "while"
   let empty_block = "empty_block"
   let start_block = "start_block"
@@ -13677,6 +13895,38 @@ let property_string f s =
 let pp_quote_string f s = 
   pp_string f ~utf:false ~quote:(best_string_quote s ) s 
 
+let rec comma_idents  cxt f (ls : Ident.t list)  =
+  match ls with
+  | [] -> cxt
+  | [x] -> ident cxt f x
+  | y :: ys ->
+    let cxt = ident cxt f y in
+    P.string f L.comma;
+    comma_idents cxt f ys  
+let ipp_ident cxt f id un_used = 
+  if un_used then 
+    ident cxt f (Ext_ident.make_unused ())
+  else 
+    ident cxt f id  
+let rec formal_parameter_list cxt (f : P.t) l env =
+  let rec aux i cxt l = 
+    match l with
+    | []     -> cxt
+    | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
+    | id :: r -> 
+      let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
+      P.string f L.comma; P.space f;
+      aux (i + 1) cxt  r
+  in
+  match l with 
+  | [] -> cxt 
+  | [i] -> 
+    (** necessary, since some js libraries like [mocha]...*)
+    if Js_fun_env.get_unused env 0 then cxt else ident cxt f i 
+  | _ -> 
+    aux 0 cxt l  
+
+
 (* IdentMap *)
 (*
 f/122 --> 
@@ -13696,7 +13946,7 @@ f/122 -->
              else check last bumped id, increase it and register
 *)
 
-let rec pp_function 
+let rec pp_function method_
     cxt (f : P.t) ?name  return 
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
   match b, (name,  return)  with 
@@ -13709,8 +13959,9 @@ let rec pp_function
                             (* TODO: need a case to justify it*)
                             call_info = 
                               (Call_builtin_runtime | Call_ml )})}}}],
-    ((_, false) | (None, true))  when
-
+    ((_, false) | (None, true))  
+    when
+      not method_ && 
       Ext_list.for_all2_no_exn (fun a b -> 
           match b.J.expression_desc with 
           | Var (Id i) -> Ident.same a i 
@@ -13733,43 +13984,12 @@ let rec pp_function
         vident cxt f v 
     end
   | _, _  -> 
-    let ipp_ident cxt f id un_used = 
-      if un_used then 
-        ident cxt f (Ext_ident.make_unused ())
-      else 
-        ident cxt f id  in
-    let rec formal_parameter_list cxt (f : P.t) l =
-      let rec aux i cxt l = 
-        match l with
-        | []     -> cxt
-        | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
-        | id :: r -> 
-          let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
-          P.string f L.comma; P.space f;
-          aux (i + 1) cxt  r
-      in
-      match l with 
-      | [] -> cxt 
-      | [i] -> 
-        (** necessary, since some js libraries like [mocha]...*)
-        if Js_fun_env.get_unused env 0 then cxt else ident cxt f i 
-      | _ -> 
-        aux 0 cxt l  in
 
-    let rec aux  cxt f ls  =
-      match ls with
-      | [] -> cxt
-      | [x] -> ident cxt f x
-      | y :: ys ->
-        let cxt = ident cxt f y in
-        P.string f L.comma;
-        aux cxt f ys  in
-
-    let set_env = (** identifiers will be printed following*)
+    let set_env : Ident_set.t = (** identifiers will be printed following*)
       match name with 
       | None ->
-        Js_fun_env.get_bound env 
-      | Some id -> Ident_set.add id (Js_fun_env.get_bound env )
+        Js_fun_env.get_unbounded env 
+      | Some id -> Ident_set.add id (Js_fun_env.get_unbounded env )
     in
     (* the context will be continued after this function *)
     let outer_cxt = Ext_pp_scope.merge set_env cxt in  
@@ -13793,19 +14013,47 @@ let rec pp_function
         end ;
       P.string f L.function_;
       P.space f ;
-      (match name with None  -> () | Some x -> ignore (ident inner_cxt f x));
-      let body_cxt = P.paren_group f 1 (fun _ -> 
-          formal_parameter_list inner_cxt  f l )
-      in
-      P.space f ;
-      ignore @@ P.brace_vgroup f 1 (fun _ -> statement_list false body_cxt f b );
+      (match name with 
+      | None  -> () 
+      | Some x -> ignore (ident inner_cxt f x));
+      if method_ then begin
+        let cxt = P.paren_group f 1 (fun _ -> 
+            formal_parameter_list inner_cxt  f (List.tl l) env )
+        in
+        P.space f ;
+        ignore @@ P.brace_vgroup f 1 (fun _ -> 
+            P.string f L.var ; 
+            P.space f; 
+            let cxt = ident cxt f (List.hd l) in 
+            P.space f ; 
+            P.string f L.eq ; 
+            P.space f ;
+            P.string f L.this;
+            P.space f ; 
+            semi f ; 
+            P.newline f ;
+            statement_list false cxt f b 
+          );
+
+      end
+      else begin  
+        let cxt = P.paren_group f 1 (fun _ -> 
+            formal_parameter_list inner_cxt  f l env )
+        in
+        P.space f ;
+        ignore @@ P.brace_vgroup f 1 (fun _ -> statement_list false cxt f b );
+      end
     in
     let lexical = Js_fun_env.get_lexical_scope env in
+
     let enclose action lexical  return = 
       if  Ident_set.is_empty lexical  
-      then
+      then 
         action return 
       else
+        (* print as 
+           {[(function(x,y){...} (x,y))]}           
+        *)
         let lexical = Ident_set.elements lexical in
         if return then
           begin 
@@ -13815,11 +14063,11 @@ let rec pp_function
         P.string f L.lparen;
         P.string f L.function_; 
         P.string f L.lparen;
-        ignore @@ aux inner_cxt f lexical;
+        ignore @@ comma_idents inner_cxt f lexical;
         P.string f L.rparen;
         P.brace_vgroup f 0  (fun _ -> action true);
         P.string f L.lparen;
-        ignore @@ aux inner_cxt f lexical;
+        ignore @@ comma_idents inner_cxt f lexical;
         P.string f L.rparen;
         P.string f L.rparen
     in
@@ -13905,8 +14153,8 @@ and
       P.paren_group f 1 action
     else action ()
 
-  | Fun (l, b, env) ->  (* TODO: dump for comments *)
-    pp_function cxt f false  l b env
+  | Fun (method_, l, b, env) ->  (* TODO: dump for comments *)
+      pp_function method_ cxt f false  l b env
   (* TODO: 
      when [e] is [Js_raw_code] with arity
      print it in a more precise way
@@ -14485,7 +14733,7 @@ and variable_declaration top cxt f
         semi f ; 
         cxt
       end 
-  | { ident = i ; value =  Some e; ident_info = {used_stats; _}} ->
+  | { ident = name; value =  Some e; ident_info = {used_stats; _}} ->
     begin match used_stats with
       | Dead_pure -> 
         cxt 
@@ -14494,12 +14742,12 @@ and variable_declaration top cxt f
         statement_desc top cxt f (J.Exp e)
       | _ -> 
         begin match e, top  with 
-          | {expression_desc = Fun (params, b, env ); comment = _}, true -> 
-            pp_function cxt f ~name:i false params b env 
+          | {expression_desc = Fun (method_, params, b, env ); comment = _}, true -> 
+            pp_function method_ cxt f ~name false params b env 
           | _, _ -> 
               P.string f L.var;
               P.space f;
-              let cxt = ident cxt f i in
+              let cxt = ident cxt f name in
               P.space f ;
               P.string f L.eq;
               P.space f ;
@@ -14806,8 +15054,9 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
 
   | Return {return_value = e} ->
     begin match e with
-      | {expression_desc = Fun ( l, b, env); _} ->
-        let cxt = pp_function cxt f true l b env in
+      | {expression_desc = Fun (method_,  l, b, env); _} ->
+        let cxt =
+          pp_function method_ cxt f true l b env in
         semi f ; cxt 
       | e ->
         P.string f L.return ;
@@ -17098,8 +17347,6 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
     has_exit_code exits obj ||
     has_exit_code exits l ||
     List.exists (has_exit_code exits) ls
-  | Levent (b,_) 
-    -> has_exit_code exits b
   | Lifused (_,b) 
     -> has_exit_code exits b
 
@@ -18292,13 +18539,21 @@ let query (prim : Lam_compile_env.primitive_description)
     | [e0;e1] -> E.unchecked_int32_add e0 e1 
     | _ -> assert false 
     end
-  | "caml_int32_div"
+  | "caml_int32_div" 
+    -> 
+    begin match args with 
+      | [e0;e1] -> 
+        E.int32_div  ~checked:(!Js_config.check_div_by_zero) e0 e1
+      | _ -> assert false 
+    end
+
   | "caml_nativeint_div" 
     -> (* nativeint behaves exactly the same as js numbers except division *)
     begin match args with 
-    | [e0;e1] -> E.int32_div e0 e1
+    | [e0;e1] -> E.int32_div  ~checked:false e0 e1
     | _ -> assert false 
     end
+
   | "caml_int32_mul"
     -> 
     begin match args with 
@@ -19144,7 +19399,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
     | _ -> 
 
-      let comment = "Missing primitve" in       
+      let comment = "Missing primitive" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
         (Js_config.get_current_file ()) ;
       E.not_implemented prim_name
@@ -20386,8 +20641,14 @@ let translate
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with
-  | Pjs_unsafe_downgrade
-  | Pdebugger -> assert false (* already handled by {!Lam_compile} *)
+  | Pjs_unsafe_downgrade _
+  | Pdebugger 
+  | Pjs_fn_run _ 
+  | Pjs_fn_make _
+
+  | Pjs_fn_runmethod _ 
+    -> assert false (* already handled by {!Lam_compile} *)
+  | Pjs_fn_method _ -> assert false
   | Pinit_mod -> 
     E.runtime_call Js_config.module_ "init_mod" args
   | Pupdate_mod ->
@@ -20526,25 +20787,31 @@ let translate
       | [e1;e2] -> E.float_div  e1  e2
       | _ -> assert false 
     end
-  | Pdivint 
-  | Pdivbint Lambda.Pnativeint
-  | Pdivbint Lambda.Pint32
+  | Pdivbint Pnativeint
     -> 
     begin match args with 
       | [e1;e2] ->
-        E.int32_div e1 e2
+        E.int32_div ~checked:false e1 e2
+      | _ -> assert false
+    end
+  | Pdivint 
+  | Pdivbint Pint32
+    -> 
+    begin match args with 
+      | [e1;e2] ->
+        E.int32_div ~checked:(!Js_config.check_div_by_zero) e1 e2
       | _ -> assert false
     end
 
-  | Pdivbint Lambda.Pint64 
+  | Pdivbint Pint64 
     -> Js_long.div args 
   | Pmodint 
-  | Pmodbint Lambda.Pnativeint
-  | Pmodbint Lambda.Pint32
+  | Pmodbint Pnativeint
+  | Pmodbint Pint32
     ->
     begin match args with
       | [e1; e2] ->
-        E.int32_mod   e1  e2
+        E.int32_mod   ~checked:(!Js_config.check_div_by_zero) e1  e2
       | _ -> assert false 
     end
   | Pmodbint Lambda.Pint64 
@@ -20977,7 +21244,7 @@ let translate
   | Pbigstring_set_32 _
   | Pbigstring_set_64 _
     -> 
-      let comment = "Missing primitve" in       
+      let comment = "Missing primitive" in       
       let s = Lam_util.string_of_primitive prim in
       let warn = Printf.sprintf  "%s: %s\n" comment s in
       Ext_log.warn __LOC__ "%s"  warn;
@@ -21627,9 +21894,6 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let o = aux o in 
       let ll = List.map aux ll in
       Lam.send u  m  o  ll v
-    | Levent(l, event) ->
-      let l = aux l in
-      Lam.event  l event
     | Lifused(v, l) -> 
       let l = aux l in 
       Lam.ifused v  l
@@ -22187,7 +22451,12 @@ and compile_recursive_let
               jmp_table = Lam_compile_defs.empty_handler_map}  body in
         if ret.triggered then 
           let body_block = Js_output.to_block output in
-          E.fun_ (* TODO:  save computation of length several times *)
+          E.ocaml_fun
+            (* TODO:  save computation of length several times 
+               Here we always create [ocaml_fun], 
+               it will be renamed into [method] 
+               when it is detected by a primitive
+            *)
             ~immutable_mask:ret.immutable_mask
             (List.map (fun x -> 
                  try Ident_map.find x ret.new_params with  Not_found -> x)
@@ -22204,7 +22473,7 @@ and compile_recursive_let
             ]
 
         else            (* TODO:  save computation of length several times *)
-          E.fun_ params (Js_output.to_block output )
+          E.ocaml_fun params (Js_output.to_block output )
       ), [] 
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
@@ -22383,7 +22652,7 @@ and
     match lam with 
     | Lfunction{ kind; params; body} ->
       Js_output.handle_name_tail st should_return lam 
-        (E.fun_
+        (E.ocaml_fun
            params
            (* Invariant:  jmp_table can not across function boundary,
               here we share env
@@ -22632,9 +22901,8 @@ and
        we need mark something that such eta-conversion can not be simplified in some cases 
     *)
 
-    | Lsend(Public (Some name), _label, 
-            Lprim {primitive = Pjs_unsafe_downgrade; 
-                   args = [obj]}, [] , loc) 
+    | Lprim {primitive = Pjs_unsafe_downgrade (name,loc); 
+             args = [obj]}
       when not (Ext_string.ends_with name Literals.setter_suffix) 
       (* TODO: more not a setter/case/case_setter *)
       -> 
@@ -22659,27 +22927,18 @@ and
             blocks ret 
         | _ -> assert false 
       end
-    | Lprim {primitive = Pccall {prim_name; _};  args = args_lambda}
-      when Ext_string.starts_with prim_name "js_fn_" ->
-      let arity, kind  = 
-        let mk =  Ext_string.starts_with_and_number prim_name ~offset:6 "mk_" in 
-        if mk < 0 then 
-          let run = Ext_string.starts_with_and_number prim_name ~offset:6 "run_" in 
-          run , `Run
-        else mk, `Mk
-      in 
-
+    | Lprim {primitive = Pjs_fn_run arity;  args = args_lambda}
+      ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
          2. invariant: `external` declaration will guarantee
          the function application is saturated
          3. we need a location for Pccall in the call site
       *)
-      if kind = `Run then 
-        match args_lambda with  
-        | [Lsend(Public (Some "case_set"), _label,
-                 Lprim{primitive = Pjs_unsafe_downgrade;
-                       args = [obj]}, [] , loc) ; key ;  value] ->
+
+        begin match args_lambda with  
+        | [Lprim{primitive = Pjs_unsafe_downgrade("case_set",loc);
+                       args = [obj]} ; key ;  value] ->
           let obj_block =
             compile_lambda {cxt with st = NeedValue; should_return = False} obj
           in
@@ -22691,7 +22950,6 @@ and
           in
           begin match obj_block, key_block, value_block with
             | {block = block0; value = Some obj },
-
               {block = block1; value = Some key},
               {block = block2; value = Some value}
               ->
@@ -22715,10 +22973,10 @@ and
             | _ -> assert false
           end
 
-        | [(Lsend(meth_kind, _label, 
-                  Lprim{primitive = 
-                          Pjs_unsafe_downgrade;
-                        args = [obj]}, [] , loc) as fn);
+        | [Lprim{
+            primitive = 
+              Pjs_unsafe_downgrade(method_name,loc);
+            args = [obj]} as fn;
            arg]
           -> 
           begin 
@@ -22736,43 +22994,35 @@ and
                   | Some obj_code -> block0 @ obj_code :: block1
                 )
             in 
-            match 
-              obj_block, value_block, meth_kind
-            with 
+            match obj_block, value_block with 
             | {block = block0; value = Some obj }, 
-              {block = block1; value = Some value}, 
-              Public (Some method_name )
-              when method_name = Literals.case 
+              {block = block1; value = Some value}
+              ->
+              if method_name = Literals.case 
                 || Ext_string.starts_with method_name 
-                     Literals.case_prefix -> 
+                     Literals.case_prefix then 
               (* TODO: if [b] contains computation, compute it first *)
-              begin match Js_ast_util.named_expression  obj with 
+                match Js_ast_util.named_expression  obj with 
                 | None -> 
                   cont block0 block1 None (E.access obj value)
                 | Some (obj_code, obj)
                   -> 
                   cont  block0 block1 (Some obj_code) (E.access (E.var obj) value)
-              end
-            | {block = block0; value = Some obj }, 
-              {block = block1; value = Some value}, Public (Some setter) 
-              ->
-              if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
-                compile_lambda cxt @@ 
-                Lam.apply fn [arg]  
-                  Location.none (* TODO *)
-                  App_js_full
-              else 
+              else if  Ext_string.ends_with method_name Literals.setter_suffix then 
                 let property =
-                  String.sub setter 0 
-                    (String.length setter - Literals.setter_suffix_len) in 
-                begin match Js_ast_util.named_expression  obj with
+                  String.sub method_name 0 
+                    (String.length method_name - Literals.setter_suffix_len) in 
+                match Js_ast_util.named_expression  obj with
                   | None ->
                     cont block0 block1 None (E.assign (E.dot obj property) value)
                   | Some (obj_code, obj)
                     ->
                     cont block0 block1 (Some obj_code)
                       (E.assign (E.dot (E.var obj) property) value)
-                end
+              else 
+                compile_lambda cxt
+                  (Lam.apply fn [arg]  
+                     Location.none (* TODO *) App_js_full)
             | _ -> 
               assert false 
           end
@@ -22783,7 +23033,46 @@ and
                Location.none (*TODO*)
                App_js_full)
         | _ -> assert false 
-      else 
+        end
+    | Lprim {primitive = Pjs_fn_runmethod arity ; args }
+      -> 
+      begin match args with 
+        | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
+                 args = [ _ ]} as fn) 
+          :: _obj
+          :: rest -> 
+        (* assert (Ident.same id2 id) ;  *)
+        (* we ignore the computation of [_obj], 
+           since our ast writer 
+           {[ obj#.f (x,y)
+           ]}
+           -->
+           {[ runmethod2 f obj#.f x y]}           
+        *)
+        compile_lambda cxt (Lam.apply fn rest loc App_js_full)
+      | _ -> assert false               
+      end
+    | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} -> 
+      begin match args_lambda with 
+        | [Lfunction{arity = len; kind; params = args; body} as fn] when len = arity + 1 -> 
+          
+          begin 
+            match compile_lambda {cxt with st = NeedValue; should_return = False}  fn
+            with 
+          | {block ; value = Some ({expression_desc = Fun (_, params, b, env)} as f)}
+            as out
+            -> 
+            {out with value = Some {f with expression_desc = Fun(true, params, b, env)}
+            }
+          | _ -> assert false 
+          end
+            
+        | _ -> assert false 
+      end
+
+
+    | Lprim {primitive = Pjs_fn_make arity;  args = args_lambda} -> 
+
         begin match args_lambda with 
           | [fn] -> 
             if arity = 0 then 
@@ -22803,8 +23092,7 @@ and
                  ]}
                  when it is passed as a function directly
               *)
-              begin 
-                match fn with 
+              begin match fn with 
                 | Lfunction {params =  [_]; body}
                   ->
                   compile_lambda cxt 
@@ -22814,6 +23102,7 @@ and
                        ~params:[]
                        ~body)
                 | _ -> 
+
                   compile_lambda cxt  
                     (Lam.function_ ~arity:0 
                        ~kind:Curried ~params:[] 
@@ -23565,8 +23854,7 @@ and
 
         end
       end
-    (* TODO: object layer *)
-    | Levent (lam,_lam_event) -> compile_lambda cxt lam
+
     (* [J.Empty,J.N] *)  (* TODO debugging, sourcemap, ignore lambda_event currently *)
     (* 
         seems to be an optimization trick for [translclass]
@@ -23809,7 +24097,6 @@ let rec get_arity
     all_lambdas meta [l2;l3]
   | Lsequence(_, l2) -> get_arity meta l2 
   | Lsend(u, m, o, ll, v) -> NA
-  | Levent(l, event) -> NA
   | Lifused(v, l) -> NA 
   | Lwhile _ 
   | Lfor _  
@@ -24560,9 +24847,6 @@ let simplify_alias
     | Lsend (u, m, o, ll, v) 
       -> 
       Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
-    | Levent (l, event) 
-      ->
-      Lam.event (simpl  l) event
     | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam
@@ -24718,8 +25002,6 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.send k 
       (eliminate_ref id m) (eliminate_ref id o)
       (List.map (eliminate_ref id) el) loc
-  | Levent(l, ev) ->
-    Lam.event (eliminate_ref id l) ev
   | Lifused(v, e) ->
     Lam.ifused v (eliminate_ref id e)
 
@@ -24884,8 +25166,6 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
     | Lassign(v, l) -> Lam.assign v (simplif l)
     | Lsend(k, m, o, ll, loc) ->
       Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
-    | Levent(l, ev) 
-      -> Lam.event (simplif l) ev
   in simplif lam ;;
 
 
@@ -25030,7 +25310,6 @@ let collect_occurs  lam : occ_tbl =
       count bv l2; 
       count Ident_map.empty l3
     | Lsend(_, m, o, ll, _) -> List.iter (count bv) (m::o::ll)
-    | Levent(l, _) -> count bv l
     | Lifused(v, l) ->
       if used v then count bv l
 
@@ -25194,7 +25473,6 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
     | Lfor(_, l1, l2, dir, l3) -> count l1; count l2; count l3
     | Lassign(_, l) -> count l
     | Lsend(_, m, o, ll, _) -> count m; count o; List.iter count ll
-    | Levent(l, _) -> count l
     | Lifused(_, l) -> count l 
 
   and count_default sw =
@@ -25381,8 +25659,6 @@ let subst_helper (subst : subst_tbl) query lam =
       Lam.assign v (simplif l)
     | Lsend (k, m, o, ll, loc) ->
       Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
-    | Levent (l, ev) -> 
-      Lam.event (simplif l) ev
     | Lifused (v, l) -> 
       Lam.ifused v (simplif l)
   in 
@@ -25677,7 +25953,6 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
            v's refcollect *)
         collect  l
     | Lsend(_, m, o, ll, _) -> List.iter collect  (m::o::ll)
-    | Levent(l, _) -> collect  l
     | Lifused(_, l) -> collect  l in collect lam 
 
 
@@ -25866,7 +26141,6 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
       Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) -> 
       Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
-    | Levent (l, event) -> Lam.event (simpl  l) event
     | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
 
@@ -26466,6 +26740,9 @@ class virtual map =
        2. Javascript dot (need to be preserved/or using quote)
      *)
                  (* TODO: option remove *)
+                 (* The first parameter by default is false, 
+     it will be true when it's a method
+  *)
                  (* A string is UTF-8 encoded, the string may contain
        escape sequences.
        The first argument is used to mark it is non-pure, please
@@ -26692,10 +26969,11 @@ class virtual map =
             o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
           in New (_x, _x_i1)
       | Var _x -> let _x = o#vident _x in Var _x
-      | Fun (_x, _x_i1, _x_i2) ->
-          let _x = o#list (fun o -> o#ident) _x in
-          let _x_i1 = o#block _x_i1 in
-          let _x_i2 = o#unknown _x_i2 in Fun (_x, _x_i1, _x_i2)
+      | Fun (_x, _x_i1, _x_i2, _x_i3) ->
+          let _x = o#bool _x in
+          let _x_i1 = o#list (fun o -> o#ident) _x_i1 in
+          let _x_i2 = o#block _x_i2 in
+          let _x_i3 = o#unknown _x_i3 in Fun (_x, _x_i1, _x_i2, _x_i3)
       | Str (_x, _x_i1) ->
           let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
       | Raw_js_code (_x, _x_i1) ->
@@ -27019,7 +27297,11 @@ let subst name export_set stats  =
           | exception Not_found 
             ->  self#statement st :: self#block rest 
 
-          | { value = Some {expression_desc = Fun (params, block, _env) ; comment = _}; 
+          | { value = 
+                Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
+              (*TODO: don't inline method tail call yet, 
+                [this] semantics are weird 
+              *)              
               property = (Alias | StrictOpt | Strict);
               ident_info = {used_stats = Once_pure };
               ident = _
@@ -27258,7 +27540,7 @@ let scope_pass  =
 
     method! expression x = 
       match x.expression_desc with 
-      | Fun (params, block , env) -> 
+      | Fun (_method_, params, block , env) -> 
         (* Function is the only place to introduce a new scope in 
             ES5
             TODO: check 
@@ -27290,7 +27572,7 @@ let scope_pass  =
         (* Noe that we don't know which variables are exactly mutable yet ..
            due to the recursive thing
          *)
-        Js_fun_env.set_bound env closured_idents'   ; 
+        Js_fun_env.set_unbounded env closured_idents'   ; 
         let lexical_scopes = Ident_set.(inter closured_idents' self#get_loop_mutable_values) in
         Js_fun_env.set_lexical_scope env lexical_scopes;
         (* tailcall , note that these varibles are used in another pass *)
@@ -28142,7 +28424,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let a = Ext_ident.create "a" in 
             let b = Ext_ident.create "b" in
-            E.fun_ [a;b] [S.return (E.string_append (E.var a) (E.var b))]
+            E.ocaml_fun [a;b] [S.return (E.string_append (E.var a) (E.var b))]
             )
 
   (* QUICK hack to make hello world example nicer,
@@ -28152,14 +28434,14 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
   | Single(_, ({name="print_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
-            E.fun_ [param] [S.return 
+            E.ocaml_fun [param] [S.return 
                               (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
                                         (E.js_global "console.log") [E.var param]) 
                                       E.zero_int_literal )] )
   | Single(_, ({name="prerr_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
-            E.fun_ [param] [S.return 
+            E.ocaml_fun [param] [S.return 
                               (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
                                         (E.js_global "console.error") [E.var param]) 
                                  E.zero_int_literal )] )
@@ -28169,7 +28451,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:( 
         let arg = Ext_ident.create "param" in
-        E.fun_ [arg] [S.return (E.anything_to_string (E.var arg))]
+        E.ocaml_fun [arg] [S.return (E.anything_to_string (E.var arg))]
       )
 
   | Single(_, ({name="max_float";_} as id),_ ),  "pervasives.ml" ->
@@ -28186,7 +28468,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:(let a = Ext_ident.create "a" in 
             let b = Ext_ident.create "b" in
-            E.fun_ [a;b] [S.return (E.array_append (E.var a) (E.var b))]
+            E.ocaml_fun [a;b] [S.return (E.array_append (E.var a) (E.var b))]
            )
 
   (** Special handling for values in [Sys] *)
@@ -29494,9 +29776,12 @@ let buckle_script_flags =
     " set will generate `.d.ts` file for typescript (experimental)")
   :: ("-bs-diagnose", Arg.Set Js_config.diagnose, 
       " More verbose output")
+  :: ("-bs-no-check-div-by-zero", Arg.Clear Js_config.check_div_by_zero, 
+      " unsafe mode, don't check div by zero and mod by zero")
   :: ("-bs-files", Arg.Rest collect_file, 
       " Provide batch of files, the compiler will sort it before compiling"
      )
+
   :: Ocaml_options.mk_impl impl
   :: Ocaml_options.mk_intf intf 
   :: Ocaml_options.mk__ anonymous
@@ -29720,177 +30005,6 @@ end = struct
 
 let int ?loc ?attrs x = 
   Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
-
-end
-module Js_pass_beta : sig 
-#1 "js_pass_beta.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** *)
-
-end = struct
-#1 "js_pass_beta.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(* When we inline a function call, if we don't do a beta-reduction immediately, there is 
-   a chance that it is ignored, (we can not assume that each pass is robust enough)
-
-   After we do inlining, it makes sense to do another constant folding and propogation 
- *)
-
-(* Check: shall we inline functions with while loop? if it is used only once, 
-   it makes sense to inline it
-*)
-
-module S = Js_stmt_make
-module E = Js_exp_make
-
-
-(** Update ident info use cases, it is a non pure function, 
-    it will annotate [program] with some meta data
-    TODO: Ident Hashtbl could be improved, 
-    since in this case it can not be global?  
-
- *)
-
-type inline_state = 
-  | False
-  | Inline_ignore of bool (*indicate whether use [break] to replace [return] or not *)
-  | Inline_ret of J.expression * bool 
-  | Inline_return 
-
-let pass_beta = 
-  object (self)
-    inherit Js_map.map as super
-    val inline_state = False 
-    method with_inline_state x = 
-      {<inline_state = x>}
-    method! block bs = 
-      match bs with 
-      | {statement_desc = Block bs ; _} :: rest 
-        -> 
-          self#block (bs @  rest )
-      | {statement_desc = Exp (
-         {expression_desc = Call (
-          {expression_desc = Fun (params, body, env) },
-          args, _info) ; _ }) ; _ } :: rest 
-           when Ext_list.same_length args  params ->
-             let body = self#block body in
-             (List.fold_right2
-              (fun p a acc ->
-                S.define ~kind:Variable p a :: acc) params args
-                 ((self#with_inline_state (Inline_ignore (Js_fun_env.is_tailcalled env))) #block  body) ) @
-              (self#block rest)
-      | {statement_desc = Exp (
-         {expression_desc = Bin (Eq,
-                                 e,
-                                  {expression_desc = Call (
-                                  {expression_desc = Fun (params, body, env) },
-                                  args, _info) ; _ }); _
-        }) ; _ } :: rest when Ext_list.same_length args params ->
-
-          let body = self#block body  in
-              (List.fold_right2
-              (fun p a acc ->
-                S.define ~kind:Variable p a :: acc) params args
-                 ((self#with_inline_state (Inline_ret (e, Js_fun_env.is_tailcalled env))) #block body) ) @
-              (self#block rest)
-
-      | {statement_desc = Return (
-         {return_value = {expression_desc = Call (
-          {expression_desc = Fun (params, body, _) },
-          args, _info) ; _ }}) ; _ } :: rest 
-        when Ext_list.same_length args  params -> 
-          let body = self#block body in
-          (List.fold_right2 
-                 (fun p a acc -> 
-                   S.define ~kind:Variable p a :: acc) params args 
-                 ((self#with_inline_state Inline_return) #block body))  @ 
-              (self#block rest)
-
-      | {statement_desc = Return {return_value = e} } as st  :: rest 
-        -> 
-          begin match inline_state with 
-          | False 
-            -> self#statement st :: self#block rest 
-          | Inline_ignore b 
-            ->
-              S.exp (self#expression e) :: 
-              (if b then S.break () :: self#block rest else self#block rest)
-          | Inline_ret (v,b) ->
-              S.exp (E.assign v (self#expression e)) :: 
-              (if b then S.break () :: self#block rest else self#block rest)
-          | Inline_return 
-            -> 
-              S.return (self#expression e ) :: self#block rest 
-          end
-      | x :: xs  -> self#statement x :: self#block xs
-      | [] -> []
-    method! expression e = 
-      match e.expression_desc with 
-      | Fun (params, body,env) ->  
-         (** only  partial information of env is wrong,  needs  to be recomputed again,
-             but we can not simply discard it 
-          *)
-          {e with expression_desc = Fun (params, ({< inline_state = False >}# block body), env)}
-
-       (** so that we will not have inner [Return] *)
-      | _ -> super#expression e 
-  end
 
 end
 module Ext_char : sig 
