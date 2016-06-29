@@ -175,10 +175,14 @@ ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_log.cmj : ../stdlib/format.cmi
 ext_log.cmx : ../stdlib/format.cmx
-ext_pervasives.cmj : ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ../stdlib/arg.cmi ext_pervasives.cmi
-ext_pervasives.cmx : ../stdlib/int32.cmx ../stdlib/format.cmx \
-    ../stdlib/arg.cmx ext_pervasives.cmi
+ext_pervasives.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi \
+    ../stdlib/obj.cmi ../stdlib/list.cmi ../stdlib/int32.cmi \
+    ../stdlib/format.cmi ../stdlib/array.cmi ../stdlib/arg.cmi \
+    ext_pervasives.cmi
+ext_pervasives.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
+    ../stdlib/obj.cmx ../stdlib/list.cmx ../stdlib/int32.cmx \
+    ../stdlib/format.cmx ../stdlib/array.cmx ../stdlib/arg.cmx \
+    ext_pervasives.cmi
 ext_string.cmj : ../stdlib/string.cmi ext_bytes.cmj ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/char.cmx \
@@ -363,6 +367,8 @@ obj_magic_test.cmj : ../stdlib/obj.cmi mt.cmi
 obj_magic_test.cmx : ../stdlib/obj.cmx mt.cmx
 obj_test.cmj : mt.cmi
 obj_test.cmx : mt.cmx
+obj_type_test.cmj : ../runtime/js.cmj
+obj_type_test.cmx : ../runtime/js.cmx
 ocaml_proto_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/printexc.cmi ../stdlib/pervasives.cmi ../stdlib/parsing.cmi \
     ../stdlib/obj.cmi mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi \
@@ -859,10 +865,14 @@ ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_log.cmo : ../stdlib/format.cmi
 ext_log.cmj : ../stdlib/format.cmj
-ext_pervasives.cmo : ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ../stdlib/arg.cmi ext_pervasives.cmi
-ext_pervasives.cmj : ../stdlib/int32.cmj ../stdlib/format.cmj \
-    ../stdlib/arg.cmj ext_pervasives.cmi
+ext_pervasives.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
+    ../stdlib/obj.cmi ../stdlib/list.cmi ../stdlib/int32.cmi \
+    ../stdlib/format.cmi ../stdlib/array.cmi ../stdlib/arg.cmi \
+    ext_pervasives.cmi
+ext_pervasives.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
+    ../stdlib/obj.cmj ../stdlib/list.cmj ../stdlib/int32.cmj \
+    ../stdlib/format.cmj ../stdlib/array.cmj ../stdlib/arg.cmj \
+    ext_pervasives.cmi
 ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/char.cmj \
@@ -1047,6 +1057,8 @@ obj_magic_test.cmo : ../stdlib/obj.cmi mt.cmi
 obj_magic_test.cmj : ../stdlib/obj.cmj mt.cmj
 obj_test.cmo : mt.cmi
 obj_test.cmj : mt.cmj
+obj_type_test.cmo : ../runtime/js.cmo
+obj_type_test.cmj : ../runtime/js.cmj
 ocaml_proto_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/printexc.cmi ../stdlib/pervasives.cmi ../stdlib/parsing.cmi \
     ../stdlib/obj.cmi mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi \

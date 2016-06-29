@@ -342,3 +342,4 @@ simplify_lambda_632o
 div_by_zero_test
 
 unsafe_this
+obj_type_test
