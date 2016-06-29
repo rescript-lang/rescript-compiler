@@ -246,7 +246,7 @@ let handle_obj_fn loc (obj : Parsetree.expression)
       let args = Ast_util.destruct_tuple_exp value in 
       let arity = List.length args in  
       if method_kind = Case_setter && arity <> 2 then 
-        Location.raise_errorf "case_set would expect arity of 2 "
+        Location.raise_errorf ~loc "case_set would expect arity of 2 "
       else  arity, args 
   in
   {e with pexp_desc = 
@@ -427,7 +427,6 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | _ -> 
               begin match args with 
                 | [("", exp)] -> 
-             
                   begin match Ext_list.exclude_with_fact (function 
                       | {Location.txt = "uncurry"; _}, _ -> true 
                       | _ -> false) e.pexp_attributes with 
