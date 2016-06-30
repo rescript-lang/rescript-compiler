@@ -90,15 +90,42 @@ let fn_run loc fn args
      pexp_attributes 
     }
 
-(** The first argument is object itself which is only 
-    for typing checking*)
-let gen_method_run loc arity fn args : Parsetree.expression_desc = 
-  let pval_prim = ["js_fn_runmethod" ; string_of_int arity]  in
-  let fn_type, (obj_type, tuple_type) = Ast_comb.obj_type_pair ~loc  arity  in 
-  let pval_type =
-    arrow ~loc "" (lift_js_meth_callback ~loc (obj_type, tuple_type)) fn_type in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    (("", fn) :: List.map (fun x -> "",x) args )
+let method_run loc (obj : Parsetree.expression) 
+    name (args : (string * Parsetree.expression) list ) e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let obj = mapper.expr mapper obj in
+  let args =
+    List.map (fun (label,e) ->
+        if label <> "" then
+          Location.raise_errorf ~loc "label is not allowed here"        ;
+        mapper.expr mapper e
+      ) args in
+  let len = List.length args in
+  let method_kind = 
+    if name = Literals.case_set then `Case_setter
+    else if Ext_string.ends_with name Literals.setter_suffix then `Setter
+    else `Normal name in 
+  let () = 
+     if method_kind = `Setter && len <> 1 then 
+        Location.raise_errorf ~loc "setter expect single argument"
+     else if method_kind = `Case_setter && len <> 2 then 
+       Location.raise_errorf ~loc "case_set would expect arity of 2 "
+  in
+  match args with 
+  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+    -> 
+    {e with pexp_desc = 
+              gen_fn_run loc 0
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                []
+    }
+  | _ -> 
+    {e with pexp_desc = 
+              gen_fn_run loc len 
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                args
+    }
+
 
 
 let gen_fn_mk loc arity arg  : Parsetree.expression_desc = 

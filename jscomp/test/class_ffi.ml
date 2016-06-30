@@ -11,6 +11,8 @@ class type x =
 and y = object 
 end [@@y]
 
+
+(*
 class type __x = object 
   inherit __y
   method u : int 
@@ -19,3 +21,4 @@ class type __x = object
   method cmp : (__x Js.t * bool ) Js.meth
 end
 type _x = __x Js.t 
+*)

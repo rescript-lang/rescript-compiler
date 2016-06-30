@@ -75,3 +75,10 @@ let fff (x : 'a u6) : 'a u7= x
 
 let f : int -> int -> (int -> int -> int [@uncurry]) [@uncurry] = 
   fun [@uncurry] x y -> fun [@uncurry] u v -> x + y + u + v
+
+
+type 'a xx0 = < hi : int -> int [@meth_callback] > 
+type 'a xx1 = < hi : (int -> int [@meth_callback]) > 
+
+
+let f (x : 'a xx0) : 'a xx1 = x  

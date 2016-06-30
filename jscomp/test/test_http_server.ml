@@ -8,12 +8,11 @@ let create_server  http =
       resp##statusCode_set 200;
       resp##setHeader "Content-Type" "text/plain";
       resp##end_ "Hello world\n"
-    end
-  in
+    end in
   server##listen port hostname  begin fun [@uncurry] () -> 
     Js.log ("Server running at http://"^ hostname ^ ":" ^ string_of_int port ^ "/")
   end
-     
+
 let () = 
   create_server Http_types.http
 
