@@ -368,12 +368,6 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           | None, _ -> Ast_mapper.default_mapper.expr mapper e 
           | Some _, attrs 
             -> 
-            match body.pexp_desc with 
-            | Pexp_fun _ -> 
-              Location.raise_errorf ~loc 
-                {| `fun [@uncurry] (param0, param1) -> `
-                   instead of `fun [@uncurry] param0 param1 ->` |}
-            | _ -> 
               let pat = mapper.pat mapper pat in 
               let body = mapper.expr mapper body in 
               {e with pexp_desc =  Ast_util.uncurry_fn_gen loc pat body ;
@@ -448,24 +442,6 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               | None, _ -> Ast_mapper.default_mapper.expr mapper e 
               | Some _, attrs -> 
                 Ast_util.fn_run loc fn args mapper e attrs 
-              (* begin match args with  *)
-              (*   | [("", exp)] ->  *)
-              (*     begin match Ext_list.exclude_with_fact (function  *)
-              (*         | {Location.txt = "uncurry"; _}, _ -> true  *)
-              (*         | _ -> false) e.pexp_attributes with  *)
-              (*     | None, _ -> Ast_mapper.default_mapper.expr mapper e  *)
-              (*     | Some _, attrs ->  *)
-              (*       let exp = mapper.expr mapper exp in  *)
-              (*       let fn = mapper.expr mapper fn in  *)
-              (*       let args = Ast_util.destruct_tuple_exp exp in *)
-              (*       let len = List.length args in  *)
-              (*       { e with  *)
-              (*         pexp_desc = Ast_util.gen_fn_run loc len fn args; *)
-              (*         pexp_attributes = attrs  *)
-              (*       }  *)
-              (*     end *)
-                (* | _ ->  *)
-                (*   Ast_mapper.default_mapper.expr mapper e *)
               end
           end
         | Pexp_record (label_exprs, None)  -> 
