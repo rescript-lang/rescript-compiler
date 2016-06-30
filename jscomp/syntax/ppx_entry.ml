@@ -346,7 +346,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 (fun ()-> mapper.expr mapper e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
-        | Pexp_extension ({txt = "meth"; loc}, payload) 
+        | Pexp_extension ({txt = "meth_callback"; loc}, payload) 
           -> 
           begin match payload with 
             | PStr [{pstr_desc = 

@@ -8,19 +8,19 @@ let v3  = mk_obj_spec ~test:3 ~config:3 ~hi:"ghos" ~displayName:"display" ()
 
 
 class type x = object 
-  method tet : (x Js.t -> int -> int -> int  [@meth])
+  method tet : (x Js.t -> int -> int -> int  [@meth_callback])
 end
 
 
 class type y = object 
-  method tet : y Js.t -> int -> int -> int  [@meth]
+  method tet : y Js.t -> int -> int -> int  [@meth_callback]
 end
 
 
 let u (x : x) : y = x 
 
-type h = < bark : 'self -> int -> int [@meth] > Js.t as 'self
-type hh = < bark :( 'self -> int -> int [@meth]) > Js.t as 'self
+type h = < bark : 'self -> int -> int [@meth_callback] > Js.t as 'self
+type hh = < bark :( 'self -> int -> int [@meth_callback]) > Js.t as 'self
 
 let ff (x  : h) : hh = x 
 
@@ -55,13 +55,13 @@ let ff ( x : 'a u4) : 'a u5 =  x
 type 'a v0 = int -> 'a ret [@uncurry]
 type 'a v1 =  int -> ('a -> int [@uncurry]) [@uncurry]
 
-type 'a xx = int -> 'a [@meth]
+type 'a xx = int -> 'a [@meth_callback]
 type 'a w0 = int -> 'a xx [@uncurry]
-type 'a w1 =  int -> (int -> 'a [@meth]) [@uncurry]
+type 'a w1 =  int -> (int -> 'a [@meth_callback]) [@uncurry]
 let f (x : 'a w0) : 'a w1 =  x
 
-type 'a v2 = int -> 'a ret [@meth]
-type 'a v3 = int -> ('a -> int [@uncurry]) [@meth]
+type 'a v2 = int -> 'a ret [@meth_callback]
+type 'a v3 = int -> ('a -> int [@uncurry]) [@meth_callback]
 
 
 let f (x : 'a v0) : 'a v1 = x
