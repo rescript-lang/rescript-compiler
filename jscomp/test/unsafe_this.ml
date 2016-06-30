@@ -8,7 +8,7 @@ let u : 'self =
       {
         x = 3 ;
         y = 32 ;
-        bark = (fun [@uncurry] (this, x, y) -> Js.log (this##length, this##x, this##y));
+        bark = (fun [@uncurry] this x y -> Js.log (this##length, this##x, this##y));
         length = 32
       } : 
         <

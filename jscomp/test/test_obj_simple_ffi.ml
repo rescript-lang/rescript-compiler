@@ -74,4 +74,4 @@ type 'a u7 = < case : int -> ('a  -> int [@uncurry])  ; >  [@uncurry]
 let fff (x : 'a u6) : 'a u7= x 
 
 let f : int -> int -> (int -> int -> int [@uncurry]) [@uncurry] = 
-  fun [@uncurry] (x,y) -> fun [@uncurry](u,v) -> x + y + u + v
+  fun [@uncurry] x y -> fun [@uncurry] u v -> x + y + u + v

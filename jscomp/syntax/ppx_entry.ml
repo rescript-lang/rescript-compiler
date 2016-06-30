@@ -368,10 +368,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           | None, _ -> Ast_mapper.default_mapper.expr mapper e 
           | Some _, attrs 
             -> 
-              let pat = mapper.pat mapper pat in 
-              let body = mapper.expr mapper body in 
-              {e with pexp_desc =  Ast_util.uncurry_fn_gen loc pat body ;
-                      pexp_attributes = attrs }
+            Ast_util.destruct_arrow_as_fn loc pat body mapper e attrs
           end
         | Pexp_apply
             (fn, args  )

@@ -137,17 +137,6 @@ let gen_method_mk loc arity arg  : Parsetree.expression_desc =
   in
   Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
 
-let uncurry_fn_gen loc 
-    (pat : Parsetree.pattern) (body : Parsetree.expression)
-  =
-  let args = destruct_tuple_pat pat in 
-  let len = List.length args in 
-  let fun_ = 
-    if len = 0 then 
-      Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) body
-    else 
-      List.fold_right (Ast_comb.fun_no_label ~loc ) args body in
-  gen_fn_mk loc len fun_
 
 let uncurry_method_gen  loc 
     (pat : Parsetree.pattern)
@@ -218,8 +207,8 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
   let first_arg = mapper.typ mapper first_arg in
   let result, rev_extra_args = 
     aux  [first_arg] typ in 
-  match rev_extra_args, first_arg with 
-  | [ _ ], {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}
+  match rev_extra_args with 
+  | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
     -> lift_curry_type ~loc result 
   | _ -> 
     lift_curry_type ~loc 
@@ -247,6 +236,39 @@ let destruct_arrow_as_meth loc (first_arg : Parsetree.core_type)
      if rev_extra_args = [] then result 
      else Typ.tuple ~loc  (List.rev_append rev_extra_args [result])
     )
+
+
+
+let destruct_arrow_as_fn loc pat body (mapper : Ast_mapper.mapper) 
+    (e : Parsetree.expression) pexp_attributes = 
+  let rec aux acc (body : Parsetree.expression) = 
+    match process_attributes_rev body.pexp_attributes with 
+    | _ , `Nothing -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (label,_, arg, body)
+          -> 
+          if label <> "" then
+            Location.raise_errorf ~loc "label is not allowed";
+          aux (mapper.pat mapper arg :: acc) body 
+        | _ -> mapper.expr mapper body, acc 
+      end 
+    | _, _ -> mapper.expr mapper body, acc  
+  in 
+  let first_arg = mapper.pat mapper pat in  
+  let result, rev_extra_args = aux [first_arg] body in 
+  match rev_extra_args with 
+  | [ {ppat_desc = Ppat_construct ({txt = Lident "()"}, None)}]
+    -> { e with pexp_desc =         
+                  gen_fn_mk loc 0 
+                    (Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) result);
+                pexp_attributes}
+  | _ -> {e with 
+          pexp_desc = 
+            gen_fn_mk loc (List.length rev_extra_args) 
+              (List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
+                 result rev_extra_args );
+          pexp_attributes 
+         }
 
 
 let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 

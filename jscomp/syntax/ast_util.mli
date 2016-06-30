@@ -42,18 +42,6 @@ val gen_method_run :
   Parsetree.expression ->
   Parsetree.expression list -> Parsetree.expression_desc
 
-(** turn {[ fun [@uncurry] (x,y) -> x]} into an uncurried function 
-    TODO: Future 
-    {[ fun%bs this (a,b,c) -> 
-    ]}
-
-    [function] can only take one argument, that is the reason we did not adopt it
-*)
-val uncurry_fn_gen :
-  Ast_helper.loc ->
-  Parsetree.pattern ->
-  Parsetree.expression -> Parsetree.expression_desc
-
 val uncurry_method_gen : 
   Ast_helper.loc ->
   Parsetree.pattern -> 
@@ -68,6 +56,20 @@ val destruct_arrow :
   Ast_helper.loc ->
   Parsetree.core_type ->
   Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+
+(** turn {[ fun [@uncurry] (x,y) -> x]} into an uncurried function 
+    TODO: Future 
+    {[ fun%bs this (a,b,c) -> 
+    ]}
+
+    [function] can only take one argument, that is the reason we did not adopt it
+*)
+val destruct_arrow_as_fn : 
+  Ast_helper.loc ->
+  Parsetree.pattern ->
+  Parsetree.expression ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
 
 val bs_object_attribute : Parsetree.attribute
 val bs_uncurry_attribute :  Parsetree.attribute
