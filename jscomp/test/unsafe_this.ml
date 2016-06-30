@@ -64,7 +64,7 @@ let uu : 'self =
         x = 3 ;
         y = 32 ;
         bark = 
-          (fun %meth_callback ((o : 'self), (x : int), (y : int)) -> 
+          (fun [@meth_callback] (o : 'self) (x : int) (y : int) -> 
                Js.log (o##length, o##x, o##y,x,y));
         length = 32
       } : 
@@ -81,7 +81,7 @@ let js_obj : 'self =
         x = 3 ;
         y = 32 ;
         bark = 
-          (fun %meth_callback ((o : 'self), x, y) -> 
+          (fun [@meth_callback] (o : 'self) x y -> 
             Js.log (o##length, o##x, o##y,x,y);
             x + y
           );

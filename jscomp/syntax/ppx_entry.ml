@@ -346,29 +346,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 (fun ()-> mapper.expr mapper e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
-        | Pexp_extension ({txt = "meth_callback"; loc}, payload) 
-          -> 
-          begin match payload with 
-            | PStr [{pstr_desc = 
-                       Pstr_eval ({pexp_desc = Pexp_fun("", None, pat, body)} as e, _)
-                    }]
-              -> 
-              let pat = mapper.pat mapper pat in 
-              let body = mapper.expr mapper body in 
-              {e with pexp_desc = Ast_util.uncurry_method_gen loc pat body}
-            | _ -> Location.raise_errorf ~loc "Expect an fun expression here"
-          end
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
           let loc = e.pexp_loc in 
-          begin match Ext_list.exclude_with_fact (function 
-              | {Location.txt = "uncurry"; _}, _ -> true 
-              | _ -> false) e.pexp_attributes with 
-          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
-          | Some _, attrs 
+          begin match Ast_util.process_attributes_rev e.pexp_attributes with 
+          | _, `Nothing 
+            -> Ast_mapper.default_mapper.expr mapper e 
+          |  attrs , `Uncurry
             -> 
             Ast_util.destruct_arrow_as_fn loc pat body mapper e attrs
+          | pexp_attributes, `Meth 
+            -> 
+            Ast_util.destruct_arrow_as_meth_callbak loc pat body mapper e pexp_attributes
           end
         | Pexp_apply
             (fn, args  )

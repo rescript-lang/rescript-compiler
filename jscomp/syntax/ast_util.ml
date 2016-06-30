@@ -69,13 +69,6 @@ let destruct_tuple_exp (exp : Parsetree.expression) : Parsetree.expression list 
   | {pexp_desc = Pexp_tuple args; _} -> args
   | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
   | v -> [v]
-let destruct_tuple_pat (pat : Parsetree.pattern) : Parsetree.pattern list = 
-  match pat with 
-  | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
-    [arg]
-  | {ppat_desc = Ppat_tuple args; _} -> args
-  | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
-  | v -> [v]
 
 
 
@@ -138,18 +131,6 @@ let gen_method_mk loc arity arg  : Parsetree.expression_desc =
   Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
 
 
-let uncurry_method_gen  loc 
-    (pat : Parsetree.pattern)
-    (body : Parsetree.expression) 
-  = 
-  let args = destruct_tuple_pat pat in 
-  let len = List.length args - 1 in 
-  let fun_ = 
-    if len < 0 then 
-      Location.raise_errorf ~loc "method expect at least one argument"
-    else 
-      List.fold_right (Ast_comb.fun_no_label ~loc) args body in
-   gen_method_mk loc len fun_
 
 
 let empty_payload = Parsetree.PStr []
@@ -269,6 +250,32 @@ let destruct_arrow_as_fn loc pat body (mapper : Ast_mapper.mapper)
                  result rev_extra_args );
           pexp_attributes 
          }
+
+let destruct_arrow_as_meth_callbak loc pat body (mapper : Ast_mapper.mapper) 
+    (e : Parsetree.expression) pexp_attributes = 
+  let rec aux acc (body : Parsetree.expression) = 
+    match process_attributes_rev body.pexp_attributes with 
+    | _ , `Nothing -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (label,_, arg, body)
+          -> 
+          if label <> "" then
+            Location.raise_errorf ~loc "label is not allowed";
+          aux (mapper.pat mapper arg :: acc) body 
+        | _ -> mapper.expr mapper body, acc 
+      end 
+    | _, _ -> mapper.expr mapper body, acc  
+  in 
+  let first_arg = mapper.pat mapper pat in  
+  let result, rev_extra_args = aux [first_arg] body in 
+  let len = List.length rev_extra_args - 1 in 
+  {e with pexp_desc = 
+            gen_method_mk loc len 
+              (List.fold_left 
+                 (fun e p -> Ast_comb.fun_no_label ~loc p e) result rev_extra_args );
+          pexp_attributes 
+  }
+
 
 
 let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 
