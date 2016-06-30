@@ -24,8 +24,8 @@ type hh = < bark :( 'self -> int -> int [@meth_callback]) > Js.t as 'self
 
 let ff (x  : h) : hh = x 
 
-let f (u : x Js.t) = 
-  u#.tet (1,2)
+(* let f (u : x Js.t) =  *)
+(*   u#.tet (1,2) *)
 
 
 type 'a return = int -> 'a [@fn]

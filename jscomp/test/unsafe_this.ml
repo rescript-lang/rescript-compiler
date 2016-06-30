@@ -18,7 +18,7 @@ let u : 'self =
       length : int >       )
   ]
 
-let v = u##bark (u,1,2)
+let v = u##bark u 1 2
 
 
 (* let bark2  = fun [@bs.this] (this, x, y) -> Js.log (this##x,x+y)  *)
@@ -88,10 +88,10 @@ let js_obj : 'self =
         length = 32
       }
   ]
-let h = js_obj#.bark(1,2)
+(* let h = js_obj#.bark(1,2) *)
 
 (* let h = run_method2  uuu##bark uuu 1 2 *)
-let hh = js_obj#.(bark (1,2))
+(* let hh = js_obj#.(bark (1,2)) *)
 
 
 (*

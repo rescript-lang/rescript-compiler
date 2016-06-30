@@ -230,53 +230,42 @@ let handle_class_obj_typ
 
 
 
-
-
-
-
-let handle_obj_method loc (obj : Parsetree.expression) 
-    name (value : Parsetree.expression) e 
+let handle_obj_fns loc (obj : Parsetree.expression) 
+    name (args : (string * Parsetree.expression) list ) e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let value = mapper.expr mapper value in 
-  let obj = mapper.expr mapper obj in 
-  let args = Ast_util.destruct_tuple_exp value in 
-  let len = List.length args in 
-  {e with pexp_desc =
-            Ast_util.gen_method_run loc len 
-              (Exp.mk ~loc (Ast_util.down_with_name ~loc obj name )) (obj::args)
-  }
-
-let handle_obj_fn loc (obj : Parsetree.expression) 
-    name (value : Parsetree.expression) e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let obj = mapper.expr mapper obj in 
-  let value = mapper.expr mapper value in 
+  let obj = mapper.expr mapper obj in
+  let args =
+    List.map (fun (label,e) ->
+        if label <> "" then
+          Location.raise_errorf ~loc "label is not allowed here"        ;
+        mapper.expr mapper e
+      ) args in
+  let len = List.length args in
   let method_kind = 
     if name = Literals.case_set then Case_setter
     else if Ext_string.ends_with name Literals.setter_suffix then Setter
     else Normal name in 
-  let len, args = 
-    match method_kind with 
-    | Setter -> 
-      1, [value]
-    | (Case_setter | Normal _) -> 
-      let args = Ast_util.destruct_tuple_exp value in 
-      let arity = List.length args in  
-      if method_kind = Case_setter && arity <> 2 then 
-        Location.raise_errorf ~loc "case_set would expect arity of 2 "
-      else  arity, args 
+  let () = 
+     if method_kind = Setter && len <> 1 then 
+        Location.raise_errorf ~loc "setter expect single argument"
+     else if method_kind = Case_setter && len <> 2 then 
+       Location.raise_errorf ~loc "case_set would expect arity of 2 "
   in
-  {e with pexp_desc = 
-            Ast_util.gen_fn_run loc len 
-              (Exp.mk ~loc @@ Ast_util.down_with_name ~loc obj name)
-              args
-  }
-        (** TODO: 
-            More syntax sanity check for [case_set] 
-            case_set: arity 2
-            _set : arity 1            
-            case:
-        *)
+  match args with 
+  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+    -> 
+    {e with pexp_desc = 
+              Ast_util.gen_fn_run loc 0
+                (Exp.mk ~loc @@ Ast_util.down_with_name ~loc obj name)
+                []
+    }
+  | _ -> 
+    {e with pexp_desc = 
+              Ast_util.gen_fn_run loc len 
+                (Exp.mk ~loc @@ Ast_util.down_with_name ~loc obj name)
+                args
+    }
+
 
 
 (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
@@ -371,22 +360,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | {pexp_desc = 
                  Pexp_apply (
                    {pexp_desc = 
-                      Pexp_ident  {txt = Lident ("##" | "#." as n) ; loc} ; _},
+                      Pexp_ident  {txt = Lident "##"  ; loc} ; _},
                    [("", obj) ;
                     ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
                    ]);
                _
               } -> 
-              begin match args with 
-                | [ "", value] -> 
-                  if n = "##" then 
-                    handle_obj_fn loc obj name value e mapper
-                  else 
-                    handle_obj_method loc obj name value e mapper
-                | _ -> 
-                  Location.raise_errorf ~loc
-                    "Js object %s expect only one argument when it is a method " n 
-              end
+              handle_obj_fns loc obj name args e mapper
             | {pexp_desc = 
                  Pexp_ident  {txt = Lident "##" ; loc} ; _} 
               -> 
@@ -394,10 +374,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 | [("", obj) ;
                    ("", {pexp_desc = Pexp_apply(
                         {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                        ["", value]
+                        args
                       ) })
                   ] -> (* f##(paint (1,2)) *)
-                  handle_obj_fn loc obj name value e mapper
+                  handle_obj_fns loc obj name args e mapper
                 | [("", obj) ;
                    ("", 
                     {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
@@ -406,21 +386,6 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 | _ -> 
                   Location.raise_errorf ~loc
                     "Js object ## expect syntax like obj##(paint (a,b)) "
-              end
-            | {pexp_desc =
-                 Pexp_ident  {txt = Lident "#." ; loc} ; _}
-              -> 
-              begin match args with
-                | [("", obj) ; (* f#.(paint (1,2)) *)
-                   ("", {pexp_desc = Pexp_apply(
-                        {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                        ["", value]
-                      ) })
-                  ] ->
-                  handle_obj_method loc obj name value e mapper
-                | _ ->
-                  Location.raise_errorf ~loc
-                    "Js object #. expect syntax like obj#.(paint (a,b)) "
               end
             | _ -> 
               begin match Ext_list.exclude_with_fact (function 

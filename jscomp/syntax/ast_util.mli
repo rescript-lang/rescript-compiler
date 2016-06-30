@@ -83,8 +83,6 @@ val destruct_arrow_as_meth :
   Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
 
 
-val destruct_tuple_exp : 
-  Parsetree.expression -> Parsetree.expression list
 
 val lift_js_type : 
   loc:Ast_helper.loc -> Parsetree.core_type -> Parsetree.core_type

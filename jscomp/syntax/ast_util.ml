@@ -59,21 +59,6 @@ let down_with_name ~loc obj name =
     ~pval_type:(downgrade ~loc ())
     ~local_fun_name:"cast" 
     (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
-       
-let destruct_tuple_exp (exp : Parsetree.expression) : Parsetree.expression list = 
-  match exp with 
-  | {pexp_desc = 
-       Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]
-    ; _} -> 
-    [arg]
-  | {pexp_desc = Pexp_tuple args; _} -> args
-  | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
-  | v -> [v]
-
-
-
-
-
 
 let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
   let pval_prim = ["js_fn_run" ; string_of_int arity]  in

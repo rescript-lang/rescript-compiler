@@ -201,11 +201,12 @@ let ui_layout
 
     button##text_set "update formula";
     button##minHeight_set 20;
-    button##on ("click", (fun [@uncurry] _event -> (* FIXME both [_] and () should work*)
+    button##on "click" begin fun [@uncurry] _event -> (* FIXME both [_] and () should work*)
       try 
         let hot_function = compile inputCode##text in
         computeFunction := fun env ->  hot_function (fun key -> lookup env key) 
-      with  e -> ()));
+      with  e -> ()
+    end;
     let fmt v = to_fixed v 2 in
     set_interval (fun [@uncurry] () -> 
 

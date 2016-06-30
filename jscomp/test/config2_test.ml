@@ -30,7 +30,7 @@ let hh2 ( x : vv) : vv2 = x
 
 
 let test_v (x : v Js.t) = 
-  x##hey(1,2)
+  x##hey 1 2
 
 let test_vv (h : vv) =
-  h##hey(1,2)
+  h##hey 1 2

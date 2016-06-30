@@ -8,7 +8,7 @@ let f (x : [%bs.obj: < case : int ->  'a ;
             case_set : int ->  int -> unit ;
             .. > [@uncurry] ] )
  = 
-  x ## case_set (3, 2) ;
+  x ## case_set 3 2 ;
   x ## case 3 
 
 class type ['a] case = object [@uncurry]
@@ -18,7 +18,7 @@ end
 
 let ff (x : int case  Js.t)
  = 
-  x##case_set (3, 2) ;
+  x##case_set 3 2 ;
   x##case 3 
 
 
@@ -38,7 +38,7 @@ type x_obj =
 let f_ext 
     (x : x_obj)
  = 
-  x ## case_set (3, 2) ;
+  x ## case_set 3 2 ;
   x ## case 3 
 
 
