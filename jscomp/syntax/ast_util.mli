@@ -29,6 +29,13 @@ val gen_fn_run :
   Parsetree.expression ->
   Parsetree.expression list -> Parsetree.expression_desc
 
+val fn_run : 
+  Ast_helper.loc ->
+  Parsetree.expression ->
+  (string * Parsetree.expression) list ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
+
 val gen_method_run : 
   Ast_helper.loc ->
   int ->

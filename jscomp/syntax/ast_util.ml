@@ -90,6 +90,28 @@ let gen_fn_run loc arity fn args  : Parsetree.expression_desc =
   Ast_comb.create_local_external loc ~pval_prim ~pval_type 
     (("", fn) :: List.map (fun x -> "",x) args )
 
+
+let fn_run loc fn args 
+    (mapper : Ast_mapper.mapper) 
+    (e : Parsetree.expression) pexp_attributes = 
+  let fn = mapper.expr mapper fn in 
+  let args = 
+    List.map 
+      (fun (label, e) -> 
+         if label <> "" then 
+           Location.raise_errorf ~loc "label is not allowed here";
+         mapper.expr mapper e
+      ) args in 
+  let len = List.length args in 
+  match args with 
+  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+    -> {e with pexp_desc = gen_fn_run loc 0 fn []}
+  | _ -> 
+    {e with
+     pexp_desc = gen_fn_run loc len fn args; 
+     pexp_attributes 
+    }
+
 (** The first argument is object itself which is only 
     for typing checking*)
 let gen_method_run loc arity fn args : Parsetree.expression_desc = 

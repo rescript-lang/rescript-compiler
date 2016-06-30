@@ -26,9 +26,10 @@ let sum_int_array (arr : intArray Js.t) =
   done;
   !v 
 
+(* TODO: warning about unprocessed attributes *)
 let sum_poly zero add (arr : _ arrayLike Js.t) = 
   let v = ref zero in 
   for i = 0 to arr##length - 1 do 
-    v := add  (!v,  (arr##case_unsafe i )) [@uncurry]
+    v := add  !v  (arr##case_unsafe i ) [@uncurry] 
   done;
   !v 

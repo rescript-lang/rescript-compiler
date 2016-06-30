@@ -388,7 +388,7 @@ let to_hex x =
     if pad <= 0 then             
       aux x.hi ^ lo
     else
-      aux x.hi ^ Caml_utils.repeat(pad, "0") [@uncurry] ^ lo 
+      aux x.hi ^ Caml_utils.repeat pad "0" [@uncurry] ^ lo 
 
 let discard_sign x = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi }  
 
