@@ -109,18 +109,24 @@ let tuple_type_pair ?loc kind arity =
   if arity = 0 then 
     let ty = Typ.var ?loc ( prefix ^ "0") in 
     match kind with 
-    | `Run -> ty, ty 
+    | `Run -> ty,  [ty] 
     | `Make -> 
       (Typ.arrow "" ?loc
          (Ast_literal.type_unit ?loc ())
          ty ,
-       ty)
+       [ty])
   else
-    let tys = Ext_list.init (arity + 1) (fun i -> 
-        Typ.var ?loc (prefix ^ string_of_int i)
+    let number = arity + 1 in
+    let tys = Ext_list.init number (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
       )  in
-    (Ext_list.reduce_from_right (fun x y -> Typ.arrow "" ?loc x y) tys,
-     Typ.tuple ?loc  tys)
+    (Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys,
+     match tys with 
+     | [result ; arg] -> [arg ; result]
+     | result :: rest -> 
+       [Typ.tuple ?loc  (List.rev rest) ; result]
+     | [] -> assert false
+    )
     
 
 

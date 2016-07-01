@@ -1,6 +1,6 @@
 
 
-open Js.Unsafe
+open Js_unsafe
 
 let f x = 
   !x # height + !x # width 

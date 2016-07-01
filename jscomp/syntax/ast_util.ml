@@ -28,11 +28,15 @@ let js_obj_type_id () =
     Ast_literal.Lid.pervasives_js_obj
   else Ast_literal.Lid.js_obj 
     
-let curry_type_id () = 
+let curry_type_id empty = 
   if Js_config.get_env () = Browser then 
-    Ast_literal.Lid.pervasives_uncurry
+    if empty then 
+      Ast_literal.Lid.pervasives_uncurry0
+    else Ast_literal.Lid.pervasives_uncurry
   else 
-    Ast_literal.Lid.js_fn 
+  if empty then 
+    Ast_literal.Lid.js_fn0
+  else Ast_literal.Lid.js_fn
 
 let meth_type_id () = 
   if Js_config.get_env () = Browser then 
@@ -43,7 +47,10 @@ let meth_type_id () =
 open Ast_helper 
 let arrow = Ast_helper.Typ.arrow
 let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
-let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
+
+let lift_curry_type  ~loc x  = 
+  let empty = match x with [_] -> true | _ -> false in 
+  Typ.constr ~loc {txt = curry_type_id empty; loc} x
 
 let lift_js_meth_callback ~loc (obj,meth) 
   = Typ.constr ~loc {txt = meth_type_id () ; loc} [obj; meth]
@@ -202,11 +209,13 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
     aux  [first_arg] typ in 
   match rev_extra_args with 
   | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-    -> lift_curry_type ~loc result 
+    -> lift_curry_type ~loc [result ]
+  | [ single ] -> 
+    lift_curry_type ~loc [ single ; result ]
   | _ -> 
     lift_curry_type ~loc 
-      (Typ.tuple ~loc  (List.rev_append rev_extra_args [result]))
-
+      [ Typ.tuple ~loc (List.rev rev_extra_args) ; result]
+  
 let destruct_arrow_as_meth loc (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
   let rec aux acc (typ : Parsetree.core_type) = 

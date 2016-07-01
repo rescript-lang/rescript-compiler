@@ -94,6 +94,9 @@ val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list
 
 val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
 
+(** [fn] is applied from left to right *)
+val reduce_from_left : ('a -> 'a -> 'a) -> 'a list -> 'a
+
 
 type 'a t = 'a list ref
 

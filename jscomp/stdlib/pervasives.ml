@@ -516,8 +516,9 @@ type (-'obj, +'a) meth_callback
 (** Mark uncurried function, please use {!Js.fn} instead *)
 
 
+type + 'a uncurry0
 
-type + 'a uncurry 
+type (+ 'arg, + 'result) uncurry 
 (** = (< > js_obj, 'a) meth_callback, 
     instead of relying on type system to do the checking 
     we provide a function to do this, the reason is that 

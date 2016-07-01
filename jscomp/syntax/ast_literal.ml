@@ -32,10 +32,15 @@ module Lid = struct
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
+
+  let js_fn0 = Longident.Ldot (Lident "Js", "fn0")
+  let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let pervasives_uncurry0 = Longident.Ldot (Lident "Pervasives", "uncurry0")
   let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
+
   let pervasives_meth_callback = Longident.Ldot (Lident "Pervasives", "meth_callback")
   let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let js_fn = Longident.Ldot (Lident "Js", "fn")
+
   let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
   let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
 end
