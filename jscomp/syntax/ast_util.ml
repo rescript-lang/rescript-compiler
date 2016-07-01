@@ -22,35 +22,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+open Ast_helper 
 
 let js_obj_type_id () = 
   if Js_config.get_env () = Browser then
     Ast_literal.Lid.pervasives_js_obj
   else Ast_literal.Lid.js_obj 
     
-let curry_type_id empty = 
+let curry_type_id () = 
   if Js_config.get_env () = Browser then 
-    if empty then 
-      Ast_literal.Lid.pervasives_uncurry0
-    else Ast_literal.Lid.pervasives_uncurry
+     Ast_literal.Lid.pervasives_uncurry
   else 
-  if empty then 
-    Ast_literal.Lid.js_fn0
-  else Ast_literal.Lid.js_fn
+    Ast_literal.Lid.js_fn
 
+let mk_args0 ~loc = 
+  Typ.variant ~loc [ Rtag ("Args_0" , [], true,  [])] Closed None
+
+let lift_curry_type  ~loc args result  = 
+  let xs =
+    match args with 
+    | [ ] -> [mk_args0 ~loc ; result ]
+    | [ x ] -> [ x ; result ] 
+    | _ -> [Typ.tuple ~loc args ; result ]
+  in 
+  Typ.constr ~loc {txt = curry_type_id (); loc} xs
+
+let lift_js_type ~loc  x  = 
+  Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 let meth_type_id () = 
   if Js_config.get_env () = Browser then 
     Ast_literal.Lid.pervasives_meth_callback
   else 
     Ast_literal.Lid.js_meth_callback
 
-open Ast_helper 
-let arrow = Ast_helper.Typ.arrow
-let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 
-let lift_curry_type  ~loc x  = 
-  let empty = match x with [_] -> true | _ -> false in 
-  Typ.constr ~loc {txt = curry_type_id empty; loc} x
+let arrow = Typ.arrow
+
+
 
 let lift_js_meth_callback ~loc (obj,meth) 
   = Typ.constr ~loc {txt = meth_type_id () ; loc} [obj; meth]
@@ -69,9 +77,9 @@ let down_with_name ~loc obj name =
 
 let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
   let pval_prim = ["js_fn_run" ; string_of_int arity]  in
-  let fn_type, tuple_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
+  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
   let pval_type =
-    arrow ~loc "" (lift_curry_type ~loc tuple_type) fn_type in 
+    arrow ~loc "" (lift_curry_type ~loc args_type result_type) fn_type in 
   Ast_comb.create_local_external loc ~pval_prim ~pval_type 
     (("", fn) :: List.map (fun x -> "",x) args )
 
@@ -137,8 +145,8 @@ let method_run loc (obj : Parsetree.expression)
 
 let gen_fn_mk loc arity arg  : Parsetree.expression_desc = 
   let pval_prim = [ "js_fn_mk"; string_of_int arity]  in
-  let fn_type , tuple_type = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-  let pval_type = arrow ~loc "" fn_type (lift_curry_type ~loc tuple_type)in
+  let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
+  let pval_type = arrow ~loc "" fn_type (lift_curry_type ~loc args_type result_type) in
   Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
 
 let gen_method_mk loc arity arg  : Parsetree.expression_desc = 
@@ -207,14 +215,15 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
   let first_arg = mapper.typ mapper first_arg in
   let result, rev_extra_args = 
     aux  [first_arg] typ in 
+
   match rev_extra_args with 
   | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-    -> lift_curry_type ~loc [result ]
-  | [ single ] -> 
-    lift_curry_type ~loc [ single ; result ]
-  | _ -> 
-    lift_curry_type ~loc 
-      [ Typ.tuple ~loc (List.rev rev_extra_args) ; result]
+    ->
+    lift_curry_type ~loc [] result 
+  | _
+    -> 
+    lift_curry_type ~loc (List.rev rev_extra_args) result 
+
   
 let destruct_arrow_as_meth loc (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
