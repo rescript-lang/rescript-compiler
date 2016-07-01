@@ -1,8 +1,10 @@
 
 
-(* val js_obj : *)
-(*   [%bs.obj: < *)
-(*          bark : [%meth: 'a, int * int -> int ]; *)
-(*          length : int; x : int; y : int  *)
-(*        > *)
-(*   ] as 'a *)
+val js_obj :
+  [%bs.obj: <
+         bark :  ('a ->  int ->  int -> int [@meth_callback]) ;
+         length : int; 
+         x : int;
+         y : int
+       >
+       as 'a ]

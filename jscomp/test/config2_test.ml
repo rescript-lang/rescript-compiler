@@ -5,22 +5,22 @@
 
 
 
-class type v = object [@uncurry]
-  method hey : int * int -> int 
+class type v = object [@fn]
+  method hey : int -> int -> int 
 end 
 
 class type v2 = object
-  method hey : int * int -> int 
+  method hey : int ->  int -> int 
 end 
 
 type vv = 
   [%bs.obj: < 
-    hey : int * int -> int 
-  >  [@uncurry] ]
+    hey : int -> int -> int 
+  >  [@fn] ]
 
 type vv2 = 
   [%bs.obj: < 
-    hey : int * int -> int 
+    hey : int ->  int -> int 
   > ] 
 
 
@@ -30,7 +30,7 @@ let hh2 ( x : vv) : vv2 = x
 
 
 let test_v (x : v Js.t) = 
-  x##hey(1,2)
+  x##hey 1 2
 
 let test_vv (h : vv) =
-  h##hey(1,2)
+  h##hey 1 2

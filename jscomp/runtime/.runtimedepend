@@ -80,6 +80,8 @@ js.cmj :
 js.cmx :
 js_primitive.cmj : js.cmj js_primitive.cmi
 js_primitive.cmx : js.cmx js_primitive.cmi
+js_unsafe.cmj : js.cmj
+js_unsafe.cmx : js.cmx
 typed_array.cmj :
 typed_array.cmx :
 block.cmo : block.cmi
@@ -140,5 +142,7 @@ js.cmo :
 js.cmj :
 js_primitive.cmo : js.cmo js_primitive.cmi
 js_primitive.cmj : js.cmj js_primitive.cmi
+js_unsafe.cmo : js.cmo
+js_unsafe.cmj : js.cmj
 typed_array.cmo :
 typed_array.cmj :

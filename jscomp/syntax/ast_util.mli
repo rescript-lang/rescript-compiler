@@ -23,58 +23,66 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val gen_fn_run : 
-  Ast_helper.loc ->
-  int ->
-  Parsetree.expression ->
-  Parsetree.expression list -> Parsetree.expression_desc
 
-val gen_method_run : 
+val fn_run : 
   Ast_helper.loc ->
-  int ->
   Parsetree.expression ->
-  Parsetree.expression list -> Parsetree.expression_desc
+  (string * Parsetree.expression) list ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
 
-(** turn {[ fun [@uncurry] (x,y) -> x]} into an uncurried function 
+val method_run : 
+  Ast_helper.loc ->
+  Parsetree.expression ->
+  string ->
+  (string * Parsetree.expression) list ->
+  Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
+
+val process_attributes_rev : 
+  Parsetree.attributes ->
+  Parsetree.attributes * [ `Meth | `Nothing | `Uncurry ]
+
+(** turn {[ fun [@fn] (x,y) -> x]} into an uncurried function 
     TODO: Future 
     {[ fun%bs this (a,b,c) -> 
     ]}
 
     [function] can only take one argument, that is the reason we did not adopt it
 *)
-val uncurry_fn_gen :
+val destruct_arrow_as_fn : 
   Ast_helper.loc ->
   Parsetree.pattern ->
-  Parsetree.expression -> Parsetree.expression_desc
+  Parsetree.expression ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
 
-val uncurry_method_gen : 
+val destruct_arrow_as_meth_callbak : 
   Ast_helper.loc ->
-  Parsetree.pattern -> 
-  Parsetree.expression -> Parsetree.expression_desc
+  Parsetree.pattern ->
+  Parsetree.expression ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
 
-
-
-val uncurry_fn_type : 
+val destruct_arrow : 
   Ast_helper.loc ->
-  'a ->
-  Ast_helper.attrs ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
 
-val destruct_tuple_typ : 
-  Parsetree.core_type -> Parsetree.core_type list
+val destruct_arrow_as_meth : 
+  Ast_helper.loc ->
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
 
-val destruct_tuple_pat : 
-  Parsetree.pattern -> Parsetree.pattern list
+val bs_object_attribute : Parsetree.attribute
+val bs_uncurry_attribute :  Parsetree.attribute
+val bs_meth_attribute : Parsetree.attribute 
 
-val destruct_tuple_exp : 
-  Parsetree.expression -> Parsetree.expression list
+
+
 
 val lift_js_type : 
   loc:Ast_helper.loc -> Parsetree.core_type -> Parsetree.core_type
 
-val find_uncurry_attrs_and_remove : 
-  Parsetree.attributes ->
-  Parsetree.attribute option * Parsetree.attribute list
 
 val from_labels : loc:Ast_helper.loc -> Asttypes.label list -> Parsetree.core_type
 

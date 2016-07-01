@@ -495,10 +495,29 @@ let _ = register_named_value "Pervasives.do_at_exit" do_at_exit
 (** Mark Js object, please use {!Js.t} instead *)
 type + 'a js_obj 
 
-type (-'obj, +'a) meth
+
+
+(* (\** only used by method declaration,  *)
+(*     the only way to consume it is  *)
+(*     by a method call *)
+(*     {[ x##name param0 param1 ]} *)
+(*  *\) *)
+(* type + 'result meth0  *)
+(* type (-'arg, + 'result) meth  *)
+
+
+(* type (- 'obj, -'arg, + 'result ) meth_callback *)
+(* type (- 'obj, + 'result) meth_callback0 *)
+
+
+type (-'obj, +'a) meth_callback
 (** Mark uncurried function, please use {!Js.fn} instead *)
-type + 'a uncurry 
-(** = (< > js_obj, 'a) meth, 
+
+
+
+
+type (-'arg, + 'result) fn
+(** = (< > js_obj, 'a) meth_callback, 
     instead of relying on type system to do the checking 
     we provide a function to do this, the reason is that 
     OCaml's type system requires user to explicitly write 

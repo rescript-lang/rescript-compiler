@@ -305,6 +305,11 @@ let reduce_from_right fn lst =
       List.fold_left  (fun x y -> fn y x) last rest 
     | _ -> invalid_arg "Ext_list.reduce" 
   end
+let reduce_from_left fn lst = 
+  match lst with 
+  | first :: rest ->  List.fold_left fn first rest 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
+
 
 type 'a t = 'a list ref
 

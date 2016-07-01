@@ -28,36 +28,37 @@ let f x =
   !x # hey 3  + !x # v
 
 let () = 
-  on p `exit (Js.Unsafe.mk0 (fun _ -> prerr_endline "hello world"));
-  on_hi p `xx (Js.Unsafe.mk1 (fun _ -> prerr_endline "hello world"))
+  on p `exit (Js_unsafe.mk0 (fun _ -> prerr_endline "hello world"));
+  on_hi p `xx (Js_unsafe.mk1 (fun _ -> prerr_endline "hello world"))
 
 *)
 
-let h0 x = Js.Unsafe.run0 x 
+let h0 x = Js_unsafe.run0 x 
 (* {[
      function h0 (x){
          return x ()
        }
    ]}
 *)
-let h00 x = Js.Unsafe.run0 x ()
+let h00 x = Js_unsafe.run0 x ()
 
-let h1 x = Js.Unsafe.run1 x 
-let h10 x = Js.Unsafe.run1 x 3  
+let h1 x = Js_unsafe.run1 x 
+let h10 x = Js_unsafe.run1 x 3  
 
-let h30 x = Js.Unsafe.run3 x 3 3   
-let h33 x = Js.Unsafe.run3 x 1 2 3
-let h34 x = Js.Unsafe.run3 x 1 2 3 4
+let h30 x = Js_unsafe.run3 x 3 3   
+let h33 x = Js_unsafe.run3 x 1 2 3
+let h34 x = Js_unsafe.run3 x 1 2 3 4
 
 
-let ocaml_run = Js.Unsafe.run3 (Js.Unsafe.mk3 (fun x y z -> x + y + z)) 1 
+let ocaml_run = Js_unsafe.run3 (Js_unsafe.mk3 (fun x y z -> x + y + z)) 1 
 
-let a0 = Js.Unsafe.mk0 (fun  _ -> Js.log "hi")
-let a1 = Js.Unsafe.mk1 (fun x -> x )
-let a2 = Js.Unsafe.mk2 (fun x y -> x + y)
-let a3 = Js.Unsafe.mk3 (fun x y z -> x + y + z )
-let a4 = Js.Unsafe.mk4 (fun x y z -> let u = x * x + y * y + z * z in fun d -> u + d)
+let a0 = Js_unsafe.mk0 (fun  _ -> Js.log "hi")
+let a1 () = Js_unsafe.mk1 (fun x -> x )
+let a2 = Js_unsafe.mk2 (fun x y -> x + y)
+let a3 = Js_unsafe.mk3 (fun x y z -> x + y + z )
+let a4 = Js_unsafe.mk4 (fun x y z -> let u = x * x + y * y + z * z in fun d -> u + d)
 
-let a44 = Js.Unsafe.mk4 (fun x y z d -> let u = x * x + y * y + z * z in  u + d)
+let a44 = Js_unsafe.mk4 (fun x y z d -> let u = x * x + y * y + z * z in  u + d)
 
-let b44 = Js.Unsafe.mk4 (fun x y z d -> (x,y,z,d))
+let b44 () = Js_unsafe.mk4 (fun x y z d -> (x,y,z,d))
+(* polymoprhic restriction *)

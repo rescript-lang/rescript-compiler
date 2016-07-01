@@ -8,7 +8,7 @@ OTHERS= caml_array caml_string \
 	caml_float caml_lexer caml_parser caml_primitive\
 	caml_format caml_md5 caml_queue caml_hash caml_weak\
 	caml_backtrace caml_int32 caml_gc typed_array \
-	js_primitive caml_basic caml_oo curry caml_module
+	js_primitive caml_basic caml_oo curry caml_module js_unsafe 
 
 SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js 
 

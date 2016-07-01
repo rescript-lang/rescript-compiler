@@ -27,9 +27,9 @@
   what is the behavior for 
   {[
     { case : 
-        (fun [@uncurry] i -> 3);
+        (fun [@fn] i -> 3);
       case_set: 
-        (fun [@uncurry] (i,v) -> ..)
+        (fun [@fn] (i,v) -> ..)
     }
   ]}
 *)

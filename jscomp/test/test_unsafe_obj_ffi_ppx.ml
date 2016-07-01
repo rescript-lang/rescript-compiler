@@ -21,7 +21,7 @@ let chain x =
 
 let g x  = 
   let () = x ## method1 3  in 
-  x ## method2 (3,  3 )
+  x ## method2 3  3 
 
 
 

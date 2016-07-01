@@ -56,17 +56,11 @@
 
 open Ast_helper
 
-type method_kind = 
-  | Case_setter
-  | Setter
-  | Normal of string 
 
 
 
 let record_as_js_object = ref None (* otherwise has an attribute *)
 
-let as_js_object_attribute  : Parsetree.attribute
-  = {txt = "bs.obj" ; loc = Location.none}, PStr []
 
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
@@ -124,67 +118,77 @@ let handle_typ
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
    } ->
-    let args = self.typ self args in
-    let body = self.typ self body in
-    begin match  Ast_util.find_uncurry_attrs_and_remove ptyp_attributes with 
-      | Some _, ptyp_attributes ->
-        Ast_util.uncurry_fn_type loc ty ptyp_attributes args body 
-      | None, _ -> 
+    begin match  Ast_util.process_attributes_rev ptyp_attributes with 
+      | ptyp_attributes, `Uncurry ->
+        Ast_util.destruct_arrow loc args body self 
+      | ptyp_attributes, `Meth -> 
+        Ast_util.destruct_arrow_as_meth loc args body self         
+      | _, `Nothing -> 
         if !uncurry_type then 
-          Ast_util.uncurry_fn_type loc ty ptyp_attributes args body 
-        else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
+          Ast_util.destruct_arrow loc args body self 
+        else 
+          Ast_mapper.default_mapper.typ self ty
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
     ptyp_attributes ;
     ptyp_loc = loc 
     } -> 
-    let inner_type =
+
+    let check_auto_uncurry core_type = 
+      if  !obj_type_auto_uncurry then
+        Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+      else self.typ self core_type in 
+    let methods, ptyp_attributes  =
       begin match Ext_list.exclude_with_fact
                     (function 
-                      | {Location.txt = "uncurry"; _}, _ -> true
+                      | {Location.txt = "fn"; _}, _ -> true
                       | _ -> false)
                     ptyp_attributes with 
-      |   None, _  ->
-        let check_auto_uncurry core_type = 
-          if  !obj_type_auto_uncurry then
-            Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
-          else self.typ self core_type in 
-
-        let methods = 
+      | None, _  ->
+        List.map (fun (label, ptyp_attrs, core_type ) -> 
+            match Ast_util.process_attributes_rev ptyp_attrs with 
+            | _, `Nothing -> 
+              label, ptyp_attrs , check_auto_uncurry  core_type
+            | ptyp_attrs, `Uncurry  -> 
+              label , ptyp_attrs, 
+              check_auto_uncurry
+                { core_type with 
+                  ptyp_attributes = 
+                    Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+            | ptyp_attrs, `Meth 
+              ->  
+              label , ptyp_attrs, 
+              check_auto_uncurry
+                { core_type with 
+                  ptyp_attributes = 
+                    Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
+          ) methods , ptyp_attributes
+      |  Some _ ,  ptyp_attributes -> 
+        Ext_ref.protect uncurry_type true begin fun _ -> 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
-              match Ast_util.find_uncurry_attrs_and_remove ptyp_attrs with 
-              | None, _ -> 
-                label, ptyp_attrs , check_auto_uncurry  core_type
-              | Some v, ptyp_attrs -> 
-                label , ptyp_attrs, 
-                check_auto_uncurry
-                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+              match Ast_util.process_attributes_rev ptyp_attrs with 
+              |  _, `Nothing -> label, ptyp_attrs , self.typ self core_type
+              | ptyp_attrs, `Uncurry -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+              | ptyp_attrs, `Meth -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
             ) methods 
-        in   
-        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                  ptyp_attributes } 
-
-      |  fact2,  ptyp_attributes -> 
-
-        let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
-        let methods = 
-          Ext_ref.protect uncurry_type uncurry_type_cxt begin fun _ -> 
-            List.map (fun (label, ptyp_attrs, core_type ) -> 
-                match Ast_util.find_uncurry_attrs_and_remove ptyp_attrs with 
-                | None, _ -> label, ptyp_attrs , self.typ self core_type
-                | Some v, ptyp_attrs -> 
-                  label , ptyp_attrs, self.typ self 
-                    { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-              ) methods 
-          end
-        in           
-        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                  ptyp_attributes } 
+        end, ptyp_attributes 
       end
     in          
+    let inner_type =
+      { ty
+        with ptyp_desc = Ptyp_object(methods, closed_flag);
+             ptyp_attributes } in 
     if !obj_type_as_js_obj_type then 
-      Ast_util.lift_js_type ~loc  inner_type
+      Ast_util.lift_js_type ~loc inner_type          
     else inner_type
   | _ -> super.typ self ty
 
@@ -194,15 +198,15 @@ let handle_class_obj_typ
     (ty : Parsetree.class_type) = 
   match ty with
   | {pcty_attributes ;
-     pcty_desc ; (* we won't have [ class type v = u -> object[@uncurry] ]*)
+     pcty_desc ; (* we won't have [ class type v = u -> object[@fn] ]*)
      pcty_loc = loc
    } ->
-    begin match  Ast_util.find_uncurry_attrs_and_remove pcty_attributes with 
-    | Some _, pcty_attributes' ->
+    begin match  Ast_util.process_attributes_rev pcty_attributes with 
+    |  pcty_attributes', `Uncurry ->
       Ext_ref.protect uncurry_type true begin fun () -> 
         self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
       end
-    | None, _ -> 
+    |  _, (`Meth | `Nothing) -> 
       if !obj_type_auto_uncurry then 
         Ext_ref.protect uncurry_type true begin fun () -> 
           super.class_type self ty
@@ -214,102 +218,17 @@ let handle_class_obj_typ
 
 
 
-
-
-
-let handle_obj_method loc (obj : Parsetree.expression) 
-    name (value : Parsetree.expression) e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let value = mapper.expr mapper value in 
-  let obj = mapper.expr mapper obj in 
-  let args = Ast_util.destruct_tuple_exp value in 
-  let len = List.length args in 
-  {e with pexp_desc =
-            Ast_util.gen_method_run loc len 
-              (Exp.mk ~loc (Ast_util.down_with_name ~loc obj name )) (obj::args)
-  }
-
-let handle_obj_fn loc (obj : Parsetree.expression) 
-    name (value : Parsetree.expression) e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let obj = mapper.expr mapper obj in 
-  let value = mapper.expr mapper value in 
-  let method_kind = 
-    if name = Literals.case_set then Case_setter
-    else if Ext_string.ends_with name Literals.setter_suffix then Setter
-    else Normal name in 
-  let len, args = 
-    match method_kind with 
-    | Setter -> 
-      1, [value]
-    | (Case_setter | Normal _) -> 
-      let args = Ast_util.destruct_tuple_exp value in 
-      let arity = List.length args in  
-      if method_kind = Case_setter && arity <> 2 then 
-        Location.raise_errorf "case_set would expect arity of 2 "
-      else  arity, args 
-  in
-  {e with pexp_desc = 
-            Ast_util.gen_fn_run loc len 
-              (Exp.mk ~loc @@ Ast_util.down_with_name ~loc obj name)
-              args
-  }
-        (** TODO: 
-            More syntax sanity check for [case_set] 
-            case_set: arity 2
-            _set : arity 1            
-            case:
-        *)
-
-
-(* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
 let handle_obj_property loc obj name e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
   let obj = mapper.expr mapper obj in 
-  { e with pexp_desc = Ast_util.down_with_name ~loc obj name
-
-  }
+  { e with pexp_desc = Ast_util.down_with_name ~loc obj name  }
 
 
-
-
-
-(** object 
-    for setter : we can push more into [Lsend] and enclose it with a unit type
-
-    for getter :
-
-    (* Invariant: we expect the typechecker & lambda emitter  
-       will not do agressive inlining
-       Worst things could happen
-    {[
-      let x = y## case 3  in 
-      x 2
-    ]}
-       in normal case, it should be compiled into Lambda
-    {[
-      let x = Lsend(y,case, [3]) in 
-      Lapp(x,2)
-    ]}
-
-       worst:
-    {[ Lsend(y, case, [3,2])
-    ]}               
-       for setter(include case setter), this could 
-       be prevented by type system, for getter.
-
-       solution: we can prevent this by rewrite into 
-    {[
-      Fn.run1  (!x# case) v 
-      ]}
-       *)
-
-      *)
 
 
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
-    expr = (fun mapper e -> 
+    expr = (fun mapper ({ pexp_loc = loc } as e) -> 
         match e.pexp_desc with 
         (** Its output should not be rewritten anymore *)        
         | Pexp_extension (
@@ -325,70 +244,34 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
               Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
-                (Some as_js_object_attribute ) true
+                (Some Ast_util.bs_object_attribute ) true
                 (fun ()-> mapper.expr mapper e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
-        | Pexp_extension ({txt = "meth"; loc}, payload) 
-          -> 
-          begin match payload with 
-            | PStr [{pstr_desc = 
-                       Pstr_eval ({pexp_desc = Pexp_fun("", None, pat, body)} as e, _)
-                    }]
-              -> 
-              let pat = mapper.pat mapper pat in 
-              let body = mapper.expr mapper body in 
-              {e with pexp_desc = Ast_util.uncurry_method_gen loc pat body}
-            | _ -> Location.raise_errorf ~loc "Expect an fun expression here"
-          end
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
-          let loc = e.pexp_loc in 
-          begin match Ext_list.exclude_with_fact (function 
-              | {Location.txt = "uncurry"; _}, _ -> true 
-              | _ -> false) e.pexp_attributes with 
-          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
-          | Some _, attrs 
+          begin match Ast_util.process_attributes_rev e.pexp_attributes with 
+          | _, `Nothing 
+            -> Ast_mapper.default_mapper.expr mapper e 
+          |  attrs , `Uncurry
             -> 
-            match body.pexp_desc with 
-            | Pexp_fun _ -> 
-              Location.raise_errorf ~loc 
-                {| `fun [@uncurry] (param0, param1) -> `
-                   instead of `fun [@uncurry] param0 param1 ->` |}
-            | _ -> 
-              let pat = mapper.pat mapper pat in 
-              let body = mapper.expr mapper body in 
-              {e with pexp_desc =  Ast_util.uncurry_fn_gen loc pat body ;
-                      pexp_attributes = attrs }
+            Ast_util.destruct_arrow_as_fn loc pat body mapper e attrs
+          | pexp_attributes, `Meth 
+            -> 
+            Ast_util.destruct_arrow_as_meth_callbak loc pat body mapper e pexp_attributes
           end
-        | Pexp_apply
-            (fn, args  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one 
-                 f ## xx (a,b)
-                 f #.(xx (a,b))
-             *)
-          let loc = e.pexp_loc in 
+        | Pexp_apply (fn, args  ) ->
           begin match fn with 
             | {pexp_desc = 
                  Pexp_apply (
                    {pexp_desc = 
-                      Pexp_ident  {txt = Lident ("##" | "#." as n) ; loc} ; _},
+                      Pexp_ident  {txt = Lident "##"  ; loc} ; _},
                    [("", obj) ;
                     ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
                    ]);
-               _
-              } -> 
-              begin match args with 
-                | [ "", value] -> 
-                  if n = "##" then 
-                    handle_obj_fn loc obj name value e mapper
-                  else 
-                    handle_obj_method loc obj name value e mapper
-                | _ -> 
-                  Location.raise_errorf ~loc
-                    "Js object %s expect only one argument when it is a method " n 
-              end
+               _} ->  (* f##paint 1 2 *)
+              Ast_util.method_run loc obj name args e mapper
             | {pexp_desc = 
                  Pexp_ident  {txt = Lident "##" ; loc} ; _} 
               -> 
@@ -396,10 +279,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 | [("", obj) ;
                    ("", {pexp_desc = Pexp_apply(
                         {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                        ["", value]
+                        args
                       ) })
-                  ] -> (* f##(paint (1,2)) *)
-                  handle_obj_fn loc obj name value e mapper
+                  ] -> (* f##(paint 1 2 ) *)
+                  Ast_util.method_run loc obj name args e mapper
                 | [("", obj) ;
                    ("", 
                     {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
@@ -409,41 +292,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                   Location.raise_errorf ~loc
                     "Js object ## expect syntax like obj##(paint (a,b)) "
               end
-            | {pexp_desc =
-                 Pexp_ident  {txt = Lident "#." ; loc} ; _}
-              -> 
-              begin match args with
-                | [("", obj) ; (* f#.(paint (1,2)) *)
-                   ("", {pexp_desc = Pexp_apply(
-                        {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                        ["", value]
-                      ) })
-                  ] ->
-                  handle_obj_method loc obj name value e mapper
-                | _ ->
-                  Location.raise_errorf ~loc
-                    "Js object #. expect syntax like obj#.(paint (a,b)) "
-              end
             | _ -> 
-              begin match args with 
-                | [("", exp)] -> 
-             
-                  begin match Ext_list.exclude_with_fact (function 
-                      | {Location.txt = "uncurry"; _}, _ -> true 
-                      | _ -> false) e.pexp_attributes with 
-                  | None, _ -> Ast_mapper.default_mapper.expr mapper e 
-                  | Some _, attrs -> 
-                    let exp = mapper.expr mapper exp in 
-                    let fn = mapper.expr mapper fn in 
-                    let args = Ast_util.destruct_tuple_exp exp in
-                    let len = List.length args in 
-                    { e with 
-                      pexp_desc = Ast_util.gen_fn_run loc len fn args;
-                      pexp_attributes = attrs 
-                    } 
-                  end
-                | _ -> 
-                  Ast_mapper.default_mapper.expr mapper e
+              begin match Ext_list.exclude_with_fact (function 
+                  | {Location.txt = "fn"; _}, _ -> true 
+                  | _ -> false) e.pexp_attributes with 
+              | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+              | Some _, attrs -> 
+                Ast_util.fn_run loc fn args mapper e attrs 
               end
           end
         | Pexp_record (label_exprs, None)  -> 

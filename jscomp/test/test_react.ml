@@ -5,14 +5,14 @@ type html_element
 
 class type document = 
   object
-    method getElementById : string -> html_element [@uncurry]
+    method getElementById : string -> html_element [@fn]
   end
 
 type doc = document Js.t 
 external doc :  doc  = "doc" [@@bs.val ]
 
 class type con = 
-    object [@uncurry]
+    object [@fn]
         method log : 'a -> unit 
     end
 

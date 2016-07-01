@@ -8,7 +8,7 @@ let eq loc x y =
 
 let f x i file v = 
   x##case i ;
-  x##case_set (i,v);
+  x##case_set i v;
   x##_open file;
   x##open_ file ;
   x##_MAX_LENGTH_

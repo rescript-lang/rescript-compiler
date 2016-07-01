@@ -5,13 +5,14 @@ let eq loc x y =
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
-let u = (fun [@uncurry] ( a , b  ) -> a + b ) ( 1 , 2 ) [@uncurry]
 
-let nullary = fun [@uncurry] () -> 3 
+let u = (fun [@fn] a  b -> a + b )  1  2  [@fn]
 
-let unary = fun [@uncurry] a -> a + 3 
+let nullary = fun [@fn] () -> 3 
 
-let xx = unary  3 [@uncurry]
+let unary = fun [@fn] a -> a + 3 
+
+let xx = unary  3 [@fn]
 let () = 
   eq __LOC__ u 3 
 

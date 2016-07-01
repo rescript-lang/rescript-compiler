@@ -1,8 +1,8 @@
 
 
 class type widget = 
-  object [@uncurry]
-      method on : string * (event -> unit ) -> unit 
+  object [@fn]
+      method on : string ->  (event -> unit ) -> unit 
   end
 and  event = 
   object 
@@ -12,18 +12,18 @@ and  event =
 
 
 class type title = 
-  object [@uncurry]
+  object [@fn]
     method title_set : string -> unit 
     method title : string
   end
 
 class type text = 
-    object [@uncurry]
+    object [@fn]
       method text_set : string -> unit 
       method text : string 
     end
 class type measure =
-    object [@uncurry]
+    object [@fn]
       method minHeight_set : int -> unit 
       method minHeight : int
       method minWidth_set : int -> unit 
@@ -35,17 +35,17 @@ class type measure =
     end
 
 class type layout = 
-    object [@uncurry]
+    object [@fn]
       method orientation_set : string -> unit  
       method orientation : string
     end
 
 class type applicationContext = 
-  object [@uncurry]
+  object [@fn]
       method exit : int -> unit 
   end
 class type contentable = 
-  object[@uncurry]
+  object[@fn]
     method content_set : #widget Js.t -> unit 
     method content : #widget Js.t 
     method contentWidth : int  
@@ -53,7 +53,7 @@ class type contentable =
   end
 
 class type hostedWindow =
-  object [@uncurry]
+  object [@fn]
     inherit widget 
     inherit title
     inherit contentable
@@ -71,7 +71,7 @@ class type hostedContent =
 
 
 class type stackPanel = 
-  object [@uncurry]
+  object [@fn]
     inherit measure
     inherit layout 
     inherit widget
@@ -81,7 +81,7 @@ class type stackPanel =
   end
 
 class type grid  = 
-  object [@uncurry]
+  object [@fn]
     inherit widget
     inherit measure
     method columns_set : [%bs.obj: <width : int; .. >  ]  array -> unit 
@@ -91,7 +91,7 @@ class type grid  =
       [%bs.obj: <label : <text : string; .. >   ; ..>  ]  array array -> unit  
   end
 
-external set_interval : (unit -> unit [@uncurry]) -> float -> unit  =  "setInterval"
+external set_interval : (unit -> unit [@fn]) -> float -> unit  =  "setInterval"
     [@@bs.call] [@@bs.module "@runtime" "Runtime"]
 
 
@@ -140,7 +140,7 @@ external stringify : 'a -> string = ""
 external random : unit -> float = ""
     [@@bs.call "Math.random"] 
 
-external array_map : 'a array -> ('a -> 'b [@uncurry]) -> 'b array = ""
+external array_map : 'a array -> ('a -> 'b [@fn]) -> 'b array = ""
     [@@bs.call"Array.prototype.map.call"] 
 
 type env 
@@ -201,16 +201,17 @@ let ui_layout
 
     button##text_set "update formula";
     button##minHeight_set 20;
-    button##on ("click", (fun [@uncurry] _event -> (* FIXME both [_] and () should work*)
+    button##on "click" begin fun [@fn] _event -> (* FIXME both [_] and () should work*)
       try 
         let hot_function = compile inputCode##text in
         computeFunction := fun env ->  hot_function (fun key -> lookup env key) 
-      with  e -> ()));
+      with  e -> ()
+    end;
     let fmt v = to_fixed v 2 in
-    set_interval (fun [@uncurry] () -> 
+    set_interval (fun [@fn] () -> 
 
       grid##dataSource_set
-        ( array_map data (fun [@uncurry] {ticker; price } -> 
+        ( array_map data (fun [@fn] {ticker; price } -> 
           let bid = price +. 20. *. random () in
           let ask = price +. 20. *. random () in
           let result = !computeFunction (mk_bid_ask ~bid ~ask ) in
