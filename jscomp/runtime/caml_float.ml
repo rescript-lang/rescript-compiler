@@ -117,7 +117,7 @@ let caml_modf_float (x : float) : float * float =
   else if Js.Float.is_nan x then Js.Float.nan ,  Js.Float.nan 
   else (1. /. x , x)
 
-let caml_ldexp_float : float ->  int -> float [@uncurry] = [%bs.raw {| function (x,exp) {
+let caml_ldexp_float : float ->  int -> float [@fn] = [%bs.raw {| function (x,exp) {
     exp |= 0;
     if (exp > 1023) {
         exp -= 1023;
@@ -138,7 +138,7 @@ let caml_ldexp_float : float ->  int -> float [@uncurry] = [%bs.raw {| function 
 
 
 
-let caml_frexp_float : float -> float * int [@uncurry]=  [%bs.raw {|function (x) {
+let caml_frexp_float : float -> float * int [@fn]=  [%bs.raw {|function (x) {
     if ((x == 0) || !isFinite(x)) return [ x, 0];
     var neg = x < 0;
     if (neg) x = - x;
@@ -178,7 +178,7 @@ let caml_log1p_float  : float -> float = function x ->
   if z = 0. then x else x *. log y /. z 
 
 
-let caml_hypot_float : float ->  float -> float [@uncurry] = [%bs.raw {| function (x, y) {
+let caml_hypot_float : float ->  float -> float [@fn] = [%bs.raw {| function (x, y) {
     var x0 = Math.abs(x), y0 = Math.abs(y);
     var a = Math.max(x0, y0), b = Math.min(x0,y0) / (a?a:1);
     return a * Math.sqrt(1 + b*b);
@@ -186,7 +186,7 @@ let caml_hypot_float : float ->  float -> float [@uncurry] = [%bs.raw {| functio
 |}]
 
 
-let caml_log10_float : float -> float [@uncurry] =  [%bs.raw {| function  (x) { 
+let caml_log10_float : float -> float [@fn] =  [%bs.raw {| function  (x) { 
    return Math.LOG10E * Math.log(x); }
 |} ]
 

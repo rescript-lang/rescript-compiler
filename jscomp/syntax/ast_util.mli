@@ -42,7 +42,7 @@ val process_attributes_rev :
   Parsetree.attributes ->
   Parsetree.attributes * [ `Meth | `Nothing | `Uncurry ]
 
-(** turn {[ fun [@uncurry] (x,y) -> x]} into an uncurried function 
+(** turn {[ fun [@fn] (x,y) -> x]} into an uncurried function 
     TODO: Future 
     {[ fun%bs this (a,b,c) -> 
     ]}

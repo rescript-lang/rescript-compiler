@@ -1098,6 +1098,6 @@ type + 'a js_obj
 
 type (-'obj, +'a) meth_callback
 (** Mark uncurried function, please use {!Js.fn} instead *)
-type + 'a uncurry0
 
-type (+ 'arg, + 'result) uncurry 
+
+type (- 'arg, + 'result) fn

@@ -31,24 +31,28 @@ let js_obj_type_id () =
     
 let curry_type_id () = 
   if Js_config.get_env () = Browser then 
-     Ast_literal.Lid.pervasives_uncurry
+     Ast_literal.Lid.pervasives_fn
   else 
     Ast_literal.Lid.js_fn
 
-let mk_args0 ~loc = 
-  Typ.variant ~loc [ Rtag ("Args_0" , [], true,  [])] Closed None
+let mk_args ~loc n tys = 
+
+  Typ.variant ~loc 
+    [ Rtag ("Args_" ^ string_of_int n, [], (tys = []),  tys)] Closed None
 
 let lift_curry_type  ~loc args result  = 
   let xs =
     match args with 
-    | [ ] -> [mk_args0 ~loc ; result ]
-    | [ x ] -> [ x ; result ] 
-    | _ -> [Typ.tuple ~loc args ; result ]
+    | [ ] -> [mk_args 0  ~loc [] ; result ]
+    | [ x ] -> [ mk_args ~loc 1 [x] ; result ] 
+    | _ -> 
+      [mk_args ~loc (List.length args ) [Typ.tuple ~loc args] ; result ]
   in 
   Typ.constr ~loc {txt = curry_type_id (); loc} xs
 
 let lift_js_type ~loc  x  = 
   Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
+
 let meth_type_id () = 
   if Js_config.get_env () = Browser then 
     Ast_literal.Lid.pervasives_meth_callback
@@ -166,7 +170,7 @@ let bs_object_attribute  : Parsetree.attribute
   = {txt = "bs.obj" ; loc = Location.none}, empty_payload
 
 let bs_uncurry_attribute : Parsetree.attribute        
-  =  {txt = "uncurry" ; loc = Location.none}, empty_payload
+  =  {txt = "fn" ; loc = Location.none}, empty_payload
 let bs_meth_attribute : Parsetree.attribute        
   =  {txt = "meth_callback" ; loc = Location.none}, empty_payload
 
@@ -176,16 +180,16 @@ let process_attributes_rev (attrs : Parsetree.attributes) =
   List.fold_left (fun (acc, st) attr -> 
       let tag = fst attr in
       match tag.Location.txt, st  with 
-      | "uncurry", (`Nothing | `Uncurry) 
+      | "fn", (`Nothing | `Uncurry) 
         -> 
         (acc, `Uncurry)
       | "meth_callback", (`Nothing | `Meth)
         -> (acc, `Meth)
-      | "uncurry", `Meth 
+      | "fn", `Meth 
       | "meth_callback", `Uncurry
         -> Location.raise_errorf 
              ~loc:tag.Location.loc 
-             "[@meth_callback] and [@uncurry] can not be applied at the same time"
+             "[@meth_callback] and [@fn] can not be applied at the same time"
       | _ , _ -> 
         (attr::acc , st)
     ) ([], `Nothing) attrs
@@ -197,7 +201,7 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
   let rec aux acc (typ : Parsetree.core_type) = 
     (* in general, 
        we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [uncurry] and [meth_callback] found in typ, 
+       however: when attributes [fn] and [meth_callback] found in typ, 
        we should stop 
     *)
     match process_attributes_rev typ.ptyp_attributes with 

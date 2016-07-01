@@ -8,13 +8,13 @@ let u : 'self =
       {
         x = 3 ;
         y = 32 ;
-        bark = (fun [@uncurry] this x y -> Js.log (this##length, this##x, this##y));
+        bark = (fun [@fn] this x y -> Js.log (this##length, this##x, this##y));
         length = 32
       } : 
         <
         x : int ; 
       y : int ;
-      bark : 'self -> int ->  int -> unit [@uncurry]; 
+      bark : 'self -> int ->  int -> unit [@fn]; 
       length : int >       )
   ]
 

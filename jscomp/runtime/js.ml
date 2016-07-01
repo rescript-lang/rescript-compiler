@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type (-'obj, +'a) meth_callback = ('obj, 'a) Pervasives.meth_callback
+type (-'obj, +'a) meth_callback 
 
-type +'a t = 'a Pervasives.js_obj(** Js object type *)
+type +'a t (** Js object type *)
 
-type +'result fn0 = 'result Pervasives.uncurry0
 
-type (+'arg, + 'result)fn = ('arg, 'result) Pervasives.uncurry (** Js uncurried function *)
+
+type (-'arg, + 'result)fn (** Js uncurried function *)
 
 (** This file will also be exported to external users 
     Attention: it should not have any code, all its code will be inlined so that 

@@ -196,8 +196,8 @@ extensible_variant_test.cmj : mt.cmi
 extensible_variant_test.cmx : mt.cmx
 fail_comp.cmj :
 fail_comp.cmx :
-ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj ../runtime/js.cmj
-ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx ../runtime/js.cmx
+ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
+ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
 ffi_js.cmj : ../stdlib/obj.cmi
 ffi_js.cmx : ../stdlib/obj.cmx
 ffi_test.cmj : ../runtime/js.cmj
@@ -890,8 +890,8 @@ extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
 fail_comp.cmo :
 fail_comp.cmj :
-ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo ../runtime/js.cmo
-ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj ../runtime/js.cmj
+ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
+ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
 ffi_js.cmo : ../stdlib/obj.cmi
 ffi_js.cmj : ../stdlib/obj.cmj
 ffi_test.cmo : ../runtime/js.cmo

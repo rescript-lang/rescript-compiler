@@ -53,11 +53,12 @@ let h34 x = Js_unsafe.run3 x 1 2 3 4
 let ocaml_run = Js_unsafe.run3 (Js_unsafe.mk3 (fun x y z -> x + y + z)) 1 
 
 let a0 = Js_unsafe.mk0 (fun  _ -> Js.log "hi")
-let a1 = Js_unsafe.mk1 (fun x -> x )
+let a1 () = Js_unsafe.mk1 (fun x -> x )
 let a2 = Js_unsafe.mk2 (fun x y -> x + y)
 let a3 = Js_unsafe.mk3 (fun x y z -> x + y + z )
 let a4 = Js_unsafe.mk4 (fun x y z -> let u = x * x + y * y + z * z in fun d -> u + d)
 
 let a44 = Js_unsafe.mk4 (fun x y z d -> let u = x * x + y * y + z * z in  u + d)
 
-let b44 = Js_unsafe.mk4 (fun x y z d -> (x,y,z,d))
+let b44 () = Js_unsafe.mk4 (fun x y z d -> (x,y,z,d))
+(* polymoprhic restriction *)

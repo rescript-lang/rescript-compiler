@@ -27,4 +27,4 @@
 
 
 
-val repeat : int -> string -> string [@uncurry]
+val repeat : int -> string -> string [@fn]

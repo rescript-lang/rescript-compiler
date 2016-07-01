@@ -495,8 +495,6 @@ let _ = register_named_value "Pervasives.do_at_exit" do_at_exit
 (** Mark Js object, please use {!Js.t} instead *)
 type + 'a js_obj 
 
-(* type + 'a uncurry0 *)
-(* type (- 'arg, 'result) uncurry *)
 
 
 (* (\** only used by method declaration,  *)
@@ -516,9 +514,9 @@ type (-'obj, +'a) meth_callback
 (** Mark uncurried function, please use {!Js.fn} instead *)
 
 
-type + 'a uncurry0
 
-type (+ 'arg, + 'result) uncurry 
+
+type (-'arg, + 'result) fn
 (** = (< > js_obj, 'a) meth_callback, 
     instead of relying on type system to do the checking 
     we provide a function to do this, the reason is that 

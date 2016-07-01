@@ -345,3 +345,4 @@ unsafe_this
 obj_type_test
 
 polymorphism_test
+class_error_message

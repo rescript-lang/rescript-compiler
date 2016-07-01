@@ -31,7 +31,7 @@
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul *)
 
 
-let repeat : int -> string -> string [@uncurry] = [%bs.raw{| (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
+let repeat : int -> string -> string [@fn] = [%bs.raw{| (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
                                                   function(count , self) {
         if (self.length == 0 || count == 0) {
             return '';

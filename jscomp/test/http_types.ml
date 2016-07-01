@@ -4,7 +4,7 @@
 
      A syntax extension
 
-     (req Js.t ->  resp Js.t -> unit  [@uncurry] )-> server Js.t [@uncurry]
+     (req Js.t ->  resp Js.t -> unit  [@fn] )-> server Js.t [@fn]
      type a = [%bs (req Js.t * resp Js.t => unit ) => server Js.t ]
   *)
 
@@ -19,19 +19,19 @@ type resp =
    statusCode_set : int -> unit  ;
    setHeader : string -> string -> unit ;
    end_ : string ->  unit 
-  >  [@uncurry] ]
+  >  [@fn] ]
 
 type server = 
   [%bs.obj: <
     listen : int ->  string -> (unit -> unit) -> unit 
-  >  [@uncurry] ]
+  >  [@fn] ]
 
 
 
 type http = 
   [%bs.obj: <
    createServer : (req  -> resp  -> unit ) ->  server
-  >  [@uncurry] ]
+  >  [@fn] ]
 
 
 external http : http  = "http"  [@@bs.val_of_module ]

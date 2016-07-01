@@ -6,12 +6,12 @@
 
 let f (x : [%bs.obj: < case : int ->  'a ; 
             case_set : int ->  int -> unit ;
-            .. > [@uncurry] ] )
+            .. > [@fn] ] )
  = 
   x ## case_set 3 2 ;
   x ## case 3 
 
-class type ['a] case = object [@uncurry]
+class type ['a] case = object [@fn]
   method case : int -> 'a 
   method case_set : int -> 'a -> unit 
 end
@@ -22,18 +22,18 @@ let ff (x : int case  Js.t)
   x##case 3 
 
 
-type 'a return = int -> 'a [@uncurry]
+type 'a return = int -> 'a [@fn]
 let h (x : 
-         [%bs.obj:< case : (int -> 'a return  ); .. >  [@uncurry] ]) = 
+         [%bs.obj:< case : (int -> 'a return  ); .. >  [@fn] ]) = 
   let a = x##case 3 in 
-  a 2 [@uncurry]   
+  a 2 [@fn]   
 
 
 type x_obj =  
   [%bs.obj: < 
     case : int ->  int ; 
     case_set : int -> int -> unit ;
-  >  [@uncurry] ]
+  >  [@fn] ]
 
 let f_ext 
     (x : x_obj)
@@ -45,8 +45,8 @@ let f_ext
 type 'a h_obj = 
   [%bs.obj: < 
     case : int ->  'a return 
-  > [@uncurry] ]
+  > [@fn] ]
 
 let h_ext  (x : 'a h_obj) = 
   let  a = x ##case 3 in 
-  a 2 [@uncurry] 
+  a 2 [@fn] 

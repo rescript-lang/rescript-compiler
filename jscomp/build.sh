@@ -25,9 +25,9 @@ make -r bin/bsc
 # make -S  -j1 quicktest 2>> build.compile
 # cat stdlib/a.js >> ./build.compile
 
-echo "Making stdlib cmis"
+echo "Making stdlib cmis" >> build.compile
 cd ./stdlib ; make allcmis; cd ..
-echo "Making stdlib finished"
+echo "Making stdlib finished" >> build.compile
 
 echo "Making runtime" >> build.compile
 cd ./runtime; make all 2>> ../build.compile ; make depend;  cd ..

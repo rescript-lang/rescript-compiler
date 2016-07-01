@@ -30,10 +30,8 @@ module Lid : sig
   val type_unit : t 
   val pervasives_js_obj : t 
 
-  val pervasives_uncurry : t 
-  val pervasives_uncurry0 : t 
+  val pervasives_fn : t 
   val js_fn : t 
-  val js_fn0 : t 
 
   val pervasives_meth_callback : t
   val js_meth_callback : t 

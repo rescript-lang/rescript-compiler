@@ -1,7 +1,7 @@
 [@@@bs.config {obj_type_auto_uncurry = true ; (* non_export = true *) } ]
 
 
-class type v = object [@uncurry]
+class type v = object [@fn]
   method hey : int -> int -> int 
 end 
 
@@ -12,7 +12,7 @@ end
 type vv = 
   [%bs.obj: < 
     hey : int -> int -> int 
-  >  [@uncurry]]
+  >  [@fn]]
 
 type vv2 = 
   [%bs.obj: < 

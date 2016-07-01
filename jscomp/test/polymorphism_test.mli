@@ -1,3 +1,3 @@
 
 
-val map : ('a -> 'b [@uncurry]) -> 'a list -> 'b list
+val map : ('a -> 'b [@fn]) -> 'a list -> 'b list

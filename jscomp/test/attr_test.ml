@@ -1,20 +1,20 @@
 
-let u = fun [@uncurry] x y -> x + y 
+let u = fun [@fn] x y -> x + y 
 
-let h = u 1 2 [@uncurry]
+let h = u 1 2 [@fn]
 
-type u = < v : int ; y : int > [@uncurry]
+type u = < v : int ; y : int > [@fn]
 type ('a,'b) xx = 
-  (< case : (int ->  (int -> 'a [@uncurry]) [@uncurry]); .. >   as 'b) 
+  (< case : (int ->  (int -> 'a [@fn]) [@fn]); .. >   as 'b) 
 type ('a,'b) xx_uncurry = 
-  (< case : int ->  (int -> 'a ); .. >  [@uncurry]) as 'b
+  (< case : int ->  (int -> 'a ); .. >  [@fn]) as 'b
 
-type yy_uncurry = < x : int > [@uncurry]
+type yy_uncurry = < x : int > [@fn]
 type yy = < x : int > 
 type number = float
 
 class type date = 
-  object [@uncurry]
+  object [@fn]
     method toDateString : unit -> string 
     method getTime : unit ->  number 
     method setMilliseconds : number ->  number 
@@ -28,7 +28,7 @@ class type date =
   end
 
 
-let max2 : float -> float -> float [@uncurry] = 
-  fun [@uncurry] x y ->   x +. y 
+let max2 : float -> float -> float [@fn] = 
+  fun [@fn] x y ->   x +. y 
 
-let hh = max2 1. 2. [@uncurry]
+let hh = max2 1. 2. [@fn]

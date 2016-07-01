@@ -142,7 +142,7 @@ let handle_typ
     let methods, ptyp_attributes  =
       begin match Ext_list.exclude_with_fact
                     (function 
-                      | {Location.txt = "uncurry"; _}, _ -> true
+                      | {Location.txt = "fn"; _}, _ -> true
                       | _ -> false)
                     ptyp_attributes with 
       | None, _  ->
@@ -198,7 +198,7 @@ let handle_class_obj_typ
     (ty : Parsetree.class_type) = 
   match ty with
   | {pcty_attributes ;
-     pcty_desc ; (* we won't have [ class type v = u -> object[@uncurry] ]*)
+     pcty_desc ; (* we won't have [ class type v = u -> object[@fn] ]*)
      pcty_loc = loc
    } ->
     begin match  Ast_util.process_attributes_rev pcty_attributes with 
@@ -294,7 +294,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               end
             | _ -> 
               begin match Ext_list.exclude_with_fact (function 
-                  | {Location.txt = "uncurry"; _}, _ -> true 
+                  | {Location.txt = "fn"; _}, _ -> true 
                   | _ -> false) e.pexp_attributes with 
               | None, _ -> Ast_mapper.default_mapper.expr mapper e 
               | Some _, attrs -> 

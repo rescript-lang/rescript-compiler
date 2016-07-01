@@ -1,7 +1,7 @@
 
 
-external map : 'a array -> ('a , 'b) Js.fn  -> 'b array = "map" [@@bs.send]
-external mapi : 'a array -> ('a * int , 'b) Js.fn  -> 'b array = "map" [@@bs.send]
+external map : 'a array -> ('a -> 'b [@fn])  -> 'b array = "map" [@@bs.send]
+external mapi : 'a array -> ('a -> int -> 'b [@fn])  -> 'b array = "map" [@@bs.send]
 
 external parseInt : string -> int = "parseInt" [@@bs.call]
 external parseInt_radix : string -> int -> int = "parseInt" [@@bs.call]

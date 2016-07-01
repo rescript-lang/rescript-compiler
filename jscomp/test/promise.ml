@@ -10,7 +10,7 @@ class type promise =
   object
     method then_ : 'a -> 'b
     method catch : 'a -> 'b
-  end [@uncurry]
+  end [@fn]
 
 external new_promise : unit -> promise Js.t = 
   "Promise" [@@bs.new] [@@bs.module "sys-bluebird"]
