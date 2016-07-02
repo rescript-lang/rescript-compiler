@@ -58,6 +58,10 @@ let add_include_path s =
   else 
     Ext_pervasives.failwithf ~loc:__LOC__ "%s is not a directory" s 
 
+let set_noassert () = 
+  Js_config.set_no_any_assert ();
+  Clflags.noassert := true
+
 
 let buckle_script_flags = 
   ("-bs-npm-output-path", Arg.String Js_config.set_npm_package_path, 
@@ -79,6 +83,9 @@ let buckle_script_flags =
       " More verbose output")
   :: ("-bs-no-check-div-by-zero", Arg.Clear Js_config.check_div_by_zero, 
       " unsafe mode, don't check div by zero and mod by zero")
+  :: ("-bs-no-any-assert", Arg.Unit set_noassert, 
+      " no code containing any assertion"
+     )
   :: ("-bs-files", Arg.Rest collect_file, 
       " Provide batch of files, the compiler will sort it before compiling"
      )
@@ -88,11 +95,13 @@ let buckle_script_flags =
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 
-let () = 
-  Clflags.unsafe_string := false;
-  Clflags.debug := true
 
-let main () =
+
+
+let _ = 
+  Clflags.unsafe_string := false;
+  Clflags.debug := true;
+
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
@@ -101,8 +110,6 @@ let main () =
   with x ->
     Location.report_exception ppf x;
     exit 2
-
-let _ = main ()
 
 
 

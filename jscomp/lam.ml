@@ -299,6 +299,8 @@ let false_ : t =
 let unit : t = 
   Lconst (Const_pointer( 0, Pt_constructor "()"))
 
+let assert_false_unit : t = 
+  Lconst (Const_pointer( 0, Pt_constructor "impossible branch"))
 
 (** [l || r ] *)
 let sequor l r = if_ l true_ r 
@@ -584,7 +586,19 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     | _ -> 
       prim ~primitive:(Pccall a) ~args
     end
-  | Praise _ -> prim ~primitive:Praise ~args
+  | Praise _ ->
+    if Js_config.get_no_any_assert () then 
+      begin match args with 
+        | [Lprim {primitive = Pmakeblock (0, _, _) ; 
+                  args = [ 
+                    Lprim {primitive = Pgetglobal ({name = "Assert_failure"} as id); args =  []}; 
+                    _
+                  ]
+                 } ] when Ident.global id
+          -> assert_false_unit
+        | _ -> prim ~primitive:Praise ~args
+      end
+    else prim ~primitive:Praise ~args
   | Psequand -> prim ~primitive:Psequand ~args 
   | Psequor -> prim ~primitive:Psequor ~args
   | Pnot -> prim ~primitive:Pnot ~args

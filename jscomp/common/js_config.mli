@@ -106,3 +106,12 @@ val tool_name : string
 val check_div_by_zero : bool ref 
 
 val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
