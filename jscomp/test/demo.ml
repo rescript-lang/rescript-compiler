@@ -1,116 +1,4 @@
-
-
-class type widget = 
-  object [@fn]
-      method on : string ->  (event -> unit ) -> unit 
-  end
-and  event = 
-  object 
-    method source : widget
-    method target : widget
-  end
-
-
-class type title = 
-  object [@fn]
-    method title_set : string -> unit 
-    method title : string
-  end
-
-class type text = 
-    object [@fn]
-      method text_set : string -> unit 
-      method text : string 
-    end
-class type measure =
-    object [@fn]
-      method minHeight_set : int -> unit 
-      method minHeight : int
-      method minWidth_set : int -> unit 
-      method minWidth : int 
-      method maxHeight_set : int -> unit 
-      method maxHeight : int 
-      method maxWidth_set : int -> unit 
-      method maxWidth : int 
-    end
-
-class type layout = 
-    object [@fn]
-      method orientation_set : string -> unit  
-      method orientation : string
-    end
-
-class type applicationContext = 
-  object [@fn]
-      method exit : int -> unit 
-  end
-class type contentable = 
-  object[@fn]
-    method content_set : #widget Js.t -> unit 
-    method content : #widget Js.t 
-    method contentWidth : int  
-    method contentWidth_set : int -> unit 
-  end
-
-class type hostedWindow =
-  object [@fn]
-    inherit widget 
-    inherit title
-    inherit contentable
-    method show : unit -> unit 
-    method hide : unit -> unit 
-    method focus : unit -> unit 
-    method appContext_set : applicationContext -> unit 
-  end
-
-class type hostedContent =
-  object 
-    inherit widget
-    inherit contentable
-  end
-
-
-class type stackPanel = 
-  object [@fn]
-    inherit measure
-    inherit layout 
-    inherit widget
-
-    method addChild : #widget Js.t -> unit 
-
-  end
-
-class type grid  = 
-  object [@fn]
-    inherit widget
-    inherit measure
-    method columns_set : [%bs.obj: <width : int; .. >  ]  array -> unit 
-    method titleRows_set : 
-      [%bs.obj: <label : <text : string; .. >   ; ..> ]   array -> unit 
-    method dataSource_set :
-      [%bs.obj: <label : <text : string; .. >   ; ..>  ]  array array -> unit  
-  end
-
-external set_interval : (unit -> unit [@fn]) -> float -> unit  =  "setInterval"
-    [@@bs.call] [@@bs.module "@runtime" "Runtime"]
-
-
-external to_fixed : float -> int -> string = "toFixed" [@@bs.send ]
-
-class type button = 
-  object
-    inherit widget
-    inherit text
-    inherit measure
-  end
-
-class type textArea = 
-    object
-      inherit widget
-      inherit measure
-      inherit text 
-    end
-
+open Demo_binding
 external addChild : stackPanel -> #widget -> unit = "x" [@@bs.send]
 
 
@@ -171,36 +59,36 @@ let ui_layout
   let button = new_button () in
   let grid = new_grid () in
   begin 
-    hw1##appContext_set appContext;
-    hw1##title_set "Test Application From OCaml";
-    hw1##content_set hc;
+    hw1##appContext#= appContext;
+    hw1##title#= "Test Application From OCaml";
+    hw1##content#= hc;
 
 
-    hc##contentWidth_set 700;
-    hc##content_set stackPanel;
+    hc##contentWidth#= 700;
+    hc##content#= stackPanel;
 
-    stackPanel##orientation_set "vertical";
-    stackPanel##minHeight_set 10000; (* FIXME -> 1e4 *)
-    stackPanel##minWidth_set 4000;
+    stackPanel##orientation #= "vertical";
+    stackPanel##minHeight #= 10000; (* FIXME -> 1e4 *)
+    stackPanel##minWidth #= 4000;
 
     stackPanel##addChild grid;
     stackPanel##addChild inputCode;
     stackPanel##addChild button;
     let mk_titleRow text = [%bs.obj {label =  {text }  } ] in
     let u =  [%bs.obj {width =  200} ]  in
-    grid##minHeight_set 300;
-    grid##titleRows_set
+    grid##minHeight #= 300;
+    grid##titleRows #=
         [| mk_titleRow "Ticker";
            mk_titleRow "Bid";
            mk_titleRow "Ask";
            mk_titleRow "Result" |] ;
-    grid##columns_set [| u;u;u;u |];
+    grid##columns #=  [| u;u;u;u |];
 
-    inputCode##text_set " bid - ask";
-    inputCode##minHeight_set 100;
+    inputCode##text #= " bid - ask";
+    inputCode##minHeight #= 100;
 
-    button##text_set "update formula";
-    button##minHeight_set 20;
+    button##text #= "update formula";
+    button##minHeight #= 20;
     button##on "click" begin fun [@fn] _event -> (* FIXME both [_] and () should work*)
       try 
         let hot_function = compile inputCode##text in
@@ -210,7 +98,7 @@ let ui_layout
     let fmt v = to_fixed v 2 in
     set_interval (fun [@fn] () -> 
 
-      grid##dataSource_set
+      grid##dataSource #=
         ( array_map data (fun [@fn] {ticker; price } -> 
           let bid = price +. 20. *. random () in
           let ask = price +. 20. *. random () in

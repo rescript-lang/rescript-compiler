@@ -1,11 +1,12 @@
 [@@@bs.config{
   obj_type_auto_uncurry = true;
+  bs_class_type = true 
   (* non_export = true; *)
 }]
 
 
 
-class type v = object [@fn]
+class type v = object 
   method hey : int -> int -> int 
 end 
 
@@ -33,4 +34,4 @@ let test_v (x : v Js.t) =
   x##hey 1 2
 
 let test_vv (h : vv) =
-  h##hey 1 2
+  let hey = h##hey in hey  1 2 [@fn]

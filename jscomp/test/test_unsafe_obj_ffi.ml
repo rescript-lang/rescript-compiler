@@ -1,4 +1,4 @@
-
+[@@@bs.config{bs_class_type = true }]
 
 open Js_unsafe
 
@@ -9,9 +9,12 @@ let g x : unit  =
   let () = run1 !x # method1 3 in
   run2 !x # method2 3 3
 
+class type _metric = object  method height : int [@@bs.set] method width : int [@@bs.set] end 
 let h x : unit  = 
-   run1 !x # height_set 3 ;
-   run1 !x # width_set 3 
+  x##height #= 3 ; 
+  x##width #= 3 
+(* can not write set api without syntax extension, any more
+*)
 
 (**
 imagine you have 

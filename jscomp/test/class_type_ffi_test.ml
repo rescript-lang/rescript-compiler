@@ -1,6 +1,6 @@
-
+[@@@bs.config{bs_class_type = true }]
 class type ['k,'v] arrayLike = 
-  object [@fn]
+  object 
     method case : 'k -> 'v Js.Null.t 
     method caseSet : 'k * 'v -> unit 
     method case_unsafe : 'k -> 'v 
@@ -33,3 +33,10 @@ let sum_poly zero add (arr : _ arrayLike Js.t) =
     v := add  !v  (arr##case_unsafe i ) [@fn] 
   done;
   !v 
+
+
+(* TODO: create a special type 
+   ['a Js.prop_set] for better error message
+*)
+let test_set x = 
+  x##length_aux #= 3 

@@ -32,6 +32,7 @@ test_fib
 test_list
 test_pervasive
 simple_lexer_test
+demo_binding
 demo
 test_char
 test_generative_module

@@ -8,11 +8,12 @@ let b =
 let f obj = 
   obj ## x + Array.length (obj ## y)
 
-let h obj = obj##u 1 2
+let h obj = obj#@u 1 2
+
 
 let u = f  a
 
 let v = f b 
 
-let vv = h b 
+let vv = h b
 

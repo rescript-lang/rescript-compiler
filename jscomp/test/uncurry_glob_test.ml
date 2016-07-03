@@ -12,3 +12,7 @@ let f = fun [@fn] () -> 3
 
 
 let u = f () [@fn]
+
+let (+>) = fun [@fn]  a (h : _ -> int [@fn]) -> h a [@fn]
+
+let u h = 3 +> h  [@fn]

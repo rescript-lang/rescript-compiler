@@ -1,3 +1,4 @@
+[@@@bs.config{bs_class_type = true }]
   (** 
      [%bs (req Js.t * resp Js.t => unit ) => server Js.t 
      ]
@@ -14,24 +15,25 @@
 
 type req 
 
-type resp = 
-  [%bs.obj: <
-   statusCode_set : int -> unit  ;
-   setHeader : string -> string -> unit ;
-   end_ : string ->  unit 
-  >  [@fn] ]
+class type _resp = 
+  object 
+    method statusCode : int [@@bs.set]
+    method setHeader : string -> string -> unit
+    method end_ : string -> unit 
+  end
+type resp = _resp Js.t 
+class type _server = 
+  object 
+    method listen : int ->  string -> (unit -> unit [@fn]) -> unit
+  end
+type server = _server Js.t 
+class type _http = 
+  object 
+    method createServer : (req  -> resp  -> unit [@fn]) ->  server
+  end
+type http = _http Js.t
 
-type server = 
-  [%bs.obj: <
-    listen : int ->  string -> (unit -> unit) -> unit 
-  >  [@fn] ]
 
-
-
-type http = 
-  [%bs.obj: <
-   createServer : (req  -> resp  -> unit ) ->  server
-  >  [@fn] ]
 
 
 external http : http  = "http"  [@@bs.val_of_module ]

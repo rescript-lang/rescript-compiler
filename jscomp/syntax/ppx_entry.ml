@@ -66,12 +66,14 @@ let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
 let obj_type_auto_uncurry =  ref false
 let non_export = ref false 
+let bs_class_type = ref false 
 
 let reset () = 
   record_as_js_object := None ;
   obj_type_as_js_obj_type := false ;
   uncurry_type := false ;
   obj_type_auto_uncurry := false ;
+  bs_class_type := false;
   non_export  :=  false
 
 
@@ -98,7 +100,80 @@ let handle_record_as_js_object
     args 
 
 
-
+let handle_class_type_field  acc =
+  (fun self ({pctf_loc = loc } as ctf : Parsetree.class_type_field) -> 
+     match ctf.Parsetree.pctf_desc with 
+     | Pctf_method 
+         (name, private_flag, virtual_flag, ty) 
+       -> 
+       let (pctf_attributes, st) = 
+         Ast_util.process_method_attributes_rev ctf.pctf_attributes 
+       in 
+       begin match ty.ptyp_desc with 
+         | Ptyp_arrow ("", args, body) 
+           -> 
+           { ctf with 
+             pctf_desc = 
+               Pctf_method (name, 
+                            private_flag,
+                            virtual_flag, 
+                            Ast_util.destruct_arrow_as_meth_type 
+                              ty.ptyp_loc args body self );
+             pctf_attributes 
+           } :: acc 
+         | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
+           -> 
+           {ctf with 
+            pctf_desc = 
+              Pctf_method 
+                (name,
+                 private_flag, 
+                 virtual_flag, 
+                 {ty with ptyp_desc = 
+                            Ptyp_poly(strs,             
+                                      Ast_util.destruct_arrow_as_meth_type
+                                        ptyp_loc args body self  )});
+            pctf_attributes
+           }  :: acc 
+         | _ -> 
+           match st with 
+           | {set = Some _ } 
+             -> 
+               {ctf with 
+                pctf_desc =
+                  Pctf_method (name ^ Literals.setter_suffix, 
+                               private_flag,
+                               virtual_flag,
+                               Ast_util.destruct_arrow_as_meth_type 
+                                 loc 
+                                 ty 
+                                 (Ast_literal.type_unit ~loc ())
+                                 self 
+                              );
+                pctf_attributes}
+             :: {ctf with 
+                pctf_desc =  
+                  Pctf_method (name , 
+                               private_flag, 
+                               virtual_flag, 
+                               self.typ self ty
+                              );
+                pctf_attributes}
+             :: acc 
+           (*TODO: test on poly type *)
+           | _ -> 
+             {ctf with 
+              pctf_desc =  Pctf_method (name , private_flag, virtual_flag, self.typ self ty);
+              pctf_attributes}
+             :: acc 
+       end
+     | Pctf_inherit _ 
+     | Pctf_val _ 
+     | Pctf_constraint _
+     | Pctf_attribute _ 
+     | Pctf_extension _  -> 
+       Ast_mapper.default_mapper.class_type_field self ctf :: acc 
+  )
 (*
   Attributes are very hard to attribute
   (since ptyp_attributes could happen in so many places), 
@@ -122,7 +197,7 @@ let handle_typ
       | ptyp_attributes, `Uncurry ->
         Ast_util.destruct_arrow loc args body self 
       | ptyp_attributes, `Meth -> 
-        Ast_util.destruct_arrow_as_meth loc args body self         
+        Ast_util.destruct_arrow_as_meth_callback_type loc args body self         
       | _, `Nothing -> 
         if !uncurry_type then 
           Ast_util.destruct_arrow loc args body self 
@@ -192,32 +267,6 @@ let handle_typ
     else inner_type
   | _ -> super.typ self ty
 
-let handle_class_obj_typ 
-    (super : Ast_mapper.mapper) 
-    (self : Ast_mapper.mapper)
-    (ty : Parsetree.class_type) = 
-  match ty with
-  | {pcty_attributes ;
-     pcty_desc ; (* we won't have [ class type v = u -> object[@fn] ]*)
-     pcty_loc = loc
-   } ->
-    begin match  Ast_util.process_attributes_rev pcty_attributes with 
-    |  pcty_attributes', `Uncurry ->
-      Ext_ref.protect uncurry_type true begin fun () -> 
-        self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
-      end
-    |  _, (`Meth | `Nothing) -> 
-      if !obj_type_auto_uncurry then 
-        Ext_ref.protect uncurry_type true begin fun () -> 
-          super.class_type self ty
-        end
-      else 
-        super.class_type self ty
-    end
-
-
-
-
 let handle_obj_property loc obj name e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
   let obj = mapper.expr mapper obj in 
@@ -228,7 +277,7 @@ let handle_obj_property loc obj name e
 
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
-    expr = (fun mapper ({ pexp_loc = loc } as e) -> 
+    expr = (fun self ({ pexp_loc = loc } as e) -> 
         match e.pexp_desc with 
         (** Its output should not be rewritten anymore *)        
         | Pexp_extension (
@@ -245,7 +294,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               -> 
               Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
                 (Some Ast_util.bs_object_attribute ) true
-                (fun ()-> mapper.expr mapper e ) 
+                (fun ()-> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
         (** End rewriting *)
@@ -253,13 +302,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           ->
           begin match Ast_util.process_attributes_rev e.pexp_attributes with 
           | _, `Nothing 
-            -> Ast_mapper.default_mapper.expr mapper e 
+            -> Ast_mapper.default_mapper.expr self e 
           |  attrs , `Uncurry
             -> 
-            Ast_util.destruct_arrow_as_fn loc pat body mapper e attrs
+            Ast_util.destruct_arrow_as_fn loc pat body self e attrs
           | pexp_attributes, `Meth 
             -> 
-            Ast_util.destruct_arrow_as_meth_callbak loc pat body mapper e pexp_attributes
+            Ast_util.destruct_arrow_as_meth_callbak loc pat body self e pexp_attributes
           end
         | Pexp_apply (fn, args  ) ->
           begin match fn with 
@@ -271,7 +320,17 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
                    ]);
                _} ->  (* f##paint 1 2 *)
-              Ast_util.method_run loc obj name args e mapper
+              Ast_util.method_run loc obj name args e self
+            | {pexp_desc = 
+                 Pexp_apply (
+                   {pexp_desc = 
+                      Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
+                   [("", obj) ;
+                    ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                   ]);
+               _} ->  (* f##paint 1 2 *)
+              Ast_util.property_run loc obj name args e self
+
             | {pexp_desc = 
                  Pexp_ident  {txt = Lident "##" ; loc} ; _} 
               -> 
@@ -282,23 +341,44 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         args
                       ) })
                   ] -> (* f##(paint 1 2 ) *)
-                  Ast_util.method_run loc obj name args e mapper
+                  Ast_util.method_run loc obj name args e self
                 | [("", obj) ;
                    ("", 
                     {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
                    )  (* f##paint  *)
-                  ] -> handle_obj_property loc obj name e mapper
+                  ] -> handle_obj_property loc obj name e self
                 | _ -> 
                   Location.raise_errorf ~loc
                     "Js object ## expect syntax like obj##(paint (a,b)) "
               end
+            (* we can not use [:=] for precedece cases 
+               like {[i @@ x##length := 3 ]} 
+               is parsed as {[ (i @@ x##length) := 3]}
+            *)
+            | {pexp_desc = 
+                 Pexp_ident {txt = Lident  "#="}
+              } -> 
+              begin match args with 
+              | ["", 
+                  {pexp_desc = 
+                     Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}}, 
+                                 ["", obj; 
+                                  "", {pexp_desc = Pexp_ident {txt = Lident name}}
+                                 ]                                 
+                                )}; 
+                 "", arg
+                ] -> 
+                Ast_util.method_run loc obj (name ^ Literals.setter_suffix) ["", arg ] e self
+              | _ -> Ast_mapper.default_mapper.expr self e 
+              end
             | _ -> 
+
               begin match Ext_list.exclude_with_fact (function 
                   | {Location.txt = "fn"; _}, _ -> true 
                   | _ -> false) e.pexp_attributes with 
-              | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+              | None, _ -> Ast_mapper.default_mapper.expr self e 
               | Some _, attrs -> 
-                Ast_util.fn_run loc fn args mapper e attrs 
+                Ast_util.fn_run loc fn args self e attrs 
               end
           end
         | Pexp_record (label_exprs, None)  -> 
@@ -307,23 +387,34 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               (* TODO better error message when [with] detected in [%bs.obj] *)
               -> 
               { e with
-                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
+                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs self;
               }
             | None -> 
-              Ast_mapper.default_mapper.expr  mapper e
+              Ast_mapper.default_mapper.expr  self e
             end
 
-        | _ ->  Ast_mapper.default_mapper.expr  mapper e
+        | _ ->  Ast_mapper.default_mapper.expr self e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
-    class_type = 
-      (fun self ctyp -> handle_class_obj_typ Ast_mapper.default_mapper self ctyp);
-    structure_item = (fun mapper (str : Parsetree.structure_item) -> 
+    class_signature = 
+      (fun self ({pcsig_self; pcsig_fields } as csg) -> 
+         if !bs_class_type then 
+           let pcsig_self = self.typ self pcsig_self in 
+           {
+             pcsig_self ;
+             pcsig_fields = List.fold_right (fun  f  acc ->
+               handle_class_type_field  acc self f 
+             )  pcsig_fields []
+           }
+         else 
+           Ast_mapper.default_mapper.class_signature self csg 
+      );
+    structure_item = (fun self (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
-        | _ -> Ast_mapper.default_mapper.structure_item mapper str 
+        | _ -> Ast_mapper.default_mapper.structure_item self str 
         end
       )
   }
@@ -337,6 +428,10 @@ let common_actions_table :
   [ "obj_type_auto_uncurry", 
     (fun e -> 
        obj_type_auto_uncurry := Ast_payload.assert_bool_lit e
+    ); 
+    "bs_class_type", 
+    (fun e -> 
+       bs_class_type := Ast_payload.assert_bool_lit e 
     )
   ]
 

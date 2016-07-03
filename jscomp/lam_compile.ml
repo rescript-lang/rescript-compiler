@@ -830,6 +830,7 @@ and
                   cont  block0 block1 (Some obj_code) (E.access (E.var obj) value)
               else if  Ext_string.ends_with method_name Literals.setter_suffix then 
                 let property =
+                  Lam_methname.translate ~loc @@ 
                   String.sub method_name 0 
                     (String.length method_name - Literals.setter_suffix_len) in 
                 match Js_ast_util.named_expression  obj with

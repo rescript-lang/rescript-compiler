@@ -38,9 +38,25 @@ val method_run :
   (string * Parsetree.expression) list ->
   Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
 
+val property_run : 
+  Ast_helper.loc ->
+  Parsetree.expression ->
+  string ->
+  (string * Parsetree.expression) list ->
+  Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
+
+
 val process_attributes_rev : 
   Parsetree.attributes ->
   Parsetree.attributes * [ `Meth | `Nothing | `Uncurry ]
+
+type ('a,'b) st = 
+  { get : 'a option ; 
+    set : 'b option }
+
+val process_method_attributes_rev : 
+  Parsetree.attributes ->
+  Parsetree.attribute list * (Parsetree.payload, Parsetree.payload) st
 
 (** turn {[ fun [@fn] (x,y) -> x]} into an uncurried function 
     TODO: Future 
@@ -68,7 +84,12 @@ val destruct_arrow :
   Parsetree.core_type ->
   Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
 
-val destruct_arrow_as_meth : 
+val destruct_arrow_as_meth_type : 
+  Ast_helper.loc ->
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+
+val destruct_arrow_as_meth_callback_type : 
   Ast_helper.loc ->
   Parsetree.core_type ->
   Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type

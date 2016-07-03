@@ -14,7 +14,7 @@ type yy = < x : int >
 type number = float
 
 class type date = 
-  object [@fn]
+  object
     method toDateString : unit -> string 
     method getTime : unit ->  number 
     method setMilliseconds : number ->  number 

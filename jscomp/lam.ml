@@ -513,7 +513,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
   | _ -> default ()
 
 
-let not x : t = 
+let not_ x : t = 
   prim Pnot [x] 
 
 let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t = 
@@ -568,24 +568,20 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
 
   | Pccall a -> 
     let prim_name = a.prim_name in
-    begin match prim_name with 
-    |  "js_debugger"
-      -> prim ~primitive:Pdebugger ~args 
-    | "js_fn_run" 
-      -> 
-      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args 
-    |  "js_fn_mk"  
-      -> 
-      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args           
-    | "js_fn_method"
-      ->
-      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args           
-    | "js_fn_runmethod"
-      ->
-      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args           
-    | _ -> 
+    if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
+      prim ~primitive:(Pccall a ) ~args else 
+    if prim_name =  "js_debugger" then 
+      prim ~primitive:Pdebugger ~args else 
+    if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
+      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args else 
+    if prim_name = "js_fn_mk" then 
+      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args else                
+    if prim_name = "js_fn_method" then 
+      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args else
+    if prim_name = "js_fn_runmethod" then 
+      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args 
+    else
       prim ~primitive:(Pccall a) ~args
-    end
   | Praise _ ->
     if Js_config.get_no_any_assert () then 
       begin match args with 

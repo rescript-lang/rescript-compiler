@@ -220,7 +220,7 @@ val unit : t
 
 val sequor : binop
 val sequand : binop
-val not : unop
+val not_ : unop
 val seq : binop
 val while_ : binop
 val event : t -> Lambda.lambda_event -> t  

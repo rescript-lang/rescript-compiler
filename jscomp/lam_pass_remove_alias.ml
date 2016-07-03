@@ -71,13 +71,13 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam.not ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
+            -> Lam.not_ ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
           | Undefined 
             -> 
-            Lam.not (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
+            Lam.not_ (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
           | Null_undefined
             -> 
-            Lam.not
+            Lam.not_
               ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l]) 
           | Normal ->  l1 
         in 

@@ -35,8 +35,19 @@ let curry_type_id () =
   else 
     Ast_literal.Lid.js_fn
 
-let mk_args ~loc n tys = 
+let method_id () = 
+  if Js_config.get_env () = Browser then 
+     Ast_literal.Lid.pervasives_meth
+  else 
+    Ast_literal.Lid.js_meth
 
+let meth_call_back_id () = 
+  if Js_config.get_env () = Browser then 
+    Ast_literal.Lid.pervasives_meth_callback
+  else 
+    Ast_literal.Lid.js_meth_callback
+
+let mk_args ~loc n tys = 
   Typ.variant ~loc 
     [ Rtag ("Args_" ^ string_of_int n, [], (tys = []),  tys)] Closed None
 
@@ -50,14 +61,19 @@ let lift_curry_type  ~loc args result  =
   in 
   Typ.constr ~loc {txt = curry_type_id (); loc} xs
 
+let lift_method_type  ~loc args result  = 
+  let xs =
+    match args with 
+    | [ ] -> [mk_args 0  ~loc [] ; result ]
+    | [ x ] -> [ mk_args ~loc 1 [x] ; result ] 
+    | _ -> 
+      [mk_args ~loc (List.length args ) [Typ.tuple ~loc args] ; result ]
+  in 
+  Typ.constr ~loc {txt = method_id (); loc} xs
+
 let lift_js_type ~loc  x  = 
   Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 
-let meth_type_id () = 
-  if Js_config.get_env () = Browser then 
-    Ast_literal.Lid.pervasives_meth_callback
-  else 
-    Ast_literal.Lid.js_meth_callback
 
 
 let arrow = Typ.arrow
@@ -65,7 +81,7 @@ let arrow = Typ.arrow
 
 
 let lift_js_meth_callback ~loc (obj,meth) 
-  = Typ.constr ~loc {txt = meth_type_id () ; loc} [obj; meth]
+  = Typ.constr ~loc {txt = meth_call_back_id () ; loc} [obj; meth]
 
 let down_with_name ~loc obj name =
   let downgrade ~loc () = 
@@ -80,10 +96,18 @@ let down_with_name ~loc obj name =
     (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
 
 let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
-  let pval_prim = ["js_fn_run" ; string_of_int arity]  in
+  let pval_prim = [Literals.js_fn_run ; string_of_int arity]  in
   let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
   let pval_type =
     arrow ~loc "" (lift_curry_type ~loc args_type result_type) fn_type in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    (("", fn) :: List.map (fun x -> "",x) args )
+
+let gen_method_run loc arity fn args  : Parsetree.expression_desc = 
+  let pval_prim = [Literals.js_method_run ; string_of_int arity]  in
+  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
+  let pval_type =
+    arrow ~loc "" (lift_method_type ~loc args_type result_type) fn_type in 
   Ast_comb.create_local_external loc ~pval_prim ~pval_type 
     (("", fn) :: List.map (fun x -> "",x) args )
 
@@ -107,6 +131,35 @@ let fn_run loc fn args
     {e with
      pexp_desc = gen_fn_run loc len fn args; 
      pexp_attributes 
+    }
+
+let property_run loc (obj : Parsetree.expression) 
+    name (args : (string * Parsetree.expression) list ) e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let obj = mapper.expr mapper obj in
+  let args =
+    List.map (fun (label,e) ->
+        if label <> "" then
+          Location.raise_errorf ~loc "label is not allowed here"        ;
+        mapper.expr mapper e
+      ) args in
+  let len = List.length args in 
+  (* TODO: have a final checking for property arities 
+     [case], [case_set] and other setter       
+  *)
+  match args with 
+  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+    -> 
+    {e with pexp_desc = 
+              gen_fn_run loc 0
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                []
+    }
+  | _ -> 
+    {e with pexp_desc = 
+              gen_fn_run loc len 
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                args
     }
 
 let method_run loc (obj : Parsetree.expression) 
@@ -134,13 +187,13 @@ let method_run loc (obj : Parsetree.expression)
   | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
     -> 
     {e with pexp_desc = 
-              gen_fn_run loc 0
+              gen_method_run loc 0
                 (Exp.mk ~loc @@ down_with_name ~loc obj name)
                 []
     }
   | _ -> 
     {e with pexp_desc = 
-              gen_fn_run loc len 
+              gen_method_run loc len 
                 (Exp.mk ~loc @@ down_with_name ~loc obj name)
                 args
     }
@@ -194,6 +247,28 @@ let process_attributes_rev (attrs : Parsetree.attributes) =
         (attr::acc , st)
     ) ([], `Nothing) attrs
 
+type ('a,'b) st = 
+  { get : 'a option ; 
+    set : 'b option }
+
+
+let process_method_attributes_rev (attrs : Parsetree.attributes) = 
+  List.fold_left (fun (acc, st) ((tag, payload) as attr) -> 
+
+      match tag.Location.txt  with 
+      | "bs.get" (* [@@bs.get{null; undefined}]*)
+        -> 
+        (acc, {st with get = Some payload} )
+
+      | "bs.set"
+        -> (* properties -- void 
+              [@@bs.set{only}]
+           *)
+          acc, {st with set = Some payload }
+      | _ -> 
+        (attr::acc , st)
+    ) ([], {get = None ; set = None}) attrs
+
 
 (** TODO: how to handle attributes *)
 let destruct_arrow loc (first_arg : Parsetree.core_type) 
@@ -228,8 +303,41 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
     -> 
     lift_curry_type ~loc (List.rev rev_extra_args) result 
 
+
+let destruct_arrow_as_meth_type loc (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
+  let rec aux acc (typ : Parsetree.core_type) = 
+    (* in general, 
+       we should collect [typ] in [int -> typ] before transformation, 
+       however: when attributes [fn] and [meth_callback] found in typ, 
+       we should stop 
+    *)
+    match process_attributes_rev typ.ptyp_attributes with 
+    | _ , `Nothing -> 
+      begin match typ.ptyp_desc with 
+      | Ptyp_arrow (label, arg, body)
+        -> 
+        if label <> "" then
+          Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+        aux (mapper.typ mapper arg :: acc) body 
+      | _ -> mapper.typ mapper typ, acc 
+      end
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
+  let first_arg = mapper.typ mapper first_arg in
+  let result, rev_extra_args = 
+    aux  [first_arg] typ in 
+
+  match rev_extra_args with 
+  | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
+    ->
+    lift_method_type ~loc [] result 
+  | _
+    -> 
+    lift_method_type ~loc (List.rev rev_extra_args) result 
+
   
-let destruct_arrow_as_meth loc (first_arg : Parsetree.core_type) 
+let destruct_arrow_as_meth_callback_type loc (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
   let rec aux acc (typ : Parsetree.core_type) = 
     match process_attributes_rev typ.ptyp_attributes with 
