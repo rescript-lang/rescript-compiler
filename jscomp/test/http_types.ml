@@ -5,7 +5,7 @@
 
      A syntax extension
 
-     (req Js.t ->  resp Js.t -> unit  [@fn] )-> server Js.t [@fn]
+     (req Js.t ->  resp Js.t -> unit  [@bs] )-> server Js.t [@bs]
      type a = [%bs (req Js.t * resp Js.t => unit ) => server Js.t ]
   *)
 
@@ -24,12 +24,12 @@ class type _resp =
 type resp = _resp Js.t 
 class type _server = 
   object 
-    method listen : int ->  string -> (unit -> unit [@fn]) -> unit
+    method listen : int ->  string -> (unit -> unit [@bs]) -> unit
   end
 type server = _server Js.t 
 class type _http = 
   object 
-    method createServer : (req  -> resp  -> unit [@fn]) ->  server
+    method createServer : (req  -> resp  -> unit [@bs]) ->  server
   end
 type http = _http Js.t
 

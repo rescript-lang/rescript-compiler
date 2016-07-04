@@ -28,22 +28,22 @@ external (!)  : 'a Js.t -> 'a = "js_unsafe_downgrade"
 external mk0 : 
   (unit -> 'a0) 
   ->
-  (unit -> 'a0 [@fn]) = 
+  (unit -> 'a0 [@bs]) = 
   "js_fn_mk" "0"
 
 external run0 : 
-  (unit -> 'a0 [@fn])  
+  (unit -> 'a0 [@bs])  
   ->
   'a0 = "js_fn_run" "0"
 
 external mk1 : 
   ('a0 -> 'a1) 
   ->
-  ('a0 -> 'a1 [@fn])  = 
+  ('a0 -> 'a1 [@bs])  = 
   "js_fn_mk" "1"
 
 external run1 : 
-  ('a0 -> 'a1 [@fn]) 
+  ('a0 -> 'a1 [@bs]) 
   ->
   'a0 -> 'a1  = 
   "js_fn_run" "1"
@@ -71,12 +71,12 @@ external run_method1 :
 external mk2 : 
   ('a0 -> 'a1 -> 'a2 ) 
   ->
-  ('a0 -> 'a1 -> 'a2 [@fn])
+  ('a0 -> 'a1 -> 'a2 [@bs])
   = 
   "js_fn_mk" "2"
 
 external run2 : 
-  ('a0 -> 'a1 -> 'a2 [@fn]) ->
+  ('a0 -> 'a1 -> 'a2 [@bs]) ->
   'a0 -> 'a1 -> 'a2  
   = 
   "js_fn_run" "2"
@@ -84,12 +84,12 @@ external run2 :
 external mk3 : 
   ('a0 -> 'a1 -> 'a2 -> 'a3 ) 
   ->
-  ('a0 -> 'a1 -> 'a2 -> 'a3 [@fn]) 
+  ('a0 -> 'a1 -> 'a2 -> 'a3 [@bs]) 
   = 
   "js_fn_mk" "3"
 
 external run3 : 
-   ('a0 -> 'a1 -> 'a2 -> 'a3 [@fn]) 
+   ('a0 -> 'a1 -> 'a2 -> 'a3 [@bs]) 
    ->
    'a0 -> 'a1 -> 'a2 -> 'a3 
   = 
@@ -98,12 +98,12 @@ external run3 :
 external mk4 : 
   ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 ) 
   -> 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@fn]) 
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@bs]) 
   = 
   "js_fn_mk" "4"
 
 external run4 : 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@fn])
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 [@bs])
   -> 
   'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 
   = 
@@ -112,12 +112,12 @@ external run4 :
 external mk5 : 
   ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 ) 
   ->
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@fn]) 
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@bs]) 
   =
   "js_fn_mk" "5"
 
 external run5 : 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@fn])
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 [@bs])
   -> 
   'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 
   = 
@@ -126,12 +126,12 @@ external run5 :
 external mk6 : 
   ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6)
   -> 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@fn])
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@bs])
   =
   "js_fn_mk" "6"
 
 external run6 : 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@fn])
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 [@bs])
   ->
   'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 
   = 
@@ -140,12 +140,12 @@ external run6 :
 external mk7 : 
   ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) 
   -> 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@fn]) 
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@bs]) 
   =
   "js_fn_mk" "7"
 
 external run7 : 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@fn])
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 [@bs])
   ->
   'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 
   = 
@@ -154,12 +154,12 @@ external run7 :
 external mk8 :
   ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 ) 
   ->
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 [@fn]) 
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 [@bs]) 
   =
   "js_fn_mk" "8"
 
 external run8 :   
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 [@fn])
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 [@bs])
   -> 
   'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 
   = 
@@ -168,12 +168,12 @@ external run8 :
 external mk9 : 
   ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9) 
   ->
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 [@fn]) 
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 [@bs]) 
   =
   "js_fn_mk" "9"
 
 external run9 : 
-  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 [@fn])
+  ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 [@bs])
   -> 
   'a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9 
   = 

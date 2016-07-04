@@ -58,7 +58,7 @@ val process_method_attributes_rev :
   Parsetree.attributes ->
   Parsetree.attribute list * (Parsetree.payload, Parsetree.payload) st
 
-(** turn {[ fun [@fn] (x,y) -> x]} into an uncurried function 
+(** turn {[ fun [@bs] x y -> x]} into an uncurried function 
     TODO: Future 
     {[ fun%bs this (a,b,c) -> 
     ]}

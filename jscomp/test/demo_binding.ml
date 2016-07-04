@@ -7,7 +7,7 @@ class type titlex =
 
 class type widget = 
   object 
-      method on : string ->  (event -> unit [@fn]) -> unit 
+      method on : string ->  (event -> unit [@bs]) -> unit 
   end
 and  event = 
   object 
@@ -104,7 +104,7 @@ class type textArea =
   end
 
 
-external set_interval : (unit -> unit [@fn]) -> float -> unit  =  "setInterval"
+external set_interval : (unit -> unit [@bs]) -> float -> unit  =  "setInterval"
     [@@bs.call] [@@bs.module "@runtime" "Runtime"]
 
 external to_fixed : float -> int -> string = "toFixed" [@@bs.send ]

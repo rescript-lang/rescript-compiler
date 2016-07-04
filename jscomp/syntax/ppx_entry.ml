@@ -217,7 +217,7 @@ let handle_typ
     let methods, ptyp_attributes  =
       begin match Ext_list.exclude_with_fact
                     (function 
-                      | {Location.txt = "fn"; _}, _ -> true
+                      | {Location.txt = "bs"; _}, _ -> true
                       | _ -> false)
                     ptyp_attributes with 
       | None, _  ->
@@ -374,7 +374,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | _ -> 
 
               begin match Ext_list.exclude_with_fact (function 
-                  | {Location.txt = "fn"; _}, _ -> true 
+                  | {Location.txt = "bs"; _}, _ -> true 
                   | _ -> false) e.pexp_attributes with 
               | None, _ -> Ast_mapper.default_mapper.expr self e 
               | Some _, attrs -> 

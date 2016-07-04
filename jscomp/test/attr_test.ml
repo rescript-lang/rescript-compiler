@@ -1,15 +1,15 @@
 
-let u = fun [@fn] x y -> x + y 
+let u = fun [@bs] x y -> x + y 
 
-let h = u 1 2 [@fn]
+let h = u 1 2 [@bs]
 
-type u = < v : int ; y : int > [@fn]
+type u = < v : int ; y : int > [@bs]
 type ('a,'b) xx = 
-  (< case : (int ->  (int -> 'a [@fn]) [@fn]); .. >   as 'b) 
+  (< case : (int ->  (int -> 'a [@bs]) [@bs]); .. >   as 'b) 
 type ('a,'b) xx_uncurry = 
-  (< case : int ->  (int -> 'a ); .. >  [@fn]) as 'b
+  (< case : int ->  (int -> 'a ); .. >  [@bs]) as 'b
 
-type yy_uncurry = < x : int > [@fn]
+type yy_uncurry = < x : int > [@bs]
 type yy = < x : int > 
 type number = float
 
@@ -28,7 +28,7 @@ class type date =
   end
 
 
-let max2 : float -> float -> float [@fn] = 
-  fun [@fn] x y ->   x +. y 
+let max2 : float -> float -> float [@bs] = 
+  fun [@bs] x y ->   x +. y 
 
-let hh = max2 1. 2. [@fn]
+let hh = max2 1. 2. [@bs]

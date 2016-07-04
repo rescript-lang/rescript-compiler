@@ -56,7 +56,8 @@ let as_empty_structure (x : t ) =
 
 let as_record_and_process 
     loc
-    ( x : t ) (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
+    ( x : t )
+    (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
   match  x with 
   | PStr [ {pstr_desc = Pstr_eval
                 ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 

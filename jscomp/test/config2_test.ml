@@ -17,7 +17,7 @@ end
 type vv = 
   [%bs.obj: < 
     hey : int -> int -> int 
-  >  [@fn] ]
+  >  [@bs] ]
 
 type vv2 = 
   [%bs.obj: < 
@@ -34,4 +34,4 @@ let test_v (x : v Js.t) =
   x##hey 1 2
 
 let test_vv (h : vv) =
-  let hey = h##hey in hey  1 2 [@fn]
+  let hey = h##hey in hey  1 2 [@bs]

@@ -2,7 +2,7 @@
 
 val js_obj :
   [%bs.obj: <
-         bark :  ('a ->  int ->  int -> int [@meth_callback]) ;
+         bark :  ('a ->  int ->  int -> int [@bs.this]) ;
          length : int; 
          x : int;
          y : int

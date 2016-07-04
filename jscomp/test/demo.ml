@@ -28,7 +28,7 @@ external stringify : 'a -> string = ""
 external random : unit -> float = ""
     [@@bs.call "Math.random"] 
 
-external array_map : 'a array -> ('a -> 'b [@fn]) -> 'b array = ""
+external array_map : 'a array -> ('a -> 'b [@bs]) -> 'b array = ""
     [@@bs.call"Array.prototype.map.call"] 
 
 type env 
@@ -89,17 +89,17 @@ let ui_layout
 
     button##text #= "update formula";
     button##minHeight #= 20;
-    button##on "click" begin fun [@fn] _event -> (* FIXME both [_] and () should work*)
+    button##on "click" begin fun [@bs] _event -> (* FIXME both [_] and () should work*)
       try 
         let hot_function = compile inputCode##text in
         computeFunction := fun env ->  hot_function (fun key -> lookup env key) 
       with  e -> ()
     end;
     let fmt v = to_fixed v 2 in
-    set_interval (fun [@fn] () -> 
+    set_interval (fun [@bs] () -> 
 
       grid##dataSource #=
-        ( array_map data (fun [@fn] {ticker; price } -> 
+        ( array_map data (fun [@bs] {ticker; price } -> 
           let bid = price +. 20. *. random () in
           let ask = price +. 20. *. random () in
           let result = !computeFunction (mk_bid_ask ~bid ~ask ) in

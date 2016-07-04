@@ -223,9 +223,9 @@ let bs_object_attribute  : Parsetree.attribute
   = {txt = "bs.obj" ; loc = Location.none}, empty_payload
 
 let bs_uncurry_attribute : Parsetree.attribute        
-  =  {txt = "fn" ; loc = Location.none}, empty_payload
+  =  {txt = "bs" ; loc = Location.none}, empty_payload
 let bs_meth_attribute : Parsetree.attribute        
-  =  {txt = "meth_callback" ; loc = Location.none}, empty_payload
+  =  {txt = "bs.this" ; loc = Location.none}, empty_payload
 
 
 
@@ -233,16 +233,16 @@ let process_attributes_rev (attrs : Parsetree.attributes) =
   List.fold_left (fun (acc, st) attr -> 
       let tag = fst attr in
       match tag.Location.txt, st  with 
-      | "fn", (`Nothing | `Uncurry) 
+      | "bs", (`Nothing | `Uncurry) 
         -> 
         (acc, `Uncurry)
-      | "meth_callback", (`Nothing | `Meth)
+      | "bs.this", (`Nothing | `Meth)
         -> (acc, `Meth)
-      | "fn", `Meth 
-      | "meth_callback", `Uncurry
+      | "bs", `Meth 
+      | "bs.this", `Uncurry
         -> Location.raise_errorf 
              ~loc:tag.Location.loc 
-             "[@meth_callback] and [@fn] can not be applied at the same time"
+             "[@bs.this] and [@bs] can not be applied at the same time"
       | _ , _ -> 
         (attr::acc , st)
     ) ([], `Nothing) attrs
@@ -276,7 +276,7 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
   let rec aux acc (typ : Parsetree.core_type) = 
     (* in general, 
        we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [fn] and [meth_callback] found in typ, 
+       however: when attributes [bs] and [bs.this] found in typ, 
        we should stop 
     *)
     match process_attributes_rev typ.ptyp_attributes with 
@@ -309,7 +309,7 @@ let destruct_arrow_as_meth_type loc (first_arg : Parsetree.core_type)
   let rec aux acc (typ : Parsetree.core_type) = 
     (* in general, 
        we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [fn] and [meth_callback] found in typ, 
+       however: when attributes [bs] and [bs.this] found in typ, 
        we should stop 
     *)
     match process_attributes_rev typ.ptyp_attributes with 

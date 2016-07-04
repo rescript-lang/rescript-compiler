@@ -14,7 +14,7 @@ end
 type vv = 
   [%bs.obj: < 
     hey : int -> int -> int 
-  >  [@fn]]
+  >  [@bs]]
 
 type vv2 = 
   [%bs.obj: < 
