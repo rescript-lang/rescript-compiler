@@ -1,6 +1,6 @@
 [@@@bs.config{
-  obj_type_auto_uncurry = true;
-  bs_class_type = true 
+  obj_type_auto_uncurry ;
+  bs_class_type 
   (* non_export = true; *)
 }]
 

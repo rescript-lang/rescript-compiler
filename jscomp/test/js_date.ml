@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type = true }]
+[@@@bs.config{bs_class_type }]
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date *)
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters *)
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split *)

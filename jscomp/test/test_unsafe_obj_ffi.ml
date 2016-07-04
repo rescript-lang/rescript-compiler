@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type = true }]
+[@@@bs.config{bs_class_type }]
 
 open Js_unsafe
 

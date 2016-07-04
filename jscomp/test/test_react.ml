@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type = true }]
+[@@@bs.config{bs_class_type  }]
 (** TODO: binding -- document.getElementById -- to mount node *)
 
 type html_element 

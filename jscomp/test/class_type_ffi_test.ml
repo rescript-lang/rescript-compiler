@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type = true }]
+[@@@bs.config{bs_class_type  }]
 class type ['k,'v] arrayLike = 
   object 
     method case : 'k -> 'v Js.Null.t 

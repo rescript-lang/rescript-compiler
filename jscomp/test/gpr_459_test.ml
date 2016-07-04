@@ -1,4 +1,4 @@
-[@@@bs.config{non_export=true}]
+[@@@bs.config{non_export}]
 
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0

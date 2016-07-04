@@ -1,5 +1,5 @@
 
-[@@@bs.config{bs_class_type = true }]
+[@@@bs.config{bs_class_type }]
 class type ['a] case = object 
   method case : int -> 'a 
   method case_set : int -> 'a -> unit 

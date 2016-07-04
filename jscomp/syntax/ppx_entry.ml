@@ -424,14 +424,18 @@ let rec unsafe_mapper : Ast_mapper.mapper =
 
 (** global configurations below *)
 let common_actions_table : 
-  (string *  (Parsetree.expression -> unit)) list = 
+  (string *  (Parsetree.expression option -> unit)) list = 
   [ "obj_type_auto_uncurry", 
     (fun e -> 
-       obj_type_auto_uncurry := Ast_payload.assert_bool_lit e
+       obj_type_auto_uncurry := 
+         (match e with Some e -> Ast_payload.assert_bool_lit e
+         | None -> true)
     ); 
     "bs_class_type", 
     (fun e -> 
-       bs_class_type := Ast_payload.assert_bool_lit e 
+       bs_class_type := 
+         (match e with Some e -> Ast_payload.assert_bool_lit e 
+         | None -> true)
     )
   ]
 
@@ -439,24 +443,39 @@ let common_actions_table :
 let structural_config_table  = 
   String_map.of_list 
     (( "non_export" , 
-      (fun e -> non_export := Ast_payload.assert_bool_lit e ))
+      (fun x -> 
+         non_export := (
+           match x with 
+           |Some e -> Ast_payload.assert_bool_lit e 
+           | None -> true)
+      ))
       :: common_actions_table)
 
-let signature_config_table = 
+let signature_config_table : 
+  (Parsetree.expression option -> unit) String_map.t= 
   String_map.of_list common_actions_table
 
 
-let make_call_back table ((x : Longident.t Asttypes.loc) , y) = 
+let make_call_back table 
+    ((x : Longident.t Asttypes.loc) , 
+     (y :Parsetree.expression)) = 
   match x with 
   | {txt = Lident name; loc  } -> 
     begin match String_map.find name table with 
-    | fn -> fn y
-    | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
+      | fn -> 
+        let y = 
+          match y with 
+          | {pexp_desc = Pexp_ident {txt = Lident name2} } when name2 = name -> 
+            None 
+          | _ -> Some y in
+        fn y
+      | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
-  | {loc} -> 
-    Location.raise_errorf ~loc "invalid label for config"
+  | _ -> 
+    Location.raise_errorf ~loc:x.loc "invalid label for config"
 
-let rewrite_signature : (Parsetree.signature -> Parsetree.signature) ref = 
+let rewrite_signature : 
+  (Parsetree.signature  -> Parsetree.signature) ref = 
   ref (fun  x -> 
       let result = 
         match (x : Parsetree.signature) with 

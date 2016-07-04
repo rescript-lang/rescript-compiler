@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type = true}]
+[@@@bs.config{bs_class_type }]
 class type _v = object 
   method height : int [@@bs.set]
   method width  : int [@@bs.set]

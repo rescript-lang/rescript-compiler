@@ -1,1 +1,1 @@
-[@@@bs.config{bs_class_type= true}]
+[@@@bs.config{bs_class_type }]
