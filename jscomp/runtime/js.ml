@@ -27,8 +27,8 @@ type (-'obj, +'a) meth_callback
 type +'a t (** Js object type *)
 
 
-
-type (-'arg, + 'result)fn (** Js uncurried function *)
+type (-'arg, + 'result) meth
+type (-'arg, + 'result) fn (** Js uncurried function *)
 
 (** This file will also be exported to external users 
     Attention: it should not have any code, all its code will be inlined so that 

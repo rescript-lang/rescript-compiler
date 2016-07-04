@@ -1,4 +1,4 @@
-
+[@@@bs.config{bs_class_type }]
 type t
 
 external catch : t -> 'a -> 'b = "catch" [@@bs.send]
@@ -10,7 +10,7 @@ class type promise =
   object
     method then_ : 'a -> 'b
     method catch : 'a -> 'b
-  end [@fn]
+  end [@bs]
 
 external new_promise : unit -> promise Js.t = 
   "Promise" [@@bs.new] [@@bs.module "sys-bluebird"]

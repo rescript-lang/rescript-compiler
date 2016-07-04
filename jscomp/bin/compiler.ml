@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 06/29-08:57 *)
+(** Bundled by ocaml_pack 07/04-09:47 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -136,6 +136,9 @@ val case : string
 val case_set : string 
 val case_prefix : string
 
+val js_fn_run : string
+val js_method_run : string
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -191,13 +194,551 @@ let stdlib = "stdlib"
 
 let imul = "imul" (* signed int32 mul *)
 
-let setter_suffix = "_set"
+let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
 let case = "case"
 let case_set = "case_set"
 let case_prefix = "case_"
 
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+end
+module Ext_ref : sig 
+#1 "ext_ref.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+
+val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
+
+end = struct
+#1 "ext_ref.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let protect r v body =
+  let old = !r in
+  try
+    r := v;
+    let res = body() in
+    r := old;
+    res
+  with x ->
+    r := old;
+    raise x
+
+
+let protect2 r1 r2 v1 v2 body =
+  let old1 = !r1 in
+  let old2 = !r2 in  
+  try
+    r1 := v1;
+    r2 := v2;
+    let res = body() in
+    r1 := old1;
+    r2 := old2;
+    res
+  with x ->
+    r1 := old1;
+    r2 := old2;
+    raise x
+
+end
+module Ext_list : sig 
+#1 "ext_list.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [List] module *)
+    
+(** TODO some function are no efficiently implemented. *) 
+
+val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
+
+val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+val exclude_with_fact2 : 
+  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+val same_length : 'a list -> 'b list -> bool
+
+val init : int -> (int -> 'a) -> 'a list
+
+val take : int -> 'a list -> 'a list * 'a list
+val try_take : int -> 'a list -> 'a list * int * 'a list 
+
+val exclude_tail : 'a list -> 'a list
+
+val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
+
+val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+
+val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
+
+val flat_map2_last : (bool -> 'a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+
+val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
+
+val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
+
+val drop : int -> 'a list -> 'a list 
+
+val for_all_ret : ('a -> bool) -> 'a list -> 'a option
+
+val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
+(** [for_all_opt f l] returns [None] if all return [None],  
+    otherwise returns the first one. 
+ *)
+
+val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+(** same as [List.fold_left]. 
+    Provide an api so that list can be easily swapped by other containers  
+ *)
+
+val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
+
+val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
+val rev_iter : ('a -> unit) -> 'a list -> unit
+
+val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** [f] is applied follow the list order *)
+val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
+
+
+val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+(** [fn] is applied from left to right *)
+val reduce_from_left : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+
+type 'a t = 'a list ref
+
+val create_ref_empty : unit -> 'a t
+
+val ref_top : 'a t -> 'a 
+
+val ref_empty : 'a t -> bool
+
+val ref_push : 'a -> 'a t -> unit
+
+val ref_pop : 'a t -> 'a
+
+end = struct
+#1 "ext_list.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let rec filter_map (f: 'a -> 'b option) xs = 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+      begin match f y with 
+      | None -> filter_map f ys
+      | Some z -> z :: filter_map f ys
+      end
+
+let excludes p l =
+  let excluded = ref false in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := true ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  if !excluded then true, v else false,l
+
+let exclude_with_fact p l =
+  let excluded = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := Some x ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded , if !excluded <> None then v else l 
+
+
+(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
+let exclude_with_fact2 p1 p2 l =
+  let excluded1 = ref None in 
+  let excluded2 = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p1 x then 
+      begin 
+        excluded1 := Some x ;
+        aux accu l
+      end
+    else if p2 x then 
+      begin 
+        excluded2 := Some x ; 
+        aux accu l 
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
+
+
+
+let rec same_length xs ys = 
+  match xs, ys with 
+  | [], [] -> true
+  | _::xs, _::ys -> same_length xs ys 
+  | _, _ -> false 
+
+let  filter_mapi (f: int -> 'a -> 'b option) xs = 
+  let rec aux i xs = 
+    match xs with 
+    | [] -> []
+    | y :: ys -> 
+        begin match f i y with 
+        | None -> aux (i + 1) ys
+        | Some z -> z :: aux (i + 1) ys
+        end in
+  aux 0 xs 
+
+let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f u v with 
+      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2 f us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2"
+
+let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
+  let rec aux i xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f i u v with 
+      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: aux (i + 1) us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2i" in
+  aux 0 xs ys
+
+let rec rev_map_append  f l1 l2 =
+  match l1 with
+  | [] -> l2
+  | a :: l -> rev_map_append f l (f a :: l2)
+
+let flat_map2 f lx ly = 
+  let rec aux acc lx ly = 
+    match lx, ly with 
+    | [], [] 
+      -> List.rev acc
+    | x::xs, y::ys 
+      ->  aux (List.rev_append (f x y) acc) xs ys
+    | _, _ -> invalid_arg "Ext_list.flat_map2" in
+  aux [] lx ly
+        
+let flat_map f lx =
+  let rec aux acc lx =
+    match lx with
+    | [] -> List.rev acc
+    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
+  aux [] lx
+
+let rec map2_last f l1 l2 =
+  match (l1, l2) with
+  | ([], []) -> []
+  | [u], [v] -> [f true u v ]
+  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
+  | (_, _) -> invalid_arg "List.map2_last"
+
+let rec map_last f l1 =
+  match l1 with
+  | [] -> []
+  | [u]-> [f true u ]
+  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
+
+
+let flat_map2_last f lx ly = List.concat @@ map2_last f lx ly
+
+let init n f = 
+  Array.to_list (Array.init n f)
+
+let take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  < n then invalid_arg "Ext_list.take"
+  else (Array.to_list (Array.sub arr 0 n ), 
+        Array.to_list (Array.sub arr n (arr_length - n)))
+
+let try_take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  <= n then 
+    l,  arr_length, []
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+
+let exclude_tail (x : 'a list) : 'a list = 
+  let rec aux acc x = 
+    match x with 
+    | [] -> invalid_arg "Ext_list.exclude_tail"
+    | [ _ ] ->  List.rev acc
+    | y0::ys -> aux (y0::acc) ys in
+  aux [] x
+
+(* For small list, only need partial equality 
+   {[
+   group (=) [1;2;3;4;3]
+   ;;
+   - : int list list = [[3; 3]; [4]; [2]; [1]]
+   # group (=) [];;
+   - : 'a list list = []
+   ]}
+ *)
+let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
+  match lst with 
+  | [] -> []
+  | x::xs -> 
+      aux cmp x (group cmp xs )
+
+and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
+  match xss with 
+  | [] -> [[x]]
+  | y::ys -> 
+      if cmp x (List.hd y) (* cannot be null*) then
+        (x::y) :: ys 
+      else
+        y :: aux cmp x ys                                 
+  
+let stable_group cmp lst =  group cmp lst |> List.rev 
+
+let rec drop n h = 
+  if n < 0 then invalid_arg "Ext_list.drop"
+  else if n = 0 then h 
+  else if h = [] then invalid_arg "Ext_list.drop"
+  else 
+    drop (n - 1) (List.tl h)
+
+let rec for_all_ret  p = function
+  | [] -> None
+  | a::l -> 
+      if p a 
+      then for_all_ret p l
+      else Some a 
+
+let rec for_all_opt  p = function
+  | [] -> None
+  | a::l -> 
+      match p a with
+      | None -> for_all_opt p l
+      | v -> v 
+
+let fold f l init = 
+  List.fold_left (fun acc i -> f  i init) init l 
+
+let rev_map_acc  acc f l = 
+  let rec rmap_f accu = function
+    | [] -> accu
+    | a::l -> rmap_f (f a :: accu) l
+  in
+  rmap_f acc l
+
+let rec rev_iter f xs =
+    match xs with    
+    | [] -> ()
+    | y :: ys -> 
+      rev_iter f ys ;
+      f y      
+      
+let rec for_all2_no_exn p l1 l2 = 
+  match (l1, l2) with
+  | ([], []) -> true
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
+  | (_, _) -> false
+
+
+let rec find_no_exn p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_no_exn p l
+
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt p l
+
+
+let split_map 
+    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
+  let rec aux bs cs xs =
+    match xs with 
+    | [] -> List.rev bs, List.rev cs 
+    | u::us -> 
+      let b,c =  f u in aux (b::bs) (c ::cs) us in 
+
+  aux [] [] xs 
+
+
+(*
+   {[
+     reduce_from_right (-) [1;2;3];;
+     - : int = 2
+               # reduce_from_right (-) [1;2;3; 4];;
+     - : int = -2
+                # reduce_from_right (-) [1];;
+     - : int = 1
+               # reduce_from_right (-) [1;2;3; 4; 5];;
+     - : int = 3
+   ]} 
+*)
+let reduce_from_right fn lst = 
+  begin match List.rev lst with
+    | last :: rest -> 
+      List.fold_left  (fun x y -> fn y x) last rest 
+    | _ -> invalid_arg "Ext_list.reduce" 
+  end
+let reduce_from_left fn lst = 
+  match lst with 
+  | first :: rest ->  List.fold_left fn first rest 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
+
+
+type 'a t = 'a list ref
+
+let create_ref_empty () = ref []
+
+let ref_top x = 
+  match !x with 
+  | y::_ -> y 
+  | _ -> invalid_arg "Ext_list.ref_top"
+
+let ref_empty x = 
+  match !x with [] -> true | _ -> false 
+
+let ref_push x refs = 
+  refs := x :: !refs
+
+let ref_pop refs = 
+  match !refs with 
+  | [] -> invalid_arg "Ext_list.ref_pop"
+  | x::rest -> 
+    refs := rest ; 
+    x     
 
 end
 module String_set : sig 
@@ -724,6 +1265,11 @@ val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
 
 val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
+
+
+val dump : 'a -> string 
+[@@ocaml.deprecated "only for debugging purpose"]
+
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -795,6 +1341,88 @@ let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
 let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
 let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+
+let rec dump r =
+  if Obj.is_int r then
+    string_of_int (Obj.magic r : int)
+  else (* Block. *)
+    let rec get_fields acc = function
+      | 0 -> acc
+      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
+    in
+    let rec is_list r =
+      if Obj.is_int r then
+        r = Obj.repr 0 (* [] *)
+      else
+        let s = Obj.size r and t = Obj.tag r in
+        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
+    in
+    let rec get_list r =
+      if Obj.is_int r then
+        []
+      else
+        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
+        h :: t
+    in
+    let opaque name =
+      (* XXX In future, print the address of value 'r'.  Not possible
+       * in pure OCaml at the moment.  *)
+      "<" ^ name ^ ">"
+    in
+    let s = Obj.size r and t = Obj.tag r in
+    (* From the tag, determine the type of block. *)
+    match t with
+    | _ when is_list r ->
+      let fields = get_list r in
+      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+    | 0 ->
+      let fields = get_fields [] s in
+      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.lazy_tag ->
+      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
+         * clear if very large constructed values could have the same
+         * tag. XXX *)
+      opaque "lazy"
+    | x when x = Obj.closure_tag ->
+      opaque "closure"
+    | x when x = Obj.object_tag ->
+      let fields = get_fields [] s in
+      let _clasz, id, slots =
+        match fields with
+        | h::h'::t -> h, h', t
+        | _ -> assert false
+      in
+      (* No information on decoding the class (first field).  So just print
+         * out the ID and the slots. *)
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+    | x when x = Obj.infix_tag ->
+      opaque "infix"
+    | x when x = Obj.forward_tag ->
+      opaque "forward"
+    | x when x < Obj.no_scan_tag ->
+      let fields = get_fields [] s in
+      "Tag" ^ string_of_int t ^
+      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.string_tag ->
+      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
+    | x when x = Obj.double_tag ->
+      string_of_float (Obj.magic r : float)
+    | x when x = Obj.abstract_tag ->
+      opaque "abstract"
+    | x when x = Obj.custom_tag ->
+      opaque "custom"
+    | x when x = Obj.custom_tag ->
+      opaque "final"
+    | x when x = Obj.double_array_tag ->
+      "[|"^
+      String.concat ";"
+        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
+      "|]"
+    | _ ->
+      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
+
+let dump v = dump (Obj.repr v)
 
 
 end
@@ -1253,6 +1881,15 @@ val check_div_by_zero : bool ref
 
 val get_check_div_by_zero : unit -> bool 
 
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1519,539 +2156,15 @@ let is_same_file () =
   !debug_file <> "" &&  !debug_file = !current_file
 
 let tool_name = "BuckleScript"
-let check_div_by_zero = ref true
 
+let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero 
 
+let no_any_assert = ref false 
 
+let set_no_any_assert () = no_any_assert := true
+let get_no_any_assert () = !no_any_assert
 
-end
-module Ext_ref : sig 
-#1 "ext_ref.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-
-val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-end = struct
-#1 "ext_ref.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let protect r v body =
-  let old = !r in
-  try
-    r := v;
-    let res = body() in
-    r := old;
-    res
-  with x ->
-    r := old;
-    raise x
-
-
-let protect2 r1 r2 v1 v2 body =
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  try
-    r1 := v1;
-    r2 := v2;
-    let res = body() in
-    r1 := old1;
-    r2 := old2;
-    res
-  with x ->
-    r1 := old1;
-    r2 := old2;
-    raise x
-
-end
-module Ext_list : sig 
-#1 "ext_list.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [List] module *)
-    
-(** TODO some function are no efficiently implemented. *) 
-
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
-
-val excludes : ('a -> bool) -> 'a list -> bool * 'a list
-val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
-val exclude_with_fact2 : 
-  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
-val same_length : 'a list -> 'b list -> bool
-
-val init : int -> (int -> 'a) -> 'a list
-
-val take : int -> 'a list -> 'a list * 'a list
-val try_take : int -> 'a list -> 'a list * int * 'a list 
-
-val exclude_tail : 'a list -> 'a list
-
-val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
-
-val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
-
-val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
-
-val flat_map2_last : (bool -> 'a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
-
-val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
-
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
-
-val drop : int -> 'a list -> 'a list 
-
-val for_all_ret : ('a -> bool) -> 'a list -> 'a option
-
-val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
-(** [for_all_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
- *)
-
-val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-(** same as [List.fold_left]. 
-    Provide an api so that list can be easily swapped by other containers  
- *)
-
-val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
-
-val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
-
-val rev_iter : ('a -> unit) -> 'a list -> unit
-
-val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option
-
-(** [f] is applied follow the list order *)
-val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
-
-
-val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
-
-
-type 'a t = 'a list ref
-
-val create_ref_empty : unit -> 'a t
-
-val ref_top : 'a t -> 'a 
-
-val ref_empty : 'a t -> bool
-
-val ref_push : 'a -> 'a t -> unit
-
-val ref_pop : 'a t -> 'a
-
-end = struct
-#1 "ext_list.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let rec filter_map (f: 'a -> 'b option) xs = 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-      begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
-      end
-
-let excludes p l =
-  let excluded = ref false in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := true ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  if !excluded then true, v else false,l
-
-let exclude_with_fact p l =
-  let excluded = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := Some x ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded , if !excluded <> None then v else l 
-
-
-(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
-let exclude_with_fact2 p1 p2 l =
-  let excluded1 = ref None in 
-  let excluded2 = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p1 x then 
-      begin 
-        excluded1 := Some x ;
-        aux accu l
-      end
-    else if p2 x then 
-      begin 
-        excluded2 := Some x ; 
-        aux accu l 
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
-
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
-  | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
-
-let  filter_mapi (f: int -> 'a -> 'b option) xs = 
-  let rec aux i xs = 
-    match xs with 
-    | [] -> []
-    | y :: ys -> 
-        begin match f i y with 
-        | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-        end in
-  aux 0 xs 
-
-let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f u v with 
-      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2 f us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2"
-
-let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
-  let rec aux i xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f i u v with 
-      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: aux (i + 1) us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2i" in
-  aux 0 xs ys
-
-let rec rev_map_append  f l1 l2 =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append f l (f a :: l2)
-
-let flat_map2 f lx ly = 
-  let rec aux acc lx ly = 
-    match lx, ly with 
-    | [], [] 
-      -> List.rev acc
-    | x::xs, y::ys 
-      ->  aux (List.rev_append (f x y) acc) xs ys
-    | _, _ -> invalid_arg "Ext_list.flat_map2" in
-  aux [] lx ly
-        
-let flat_map f lx =
-  let rec aux acc lx =
-    match lx with
-    | [] -> List.rev acc
-    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
-  aux [] lx
-
-let rec map2_last f l1 l2 =
-  match (l1, l2) with
-  | ([], []) -> []
-  | [u], [v] -> [f true u v ]
-  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
-  | (_, _) -> invalid_arg "List.map2_last"
-
-let rec map_last f l1 =
-  match l1 with
-  | [] -> []
-  | [u]-> [f true u ]
-  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
-
-
-let flat_map2_last f lx ly = List.concat @@ map2_last f lx ly
-
-let init n f = 
-  Array.to_list (Array.init n f)
-
-let take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  < n then invalid_arg "Ext_list.take"
-  else (Array.to_list (Array.sub arr 0 n ), 
-        Array.to_list (Array.sub arr n (arr_length - n)))
-
-let try_take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  <= n then 
-    l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
-
-let exclude_tail (x : 'a list) : 'a list = 
-  let rec aux acc x = 
-    match x with 
-    | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ _ ] ->  List.rev acc
-    | y0::ys -> aux (y0::acc) ys in
-  aux [] x
-
-(* For small list, only need partial equality 
-   {[
-   group (=) [1;2;3;4;3]
-   ;;
-   - : int list list = [[3; 3]; [4]; [2]; [1]]
-   # group (=) [];;
-   - : 'a list list = []
-   ]}
- *)
-let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-      aux cmp x (group cmp xs )
-
-and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | y::ys -> 
-      if cmp x (List.hd y) (* cannot be null*) then
-        (x::y) :: ys 
-      else
-        y :: aux cmp x ys                                 
-  
-let stable_group cmp lst =  group cmp lst |> List.rev 
-
-let rec drop n h = 
-  if n < 0 then invalid_arg "Ext_list.drop"
-  else if n = 0 then h 
-  else if h = [] then invalid_arg "Ext_list.drop"
-  else 
-    drop (n - 1) (List.tl h)
-
-let rec for_all_ret  p = function
-  | [] -> None
-  | a::l -> 
-      if p a 
-      then for_all_ret p l
-      else Some a 
-
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-      match p a with
-      | None -> for_all_opt p l
-      | v -> v 
-
-let fold f l init = 
-  List.fold_left (fun acc i -> f  i init) init l 
-
-let rev_map_acc  acc f l = 
-  let rec rmap_f accu = function
-    | [] -> accu
-    | a::l -> rmap_f (f a :: accu) l
-  in
-  rmap_f acc l
-
-let rec rev_iter f xs =
-    match xs with    
-    | [] -> ()
-    | y :: ys -> 
-      rev_iter f ys ;
-      f y      
-      
-let rec for_all2_no_exn p l1 l2 = 
-  match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
-  | (_, _) -> false
-
-
-let rec find_no_exn p = function
-  | [] -> None
-  | x :: l -> if p x then Some x else find_no_exn p l
-
-
-let rec find_opt p = function
-  | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt p l
-
-
-let split_map 
-    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
-  let rec aux bs cs xs =
-    match xs with 
-    | [] -> List.rev bs, List.rev cs 
-    | u::us -> 
-      let b,c =  f u in aux (b::bs) (c ::cs) us in 
-
-  aux [] [] xs 
-
-
-(*
-   {[
-     reduce_from_right (-) [1;2;3];;
-     - : int = 2
-               # reduce_from_right (-) [1;2;3; 4];;
-     - : int = -2
-                # reduce_from_right (-) [1];;
-     - : int = 1
-               # reduce_from_right (-) [1;2;3; 4; 5];;
-     - : int = 3
-   ]} 
-*)
-let reduce_from_right fn lst = 
-  begin match List.rev lst with
-    | last :: rest -> 
-      List.fold_left  (fun x y -> fn y x) last rest 
-    | _ -> invalid_arg "Ext_list.reduce" 
-  end
-
-type 'a t = 'a list ref
-
-let create_ref_empty () = ref []
-
-let ref_top x = 
-  match !x with 
-  | y::_ -> y 
-  | _ -> invalid_arg "Ext_list.ref_top"
-
-let ref_empty x = 
-  match !x with [] -> true | _ -> false 
-
-let ref_push x refs = 
-  refs := x :: !refs
-
-let ref_pop refs = 
-  match !refs with 
-  | [] -> invalid_arg "Ext_list.ref_pop"
-  | x::rest -> 
-    refs := rest ; 
-    x     
 
 end
 module Ast_payload : sig 
@@ -2158,7 +2271,8 @@ let as_empty_structure (x : t ) =
 
 let as_record_and_process 
     loc
-    ( x : t ) (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
+    ( x : t )
+    (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
   match  x with 
   | PStr [ {pstr_desc = Pstr_eval
                 ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
@@ -2248,11 +2362,17 @@ module Lid : sig
   val val_unit : t 
   val type_unit : t 
   val pervasives_js_obj : t 
-  val pervasives_uncurry : t 
-  val pervasives_meth : t
-  val js_meth : t 
-  val js_obj : t 
+
   val js_fn : t 
+  val pervasives_fn : t 
+
+  val js_meth : t 
+  val pervasives_meth : t 
+
+  val pervasives_meth_callback : t
+  val js_meth_callback : t 
+  val js_obj : t 
+
   val ignore_id : t 
 end
 
@@ -2306,11 +2426,18 @@ module Lid = struct
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
-  let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
-  let pervasives_meth = Longident.Ldot (Lident "Pervasives", "meth")
-  let js_obj = Longident.Ldot (Lident "Js", "t") 
+
+
   let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let pervasives_fn = Longident.Ldot (Lident "Pervasives", "fn")
+
   let js_meth = Longident.Ldot (Lident "Js", "meth")
+  let pervasives_meth = Longident.Ldot (Lident "Pervasives", "meth")
+
+  let pervasives_meth_callback = Longident.Ldot (Lident "Pervasives", "meth_callback")
+  let js_obj = Longident.Ldot (Lident "Js", "t") 
+
+  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
   let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
 end
 
@@ -2435,9 +2562,8 @@ val discard_exp_as_unit :
 
 val tuple_type_pair : 
   ?loc:Ast_helper.loc ->
-  [`Make | `Run ] -> 
-  int  ->
-  Parsetree.core_type * Parsetree.core_type
+  [< `Make | `Run ] ->
+  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
 
 
 val obj_type_pair : 
@@ -2557,18 +2683,23 @@ let tuple_type_pair ?loc kind arity =
   if arity = 0 then 
     let ty = Typ.var ?loc ( prefix ^ "0") in 
     match kind with 
-    | `Run -> ty, ty 
+    | `Run -> ty,  [], ty 
     | `Make -> 
       (Typ.arrow "" ?loc
          (Ast_literal.type_unit ?loc ())
          ty ,
-       ty)
+       [], ty)
   else
-    let tys = Ext_list.init (arity + 1) (fun i -> 
-        Typ.var ?loc (prefix ^ string_of_int i)
+    let number = arity + 1 in
+    let tys = Ext_list.init number (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
       )  in
-    (Ext_list.reduce_from_right (fun x y -> Typ.arrow "" ?loc x y) tys,
-     Typ.tuple ?loc  tys)
+    match tys with 
+    | result :: rest -> 
+      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
+      List.rev rest , result
+    | [] -> assert false
+    
     
 
 
@@ -2591,6 +2722,611 @@ let obj_type_pair ?loc arity =
     
 
 
+
+end
+module Ast_util : sig 
+#1 "ast_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val fn_run : 
+  Ast_helper.loc ->
+  Parsetree.expression ->
+  (string * Parsetree.expression) list ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
+
+val method_run : 
+  Ast_helper.loc ->
+  Parsetree.expression ->
+  string ->
+  (string * Parsetree.expression) list ->
+  Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
+
+val property_run : 
+  Ast_helper.loc ->
+  Parsetree.expression ->
+  string ->
+  (string * Parsetree.expression) list ->
+  Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
+
+
+val process_attributes_rev : 
+  Parsetree.attributes ->
+  Parsetree.attributes * [ `Meth | `Nothing | `Uncurry ]
+
+type ('a,'b) st = 
+  { get : 'a option ; 
+    set : 'b option }
+
+val process_method_attributes_rev : 
+  Parsetree.attributes ->
+  Parsetree.attribute list * (Parsetree.payload, Parsetree.payload) st
+
+(** turn {[ fun [@bs] x y -> x]} into an uncurried function 
+    TODO: Future 
+    {[ fun%bs this (a,b,c) -> 
+    ]}
+
+    [function] can only take one argument, that is the reason we did not adopt it
+*)
+val destruct_arrow_as_fn : 
+  Ast_helper.loc ->
+  Parsetree.pattern ->
+  Parsetree.expression ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
+
+val destruct_arrow_as_meth_callbak : 
+  Ast_helper.loc ->
+  Parsetree.pattern ->
+  Parsetree.expression ->
+  Ast_mapper.mapper ->
+  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
+
+val destruct_arrow : 
+  Ast_helper.loc ->
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+
+val destruct_arrow_as_meth_type : 
+  Ast_helper.loc ->
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+
+val destruct_arrow_as_meth_callback_type : 
+  Ast_helper.loc ->
+  Parsetree.core_type ->
+  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+
+val bs_object_attribute : Parsetree.attribute
+val bs_uncurry_attribute :  Parsetree.attribute
+val bs_meth_attribute : Parsetree.attribute 
+
+
+
+
+val lift_js_type : 
+  loc:Ast_helper.loc -> Parsetree.core_type -> Parsetree.core_type
+
+
+val from_labels : loc:Ast_helper.loc -> Asttypes.label list -> Parsetree.core_type
+
+val down_with_name : 
+  loc:Ast_helper.loc ->
+  Parsetree.expression -> string -> Parsetree.expression_desc
+
+val handle_debugger : 
+  Location.t -> Ast_payload.t -> Parsetree.expression_desc
+
+val handle_raw : 
+  Location.t -> Ast_payload.t -> Parsetree.expression
+val handle_raw_structure : 
+  Location.t -> Ast_payload.t -> Parsetree.structure_item
+
+end = struct
+#1 "ast_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper 
+
+let js_obj_type_id () = 
+  if Js_config.get_env () = Browser then
+    Ast_literal.Lid.pervasives_js_obj
+  else Ast_literal.Lid.js_obj 
+    
+let curry_type_id () = 
+  if Js_config.get_env () = Browser then 
+     Ast_literal.Lid.pervasives_fn
+  else 
+    Ast_literal.Lid.js_fn
+
+let method_id () = 
+  if Js_config.get_env () = Browser then 
+     Ast_literal.Lid.pervasives_meth
+  else 
+    Ast_literal.Lid.js_meth
+
+let meth_call_back_id () = 
+  if Js_config.get_env () = Browser then 
+    Ast_literal.Lid.pervasives_meth_callback
+  else 
+    Ast_literal.Lid.js_meth_callback
+
+let mk_args ~loc n tys = 
+  Typ.variant ~loc 
+    [ Rtag ("Args_" ^ string_of_int n, [], (tys = []),  tys)] Closed None
+
+let lift_curry_type  ~loc args result  = 
+  let xs =
+    match args with 
+    | [ ] -> [mk_args 0  ~loc [] ; result ]
+    | [ x ] -> [ mk_args ~loc 1 [x] ; result ] 
+    | _ -> 
+      [mk_args ~loc (List.length args ) [Typ.tuple ~loc args] ; result ]
+  in 
+  Typ.constr ~loc {txt = curry_type_id (); loc} xs
+
+let lift_method_type  ~loc args result  = 
+  let xs =
+    match args with 
+    | [ ] -> [mk_args 0  ~loc [] ; result ]
+    | [ x ] -> [ mk_args ~loc 1 [x] ; result ] 
+    | _ -> 
+      [mk_args ~loc (List.length args ) [Typ.tuple ~loc args] ; result ]
+  in 
+  Typ.constr ~loc {txt = method_id (); loc} xs
+
+let lift_js_type ~loc  x  = 
+  Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
+
+
+
+let arrow = Typ.arrow
+
+
+
+let lift_js_meth_callback ~loc (obj,meth) 
+  = Typ.constr ~loc {txt = meth_call_back_id () ; loc} [obj; meth]
+
+let down_with_name ~loc obj name =
+  let downgrade ~loc () = 
+    let var = Typ.var ~loc "a" in 
+    Ast_comb.arrow_no_label ~loc
+      (lift_js_type ~loc var) var
+  in
+  Ast_comb.local_extern_cont loc  
+    ~pval_prim:["js_unsafe_downgrade"] 
+    ~pval_type:(downgrade ~loc ())
+    ~local_fun_name:"cast" 
+    (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
+
+let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
+  let pval_prim = [Literals.js_fn_run ; string_of_int arity]  in
+  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
+  let pval_type =
+    arrow ~loc "" (lift_curry_type ~loc args_type result_type) fn_type in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    (("", fn) :: List.map (fun x -> "",x) args )
+
+let gen_method_run loc arity fn args  : Parsetree.expression_desc = 
+  let pval_prim = [Literals.js_method_run ; string_of_int arity]  in
+  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
+  let pval_type =
+    arrow ~loc "" (lift_method_type ~loc args_type result_type) fn_type in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    (("", fn) :: List.map (fun x -> "",x) args )
+
+
+let fn_run loc fn args 
+    (mapper : Ast_mapper.mapper) 
+    (e : Parsetree.expression) pexp_attributes = 
+  let fn = mapper.expr mapper fn in 
+  let args = 
+    List.map 
+      (fun (label, e) -> 
+         if label <> "" then 
+           Location.raise_errorf ~loc "label is not allowed here";
+         mapper.expr mapper e
+      ) args in 
+  let len = List.length args in 
+  match args with 
+  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+    -> {e with pexp_desc = gen_fn_run loc 0 fn []}
+  | _ -> 
+    {e with
+     pexp_desc = gen_fn_run loc len fn args; 
+     pexp_attributes 
+    }
+
+let property_run loc (obj : Parsetree.expression) 
+    name (args : (string * Parsetree.expression) list ) e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let obj = mapper.expr mapper obj in
+  let args =
+    List.map (fun (label,e) ->
+        if label <> "" then
+          Location.raise_errorf ~loc "label is not allowed here"        ;
+        mapper.expr mapper e
+      ) args in
+  let len = List.length args in 
+  (* TODO: have a final checking for property arities 
+     [case], [case_set] and other setter       
+  *)
+  match args with 
+  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+    -> 
+    {e with pexp_desc = 
+              gen_fn_run loc 0
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                []
+    }
+  | _ -> 
+    {e with pexp_desc = 
+              gen_fn_run loc len 
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                args
+    }
+
+let method_run loc (obj : Parsetree.expression) 
+    name (args : (string * Parsetree.expression) list ) e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let obj = mapper.expr mapper obj in
+  let args =
+    List.map (fun (label,e) ->
+        if label <> "" then
+          Location.raise_errorf ~loc "label is not allowed here"        ;
+        mapper.expr mapper e
+      ) args in
+  let len = List.length args in
+  let method_kind = 
+    if name = Literals.case_set then `Case_setter
+    else if Ext_string.ends_with name Literals.setter_suffix then `Setter
+    else `Normal name in 
+  let () = 
+     if method_kind = `Setter && len <> 1 then 
+        Location.raise_errorf ~loc "setter expect single argument"
+     else if method_kind = `Case_setter && len <> 2 then 
+       Location.raise_errorf ~loc "case_set would expect arity of 2 "
+  in
+  match args with 
+  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+    -> 
+    {e with pexp_desc = 
+              gen_method_run loc 0
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                []
+    }
+  | _ -> 
+    {e with pexp_desc = 
+              gen_method_run loc len 
+                (Exp.mk ~loc @@ down_with_name ~loc obj name)
+                args
+    }
+
+
+
+let gen_fn_mk loc arity arg  : Parsetree.expression_desc = 
+  let pval_prim = [ "js_fn_mk"; string_of_int arity]  in
+  let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
+  let pval_type = arrow ~loc "" fn_type (lift_curry_type ~loc args_type result_type) in
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
+
+let gen_method_mk loc arity arg  : Parsetree.expression_desc = 
+  let pval_prim = [ "js_fn_method"; string_of_int arity]  in
+  let fn_type , (obj_type, tuple_type) = Ast_comb.obj_type_pair ~loc  arity  in 
+  let pval_type = 
+    arrow ~loc "" fn_type (lift_js_meth_callback ~loc (obj_type, tuple_type))
+  in
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
+
+
+
+
+let empty_payload = Parsetree.PStr []
+
+let bs_object_attribute  : Parsetree.attribute
+  = {txt = "bs.obj" ; loc = Location.none}, empty_payload
+
+let bs_uncurry_attribute : Parsetree.attribute        
+  =  {txt = "bs" ; loc = Location.none}, empty_payload
+let bs_meth_attribute : Parsetree.attribute        
+  =  {txt = "bs.this" ; loc = Location.none}, empty_payload
+
+
+
+let process_attributes_rev (attrs : Parsetree.attributes) = 
+  List.fold_left (fun (acc, st) attr -> 
+      let tag = fst attr in
+      match tag.Location.txt, st  with 
+      | "bs", (`Nothing | `Uncurry) 
+        -> 
+        (acc, `Uncurry)
+      | "bs.this", (`Nothing | `Meth)
+        -> (acc, `Meth)
+      | "bs", `Meth 
+      | "bs.this", `Uncurry
+        -> Location.raise_errorf 
+             ~loc:tag.Location.loc 
+             "[@bs.this] and [@bs] can not be applied at the same time"
+      | _ , _ -> 
+        (attr::acc , st)
+    ) ([], `Nothing) attrs
+
+type ('a,'b) st = 
+  { get : 'a option ; 
+    set : 'b option }
+
+
+let process_method_attributes_rev (attrs : Parsetree.attributes) = 
+  List.fold_left (fun (acc, st) ((tag, payload) as attr) -> 
+
+      match tag.Location.txt  with 
+      | "bs.get" (* [@@bs.get{null; undefined}]*)
+        -> 
+        (acc, {st with get = Some payload} )
+
+      | "bs.set"
+        -> (* properties -- void 
+              [@@bs.set{only}]
+           *)
+          acc, {st with set = Some payload }
+      | _ -> 
+        (attr::acc , st)
+    ) ([], {get = None ; set = None}) attrs
+
+
+(** TODO: how to handle attributes *)
+let destruct_arrow loc (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
+  let rec aux acc (typ : Parsetree.core_type) = 
+    (* in general, 
+       we should collect [typ] in [int -> typ] before transformation, 
+       however: when attributes [bs] and [bs.this] found in typ, 
+       we should stop 
+    *)
+    match process_attributes_rev typ.ptyp_attributes with 
+    | _ , `Nothing -> 
+      begin match typ.ptyp_desc with 
+      | Ptyp_arrow (label, arg, body)
+        -> 
+        if label <> "" then
+          Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+        aux (mapper.typ mapper arg :: acc) body 
+      | _ -> mapper.typ mapper typ, acc 
+      end
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
+  let first_arg = mapper.typ mapper first_arg in
+  let result, rev_extra_args = 
+    aux  [first_arg] typ in 
+
+  match rev_extra_args with 
+  | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
+    ->
+    lift_curry_type ~loc [] result 
+  | _
+    -> 
+    lift_curry_type ~loc (List.rev rev_extra_args) result 
+
+
+let destruct_arrow_as_meth_type loc (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
+  let rec aux acc (typ : Parsetree.core_type) = 
+    (* in general, 
+       we should collect [typ] in [int -> typ] before transformation, 
+       however: when attributes [bs] and [bs.this] found in typ, 
+       we should stop 
+    *)
+    match process_attributes_rev typ.ptyp_attributes with 
+    | _ , `Nothing -> 
+      begin match typ.ptyp_desc with 
+      | Ptyp_arrow (label, arg, body)
+        -> 
+        if label <> "" then
+          Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+        aux (mapper.typ mapper arg :: acc) body 
+      | _ -> mapper.typ mapper typ, acc 
+      end
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
+  let first_arg = mapper.typ mapper first_arg in
+  let result, rev_extra_args = 
+    aux  [first_arg] typ in 
+
+  match rev_extra_args with 
+  | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
+    ->
+    lift_method_type ~loc [] result 
+  | _
+    -> 
+    lift_method_type ~loc (List.rev rev_extra_args) result 
+
+  
+let destruct_arrow_as_meth_callback_type loc (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
+  let rec aux acc (typ : Parsetree.core_type) = 
+    match process_attributes_rev typ.ptyp_attributes with 
+    | _ , `Nothing -> 
+      begin match typ.ptyp_desc with 
+        | Ptyp_arrow (label, arg, body)
+          -> 
+          if label <> "" then
+            Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+          aux (mapper.typ mapper arg :: acc) body 
+        | _ -> mapper.typ mapper typ, acc 
+      end 
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
+  let first_arg = mapper.typ mapper first_arg in 
+  let result, rev_extra_args = aux  [] typ in 
+  lift_js_meth_callback ~loc 
+    (first_arg, 
+     if rev_extra_args = [] then result 
+     else Typ.tuple ~loc  (List.rev_append rev_extra_args [result])
+    )
+
+
+
+let destruct_arrow_as_fn loc pat body (mapper : Ast_mapper.mapper) 
+    (e : Parsetree.expression) pexp_attributes = 
+  let rec aux acc (body : Parsetree.expression) = 
+    match process_attributes_rev body.pexp_attributes with 
+    | _ , `Nothing -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (label,_, arg, body)
+          -> 
+          if label <> "" then
+            Location.raise_errorf ~loc "label is not allowed";
+          aux (mapper.pat mapper arg :: acc) body 
+        | _ -> mapper.expr mapper body, acc 
+      end 
+    | _, _ -> mapper.expr mapper body, acc  
+  in 
+  let first_arg = mapper.pat mapper pat in  
+  let result, rev_extra_args = aux [first_arg] body in 
+  match rev_extra_args with 
+  | [ {ppat_desc = Ppat_construct ({txt = Lident "()"}, None)}]
+    -> { e with pexp_desc =         
+                  gen_fn_mk loc 0 
+                    (Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) result);
+                pexp_attributes}
+  | _ -> {e with 
+          pexp_desc = 
+            gen_fn_mk loc (List.length rev_extra_args) 
+              (List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
+                 result rev_extra_args );
+          pexp_attributes 
+         }
+
+let destruct_arrow_as_meth_callbak loc pat body (mapper : Ast_mapper.mapper) 
+    (e : Parsetree.expression) pexp_attributes = 
+  let rec aux acc (body : Parsetree.expression) = 
+    match process_attributes_rev body.pexp_attributes with 
+    | _ , `Nothing -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (label,_, arg, body)
+          -> 
+          if label <> "" then
+            Location.raise_errorf ~loc "label is not allowed";
+          aux (mapper.pat mapper arg :: acc) body 
+        | _ -> mapper.expr mapper body, acc 
+      end 
+    | _, _ -> mapper.expr mapper body, acc  
+  in 
+  let first_arg = mapper.pat mapper pat in  
+  let result, rev_extra_args = aux [first_arg] body in 
+  let len = List.length rev_extra_args - 1 in 
+  {e with pexp_desc = 
+            gen_method_mk loc len 
+              (List.fold_left 
+                 (fun e p -> Ast_comb.fun_no_label ~loc p e) result rev_extra_args );
+          pexp_attributes 
+  }
+
+
+
+let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 
+  let arity = List.length labels in 
+  let tyvars = (Ext_list.init arity (fun i ->      
+      Typ.var ~loc ("a" ^ string_of_int i))) in 
+
+  let result_type =
+    lift_js_type ~loc  
+    @@ Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed
+
+  in 
+  List.fold_right2 
+    (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
+
+let handle_debugger loc payload = 
+  if Ast_payload.as_empty_structure payload then
+    let predef_unit_type = Ast_literal.type_unit ~loc () in
+    let pval_prim = ["js_debugger"] in
+    Ast_comb.create_local_external loc 
+      ~pval_prim
+      ~pval_type:(arrow "" predef_unit_type predef_unit_type)
+      [("",  Ast_literal.val_unit ~loc ())]
+  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+
+
+let handle_raw loc payload = 
+  begin match Ast_payload.as_string_exp payload with 
+    | None -> 
+      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+    | Some exp -> 
+      let pval_prim = ["js_pure_expr"] in
+      { exp with pexp_desc = Ast_comb.create_local_external loc 
+                     ~pval_prim
+                     ~pval_type:(arrow "" 
+                                   (Ast_literal.type_string ~loc ()) 
+                                   (Ast_literal.type_any ~loc ()) )
+
+                     ["",exp]}
+  end
+
+let handle_raw_structure loc payload = 
+  begin match Ast_payload.as_string_exp payload with 
+    | Some exp 
+      -> 
+      let pval_prim = ["js_pure_stmt"] in 
+      Ast_helper.Str.eval 
+        { exp with pexp_desc =
+                     Ast_comb.create_local_external loc 
+                       ~pval_prim
+                       ~pval_type:(arrow ""
+                                     (Ast_literal.type_string ~loc ())
+                                     (Ast_literal.type_any ~loc ()))
+                       ["",exp]}
+    | None
+      -> 
+      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  end
 
 end
 module Ppx_entry : sig 
@@ -2625,6 +3361,42 @@ module Ppx_entry : sig
 val rewrite_signature :   (Parsetree.signature -> Parsetree.signature) ref
 
 val rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref
+
+
+
+
+
+(* object 
+    for setter : we can push more into [Lsend] and enclose it with a unit type
+
+    for getter :
+
+    (* Invariant: we expect the typechecker & lambda emitter  
+       will not do agressive inlining
+       Worst things could happen
+    {[
+      let x = y## case 3  in 
+      x 2
+    ]}
+       in normal case, it should be compiled into Lambda
+    {[
+      let x = Lsend(y,case, [3]) in 
+      Lapp(x,2)
+    ]}
+
+       worst:
+    {[ Lsend(y, case, [3,2])
+    ]}               
+       for setter(include case setter), this could 
+       be prevented by type system, for getter.
+
+       solution: we can prevent this by rewrite into 
+    {[
+      Fn.run1  (!x# case) v 
+      ]}
+       *)
+
+      *)
 
 end = struct
 #1 "ppx_entry.ml"
@@ -2663,7 +3435,7 @@ end = struct
 (**
 1. extension point 
    {[ 
-     [%unsafe{| blabla |}]
+     [%bs.raw{| blabla |}]
    ]}
    will be desugared into 
    {[ 
@@ -2684,161 +3456,30 @@ end = struct
 
 
 
+open Ast_helper
 
 
 
-
-
-let js_obj_type_id () = 
-  if Js_config.get_env () = Browser then
-    Ast_literal.Lid.pervasives_js_obj
-  else Ast_literal.Lid.js_obj 
-    
-let curry_type_id () = 
-  if Js_config.get_env () = Browser then 
-    Ast_literal.Lid.pervasives_uncurry
-  else 
-    Ast_literal.Lid.js_fn 
-
-let meth_type_id () = 
-  if Js_config.get_env () = Browser then 
-    Ast_literal.Lid.pervasives_meth
-  else 
-    Ast_literal.Lid.js_meth
-
-open Ast_helper 
-let arrow = Ast_helper.Typ.arrow
 
 let record_as_js_object = ref None (* otherwise has an attribute *)
 
-let as_js_object_attribute  : Parsetree.attribute
-  = {txt = "bs.obj" ; loc = Location.none}, PStr []
 
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
 let obj_type_auto_uncurry =  ref false
 let non_export = ref false 
+let bs_class_type = ref false 
 
 let reset () = 
   record_as_js_object := None ;
   obj_type_as_js_obj_type := false ;
   uncurry_type := false ;
   obj_type_auto_uncurry := false ;
+  bs_class_type := false;
   non_export  :=  false
 
 
-let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
-let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
-
-let lift_js_meth ~loc (obj,meth) 
-  = Typ.constr ~loc {txt = meth_type_id () ; loc} [obj; meth]
-
-let downgrade ~loc () = 
-  let var = Typ.var ~loc "a" in 
-  Ast_comb.arrow_no_label ~loc
-    (lift_js_type ~loc var) var
-
-let down_with_name ~loc obj name =
-  Ast_comb.local_extern_cont loc  
-    ~pval_prim:["js_unsafe_downgrade"] 
-    ~pval_type:(downgrade ~loc ())
-    ~local_fun_name:"cast" 
-    (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
-       
-
-
-let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
-  let pval_prim = ["js_fn_run" ; string_of_int arity]  in
-  let fn_type, tuple_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
-  let pval_type =
-    arrow ~loc "" (lift_curry_type ~loc tuple_type) fn_type in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    (("", fn) :: List.map (fun x -> "",x) args )
-
-(** The first argument is object itself which is only 
-    for typing checking*)
-let gen_method_run loc arity fn args : Parsetree.expression_desc = 
-  let pval_prim = ["js_fn_runmethod" ; string_of_int arity]  in
-  let fn_type, (obj_type, tuple_type) = Ast_comb.obj_type_pair ~loc  arity  in 
-  let pval_type =
-    arrow ~loc "" (lift_js_meth ~loc (obj_type, tuple_type)) fn_type in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    (("", fn) :: List.map (fun x -> "",x) args )
-
-
-let gen_fn_mk loc arity arg  : Parsetree.expression_desc = 
-  let pval_prim = [ "js_fn_mk"; string_of_int arity]  in
-  let fn_type , tuple_type = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-  let pval_type = arrow ~loc "" fn_type (lift_curry_type ~loc tuple_type)in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
-
-let gen_method_mk loc arity arg  : Parsetree.expression_desc = 
-  let pval_prim = [ "js_fn_method"; string_of_int arity]  in
-  let fn_type , (obj_type, tuple_type) = Ast_comb.obj_type_pair ~loc  arity  in 
-  let pval_type = 
-    arrow ~loc "" fn_type (lift_js_meth ~loc (obj_type, tuple_type))
-  in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
-        
-
-let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
-  Ext_list.exclude_with_fact (function 
-    | ({Location.txt  = "uncurry"}, _) -> true 
-    | _ -> false ) attrs 
-
-let destruct_tuple_exp (exp : Parsetree.expression) : Parsetree.expression list = 
-    match exp with 
-    | {pexp_desc = 
-         Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]
-      ; _} -> 
-      [arg]
-    | {pexp_desc = Pexp_tuple args; _} -> args
-    | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
-    | v -> [v]
-let destruct_tuple_pat (pat : Parsetree.pattern) : Parsetree.pattern list = 
-    match pat with 
-    | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
-      [arg]
-    | {ppat_desc = Ppat_tuple args; _} -> args
-    | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
-    | v -> [v]
-
-let destruct_tuple_typ (args : Parsetree.core_type)  = 
-    match args with
-    | {ptyp_desc = 
-         Ptyp_tuple 
-           [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; 
-       _} 
-      -> [ arg]
-    | {ptyp_desc = Ptyp_tuple args; _} -> args 
-      
-    | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> []
-    | v -> [v]
-
-(** 
-   Turn {[ int -> int -> int ]} 
-   into {[ (int *  int * int) fn ]}
-*)
-let uncurry_fn_type loc ty attrs
-    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
-  let tyvars = destruct_tuple_typ args in 
-  let arity = List.length tyvars in 
-  if arity = 0 then lift_curry_type ~loc body 
-  else lift_curry_type ~loc (Typ.tuple ~loc ~attrs (tyvars @ [body]))
-
-
-let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 
-  let arity = List.length labels in 
-  let tyvars = (Ext_list.init arity (fun i ->      
-      Typ.var ~loc ("a" ^ string_of_int i))) in 
-
-  let result_type =
-    lift_js_type ~loc  
-    @@ Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed
-
-  in 
-  List.fold_right2 
-    (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
+let arrow = Ast_helper.Typ.arrow
 
 let handle_record_as_js_object 
     loc 
@@ -2854,14 +3495,87 @@ let handle_record_as_js_object
   ) label_exprs in 
   let pval_prim = [ "" ] in 
   let pval_attributes = [attr] in 
-  let pval_type = from_labels ~loc labels in 
+  let pval_type = Ast_util.from_labels ~loc labels in 
   Ast_comb.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
     args 
 
 
-
+let handle_class_type_field  acc =
+  (fun self ({pctf_loc = loc } as ctf : Parsetree.class_type_field) -> 
+     match ctf.Parsetree.pctf_desc with 
+     | Pctf_method 
+         (name, private_flag, virtual_flag, ty) 
+       -> 
+       let (pctf_attributes, st) = 
+         Ast_util.process_method_attributes_rev ctf.pctf_attributes 
+       in 
+       begin match ty.ptyp_desc with 
+         | Ptyp_arrow ("", args, body) 
+           -> 
+           { ctf with 
+             pctf_desc = 
+               Pctf_method (name, 
+                            private_flag,
+                            virtual_flag, 
+                            Ast_util.destruct_arrow_as_meth_type 
+                              ty.ptyp_loc args body self );
+             pctf_attributes 
+           } :: acc 
+         | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
+           -> 
+           {ctf with 
+            pctf_desc = 
+              Pctf_method 
+                (name,
+                 private_flag, 
+                 virtual_flag, 
+                 {ty with ptyp_desc = 
+                            Ptyp_poly(strs,             
+                                      Ast_util.destruct_arrow_as_meth_type
+                                        ptyp_loc args body self  )});
+            pctf_attributes
+           }  :: acc 
+         | _ -> 
+           match st with 
+           | {set = Some _ } 
+             -> 
+               {ctf with 
+                pctf_desc =
+                  Pctf_method (name ^ Literals.setter_suffix, 
+                               private_flag,
+                               virtual_flag,
+                               Ast_util.destruct_arrow_as_meth_type 
+                                 loc 
+                                 ty 
+                                 (Ast_literal.type_unit ~loc ())
+                                 self 
+                              );
+                pctf_attributes}
+             :: {ctf with 
+                pctf_desc =  
+                  Pctf_method (name , 
+                               private_flag, 
+                               virtual_flag, 
+                               self.typ self ty
+                              );
+                pctf_attributes}
+             :: acc 
+           (*TODO: test on poly type *)
+           | _ -> 
+             {ctf with 
+              pctf_desc =  Pctf_method (name , private_flag, virtual_flag, self.typ self ty);
+              pctf_attributes}
+             :: acc 
+       end
+     | Pctf_inherit _ 
+     | Pctf_val _ 
+     | Pctf_constraint _
+     | Pctf_attribute _ 
+     | Pctf_extension _  -> 
+       Ast_mapper.default_mapper.class_type_field self ctf :: acc 
+  )
 (*
   Attributes are very hard to attribute
   (since ptyp_attributes could happen in so many places), 
@@ -2881,473 +3595,249 @@ let handle_typ
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
    } ->
-    begin match  find_uncurry_attrs_and_remove ptyp_attributes with 
-    | Some _, ptyp_attributes ->
-        let args = self.typ self args in
-        let body = self.typ self body in
-        uncurry_fn_type loc ty ptyp_attributes args body 
-    | None, _ -> 
-        let args = self.typ self args in
-        let body = self.typ self body in
+    begin match  Ast_util.process_attributes_rev ptyp_attributes with 
+      | ptyp_attributes, `Uncurry ->
+        Ast_util.destruct_arrow loc args body self 
+      | ptyp_attributes, `Meth -> 
+        Ast_util.destruct_arrow_as_meth_callback_type loc args body self         
+      | _, `Nothing -> 
         if !uncurry_type then 
-          uncurry_fn_type loc ty ptyp_attributes args body 
-        else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
+          Ast_util.destruct_arrow loc args body self 
+        else 
+          Ast_mapper.default_mapper.typ self ty
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
     ptyp_attributes ;
     ptyp_loc = loc 
     } -> 
-    let inner_type =
+
+    let check_auto_uncurry core_type = 
+      if  !obj_type_auto_uncurry then
+        Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+      else self.typ self core_type in 
+    let methods, ptyp_attributes  =
       begin match Ext_list.exclude_with_fact
                     (function 
-                      | {Location.txt = "uncurry"; _}, _ -> true
+                      | {Location.txt = "bs"; _}, _ -> true
                       | _ -> false)
                     ptyp_attributes with 
-      |   None, _  ->
-        let check_auto_uncurry core_type = 
-          if  !obj_type_auto_uncurry then
-            Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
-          else self.typ self core_type in 
-
-        let methods = 
+      | None, _  ->
+        List.map (fun (label, ptyp_attrs, core_type ) -> 
+            match Ast_util.process_attributes_rev ptyp_attrs with 
+            | _, `Nothing -> 
+              label, ptyp_attrs , check_auto_uncurry  core_type
+            | ptyp_attrs, `Uncurry  -> 
+              label , ptyp_attrs, 
+              check_auto_uncurry
+                { core_type with 
+                  ptyp_attributes = 
+                    Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+            | ptyp_attrs, `Meth 
+              ->  
+              label , ptyp_attrs, 
+              check_auto_uncurry
+                { core_type with 
+                  ptyp_attributes = 
+                    Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
+          ) methods , ptyp_attributes
+      |  Some _ ,  ptyp_attributes -> 
+        Ext_ref.protect uncurry_type true begin fun _ -> 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
-              match find_uncurry_attrs_and_remove ptyp_attrs with 
-              | None, _ -> 
-                label, ptyp_attrs , check_auto_uncurry  core_type
-              | Some v, ptyp_attrs -> 
-                label , ptyp_attrs, 
-                check_auto_uncurry
-                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+              match Ast_util.process_attributes_rev ptyp_attrs with 
+              |  _, `Nothing -> label, ptyp_attrs , self.typ self core_type
+              | ptyp_attrs, `Uncurry -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+              | ptyp_attrs, `Meth -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
             ) methods 
-        in   
-        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                  ptyp_attributes } 
-
-      |  fact2,  ptyp_attributes -> 
-
-        let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
-        let methods = 
-          Ext_ref.protect uncurry_type uncurry_type_cxt begin fun _ -> 
-            List.map (fun (label, ptyp_attrs, core_type ) -> 
-                match find_uncurry_attrs_and_remove ptyp_attrs with 
-                | None, _ -> label, ptyp_attrs , self.typ self core_type
-                | Some v, ptyp_attrs -> 
-                  label , ptyp_attrs, self.typ self 
-                    { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-              ) methods 
-          end
-        in           
-        { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                  ptyp_attributes } 
+        end, ptyp_attributes 
       end
     in          
+    let inner_type =
+      { ty
+        with ptyp_desc = Ptyp_object(methods, closed_flag);
+             ptyp_attributes } in 
     if !obj_type_as_js_obj_type then 
-      lift_js_type ~loc  inner_type
+      Ast_util.lift_js_type ~loc inner_type          
     else inner_type
   | _ -> super.typ self ty
 
-let handle_class_obj_typ 
-    (super : Ast_mapper.mapper) 
-    (self : Ast_mapper.mapper)
-    (ty : Parsetree.class_type) = 
-  match ty with
-  | {pcty_attributes ;
-     pcty_desc ; (* we won't have [ class type v = u -> object[@uncurry] ]*)
-     pcty_loc = loc
-   } ->
-    begin match  find_uncurry_attrs_and_remove pcty_attributes with 
-    | Some _, pcty_attributes' ->
-      Ext_ref.protect uncurry_type true begin fun () -> 
-        self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
-      end
-    | None, _ -> 
-      if !obj_type_auto_uncurry then 
-        Ext_ref.protect uncurry_type true begin fun () -> 
-          super.class_type self ty
-        end
-      else 
-        super.class_type self ty
-    end
-
-
-let handle_debugger loc payload = 
-  if Ast_payload.as_empty_structure payload then
-    let predef_unit_type = Ast_literal.type_unit ~loc () in
-    let pval_prim = ["js_debugger"] in
-    Ast_comb.create_local_external loc 
-      ~pval_prim
-      ~pval_type:(arrow "" predef_unit_type predef_unit_type)
-      [("",  Ast_literal.val_unit ~loc ())]
-  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-
-
-(** TODO: Future 
-    {[ fun%bs this (a,b,c) -> 
-    ]}
-
-    [function] can only take one argument, that is the reason we did not adopt it
-*)
-let handle_uncurry_fn_generation  loc 
-    (pat : Parsetree.pattern)
-    (body : Parsetree.expression) 
-    (e : Parsetree.expression) (mapper : Ast_mapper.mapper) = 
-  let args = destruct_tuple_pat pat in 
-  let len = List.length args in 
-  let body = mapper.expr mapper body in 
-  let fun_ = 
-    if len = 0 then 
-      Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) body
-    else 
-      List.fold_right (fun arg body -> 
-          let arg = mapper.pat mapper arg in 
-          Ast_comb.fun_no_label ~loc arg body 
-          ) args body in
-  {e with pexp_desc = gen_fn_mk loc len fun_}
-
-
-let handle_uncurry_method_generation  loc 
-    (pat : Parsetree.pattern)
-    (body : Parsetree.expression) 
-    (e : Parsetree.expression) (mapper : Ast_mapper.mapper) = 
-  let args = destruct_tuple_pat pat in 
-  let len = List.length args in 
-  let body = mapper.expr mapper body in 
-  let fun_ = 
-    if len = 0 then 
-      Location.raise_errorf ~loc "method expect at least one argument"
-    else 
-      List.fold_right (fun arg body -> 
-          let arg = mapper.pat mapper arg in 
-          Ast_comb.fun_no_label ~loc arg body 
-          ) args body in
-  {e with pexp_desc = gen_method_mk loc (len - 1) fun_}
-
-let handle_uncurry_application 
-    loc fn (exp : Parsetree.expression) (e : Parsetree.expression)
-    (self : Ast_mapper.mapper) 
-  : Parsetree.expression = 
-  let args = destruct_tuple_exp exp in
-  let fn = self.expr self fn in 
-  let args = List.map (self.expr self) args in 
-  let len = List.length args in 
-  { e with pexp_desc = gen_fn_run loc len fn args}
-
-
-type method_kind = 
-  | Case_setter
-  | Setter
-  | Normal of string 
-
-(* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
 let handle_obj_property loc obj name e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
   let obj = mapper.expr mapper obj in 
-  { e with pexp_desc = down_with_name ~loc obj name
-
-  }
+  { e with pexp_desc = Ast_util.down_with_name ~loc obj name  }
 
 
-
-let handle_obj_fn loc (obj : Parsetree.expression) 
-    name (value : Parsetree.expression) e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let method_kind = 
-    if name = Literals.case_set then Case_setter
-    else if Ext_string.ends_with name Literals.setter_suffix then Setter
-    else Normal name in 
-  let len, args = 
-    match method_kind with 
-    | Setter -> 
-      1, [value]
-    | (Case_setter | Normal _) -> 
-      let args = destruct_tuple_exp value in 
-      let arity = List.length args in  
-      if method_kind = Case_setter && arity <> 2 then 
-        Location.raise_errorf "case_set would expect arity of 2 "
-      else  arity, args 
-  in
-  let obj = mapper.expr mapper obj in 
-  let args = List.map (mapper.expr mapper ) args in 
-
-
-  {e with pexp_desc = 
-            gen_fn_run loc len (Exp.mk ~loc @@ down_with_name ~loc obj name)
-              args
-    }
-        (** TODO: 
-            More syntax sanity check for [case_set] 
-            case_set: arity 2
-            _set : arity 1            
-            case:
-        *)
-
-let handle_obj_method loc (obj : Parsetree.expression) 
-    name (value : Parsetree.expression) e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let args = destruct_tuple_exp value in 
-  let len = List.length args in 
-  let obj = mapper.expr mapper obj in 
-  let args = List.map (mapper.expr mapper ) args in 
-  {e with pexp_desc =
-            gen_method_run loc len 
-              (Exp.mk ~loc (down_with_name ~loc obj name )) (obj::args)
-  }
-
-(** object 
-    for setter : we can push more into [Lsend] and enclose it with a unit type
-
-    for getter :
-
-    (* Invariant: we expect the typechecker & lambda emitter  
-       will not do agressive inlining
-       Worst things could happen
-    {[
-      let x = y## case 3  in 
-      x 2
-    ]}
-       in normal case, it should be compiled into Lambda
-    {[
-      let x = Lsend(y,case, [3]) in 
-      Lapp(x,2)
-    ]}
-
-       worst:
-    {[ Lsend(y, case, [3,2])
-    ]}               
-       for setter(include case setter), this could 
-       be prevented by type system, for getter.
-
-       solution: we can prevent this by rewrite into 
-    {[
-      Fn.run1  (!x# case) v 
-      ]}
-       *)
-
-      *)
 
 
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
-    expr = (fun mapper e -> 
+    expr = (fun self ({ pexp_loc = loc } as e) -> 
         match e.pexp_desc with 
-        (** Begin rewriting [bs.raw], its output should not be rewritten anymore
-        *)        
+        (** Its output should not be rewritten anymore *)        
         | Pexp_extension (
             {txt = "bs.raw"; loc} , payload)
           -> 
-          begin match Ast_payload.as_string_exp payload with 
-            | None -> 
-              Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-            | Some exp -> 
-              let pval_prim = ["js_pure_expr"] in
-              { exp with pexp_desc = Ast_comb.create_local_external loc 
-                           ~pval_prim
-                           ~pval_type:(arrow "" 
-                                         (Ast_literal.type_string ~loc ()) 
-                                         (Ast_literal.type_any ~loc ()) )
-
-                           ["",exp]}
-          end
-
-        (** End rewriting [bs.raw] *)
-
-        (** Begin rewriting [bs.debugger], its output should not be rewritten any more*)
+          Ast_util.handle_raw loc payload
+        (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
-          -> {e with pexp_desc = handle_debugger loc payload}
+          -> {e with pexp_desc = Ast_util.handle_debugger loc payload}
         | Pexp_extension ({txt = "bs.obj"; loc},  payload)
           -> 
             begin match payload with 
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
               Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
-                (Some as_js_object_attribute ) true
-                (fun ()-> mapper.expr mapper e ) 
+                (Some Ast_util.bs_object_attribute ) true
+                (fun ()-> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
-        | Pexp_extension ({txt = "meth"; loc}, payload) 
-          -> 
-          begin match payload with 
-            | PStr [{pstr_desc = 
-                       Pstr_eval ({pexp_desc = Pexp_fun("", None, pat, body)} as e, _)
-                    }]
-              -> handle_uncurry_method_generation loc pat body e mapper 
-            | _ -> Location.raise_errorf ~loc "Expect an fun expression here"
-          end
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
-          let loc = e.pexp_loc in 
-          begin match Ext_list.exclude_with_fact (function 
-              | {Location.txt = "uncurry"; _}, _ -> true 
-              | _ -> false) e.pexp_attributes with 
-          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
-          | Some _, attrs 
+          begin match Ast_util.process_attributes_rev e.pexp_attributes with 
+          | _, `Nothing 
+            -> Ast_mapper.default_mapper.expr self e 
+          |  attrs , `Uncurry
             -> 
-            begin match body.pexp_desc with 
-              | Pexp_fun _ -> 
-                Location.raise_errorf ~loc 
-                  {| `fun [@uncurry] (param0, param1) -> `
-                     instead of `fun [@uncurry] param0 param1 ->` |}
-              | _ -> 
-                handle_uncurry_fn_generation loc pat body 
-                  {e with pexp_attributes = attrs } mapper
-            end
+            Ast_util.destruct_arrow_as_fn loc pat body self e attrs
+          | pexp_attributes, `Meth 
+            -> 
+            Ast_util.destruct_arrow_as_meth_callbak loc pat body self e pexp_attributes
           end
+        | Pexp_apply (fn, args  ) ->
+          begin match fn with 
+            | {pexp_desc = 
+                 Pexp_apply (
+                   {pexp_desc = 
+                      Pexp_ident  {txt = Lident "##"  ; loc} ; _},
+                   [("", obj) ;
+                    ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                   ]);
+               _} ->  (* f##paint 1 2 *)
+              Ast_util.method_run loc obj name args e self
+            | {pexp_desc = 
+                 Pexp_apply (
+                   {pexp_desc = 
+                      Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
+                   [("", obj) ;
+                    ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                   ]);
+               _} ->  (* f##paint 1 2 *)
+              Ast_util.property_run loc obj name args e self
 
-        | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
-                      [("", fn);
-                       ("", pat)])
-          -> 
-          handle_uncurry_application loc fn pat e mapper
+            | {pexp_desc = 
+                 Pexp_ident  {txt = Lident "##" ; loc} ; _} 
+              -> 
+              begin match args with 
+                | [("", obj) ;
+                   ("", {pexp_desc = Pexp_apply(
+                        {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
+                        args
+                      ) })
+                  ] -> (* f##(paint 1 2 ) *)
+                  Ast_util.method_run loc obj name args e self
+                | [("", obj) ;
+                   ("", 
+                    {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
+                   )  (* f##paint  *)
+                  ] -> handle_obj_property loc obj name e self
+                | _ -> 
+                  Location.raise_errorf ~loc
+                    "Js object ## expect syntax like obj##(paint (a,b)) "
+              end
+            (* we can not use [:=] for precedece cases 
+               like {[i @@ x##length := 3 ]} 
+               is parsed as {[ (i @@ x##length) := 3]}
+            *)
+            | {pexp_desc = 
+                 Pexp_ident {txt = Lident  "#="}
+              } -> 
+              begin match args with 
+              | ["", 
+                  {pexp_desc = 
+                     Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}}, 
+                                 ["", obj; 
+                                  "", {pexp_desc = Pexp_ident {txt = Lident name}}
+                                 ]                                 
+                                )}; 
+                 "", arg
+                ] -> 
+                Ast_util.method_run loc obj (name ^ Literals.setter_suffix) ["", arg ] e self
+              | _ -> Ast_mapper.default_mapper.expr self e 
+              end
+            | _ -> 
 
-        | Pexp_apply
-            ({pexp_desc = 
-               Pexp_apply (
-                 {pexp_desc = 
-                    Pexp_ident  {txt = Lident "##" ; loc} ; _},
-                 [("", obj) ;
-                  ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-                 ]);
-              _
-             }, args  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one 
-                 f ## xx (a,b)
-                 f #.(xx (a,b))
-             *)
-          begin match args with 
-          | [ "", value] -> 
-              handle_obj_fn loc obj name value e mapper
-          | _ -> 
-            Location.raise_errorf 
-              "Js object ## expect only one argument when it is a method "
+              begin match Ext_list.exclude_with_fact (function 
+                  | {Location.txt = "bs"; _}, _ -> true 
+                  | _ -> false) e.pexp_attributes with 
+              | None, _ -> Ast_mapper.default_mapper.expr self e 
+              | Some _, attrs -> 
+                Ast_util.fn_run loc fn args self e attrs 
+              end
           end
-        (* TODO: design: shall we allow 
-                               {[ x #.Capital ]}
-        *)
-        | Pexp_apply (
-            {pexp_desc = 
-               Pexp_ident  {txt = Lident "##" ; loc} ; _}, args
-          )
-          -> (* f##(paint (1,2)) or f##paint *)
-          begin match args with 
-          | [("", obj) ;
-             ("", {pexp_desc = Pexp_apply(
-                  {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                  ["", value]
-                ) })
-            ] -> 
-            handle_obj_fn loc obj name value e mapper
-          | [("", obj) ;
-                       ("", 
-                       {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
-                         )
-                      ] -> handle_obj_property loc obj name e mapper
-          | _ -> 
-            Location.raise_errorf 
-              "Js object ## expect syntax like obj##(paint (a,b)) "
-
-          end
-
-        | Pexp_apply
-            ({pexp_desc = 
-               Pexp_apply (
-                 {pexp_desc = 
-                    Pexp_ident  {txt = Lident "#." ; loc} ; _},
-                 [("", obj) ;
-                  ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-                 ]);
-              _
-             }, args  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one 
-                 f #.xx (a,b)
-             *)
-          begin match args with 
-          | [ "", value] -> 
-              handle_obj_method loc obj name value e mapper
-          | _ -> 
-            Location.raise_errorf 
-              "Js object ## expect only one argument when it is a method "
-          end
-        | Pexp_apply (
-            {pexp_desc =
-               Pexp_ident  {txt = Lident "#." ; loc} ; _}, args
-          )
-          -> (* f##(paint (1,2)) or f##paint *)
-          begin match args with
-          | [("", obj) ;
-             ("", {pexp_desc = Pexp_apply(
-                  {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                  ["", value]
-                ) })
-            ] ->
-            handle_obj_method loc obj name value e mapper
-          | _ ->
-            Location.raise_errorf
-              "Js object #. expect syntax like obj#.(paint (a,b)) "
-
-          end
-
-
-        | Pexp_apply (fn,
-                      [("", pat)]) -> 
-          let loc = e.pexp_loc in 
-          begin match Ext_list.exclude_with_fact (function 
-              | {Location.txt = "uncurry"; _}, _ -> true 
-              | _ -> false) e.pexp_attributes with 
-          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
-          | Some _, attrs -> 
-            handle_uncurry_application loc fn pat 
-              {e with pexp_attributes = attrs} mapper
-          end
-
         | Pexp_record (label_exprs, None)  -> 
             begin match !record_as_js_object with 
             | Some attr 
               (* TODO better error message when [with] detected in [%bs.obj] *)
               -> 
               { e with
-                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
+                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs self;
               }
             | None -> 
-              Ast_mapper.default_mapper.expr  mapper e
+              Ast_mapper.default_mapper.expr  self e
             end
 
-        | _ ->  Ast_mapper.default_mapper.expr  mapper e
+        | _ ->  Ast_mapper.default_mapper.expr self e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
-    class_type = (fun self ctyp -> handle_class_obj_typ Ast_mapper.default_mapper self ctyp);
-    structure_item = (fun mapper (str : Parsetree.structure_item) -> 
+    class_signature = 
+      (fun self ({pcsig_self; pcsig_fields } as csg) -> 
+         if !bs_class_type then 
+           let pcsig_self = self.typ self pcsig_self in 
+           {
+             pcsig_self ;
+             pcsig_fields = List.fold_right (fun  f  acc ->
+               handle_class_type_field  acc self f 
+             )  pcsig_fields []
+           }
+         else 
+           Ast_mapper.default_mapper.class_signature self csg 
+      );
+    structure_item = (fun self (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
           -> 
-            begin match Ast_payload.as_string_exp payload with 
-              | Some exp 
-                -> 
-                let pval_prim = ["js_pure_stmt"] in 
-                Ast_helper.Str.eval 
-                  { exp with pexp_desc =
-                             Ast_comb.create_local_external loc 
-                               ~pval_prim
-                               ~pval_type:(arrow ""
-                                             (Ast_literal.type_string ~loc ())
-                                             (Ast_literal.type_any ~loc ()))
-                               ["",exp]}
-              | None
-                -> 
-                Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-            end
-        | _ -> Ast_mapper.default_mapper.structure_item mapper str 
+          Ast_util.handle_raw_structure loc payload
+        | _ -> Ast_mapper.default_mapper.structure_item self str 
         end
       )
   }
 
 
+
+
+(** global configurations below *)
 let common_actions_table : 
-  (string *  (Parsetree.expression -> unit)) list = 
+  (string *  (Parsetree.expression option -> unit)) list = 
   [ "obj_type_auto_uncurry", 
     (fun e -> 
-       obj_type_auto_uncurry := Ast_payload.assert_bool_lit e
+       obj_type_auto_uncurry := 
+         (match e with Some e -> Ast_payload.assert_bool_lit e
+         | None -> true)
+    ); 
+    "bs_class_type", 
+    (fun e -> 
+       bs_class_type := 
+         (match e with Some e -> Ast_payload.assert_bool_lit e 
+         | None -> true)
     )
   ]
 
@@ -3355,24 +3845,39 @@ let common_actions_table :
 let structural_config_table  = 
   String_map.of_list 
     (( "non_export" , 
-      (fun e -> non_export := Ast_payload.assert_bool_lit e ))
+      (fun x -> 
+         non_export := (
+           match x with 
+           |Some e -> Ast_payload.assert_bool_lit e 
+           | None -> true)
+      ))
       :: common_actions_table)
 
-let signature_config_table = 
+let signature_config_table : 
+  (Parsetree.expression option -> unit) String_map.t= 
   String_map.of_list common_actions_table
 
 
-let make_call_back table ((x : Longident.t Asttypes.loc) , y) = 
+let make_call_back table 
+    ((x : Longident.t Asttypes.loc) , 
+     (y :Parsetree.expression)) = 
   match x with 
   | {txt = Lident name; loc  } -> 
     begin match String_map.find name table with 
-    | fn -> fn y
-    | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
+      | fn -> 
+        let y = 
+          match y with 
+          | {pexp_desc = Pexp_ident {txt = Lident name2} } when name2 = name -> 
+            None 
+          | _ -> Some y in
+        fn y
+      | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
-  | {loc} -> 
-    Location.raise_errorf ~loc "invalid label for config"
+  | _ -> 
+    Location.raise_errorf ~loc:x.loc "invalid label for config"
 
-let rewrite_signature : (Parsetree.signature -> Parsetree.signature) ref = 
+let rewrite_signature : 
+  (Parsetree.signature  -> Parsetree.signature) ref = 
   ref (fun  x -> 
       let result = 
         match (x : Parsetree.signature) with 
@@ -5149,7 +5654,7 @@ val unit : t
 
 val sequor : binop
 val sequand : binop
-val not : unop
+val not_ : unop
 val seq : binop
 val while_ : binop
 val event : t -> Lambda.lambda_event -> t  
@@ -5484,6 +5989,8 @@ let false_ : t =
 let unit : t = 
   Lconst (Const_pointer( 0, Pt_constructor "()"))
 
+let assert_false_unit : t = 
+  Lconst (Const_pointer( 0, Pt_constructor "impossible branch"))
 
 (** [l || r ] *)
 let sequor l r = if_ l true_ r 
@@ -5696,7 +6203,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
   | _ -> default ()
 
 
-let not x : t = 
+let not_ x : t = 
   prim Pnot [x] 
 
 let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t = 
@@ -5751,25 +6258,33 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
 
   | Pccall a -> 
     let prim_name = a.prim_name in
-    begin match prim_name with 
-    |  "js_debugger"
-      -> prim ~primitive:Pdebugger ~args 
-    | "js_fn_run" 
-      -> 
-      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args 
-    |  "js_fn_mk"  
-      -> 
-      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args           
-    | "js_fn_method"
-      ->
-      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args           
-    | "js_fn_runmethod"
-      ->
-      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args           
-    | _ -> 
+    if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
+      prim ~primitive:(Pccall a ) ~args else 
+    if prim_name =  "js_debugger" then 
+      prim ~primitive:Pdebugger ~args else 
+    if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
+      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args else 
+    if prim_name = "js_fn_mk" then 
+      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args else                
+    if prim_name = "js_fn_method" then 
+      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args else
+    if prim_name = "js_fn_runmethod" then 
+      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args 
+    else
       prim ~primitive:(Pccall a) ~args
-    end
-  | Praise _ -> prim ~primitive:Praise ~args
+  | Praise _ ->
+    if Js_config.get_no_any_assert () then 
+      begin match args with 
+        | [Lprim {primitive = Pmakeblock (0, _, _) ; 
+                  args = [ 
+                    Lprim {primitive = Pgetglobal ({name = "Assert_failure"} as id); args =  []}; 
+                    _
+                  ]
+                 } ] when Ident.global id
+          -> assert_false_unit
+        | _ -> prim ~primitive:Praise ~args
+      end
+    else prim ~primitive:Praise ~args
   | Psequand -> prim ~primitive:Psequand ~args 
   | Psequor -> prim ~primitive:Psequor ~args
   | Pnot -> prim ~primitive:Pnot ~args
@@ -17201,9 +17716,9 @@ end = struct
   what is the behavior for 
   {[
     { case : 
-        (fun [@uncurry] i -> 3);
+        (fun [@fn] i -> 3);
       case_set: 
-        (fun [@uncurry] (i,v) -> ..)
+        (fun [@fn] (i,v) -> ..)
     }
   ]}
 *)
@@ -23010,6 +23525,7 @@ and
                   cont  block0 block1 (Some obj_code) (E.access (E.var obj) value)
               else if  Ext_string.ends_with method_name Literals.setter_suffix then 
                 let property =
+                  Lam_methname.translate ~loc @@ 
                   String.sub method_name 0 
                     (String.length method_name - Literals.setter_suffix_len) in 
                 match Js_ast_util.named_expression  obj with
@@ -24645,13 +25161,13 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam.not ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
+            -> Lam.not_ ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
           | Undefined 
             -> 
-            Lam.not (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
+            Lam.not_ (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
           | Null_undefined
             -> 
-            Lam.not
+            Lam.not_
               ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l]) 
           | Normal ->  l1 
         in 
@@ -29757,6 +30273,10 @@ let add_include_path s =
   else 
     Ext_pervasives.failwithf ~loc:__LOC__ "%s is not a directory" s 
 
+let set_noassert () = 
+  Js_config.set_no_any_assert ();
+  Clflags.noassert := true
+
 
 let buckle_script_flags = 
   ("-bs-npm-output-path", Arg.String Js_config.set_npm_package_path, 
@@ -29778,6 +30298,9 @@ let buckle_script_flags =
       " More verbose output")
   :: ("-bs-no-check-div-by-zero", Arg.Clear Js_config.check_div_by_zero, 
       " unsafe mode, don't check div by zero and mod by zero")
+  :: ("-bs-no-any-assert", Arg.Unit set_noassert, 
+      " no code containing any assertion"
+     )
   :: ("-bs-files", Arg.Rest collect_file, 
       " Provide batch of files, the compiler will sort it before compiling"
      )
@@ -29787,11 +30310,13 @@ let buckle_script_flags =
   :: Ocaml_options.mk__ anonymous
   :: Ocaml_options.ocaml_options
 
-let () = 
-  Clflags.unsafe_string := false;
-  Clflags.debug := true
 
-let main () =
+
+
+let _ = 
+  Clflags.unsafe_string := false;
+  Clflags.debug := true;
+
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
@@ -29800,8 +30325,6 @@ let main () =
   with x ->
     Location.report_exception ppf x;
     exit 2
-
-let _ = main ()
 
 
 

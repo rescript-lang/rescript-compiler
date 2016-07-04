@@ -37,6 +37,9 @@ module Lid = struct
   let js_fn = Longident.Ldot (Lident "Js", "fn")
   let pervasives_fn = Longident.Ldot (Lident "Pervasives", "fn")
 
+  let js_meth = Longident.Ldot (Lident "Js", "meth")
+  let pervasives_meth = Longident.Ldot (Lident "Pervasives", "meth")
+
   let pervasives_meth_callback = Longident.Ldot (Lident "Pervasives", "meth_callback")
   let js_obj = Longident.Ldot (Lident "Js", "t") 
 

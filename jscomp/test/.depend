@@ -136,8 +136,10 @@ debug_keep_test.cmj :
 debug_keep_test.cmx :
 debugger_test.cmj : ../runtime/js.cmj
 debugger_test.cmx : ../runtime/js.cmx
-demo.cmj : ../runtime/js.cmj
-demo.cmx : ../runtime/js.cmx
+demo.cmj : ../runtime/js.cmj demo_binding.cmj
+demo.cmx : ../runtime/js.cmx demo_binding.cmx
+demo_binding.cmj : ../runtime/js.cmj
+demo_binding.cmx : ../runtime/js.cmx
 demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
 demo_page.cmj :
@@ -148,6 +150,8 @@ digest_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx mt.cmx \
     ext_array.cmx ../stdlib/digest.cmx ../stdlib/array.cmx
 div_by_zero_test.cmj : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
 div_by_zero_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx
+dom.cmj :
+dom.cmx :
 empty_obj.cmj :
 empty_obj.cmx :
 epsilon_test.cmj : mt.cmi
@@ -252,8 +256,8 @@ hashtbl_test.cmj : mt.cmi ../stdlib/moreLabels.cmi ../stdlib/list.cmi \
     ../stdlib/hashtbl.cmi ../stdlib/array.cmi
 hashtbl_test.cmx : mt.cmx ../stdlib/moreLabels.cmx ../stdlib/list.cmx \
     ../stdlib/hashtbl.cmx ../stdlib/array.cmx
-http_types.cmj :
-http_types.cmx :
+http_types.cmj : ../runtime/js.cmj
+http_types.cmx : ../runtime/js.cmx
 ignore_test.cmj : mt.cmi ../runtime/js.cmj
 ignore_test.cmx : mt.cmx ../runtime/js.cmx
 inline_edge_cases.cmj : inline_edge_cases.cmi
@@ -298,8 +302,8 @@ js_date.cmj : ../runtime/js.cmj
 js_date.cmx : ../runtime/js.cmx
 js_date_test.cmj : mt.cmi js_date.cmj
 js_date_test.cmx : mt.cmx js_date.cmx
-js_obj_test.cmj : mt.cmi ../runtime/js.cmj
-js_obj_test.cmx : mt.cmx ../runtime/js.cmx
+js_obj_test.cmj : mt.cmi
+js_obj_test.cmx : mt.cmx
 js_val.cmj :
 js_val.cmx :
 largest_int_flow.cmj :
@@ -498,6 +502,8 @@ test_bug.cmj : ../stdlib/bytes.cmi
 test_bug.cmx : ../stdlib/bytes.cmx
 test_bytes.cmj : ../stdlib/bytes.cmi
 test_bytes.cmx : ../stdlib/bytes.cmx
+test_case_set.cmj :
+test_case_set.cmx :
 test_char.cmj :
 test_char.cmx :
 test_closure.cmj : ../stdlib/array.cmi
@@ -676,8 +682,8 @@ test_unsafe_cmp.cmj : ../runtime/js.cmj
 test_unsafe_cmp.cmx : ../runtime/js.cmx
 test_unsafe_obj_ffi.cmj : ../runtime/js_unsafe.cmj test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi.cmx : ../runtime/js_unsafe.cmx test_unsafe_obj_ffi.cmi
-test_unsafe_obj_ffi_ppx.cmj : test_unsafe_obj_ffi_ppx.cmi
-test_unsafe_obj_ffi_ppx.cmx : test_unsafe_obj_ffi_ppx.cmi
+test_unsafe_obj_ffi_ppx.cmj : ../runtime/js.cmj test_unsafe_obj_ffi_ppx.cmi
+test_unsafe_obj_ffi_ppx.cmx : ../runtime/js.cmx test_unsafe_obj_ffi_ppx.cmi
 test_unsupported_primitive.cmj : ../stdlib/bytes.cmi
 test_unsupported_primitive.cmx : ../stdlib/bytes.cmx
 test_while_closure.cmj : ../stdlib/array.cmi
@@ -830,8 +836,10 @@ debug_keep_test.cmo :
 debug_keep_test.cmj :
 debugger_test.cmo : ../runtime/js.cmo
 debugger_test.cmj : ../runtime/js.cmj
-demo.cmo : ../runtime/js.cmo
-demo.cmj : ../runtime/js.cmj
+demo.cmo : ../runtime/js.cmo demo_binding.cmo
+demo.cmj : ../runtime/js.cmj demo_binding.cmj
+demo_binding.cmo : ../runtime/js.cmo
+demo_binding.cmj : ../runtime/js.cmj
 demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmo :
@@ -842,6 +850,8 @@ digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
 div_by_zero_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
 div_by_zero_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
+dom.cmo :
+dom.cmj :
 empty_obj.cmo :
 empty_obj.cmj :
 epsilon_test.cmo : mt.cmi
@@ -946,8 +956,8 @@ hashtbl_test.cmo : mt.cmi ../stdlib/moreLabels.cmi ../stdlib/list.cmi \
     ../stdlib/hashtbl.cmi ../stdlib/array.cmi
 hashtbl_test.cmj : mt.cmj ../stdlib/moreLabels.cmj ../stdlib/list.cmj \
     ../stdlib/hashtbl.cmj ../stdlib/array.cmj
-http_types.cmo :
-http_types.cmj :
+http_types.cmo : ../runtime/js.cmo
+http_types.cmj : ../runtime/js.cmj
 ignore_test.cmo : mt.cmi ../runtime/js.cmo
 ignore_test.cmj : mt.cmj ../runtime/js.cmj
 inline_edge_cases.cmo : inline_edge_cases.cmi
@@ -992,8 +1002,8 @@ js_date.cmo : ../runtime/js.cmo
 js_date.cmj : ../runtime/js.cmj
 js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
-js_obj_test.cmo : mt.cmi ../runtime/js.cmo
-js_obj_test.cmj : mt.cmj ../runtime/js.cmj
+js_obj_test.cmo : mt.cmi
+js_obj_test.cmj : mt.cmj
 js_val.cmo :
 js_val.cmj :
 largest_int_flow.cmo :
@@ -1192,6 +1202,8 @@ test_bug.cmo : ../stdlib/bytes.cmi
 test_bug.cmj : ../stdlib/bytes.cmj
 test_bytes.cmo : ../stdlib/bytes.cmi
 test_bytes.cmj : ../stdlib/bytes.cmj
+test_case_set.cmo :
+test_case_set.cmj :
 test_char.cmo :
 test_char.cmj :
 test_closure.cmo : ../stdlib/array.cmi
@@ -1370,8 +1382,8 @@ test_unsafe_cmp.cmo : ../runtime/js.cmo
 test_unsafe_cmp.cmj : ../runtime/js.cmj
 test_unsafe_obj_ffi.cmo : ../runtime/js_unsafe.cmo test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi.cmj : ../runtime/js_unsafe.cmj test_unsafe_obj_ffi.cmi
-test_unsafe_obj_ffi_ppx.cmo : test_unsafe_obj_ffi_ppx.cmi
-test_unsafe_obj_ffi_ppx.cmj : test_unsafe_obj_ffi_ppx.cmi
+test_unsafe_obj_ffi_ppx.cmo : ../runtime/js.cmo test_unsafe_obj_ffi_ppx.cmi
+test_unsafe_obj_ffi_ppx.cmj : ../runtime/js.cmj test_unsafe_obj_ffi_ppx.cmi
 test_unsupported_primitive.cmo : ../stdlib/bytes.cmi
 test_unsupported_primitive.cmj : ../stdlib/bytes.cmj
 test_while_closure.cmo : ../stdlib/array.cmi

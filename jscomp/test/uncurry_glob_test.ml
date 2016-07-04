@@ -1,14 +1,18 @@
 
 
-let v = Caml_utils.repeat 100 "x" [@fn]
+let v = Caml_utils.repeat 100 "x" [@bs]
 
-module M ( U : sig val f : int -> string -> string [@fn] end ) = 
+module M ( U : sig val f : int -> string -> string [@bs] end ) = 
 struct
-  let v = U.f 100 "x" [@fn]
+  let v = U.f 100 "x" [@bs]
 end
 
 
-let f = fun [@fn] () -> 3 
+let f = fun [@bs] () -> 3 
 
 
-let u = f () [@fn]
+let u = f () [@bs]
+
+let (+>) = fun [@bs]  a (h : _ -> int [@bs]) -> h a [@bs]
+
+let u h = 3 +> h  [@bs]

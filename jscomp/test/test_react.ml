@@ -1,20 +1,20 @@
-
+[@@@bs.config{bs_class_type  }]
 (** TODO: binding -- document.getElementById -- to mount node *)
 
 type html_element 
 
 class type document = 
   object
-    method getElementById : string -> html_element [@fn]
+    method getElementById : string -> html_element 
   end
 
 type doc = document Js.t 
 external doc :  doc  = "doc" [@@bs.val ]
 
 class type con = 
-    object [@fn]
-        method log : 'a -> unit 
-    end
+  object
+    method log : 'a -> unit 
+  end
 
 type console = con Js.t 
 external console : console  = "console" [@@bs.val ]

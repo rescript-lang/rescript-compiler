@@ -1,20 +1,20 @@
 
-
-
-
-
-
-let f (x : [%bs.obj: < case : int ->  'a ; 
-            case_set : int ->  int -> unit ;
-            .. > [@fn] ] )
- = 
-  x ## case_set 3 2 ;
-  x ## case 3 
-
-class type ['a] case = object [@fn]
+[@@@bs.config{bs_class_type }]
+class type ['a] case = object 
   method case : int -> 'a 
   method case_set : int -> 'a -> unit 
 end
+
+
+
+
+(* let f (x : [%bs.obj: < case : int ->  'a ;  *)
+(*             case_set : int ->  int -> unit ; *)
+(*             .. > [@bs] ] ) *)
+(*  =  *)
+(*   x ## case_set 3 2 ; *)
+(*   x ## case 3  *)
+
 
 let ff (x : int case  Js.t)
  = 
@@ -22,31 +22,30 @@ let ff (x : int case  Js.t)
   x##case 3 
 
 
-type 'a return = int -> 'a [@fn]
+type 'a return = int -> 'a [@bs]
 let h (x : 
-         [%bs.obj:< case : (int -> 'a return  ); .. >  [@fn] ]) = 
-  let a = x##case 3 in 
-  a 2 [@fn]   
+         [%bs.obj:< cse : (int -> 'a return  ); .. >  [@bs] ]) = 
+   (x#@cse 3) 2 [@bs]
+
 
 
 type x_obj =  
   [%bs.obj: < 
-    case : int ->  int ; 
-    case_set : int -> int -> unit ;
-  >  [@fn] ]
+    cse : int ->  int ; 
+    cse_st : int -> int -> unit ;
+  >  [@bs] ]
 
 let f_ext 
     (x : x_obj)
  = 
-  x ## case_set 3 2 ;
-  x ## case 3 
+ x #@ cse_st  3 2;
+ x #@ cse  3
 
 
 type 'a h_obj = 
   [%bs.obj: < 
-    case : int ->  'a return 
-  > [@fn] ]
+    cse : int ->  'a return 
+  > [@bs] ]
 
 let h_ext  (x : 'a h_obj) = 
-  let  a = x ##case 3 in 
-  a 2 [@fn] 
+   (x #@cse 3) 2 [@bs]

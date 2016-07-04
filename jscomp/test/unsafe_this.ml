@@ -8,17 +8,18 @@ let u : 'self =
       {
         x = 3 ;
         y = 32 ;
-        bark = (fun [@fn] this x y -> Js.log (this##length, this##x, this##y));
+        bark = (fun [@bs] this x y -> Js.log (this##length, this##x, this##y));
         length = 32
       } : 
         <
         x : int ; 
       y : int ;
-      bark : 'self -> int ->  int -> unit [@fn]; 
+      bark : 'self -> int ->  int -> unit [@bs]; 
       length : int >       )
   ]
 
-let v = u##bark u 1 2
+
+let u  = u#@bark u 1 2 [@bs]
 
 
 (* let bark2  = fun [@bs.this] (this, x, y) -> Js.log (this##x,x+y)  *)
@@ -64,14 +65,14 @@ let uu : 'self =
         x = 3 ;
         y = 32 ;
         bark = 
-          (fun [@meth_callback] (o : 'self) (x : int) (y : int) -> 
+          (fun [@bs.this] (o : 'self) (x : int) (y : int) -> 
                Js.log (o##length, o##x, o##y,x,y));
         length = 32
       } : 
         <
         x : int ; 
       y : int ;
-      bark : ('self -> int -> int -> _ [@meth_callback]); 
+      bark : ('self -> int -> int -> _ [@bs.this]); 
       length : int >       )
   ]
 
@@ -81,7 +82,7 @@ let js_obj : 'self =
         x = 3 ;
         y = 32 ;
         bark = 
-          (fun [@meth_callback] (o : 'self) x y -> 
+          (fun [@bs.this] (o : 'self) x y -> 
             Js.log (o##length, o##x, o##y,x,y);
             x + y
           );
