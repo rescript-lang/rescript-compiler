@@ -236,6 +236,10 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.
 (** 
     The second return values are values which need to be wrapped using 
    [caml_update_dummy] 
+   
+   Invariant:  jmp_table can not across function boundary,
+       here we share env 
+
 *)
 and compile_recursive_let 
     (cxt : Lam_compile_defs.cxt)
@@ -243,8 +247,6 @@ and compile_recursive_let
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
   |  Lfunction { kind; params; body; _}  -> 
-    (* Invariant:  jmp_table can not across function boundary,
-       here we share env *)
 
     let continue_label = Lam_util.generate_label ~name:id.name () in
     (* TODO: Think about recursive value 
@@ -875,19 +877,24 @@ and
       end
     | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} -> 
       begin match args_lambda with 
-        | [Lfunction{arity = len; kind; params = args; body} as fn] when len = arity + 1 -> 
-          
-          begin 
-            match compile_lambda {cxt with st = NeedValue; should_return = False}  fn
-            with 
-          | {block ; value = Some ({expression_desc = Fun (_, params, b, env)} as f)}
-            as out
-            -> 
-            {out with value = Some {f with expression_desc = Fun(true, params, b, env)}
-            }
-          | _ -> assert false 
-          end
-            
+        | [Lfunction{arity = len; kind; params; body} ] 
+          when len = arity + 1 -> 
+          Js_output.handle_block_return 
+            st
+            should_return             
+            lam 
+            []
+            (E.method_
+             params
+             (* Invariant:  jmp_table can not across function boundary,
+                here we share env
+             *)
+             (Js_output.to_block 
+                ( compile_lambda
+                    { cxt with st = EffectCall;  
+                               should_return = True None; 
+                               jmp_table = Lam_compile_defs.empty_handler_map} 
+                    body)))
         | _ -> assert false 
       end
 

@@ -201,6 +201,18 @@ let ocaml_fun
     comment
   }
 
+let method_
+    ?comment  
+    ?immutable_mask
+    params block  : t = 
+  let len = List.length params in
+  {
+    expression_desc = 
+      Fun (true, params,block, Js_fun_env.empty ?immutable_mask len ); 
+    comment
+  }
+
+
 let dummy_obj ?comment ()  : t = 
   {comment  ; expression_desc = Object []}
 
