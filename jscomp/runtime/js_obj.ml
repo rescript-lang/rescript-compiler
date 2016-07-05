@@ -23,9 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val none : 'a option
-val some : 'a -> 'a option
-val is_none : 'a option -> Js.boolean
-val to_def : 'a option -> 'a Js.Undefined.t
-val cons : 'a -> 'a list -> 'a list
-val is_list_empty : 'a list -> Js.boolean
+type any = Obj.t
+external set_tag : any -> int -> unit = "caml_obj_set_tag"
+external set_length : any -> int -> unit = "js_obj_set_length"
+external length : any -> int = "js_obj_length"
+external tag : any -> int = "caml_obj_tag"
+external set_tag : any -> int -> unit = "caml_obj_set_tag"
+external uninitialized_object : int -> int -> any = "js_uninitialized_object"
+external is_instance_array : any -> bool = 
+  "js_is_instance_array" (* use Array.isArray instead*)
+external size_of_any : any -> 'a Js.undefined =
+  "length" [@@bs.get]
+external tag_of_any : any -> 'a Js.undefined =
+  "tag" [@@bs.get]
+external magic : 'a -> 'b = "%identity"

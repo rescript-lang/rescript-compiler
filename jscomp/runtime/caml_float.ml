@@ -94,19 +94,19 @@ Math methods available prior to ES6 (ES5 or less)
 *)
 
 let caml_classify_float x : fpclass  = 
-  if Js.Float.is_finite x then 
+  if Js_float.is_finite x then 
     if abs_float x >= 2.2250738585072014e-308  then
       FP_normal
     else if x <> 0. then FP_subnormal
     else FP_zero
   else 
-  if Js.Float.is_nan x then 
+  if Js_float.is_nan x then 
     FP_nan 
   else FP_infinite
 
 
 let caml_modf_float (x : float) : float * float = 
-  if Js.Float.is_finite x then 
+  if Js_float.is_finite x then 
     let neg = 1. /. x < 0. in 
     let x = abs_float x  in
     let i = floor x in
@@ -114,7 +114,7 @@ let caml_modf_float (x : float) : float * float =
     if neg then 
       -. f, -. i       
     else f, i 
-  else if Js.Float.is_nan x then Js.Float.nan ,  Js.Float.nan 
+  else if Js_float.is_nan x then Js_float.nan ,  Js_float.nan 
   else (1. /. x , x)
 
 let caml_ldexp_float : float ->  int -> float [@bs] = [%bs.raw {| function (x,exp) {

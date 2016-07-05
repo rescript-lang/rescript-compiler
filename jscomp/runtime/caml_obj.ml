@@ -43,15 +43,15 @@
     we don't need fill fields, since it is not required by GC    
 *)
 let caml_obj_dup (x : Obj.t) = 
-  let len = Js.Caml_obj.length x in
-  let v = Js.Caml_obj.uninitialized_object (Js.Caml_obj.tag x ) len in
+  let len = Js_obj.length x in
+  let v = Js_obj.uninitialized_object (Js_obj.tag x ) len in
   for i = 0 to len - 1 do 
     Obj.set_field v i (Obj.field x i)
   done;
   v   
 
 let caml_obj_truncate (x : Obj.t) (new_size : int) = 
-  let len = Js.Caml_obj.length x in
+  let len = Js_obj.length x in
   if new_size <= 0 || new_size > len then 
     raise (Invalid_argument "Obj.truncate")
   else 
@@ -60,7 +60,7 @@ let caml_obj_truncate (x : Obj.t) (new_size : int) =
       for i = new_size  to len - 1  do
         Obj.set_field x  i (Obj.magic 0)
       done;
-      Js.Caml_obj.set_length x new_size 
+      Js_obj.set_length x new_size 
     end
 
      
@@ -69,12 +69,12 @@ let caml_lazy_make_forward x = lazy x
 
 (** TODO: the dummy one should be [{}] *)
 let caml_update_dummy x y = 
-  let len = Js.Caml_obj.length y in
+  let len = Js_obj.length y in
   for i = 0 to len - 1 do  
     Obj.set_field x i (Obj.field y i)
   done  ;
   Obj.set_tag x (Obj.tag y);
-  Js.Caml_obj.set_length x   (Js.Caml_obj.length y)
+  Js_obj.set_length x   (Js_obj.length y)
 
 let caml_int_compare (x : int) (y: int) : int = 
   if  x < y then -1 else if x = y then 0 else  1
@@ -108,8 +108,8 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   (* if js_is_instance_array a then  *)
   (*   0 *)
   (* else  *)
-    let tag_a = Js.Caml_obj.tag a in
-    let tag_b = Js.Caml_obj.tag b in
+    let tag_a = Js_obj.tag a in
+    let tag_b = Js_obj.tag b in
     (* double_array_tag: 254
        forward_tag:250
     *)
@@ -124,8 +124,8 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     else if tag_a <> tag_b then
       if tag_a < tag_b then (-1) else  1
     else
-      let len_a = Js.Caml_obj.length a in 
-      let len_b = Js.Caml_obj.length b in 
+      let len_a = Js_obj.length a in 
+      let len_b = Js_obj.length b in 
       if len_a = len_b then 
         aux_same_length a b 0 len_a 
       else if len_a < len_b then 
@@ -158,8 +158,8 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   if Js.typeof a = "string" then a == b 
   else if Js.typeof a = "number" then a == b 
   else
-    let tag_a = Js.Caml_obj.tag a in
-    let tag_b = Js.Caml_obj.tag b in
+    let tag_a = Js_obj.tag a in
+    let tag_b = Js_obj.tag b in
     (* double_array_tag: 254
        forward_tag:250
     *)
@@ -174,8 +174,8 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
     else if tag_a <> tag_b then
       false      
     else
-      let len_a = Js.Caml_obj.length a in 
-      let len_b = Js.Caml_obj.length b in 
+      let len_a = Js_obj.length a in 
+      let len_b = Js_obj.length b in 
       if len_a = len_b then 
         aux_equal_length a b 0 len_a 
       else false

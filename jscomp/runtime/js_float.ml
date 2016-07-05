@@ -23,9 +23,31 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val none : 'a option
-val some : 'a -> 'a option
-val is_none : 'a option -> Js.boolean
-val to_def : 'a option -> 'a Js.Undefined.t
-val cons : 'a -> 'a list -> 'a list
-val is_list_empty : 'a list -> Js.boolean
+external nan : float = "NaN"
+    [@@bs.val ] 
+
+external to_fixed : float -> int -> string = "toFixed" 
+    [@@bs.send]
+
+external is_finite : float -> bool = "isFinite"
+    [@@bs.call ]
+
+external is_nan : float -> bool = "isNaN"
+    [@@bs.call ] 
+
+external exp : float -> float = "Math.exp"
+    [@@bs.call ]
+
+external log : float -> float = "Math.log"
+    [@@bs.call ]
+
+external to_exponential : float -> prec:int ->  string = "toExponential"
+    [@@bs.send]
+
+external log2 : float = "Math.LN2" [@@ bs.val ]  
+external max : float -> float -> float = "Math.max" 
+    [@@bs.call]
+external random : unit -> float = "Math.random"
+    [@@bs.call ]
+external of_any : 'a -> float = "js_anything_to_number"
+

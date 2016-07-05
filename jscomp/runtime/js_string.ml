@@ -22,6 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external string_of_char : char -> string = "js_string_of_char"
+(** TODO: check with {!String.of_char} 
+    it's quite common that we have
+    {[ Js_string.of_char x.[0] ]}
+    It would be nice to generate code as below    
+    {[ x[0]
+    ]}
+*)
+
 external of_char : char -> string = "String.fromCharCode" 
     [@@bs.call]
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send]

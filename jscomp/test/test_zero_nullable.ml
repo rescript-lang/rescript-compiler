@@ -82,7 +82,7 @@ module Test_def = struct
 
 
   let f1 x = 
-    match Js.Def.to_opt x with 
+    match Js.Undefined.to_opt x with 
     | None -> 
       let sum x y = x + y in 
       sum 1 2 
@@ -91,7 +91,7 @@ module Test_def = struct
       sum x 1
 
   let f2 x = 
-    let u = Js.Def.to_opt x in
+    let u = Js.Undefined.to_opt x in
     match  u with 
     | None -> 
       let sum x y = x + y in 
@@ -103,7 +103,7 @@ module Test_def = struct
 
 
   let f5 h x = 
-    let u = Js.Def.to_opt @@ h 32 in
+    let u = Js.Undefined.to_opt @@ h 32 in
     match  u with 
     | None -> 
       let sum x y = x + y in 
@@ -113,7 +113,7 @@ module Test_def = struct
       sum x 1
 
   let f4 h x = 
-    let u = Js.Def.to_opt @@ h 32 in
+    let u = Js.Undefined.to_opt @@ h 32 in
     let v = 32 + x  in
     match  u with 
     | None -> 
@@ -134,24 +134,24 @@ module Test_def = struct
      No, if [x] is [null] then None else [Some x]
   *)
   let f8 x = 
-    match Js.Def.to_opt x with 
+    match Js.Undefined.to_opt x with 
     | Some x ->
-      (match Js.Def.to_opt x with 
+      (match Js.Undefined.to_opt x with 
        | Some _ -> 0
        | None -> 1 )
     | None -> 2 
 
-  let u = f8 (Js.Def.return (Js.Def.return None))
+  let u = f8 (Js.Undefined.return (Js.Undefined.return None))
 
-  let f9 x = Js.Def.to_opt x 
+  let f9 x = Js.Undefined.to_opt x 
 
-  let f10 x = Js.Def.test x 
-  let f11 = Js.Def.test (Js.Def.return 3 )
+  let f10 x = Js.Undefined.test x 
+  let f11 = Js.Undefined.test (Js.Undefined.return 3 )
 end
 
 
 module Test_null_def = struct 
-  open Js.Null_def
+  open Js.Null_undefined
   let f1 x = 
     match to_opt x with 
     | None -> 
@@ -224,14 +224,14 @@ end
 
 let () = 
   begin 
-    eq __LOC__ (Test_null_def.f1 (Js.Null_def.return 0 )) 1 ;
+    eq __LOC__ (Test_null_def.f1 (Js.Null_undefined.return 0 )) 1 ;
     eq __LOC__ (Test_null_def.f1 ([%bs.raw "null"])) 3 ;
     eq __LOC__ (Test_null_def.f1 ([%bs.raw "undefined"])) 3 ;
 
     eq __LOC__ (Test_null.f1 (Js.Null.return 0 )) 1 ;
     eq __LOC__ (Test_null.f1 ([%bs.raw "null"])) 3 ;
 
-    eq __LOC__ (Test_def.f1 (Js.Def.return 0 )) 1 ;
+    eq __LOC__ (Test_def.f1 (Js.Undefined.return 0 )) 1 ;
     eq __LOC__ (Test_def.f1 ([%bs.raw "undefined"])) 3 ;
   end
 

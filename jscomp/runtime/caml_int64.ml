@@ -280,7 +280,7 @@ let neg_two_ptr_63 = -. (2. ** 63.)
    ]}
 *)
 let rec of_float (x : float) : t = 
-  if Js.Float.is_nan x ||  Pervasives.not  (Js.Float.is_finite x ) then zero 
+  if Js_float.is_nan x ||  Pervasives.not  (Js_float.is_finite x ) then zero 
   else if x <= neg_two_ptr_63 then 
     min_int
   else if x  +. 1. >= two_ptr_63_dbl then
@@ -332,9 +332,9 @@ let rec div self other =
       let rem = ref self in 
       (* assert false *)
       while ge !rem other  do
-        let approx = ref ( Js.Float.max 1.
+        let approx = ref ( Js_float.max 1.
              (floor (to_float !rem /. to_float other) )) in
-        let log2 = ceil (log !approx /. Js.Float.log2) in
+        let log2 = ceil (log !approx /. Js_float.log2) in
         let delta =
           if log2 <= 48. then 1.
           else 2. ** (log2 -. 48.) in

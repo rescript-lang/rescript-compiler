@@ -27,6 +27,6 @@
 
 
 
-val js_is_nil_undef : 'a Js.Null_def.t -> bool
+val js_is_nil_undef : 'a Js.Null_undefined.t -> bool
 
-val js_from_nullable_def : 'a Js.Null_def.t -> 'a option
+val js_from_nullable_def : 'a Js.Null_undefined.t -> 'a option

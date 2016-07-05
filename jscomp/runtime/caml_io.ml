@@ -30,9 +30,9 @@
 
 
 let (^) = Js_string.append
-let stdin = Js.Def.empty
+let stdin = Js.Undefined.empty
 
-let stderr = Js.Def.empty
+let stderr = Js.Undefined.empty
 
 type out_channel  = {
   mutable buffer :  string;

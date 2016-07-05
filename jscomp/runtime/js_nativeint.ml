@@ -22,10 +22,4 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-val none : 'a option
-val some : 'a -> 'a option
-val is_none : 'a option -> Js.boolean
-val to_def : 'a option -> 'a Js.Undefined.t
-val cons : 'a -> 'a list -> 'a list
-val is_list_empty : 'a list -> Js.boolean
+external to_string : nativeint -> string = "js_anything_to_string"

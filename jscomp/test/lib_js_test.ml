@@ -1,10 +1,10 @@
 
 
-
+external to_json_string : 'a -> string = "js_json_stringify"
 let () =
   begin
 
-    Js.log @@ Js.to_json_string [1;2;3];
+    Js.log @@ to_json_string [1;2;3];
     Js.log "hey";
   end
 

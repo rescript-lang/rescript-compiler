@@ -64,7 +64,7 @@ let caml_sys_random_seed () : nativeint array =
    [|
      Nativeint.of_float 
      ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (current_date ()))
-                             0xffffffffn)) *. Js.Float.random ()) |]
+                             0xffffffffn)) *. Js_float.random ()) |]
 
 let caml_sys_system_command () = 127
 
