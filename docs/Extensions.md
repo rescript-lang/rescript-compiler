@@ -16,20 +16,24 @@ let x = [%bs.raw .. ]
 # Create Simple JS object in expression and core-type level
 
   - Types and expressions nested 
+ 
   ```ocaml
   [%bs.obj ({ x = 3 } : < x : int > )]
   ```
   - Types and expressions separate 
+
   ```ocaml
   [%bs.obj {x = 3 } ] : [%bs.obj: < x : int > ]
   ```
   - Object collections 
+
   ```
   [%bs.obj
   ([ {x = {y = 3}}]
   : < x : <y : int > > list )
   ]
   ```
+
   ```ocaml
   [%bs.obj {
   x = 3 ;
@@ -42,6 +46,7 @@ let x = [%bs.raw .. ]
   u : int -> int -> int  [@bs];
   > ]
   ```
+
   ```ocaml
   [%bs.obj: <
   x : int ;
@@ -70,13 +75,11 @@ val f : int -> string -> int
 val f_uncurry : int -> string -> int [@bs]
 ```
 
-```
-
 
 
 - How BuckleScript compiles function application
 
-To apply a function, you can do this
+  To apply a function, you can do this
 
 ```ocaml
 f 3 "x" (* curried calling convention *)
@@ -155,13 +158,20 @@ fun [@bs] x y -> x + y (* arity of 2*)
 
 - class type
 
+BuckleScript overrides OCaml `class type` syntax for FFI, to trigger this, 
+you have to put a file level configuration in the beginning.
+
+```ocaml
+[@@@bs.config {bs_class_type } ]
+```
+
 ```ocaml
 class type _x = object
   method height : int [@@bs.set]
   method bark : unit -> int
   method hi : int -> int
   method hey : int -> int   -> int
-end [@bs]
+end 
 type x = _x Js.t
 ```
 
