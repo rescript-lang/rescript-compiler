@@ -37,8 +37,8 @@ improve the generated code.
    annotation, for example:
 
    ```ocaml
-   let f : float * float -> float [@uncurry] = [%bs.raw "Math.max" ]
-   in f (3.0, 2.0) [@uncurry]
+   let f : float -> float -> float [@bs] = [%bs.raw "Math.max" ]
+   in f 3.0 2.0 [@bs]
    ```
    will be translated into 
 
@@ -202,8 +202,8 @@ gives it a type and customized attributes
    below is an example
 
    ```OCaml
-   external describe : string -> (unit -> unit [@uncurry]) -> unit = "describe" [@@bs.call]
-   external it : string -> (unit -> unit [@uncurry]) -> unit = "it" [@@bs.call "it"]
+   external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.call]
+   external it : string -> (unit -> unit [@bs]) -> unit = "it" [@@bs.call "it"]
    ```
 
    Since, `mochajs` is a test framework, we also need some assertion
@@ -219,7 +219,7 @@ On top of this we can write normal OCaml functions, for example:
    ```OCaml
    let assert_equal = eq
    let from_suites name suite  = 
-       describe name (fun [@uncurry] () -> 
+       describe name (fun [@bs] () -> 
          List.iter (fun (name, code) -> it name code) suite)
    ```
 
@@ -262,7 +262,7 @@ let f x a b = x ## hi (a,b)
 is inferred as type
 
 ```ocaml
-val f : < hi : ('a * 'b -> 'c [@uncurry] ;  .. > Js.t  -> 'a -> 'b -> 'c
+val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
 ```
 
 - `bs.obj`
@@ -270,8 +270,8 @@ val f : < hi : ('a * 'b -> 'c [@uncurry] ;  .. > Js.t  -> 'a -> 'b -> 'c
   This attribute helps create JavaScript object literal
 
 ```ocaml
-  let a = f ({ hi = fun [@uncurry] (x,y) -> x + y}[@bs.obj]) 1 2 
-  let b = f ({ hi = fun [@uncurry] (x,y) -> x +. y}[@bs.obj]) 1. 2.
+  let a = f [%bs.obj { hi = fun [@bs] (x,y) -> x + y} ] 1 2 
+  let b = f [%bs.obj { hi = fun [@bs] (x,y) -> x +. y} ] 1. 2.
   ```
 
    Generated code is like below 
