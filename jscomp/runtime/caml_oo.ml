@@ -36,7 +36,7 @@
     option1: set new index directly
     option2: create a new array    
 *)
-let caml_methods_cache = Js.Array.make 1000 0 
+let caml_methods_cache = Caml_array.make 1000 0 
 
 external get_methods : CamlinternalOO.obj -> CamlinternalOO.closure array =
   "%field0"
@@ -47,12 +47,12 @@ let caml_get_public_method
     (tag : int) (cacheid  : int) : CamlinternalOO.closure =
   let meths = get_methods obj in
   let offs =  caml_methods_cache.(cacheid) in
-  if (Js.Caml_obj.magic meths.(offs) : int) = tag then meths.(offs - 1)
+  if (Js_obj.magic meths.(offs) : int) = tag then meths.(offs - 1)
   else
     (** TODO: binary search *)    
     let rec aux (i : int) : int =     
       if i < 3 then assert false       
-      else if (Js.Caml_obj.magic meths.(i) : int) = tag then
+      else if (Js_obj.magic meths.(i) : int) = tag then
         begin        
           caml_methods_cache.(cacheid) <- i;         
           i
@@ -60,5 +60,5 @@ let caml_get_public_method
       else         
         aux (i - 2)
     in
-    meths.(aux (Js.Caml_obj.magic ((Js.Caml_obj.magic meths.(0) : int) * 2 + 1) : int) - 1)     
+    meths.(aux (Js_obj.magic ((Js_obj.magic meths.(0) : int) * 2 + 1) : int) - 1)     
 

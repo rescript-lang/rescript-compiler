@@ -24,10 +24,13 @@
 
 
 
+external new_uninitialized : int -> 'a array = "js_create_array"
+external append : 'a array -> 'a array -> 'a array = "js_array_append"
+external make : int -> 'a -> 'a array = "caml_make_vect"
 
 
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
-  let result = Js.Array.new_uninitialized len  in
+  let result = new_uninitialized len  in
   let j = ref 0 and i = ref offset in
   while !j < len do
     result.(!j) <- x.(!i);
@@ -58,7 +61,7 @@ let rec fill arr i l =
 
 let  caml_array_concat (l : 'a array list) : 'a array =
   let v = len 0 l in
-  let result = Js.Array.new_uninitialized v in
+  let result = new_uninitialized v in
   fill result 0 l ;
   result
 
@@ -73,7 +76,7 @@ let caml_array_get xs index =
   else xs.(index)
 
 let caml_make_vect len init = 
-  let b = Js.Array.new_uninitialized len in
+  let b = new_uninitialized len in
   for i = 0 to len - 1 do 
     b.(i) <- init
   done;

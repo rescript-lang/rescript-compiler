@@ -22,71 +22,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** This module will  be exported 
+
+
+    - It does not have any code, all its code will be inlined so that 
+       there will be never 
+       {[ require('js')]}
+
+    - Its interface should be minimal
+
+*)
+
+(** internal types for FFI, these types are not used by normal users *)
 type (-'obj, +'a) meth_callback 
-
-type +'a t (** Js object type *)
-
-
 type (-'arg, + 'result) meth
 type (-'arg, + 'result) fn (** Js uncurried function *)
 
-(** This file will also be exported to external users 
-    Attention: it should not have any code, all its code will be inlined so that 
-    there will be never 
-    {[ require('js')]}
-*)
-external typeof : 'a -> string = "js_typeof"
 
-external to_json_string : 'a -> string = "js_json_stringify"
-
-external log : 'a -> unit = "js_dump"
-
-
-
-
-type 'a set = 'a -> unit 
-(* TODO: in theory: it should be {[ 'a -> 'a]} *) 
-
-type any = Obj.t
-
-external erase : 'a -> any = "%identity" 
-external cast : any -> 'a = "%identity" 
-
-(* Note [to_opt null] will be [null : 'a opt opt]*)
-
-module Null = struct 
-  type + 'a t 
-  external to_opt : 'a t -> 'a option = "js_from_nullable"
-  external return : 'a -> 'a t  = "%identity"
-  external test : 'a t -> bool = "js_is_nil"
-  external empty : 'a t = "null" [@@bs.val]
-end
-
-module Def = struct 
-  type + 'a t 
-  external to_opt : 'a t -> 'a option = "js_from_def"
-  external return : 'a -> 'a t = "%identity"
-  external test : 'a t -> bool =  "js_is_undef"
-  external empty : 'a t = "undefined" [@@bs.val]
-end
-
-module Null_def = struct
-  type + 'a t 
-  external to_opt : 'a t -> 'a option = "js_from_nullable_def"
-  external return : 'a -> 'a t = "%identity"
-  external test : 'a t -> bool =  "js_is_nil_undef"
-  external empty : 'a t = "undefined" [@@bs.val]
-end
-
+(** Types for JS objects *)
+type +'a t (** Js object type *)
+type + 'a null 
+type + 'a undefined
+type + 'a null_undefined
 type boolean 
 
 
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
-
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
-external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
-external string_of_nativeint : nativeint -> string = "js_anything_to_string"
+
+external typeof : 'a -> string = "js_typeof"
+external log : 'a -> unit = "js_dump"
 
 external unsafe_lt : 'a -> 'a -> boolean = "js_unsafe_lt"
 external unsafe_le : 'a -> 'a -> boolean = "js_unsafe_le"
@@ -94,116 +60,39 @@ external unsafe_gt : 'a -> 'a -> boolean = "js_unsafe_gt"
 external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
 
 
-external string_of_char : char -> string = "js_string_of_char"
-(** TODO: check with {!String.of_char} 
-    it's quite common that we have
-    {[ Js.String.of_char x.[0] ]}
-    It would be nice to generate code as below    
-    {[ x[0]
-    ]}
-*)
-module String = struct 
-  external of_char : char -> string = "String.fromCharCode" 
-      [@@bs.call]
-  external toUpperCase : string -> string = "toUpperCase" [@@bs.send]
-  external of_int : int -> base:int -> string = "toString" [@@bs.send]
-  external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
-  external slice : string -> int -> int -> string = "slice" 
-      [@@bs.send]
-  external slice_rest : string -> int -> string = "slice" 
-      [@@bs.send]
-  external index_of : string -> string -> int = "indexOf"
-      [@@bs.send]
-  external append : string -> string -> string = "js_string_append"
-  external of_small_int_array : int array -> string = "js_string_of_small_int_array"
-  external of_small_int32_array : int32 array -> string = "js_string_of_small_int_array"
-  external lastIndexOf : string -> string -> int = "lastIndexOf"
-      [@@bs.send]    
-  external of_any : 'a -> string = "js_anything_to_string"
+(* Note [to_opt null] will be [null : 'a opt opt]*)
 
-
-  (***********************)
-  (* replaced primitives *)
-  external length : string -> int = "%string_length"
-  external get : string -> int -> char = "%string_safe_get"
-  external create : int -> bytes = "caml_create_string"
-  external unsafe_get : string -> int -> char = "%string_unsafe_get"
-  external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-  external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
-    = "caml_blit_string" "noalloc"
-  external unsafe_fill : bytes -> int -> int -> char -> unit
-    = "caml_fill_string" "noalloc"
-
+module Null = struct 
+  type + 'a t = 'a null
+  external to_opt : 'a t -> 'a option = "js_from_nullable"
+  external return : 'a -> 'a t  = "%identity"
+  external test : 'a t -> bool = "js_is_nil"
+  external empty : 'a t = "null" [@@bs.val]
 end
 
-module Array = struct 
-  external new_uninitialized : int -> 'a array = "js_create_array"
-  external append : 'a array -> 'a array -> 'a array = "js_array_append"
-  external make : int -> 'a -> 'a array = "caml_make_vect"
-end
-module Bytes = struct 
-  external to_int_array : bytes -> int array = "%identity"
-  external of_int_array : int array -> bytes = "%identity"
-  external new_uninitialized : int -> bytes = "js_create_array" 
-
-  (***********************)
-  (* replaced primitives *)
-  (* Note that we explicitly define [unsafe_set] instead of 
-     using {!Bytes.unsafe_set} since for some standard libraries, 
-     it might point to ["%string_unsafe_set"]
-  *)
-  external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-  external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
-  external length : bytes -> int = "%bytes_length"
-end
-module Float = struct 
-  external nan : float = "NaN"
-    [@@bs.val ] 
-  
-  external to_fixed : float -> int -> string = "toFixed" 
-    [@@bs.send]
-
-  external is_finite : float -> bool = "isFinite"
-    [@@bs.call ]
-
-  external is_nan : float -> bool = "isNaN"
-    [@@bs.call ] 
-
-  external exp : float -> float = "Math.exp"
-    [@@bs.call ]
-
-  external log : float -> float = "Math.log"
-    [@@bs.call ]
-  
-  external to_exponential : float -> prec:int ->  string = "toExponential"
-    [@@bs.send]
-
-  external log2 : float = "Math.LN2" [@@ bs.val ]  
-  external max : float -> float -> float = "Math.max" 
-    [@@bs.call]
-  external random : unit -> float = "Math.random"
-    [@@bs.call ]
-  external of_any : 'a -> float = "js_anything_to_number"
+module Undefined = struct 
+  type + 'a t = 'a undefined 
+  external to_opt : 'a t -> 'a option = "js_from_def"
+  external return : 'a -> 'a t = "%identity"
+  external test : 'a t -> bool =  "js_is_undef"
+  external empty : 'a t = "undefined" [@@bs.val]
 end
 
-module Caml_obj = struct 
-  external set_tag : any -> int -> unit = "caml_obj_set_tag"
-  external set_length : any -> int -> unit = "js_obj_set_length"
-  external length : any -> int = "js_obj_length"
-  external tag : any -> int = "caml_obj_tag"
-  external set_tag : any -> int -> unit = "caml_obj_set_tag"
-  external uninitialized_object : int -> int -> any = "js_uninitialized_object"
-  external is_instance_array : any -> bool = 
-    "js_is_instance_array" (* use Array.isArray instead*)
-  external size_of_any : any -> 'a Def.t =
-    "length" [@@bs.get]
-  external tag_of_any : any -> 'a Def.t =
-    "tag" [@@bs.get]
-  external magic : 'a -> 'b = "%identity"
+module Null_undefined = struct
+  type + 'a t = 'a null_undefined
+  external to_opt : 'a t -> 'a option = "js_from_nullable_def"
+  external return : 'a -> 'a t = "%identity"
+  external test : 'a t -> bool =  "js_is_nil_undef"
+  external empty : 'a t = "undefined" [@@bs.val]
 end
 
-module Caml_int64 = struct
-  external discard_sign : int64 -> int64 = "js_int64_discard_sign"
-  external div_mod : int64 -> int64 -> int64 * int64 = "js_int64_div_mod"
-  external to_hex : int64 -> string = "js_int64_to_hex"    
-end  
+
+
+
+
+
+
+
+
+
+

@@ -152,8 +152,8 @@ let md5blk = [|
   |] 
 
 let caml_md5_string s start len = 
-  let s = Js.String.slice   s start len in
-  let n =Js.String.length s in
+  let s = Js_string.slice   s start len in
+  let n =Js_string.length s in
   let () = 
     state.(0) <- seed_a; 
     state.(1) <- seed_b; 
@@ -177,11 +177,11 @@ let caml_md5_string s start len =
     cycle state md5blk
   done ;
 
-  let s_tail  = Js.String.slice_rest s (i_end  * 64) in 
+  let s_tail  = Js_string.slice_rest s (i_end  * 64) in 
   for kk = 0 to 15 do 
     md5blk.(kk) <- 0l 
   done ;
-  let i_end =Js.String.length s_tail - 1 in
+  let i_end =Js_string.length s_tail - 1 in
   for i = 0 to  i_end do 
     md5blk.(i / 4 ) <- 
       Int32.logor md5blk.(i / 4)  (Int32.of_int (Char.code s_tail.[i]) << ((i mod 4) lsl 3))
@@ -197,7 +197,7 @@ let caml_md5_string s start len =
     end;
   md5blk.(14) <-  Int32.mul (Int32.of_int n)  8l;
   cycle state md5blk;
-  Js.String.of_small_int32_array [|
+  Js_string.of_small_int32_array [|
         state.(0) & 0xffl;
         (state.(0) >> 8) & 0xffl;
         (state.(0) >> 16) & 0xffl;

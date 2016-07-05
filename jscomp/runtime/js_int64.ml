@@ -23,9 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val none : 'a option
-val some : 'a -> 'a option
-val is_none : 'a option -> Js.boolean
-val to_def : 'a option -> 'a Js.Undefined.t
-val cons : 'a -> 'a list -> 'a list
-val is_list_empty : 'a list -> Js.boolean
+external discard_sign : int64 -> int64 = "js_int64_discard_sign"
+external div_mod : int64 -> int64 -> int64 * int64 = "js_int64_div_mod"
+external to_hex : int64 -> string = "js_int64_to_hex"    

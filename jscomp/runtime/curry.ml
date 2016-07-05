@@ -92,7 +92,7 @@ let rec app f args =
     app (Obj.magic (apply_args f (sub args 0 arity)))
       (sub args arity (-d))
   else 
-    Obj.magic (fun x -> app f (Js.Array.append args [|x|] ))
+    Obj.magic (fun x -> app f (Caml_array.append args [|x|] ))
 
 (* Generated code 
    [if/else]

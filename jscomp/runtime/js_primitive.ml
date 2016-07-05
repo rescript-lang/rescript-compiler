@@ -27,10 +27,10 @@
 
 
 
-let js_is_nil_undef (x : _ Js.Null_def.t) = 
-  (Obj.magic x) == Js.Null.empty ||  (Obj.magic x) == Js.Def.empty
+let js_is_nil_undef (x : _ Js.Null_undefined.t) = 
+  (Obj.magic x) == Js.Null.empty ||  (Obj.magic x) == Js.Undefined.empty
 
-let js_from_nullable_def ( x : 'a Js.Null_def.t) = 
-  if (Obj.magic x) == Js.Null.empty ||  (Obj.magic x) == Js.Def.empty then 
+let js_from_nullable_def ( x : 'a Js.Null_undefined.t) = 
+  if (Obj.magic x) == Js.Null.empty ||  (Obj.magic x) == Js.Undefined.empty then 
     None 
   else Some (Obj.magic x : 'a)

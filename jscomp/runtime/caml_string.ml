@@ -25,22 +25,35 @@
 
 
 
+external new_uninitialized : int -> bytes = "js_create_array" 
+external to_int_array : bytes -> int array = "%identity"
+external of_int_array : int array -> bytes = "%identity"
 
 
+(***********************)
+(* replaced primitives *)
+(* Note that we explicitly define [unsafe_set] instead of 
+   using {!Bytes.unsafe_set} since for some standard libraries, 
+   it might point to ["%string_unsafe_set"]
+*)
+external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
+external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
+external length : bytes -> int = "%bytes_length"
 
-let js_string_of_char = Js.String.of_char
-let add = Js.String.append 
+
+let js_string_of_char = Js_string.of_char
+let add = Js_string.append 
 
 let caml_string_get s i= 
-  if i >=Js.String.length s || i < 0  then
+  if i >=Js_string.length s || i < 0  then
     raise (Invalid_argument "index out of bounds") 
-  else Js.String.unsafe_get s i
+  else Js_string.unsafe_get s i
 
 
 let caml_create_string len : bytes = 
   (* Node raise [RangeError] exception *)
   if len < 0 then raise (Invalid_argument "String.create")
-  else Js.Bytes.new_uninitialized len 
+  else new_uninitialized len 
 
 
 let caml_string_compare (s1 : string) (s2 : string) : int = 
@@ -51,7 +64,7 @@ let caml_string_compare (s1 : string) (s2 : string) : int =
 let caml_fill_string (s : bytes) i l (c : char) = 
   if l > 0 then
     for k = i to l + i - 1 do 
-      Js.Bytes.unsafe_set s k c 
+      unsafe_set s k c 
     done
 
 (**
@@ -59,18 +72,18 @@ let caml_fill_string (s : bytes) i l (c : char) =
  *)
 let caml_blit_string s1 i1 s2 i2 (len : int ) = 
   if len > 0 then
-    let off1 = Js.String.length s1 - i1 in
+    let off1 = Js_string.length s1 - i1 in
     if len <= off1 then 
       for i = 0 to len - 1 do 
-        Js.Bytes.unsafe_set s2 (i2 + i) s1.[i1 + i]
+        unsafe_set s2 (i2 + i) s1.[i1 + i]
       done
     else 
       begin
         for i = 0 to off1 - 1 do 
-          Js.Bytes.unsafe_set s2 (i2 + i) s1.[i1 + i]
+          unsafe_set s2 (i2 + i) s1.[i1 + i]
         done;
         for i = off1 to len - 1 do 
-          Js.Bytes.unsafe_set s2 (i2 + i) '\000'
+          unsafe_set s2 (i2 + i) '\000'
         done
       end
 
@@ -79,27 +92,27 @@ let caml_blit_string s1 i1 s2 i2 (len : int ) =
  *)
 let caml_blit_bytes s1 i1 s2 i2 len = 
   if len > 0 then
-    let off1 = Js.Bytes.length s1 - i1 in
+    let off1 = length s1 - i1 in
     if len <= off1 then 
       for i = 0 to len - 1 do 
-        Js.Bytes.unsafe_set s2 (i2 + i) (Js.Bytes.unsafe_get s1 (i1 + i))
+        unsafe_set s2 (i2 + i) (unsafe_get s1 (i1 + i))
       done
     else 
       begin
         for i = 0 to off1 - 1 do 
-          Js.Bytes.unsafe_set s2 (i2 + i) (Js.Bytes.unsafe_get s1 (i1 + i))
+          unsafe_set s2 (i2 + i) (unsafe_get s1 (i1 + i))
         done;
         for i = off1 to len - 1 do 
-          Js.Bytes.unsafe_set s2 (i2 + i) '\000'
+          unsafe_set s2 (i2 + i) '\000'
         done
       end
 
 (** checkout [Bytes.empty] -- to be inlined? *)
 let bytes_of_string  s = 
-  let len = Js.String.length s in
-  let res = Js.Bytes.new_uninitialized len  in
+  let len = Js_string.length s in
+  let res = new_uninitialized len  in
   for i = 0 to len - 1 do 
-    Js.Bytes.unsafe_set res i s.[i]
+    unsafe_set res i s.[i]
       (* Note that when get a char and convert it to int immedately, should be optimized
          should be [s.charCodeAt[i]]
        *)
@@ -115,16 +128,16 @@ let string_of_large_bytes bytes i len =
   let s = ref "" in
   let s_len = ref len in
   let seg = 1024 in
-  if i = 0 && len <= 4 * seg && len = Js.Bytes.length bytes then 
-    Js.String.of_small_int_array  (Js.Bytes.to_int_array bytes)
+  if i = 0 && len <= 4 * seg && len = length bytes then 
+    Js_string.of_small_int_array  (to_int_array bytes)
   else 
     begin
       let offset = ref 0 in
       while !s_len > 0 do 
         let next = if !s_len < 1024 then !s_len else seg in
-        let tmp_bytes = Js.Bytes.new_uninitialized next in
+        let tmp_bytes = new_uninitialized next in
         let () = caml_blit_bytes bytes !offset tmp_bytes 0 next in 
-        s := Js.String.append !s (Js.String.of_small_int_array (Js.Bytes.to_int_array tmp_bytes));
+        s := Js_string.append !s (Js_string.of_small_int_array (to_int_array tmp_bytes));
         s_len := !s_len - next ; 
         offset := !offset + next;
       done;
@@ -132,7 +145,7 @@ let string_of_large_bytes bytes i len =
     end
 
 let bytes_to_string a  = 
-  string_of_large_bytes a 0 (Js.Bytes.length a)   
+  string_of_large_bytes a 0 (length a)   
 
 
 (** TODO: performance could be improved, however, 
@@ -140,9 +153,9 @@ let bytes_to_string a  =
  *)
 let caml_string_of_char_array chars =
     let len = Array.length chars  in
-    let bytes = Js.Bytes.new_uninitialized len in
+    let bytes = new_uninitialized len in
     for i = 0 to len - 1 do 
-      Js.Bytes.unsafe_set bytes i chars.(i)
+      unsafe_set bytes i chars.(i)
     done;
     bytes_to_string bytes
 
