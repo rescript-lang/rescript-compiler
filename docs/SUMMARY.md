@@ -22,7 +22,7 @@
 
 * BuckleScript FFI
 
-  * [Curry and Uncurry functions](./Curry-and-Uncurry-functions.md)
+  * [Language Extenions](./Extensions.md)
   * [JS call OCaml](./JS-call-OCaml.md)
   * [OCaml call JS](./OCaml-call-JS.md)
   * [Runtime representation](./Runtime-representation.md)
