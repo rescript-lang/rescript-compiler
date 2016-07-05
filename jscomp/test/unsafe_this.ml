@@ -21,8 +21,10 @@ let u : 'self =
 
 let u  = u#@bark u 1 2 [@bs]
 
+let uux_this :[%bs.obj: < length : int > ] -> int -> int -> int [@bs.this] 
+  =
+  fun[@bs.this] o x y -> o##length + x + y
 
-(* let bark2  = fun [@bs.this] (this, x, y) -> Js.log (this##x,x+y)  *)
 
 type (-'this, +'tuple) u 
 

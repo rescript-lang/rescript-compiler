@@ -25,7 +25,7 @@ test_unsafe_obj_ffi.cmi : ../runtime/js.cmj
 test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmj
 testing.cmi :
 ui_defs.cmi :
-unsafe_this.cmi :
+unsafe_this.cmi : ../runtime/js.cmj
 a.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -498,6 +498,8 @@ test_array_primitive.cmj : ../stdlib/array.cmi
 test_array_primitive.cmx : ../stdlib/array.cmx
 test_bool_equal.cmj :
 test_bool_equal.cmx :
+test_bs_this.cmj : ../runtime/js.cmj
+test_bs_this.cmx : ../runtime/js.cmx
 test_bug.cmj : ../stdlib/bytes.cmi
 test_bug.cmx : ../stdlib/bytes.cmx
 test_bytes.cmj : ../stdlib/bytes.cmi
@@ -1198,6 +1200,8 @@ test_array_primitive.cmo : ../stdlib/array.cmi
 test_array_primitive.cmj : ../stdlib/array.cmj
 test_bool_equal.cmo :
 test_bool_equal.cmj :
+test_bs_this.cmo : ../runtime/js.cmo
+test_bs_this.cmj : ../runtime/js.cmj
 test_bug.cmo : ../stdlib/bytes.cmi
 test_bug.cmj : ../stdlib/bytes.cmj
 test_bytes.cmo : ../stdlib/bytes.cmi

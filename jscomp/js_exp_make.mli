@@ -91,6 +91,9 @@ val str : ?pure:bool -> ?comment:string -> string -> t
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
+val method_ : ?comment:string ->
+  ?immutable_mask:bool array -> J.ident list -> J.block -> t
+
 val econd : ?comment:string -> t -> t -> t -> t
 
 val int : ?comment:string -> ?c:char ->  int32 -> t 

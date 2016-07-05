@@ -8,3 +8,6 @@ val js_obj :
          y : int
        >
        as 'a ]
+
+val uux_this : 
+  < length : int > Js.t ->  int -> int ->  int [@bs.this]
