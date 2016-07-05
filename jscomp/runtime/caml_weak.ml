@@ -30,7 +30,7 @@
 type 'a t = 'a Js.Def.t array
 
 let caml_weak_create n =
-  Js.Array.new_uninitialized n 
+  Caml_array.new_uninitialized n 
 
 let caml_weak_set xs i v = 
   match v with 

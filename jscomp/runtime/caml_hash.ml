@@ -59,7 +59,7 @@ let final_mix h =
   (* Nativeint.logand  (!h ^ (!h >>> 16)) 0x3FFFFFFFn *)
 
 let caml_hash_mix_string h  s = 
-  let len =Js.String.length s in
+  let len =Js_string.length s in
   let block = len / 4 - 1  in
   let hash = ref h in  
   for i = 0 to block  do 

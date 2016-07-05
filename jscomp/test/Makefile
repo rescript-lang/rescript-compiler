@@ -6,6 +6,8 @@ INCLUDES= -I ../stdlib  -I ../runtime
 
 SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
+## since we use ppx
+$(addsuffix .cmi, $(SOURCE_LIST)): ../runtime/js.cmi
 
 COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
 COMPFLAGS+=  -bs-diagnose -bs-cross-module-opt -bs-npm-output-path $(npm_package_name):lib/js/test/

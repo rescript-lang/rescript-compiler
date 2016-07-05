@@ -97,50 +97,12 @@ external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
 external string_of_char : char -> string = "js_string_of_char"
 (** TODO: check with {!String.of_char} 
     it's quite common that we have
-    {[ Js.String.of_char x.[0] ]}
+    {[ Js_string.of_char x.[0] ]}
     It would be nice to generate code as below    
     {[ x[0]
     ]}
 *)
-module String = struct 
-  external of_char : char -> string = "String.fromCharCode" 
-      [@@bs.call]
-  external toUpperCase : string -> string = "toUpperCase" [@@bs.send]
-  external of_int : int -> base:int -> string = "toString" [@@bs.send]
-  external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
-  external slice : string -> int -> int -> string = "slice" 
-      [@@bs.send]
-  external slice_rest : string -> int -> string = "slice" 
-      [@@bs.send]
-  external index_of : string -> string -> int = "indexOf"
-      [@@bs.send]
-  external append : string -> string -> string = "js_string_append"
-  external of_small_int_array : int array -> string = "js_string_of_small_int_array"
-  external of_small_int32_array : int32 array -> string = "js_string_of_small_int_array"
-  external lastIndexOf : string -> string -> int = "lastIndexOf"
-      [@@bs.send]    
-  external of_any : 'a -> string = "js_anything_to_string"
 
-
-  (***********************)
-  (* replaced primitives *)
-  external length : string -> int = "%string_length"
-  external get : string -> int -> char = "%string_safe_get"
-  external create : int -> bytes = "caml_create_string"
-  external unsafe_get : string -> int -> char = "%string_unsafe_get"
-  external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-  external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
-    = "caml_blit_string" "noalloc"
-  external unsafe_fill : bytes -> int -> int -> char -> unit
-    = "caml_fill_string" "noalloc"
-
-end
-
-module Array = struct 
-  external new_uninitialized : int -> 'a array = "js_create_array"
-  external append : 'a array -> 'a array -> 'a array = "js_array_append"
-  external make : int -> 'a -> 'a array = "caml_make_vect"
-end
 module Bytes = struct 
   external to_int_array : bytes -> int array = "%identity"
   external of_int_array : int array -> bytes = "%identity"

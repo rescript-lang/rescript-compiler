@@ -29,7 +29,7 @@
 
 
 
-let (^) = Js.String.append
+let (^) = Js_string.append
 let stdin = Js.Def.empty
 
 let stderr = Js.Def.empty
@@ -42,21 +42,21 @@ type out_channel  = {
 let stdout = {
   buffer = "";
   output = (fun _ s ->
-    let v =Js.String.length s - 1 in
+    let v =Js_string.length s - 1 in
     if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
       ([%bs.raw{| process.stdout.write |} ] : string -> unit [@bs]) s [@bs]
     else
     if s.[v] = '\n' then
-      Js.log (Js.String.slice s 0 v)
+      Js.log (Js_string.slice s 0 v)
     else Js.log s)
 }
 
 let stderr = {
   buffer = "";
   output = fun _ s ->
-    let v =Js.String.length s - 1 in     
+    let v =Js_string.length s - 1 in     
     if s.[v] = '\n' then
-      Js.log (Js.String.slice s 0 v) (* TODO: change to Js.error*)
+      Js.log (Js_string.slice s 0 v) (* TODO: change to Js.error*)
     else Js.log s        
 }
 
@@ -82,8 +82,8 @@ let node_std_output  : string -> bool = [%bs.raw{|function (s){
 *)
 let caml_ml_output (oc : out_channel) (str : string) offset len  =
   let str =
-    if offset = 0 && len =Js.String.length str then str    
-    else Js.String.slice str offset len in
+    if offset = 0 && len =Js_string.length str then str    
+    else Js_string.slice str offset len in
   if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then
     ([%bs.raw{| process.stdout.write |}] : string -> unit [@bs] ) str [@bs]
@@ -91,19 +91,19 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
   else
     begin     
 
-      let id = Js.String.lastIndexOf str "\n" in
+      let id = Js_string.lastIndexOf str "\n" in
       if id < 0 then
         oc.buffer <- oc.buffer ^ str
       else
         begin 
-          oc.buffer <- oc.buffer ^ Js.String.slice str 0 (id +1);
+          oc.buffer <- oc.buffer ^ Js_string.slice str 0 (id +1);
           caml_ml_flush oc;
-          oc.buffer <- oc.buffer ^ Js.String.slice_rest str (id + 1)
+          oc.buffer <- oc.buffer ^ Js_string.slice_rest str (id + 1)
         end
     end      
 
 let caml_ml_output_char (oc : out_channel)  (char : char) : unit =
-  caml_ml_output oc (Js.String.of_char char) 0 1 
+  caml_ml_output oc (Js_string.of_char char) 0 1 
 
 let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
   raise @@ Failure  "caml_ml_input ic not implemented"

@@ -36,7 +36,7 @@
     option1: set new index directly
     option2: create a new array    
 *)
-let caml_methods_cache = Js.Array.make 1000 0 
+let caml_methods_cache = Caml_array.make 1000 0 
 
 external get_methods : CamlinternalOO.obj -> CamlinternalOO.closure array =
   "%field0"

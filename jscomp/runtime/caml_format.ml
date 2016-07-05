@@ -32,7 +32,7 @@
 let repeat = Caml_utils.repeat
 let caml_failwith s = raise (Failure  s)
 let caml_invalid_argument s= raise (Invalid_argument s )
-let (^) = Js.String.append
+let (^) = Js_string.append
 let (>>>) = Nativeint.shift_right_logical
 
 let to_nat x = Nativeint.of_int x 
@@ -89,7 +89,7 @@ let caml_int_of_string s =
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Nativeint.of_int @@ int_of_string_base hbase in
   let threshold = (-1n >>> 0) in 
-  let len =Js.String.length s in  
+  let len =Js_string.length s in  
   let c = if i < len then s.[i] else '\000' in
   let d = to_nat @@ parse_digit c in
   let () =
@@ -133,7 +133,7 @@ let caml_int64_of_string s =
     | Bin ->
       9223372036854775807L
   in 
-  let len =Js.String.length s in  
+  let len =Js_string.length s in  
   let c = if i < len then s.[i] else '\000' in
   let d = Int64.of_int @@ parse_digit c in
   let () =
@@ -192,7 +192,7 @@ let lowercase c =
   else c
 
 let parse_format fmt = 
-  let len =Js.String.length fmt in 
+  let len =Js_string.length fmt in 
   if len > 31 then 
     raise @@ Invalid_argument "format_int: format too long" ;
   let rec aux (f : fmt) i : fmt = 
@@ -205,7 +205,7 @@ let parse_format fmt =
         aux f (i + 1)
       | '+'|' ' 
         ->
-        f.signstyle <- Js.String.of_char c ; 
+        f.signstyle <- Js_string.of_char c ; 
         aux f (i + 1)
       | '#' -> 
         f.alternate <- true;
@@ -256,13 +256,13 @@ let parse_format fmt =
       | 'e' | 'f' | 'g' 
         -> 
         f.signedconv <- true;
-        f.conv <- Js.String.of_char c ;
+        f.conv <- Js_string.of_char c ;
         aux  f (i + 1)
       | 'E' | 'F' | 'G' 
         -> 
         f.signedconv <- true;
         f.uppercase <- true;
-        f.conv <- Js.String.of_char (lowercase c);
+        f.conv <- Js_string.of_char (lowercase c);
         aux f (i + 1)
       | _ -> 
         aux f (i + 1) 
@@ -332,7 +332,7 @@ let finish_formatting ({
     done;
   begin 
     if uppercase then 
-      buffer := !buffer ^ Js.String.toUpperCase rawbuffer
+      buffer := !buffer ^ Js_string.toUpperCase rawbuffer
     else
       buffer := !buffer ^ rawbuffer
   end;
@@ -355,11 +355,11 @@ let aux f (i : nativeint)  =
       else 
         Nativeint.shift_right_logical i 0 
     else  i  in
-  let s = ref @@ Js.String.of_nativeint i ~base:(int_of_base f.base) in 
+  let s = ref @@ Js_string.of_nativeint i ~base:(int_of_base f.base) in 
   if f.prec >= 0 then 
     begin 
       f.filter <- " ";
-      let n = f.prec -Js.String.length !s in 
+      let n = f.prec -Js_string.length !s in 
       if n > 0 then
         s :=  repeat n "0" [@bs]  ^ !s
     end ;
@@ -482,7 +482,7 @@ let caml_int64_format fmt x =
   if f.prec >= 0 then
     begin
       f.filter <- " ";
-      let n = f.prec -Js.String.length !s in
+      let n = f.prec -Js_string.length !s in
       if n > 0 then
         s := repeat n "0" [@bs] ^ !s
     end;
@@ -517,10 +517,10 @@ let caml_format_float fmt x =
                3.3e+00
            ]}
         *)
-        let  i =Js.String.length !s in 
+        let  i =Js_string.length !s in 
         if !s.[i-3] = 'e' then
           begin 
-            s := Js.String.slice !s 0 (i - 1) ^ "0" ^ Js.String.slice_rest !s (i - 1)
+            s := Js_string.slice !s 0 (i - 1) ^ "0" ^ Js_string.slice_rest !s (i - 1)
           end
       | "f"
         -> 
@@ -530,19 +530,19 @@ let caml_format_float fmt x =
       | "g" -> 
         let prec = if prec <> 0 then prec else 1 in
         s := Js.Float.to_exponential x (prec - 1);
-        let j = Js.String.index_of !s "e" in 
-        let  exp = Js.to_number @@ Js.String.slice_rest !s (j + 1)  in 
-        if exp < -4 || x >= 1e21 ||Js.String.length (Js.Float.to_fixed x 0) > prec then 
+        let j = Js_string.index_of !s "e" in 
+        let  exp = Js.to_number @@ Js_string.slice_rest !s (j + 1)  in 
+        if exp < -4 || x >= 1e21 ||Js_string.length (Js.Float.to_fixed x 0) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 
             decr i 
           done;
           if !s.[!i] = '.' then 
             decr i ;
-          s := Js.String.slice !s 0 (!i+1) ^ Js.String.slice_rest !s j ;
-          let i =Js.String.length !s in 
+          s := Js_string.slice !s 0 (!i+1) ^ Js_string.slice_rest !s j ;
+          let i =Js_string.length !s in 
           if !s.[i - 3] = 'e' then 
-            s := Js.String.slice !s 0 (i - 1) ^ "0" ^ Js.String.slice_rest !s (i - 1) 
+            s := Js_string.slice !s 0 (i - 1) ^ "0" ^ Js_string.slice_rest !s (i - 1) 
           else ()
         else 
           let p = ref prec in 
@@ -552,17 +552,17 @@ let caml_format_float fmt x =
               s := Js.Float.to_fixed x !p 
             end
           else 
-            while (s := Js.Float.to_fixed x !p;Js.String.length !s > prec + 1) do 
+            while (s := Js.Float.to_fixed x !p;Js_string.length !s > prec + 1) do 
               decr p
             done ;
           if !p <> 0 then 
-            let k = ref @@Js.String.length !s - 1 in 
+            let k = ref @@Js_string.length !s - 1 in 
             while !s.[!k] = '0' do 
               decr k
             done ;
             if !s.[!k] = '.' then 
               decr k ;
-            s := Js.String.slice !s 0 (!k + 1) 
+            s := Js_string.slice !s 0 (!k + 1) 
 
       | _ -> ()
     end;
