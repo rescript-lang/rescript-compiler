@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/04-09:47 *)
+(** Bundled by ocaml_pack 07/05-16:14 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11559,6 +11559,9 @@ val str : ?pure:bool -> ?comment:string -> string -> t
 val ocaml_fun : ?comment:string ->
   ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
+val method_ : ?comment:string ->
+  ?immutable_mask:bool array -> J.ident list -> J.block -> t
+
 val econd : ?comment:string -> t -> t -> t -> t
 
 val int : ?comment:string -> ?c:char ->  int32 -> t 
@@ -11950,6 +11953,18 @@ let ocaml_fun
       Fun (false, params,block, Js_fun_env.empty ?immutable_mask len ); 
     comment
   }
+
+let method_
+    ?comment  
+    ?immutable_mask
+    params block  : t = 
+  let len = List.length params in
+  {
+    expression_desc = 
+      Fun (true, params,block, Js_fun_env.empty ?immutable_mask len ); 
+    comment
+  }
+
 
 let dummy_obj ?comment ()  : t = 
   {comment  ; expression_desc = Object []}
@@ -22931,6 +22946,10 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.
 (** 
     The second return values are values which need to be wrapped using 
    [caml_update_dummy] 
+   
+   Invariant:  jmp_table can not across function boundary,
+       here we share env 
+
 *)
 and compile_recursive_let 
     (cxt : Lam_compile_defs.cxt)
@@ -22938,8 +22957,6 @@ and compile_recursive_let
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
   |  Lfunction { kind; params; body; _}  -> 
-    (* Invariant:  jmp_table can not across function boundary,
-       here we share env *)
 
     let continue_label = Lam_util.generate_label ~name:id.name () in
     (* TODO: Think about recursive value 
@@ -23570,19 +23587,24 @@ and
       end
     | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} -> 
       begin match args_lambda with 
-        | [Lfunction{arity = len; kind; params = args; body} as fn] when len = arity + 1 -> 
-          
-          begin 
-            match compile_lambda {cxt with st = NeedValue; should_return = False}  fn
-            with 
-          | {block ; value = Some ({expression_desc = Fun (_, params, b, env)} as f)}
-            as out
-            -> 
-            {out with value = Some {f with expression_desc = Fun(true, params, b, env)}
-            }
-          | _ -> assert false 
-          end
-            
+        | [Lfunction{arity = len; kind; params; body} ] 
+          when len = arity + 1 -> 
+          Js_output.handle_block_return 
+            st
+            should_return             
+            lam 
+            []
+            (E.method_
+             params
+             (* Invariant:  jmp_table can not across function boundary,
+                here we share env
+             *)
+             (Js_output.to_block 
+                ( compile_lambda
+                    { cxt with st = EffectCall;  
+                               should_return = True None; 
+                               jmp_table = Lam_compile_defs.empty_handler_map} 
+                    body)))
         | _ -> assert false 
       end
 
