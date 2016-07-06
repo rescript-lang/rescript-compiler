@@ -111,55 +111,31 @@ let js_property loc obj name =
     ~local_fun_name:"cast" 
     (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
 
-let gen_fn_run loc arity fn args  : Parsetree.expression_desc = 
-  let pval_prim = [Literals.js_fn_run ; string_of_int arity]  in
+let generic_run ty loc arity fn args : Parsetree.expression_desc = 
   let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
-  let pval_type =
-    arrow ~loc "" (lift_curry_type loc args_type result_type) fn_type in 
+  let string_arity = string_of_int arity in
+  let pval_prim, pval_type = 
+    match ty with 
+    | `Fn | `PropertyFn -> 
+      [Literals.js_fn_run; string_arity], 
+      arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
+    | `Method -> 
+      [Literals.js_method_run ; string_arity], 
+      arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
+  in
   Ast_comb.create_local_external loc ~pval_prim ~pval_type 
     (("", fn) :: List.map (fun x -> "",x) args )
-
-let gen_method_run loc arity fn args  : Parsetree.expression_desc = 
-  let pval_prim = [Literals.js_method_run ; string_of_int arity]  in
-  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
-  let pval_type =
-    arrow ~loc "" (lift_method_type loc args_type result_type) fn_type in 
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    (("", fn) :: List.map (fun x -> "",x) args )
-
-
-
-
-let uncurry_fn_apply loc (self : Ast_mapper.mapper)  fn args 
-
-  = 
-  let fn = self.expr self fn in 
-  let args = 
-    List.map 
-      (fun (label, e) -> 
-         if label <> "" then 
-           Location.raise_errorf ~loc "label is not allowed here";
-         self.expr self e
-      ) args in 
-  match args with 
-  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
-    -> 
-    gen_fn_run loc 0 fn []
-  | _ -> 
-    let len = List.length args in 
-    gen_fn_run loc len fn args
-
 
 (* TODO: 
    have a final checking for property arities 
      [#=], 
-   remove [case_set] support 
-*)
+   remove [case_set] support *)
 
-let property_apply loc 
+
+let generic_apply  kind loc 
     (self : Ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    name (args : args )  =
+    (args : args ) cb   =
   let obj = self.expr self obj in
   let args =
     List.map (fun (label,e) ->
@@ -171,40 +147,22 @@ let property_apply loc
   match args with 
   | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
     -> 
-    gen_fn_run loc 0
-      (Exp.mk ~loc @@ js_property loc obj name)
+    generic_run kind loc 0 (cb loc obj)
       []
   | _ -> 
-    gen_fn_run loc len 
-      (Exp.mk ~loc @@ js_property loc obj name)
-      args
+    generic_run kind loc len (cb loc obj) args
 
+let uncurry_fn_apply loc self fn args = 
+  generic_apply `Fn loc self fn args (fun _ obj -> obj )
 
-let method_apply 
-    loc 
-    (mapper : Ast_mapper.mapper) 
-    (obj : Parsetree.expression) 
-    name 
-    (args : args )
-  = 
-  let obj = mapper.expr mapper obj in
-  let args =
-    List.map (fun (label,e) ->
-        if label <> "" then
-          Location.raise_errorf ~loc "label is not allowed here"        ;
-        mapper.expr mapper e
-      ) args in
-  let len = List.length args in
-  match args with 
-  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
-    -> 
-    gen_method_run loc 0
-      (Exp.mk ~loc @@ js_property loc obj name)
-      []
-  | _ -> 
-    gen_method_run loc len 
-      (Exp.mk ~loc @@ js_property loc obj name)
-      args
+let property_apply loc self obj name (args : args) 
+  =  generic_apply `PropertyFn loc self obj args 
+    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
+
+let method_apply loc self obj name args = 
+  generic_apply `Method loc self obj args 
+    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
+
 
 let gen_fn_mk loc arity arg  : Parsetree.expression_desc = 
   let pval_prim = [ Literals.js_fn_mk; string_of_int arity]  in

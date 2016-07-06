@@ -69,7 +69,3 @@ val tuple_type_pair :
   [< `Make | `Run ] ->
   int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
 
-
-(* val obj_type_pair :  *)
-(*   ?loc:Ast_helper.loc -> *)
-(*   int -> Parsetree.core_type * (Parsetree.core_type * Parsetree.core_type) *)
