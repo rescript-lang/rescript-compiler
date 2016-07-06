@@ -27,7 +27,14 @@ type 'a cxt = Ast_helper.loc -> Ast_mapper.mapper -> 'a
 type loc = Location.t 
 type args = (string * Parsetree.expression) list
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-
+type uncurry_expression_gen = 
+  (Parsetree.pattern ->
+   Parsetree.expression ->
+   Parsetree.expression_desc) cxt
+type uncurry_type_gen = 
+  (Parsetree.core_type ->
+   Parsetree.core_type  ->
+   Parsetree.core_type) cxt
 let js_obj_type_id () = 
   if Js_config.get_env () = Browser then
     Ast_literal.Lid.pervasives_js_obj
@@ -50,6 +57,7 @@ let method_call_back_id () =
     Ast_literal.Lid.pervasives_meth_callback
   else 
     Ast_literal.Lid.js_meth_callback
+
 let arity_lit = "Arity_"
 
 let mk_args loc n tys = 
@@ -92,11 +100,7 @@ let lift_js_method_callback loc
 let to_js_type loc  x  = 
   Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 
-
-
 let arrow = Typ.arrow
-
-
 
 
 let js_property loc obj name =
@@ -163,11 +167,7 @@ let method_apply loc self obj name args =
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-
-
- 
-(** TODO: how to handle attributes *)
-let to_uncurry_type loc (mapper : Ast_mapper.mapper)
+let generic_to_uncurry_type kind loc (mapper : Ast_mapper.mapper)
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  = 
   let rec aux acc (typ : Parsetree.core_type) = 
@@ -189,74 +189,35 @@ let to_uncurry_type loc (mapper : Ast_mapper.mapper)
     | _, _ -> mapper.typ mapper typ, acc  
   in 
   let first_arg = mapper.typ mapper first_arg in
-  let result, rev_extra_args = 
-    aux  [first_arg] typ in 
-
-  match rev_extra_args with 
-  | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-    ->
-    lift_curry_type loc [] result 
-  | _
-    -> 
-    lift_curry_type loc (List.rev rev_extra_args) result 
-
-
-let to_method_type loc (mapper : Ast_mapper.mapper)
-    (first_arg : Parsetree.core_type) 
-    (typ : Parsetree.core_type)  = 
-  let rec aux acc (typ : Parsetree.core_type) = 
-    (* in general, 
-       we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [bs] and [bs.this] found in typ, 
-       we should stop 
-    *)
-    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
-    |  `Nothing, _ -> 
-      begin match typ.ptyp_desc with 
-      | Ptyp_arrow (label, arg, body)
-        -> 
-        if label <> "" then
-          Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
-        aux (mapper.typ mapper arg :: acc) body 
-      | _ -> mapper.typ mapper typ, acc 
-      end
-    | _, _ -> mapper.typ mapper typ, acc  
-  in 
-  let first_arg = mapper.typ mapper first_arg in
-  let result, rev_extra_args = 
-    aux  [first_arg] typ in 
-
-  match rev_extra_args with 
-  | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-    ->
-    lift_method_type loc [] result 
-  | _
-    -> 
-    lift_method_type loc (List.rev rev_extra_args) result 
-
-  
-let to_method_callback_type 
-    loc 
-    (mapper : Ast_mapper.mapper)
-    (first_arg : Parsetree.core_type) 
-    (typ : Parsetree.core_type)  = 
-  let rec aux acc (typ : Parsetree.core_type) = 
-    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
-    |  `Nothing , _ -> 
-      begin match typ.ptyp_desc with 
-        | Ptyp_arrow (label, arg, body)
-          -> 
-          if label <> "" then
-            Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
-          aux (mapper.typ mapper arg :: acc) body 
-        | _ -> mapper.typ mapper typ, acc 
-      end 
-    | _, _ -> mapper.typ mapper typ, acc  
-  in 
-  let first_arg = mapper.typ mapper first_arg in 
   let result, rev_extra_args = aux  [first_arg] typ in 
-  lift_js_method_callback loc (List.rev rev_extra_args) result
+  let args  = List.rev rev_extra_args in 
+  match kind with 
+  | `Fn
+    ->
+    let args = 
+      match args with 
+      | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
+        -> []
+      | _ -> args in
+    lift_curry_type loc args result 
+  | `Method -> 
+    let args = 
+      match args with 
+      | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
+        -> []
+      | _ -> args in
+    lift_method_type loc args result 
 
+  | `Method_callback
+    -> lift_js_method_callback loc args result 
+
+
+let to_uncurry_type  = 
+  generic_to_uncurry_type `Fn
+let to_method_type  =
+  generic_to_uncurry_type  `Method
+let to_method_callback_type  = 
+  generic_to_uncurry_type `Method_callback 
 
 let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body 
   = 
@@ -303,11 +264,10 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
       ) in
     Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", body)]
 
-let to_uncurry_fn loc self pat body = 
-  generic_to_uncurry_exp `Fn loc self pat body 
-
-let to_method_callback loc self pat body = 
-  generic_to_uncurry_exp `Method_callback loc self pat body 
+let to_uncurry_fn   = 
+  generic_to_uncurry_exp `Fn
+let to_method_callback  = 
+  generic_to_uncurry_exp `Method_callback 
 
 let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 
   let arity = List.length labels in 

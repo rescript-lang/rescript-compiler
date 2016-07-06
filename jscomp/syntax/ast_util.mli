@@ -28,6 +28,20 @@ type loc = Location.t
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type 'a cxt = loc -> Ast_mapper.mapper -> 'a
 
+(** In general three kinds of ast generation.
+    - convert a curried to type to uncurried 
+    - convert a curried fun to uncurried fun
+    - convert a uncuried application to normal 
+*)
+type uncurry_expression_gen = 
+  (Parsetree.pattern ->
+   Parsetree.expression ->
+   Parsetree.expression_desc) cxt
+type uncurry_type_gen = 
+  (Parsetree.core_type ->
+   Parsetree.core_type  ->
+   Parsetree.core_type) cxt
+
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   (Parsetree.expression ->
@@ -56,42 +70,30 @@ val property_apply :
     [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
 
 *)
-val to_uncurry_fn : 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt 
+val to_uncurry_fn : uncurry_expression_gen
+
 
 (** syntax: 
     {[fun [@bs.this] obj pat pat1 -> body]}    
 *)
-val to_method_callback : 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt 
+val to_method_callback : uncurry_expression_gen
+
 
 (** syntax : 
     {[ int -> int -> int [@bs]]}
 *)
-val to_uncurry_type : 
-  (Parsetree.core_type ->
-   Parsetree.core_type  ->
-   Parsetree.core_type) cxt 
+val to_uncurry_type : uncurry_type_gen
+  
 
 (** syntax
     {[ method : int -> itn -> int ]}
 *)
-val to_method_type : 
-  (Parsetree.core_type ->
-  Parsetree.core_type ->
-  Parsetree.core_type) cxt 
+val to_method_type : uncurry_type_gen
 
 (** syntax:
     {[ 'obj -> int -> int [@bs.this] ]}
 *)
-val to_method_callback_type : 
-  (Parsetree.core_type ->
-  Parsetree.core_type ->  
-  Parsetree.core_type) cxt 
+val to_method_callback_type : uncurry_type_gen
 
 val to_js_type : 
   loc -> Parsetree.core_type -> Parsetree.core_type
