@@ -59,3 +59,8 @@ val case_prefix : string
 
 val js_fn_run : string
 val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 

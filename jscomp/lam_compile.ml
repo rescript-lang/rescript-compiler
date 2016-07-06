@@ -878,7 +878,7 @@ and
     | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} -> 
       begin match args_lambda with 
         | [Lfunction{arity = len; kind; params; body} ] 
-          when len = arity + 1 -> 
+          when len = arity -> 
           Js_output.handle_block_return 
             st
             should_return             

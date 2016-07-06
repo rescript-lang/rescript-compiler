@@ -60,3 +60,7 @@ let case_prefix = "case_"
 
 let js_fn_run = "js_fn_run"
 let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"

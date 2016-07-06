@@ -49,22 +49,21 @@ let process_method_attributes_rev (attrs : t) =
 
 
 let process_attributes_rev (attrs : t) = 
-  List.fold_left (fun (acc, st) attr -> 
-      let tag = fst attr in
-      match tag.Location.txt, st  with 
+  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
+      match txt, st  with 
       | "bs", (`Nothing | `Uncurry) 
         -> 
-        (acc, `Uncurry)
+        `Uncurry, acc
       | "bs.this", (`Nothing | `Meth)
-        -> (acc, `Meth)
+        ->  `Meth, acc
       | "bs", `Meth 
       | "bs.this", `Uncurry
         -> Location.raise_errorf 
-             ~loc:tag.Location.loc 
+             ~loc
              "[@bs.this] and [@bs] can not be applied at the same time"
       | _ , _ -> 
-        (attr::acc , st)
-    ) ([], `Nothing) attrs
+        st, attr::acc 
+    ) ( `Nothing, []) attrs
 
 
 let bs_obj  : attr 

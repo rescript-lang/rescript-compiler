@@ -59,7 +59,7 @@ open Ast_helper
 
 
 
-let record_as_js_object = ref None (* otherwise has an attribute *)
+let record_as_js_object = ref false (* otherwise has an attribute *)
 
 
 let obj_type_as_js_obj_type = ref false
@@ -69,7 +69,7 @@ let non_export = ref false
 let bs_class_type = ref false 
 
 let reset () = 
-  record_as_js_object := None ;
+  record_as_js_object := false ;
   obj_type_as_js_obj_type := false ;
   uncurry_type := false ;
   obj_type_auto_uncurry := false ;
@@ -91,15 +91,15 @@ let handle_class_type_field  acc =
              match ty.ptyp_desc with 
              | Ptyp_arrow ("", args, body) 
                -> 
-               Ast_util.destruct_arrow_as_meth_type 
-                 ty.ptyp_loc args body self 
+               Ast_util.to_method_type
+                 ty.ptyp_loc  self  args body
 
              | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
                -> 
                {ty with ptyp_desc = 
                           Ptyp_poly(strs,             
-                                    Ast_util.destruct_arrow_as_meth_type
-                                      ptyp_loc args body self  )}
+                                    Ast_util.to_method_type
+                                      ptyp_loc  self args body  )}
              | _ -> 
                self.typ self ty
            in 
@@ -126,11 +126,10 @@ let handle_class_type_field  acc =
                 Pctf_method (name ^ Literals.setter_suffix, 
                              private_flag,
                              virtual_flag,
-                             Ast_util.destruct_arrow_as_meth_type 
-                               loc 
+                             Ast_util.to_method_type
+                               loc self 
                                ty 
                                (Ast_literal.type_unit ~loc ())
-                               self 
                             );
               pctf_attributes}
              :: get_acc 
@@ -165,13 +164,13 @@ let handle_typ
      ptyp_loc = loc
    } ->
     begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
-      | ptyp_attributes, `Uncurry ->
-        Ast_util.destruct_arrow loc args body self 
-      | ptyp_attributes, `Meth -> 
-        Ast_util.destruct_arrow_as_meth_callback_type loc args body self         
-      | _, `Nothing -> 
+      | `Uncurry , ptyp_attributes ->
+        Ast_util.to_uncurry_type loc self args body 
+      |  `Meth, ptyp_attributes -> 
+        Ast_util.to_method_callback_type loc self args body
+      | `Nothing , _ -> 
         if !uncurry_type then 
-          Ast_util.destruct_arrow loc args body self 
+          Ast_util.to_uncurry_type loc  self  args body
         else 
           Ast_mapper.default_mapper.typ self ty
     end
@@ -194,15 +193,15 @@ let handle_typ
       | None, _  ->
         List.map (fun (label, ptyp_attrs, core_type ) -> 
             match Ast_attributes.process_attributes_rev ptyp_attrs with 
-            | _, `Nothing -> 
+            | `Nothing,  _ -> 
               label, ptyp_attrs , check_auto_uncurry  core_type
-            | ptyp_attrs, `Uncurry  -> 
+            |  `Uncurry, _  -> 
               label , ptyp_attrs, 
               check_auto_uncurry
                 { core_type with 
                   ptyp_attributes = 
                     Ast_attributes.bs :: core_type.ptyp_attributes}
-            | ptyp_attrs, `Meth 
+            |  `Meth, ptyp_attrs 
               ->  
               label , ptyp_attrs, 
               check_auto_uncurry
@@ -214,13 +213,13 @@ let handle_typ
         Ext_ref.protect uncurry_type true begin fun _ -> 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
               match Ast_attributes.process_attributes_rev ptyp_attrs with 
-              |  _, `Nothing -> label, ptyp_attrs , self.typ self core_type
-              | ptyp_attrs, `Uncurry -> 
+              | `Nothing,  _ -> label, ptyp_attrs , self.typ self core_type
+              |  `Uncurry, ptyp_attrs -> 
                 label , ptyp_attrs, self.typ self 
                   { core_type with 
                     ptyp_attributes = 
                       Ast_attributes.bs :: core_type.ptyp_attributes}
-              | ptyp_attrs, `Meth -> 
+              |  `Meth, ptyp_attrs -> 
                 label , ptyp_attrs, self.typ self 
                   { core_type with 
                     ptyp_attributes = 
@@ -234,14 +233,10 @@ let handle_typ
         with ptyp_desc = Ptyp_object(methods, closed_flag);
              ptyp_attributes } in 
     if !obj_type_as_js_obj_type then 
-      Ast_util.lift_js_type ~loc inner_type          
+      Ast_util.to_js_type loc inner_type          
     else inner_type
   | _ -> super.typ self ty
 
-let handle_obj_property loc obj name e 
-    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let obj = mapper.expr mapper obj in 
-  { e with pexp_desc = Ast_util.down_with_name ~loc obj name  }
 
 
 
@@ -264,7 +259,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
               Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
-                (Some Ast_attributes.bs_obj ) true
+                true true
                 (fun ()-> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
@@ -272,14 +267,17 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_fun ("", None, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
-          | _, `Nothing 
+          | `Nothing, _ 
             -> Ast_mapper.default_mapper.expr self e 
-          |  attrs , `Uncurry
+          |   `Uncurry, pexp_attributes
             -> 
-            Ast_util.destruct_arrow_as_fn loc pat body self e attrs
-          | pexp_attributes, `Meth 
+            {e with 
+             pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
+             pexp_attributes}
+          | `Meth , pexp_attributes
             -> 
-            Ast_util.destruct_arrow_as_meth_callbak loc pat body self e pexp_attributes
+            {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;
+                    pexp_attributes }
           end
         | Pexp_apply (fn, args  ) ->
           begin match fn with 
@@ -291,7 +289,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
                    ]);
                _} ->  (* f##paint 1 2 *)
-              Ast_util.method_run loc obj name args e self
+              {e with pexp_desc = Ast_util.method_apply loc self obj name args }
             | {pexp_desc = 
                  Pexp_apply (
                    {pexp_desc = 
@@ -300,7 +298,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
                    ]);
                _} ->  (* f##paint 1 2 *)
-              Ast_util.property_run loc obj name args e self
+              {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
 
             | {pexp_desc = 
                  Pexp_ident  {txt = Lident "##" ; loc} ; _} 
@@ -312,12 +310,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         args
                       ) })
                   ] -> (* f##(paint 1 2 ) *)
-                  Ast_util.method_run loc obj name args e self
+                  {e with pexp_desc = Ast_util.method_apply loc self obj name args}
                 | [("", obj) ;
                    ("", 
                     {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
                    )  (* f##paint  *)
-                  ] -> handle_obj_property loc obj name e self
+                  ] -> 
+                  { e with pexp_desc = 
+                             Ast_util.js_property loc (self.expr self obj) name  
+                  }
+
                 | _ -> 
                   Location.raise_errorf ~loc
                     "Js object ## expect syntax like obj##(paint (a,b)) "
@@ -339,7 +341,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                                 )}; 
                  "", arg
                 ] -> 
-                Ast_util.method_run loc obj (name ^ Literals.setter_suffix) ["", arg ] e self
+                 { e with
+                   pexp_desc =
+                     Ast_util.method_apply loc self obj 
+                       (name ^ Literals.setter_suffix) ["", arg ]  }
               | _ -> Ast_mapper.default_mapper.expr self e 
               end
             | _ -> 
@@ -348,22 +353,20 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                   | {Location.txt = "bs"; _}, _ -> true 
                   | _ -> false) e.pexp_attributes with 
               | None, _ -> Ast_mapper.default_mapper.expr self e 
-              | Some _, attrs -> 
-                Ast_util.fn_run loc fn args self e attrs 
+              | Some _, pexp_attributes -> 
+                {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
+                        pexp_attributes }
               end
           end
         | Pexp_record (label_exprs, None)  -> 
-            begin match !record_as_js_object with 
-            | Some attr 
-              (* TODO better error message when [with] detected in [%bs.obj] *)
-              -> 
-              { e with
-                pexp_desc =  Ast_util.handle_record_as_js_object loc attr label_exprs self;
-              }
-            | None -> 
-              Ast_mapper.default_mapper.expr  self e
-            end
-
+          (* TODO better error message when [with] detected in [%bs.obj] *)
+          if !record_as_js_object then
+            { e with
+              pexp_desc =  
+                Ast_util.record_as_js_object loc self label_exprs;
+            }
+          else 
+            Ast_mapper.default_mapper.expr  self e
         | _ ->  Ast_mapper.default_mapper.expr self e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
