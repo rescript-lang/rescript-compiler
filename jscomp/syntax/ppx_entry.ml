@@ -77,8 +77,6 @@ let reset () =
   non_export  :=  false
 
 
-let arrow = Ast_helper.Typ.arrow
-
 let handle_record_as_js_object 
     loc 
     attr
