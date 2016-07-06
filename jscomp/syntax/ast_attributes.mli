@@ -21,23 +21,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type attr =  Parsetree.attribute
+type t =  attr list 
 
+type ('a,'b) st = 
+  { get : 'a option ; 
+    set : 'b option }
 
+val process_method_attributes_rev : 
+  t ->
+  (Parsetree.payload, Parsetree.payload) st * t 
 
-(** A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI attributes and built-in ppx  *)
+val process_attributes_rev : 
+  t -> t * [ `Meth | `Nothing | `Uncurry ]
 
-type t = Parsetree.payload
-
-val is_single_string : t -> string option
-val as_string_exp : t -> Parsetree.expression option 
-val as_empty_structure :  t -> bool 
-val is_string_or_strings : 
-  t -> [ `None | `Single of string | `Some of string list ]
-val as_record_and_process : 
-  Location.t ->
-  t -> (Longident.t Asttypes.loc * Parsetree.expression -> unit) -> unit
-
-val assert_bool_lit : Parsetree.expression -> bool
-
-val empty : t 
+val bs_obj : attr 
+val bs : attr 
+val bs_this : attr

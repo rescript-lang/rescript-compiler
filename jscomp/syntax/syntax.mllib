@@ -6,3 +6,4 @@ ast_comb
 depend
 ast_extract
 ast_util
+ast_attributes

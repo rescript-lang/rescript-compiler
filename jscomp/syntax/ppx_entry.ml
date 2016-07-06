@@ -77,27 +77,6 @@ let reset () =
   non_export  :=  false
 
 
-let arrow = Ast_helper.Typ.arrow
-
-let handle_record_as_js_object 
-    loc 
-    attr
-    (label_exprs : (Longident.t Asttypes.loc * Parsetree.expression) list)
-    (mapper : Ast_mapper.mapper) : Parsetree.expression_desc = 
-  let labels, args = 
-    Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
-        match txt with
-        | Longident.Lident x -> (x, (x, mapper.expr mapper e))
-        | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label "
-  ) label_exprs in 
-  let pval_prim = [ "" ] in 
-  let pval_attributes = [attr] in 
-  let pval_type = Ast_util.from_labels ~loc labels in 
-  Ast_comb.create_local_external loc 
-    ~pval_prim
-    ~pval_type ~pval_attributes 
-    args 
 
 
 let handle_class_type_field  acc =
@@ -106,72 +85,58 @@ let handle_class_type_field  acc =
      | Pctf_method 
          (name, private_flag, virtual_flag, ty) 
        -> 
-       let pctf_attributes, st = 
-         Ast_util.process_method_attributes_rev ctf.pctf_attributes 
-       in 
-       begin match st with 
-         | {get = None; set = None} -> 
-           begin match ty.ptyp_desc with 
+       begin match Ast_attributes.process_method_attributes_rev ctf.pctf_attributes with 
+         | {get = None; set = None}, _  -> 
+           let ty = 
+             match ty.ptyp_desc with 
              | Ptyp_arrow ("", args, body) 
                -> 
-               { ctf with 
-                 pctf_desc = 
-                   Pctf_method (name, 
-                                private_flag,
-                                virtual_flag, 
-                                Ast_util.destruct_arrow_as_meth_type 
-                                  ty.ptyp_loc args body self );
-                 pctf_attributes 
-               } :: acc 
+               Ast_util.destruct_arrow_as_meth_type 
+                 ty.ptyp_loc args body self 
+
              | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
                -> 
-               {ctf with 
-                pctf_desc = 
-                  Pctf_method 
-                    (name,
-                     private_flag, 
-                     virtual_flag, 
-                     {ty with ptyp_desc = 
-                                Ptyp_poly(strs,             
-                                          Ast_util.destruct_arrow_as_meth_type
-                                            ptyp_loc args body self  )});
-                pctf_attributes
-               }  :: acc 
+               {ty with ptyp_desc = 
+                          Ptyp_poly(strs,             
+                                    Ast_util.destruct_arrow_as_meth_type
+                                      ptyp_loc args body self  )}
              | _ -> 
-               {ctf with 
-                pctf_desc =  Pctf_method (name , private_flag, virtual_flag, self.typ self ty);
-                pctf_attributes}
-               :: acc 
-           end
-         | {set = Some _ } 
+               self.typ self ty
+           in 
+           {ctf with 
+            pctf_desc = 
+              Pctf_method (name , private_flag, virtual_flag, ty)}
+           :: acc 
+
+         | st , pctf_attributes
            -> 
-           {ctf with 
-            pctf_desc =
-              Pctf_method (name ^ Literals.setter_suffix, 
-                           private_flag,
-                           virtual_flag,
-                           Ast_util.destruct_arrow_as_meth_type 
-                             loc 
-                             ty 
-                             (Ast_literal.type_unit ~loc ())
-                             self 
-                          );
-            pctf_attributes}
-           :: {ctf with 
-               pctf_desc =  
-                 Pctf_method (name , 
-                              private_flag, 
-                              virtual_flag, 
-                              self.typ self ty
-                             );
-               pctf_attributes}
-           :: acc 
+           let get_acc = {ctf with 
+                          pctf_desc =  
+                            Pctf_method (name , 
+                                         private_flag, 
+                                         virtual_flag, 
+                                         self.typ self ty
+                                        );
+                          pctf_attributes}
+                         :: acc  in 
+           match st with 
+           | {set = Some _ } -> 
+             {ctf with 
+              pctf_desc =
+                Pctf_method (name ^ Literals.setter_suffix, 
+                             private_flag,
+                             virtual_flag,
+                             Ast_util.destruct_arrow_as_meth_type 
+                               loc 
+                               ty 
+                               (Ast_literal.type_unit ~loc ())
+                               self 
+                            );
+              pctf_attributes}
+             :: get_acc 
          (*TODO: test on poly type *)
-         | {set = None ; } -> 
-           {ctf with 
-            pctf_desc =  Pctf_method (name , private_flag, virtual_flag, self.typ self ty);
-            pctf_attributes}
-           :: acc 
+           | {set = None ; } -> 
+             get_acc 
        end
      | Pctf_inherit _ 
      | Pctf_val _ 
@@ -199,7 +164,7 @@ let handle_typ
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
    } ->
-    begin match  Ast_util.process_attributes_rev ptyp_attributes with 
+    begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
       | ptyp_attributes, `Uncurry ->
         Ast_util.destruct_arrow loc args body self 
       | ptyp_attributes, `Meth -> 
@@ -228,7 +193,7 @@ let handle_typ
                     ptyp_attributes with 
       | None, _  ->
         List.map (fun (label, ptyp_attrs, core_type ) -> 
-            match Ast_util.process_attributes_rev ptyp_attrs with 
+            match Ast_attributes.process_attributes_rev ptyp_attrs with 
             | _, `Nothing -> 
               label, ptyp_attrs , check_auto_uncurry  core_type
             | ptyp_attrs, `Uncurry  -> 
@@ -236,30 +201,30 @@ let handle_typ
               check_auto_uncurry
                 { core_type with 
                   ptyp_attributes = 
-                    Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+                    Ast_attributes.bs :: core_type.ptyp_attributes}
             | ptyp_attrs, `Meth 
               ->  
               label , ptyp_attrs, 
               check_auto_uncurry
                 { core_type with 
                   ptyp_attributes = 
-                    Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
+                    Ast_attributes.bs_this :: core_type.ptyp_attributes}
           ) methods , ptyp_attributes
       |  Some _ ,  ptyp_attributes -> 
         Ext_ref.protect uncurry_type true begin fun _ -> 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
-              match Ast_util.process_attributes_rev ptyp_attrs with 
+              match Ast_attributes.process_attributes_rev ptyp_attrs with 
               |  _, `Nothing -> label, ptyp_attrs , self.typ self core_type
               | ptyp_attrs, `Uncurry -> 
                 label , ptyp_attrs, self.typ self 
                   { core_type with 
                     ptyp_attributes = 
-                      Ast_util.bs_uncurry_attribute :: core_type.ptyp_attributes}
+                      Ast_attributes.bs :: core_type.ptyp_attributes}
               | ptyp_attrs, `Meth -> 
                 label , ptyp_attrs, self.typ self 
                   { core_type with 
                     ptyp_attributes = 
-                      Ast_util.bs_meth_attribute :: core_type.ptyp_attributes}
+                      Ast_attributes.bs_this :: core_type.ptyp_attributes}
             ) methods 
         end, ptyp_attributes 
       end
@@ -299,14 +264,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
               Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
-                (Some Ast_util.bs_object_attribute ) true
+                (Some Ast_attributes.bs_obj ) true
                 (fun ()-> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
-          begin match Ast_util.process_attributes_rev e.pexp_attributes with 
+          begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
           | _, `Nothing 
             -> Ast_mapper.default_mapper.expr self e 
           |  attrs , `Uncurry
@@ -393,7 +358,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               (* TODO better error message when [with] detected in [%bs.obj] *)
               -> 
               { e with
-                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs self;
+                pexp_desc =  Ast_util.handle_record_as_js_object loc attr label_exprs self;
               }
             | None -> 
               Ast_mapper.default_mapper.expr  self e

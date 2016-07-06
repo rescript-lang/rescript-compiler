@@ -46,18 +46,6 @@ val property_run :
   Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
 
 
-val process_attributes_rev : 
-  Parsetree.attributes ->
-  Parsetree.attributes * [ `Meth | `Nothing | `Uncurry ]
-
-type ('a,'b) st = 
-  { get : 'a option ; 
-    set : 'b option }
-
-val process_method_attributes_rev : 
-  Parsetree.attributes ->
-  Parsetree.attribute list * (Parsetree.payload, Parsetree.payload) st
-
 (** turn {[ fun [@bs] x y -> x]} into an uncurried function 
     TODO: Future 
     {[ fun%bs this (a,b,c) -> 
@@ -94,10 +82,6 @@ val destruct_arrow_as_meth_callback_type :
   Parsetree.core_type ->
   Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
 
-val bs_object_attribute : Parsetree.attribute
-val bs_uncurry_attribute :  Parsetree.attribute
-val bs_meth_attribute : Parsetree.attribute 
-
 
 
 
@@ -105,8 +89,13 @@ val lift_js_type :
   loc:Ast_helper.loc -> Parsetree.core_type -> Parsetree.core_type
 
 
-val from_labels : loc:Ast_helper.loc -> Asttypes.label list -> Parsetree.core_type
 
+
+val handle_record_as_js_object : 
+  Ast_helper.loc ->
+  Parsetree.attribute ->
+  (Longident.t Asttypes.loc * Parsetree.expression) list ->
+  Ast_mapper.mapper -> Parsetree.expression_desc
 val down_with_name : 
   loc:Ast_helper.loc ->
   Parsetree.expression -> string -> Parsetree.expression_desc

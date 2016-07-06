@@ -25,7 +25,7 @@ let js_obj : 'self =
       }
   ]
 class type _x = object 
-  method onload : (_x Js.t -> unit [@bs.this]) [@@bs.set]
+  method onload : _x Js.t -> unit [@bs.this] [@@bs.set]
   method addEventListener : string -> (_x Js.t -> unit [@bs.this]) -> unit 
   method response : string
 end

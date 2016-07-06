@@ -492,34 +492,12 @@ let _ = register_named_value "Pervasives.do_at_exit" do_at_exit
 
 (** TEMPORARY CHANGES FOR PLAYGROUND, SHOULD BE REMOVED LATER *)
 
-(** Mark Js object, please use {!Js.t} instead *)
-type + 'a js_obj 
+(** internal types for FFI, these types are not used by normal users *)
+type (-'obj, +'a) js_meth_callback 
+type (-'arg, + 'result) js_meth
+type (-'arg, + 'result) js_fn (** Js uncurried function *)
 
 
+(** Types for JS objects *)
+type +'a js_t (** Js object type *)
 
-(* (\** only used by method declaration,  *)
-(*     the only way to consume it is  *)
-(*     by a method call *)
-(*     {[ x##name param0 param1 ]} *)
-(*  *\) *)
-(* type + 'result meth0  *)
-(* type (-'arg, + 'result) meth  *)
-
-
-(* type (- 'obj, -'arg, + 'result ) meth_callback *)
-(* type (- 'obj, + 'result) meth_callback0 *)
-
-
-type (-'obj, +'a) meth_callback
-(** Mark uncurried function, please use {!Js.fn} instead *)
-
-
-
-
-type (-'arg, + 'result) fn
-(** = (< > js_obj, 'a) meth_callback, 
-    instead of relying on type system to do the checking 
-    we provide a function to do this, the reason is that 
-    OCaml's type system requires user to explicitly write 
-    ( x : ty :> ty1) in this case
- *)
