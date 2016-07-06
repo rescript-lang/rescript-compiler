@@ -1,3 +1,5 @@
+[@@@bs.config{bs_class_type}]
+
 let uux_this :[%bs.obj: < length : int > ] -> int -> int -> int [@bs.this] 
   =
   fun[@bs.this] o x y -> o##length + x + y
@@ -22,3 +24,18 @@ let js_obj : 'self =
 
       }
   ]
+class type _x = object 
+  method onload : (_x Js.t -> unit [@bs.this]) [@@bs.set]
+  method addEventListener : string -> (_x Js.t -> unit [@bs.this]) -> unit 
+  method response : string
+end
+type x = _x Js.t 
+
+let f (x : x ) = 
+  begin 
+    x##onload #=  (fun [@bs.this] o -> Js.log o);
+    x##addEventListener "onload" begin fun [@bs.this] o -> 
+      Js.log o##response
+    end
+  end
+

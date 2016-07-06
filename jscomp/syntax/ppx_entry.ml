@@ -106,66 +106,72 @@ let handle_class_type_field  acc =
      | Pctf_method 
          (name, private_flag, virtual_flag, ty) 
        -> 
-       let (pctf_attributes, st) = 
+       let pctf_attributes, st = 
          Ast_util.process_method_attributes_rev ctf.pctf_attributes 
        in 
-       begin match ty.ptyp_desc with 
-         | Ptyp_arrow ("", args, body) 
-           -> 
-           { ctf with 
-             pctf_desc = 
-               Pctf_method (name, 
-                            private_flag,
-                            virtual_flag, 
-                            Ast_util.destruct_arrow_as_meth_type 
-                              ty.ptyp_loc args body self );
-             pctf_attributes 
-           } :: acc 
-         | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
+       begin match st with 
+         | {get = None; set = None} -> 
+           begin match ty.ptyp_desc with 
+             | Ptyp_arrow ("", args, body) 
+               -> 
+               { ctf with 
+                 pctf_desc = 
+                   Pctf_method (name, 
+                                private_flag,
+                                virtual_flag, 
+                                Ast_util.destruct_arrow_as_meth_type 
+                                  ty.ptyp_loc args body self );
+                 pctf_attributes 
+               } :: acc 
+             | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
+               -> 
+               {ctf with 
+                pctf_desc = 
+                  Pctf_method 
+                    (name,
+                     private_flag, 
+                     virtual_flag, 
+                     {ty with ptyp_desc = 
+                                Ptyp_poly(strs,             
+                                          Ast_util.destruct_arrow_as_meth_type
+                                            ptyp_loc args body self  )});
+                pctf_attributes
+               }  :: acc 
+             | _ -> 
+               {ctf with 
+                pctf_desc =  Pctf_method (name , private_flag, virtual_flag, self.typ self ty);
+                pctf_attributes}
+               :: acc 
+           end
+         | {set = Some _ } 
            -> 
            {ctf with 
-            pctf_desc = 
-              Pctf_method 
-                (name,
-                 private_flag, 
-                 virtual_flag, 
-                 {ty with ptyp_desc = 
-                            Ptyp_poly(strs,             
-                                      Ast_util.destruct_arrow_as_meth_type
-                                        ptyp_loc args body self  )});
-            pctf_attributes
-           }  :: acc 
-         | _ -> 
-           match st with 
-           | {set = Some _ } 
-             -> 
-               {ctf with 
-                pctf_desc =
-                  Pctf_method (name ^ Literals.setter_suffix, 
-                               private_flag,
-                               virtual_flag,
-                               Ast_util.destruct_arrow_as_meth_type 
-                                 loc 
-                                 ty 
-                                 (Ast_literal.type_unit ~loc ())
-                                 self 
-                              );
-                pctf_attributes}
-             :: {ctf with 
-                pctf_desc =  
-                  Pctf_method (name , 
-                               private_flag, 
-                               virtual_flag, 
-                               self.typ self ty
-                              );
-                pctf_attributes}
-             :: acc 
-           (*TODO: test on poly type *)
-           | _ -> 
-             {ctf with 
-              pctf_desc =  Pctf_method (name , private_flag, virtual_flag, self.typ self ty);
-              pctf_attributes}
-             :: acc 
+            pctf_desc =
+              Pctf_method (name ^ Literals.setter_suffix, 
+                           private_flag,
+                           virtual_flag,
+                           Ast_util.destruct_arrow_as_meth_type 
+                             loc 
+                             ty 
+                             (Ast_literal.type_unit ~loc ())
+                             self 
+                          );
+            pctf_attributes}
+           :: {ctf with 
+               pctf_desc =  
+                 Pctf_method (name , 
+                              private_flag, 
+                              virtual_flag, 
+                              self.typ self ty
+                             );
+               pctf_attributes}
+           :: acc 
+         (*TODO: test on poly type *)
+         | {set = None ; } -> 
+           {ctf with 
+            pctf_desc =  Pctf_method (name , private_flag, virtual_flag, self.typ self ty);
+            pctf_attributes}
+           :: acc 
        end
      | Pctf_inherit _ 
      | Pctf_val _ 
