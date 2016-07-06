@@ -217,57 +217,11 @@ let gen_method_mk loc arity arg  : Parsetree.expression_desc =
 
 
 
-let empty_payload = Parsetree.PStr []
-
-let bs_object_attribute  : Parsetree.attribute
-  = {txt = "bs.obj" ; loc = Location.none}, empty_payload
-
-let bs_uncurry_attribute : Parsetree.attribute        
-  =  {txt = "bs" ; loc = Location.none}, empty_payload
-let bs_meth_attribute : Parsetree.attribute        
-  =  {txt = "bs.this" ; loc = Location.none}, empty_payload
 
 
 
-let process_attributes_rev (attrs : Parsetree.attributes) = 
-  List.fold_left (fun (acc, st) attr -> 
-      let tag = fst attr in
-      match tag.Location.txt, st  with 
-      | "bs", (`Nothing | `Uncurry) 
-        -> 
-        (acc, `Uncurry)
-      | "bs.this", (`Nothing | `Meth)
-        -> (acc, `Meth)
-      | "bs", `Meth 
-      | "bs.this", `Uncurry
-        -> Location.raise_errorf 
-             ~loc:tag.Location.loc 
-             "[@bs.this] and [@bs] can not be applied at the same time"
-      | _ , _ -> 
-        (attr::acc , st)
-    ) ([], `Nothing) attrs
-
-type ('a,'b) st = 
-  { get : 'a option ; 
-    set : 'b option }
 
 
-let process_method_attributes_rev (attrs : Parsetree.attributes) = 
-  List.fold_left (fun (acc, st) ((tag, payload) as attr) -> 
-
-      match tag.Location.txt  with 
-      | "bs.get" (* [@@bs.get{null; undefined}]*)
-        -> 
-        (acc, {st with get = Some payload} )
-
-      | "bs.set"
-        -> (* properties -- void 
-              [@@bs.set{only}]
-           *)
-          acc, {st with set = Some payload }
-      | _ -> 
-        (attr::acc , st)
-    ) ([], {get = None ; set = None}) attrs
 
 
 (** TODO: how to handle attributes *)
@@ -279,7 +233,7 @@ let destruct_arrow loc (first_arg : Parsetree.core_type)
        however: when attributes [bs] and [bs.this] found in typ, 
        we should stop 
     *)
-    match process_attributes_rev typ.ptyp_attributes with 
+    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
     | _ , `Nothing -> 
       begin match typ.ptyp_desc with 
       | Ptyp_arrow (label, arg, body)
@@ -312,7 +266,7 @@ let destruct_arrow_as_meth_type loc (first_arg : Parsetree.core_type)
        however: when attributes [bs] and [bs.this] found in typ, 
        we should stop 
     *)
-    match process_attributes_rev typ.ptyp_attributes with 
+    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
     | _ , `Nothing -> 
       begin match typ.ptyp_desc with 
       | Ptyp_arrow (label, arg, body)
@@ -340,7 +294,7 @@ let destruct_arrow_as_meth_type loc (first_arg : Parsetree.core_type)
 let destruct_arrow_as_meth_callback_type loc (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type) (mapper : Ast_mapper.mapper) = 
   let rec aux acc (typ : Parsetree.core_type) = 
-    match process_attributes_rev typ.ptyp_attributes with 
+    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
     | _ , `Nothing -> 
       begin match typ.ptyp_desc with 
         | Ptyp_arrow (label, arg, body)
@@ -365,7 +319,7 @@ let destruct_arrow_as_meth_callback_type loc (first_arg : Parsetree.core_type)
 let destruct_arrow_as_fn loc pat body (mapper : Ast_mapper.mapper) 
     (e : Parsetree.expression) pexp_attributes = 
   let rec aux acc (body : Parsetree.expression) = 
-    match process_attributes_rev body.pexp_attributes with 
+    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
     | _ , `Nothing -> 
       begin match body.pexp_desc with 
         | Pexp_fun (label,_, arg, body)
@@ -396,7 +350,7 @@ let destruct_arrow_as_fn loc pat body (mapper : Ast_mapper.mapper)
 let destruct_arrow_as_meth_callbak loc pat body (mapper : Ast_mapper.mapper) 
     (e : Parsetree.expression) pexp_attributes = 
   let rec aux acc (body : Parsetree.expression) = 
-    match process_attributes_rev body.pexp_attributes with 
+    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
     | _ , `Nothing -> 
       begin match body.pexp_desc with 
         | Pexp_fun (label,_, arg, body)
@@ -476,3 +430,23 @@ let handle_raw_structure loc payload =
       -> 
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   end
+
+let handle_record_as_js_object 
+    loc 
+    attr
+    (label_exprs : (Longident.t Asttypes.loc * Parsetree.expression) list)
+    (self : Ast_mapper.mapper) : Parsetree.expression_desc = 
+  let labels, args = 
+    Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
+        match txt with
+        | Longident.Lident x -> (x, (x, self.expr self e))
+        | Ldot _ | Lapply _ ->  
+          Location.raise_errorf ~loc "invalid js label "
+  ) label_exprs in 
+  let pval_prim = [ "" ] in 
+  let pval_attributes = [attr] in 
+  let pval_type = from_labels ~loc labels in 
+  Ast_comb.create_local_external loc 
+    ~pval_prim
+    ~pval_type ~pval_attributes 
+    args 

@@ -41,23 +41,19 @@ let hh (x : 'a fn) = h (x : _ fn :>   (< l : int ; y :int > Js.t, int) u )
 
 (* let m = [%bs.method fun o (x,y) -> o##length < x && o##length > y ] *)
 
-external method0 : ('obj -> 'a0)  -> ('obj, 'a0) meth_callback =
+external method0 : 
+  ('obj -> 'a0)  
+  -> 
+  ('obj ->  'a0 [@bs.this]) =
   "js_fn_method" "0"
-external method1 : ('obj  -> 'a0 -> 'a1) -> ('obj, 'a0 * 'a1) meth_callback = "js_fn_method" "1"
+external method1 : 
+  ('obj  -> 'a0 -> 'a1) ->
+  ('obj  -> 'a0 -> 'a1 [@bs.this])
+   = "js_fn_method" "1"
 
-external method2 : (< > Js.t , ('obj * 'a0 * 'a1 * 'a2)) meth_callback
-  -> ('obj, 'a0 * 'a1 * 'a2) meth_callback
-  = "js_fn_method" "2"
 
-external run_method0 : 'obj ->  ('obj, 'a0) meth_callback -> 'a0 = "js_fn_runmethod" "0"
-external run_method1 : 'obj ->  ('obj, 'a0 * 'a1) meth_callback -> 'a0 -> 'a1 
-  = "js_fn_runmethod" "1"
 
-external run_method2 : 
-  ('obj, 'a0 * 'a1 * 'a2) meth_callback ->
-  'obj ->  
-  'a0 -> 'a1  -> 'a2
-  = "js_fn_runmethod" "2"
+
 
 
 let uu : 'self = 

@@ -112,3 +112,6 @@ let assert_bool_lit  (e : Parsetree.expression) =
     -> false 
   | _ ->
     Location.raise_errorf ~loc:e.pexp_loc "expect `true` or `false` in this field"
+
+
+let empty : t = Parsetree.PStr []

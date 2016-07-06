@@ -1093,11 +1093,10 @@ val do_at_exit : unit -> unit
 
 (** TEMPORARY CHANGES FOR PLAYGROUND, SHOULD BE REMOVED LATER *)
 
-(** Mark Js object, please use {!Js.t} instead *)
-type + 'a js_obj 
-
-type (-'obj, +'a) meth_callback
-(** Mark uncurried function, please use {!Js.fn} instead *)
+type (-'obj, +'a) js_meth_callback 
+type (-'arg, + 'result) js_meth
+type (-'arg, + 'result) js_fn (** Js uncurried function *)
 
 
-type (- 'arg, + 'result) fn
+(** Types for JS objects *)
+type +'a js_t (** Js object type *)
