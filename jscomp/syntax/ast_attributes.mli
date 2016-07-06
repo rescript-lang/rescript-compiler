@@ -33,7 +33,7 @@ val process_method_attributes_rev :
   (Parsetree.payload, Parsetree.payload) st * t 
 
 val process_attributes_rev : 
-  t -> t * [ `Meth | `Nothing | `Uncurry ]
+  t -> [ `Meth | `Nothing | `Uncurry ] * t 
 
 val bs_obj : attr 
 val bs : attr 

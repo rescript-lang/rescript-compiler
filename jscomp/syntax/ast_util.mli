@@ -23,87 +23,94 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type args = (string * Parsetree.expression) list
+type loc = Location.t 
+type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
+type 'a cxt = loc -> Ast_mapper.mapper -> 'a
 
-val fn_run : 
-  Ast_helper.loc ->
-  Parsetree.expression ->
-  (string * Parsetree.expression) list ->
-  Ast_mapper.mapper ->
-  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
+(** syntax: {[f arg0 arg1 [@bs]]}*)
+val uncurry_fn_apply : 
+  (Parsetree.expression ->
+  args ->
+  Parsetree.expression_desc ) cxt 
 
-val method_run : 
-  Ast_helper.loc ->
-  Parsetree.expression ->
+(** syntax : {[f## arg0 arg1 ]}*)
+val method_apply : 
+  (Parsetree.expression ->
   string ->
-  (string * Parsetree.expression) list ->
-  Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
+  args ->
+  Parsetree.expression_desc) cxt 
 
-val property_run : 
-  Ast_helper.loc ->
-  Parsetree.expression ->
+(** syntax {[f#@ arg0 arg1 ]}*)
+val property_apply : 
+  (Parsetree.expression ->
   string ->
-  (string * Parsetree.expression) list ->
-  Parsetree.expression -> Ast_mapper.mapper -> Parsetree.expression
+  args ->
+  Parsetree.expression_desc) cxt 
 
 
-(** turn {[ fun [@bs] x y -> x]} into an uncurried function 
-    TODO: Future 
-    {[ fun%bs this (a,b,c) -> 
-    ]}
-
+(** 
     [function] can only take one argument, that is the reason we did not adopt it
+    syntax:
+    {[ fun [@bs] pat pat1-> body ]}
+    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
+
 *)
-val destruct_arrow_as_fn : 
-  Ast_helper.loc ->
-  Parsetree.pattern ->
-  Parsetree.expression ->
-  Ast_mapper.mapper ->
-  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
+val to_uncurry_fn : 
+  (Parsetree.pattern ->
+   Parsetree.expression ->
+   Parsetree.expression_desc) cxt 
 
-val destruct_arrow_as_meth_callbak : 
-  Ast_helper.loc ->
-  Parsetree.pattern ->
-  Parsetree.expression ->
-  Ast_mapper.mapper ->
-  Parsetree.expression -> Parsetree.attributes -> Parsetree.expression
+(** syntax: 
+    {[fun [@bs.this] obj pat pat1 -> body]}    
+*)
+val to_method_callback : 
+  (Parsetree.pattern ->
+   Parsetree.expression ->
+   Parsetree.expression_desc) cxt 
 
-val destruct_arrow : 
-  Ast_helper.loc ->
+(** syntax : 
+    {[ int -> int -> int [@bs]]}
+*)
+val to_uncurry_type : 
+  (Parsetree.core_type ->
+   Parsetree.core_type  ->
+   Parsetree.core_type) cxt 
+
+(** syntax
+    {[ method : int -> itn -> int ]}
+*)
+val to_method_type : 
+  (Parsetree.core_type ->
   Parsetree.core_type ->
-  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+  Parsetree.core_type) cxt 
 
-val destruct_arrow_as_meth_type : 
-  Ast_helper.loc ->
-  Parsetree.core_type ->
-  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
+(** syntax:
+    {[ 'obj -> int -> int [@bs.this] ]}
+*)
+val to_method_callback_type : 
+  (Parsetree.core_type ->
+  Parsetree.core_type ->  
+  Parsetree.core_type) cxt 
 
-val destruct_arrow_as_meth_callback_type : 
-  Ast_helper.loc ->
-  Parsetree.core_type ->
-  Parsetree.core_type -> Ast_mapper.mapper -> Parsetree.core_type
-
-
-
-
-val lift_js_type : 
-  loc:Ast_helper.loc -> Parsetree.core_type -> Parsetree.core_type
+val to_js_type : 
+  loc -> Parsetree.core_type -> Parsetree.core_type
 
 
 
 
-val handle_record_as_js_object : 
-  Ast_helper.loc ->
-  Parsetree.attribute ->
-  (Longident.t Asttypes.loc * Parsetree.expression) list ->
-  Ast_mapper.mapper -> Parsetree.expression_desc
-val down_with_name : 
-  loc:Ast_helper.loc ->
+val record_as_js_object : 
+  (label_exprs ->
+   Parsetree.expression_desc) cxt 
+
+val js_property : 
+  loc ->
   Parsetree.expression -> string -> Parsetree.expression_desc
 
 val handle_debugger : 
-  Location.t -> Ast_payload.t -> Parsetree.expression_desc
+  loc -> Ast_payload.t -> Parsetree.expression_desc
 
 val handle_raw : 
-  Location.t -> Ast_payload.t -> Parsetree.expression
+  loc -> Ast_payload.t -> Parsetree.expression
 val handle_raw_structure : 
-  Location.t -> Ast_payload.t -> Parsetree.structure_item
+  loc -> Ast_payload.t -> Parsetree.structure_item

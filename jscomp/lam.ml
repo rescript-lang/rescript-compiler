@@ -574,11 +574,11 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
       prim ~primitive:Pdebugger ~args else 
     if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
       prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args else 
-    if prim_name = "js_fn_mk" then 
+    if prim_name = Literals.js_fn_mk then 
       prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args else                
-    if prim_name = "js_fn_method" then 
+    if prim_name = Literals.js_fn_method then 
       prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args else
-    if prim_name = "js_fn_runmethod" then 
+    if prim_name = Literals.js_fn_runmethod then 
       prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args 
     else
       prim ~primitive:(Pccall a) ~args
