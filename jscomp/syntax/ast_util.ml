@@ -111,20 +111,6 @@ let js_property loc obj name =
     ~local_fun_name:"cast" 
     (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
 
-let generic_run ty loc arity fn args : Parsetree.expression_desc = 
-  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
-  let string_arity = string_of_int arity in
-  let pval_prim, pval_type = 
-    match ty with 
-    | `Fn | `PropertyFn -> 
-      [Literals.js_fn_run; string_arity], 
-      arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
-    | `Method -> 
-      [Literals.js_method_run ; string_arity], 
-      arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
-  in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    (("", fn) :: List.map (fun x -> "",x) args )
 
 (* TODO: 
    have a final checking for property arities 
@@ -144,13 +130,27 @@ let generic_apply  kind loc
         self.expr self e
       ) args in
   let len = List.length args in 
+  let arity, fn, args  = 
   match args with 
   | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
     -> 
-    generic_run kind loc 0 (cb loc obj)
-      []
+     0, cb loc obj, []
   | _ -> 
-    generic_run kind loc len (cb loc obj) args
+    len,  cb loc obj, args in
+  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
+  let string_arity = string_of_int arity in
+  let pval_prim, pval_type = 
+    match kind with 
+    | `Fn | `PropertyFn -> 
+      [Literals.js_fn_run; string_arity], 
+      arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
+    | `Method -> 
+      [Literals.js_method_run ; string_arity], 
+      arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
+  in
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    (("", fn) :: List.map (fun x -> "",x) args )
+
 
 let uncurry_fn_apply loc self fn args = 
   generic_apply `Fn loc self fn args (fun _ obj -> obj )
@@ -164,21 +164,8 @@ let method_apply loc self obj name args =
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
 
-let gen_fn_mk loc arity arg  : Parsetree.expression_desc = 
-  let pval_prim = [ Literals.js_fn_mk; string_of_int arity]  in
-  let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-  let pval_type = arrow ~loc "" fn_type (lift_curry_type loc args_type result_type) in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
 
-let gen_method_callback_mk loc arity arg  : Parsetree.expression_desc = 
-  let pval_prim = [ Literals.js_fn_method; string_of_int arity]  in
-  let fn_type , args_type, result_type = Ast_comb.tuple_type_pair ~loc `Make  arity  in 
-  let pval_type = 
-    arrow ~loc "" fn_type (lift_js_method_callback loc args_type result_type)
-  in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", arg)]
-
-
+ 
 (** TODO: how to handle attributes *)
 let to_uncurry_type loc (mapper : Ast_mapper.mapper)
     (first_arg : Parsetree.core_type) 
@@ -271,37 +258,7 @@ let to_method_callback_type
   lift_js_method_callback loc (List.rev rev_extra_args) result
 
 
-
-
-let to_uncurry_fn loc (mapper : Ast_mapper.mapper)  pat body 
-  = 
-  let rec aux acc (body : Parsetree.expression) = 
-    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
-    | `Nothing, _ -> 
-      begin match body.pexp_desc with 
-        | Pexp_fun (label,_, arg, body)
-          -> 
-          if label <> "" then
-            Location.raise_errorf ~loc "label is not allowed";
-          aux (mapper.pat mapper arg :: acc) body 
-        | _ -> mapper.expr mapper body, acc 
-      end 
-    | _, _ -> mapper.expr mapper body, acc  
-  in 
-  let first_arg = mapper.pat mapper pat in  
-  let result, rev_extra_args = aux [first_arg] body in 
-  match rev_extra_args with 
-  | [ {ppat_desc = Ppat_construct ({txt = Lident "()"}, None)}]
-    ->  
-    gen_fn_mk loc 0 
-      (Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) result)
-
-  | _ -> 
-    gen_fn_mk loc (List.length rev_extra_args) 
-      (List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
-         result rev_extra_args )
-
-let to_method_callback loc (self : Ast_mapper.mapper) pat body  
+let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body 
   = 
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
@@ -318,12 +275,39 @@ let to_method_callback loc (self : Ast_mapper.mapper) pat body
   in 
   let first_arg = self.pat self pat in  
   let result, rev_extra_args = aux [first_arg] body in 
+  let body = 
+    List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
+      result rev_extra_args in
   let len = List.length rev_extra_args in 
-  gen_method_callback_mk loc len 
-    (List.fold_left 
-       (fun e p -> Ast_comb.fun_no_label ~loc p e) result rev_extra_args )
+  let arity = 
+    match kind with 
+    | `Fn  ->     
+      begin match rev_extra_args with 
+        | [ {ppat_desc = Ppat_construct ({txt = Lident "()"}, None)}]
+          -> 0 
+        | _ -> len 
+      end
+    | `Method_callback -> len  in 
+  let pval_prim =
+      [ (match kind with 
+           | `Fn -> Literals.js_fn_mk
+           | `Method_callback -> Literals.js_fn_method); 
+        string_of_int arity]  in
+    let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
+    let pval_type = arrow ~loc "" fn_type (
+        match kind with 
+        | `Fn -> 
+          lift_curry_type loc args_type result_type
+        | `Method_callback -> 
+          lift_js_method_callback loc args_type result_type
+      ) in
+    Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", body)]
 
+let to_uncurry_fn loc self pat body = 
+  generic_to_uncurry_exp `Fn loc self pat body 
 
+let to_method_callback loc self pat body = 
+  generic_to_uncurry_exp `Method_callback loc self pat body 
 
 let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 
   let arity = List.length labels in 
