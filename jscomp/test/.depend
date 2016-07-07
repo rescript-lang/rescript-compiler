@@ -239,6 +239,8 @@ global_exception_regression_test.cmj : mt.cmi
 global_exception_regression_test.cmx : mt.cmx
 google_closure_test.cmj : test_google_closure.cmj mt.cmi
 google_closure_test.cmx : test_google_closure.cmx mt.cmx
+gpr496_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../runtime/js.cmj
+gpr496_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../runtime/js.cmx
 gpr_405_test.cmj : ../stdlib/hashtbl.cmi gpr_405_test.cmi
 gpr_405_test.cmx : ../stdlib/hashtbl.cmx gpr_405_test.cmi
 gpr_441.cmj :
@@ -943,6 +945,8 @@ global_exception_regression_test.cmo : mt.cmi
 global_exception_regression_test.cmj : mt.cmj
 google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
+gpr496_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../runtime/js.cmo
+gpr496_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../runtime/js.cmj
 gpr_405_test.cmo : ../stdlib/hashtbl.cmi gpr_405_test.cmi
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmo :
