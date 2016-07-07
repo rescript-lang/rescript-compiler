@@ -42,7 +42,7 @@ let () =
   Js_config.set_env Browser;
   Clflags.unsafe_string := false
 
-let implementation non_export ppf  str  =
+let implementation no_export ppf  str  =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
@@ -64,7 +64,7 @@ let implementation non_export ppf  str  =
   |> (* Printlambda.lambda ppf *) (fun lam -> 
       let buffer = Buffer.create 1000 in 
       let () = Js_dump.(pp_deps_program 
-                          (Lam_compile_group.compile ~filename:"" non_export
+                          (Lam_compile_group.compile ~filename:"" no_export
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in
       let v = Buffer.contents buffer in 

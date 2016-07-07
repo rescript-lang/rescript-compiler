@@ -1,7 +1,7 @@
 [@@@bs.config{
   obj_type_auto_uncurry ;
   bs_class_type 
-  (* non_export = true; *)
+  (* no_export = true; *)
 }]
 
 

@@ -65,7 +65,7 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
 let obj_type_auto_uncurry =  ref false
-let non_export = ref false 
+let no_export = ref false 
 let bs_class_type = ref false 
 
 let reset () = 
@@ -74,7 +74,7 @@ let reset () =
   uncurry_type := false ;
   obj_type_auto_uncurry := false ;
   bs_class_type := false;
-  non_export  :=  false
+  no_export  :=  false
 
 
 
@@ -430,9 +430,9 @@ let common_actions_table :
 
 let structural_config_table  = 
   String_map.of_list 
-    (( "non_export" , 
+    (( "no_export" , 
       (fun x -> 
-         non_export := (
+         no_export := (
            match x with 
            |Some e -> Ast_payload.assert_bool_lit e 
            | None -> true)
@@ -482,7 +482,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
             Ast_payload.as_record_and_process loc payload 
             |> List.iter (make_call_back structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
-            if !non_export then
+            if !no_export then
               [Str.include_ ~loc  
                  (Incl.mk ~loc 
                     (Mod.constraint_ ~loc
