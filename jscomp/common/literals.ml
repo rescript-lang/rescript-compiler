@@ -54,9 +54,6 @@ let imul = "imul" (* signed int32 mul *)
 let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
-let case = "case"
-let case_set = "case_set"
-let case_prefix = "case_"
 
 let js_fn_run = "js_fn_run"
 let js_method_run = "js_method_run"

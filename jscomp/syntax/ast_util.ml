@@ -119,7 +119,7 @@ let js_property loc obj name =
 (* TODO: 
    have a final checking for property arities 
      [#=], 
-   remove [case_set] support *)
+*)
 
 
 let generic_apply  kind loc 
