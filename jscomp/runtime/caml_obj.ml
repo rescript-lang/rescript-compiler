@@ -82,6 +82,10 @@ let caml_int_compare (x : int) (y: int) : int =
 let caml_string_compare (x : string) (y: string) : int = 
   if  x < y then -1 else if x = y then 0 else  1
 
+let unsafe_js_compare x y = 
+  if x == y then 0 else 
+  if Js.to_bool @@ Js.unsafe_lt x y then -1 
+  else 1
 (** TODO: investigate total 
     [compare x y] returns [0] if [x] is equal to [y], 
     a negative integer if [x] is less than [y], 
@@ -104,6 +108,11 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     caml_string_compare (Obj.magic a) (Obj.magic b )
   else if Js.typeof a = "number" then
     caml_int_compare (Obj.magic a) (Obj.magic b )
+  else if Js.typeof a = "boolean" 
+          || Js.typeof a = "null"
+          || Js.typeof a = "undefined"
+  then 
+    unsafe_js_compare a b 
   else
   (* if js_is_instance_array a then  *)
   (*   0 *)
@@ -155,9 +164,12 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
 type eq = Obj.t -> Obj.t -> bool
 
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool = 
-  if Js.typeof a = "string" then a == b 
-  else if Js.typeof a = "number" then a == b 
-  else
+  if Js.typeof a = "string" 
+  || Js.typeof a = "number"
+  || Js.typeof a = "boolean"
+  || Js.typeof a = "undefined"
+  || Js.typeof a = "null"
+  then a == b else
     let tag_a = Js_obj.tag a in
     let tag_b = Js_obj.tag b in
     (* double_array_tag: 254
