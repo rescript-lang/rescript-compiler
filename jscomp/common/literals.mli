@@ -53,9 +53,6 @@ val imul : string
 val setter_suffix : string
 val setter_suffix_len : int
 
-val case : string 
-val case_set : string 
-val case_prefix : string
 
 val js_fn_run : string
 val js_method_run : string

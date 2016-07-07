@@ -23,16 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(*TODO: 
-  what is the behavior for 
-  {[
-    { case : 
-        (fun [@fn] i -> 3);
-      case_set: 
-        (fun [@fn] (i,v) -> ..)
-    }
-  ]}
-*)
 let translate ?loc name = 
   let i = Ext_string.rfind ~sub:"_" name  in 
   if name.[0] = '_' then 

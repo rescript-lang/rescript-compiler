@@ -726,7 +726,6 @@ and
     | Lprim {primitive = Pjs_unsafe_downgrade (name,loc); 
              args = [obj]}
       when not (Ext_string.ends_with name Literals.setter_suffix) 
-      (* TODO: more not a setter/case/case_setter *)
       -> 
       (**
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
@@ -759,42 +758,6 @@ and
       *)
 
         begin match args_lambda with  
-        | [Lprim{primitive = Pjs_unsafe_downgrade("case_set",loc);
-                       args = [obj]} ; key ;  value] ->
-          let obj_block =
-            compile_lambda {cxt with st = NeedValue; should_return = False} obj
-          in
-          let key_block =
-            compile_lambda {cxt with st = NeedValue; should_return = False} key
-          in
-          let value_block =
-            compile_lambda {cxt with st = NeedValue; should_return = False} value
-          in
-          begin match obj_block, key_block, value_block with
-            | {block = block0; value = Some obj },
-              {block = block1; value = Some key},
-              {block = block2; value = Some value}
-              ->
-              (* TODO: if [b] contains computation, compute it first *)
-              let cont obj_code =
-                Js_output.handle_block_return st should_return lam
-                  (
-                    match obj_code with
-                    | None -> block0 @ block1 @ block2
-                    | Some obj_code -> block0 @ obj_code :: block1 @ block2)
-              in
-
-              begin match Js_ast_util.named_expression  obj with
-                | None ->
-                  cont None (E.assign (E.access obj key) value)
-                | Some (obj_code, obj)
-                  ->
-                  cont  (Some obj_code)
-                    (E.assign (E.access (E.var obj) key) value)
-              end
-            | _ -> assert false
-          end
-
         | [Lprim{
             primitive = 
               Pjs_unsafe_downgrade(method_name,loc);
@@ -820,17 +783,7 @@ and
             | {block = block0; value = Some obj }, 
               {block = block1; value = Some value}
               ->
-              if method_name = Literals.case 
-                || Ext_string.starts_with method_name 
-                     Literals.case_prefix then 
-              (* TODO: if [b] contains computation, compute it first *)
-                match Js_ast_util.named_expression  obj with 
-                | None -> 
-                  cont block0 block1 None (E.access obj value)
-                | Some (obj_code, obj)
-                  -> 
-                  cont  block0 block1 (Some obj_code) (E.access (E.var obj) value)
-              else if  Ext_string.ends_with method_name Literals.setter_suffix then 
+               if  Ext_string.ends_with method_name Literals.setter_suffix then 
                 let property =
                   Lam_methname.translate ~loc @@ 
                   String.sub method_name 0 
