@@ -62,7 +62,7 @@ type action =
 let as_record_and_process 
     loc
     x 
-    (action : action -> unit ): unit= 
+  = 
   match  x with 
   | Parsetree.PStr 
       [ {pstr_desc = Pstr_eval
@@ -72,19 +72,19 @@ let as_record_and_process
     -> 
     begin match with_obj with
     | None ->
-      List.iter 
+      List.map
         (fun (x,y) -> 
            match (x,y) with 
            | ({Asttypes.txt = Longident.Lident name; loc} ) , 
              ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
              when name2 = name -> 
-             action (x, None)
-           | _ -> action (x, Some y)
-        )
+              (x, None)
+           | _ ->  (x, Some y))
         label_exprs
     | Some _ -> 
       Location.raise_errorf ~loc "with is not supported"
     end
+  | Parsetree.PStr [] -> []
   | _ -> 
     Location.raise_errorf ~loc "this is not a valid record config"
 

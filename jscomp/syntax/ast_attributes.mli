@@ -30,7 +30,7 @@ type ('a,'b) st =
 
 val process_method_attributes_rev : 
   t ->
-  (Parsetree.payload, Parsetree.payload) st * t 
+  (bool * bool , [`Get | `No_get ]) st * t 
 
 val process_attributes_rev : 
   t -> [ `Meth | `Nothing | `Uncurry ] * t 

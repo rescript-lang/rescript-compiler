@@ -3,6 +3,7 @@ abstract_type.cmi :
 ari_regress_test.cmi :
 array_test.cmi :
 basic_module_test.cmi :
+class_setter_getter.cmi :
 config2_test.cmi : ../runtime/js.cmj
 const_block_test.cmi :
 demo_int_map.cmi :
@@ -104,6 +105,8 @@ class_ffi.cmj :
 class_ffi.cmx :
 class_repr.cmj : ../stdlib/oo.cmi
 class_repr.cmx : ../stdlib/oo.cmx
+class_setter_getter.cmj : ../runtime/js.cmj class_setter_getter.cmi
+class_setter_getter.cmx : ../runtime/js.cmx class_setter_getter.cmi
 class_test.cmj : mt.cmi
 class_test.cmx : mt.cmx
 class_type_ffi_test.cmj : ../runtime/js.cmj
@@ -806,6 +809,8 @@ class_ffi.cmo :
 class_ffi.cmj :
 class_repr.cmo : ../stdlib/oo.cmi
 class_repr.cmj : ../stdlib/oo.cmj
+class_setter_getter.cmo : ../runtime/js.cmo class_setter_getter.cmi
+class_setter_getter.cmj : ../runtime/js.cmj class_setter_getter.cmi
 class_test.cmo : mt.cmi
 class_test.cmj : mt.cmj
 class_type_ffi_test.cmo : ../runtime/js.cmo

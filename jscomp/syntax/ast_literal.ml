@@ -48,6 +48,10 @@ module Lid = struct
   let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_t") 
 
   let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+
+  let js_null  = Longident.Ldot (Lident "Js", "null")
+  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
+  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
 end
 
 module No_loc = struct 

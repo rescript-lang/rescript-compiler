@@ -110,32 +110,46 @@ let handle_class_type_field  acc =
 
          | st , pctf_attributes
            -> 
-           let get_acc = {ctf with 
-                          pctf_desc =  
-                            Pctf_method (name , 
-                                         private_flag, 
-                                         virtual_flag, 
-                                         self.typ self ty
-                                        );
-                          pctf_attributes}
-                         :: acc  in 
-           match st with 
-           | {set = Some _ } -> 
+           let get_acc = 
+             match st.set with 
+             | Some `No_get -> acc 
+             | None 
+             | Some `Get -> 
+               let lift txt = 
+                 Typ.constr ~loc {txt ; loc} [ty] in
+               let (null,undefined) =                
+                 match st with 
+                 | {get = Some (null, undefined) } -> (null, undefined)
+                 | {get = None} -> (false, false ) in 
+               let ty = 
+                 match (null,undefined) with 
+                 | false, false -> ty
+                 | true, false -> lift Ast_literal.Lid.js_null
+                 | false, true -> lift Ast_literal.Lid.js_undefined
+                 | true , true -> lift Ast_literal.Lid.js_null_undefined in 
+               {ctf with 
+                pctf_desc =  
+                  Pctf_method (name , 
+                               private_flag, 
+                               virtual_flag, 
+                               self.typ self ty
+                              );
+                pctf_attributes}
+               :: acc  
+           in 
+           if st.set = None then get_acc 
+           else 
              {ctf with 
               pctf_desc =
                 Pctf_method (name ^ Literals.setter_suffix, 
                              private_flag,
                              virtual_flag,
                              Ast_util.to_method_type
-                               loc self 
-                               ty 
+                               loc self ty
                                (Ast_literal.type_unit ~loc ())
                             );
               pctf_attributes}
              :: get_acc 
-         (*TODO: test on poly type *)
-           | {set = None ; } -> 
-             get_acc 
        end
      | Pctf_inherit _ 
      | Pctf_val _ 
@@ -450,7 +464,7 @@ let rewrite_signature :
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-              (make_call_back signature_config_table) ; 
+            |> List.iter (make_call_back signature_config_table) ; 
             unsafe_mapper.signature unsafe_mapper rest
           end
         | _ -> 
@@ -466,7 +480,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-              (make_call_back structural_config_table) ; 
+            |> List.iter (make_call_back structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
             if !non_export then
               [Str.include_ ~loc  
