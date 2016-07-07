@@ -1,5 +1,14 @@
 BuckleScript inherits the command line arguments of the [OCaml compiler](http://caml.inria.fr/pub/docs/manual-ocaml/comp.html). It also adds several flags:
 
+* -bs-files
+
+so that you can do
+
+```bash
+bsc -bs-files *.ml *.mli
+```
+The compiler will sort the order of input files before starting compilation
+
 * -bs-module
 
 Specify the JavaScript module system to use in the generated JavaScript code. Supported values are `commonjs`, `amdjs` and `goog:<namespace>`
