@@ -53,7 +53,7 @@
         data-chapter-title="Language Extenions"
         data-filepath="Extensions.md"
         data-basepath="."
-        data-revision="Tue Jul 05 2016 17:01:33 GMT-0400 (EDT)"
+        data-revision="Thu Jul 07 2016 15:25:41 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -667,6 +667,62 @@ you have to put a file level configuration in the beginning.</p>
   <span class="hljs-keyword">method</span> hey : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span>   -&gt; <span class="hljs-built_in">int</span>
 <span class="hljs-keyword">end</span> 
 <span class="hljs-keyword">type</span> x = _x <span class="hljs-type">Js</span>.t
+</code></pre>
+<ul>
+<li>getter setter attributs</li>
+</ul>
+<p>Such combinations:</p>
+<pre><code class="lang-ocaml">[@@@bs.config{bs_class_type}]
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set {no_get}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y = _y <span class="hljs-type">Js</span>.t 
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y0 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set] [@@bs.get {null}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y0 = _y0 <span class="hljs-type">Js</span>.t 
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y1 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set] [@@bs.get {undefined}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y1 = _y1 <span class="hljs-type">Js</span>.t 
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y2 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set] [@@bs.get {undefined; null}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y2 = _y2 <span class="hljs-type">Js</span>.t 
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y3 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span>  [@@bs.get {undefined ; null}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y3 = _y3 <span class="hljs-type">Js</span>.t
+</code></pre>
+<p>Which is equivalent to type definitions as below:
+(Note that user can not write such type definitions, but its semantics-equivalent )</p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y =
+  <span class="hljs-keyword">object</span> <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y = _y <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y0 =
+  <span class="hljs-keyword">object</span>
+    <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.null
+    <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y0 = _y0 <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y1 =
+  <span class="hljs-keyword">object</span>
+    <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.undefined
+    <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y1 = _y1 <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y2 =
+  <span class="hljs-keyword">object</span>
+    <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.null_undefined
+    <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y2 = _y2 <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y3 = <span class="hljs-keyword">object</span> <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.null_undefined <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y3 = _y3 <span class="hljs-type">Js</span>.t
 </code></pre>
 <ul>
 <li>object application</li>
