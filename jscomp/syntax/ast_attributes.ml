@@ -31,18 +31,52 @@ type ('a,'b) st =
 
 
 let process_method_attributes_rev (attrs : t) = 
-  List.fold_left (fun (st,acc) ((tag, payload) as attr) -> 
+  List.fold_left (fun (st,acc) (({txt ; loc}, payload) as attr : attr) -> 
 
-      match tag.Location.txt  with 
+      match txt  with 
       | "bs.get" (* [@@bs.get{null; undefined}]*)
         -> 
-        ({st with get = Some payload}, acc  )
+        let result = 
+          List.fold_left 
+          (fun 
+            (null, undefined)
+            (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+            if txt = Lident "null" then 
+              (match opt_expr with 
+              | None -> true
+              | Some e -> 
+                Ast_payload.assert_bool_lit e), undefined
+
+            else if txt = Lident "undefined" then 
+              null, 
+              (match opt_expr with
+               | None ->  true
+               | Some e -> 
+                 Ast_payload.assert_bool_lit e)
+
+            else Location.raise_errorf ~loc "unsupported predicates"
+          ) (false, false) (Ast_payload.as_record_and_process loc payload)  in 
+
+        ({st with get = Some result}, acc  )
 
       | "bs.set"
-        -> (* properties -- void 
+        -> 
+        let result = 
+          List.fold_left 
+          (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+            if txt = Lident "no_get" then 
+              match opt_expr with 
+              | None -> `No_get 
+              | Some e -> 
+                if Ast_payload.assert_bool_lit e then 
+                  `No_get
+                else `Get
+            else Location.raise_errorf ~loc "unsupported predicates"
+          ) `Get (Ast_payload.as_record_and_process loc payload)  in 
+        (* properties -- void 
               [@@bs.set{only}]
            *)
-          {st with set = Some payload }, acc
+        {st with set = Some result }, acc
       | _ -> 
         (st, attr::acc  )
     ) ( {get = None ; set = None}, []) attrs

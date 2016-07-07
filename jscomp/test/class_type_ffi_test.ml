@@ -40,3 +40,5 @@ let sum_poly zero add (arr : _ arrayLike Js.t) =
 *)
 let test_set x = 
   x##length_aux #= 3 
+
+(* let f (x : y0)  =  *)

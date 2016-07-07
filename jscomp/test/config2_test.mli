@@ -1,4 +1,4 @@
-[@@@bs.config {obj_type_auto_uncurry  ; (* non_export = true *) 
+[@@@bs.config {obj_type_auto_uncurry  ; (* no_export = true *) 
 bs_class_type 
 } ]
 

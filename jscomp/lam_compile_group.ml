@@ -175,12 +175,12 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
-    [non_export] is only used in playground
+    [no_export] is only used in playground
 *)
-let compile  ~filename output_prefix non_export env _sigs 
+let compile  ~filename output_prefix no_export env _sigs 
     (lam : Lambda.lambda)   = 
   let export_idents = 
-    if non_export then
+    if no_export then
       []    
     else  Translmod.get_export_identifiers()  
   in
@@ -267,7 +267,7 @@ let compile  ~filename output_prefix non_export env _sigs
         | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
           rest ->
           let coercion_groups, new_exports, new_export_set,  export_map = 
-            if non_export then 
+            if no_export then 
               [], [], Ident_set.empty, Ident_map.empty
             else
               List.fold_right2 
@@ -403,7 +403,7 @@ let compile  ~filename output_prefix non_export env _sigs
             (* Exporting ... *)
             let v = 
               Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
-                (if non_export then Ident_map.empty else export_map) 
+                (if no_export then Ident_map.empty else export_map) 
             in
             (if not @@ Ext_string.is_empty filename then
                Js_cmj_format.to_file 

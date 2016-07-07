@@ -65,7 +65,7 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
 let obj_type_auto_uncurry =  ref false
-let non_export = ref false 
+let no_export = ref false 
 let bs_class_type = ref false 
 
 let reset () = 
@@ -74,7 +74,7 @@ let reset () =
   uncurry_type := false ;
   obj_type_auto_uncurry := false ;
   bs_class_type := false;
-  non_export  :=  false
+  no_export  :=  false
 
 
 
@@ -110,32 +110,46 @@ let handle_class_type_field  acc =
 
          | st , pctf_attributes
            -> 
-           let get_acc = {ctf with 
-                          pctf_desc =  
-                            Pctf_method (name , 
-                                         private_flag, 
-                                         virtual_flag, 
-                                         self.typ self ty
-                                        );
-                          pctf_attributes}
-                         :: acc  in 
-           match st with 
-           | {set = Some _ } -> 
+           let get_acc = 
+             match st.set with 
+             | Some `No_get -> acc 
+             | None 
+             | Some `Get -> 
+               let lift txt = 
+                 Typ.constr ~loc {txt ; loc} [ty] in
+               let (null,undefined) =                
+                 match st with 
+                 | {get = Some (null, undefined) } -> (null, undefined)
+                 | {get = None} -> (false, false ) in 
+               let ty = 
+                 match (null,undefined) with 
+                 | false, false -> ty
+                 | true, false -> lift Ast_literal.Lid.js_null
+                 | false, true -> lift Ast_literal.Lid.js_undefined
+                 | true , true -> lift Ast_literal.Lid.js_null_undefined in 
+               {ctf with 
+                pctf_desc =  
+                  Pctf_method (name , 
+                               private_flag, 
+                               virtual_flag, 
+                               self.typ self ty
+                              );
+                pctf_attributes}
+               :: acc  
+           in 
+           if st.set = None then get_acc 
+           else 
              {ctf with 
               pctf_desc =
                 Pctf_method (name ^ Literals.setter_suffix, 
                              private_flag,
                              virtual_flag,
                              Ast_util.to_method_type
-                               loc self 
-                               ty 
+                               loc self ty
                                (Ast_literal.type_unit ~loc ())
                             );
               pctf_attributes}
              :: get_acc 
-         (*TODO: test on poly type *)
-           | {set = None ; } -> 
-             get_acc 
        end
      | Pctf_inherit _ 
      | Pctf_val _ 
@@ -416,9 +430,9 @@ let common_actions_table :
 
 let structural_config_table  = 
   String_map.of_list 
-    (( "non_export" , 
+    (( "no_export" , 
       (fun x -> 
-         non_export := (
+         no_export := (
            match x with 
            |Some e -> Ast_payload.assert_bool_lit e 
            | None -> true)
@@ -430,23 +444,16 @@ let signature_config_table :
   String_map.of_list common_actions_table
 
 
-let make_call_back table 
-    ((x : Longident.t Asttypes.loc) , 
-     (y :Parsetree.expression)) = 
-  match x with 
-  | {txt = Lident name; loc  } -> 
+let make_call_back table (action : Ast_payload.action)
+     = 
+  match action with 
+  | {txt = Lident name; loc  }, y -> 
     begin match String_map.find name table with 
-      | fn -> 
-        let y = 
-          match y with 
-          | {pexp_desc = Pexp_ident {txt = Lident name2} } when name2 = name -> 
-            None 
-          | _ -> Some y in
-        fn y
+      | fn -> fn y
       | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
-  | _ -> 
-    Location.raise_errorf ~loc:x.loc "invalid label for config"
+  | { loc ; }, _  -> 
+    Location.raise_errorf ~loc "invalid label for config"
 
 let rewrite_signature : 
   (Parsetree.signature  -> Parsetree.signature) ref = 
@@ -457,7 +464,7 @@ let rewrite_signature :
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-              (make_call_back signature_config_table) ; 
+            |> List.iter (make_call_back signature_config_table) ; 
             unsafe_mapper.signature unsafe_mapper rest
           end
         | _ -> 
@@ -473,9 +480,9 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-              (make_call_back structural_config_table) ; 
+            |> List.iter (make_call_back structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
-            if !non_export then
+            if !no_export then
               [Str.include_ ~loc  
                  (Incl.mk ~loc 
                     (Mod.constraint_ ~loc

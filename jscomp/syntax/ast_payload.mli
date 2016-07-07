@@ -28,15 +28,26 @@
     compiling FFI attributes and built-in ppx  *)
 
 type t = Parsetree.payload
+type lid = Longident.t Asttypes.loc
+type label_expr = lid  * Parsetree.expression
+type action = 
+   lid * Parsetree.expression option 
 
 val is_single_string : t -> string option
 val as_string_exp : t -> Parsetree.expression option 
 val as_empty_structure :  t -> bool 
 val is_string_or_strings : 
   t -> [ `None | `Single of string | `Some of string list ]
+
+(** as a record or empty 
+    it will accept 
+    {[ [@@@bs.config ]]}
+    or 
+    {[ [@@@bs.config { property  .. } ]]}    
+*)
 val as_record_and_process : 
   Location.t ->
-  t -> (Longident.t Asttypes.loc * Parsetree.expression -> unit) -> unit
+  t -> action list 
 
 val assert_bool_lit : Parsetree.expression -> bool
 
