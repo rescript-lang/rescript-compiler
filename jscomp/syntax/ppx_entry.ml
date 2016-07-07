@@ -430,23 +430,16 @@ let signature_config_table :
   String_map.of_list common_actions_table
 
 
-let make_call_back table 
-    ((x : Longident.t Asttypes.loc) , 
-     (y :Parsetree.expression)) = 
-  match x with 
-  | {txt = Lident name; loc  } -> 
+let make_call_back table (action : Ast_payload.action)
+     = 
+  match action with 
+  | {txt = Lident name; loc  }, y -> 
     begin match String_map.find name table with 
-      | fn -> 
-        let y = 
-          match y with 
-          | {pexp_desc = Pexp_ident {txt = Lident name2} } when name2 = name -> 
-            None 
-          | _ -> Some y in
-        fn y
+      | fn -> fn y
       | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
-  | _ -> 
-    Location.raise_errorf ~loc:x.loc "invalid label for config"
+  | { loc ; }, _  -> 
+    Location.raise_errorf ~loc "invalid label for config"
 
 let rewrite_signature : 
   (Parsetree.signature  -> Parsetree.signature) ref = 

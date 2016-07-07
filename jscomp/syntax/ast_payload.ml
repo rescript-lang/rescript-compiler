@@ -53,20 +53,35 @@ let as_empty_structure (x : t ) =
   | PStr ([]) -> true
   | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
 
+type lid = Longident.t Asttypes.loc
+type label_expr = lid  * Parsetree.expression
+type action = 
+   lid * Parsetree.expression option 
+
 
 let as_record_and_process 
     loc
-    ( x : t )
-    (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
+    x 
+    (action : action -> unit ): unit= 
   match  x with 
-  | PStr [ {pstr_desc = Pstr_eval
-                ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
-            _
-           }]
+  | Parsetree.PStr 
+      [ {pstr_desc = Pstr_eval
+             ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
+         _
+        }]
     -> 
     begin match with_obj with
     | None ->
-      List.iter action label_exprs
+      List.iter 
+        (fun (x,y) -> 
+           match (x,y) with 
+           | ({Asttypes.txt = Longident.Lident name; loc} ) , 
+             ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
+             when name2 = name -> 
+             action (x, None)
+           | _ -> action (x, Some y)
+        )
+        label_exprs
     | Some _ -> 
       Location.raise_errorf ~loc "with is not supported"
     end
