@@ -1,17 +1,6 @@
 
 
 
-# Embedding raw js code in expression and structure level
-
-```ocaml
-let x = [%bs.raw .. ]
-[%%bs.raw]
-```
-# Debugger in expression level
-
-```ocaml
-[%bs.debugger]
-```
 
 # Create Simple JS object in expression and core-type level
 
@@ -279,5 +268,45 @@ function uu(x,y){
   return o.length + x + y
 }
 
+```
+
+# Embedding raw JS code
+
+Note this is not encouraged, user is always encouraged to minimize and localize use cases 
+of embedding raw Javascript code, however, sometimes it's useful to get the job done quickly
+
+- Ebedding raw JS code as an expression
+
+```ocaml
+let keys : t -> string array [@bs] = [%bs.raw "Object.keys" ]
+let unsafe_lt : 'a -> 'a -> Js.boolean [@bs] = [%bs.raw{|function(x,y){return x < y}|}]
+```
+We recommend user to write type annotations for such unsafe code, it is unsafe to 
+refer external ocaml symbols in raw JS code
+
+- Embedding raw JS code as statements
+
+```ocaml
+[%%bs.raw{|
+console.log ("hey");
+|}]
+```
+
+# Set debugger point
+
+User can set debugger point in expression level
+
+```ocaml
+let f x y = 
+  [%bs.debugger];
+  x + y
+```
+
+Will generate code
+```js
+function f(x,y){
+  debugger;
+  return x + y;
+}
 ```
 
