@@ -395,20 +395,17 @@ let compile  ~filename output_prefix no_export env _sigs
                 meta.required_modules  
                 (Js_fold_basic.calculate_hard_dependencies js.block)
             in
-            let required_modules =
-              List.map 
-                (fun id -> Lam_module_ident.id id, Js_program_loader.string_of_module_id id )
-                external_module_ids in
-
             (* Exporting ... *)
             let v = 
               Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
                 (if no_export then Ident_map.empty else export_map) 
             in
+
+
             (if not @@ Ext_string.is_empty filename then
                Js_cmj_format.to_file 
                   (output_prefix ^ Js_config.cmj_ext) v);
-            Js_program_loader.decorate_deps required_modules v.effect js
+            Js_program_loader.decorate_deps external_module_ids v.effect js
           )
         | _ -> raise Not_a_module
       end

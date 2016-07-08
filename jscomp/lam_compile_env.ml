@@ -74,7 +74,7 @@ type ident_info = {
    [ find_in_path_uncap !load_path (name ^ ".cmi")]
 *)
 
-open Js_output.Ops
+
 
 let cached_tbl : (module_id , env_value) Hashtbl.t = Hashtbl.create 31
 
