@@ -3,81 +3,13 @@ extensions to OCaml language. Those BuckleScript extensions
 facilitates the integration of native JavaScript code as well as
 improve the generated code.
 
-> Note that all those extension will be correctly ignored by the native OCaml compiler.
+Like typescript, when build typesafe bindings from JS to OCaml, user has to write type declarations
+in OCaml, unlike typescript, user does not need to create a separate `.d.ts` file, 
+the type declaration langauge is the same langauge in OCaml.
 
+The FFI is divided into components, one is binding to JS function, the other is binding to JS object.
 
-## Embedding raw Javascript code
-
-- extension `bs.raw`
-  
-   It can be either `[%bs.raw{|  this_is_arbitrary_js_expression |}]` or `[%%bs.raw{| this is arbitrary_js_statement |}`
-   
-   Use cases:
-   for example if you want to use a JavaScript string, you can write code like this
-   
-   ```OCaml
-   let x  : string = [%bs.raw{|"\x01\x02"|}]
-   ```
-
-   which will be compiled into 
-
-   ```js
-   var x = "\x01\x02"
-   ``` 
-
-   ```OCaml
-   [%%bs.raw{|
-   // Math.imul polyfill
-   if (!Math.imul){
-       Math.imul = function (..) {..}
-    }
-   |}]
-   ```
-   In the expression level, i.e, `[%bs.raw ...]` user can add a type
-   annotation, for example:
-
-   ```ocaml
-   let f : float -> float -> float [@bs] = [%bs.raw "Math.max" ]
-   in f 3.0 2.0 [@bs]
-   ```
-   will be translated into 
-
-   ```js
-   var f = Math.max ;
-   f(3.0,2.0)
-   ```
-   Caveat:
-   1. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
-   2. You should not refer symbols in OCaml code, it is not guaranteed that the order is correct.
-      You should avoid introducing new symbols in the raw code, if needed, use the `$$` prefix (ie `$$your_func_name`) 
-
-## Debugger support
-
-- extension `bs.debugger`
-
-   It can be `[%bs.debugger]`
-
-   use case
-
-   ```ocaml
-   let f x y = 
-      [%bs.debugger];
-      x + y
-   ```
-
-   which will be compiled into 
-
-   ```js
-   function f (x,y) {
-     debugger; // JavaScript developer tools will set an breakpoint and stop here
-     x + y;
-   }
-   ```
-
-
-
-
-## FFI to js functions
+## FFI to first order JS functions
 
 This part is similar to [traditional FFI](http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html), 
 syntax is described as below:
@@ -194,6 +126,85 @@ gives it a type and customized attributes
    var U = require("x")
    var f = U.add(3,4)
    ```
+
+## FFI to high-order JS functions
+
+High oder function means the FFI can take callback as an argument, for example, suppose
+JS has a map function as below:
+
+```js
+// 
+function map (f, a, b ){
+  var i = Math.min(a.length, b.length)
+  var c = new Array(i)
+  for(var j = 0; j < i; ++j){
+    c[j] = f(a[i],b[i])
+  }
+}
+```
+
+We want to write its external type declarations as below
+
+```ocaml
+external map : 'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array = "map" [@@bs.call]
+```
+
+Unfortunately, this is not faithful due to OCaml's curried calling convention.
+OCaml is curried language, which means by semantics it always take just one argument each time,
+for example,
+
+```ocaml
+let f x y z = x + y + z
+let a = f 1 2 3 
+let b = f 1 2 
+```
+
+is *semantically* equivalent to 
+
+```js
+function f(x){
+  return function (y){
+    return function (z){
+      return x + y + z
+    }
+  }
+}
+var a = f (1) (2) (3)
+var b = f (1) (2)
+```
+
+But as you can all see, this is highly inefficient, since the compiler already *saw the source definition* of `f`
+it can be optimized as below:
+
+```js
+function f(x,y,z) {return x + y + z}
+var a = f(1,2,3)
+var b = function(z){return f(1,2,z)}
+```
+We do this optimization in the cross module level, however, such optimization will not work with *high order* function, 
+i.e, callback
+
+For example,
+
+```ocaml
+let app f x = f x
+```
+Since `f`'s arity is unknown, the compiler can not do any optimization (unless `app` get inlined), so we 
+have to generate code as below:
+
+```js
+function app(f,x){
+  return Curry._1(f,x);
+}
+```
+`Curry._1` is a function to dynamic support curried calling convention. 
+
+JS does not support such calling convention by default, so we introduce a special attribute `[@bs]`
+to mark it as a special function, and the type system will guarantee that it is fully applied.
+
+
+Note in OCaml, the compiler internally uncurried every function `marked` with `external`, 
+in that case, the compiler guaranteed that it is always fully applied. 
 
 
 ## A simple example: binding to mocha unit test library
@@ -319,6 +330,72 @@ val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
   let v = {hi : 3 , lo: 2}
   ```
 
+## Embedding raw Javascript code
 
+- extension `bs.raw`
+  
+   It can be either `[%bs.raw{|  this_is_arbitrary_js_expression |}]` or `[%%bs.raw{| this is arbitrary_js_statement |}`
+   
+   Use cases:
+   for example if you want to use a JavaScript string, you can write code like this
+   
+   ```OCaml
+   let x  : string = [%bs.raw{|"\x01\x02"|}]
+   ```
+
+   which will be compiled into 
+
+   ```js
+   var x = "\x01\x02"
+   ``` 
+
+   ```OCaml
+   [%%bs.raw{|
+   // Math.imul polyfill
+   if (!Math.imul){
+       Math.imul = function (..) {..}
+    }
+   |}]
+   ```
+   In the expression level, i.e, `[%bs.raw ...]` user can add a type
+   annotation, for example:
+
+   ```ocaml
+   let f : float -> float -> float [@bs] = [%bs.raw "Math.max" ]
+   in f 3.0 2.0 [@bs]
+   ```
+   will be translated into 
+
+   ```js
+   var f = Math.max ;
+   f(3.0,2.0)
+   ```
+   Caveat:
+   1. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
+   2. You should not refer symbols in OCaml code, it is not guaranteed that the order is correct.
+      You should avoid introducing new symbols in the raw code, if needed, use the `$$` prefix (ie `$$your_func_name`) 
+
+## Debugger support
+
+- extension `bs.debugger`
+
+   It can be `[%bs.debugger]`
+
+   use case
+
+   ```ocaml
+   let f x y = 
+      [%bs.debugger];
+      x + y
+   ```
+
+   which will be compiled into 
+
+   ```js
+   function f (x,y) {
+     debugger; // JavaScript developer tools will set an breakpoint and stop here
+     x + y;
+   }
+   ```
 
 
