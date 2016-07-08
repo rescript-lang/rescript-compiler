@@ -30,7 +30,8 @@
 
 
 
-type t = { id : Ident.t ; kind : Js_op.kind }
+type t = Js_op.module_id = 
+  { id : Ident.t ; kind : Js_op.kind }
 
 let id x = x.id 
 

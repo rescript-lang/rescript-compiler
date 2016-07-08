@@ -1564,18 +1564,36 @@ let program f cxt   ( x : J.program ) =
   let () = P.force_newline f in
   exports cxt f x.exports
 
-let goog_program f goog_package x  = 
+let goog_program f goog_package (x : J.deps_program)  = 
   P.newline f ;
   P.string f L.goog_module;
   P.string f "(";
   P.string f (Printf.sprintf "%S" goog_package);
   P.string f ")";
   semi f ;
-  let cxt = requires L.goog_require ( Ext_pp_scope.empty)  f x.J.modules in
+  let cxt = 
+    requires
+      L.goog_require
+      Ext_pp_scope.empty
+      f 
+      (List.map 
+         (fun x -> 
+            Lam_module_ident.id x, Js_program_loader.string_of_module_id x)
+         x.modules) 
+  in
   program f cxt x.program  
 
 let node_program f ( x : J.deps_program) = 
-  let cxt = requires L.require ( Ext_pp_scope.empty)  f x.modules in
+  let cxt = 
+    requires 
+      L.require
+      Ext_pp_scope.empty
+      f
+      (List.map 
+         (fun x -> 
+            Lam_module_ident.id x, Js_program_loader.string_of_module_id x)
+         x.modules)
+  in
   program f cxt x.program  
   
 
@@ -1589,7 +1607,8 @@ let amd_program f
   P.string f "([";
   P.string f (Printf.sprintf "%S" L.exports);
 
-  List.iter (fun (_,s) ->
+  List.iter (fun x ->
+      let s = Js_program_loader.string_of_module_id x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -1602,7 +1621,8 @@ let amd_program f
   P.string f L.exports;
 
   let cxt = 
-    List.fold_left (fun cxt (id,_) ->         
+    List.fold_left (fun cxt x ->         
+        let id = Lam_module_ident.id x in
         P.string f L.comma;
         P.space f ; 
         ident cxt f id

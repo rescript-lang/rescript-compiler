@@ -227,7 +227,9 @@ type ident_info = {
 
 type exports = Ident.t list 
 
-type required_modules = (Ident.t * string) list
+type module_id = { id : Ident.t; kind  : kind}
+
+type required_modules = module_id list
 
 
 type tag_info = Lambda.tag_info = 
