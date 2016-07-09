@@ -129,29 +129,92 @@ gives it a type and customized attributes
 
 ## FFI to high-order JS functions
 
-High oder function means the FFI can take callback as an argument, for example, suppose
+High oder function means callback can be another function, for example, suppose
 JS has a map function as below:
 
 ```js
-// 
-function map (f, a, b ){
-  var i = Math.min(a.length, b.length)
-  var c = new Array(i)
+function map (a, b, f){
+  var i = Math.min(a.length, b.length);
+  var c = new Array(i);
   for(var j = 0; j < i; ++j){
     c[j] = f(a[i],b[i])
   }
+  return c ;
 }
 ```
 
-We want to write its external type declarations as below
+A naive external type declaration would be as below:
 
 ```ocaml
 external map : 'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array = "map" [@@bs.call]
 ```
 
-Unfortunately, this is not faithful due to OCaml's curried calling convention.
-OCaml is curried language, which means by semantics it always take just one argument each time,
-for example,
+Unfortunately, this is not completely faithful. The issue is by 
+reading the type `'a -> 'b -> 'c`, it can be in several cases:
+
+```ocaml
+let f x y = x + y
+```
+
+```ocaml
+let g x  = let z  = x + 1 in fun y -> x + z 
+```
+
+In OCaml, they all have the same type, however, 
+they will be compiled into functions which have 
+different arities.
+
+Note even we do a naive compilation, compile `f` as below:
+
+```ocaml
+let f  = fun x -> fun y -> x + y
+```
+
+Its arity will be *consistent* but is *1* (return another function), however, 
+we expect its arity to be 2. 
+
+The conclusion is that we can not guarantee its arity to be 2 just 
+by having declaring its type to be `'a -> 'b -> 'c` due to OCaml's 
+curried calling convention.
+
+To solve the problem, we introduce a special attribute.
+
+```ocaml
+external map : 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
+= "map" [@@bs.call]
+```
+
+Here `('a -> 'b -> 'c [@bs])` will be always of arity 2, in general 
+`'a0 -> 'a1 ... 'aN -> 'b0 [@bs]` is the same as `'a0 -> 'a1 ... 'aN -> 'b0`
+except the former's arity is guaranteed to be `N` while the latter is unknown.
+
+To produce a function of type `'a0 -> .. 'aN -> 'b0`, as follows:
+
+```ocaml
+let f : 'a0 -> 'a1 -> .. 'b0 [@bs] = fun [@bs] a0 a1 .. aN -> b0 
+let b : 'b0 = f a0 a1 a2 .. aN [@bs] 
+``` 
+A special case for arity of 0:
+
+```ocaml
+let f : unit -> 'b0 [@bs] = fun [@bs] () -> b0 
+let b : 'b0 = f () [@bs]
+```
+
+
+Note that this extension to the OCaml language is *sound*, if you add 
+an attribute in one place and miss it in other place, the type checker
+will complain.
+
+
+### Uncurried calling convention as an optimization 
+
+As we discussed before we can compile any OCaml function as arity 1 to 
+support OCaml's curried calling convention. 
+
+This model is simple and easy to implement, however, 
+the native compilation is very slow and expensive for all functions.
+
 
 ```ocaml
 let f x y z = x + y + z
@@ -159,7 +222,7 @@ let a = f 1 2 3
 let b = f 1 2 
 ```
 
-is *semantically* equivalent to 
+would be compiled as  
 
 ```js
 function f(x){
@@ -173,7 +236,7 @@ var a = f (1) (2) (3)
 var b = f (1) (2)
 ```
 
-But as you can all see, this is highly inefficient, since the compiler already *saw the source definition* of `f`
+But as you can all see, this is *highly inefficient*, since the compiler already *saw the source definition* of `f`
 it can be optimized as below:
 
 ```js
@@ -199,12 +262,27 @@ function app(f,x){
 ```
 `Curry._1` is a function to dynamic support curried calling convention. 
 
-JS does not support such calling convention by default, so we introduce a special attribute `[@bs]`
-to mark it as a special function, and the type system will guarantee that it is fully applied.
+Since we add uncurried calling convention support, you can write `app`
+as below
+
+```ocaml
+let app f x = f x [@bs]
+```
+
+Now the type system will infer `app` as type 
+`('a ->'b [@bs]) -> 'a` and compile `app` as 
+
+```js
+function app(f,x){
+  return f(x)
+}
+```
 
 
 Note in OCaml, the compiler internally uncurried every function `marked` with `external`, 
-in that case, the compiler guaranteed that it is always fully applied. 
+in that case, the compiler guaranteed that it is always fully applied, so 
+for `external` FFI, its outermost function does not need `[@bs]` 
+annotation.
 
 
 ## A simple example: binding to mocha unit test library
