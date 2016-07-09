@@ -17,9 +17,9 @@ merlin
 
 Beta release:
 
-- [ ] Object part of FFI(we have a working solution, the name mangling is not ideal)
+- [ ] Object part of FFI (we have a working solution; the name mangling is not ideal)
 - [ ] Compile local module as dictionary
-- [ ] Customer formatter in debug mode
+- [ ] Custom formatter in debug mode
 - [ ] Improving Runtime library (no unsafe code)
 - [ ] Support es6 module (rollup format) (we current support commonjs and amdjs)
 

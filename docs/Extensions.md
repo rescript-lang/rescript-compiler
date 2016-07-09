@@ -88,8 +88,8 @@ f_uncurry(3,"x")
 However, for curried function application, it depends on how compiler
 optimizations goes, for most cases, when the compiler see the
 definition of `f`, it will compile it in the most efficient way, i.e,
-JS full aplication, if the compiler can not see the definition of `f`,
-it will do a runtime dispath, so there are two possible outputs:
+JS full application, if the compiler can not see the definition of `f`,
+it will do a runtime dispatch, so there are two possible outputs:
 
 ```js
 Curry._2(f, 3, "x") // compiler fails to optimize
@@ -147,7 +147,7 @@ fun [@bs] x y -> x + y (* arity of 2*)
 
 - class type
 
-BuckleScript overrides OCaml `class type` syntax for FFI, to trigger this, 
+BuckleScript overrides OCaml `class type` syntax for FFI. To trigger this, 
 you have to put a file level configuration in the beginning.
 
 ```ocaml
@@ -196,7 +196,7 @@ type y3 = _y3 Js.t
 ```
 
 Which is equivalent to type definitions as below:
-(Note that user can not write such type definitions, but its semantics-equivalent )
+(Note that user can not write such type definitions, but it's semantically equivalent.)
 
 ```ocaml
 class type _y =
@@ -272,10 +272,10 @@ function uu(x,y){
 
 # Embedding raw JS code
 
-Note this is not encouraged, user is always encouraged to minimize and localize use cases 
-of embedding raw Javascript code, however, sometimes it's useful to get the job done quickly
+Note this is not encouraged. The user is always encouraged to minimize and localize use cases 
+of embedding raw Javascript code, however, sometimes it's useful to get the job done quickly.
 
-- Ebedding raw JS code as an expression
+- Embedding raw JS code as an expression
 
 ```ocaml
 let keys : t -> string array [@bs] = [%bs.raw "Object.keys" ]

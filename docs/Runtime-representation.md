@@ -5,8 +5,8 @@ encoding (and it is subject to change)**. We recommend that you write setter/get
 to manipulate safely OCaml values from JavaScript. 
 
 For example, users should not rely on how OCaml `list` is encoded in JavaScript; instead,
-the OCaml stdlib provide three functions: `List.cons`, `List.hd` and `List.tl`. JavaScript
-code should only rely on such three functions.
+the OCaml stdlib provides three functions: `List.cons`, `List.hd` and `List.tl`. JavaScript
+code should only rely on those three functions.
 
 # OCaml type
 
@@ -130,7 +130,7 @@ code should only rely on such three functions.
         | D [@@bb.export]
    ```
    For nullary constructor, ```A``, it is encoded as a hash function, **users should not rely
-   on how the hash function work**. 
+   on how the hash function works**. 
    For documentation purpose, ``A` is encoded as number `65`
    
    ```B(1,2)`` is encoded as `[66, [1,2] ]`
@@ -146,13 +146,13 @@ code should only rely on such three functions.
 
 # JavaScript type exposed to OCaml
 
-BuckleScript exposes type safe interface to JavaScript native types. Those can be found in the `Js` module. 
+BuckleScript exposes type safe interfaces to JavaScript native types. Those can be found in the `Js` module. 
 
 ## `Js.boolean` 
   - javascript type: boolean   
   - Js.true_ -> true
   - Js.false_ -> false
-  We also provide a function `Js.to_bool` to convert `Js.boolean` to ocaml `bool`
+  We also provide a function `Js.to_bool` to convert `Js.boolean` to OCaml `bool`
   
   ```ocaml
   val to_bool : Js.boolean -> bool 
@@ -167,8 +167,8 @@ BuckleScript exposes type safe interface to JavaScript native types. Those can b
   val to_opt : 'a -> 'a opt
   val is_nil : 'a opt -> bool
   ```
-  It's more efficient than `'a option` since it is unboxed, when user 
-  want to get the value, he can write code as below
+  It's more efficient than `'a option` since it is unboxed. When the user 
+  wants to get the value, he can write code as below:
   
   ```ocaml
   match Js.from_opt x with
@@ -197,5 +197,5 @@ BuckleScript exposes type safe interface to JavaScript native types. Those can b
   val is_undef : 'a def -> bool 
   ```  
 
->Note in the future, we will have a *debug* mode, which means, in such mode, the 
+>Note in the future, we will have a *debug* mode, in which the 
 corresponding js encoding will be instrumented with more information using `Object.defineProperty`

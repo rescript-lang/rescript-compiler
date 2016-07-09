@@ -1,26 +1,26 @@
 To make OCaml work smoothly with Javascript, we introduced several
-extensions to OCaml language. Those BuckleScript extensions
-facilitates the integration of native JavaScript code as well as
+extensions to the OCaml language. These BuckleScript extensions
+facilitate the integration of native JavaScript code as well as
 improve the generated code.
 
-Like typescript, when build typesafe bindings from JS to OCaml, user has to write type declarations
-in OCaml, unlike typescript, user does not need to create a separate `.d.ts` file, 
-the type declaration langauge is the same langauge in OCaml.
+Like TypeScript, when building typesafe bindings from JS to OCaml, the user has to write type declarations.
+In OCaml, unlike TypeScript, user does not need to create a separate `.d.ts` file, 
+since the type declaration langauge is the same langauge in OCaml.
 
 The FFI is divided into components, one is binding to JS function, the other is binding to JS object.
 
 ## FFI to first order JS functions
 
 This part is similar to [traditional FFI](http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html), 
-syntax is described as below:
+with syntax as described below:
 
 ```OCaml
 external value-name :  typexpr =  external-declaration  attributes
 external-declaration :=	 string-literal  
 ```
 
-Users need declare types of the foreign function (JS function here) and 
-gives it a type and customized attributes
+Users need to declare types of the foreign function (JS function here) and 
+give it a type and customized attributes.
 
 ### attributes
 
@@ -31,8 +31,8 @@ gives it a type and customized attributes
   ```ocaml
   external imul : int -> int -> int = "Math.imul" [@@bs.call]
   ```
->Note that if you want to make a single FFI for both c functions and JavaScript functions, you can 
- give JavaScript foreign function different name
+>Note that if you want to make a single FFI for both C functions and JavaScript functions, you can 
+ give the JavaScript foreign function different name:
 
   ```ocaml
   external imul : int -> int -> int = "c_imul" [@@bs.call "Math.imul"]
@@ -40,8 +40,8 @@ gives it a type and customized attributes
 
 * `bs.new`
 
-  This attribute is to help user create a JavaScript object
-  example:
+  This attribute is to help the user create a JavaScript object.
+  Example:
 
   ```ocaml
   external create_date : unit -> t = "Date" [@@bs.new]
@@ -60,7 +60,7 @@ gives it a type and customized attributes
 
 * `bs.send`
   
-  This attribute is to help user send a message to js object
+  This attribute is to help the user send a message to JS object
 
   ```OCaml
   type id 
@@ -68,7 +68,7 @@ gives it a type and customized attributes
   external get_by_id : dom -> string -> id = "getElementById" [@@bs.send]
   ```
   
-  The object is always the first argument and arguments follow.
+  The object is always the first argument and actual arguments follow.
 
   ```OCaml
   getElementById dom "xx"
@@ -79,7 +79,7 @@ gives it a type and customized attributes
   ```
 
 * `bs.get`, `bs.set`
-  This attribute help get and set the property of a JavaScript object.
+  This attribute helps get and set the property of a JavaScript object.
 
   ```OCaml
   type textarea
@@ -89,7 +89,7 @@ gives it a type and customized attributes
 
 * `bs.set_index` `bs.get_index`
 
-  This attribute help dynamic access to JavaScript property
+  This attribute helps dynamic access to a JavaScript property
 
   ```OCaml
   module Int32Array = struct
@@ -129,7 +129,7 @@ gives it a type and customized attributes
 
 ## FFI to high-order JS functions
 
-High oder function means callback can be another function, for example, suppose
+High order function means callback can be another function, for example, suppose
 JS has a map function as below:
 
 ```js
@@ -170,7 +170,7 @@ Note even we do a naive compilation, compile `f` as below:
 let f  = fun x -> fun y -> x + y
 ```
 
-Its arity will be *consistent* but is *1* (return another function), however, 
+Its arity will be *consistent* but is *1* (returning another function), however, 
 we expect its arity to be 2. 
 
 The conclusion is that we can not guarantee its arity to be 2 just 
@@ -212,7 +212,7 @@ will complain.
 As we discussed before we can compile any OCaml function as arity 1 to 
 support OCaml's curried calling convention. 
 
-This model is simple and easy to implement, however, 
+This model is simple and easy to implement, but
 the native compilation is very slow and expensive for all functions.
 
 
@@ -236,23 +236,23 @@ var a = f (1) (2) (3)
 var b = f (1) (2)
 ```
 
-But as you can all see, this is *highly inefficient*, since the compiler already *saw the source definition* of `f`
-it can be optimized as below:
+But as you can all see, this is *highly inefficient*, since the compiler already *saw the source definition* of `f`.
+It can be optimized as below:
 
 ```js
 function f(x,y,z) {return x + y + z}
 var a = f(1,2,3)
 var b = function(z){return f(1,2,z)}
 ```
-We do this optimization in the cross module level, however, such optimization will not work with *high order* function, 
-i.e, callback
+We do this optimization in the cross module level, however, such optimization will not work with *high order* functions, 
+i.e, callbacks.
 
 For example,
 
 ```ocaml
 let app f x = f x
 ```
-Since `f`'s arity is unknown, the compiler can not do any optimization (unless `app` get inlined), so we 
+Since `f`'s arity is unknown, the compiler can not do any optimization (unless `app` gets inlined), so we 
 have to generate code as below:
 
 ```js
@@ -260,7 +260,7 @@ function app(f,x){
   return Curry._1(f,x);
 }
 ```
-`Curry._1` is a function to dynamic support curried calling convention. 
+`Curry._1` is a function to dynamically support the curried calling convention. 
 
 Since we add uncurried calling convention support, you can write `app`
 as below
@@ -288,7 +288,7 @@ annotation.
 ## A simple example: binding to mocha unit test library
 
    If we want to provide bindings to the [mochajs](https://mochajs.org/) unit test framework, 
-   below is an example
+   below is an example:
 
    ```OCaml
    external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.call]
@@ -296,7 +296,7 @@ annotation.
    ```
 
    Since, `mochajs` is a test framework, we also need some assertion
-   test, we can also describe the bindings to `assert.deepEqual` from
+   tests. We can also describe the bindings to `assert.deepEqual` from
    nodejs `assert` library:
 
    ```ocaml
@@ -356,7 +356,7 @@ val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
 
 - `bs.obj`
 
-  This attribute helps create JavaScript object literal
+  This attribute helps create JavaScript object literals
 
 ```ocaml
   let a = f [%bs.obj { hi = fun [@bs] (x,y) -> x + y} ] 1 2 
@@ -415,13 +415,13 @@ val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
    It can be either `[%bs.raw{|  this_is_arbitrary_js_expression |}]` or `[%%bs.raw{| this is arbitrary_js_statement |}`
    
    Use cases:
-   for example if you want to use a JavaScript string, you can write code like this
+   for example if you want to use a JavaScript string, you can write code like this:
    
    ```OCaml
    let x  : string = [%bs.raw{|"\x01\x02"|}]
    ```
 
-   which will be compiled into 
+   which will be compiled into:
 
    ```js
    var x = "\x01\x02"
@@ -442,7 +442,7 @@ val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
    let f : float -> float -> float [@bs] = [%bs.raw "Math.max" ]
    in f 3.0 2.0 [@bs]
    ```
-   will be translated into 
+   will be translated into:
 
    ```js
    var f = Math.max ;
@@ -450,8 +450,8 @@ val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
    ```
    Caveat:
    1. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
-   2. You should not refer symbols in OCaml code, it is not guaranteed that the order is correct.
-      You should avoid introducing new symbols in the raw code, if needed, use the `$$` prefix (ie `$$your_func_name`) 
+   2. You should not refer to symbols in OCaml code. It is not guaranteed that the order is correct.
+      You should avoid introducing new symbols in the raw code, but if needed use the `$$` prefix (ie `$$your_func_name`) 
 
 ## Debugger support
 
@@ -467,7 +467,7 @@ val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
       x + y
    ```
 
-   which will be compiled into 
+   which will be compiled into:
 
    ```js
    function f (x,y) {

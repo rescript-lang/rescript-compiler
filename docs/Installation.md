@@ -1,6 +1,6 @@
 ## Introduction
 
-To use BuckleScript, you need both, a specific version of the OCaml compiler (tweaked to make BuckleScript possible), and the BuckleScript software itself. The instructions below show how to install both of these using standard package managers as well as how to build from source for Unix/Linux systems. Build directions will be updated once Windows systems are supported.
+To use BuckleScript, you need both a specific version of the OCaml compiler (tweaked to make BuckleScript possible), and the BuckleScript software itself. The instructions below show how to install each of these using standard package managers as well as how to build from source for Unix/Linux systems. Build directions will be updated once Windows systems are supported.
 
 ## Default installation procedure (using package managers)
 
@@ -16,7 +16,7 @@ opam switch 4.02.3+buckle-1
 eval `opam config env`
 ```
 
-> This step is optional. npm installation will build the compiler from source if not installed from opam
+> This step is optional. npm installation will build the compiler from source if not installed from opam.
 
 ### 2. BuckleScript from npm (required)
 
@@ -28,7 +28,7 @@ npm install --save bs-platform
 
 ## Advanced installation procedure (from source)
 
-BuckleScript has very little dependencies and building from source can easily be done.
+BuckleScript has very few dependencies and building from source can easily be done.
 
 ### 1. OCaml compiler
 
@@ -63,7 +63,7 @@ which you can add to your `$PATH`. You could also set an environment variable
 pointing to the stdlib, e.g. `BSC_LIB=/path/to/jscomp/stdlib` for ease of use.
 
 Note that by default, `bsc` will generate `commonjs` modules, you can
-override such behavior by picking up your own module system:
+override such behavior by picking your own module system:
 
 ```sh
 MODULE_FLAGS='-bs-module amdjs' make world

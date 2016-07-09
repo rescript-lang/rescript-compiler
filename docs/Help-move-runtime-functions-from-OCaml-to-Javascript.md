@@ -8,11 +8,11 @@ Currently all tests are in `jscomp/test` directory and you should either add a n
 
 * Add the filename in `jscomp/test/test.mllib`
 
-* Add a  suite test
+* Add a suite test
 
    The specification is in `jscomp/test/mt.ml`
 
-   For example a simple tests would be like
+   For example some simple tests would be like:
 
    ```ocaml
    let suites : _ Mt.pair_suites = Mt.[
@@ -24,7 +24,7 @@ Currently all tests are in `jscomp/test` directory and you should either add a n
    let () = Mt.from_pair_suites __FILE__ suites
    ```
 
-* Run the test
+* Run the tests
 
    Suppose you have mocha installed, if not, try `npm install mocha`
 

@@ -22,9 +22,9 @@
 
 * BuckleScript FFI
 
-  * [Language Extenions](./Extensions.md)
-  * [JS call OCaml](./JS-call-OCaml.md)
-  * [OCaml call JS](./OCaml-call-JS.md)
+  * [Language Extensions](./Extensions.md)
+  * [JS calling OCaml](./JS-call-OCaml.md)
+  * [OCaml calling JS](./OCaml-call-JS.md)
   * [Runtime representation](./Runtime-representation.md)
   * [Experimental support of typescript](./Experimental-support-of-typescript.md)
   * [Unsupported IO primitives](./Unsupported-IO-primitives.md)

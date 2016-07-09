@@ -8,9 +8,9 @@ cd npm_test
 echo "{}" > package.json
 ```
 
-First, Install BuckleScript.
-(For more advacned settings, please read
-[Installation](./Installation.md))
+First, install BuckleScript.
+(For more advanced settings, please read
+[Installation](./Installation.md).)
 
 
 
