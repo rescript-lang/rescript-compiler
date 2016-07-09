@@ -1,10 +1,10 @@
-BuckleScript compilation model is the same as the OCaml compiler. 
+The BuckleScript compilation model is the same as the OCaml compiler. 
 
 If `b.ml` depends on `a.ml`, you have to compile `a.ml` **and** `a.mli` first. 
 
-> The technical reason is that BuckleScript will generate intermediate file with extension `.cmj` which are later used for cross module inlining and other information. 
+> The technical reason is that BuckleScript will generate intermediate files with the extension `.cmj` which are later used for cross module inlining and other information. 
 
-Find below a simple Makefile to get started:
+Here is a simple Makefile to get started:
 
 ```make
 OCAMLC=bsc

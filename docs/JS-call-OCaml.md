@@ -1,4 +1,4 @@
-# JS Call OCaml
+# JS Calling OCaml
 
 Since BuckleScript guarantees that all OCaml functions are exported as is, no extra work is required to expose OCaml function to JavaScript.
 
@@ -8,7 +8,7 @@ Some things need be taken care of:
    want to export those external functions, please write `val` instead. 
 
 * `operators` are escaped, since Javascript does not support user
-   defined operators, for example instead of calling `Pervasives.(^)`,
+   defined operators. For example instead of calling `Pervasives.(^)`,
    you have to call `Pervasives.$caret` from your Javascript functions
-   (TODO: document the conversion rules)
+   (TODO: document the conversion rules).
 

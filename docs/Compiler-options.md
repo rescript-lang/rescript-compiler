@@ -7,13 +7,13 @@ so that you can do
 ```bash
 bsc -bs-files *.ml *.mli
 ```
-The compiler will sort the order of input files before starting compilation
+The compiler will sort the order of input files before starting compilation.
 
 * -bs-module
 
-Specify the JavaScript module system to use in the generated JavaScript code. Supported values are `commonjs`, `amdjs` and `goog:<namespace>`
+Specify the JavaScript module system to use in the generated JavaScript code. Supported values are: `commonjs`, `amdjs` and `goog:<namespace>`
 
-When you want to use `goog` module system, you can do things like this:
+When you want to use the `goog` module system, you can do things like this:
 
 ```bash
 bsc -bs-module goog xx.ml 
@@ -23,7 +23,7 @@ bsc -bs-module goog:bloomberg.buckle.test xx.ml
   # namespace is bloomberg.buckle.test
 ```
 
-You would then need a bundler for different the different module systems: `webpack` supports `commonjs` and `amdjs` while `google closure compiler` supports all.
+You would then need a bundler for the different module systems: `webpack` supports `commonjs` and `amdjs` while `google closure compiler` supports all.
 
 *  -bs-gen-tds
 
