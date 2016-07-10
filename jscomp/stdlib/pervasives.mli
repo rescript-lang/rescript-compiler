@@ -1100,3 +1100,5 @@ type (-'arg, + 'result) js_fn (** Js uncurried function *)
 
 (** Types for JS objects *)
 type +'a js_t (** Js object type *)
+
+type js_re (* Js re type*)
