@@ -366,16 +366,111 @@ On top of this we can write normal OCaml functions, for example:
 ## FFI to object
 
 
-- Js object convention
+### Js object convention
 
 All JS object of type `'a` are lifted to type `'a Js.t` to avoid
 conflict with OCaml's own object system(We support both OCaml's own object system and FFI to JS's objects). 
 
-`##` is used in JS's object method dispatch, 
+`##` is used in JS's object method dispatch and field access, 
 while `#` is used in OCaml's object method dispatch.
 
+### Create simple JS object literal and its typing
 
-For example
+
+For example:
+
+```ocaml
+let u = [%bs.obj { x = { y = { z = 3}}} ]
+```
+
+Would be compiled as 
+
+```js
+var u = { x : { y : { z : 3 }}}}
+```
+
+The compiler would infer `u` has type
+
+```ocaml
+val u : < x :  < y : < z : int > Js.t >  Js.t > Js.t
+```
+
+To make it more symmetric, we also apply the extension `bs.obj` 
+into the type level, so you can write
+
+```ocaml
+val u : [%bs.obj: < x : < y < z : int > > > ]
+```
+
+User can also write expression and types togehter as below:
+
+```ocaml
+let u = [%bs.obj ( { x = { y = { z = 3 }}} : < x : < y : < z : int > > > ]
+```
+
+Even better, user can also write Objects in a collection:
+
+```ocaml
+var xs = [%bs.obj [| { x = 3 } ; {x = 3 } |] : < x : int  > array  ]
+var ys = [%bs.obj [| { x = 3} : { x = 4 } |] ]
+```
+
+which will be compiled as below:
+
+```js
+var xs = [ { x : 3 } , { x : 3 }]
+var ys = [ { x : 3 },  {x : 4 } ]
+```
+
+
+#### Field access
+
+As we said `##` is used in both object method dispatch and field access.
+
+```ocaml
+f##field (* field access should not come with any argument *)
+f##method args0 args1 args2 (* method with arities of 3 *)
+```
+
+JS's **method is not a function**, a classis example is as below:
+
+```js
+console.log('fine')
+var log = console.log;
+log('fine') // May cause exception, implementation dependent, `console.log` may depend on `this` 
+```
+
+So to make it clearly type safe, for `field` access, it should not come with any argument.
+
+```ocaml
+let fn = f##field in
+let a = fn a b 
+(* f##field a b would think `field` as a method *)
+```
+
+Note that if user make such a mistake, the type checker would complain it expect `Js.method` but have a
+function instead, so it is still sound and type safe.
+
+Currently `bs.obj` only supports plain JS object literal with no support of JS method, `class type` supports
+JS style method.
+
+So, 
+```ocaml
+let u = [%bs.obj {x = { y = { z = 3 }}; fn = fun [@bs] u v -> u + v } ]
+let h = u##x##y##z
+let a = h##fn
+let b = a 1 2
+```
+
+will be compiled as below:
+
+```js
+var u = { x : { y : {z : 3}}, fn : function (u,v) {return u + v}}
+var h = u.x.y.z
+var a = h.fn
+var b = a(1,2)
+```
+
 
 ```ocaml
 let f x a b = x ## hi a b
