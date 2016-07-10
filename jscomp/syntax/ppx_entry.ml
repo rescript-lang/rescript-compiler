@@ -389,6 +389,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | _ ->  Ast_mapper.default_mapper.expr self e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
+    class_type = 
+      (fun self ({pcty_attributes} as ctd) -> 
+         match Ast_attributes.process_class_type_decl_rev 
+                 pcty_attributes with 
+         | `Nothing,  _ -> 
+           Ast_mapper.default_mapper.class_type
+             self ctd 
+         | `Has, pcty_attributes -> 
+           Ext_ref.non_exn_protect bs_class_type true begin fun _ -> 
+             Ast_mapper.default_mapper.class_type
+               self {ctd with pcty_attributes}
+           end
+      );
     class_signature = 
       (fun self ({pcsig_self; pcsig_fields } as csg) -> 
          if !bs_class_type then 

@@ -352,3 +352,5 @@ test_bs_this
 class_setter_getter
 
 gpr496_test
+
+local_class_type

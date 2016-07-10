@@ -35,6 +35,9 @@ val process_method_attributes_rev :
 val process_attributes_rev : 
   t -> [ `Meth | `Nothing | `Uncurry ] * t 
 
+val process_class_type_decl_rev : 
+  t -> [ `Nothing | `Has] * t 
+
 val bs_obj : attr 
 val bs : attr 
 val bs_this : attr
