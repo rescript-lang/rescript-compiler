@@ -333,6 +333,8 @@ list_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/array.cmx
+local_class_type.cmj :
+local_class_type.cmx :
 local_exception_test.cmj :
 local_exception_test.cmx :
 loop_regression_test.cmj : mt.cmi
@@ -1039,6 +1041,8 @@ list_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj
+local_class_type.cmo :
+local_class_type.cmj :
 local_exception_test.cmo :
 local_exception_test.cmj :
 loop_regression_test.cmo : mt.cmi
