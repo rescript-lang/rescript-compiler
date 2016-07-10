@@ -7,7 +7,11 @@ Like TypeScript, when building typesafe bindings from JS to OCaml, the user has 
 In OCaml, unlike TypeScript, user does not need to create a separate `.d.ts` file, 
 since the type declaration langauge is the same langauge in OCaml.
 
-The FFI is divided into components, one is binding to JS function, the other is binding to JS object.
+The FFI is divided into several components:
+
+- Binding to JS functions
+- Binding to JS object literals
+- Binding to JS classes
 
 ## FFI to first-order JS functions
 
@@ -229,6 +233,22 @@ Note that this extension to the OCaml language is *sound*, if you add
 an attribute in one place and miss it in other place, the type checker
 will complain.
 
+Another more complex example:
+
+```ocaml
+type 'a return = int -> 'a [@bs]
+type 'a u0 = int -> string -> 'a return  [@bs]
+(* [u0] has arity of 2, return a function 
+   with arity 1
+*)
+type 'a u1 = int -> string -> int -> 'a [@bs]
+(* [u1] has arity of 3 *)
+type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs]
+(* [u2] has arity of 2, reutrn a function 
+   with arity 1
+*)
+```
+
 
 ### Uncurried calling convention as an optimization 
 
@@ -314,53 +334,48 @@ in that case, the compiler guaranteed that it is always fully applied, so
 for `external` first-order FFI, its outermost function does not need `[@bs]` 
 annotation.
 
+### Bindings to callback which relies on `this`
 
-## A simple example: binding to mocha unit test library
+It's quite common that in JS library, a callback relies on `this` (the source), for example:
 
-   If we want to provide bindings to the [mochajs](https://mochajs.org/) unit test framework, 
-   below is an example:
+```js
+x.onload = function(v){
+  console.log(this.response + v )
+}
+```
+Here, `this` would be the same as `x` (actually depends on how `onload` is called), it is clear that
+it is not exact to declare `x.onload` of type `unit -> unit [@bs]`, instead we introduced a special attribute
+`bs.this`, in that case we an type `x` as below:
 
-   ```OCaml
-   external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.call]
-   external it : string -> (unit -> unit [@bs]) -> unit = "it" [@@bs.call "it"]
-   ```
+```ocaml
+type x 
+external onload : x -> (x -> int -> unit [@bs.this]) -> unit = "onload" [@@bs.set]
+external resp : x -> int = "response" [@@bs.get]
+onload x begin fun [@bs.this] o v -> 
+  Js.log(resp o + v )
+end
+```
 
-   Since, `mochajs` is a test framework, we also need some assertion
-   tests. We can also describe the bindings to `assert.deepEqual` from
-   nodejs `assert` library:
+The generated code would be as blow:
 
-   ```ocaml
-   external eq : 'a -> 'a -> unit = "deepEqual"  [@@bs.call] [@@bs.module "assert"]
-   ```
+```js
+x.onload = function(v){
+  var o = this ; 
+  console.log(o.response + v);
+}
+```
 
-On top of this we can write normal OCaml functions, for example:
+`bs.obj` is the same as `bs`: except that its first parameter is reserved for `this`, and for arity of 0, there
+is no need for a redundant `unit` type:
 
-   ```OCaml
-   let assert_equal = eq
-   let from_suites name suite  = 
-       describe name (fun [@bs] () -> 
-         List.iter (fun (name, code) -> it name code) suite)
-   ```
+```ocaml
+let f : 'obj -> unit [@bs.this] = fun [@bs.this] obj -> ....
+let f1 : 'obj -> 'a0 -> 'b [@bs.this] = fun [@bs.this] obj a -> ...
+```
 
-   The compiler would generate code as below:
-
-   ```js
-   var Assert = require("assert");
-   var List = require("bs-platform/lib/js/list");
-
-   function assert_equal(prim, prim$1) {
-     return Assert.deepEqual(prim, prim$1);
-   }
-
-   function from_suites(name, suite) {
-      return describe(name, function () {
-              return List.iter(function (param) {
-                          return it(param[0], param[1]);
-                        }, suite);
-            });
-    }
-   ```
-
+> Note there is no way to consume function of type `'obj -> 'a0 .. -> 'aN -> 'b0 [@bs.this]` on OCaml side,
+we don't encourage people to write code in this style, it was introduced mainly for consumed by existing JS library
+you can also type `x` a an JS class too (see later)
 
 
 ## FFI to JS plain objects
@@ -671,6 +686,53 @@ This is more type safe, since in JS, method is not function.
      debugger; // JavaScript developer tools will set an breakpoint and stop here
      x + y;
    }
+   ```
+
+## Examples:
+### A simple example: binding to mocha unit test library
+
+   If we want to provide bindings to the [mochajs](https://mochajs.org/) unit test framework, 
+   below is an example:
+
+   ```OCaml
+   external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.call]
+   external it : string -> (unit -> unit [@bs]) -> unit = "it" [@@bs.call "it"]
+   ```
+
+   Since, `mochajs` is a test framework, we also need some assertion
+   tests. We can also describe the bindings to `assert.deepEqual` from
+   nodejs `assert` library:
+
+   ```ocaml
+   external eq : 'a -> 'a -> unit = "deepEqual"  [@@bs.call] [@@bs.module "assert"]
+   ```
+
+On top of this we can write normal OCaml functions, for example:
+
+   ```OCaml
+   let assert_equal = eq
+   let from_suites name suite  = 
+       describe name (fun [@bs] () -> 
+         List.iter (fun (name, code) -> it name code) suite)
+   ```
+
+   The compiler would generate code as below:
+
+   ```js
+   var Assert = require("assert");
+   var List = require("bs-platform/lib/js/list");
+
+   function assert_equal(prim, prim$1) {
+     return Assert.deepEqual(prim, prim$1);
+   }
+
+   function from_suites(name, suite) {
+      return describe(name, function () {
+              return List.iter(function (param) {
+                          return it(param[0], param[1]);
+                        }, suite);
+            });
+    }
    ```
 
 
