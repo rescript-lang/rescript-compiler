@@ -363,7 +363,7 @@ On top of this we can write normal OCaml functions, for example:
 
 
 
-## FFI to object
+## FFI to JS plain objects
 
 
 ### Js object convention
@@ -377,7 +377,7 @@ while `#` is used in OCaml's object method dispatch.
 ### Create simple JS object literal and its typing
 
 
-For example:
+BuckleScript introduces `bs.obj` extension, for example:
 
 ```ocaml
 let u = [%bs.obj { x = { y = { z = 3}}} ]
@@ -423,6 +423,32 @@ var ys = [ { x : 3 },  {x : 4 } ]
 ```
 
 
+
+`bs.obj` can also be used as an attribute in external declarations, like as below:
+
+```OCaml
+external make_config : hi:int -> lo:int -> unit -> t [@@bs.obj]
+let v = make_config ~hi:2 ~lo:3
+```
+will be compiled as 
+
+```js
+  let v = { hi:2, lo:3}
+```
+
+You can use optional as well
+
+```ocaml
+external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj]
+let u = make_config ~hi:3 ()
+let v = make_config ~hi:3 ~lo:2 ()
+```
+Will generate
+```js
+let u = {hi : 3}
+let v = {hi : 3 , lo: 2}
+```
+
 #### Field access
 
 As we said `##` is used in both object method dispatch and field access.
@@ -448,11 +474,10 @@ let a = fn a b
 (* f##field a b would think `field` as a method *)
 ```
 
-Note that if user make such a mistake, the type checker would complain it expect `Js.method` but have a
+> Note that if user make such a mistake, the type checker would complain it expect `Js.method` but have a
 function instead, so it is still sound and type safe.
 
-Currently `bs.obj` only supports plain JS object literal with no support of JS method, `class type` supports
-JS style method.
+Currently `bs.obj` only supports plain JS object literal with no support of JS method, `class type` (discussed later) supports JS style method.
 
 So, 
 ```ocaml
@@ -471,70 +496,114 @@ var a = h.fn
 var b = a(1,2)
 ```
 
+When the field is an uncurried function, there is a short cut syntax as below:
 
 ```ocaml
-let f x a b = x ## hi a b
+let b x y h = h#@fn x y
+```
+It will be compiled as 
+
+```js
+function b (x,y,h){
+  return h.fn(x,y)
+}
+```
+And compiler infer the type of `b` as
+
+```ocaml
+val b : 'a -> 'b -> [%bs.obj: < fn :  'a -> 'b -> 'c [@bs] ] -> 'c
 ```
 
-is inferred as type
+As we said before, currently `[%bs.obj]` is only used for object literals with no `this` semantics.
+
+## FFI to JS classes
+
+### Class type declarations
+
+Below is an example:
 
 ```ocaml
-val f : < hi : ('a * 'b -> 'c [@bs] ;  .. > Js.t  -> 'a -> 'b -> 'c
+class type _rect = object
+  method height : int [@@bs.set]
+  method width : int [@@bs.set]
+  method draw : unit -> unit
+end [@bs]
+type rect = _rect Js.t
+```
+As the example, `class type` annotated with `[@bs]` are treated as JS class type.
+For JS classes, methods with arrow types are treated as real methods while methods with non-arrow types
+are treated as properties, since OCaml's object system does not have getter/setter, we introduce two
+attributes `bs.get` and `bs.set` to help inform BuckleScript to compile them as property getter/setter.
+
+
+#### Annotation to JS properties
+
+There are varous getter/setter decorations as below:
+
+```ocaml
+class type _y = object 
+  method height : int [@@bs.set {no_get}]
+  (* [height] is setter only *)
+end [@bs]
+type y = _y Js.t 
+class type _y0 = object 
+  method height : int [@@bs.set] [@@bs.get {null}] 
+  (* getter reutrn [int Js.null]*)
+end [@bs]
+type y0 = _y0 Js.t 
+class type _y1 = object 
+  method height : int [@@bs.set] [@@bs.get {undefined}]
+  (* getter return [int Js.undefined]*)
+end [@bs]
+type y1 = _y1 Js.t 
+class type _y2 = object 
+  method height : int [@@bs.set] [@@bs.get {undefined; null}] 
+  (* getter return [int Js.null_undefined] *)
+end [@bs]
+type y2 = _y2 Js.t 
+class type _y3 = object 
+  method height : int  [@@bs.get {undefined ; null}] 
+  (* getter only, return [int Js.null_undefined] *)
+end [@bs]
+type y3 = _y3 Js.t
 ```
 
-- `bs.obj`
+#### Consume JS class API
 
-  This attribute helps create JavaScript object literals
+For example, 
 
 ```ocaml
-  let a = f [%bs.obj { hi = fun [@bs] (x,y) -> x + y} ] 1 2 
-  let b = f [%bs.obj { hi = fun [@bs] (x,y) -> x +. y} ] 1. 2.
-  ```
+let f (u : rect) =   
+  (* the type annotation is un-necessary,
+     but it gives better error message
+  *) 
+   Js.log u##height ; 
+   Js.log u##width ;
+   u##width #= 30;
+   u##height #= 30;
+   u##draw ()
+```
+Would be compiled as below:
 
-   Generated code is like below 
+```js
+function f(u){
+  console.log(u.height);
+  console.log(u.width);
+  u.width = 30;
+  u.height = 30;
+  return u.draw()
+}
+```
 
+Note the type system would guarteen that user can not write such code:
 
-   ```js
-   function f(x, a, b) {
-      return x.hi(a, b);
-   }
+```ocaml
+let v = u##draw 
+(* use v later *)
+```
 
-   var a = f({
-      "hi": function (x, y) {
-       return x + y | 0;
-      }
-    }, 1, 2);
+This is more type safe, since in JS, method is not function.
 
-   var b = f({
-     "hi": function (x, y) {
-     return x + y;
-    }
-    }, 1, 2);
-   ```
-
-  `bs.obj` can also be used in external declarations, like as below:
-
-  ```OCaml
-  external make_config : hi:int -> lo:int -> unit -> t [@@bs.obj]
-  let v = make_config ~hi:2 ~lo:3
-  ```
-  will be compiled as 
-
-  ```js
-  let v = { hi:2, lo:3}
-  ```
-  You can use optional as well
-
-  ```ocaml
-  external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj]
-  let u = make_config ~hi:3 ()
-  let v = make_config ~hi:3 ~lo:2 ()
-  ```
-  Will generate
-  ```js
-  let u = {hi : 3}
-  let v = {hi : 3 , lo: 2}
-  ```
 
 ## Embedding raw Javascript code
 
