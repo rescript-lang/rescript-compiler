@@ -9,12 +9,12 @@ since the type declaration langauge is the same langauge in OCaml.
 
 The FFI is divided into components, one is binding to JS function, the other is binding to JS object.
 
-## FFI to first order JS functions
+## FFI to first-order JS functions
 
 This part is similar to [traditional FFI](http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html), 
 with syntax as described below:
 
-```OCaml
+```
 external value-name :  typexpr =  external-declaration  attributes
 external-declaration :=	 string-literal  
 ```
@@ -22,7 +22,7 @@ external-declaration :=	 string-literal
 Users need to declare types of the foreign function (JS function here) and 
 give it a type and customized attributes.
 
-### attributes
+### Attributes
 
 * `bs.call`
 
@@ -31,7 +31,7 @@ give it a type and customized attributes.
   ```ocaml
   external imul : int -> int -> int = "Math.imul" [@@bs.call]
   ```
->Note that if you want to make a single FFI for both C functions and JavaScript functions, you can 
+> Note that if you want to make a single FFI for both C functions and JavaScript functions, you can 
  give the JavaScript foreign function different name:
 
   ```ocaml
@@ -55,7 +55,7 @@ give it a type and customized attributes.
    type dom 
       (* Abstract type for the DOM *)
    
-   external dom : dome = "document" [@@bs.val]
+   external dom : dom = "document" [@@bs.val]
   ```
 
 * `bs.send`
@@ -161,34 +161,57 @@ let g x  = let z  = x + 1 in fun y -> x + z
 ```
 
 In OCaml, they all have the same type, however, 
-they will be compiled into functions which have 
+`f` and `g` may be compiled into functions with
 different arities.
 
-Note even we do a naive compilation, compile `f` as below:
+A naive compilation, compile `f` as below:
 
 ```ocaml
 let f  = fun x -> fun y -> x + y
 ```
 
+```js
+function f(x){
+  return function (y){
+    return x + y;
+  }
+}
+function g(x){
+  var z = x + 1 ;
+  return function (y){
+    return x + z ; 
+  }
+}
+```
+
 Its arity will be *consistent* but is *1* (returning another function), however, 
-we expect its arity to be 2. 
+we expect *its arity to be 2*. 
 
-The conclusion is that we can not guarantee its arity to be 2 just 
-by having declaring its type to be `'a -> 'b -> 'c` due to OCaml's 
-curried calling convention.
 
-To solve the problem, we introduce a special attribute.
+A more complex compilation strategy used in BuckleScript would compile `f` as
+
+```js
+function f(x,y){
+  return x + y ; 
+}
+```
+
+**No matter which startegy we use, by just using existing typing rules, we can not
+guarantee a function of type `'a -> 'b -> 'c` will have arity 2.**
+
+To solve the problem introduced by OCaml's curried calling convention, we 
+introduce a special attribute `[@bs]` in the type level.
 
 ```ocaml
 external map : 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
 = "map" [@@bs.call]
 ```
 
-Here `('a -> 'b -> 'c [@bs])` will be always of arity 2, in general 
+Here `('a -> 'b -> 'c [@bs])` will be *always of arity 2*, in general 
 `'a0 -> 'a1 ... 'aN -> 'b0 [@bs]` is the same as `'a0 -> 'a1 ... 'aN -> 'b0`
 except the former's arity is guaranteed to be `N` while the latter is unknown.
 
-To produce a function of type `'a0 -> .. 'aN -> 'b0`, as follows:
+To produce a function of type `'a0 -> .. 'aN -> 'b0 [@bs]`, as follows:
 
 ```ocaml
 let f : 'a0 -> 'a1 -> .. 'b0 [@bs] = fun [@bs] a0 a1 .. aN -> b0 
@@ -209,6 +232,8 @@ will complain.
 
 ### Uncurried calling convention as an optimization 
 
+#### Background
+  
 As we discussed before we can compile any OCaml function as arity 1 to 
 support OCaml's curried calling convention. 
 
@@ -244,7 +269,12 @@ function f(x,y,z) {return x + y + z}
 var a = f(1,2,3)
 var b = function(z){return f(1,2,z)}
 ```
-We do this optimization in the cross module level, however, such optimization will not work with *high order* functions, 
+
+We do this optimization in the cross module level and try to infer the arity as much as we can.
+
+### Callback optimization
+
+However, such optimization will not work with *high-order* functions, 
 i.e, callbacks.
 
 For example,
@@ -279,9 +309,9 @@ function app(f,x){
 ```
 
 
-Note in OCaml, the compiler internally uncurried every function `marked` with `external`, 
+> Note in OCaml, the compiler internally uncurried every function declared as `external`, 
 in that case, the compiler guaranteed that it is always fully applied, so 
-for `external` FFI, its outermost function does not need `[@bs]` 
+for `external` first-order FFI, its outermost function does not need `[@bs]` 
 annotation.
 
 
@@ -316,7 +346,7 @@ On top of this we can write normal OCaml functions, for example:
 
    ```js
    var Assert = require("assert");
-   var List = require("../stdlib/list");
+   var List = require("bs-platform/lib/js/list");
 
    function assert_equal(prim, prim$1) {
      return Assert.deepEqual(prim, prim$1);
@@ -336,16 +366,19 @@ On top of this we can write normal OCaml functions, for example:
 ## FFI to object
 
 
-- Js object calling 
-All JS object of type `a` are lifted to type `a Js.t` to avoid
-conflict with OCaml's own object system. `##` is used in JS's object
-method dispatch, while `#` is used in OCaml's object method dispatch.
+- Js object convention
+
+All JS object of type `'a` are lifted to type `'a Js.t` to avoid
+conflict with OCaml's own object system(We support both OCaml's own object system and FFI to JS's objects). 
+
+`##` is used in JS's object method dispatch, 
+while `#` is used in OCaml's object method dispatch.
 
 
 For example
 
 ```ocaml
-let f x a b = x ## hi (a,b)
+let f x a b = x ## hi a b
 ```
 
 is inferred as type
