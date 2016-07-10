@@ -44,6 +44,9 @@ module Lid : sig
   val js_null : t 
   val js_undefined : t
   val js_null_undefined : t 
+
+  val pervasives_re_id : t 
+  val js_re_id : t 
 end
 
 type expression_lit = Parsetree.expression lit 

@@ -266,6 +266,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             {txt = "bs.raw"; loc} , payload)
           -> 
           Ast_util.handle_raw loc payload
+        | Pexp_extension (
+            {txt = "bs.re"; loc} , payload)
+          -> 
+          Ast_util.handle_regexp loc payload
+
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> {e with pexp_desc = Ast_util.handle_debugger loc payload}

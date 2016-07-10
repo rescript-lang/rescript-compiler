@@ -354,3 +354,5 @@ class_setter_getter
 gpr496_test
 
 local_class_type
+
+test_regex

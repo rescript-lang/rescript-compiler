@@ -58,6 +58,11 @@ let method_call_back_id () =
   else 
     Ast_literal.Lid.js_meth_callback
 
+let re_id () = 
+  if Js_config.get_env () = Browser then
+    Ast_literal.Lid.pervasives_re_id 
+  else 
+    Ast_literal.Lid.js_re_id 
 let arity_lit = "Arity_"
 
 let mk_args loc n tys = 
@@ -305,6 +310,28 @@ let handle_raw loc payload =
 
                      ["",exp]}
   end
+
+let handle_regexp loc payload = 
+  match Ast_payload.as_string_exp payload with 
+  | None -> 
+    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  | Some exp -> 
+    let pval_prim = ["js_pure_expr"] in
+    {exp with pexp_desc = 
+                Ast_comb.local_extern_cont loc 
+                  ~pval_prim
+                  ~pval_type:(arrow "" 
+                                (Ast_literal.type_string ~loc ()) 
+                                (Ast_literal.type_any ~loc ()) )
+                  (fun f -> 
+                     Exp.constraint_ ~loc 
+                       (Exp.apply ~loc f ["", exp])
+                       (Typ.constr ~loc {txt = re_id (); loc} [])
+                  )
+    }
+
+
+
 
 let handle_raw_structure loc payload = 
   begin match Ast_payload.as_string_exp payload with 

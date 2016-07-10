@@ -38,6 +38,9 @@ val process_attributes_rev :
 val process_class_type_decl_rev : 
   t -> [ `Nothing | `Has] * t 
 
+val process_const_string_rev : 
+  t -> 
+  [> `Has_re | `Nothing ] * t 
 val bs_obj : attr 
 val bs : attr 
 val bs_this : attr
