@@ -637,6 +637,8 @@ test_react.cmj : ../runtime/js.cmj
 test_react.cmx : ../runtime/js.cmx
 test_react_case.cmj :
 test_react_case.cmx :
+test_regex.cmj :
+test_regex.cmx :
 test_runtime_encoding.cmj : ../stdlib/array.cmi
 test_runtime_encoding.cmx : ../stdlib/array.cmx
 test_scope.cmj :
@@ -1345,6 +1347,8 @@ test_react.cmo : ../runtime/js.cmo
 test_react.cmj : ../runtime/js.cmj
 test_react_case.cmo :
 test_react_case.cmj :
+test_regex.cmo :
+test_regex.cmj :
 test_runtime_encoding.cmo : ../stdlib/array.cmi
 test_runtime_encoding.cmj : ../stdlib/array.cmj
 test_scope.cmo :
