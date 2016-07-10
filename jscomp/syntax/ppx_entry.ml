@@ -172,7 +172,8 @@ let handle_typ
   match ty with
   | {ptyp_desc = Ptyp_extension({txt = "bs.obj"}, PTyp ty)}
     -> 
-    Ext_ref.protect obj_type_as_js_obj_type true (fun _ -> self.typ self ty )
+    Ext_ref.non_exn_protect obj_type_as_js_obj_type true 
+      (fun _ -> self.typ self ty )
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
@@ -196,7 +197,8 @@ let handle_typ
 
     let check_auto_uncurry core_type = 
       if  !obj_type_auto_uncurry then
-        Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+        Ext_ref.non_exn_protect uncurry_type true 
+          (fun _ -> self.typ self core_type  )          
       else self.typ self core_type in 
     let methods, ptyp_attributes  =
       begin match Ext_list.exclude_with_fact
@@ -224,7 +226,7 @@ let handle_typ
                     Ast_attributes.bs_this :: core_type.ptyp_attributes}
           ) methods , ptyp_attributes
       |  Some _ ,  ptyp_attributes -> 
-        Ext_ref.protect uncurry_type true begin fun _ -> 
+        Ext_ref.non_exn_protect uncurry_type true begin fun _ -> 
           List.map (fun (label, ptyp_attrs, core_type ) -> 
               match Ast_attributes.process_attributes_rev ptyp_attrs with 
               | `Nothing,  _ -> label, ptyp_attrs , self.typ self core_type
@@ -272,9 +274,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             begin match payload with 
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
-              Ext_ref.protect2 record_as_js_object  obj_type_as_js_obj_type
-                true true
-                (fun ()-> self.expr self e ) 
+              Ext_ref.non_exn_protect2 
+                record_as_js_object
+                obj_type_as_js_obj_type
+                true
+                true
+                (fun () -> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
         (** End rewriting *)
@@ -384,6 +389,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | _ ->  Ast_mapper.default_mapper.expr self e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
+    class_type = 
+      (fun self ({pcty_attributes} as ctd) -> 
+         match Ast_attributes.process_class_type_decl_rev 
+                 pcty_attributes with 
+         | `Nothing,  _ -> 
+           Ast_mapper.default_mapper.class_type
+             self ctd 
+         | `Has, pcty_attributes -> 
+           Ext_ref.non_exn_protect bs_class_type true begin fun _ -> 
+             Ast_mapper.default_mapper.class_type
+               self {ctd with pcty_attributes}
+           end
+      );
     class_signature = 
       (fun self ({pcsig_self; pcsig_fields } as csg) -> 
          if !bs_class_type then 
