@@ -37,6 +37,8 @@
 
 type t = Js_op.module_id = private { id : Ident.t ; kind : Js_op.kind }
 
+type system = Js_config.module_system 
+
 val id : t -> Ident.t 
 
 val name : t -> string

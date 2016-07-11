@@ -36,30 +36,30 @@ type uncurry_type_gen =
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
 let js_obj_type_id () = 
-  if Js_config.get_env () = Browser then
+  if Js_config.is_browser () then
     Ast_literal.Lid.pervasives_js_obj
   else Ast_literal.Lid.js_obj 
     
 let uncurry_type_id () = 
-  if Js_config.get_env () = Browser then 
+  if Js_config.is_browser () then 
      Ast_literal.Lid.pervasives_fn
   else 
     Ast_literal.Lid.js_fn
 
 let method_id () = 
-  if Js_config.get_env () = Browser then 
+  if Js_config.is_browser () then 
      Ast_literal.Lid.pervasives_meth
   else 
     Ast_literal.Lid.js_meth
 
 let method_call_back_id () = 
-  if Js_config.get_env () = Browser then 
+  if Js_config.is_browser () then 
     Ast_literal.Lid.pervasives_meth_callback
   else 
     Ast_literal.Lid.js_meth_callback
 
 let re_id () = 
-  if Js_config.get_env () = Browser then
+  if Js_config.is_browser () then
     Ast_literal.Lid.pervasives_re_id 
   else 
     Ast_literal.Lid.js_re_id 

@@ -33,6 +33,8 @@
 type t = Js_op.module_id = 
   { id : Ident.t ; kind : Js_op.kind }
 
+type system = Js_config.module_system 
+
 let id x = x.id 
 
 let of_ml id = { id ; kind =  Ml}

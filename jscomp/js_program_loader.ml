@@ -34,85 +34,78 @@ module S = Js_stmt_make
 
 
 
+(** Design guides:
+    1. We don't want to force user to have 
+       [-bs-package-name] and [-bs-package-output] set
 
+       [bsc -c hello.ml] should just work 
+       by producing a [hello.js] file in the same directory
+
+    Some designs due to legacy reasons that we don't have all runtime
+    written in OCaml, so it might only have js files (no cmjs) for Runtime kind
+    {[
+      begin match Config_util.find file with   
+        (* maybe from third party library*)
+        (* Check: be consistent when generating js files
+           A.ml -> a.js
+           a.ml -> a.js
+           check generated [js] file if it's capital or not
+           Actually, we can not tell its original name just from [id], 
+           so we just always general litte_case.js
+        *)
+        | file ->
+          rebase (`File file)
+        (* for some primitive files, no cmj support *)
+        | exception Not_found ->
+          Ext_pervasives.failwithf ~loc:__LOC__ 
+            "@[%s not found in search path - while compiling %s @] "
+            file !Location.input_name 
+      end
+
+    ]}
+
+*)
 
 let (//) = Filename.concat 
 
-let string_of_module_id (x : Lam_module_ident.t) : string =           
+let string_of_module_id (module_system : Lam_module_ident.system)
+    (x : Lam_module_ident.t) : string =           
   match x.kind  with 
   | Runtime  
   | Ml  -> 
     let id = x.id in
     let file = Printf.sprintf "%s.js" id.name in
-    begin match Js_config.get_env () with 
-      | Goog _ -> 
-        (*TODO: we should store 
-          the goog module name in the [cmj] file
-        *)
-        let base =  String.uncapitalize id.name in
-        begin match Lam_compile_env.get_goog_package_name x with 
-          | None 
-          | Some "" -> 
-            base 
-          | Some v -> v ^ "." ^ base 
-        end
-      | AmdJS
-      | NodeJS -> 
-        let rebase dep =
-          Ext_filename.node_relative_path 
-            (`Dir (Js_config.get_output_dir !Location.input_name)) dep 
-        in 
-        begin match Lam_compile_env.get_npm_package_path x
-                     with
-          | Some (package_name, x) -> 
-              let filename = String.uncapitalize id.name in
-            begin match Js_config.get_npm_package_path () with 
-            | None 
-              -> 
-              (* decide which default is better later 
-                 we want the experience of 
-                 {[
-                   `npm bin`/bsc -c hello.ml
-                 ]}
-                 better 
-              *)              
-              package_name // x // filename
-            | Some (current_package, path) ->
-              if current_package <> package_name then 
-                (*TODO: fix platform specific issue *)
+    let rebase dep =
+      Ext_filename.node_relative_path 
+        (`Dir (Js_config.get_output_dir module_system !Location.input_name)) dep 
+    in 
+    begin match Lam_compile_env.get_package_path_from_cmj module_system x
+      with
+      | Some (package_name, x) -> 
+        begin match module_system with 
+          | `Goog  -> 
+            package_name  ^ "." ^  String.uncapitalize id.name
+          | `AmdJS
+          | `NodeJS -> 
+            let filename = String.uncapitalize id.name in
+            begin match Js_config.get_npm_package_path module_system with 
+              | None -> 
+                (* should fail earlier instead ? *)
                 package_name // x // filename
-              else               
-                rebase (`File (
-                    Lazy.force Ext_filename.package_dir // x // filename))
+              | Some (current_package, path) ->
+                if current_package <> package_name then 
+                  (*TODO: fix platform specific issue *)
+                  package_name // x // filename
+                else               
+                  rebase (`File (
+                      Lazy.force Ext_filename.package_dir // x // filename))
 
             end
-          | None -> 
-            begin match Config_util.find file with   
-              (* maybe from third party library*)
-              (* Check: be consistent when generating js files
-                 A.ml -> a.js
-                 a.ml -> a.js
-                 check generated [js] file if it's capital or not
-                 Actually, we can not tell its original name just from [id], 
-                 so we just always general litte_case.js
-              *)
-              | file ->
-                rebase (`File file)
-              (* for some primitive files, no cmj support *)
-              | exception Not_found ->
-                Ext_pervasives.failwithf ~loc:__LOC__ 
-                  "@[%s not found in search path - while compiling %s @] "
-                  file !Location.input_name 
-            end
         end
-      | Browser 
-        (* In browser *)
-        ->  
-        let target = Filename.chop_extension @@ String.uncapitalize file in
-        if String_set.mem target Js_config.runtime_set   then
-          "./runtime/" ^  target
-        else
-          "./stdlib/" ^ target 
+      | None -> 
+        Ext_pervasives.failwithf ~loc:__LOC__ 
+          "@[%s not found in search path - while compiling %s @] "
+          file !Location.input_name 
     end
   | External name -> name
 

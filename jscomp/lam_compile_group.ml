@@ -423,10 +423,21 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "tuple_alloc.ml";
-    Ext_pervasives.with_file_as_chan 
-      (Js_config.get_output_file filename)
-      (fun chan -> Js_dump.dump_deps_program 
-	  (compile ~filename output_prefix false env sigs lam) chan)
+    let lambda_output = compile ~filename output_prefix false env sigs lam in
+    (* Not re-entrant *)
+    match Js_config.get_packages_info () with 
+    | Empty
+    | Browser -> ()
+    | NonBrowser (_package_name, module_systems) -> 
+      module_systems |> List.iter begin fun (module_system, _path) -> 
+        Ext_pervasives.with_file_as_chan 
+          (Js_config.get_output_file module_system filename)
+          (fun chan -> 
+             Js_dump.dump_deps_program 
+               (module_system :> [Js_config.module_system | `Browser])
+               lambda_output
+	        chan)
+      end
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 

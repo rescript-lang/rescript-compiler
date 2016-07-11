@@ -24,8 +24,11 @@ $(addsuffix .cmi, $(OTHERS)): js.cmi
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 
+BS_COMMON_FLAGS= -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name $(npm_package_name)
+DEV_BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output lib/js 
+PROD_BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs
 
-COMPFLAGS += $(MODULE_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -w -40 -bs-npm-output-path $(npm_package_name):lib/js -bs-no-check-div-by-zero -bs-cross-module-opt -bs-diagnose
+COMPFLAGS += $(PROD_BS_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -w -40
 
 
 

@@ -46,7 +46,7 @@ let find_cmj file =
     Js_cmj_format.from_file f             
   | exception Not_found -> 
     (* ONLY read the stored cmj data in browser environment *)
-    if Js_config.get_env () = Browser then     
+    if Js_config.is_browser () then     
       let target = String.uncapitalize (Filename.basename file) in
       match 
         String_map.find  target
