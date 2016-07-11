@@ -55,7 +55,7 @@ As you can see, there is no name mangling in the generated code, so if this modu
 
 This project has been released to exchange ideas and collect feedback from the OCaml and JavaScript communities.
 
-It is in an *alpha* stage, and we encourage you to try it and share
+It is in an *beta* stage, and we encourage you to try it and share
 your feedback.
 
 ## Documentation
@@ -73,19 +73,14 @@ See https://github.com/bloomberg/bucklescript-addons
 
 #### Build from package manager
 
-1. opam switch (*optional*, *recommended*)
-
-  ```
-  opam switch 4.02.3+buckle-1
-  ```
-  With this switch, you can install all OCaml tools that are compatible with BuckleScript.
-
-2. npm install
+#. npm install
 
   ```
   npm install  bs-platform
   ```
 
+It will install OCaml compiler, BuckleScript compiler and Standard library
+in three module systems (CommonJS, AMDJS, and Google Module).
 
 #### Build from source
 
@@ -127,13 +122,12 @@ See https://github.com/bloomberg/bucklescript-addons
 
 
   Note that by default, `bsc` will generate `commonjs` modules. You can
-  override this behavior by specifying a module system:
+  override this behavior to generate JS files for all three module systems 
+  by setting a variable:
 
 
   ```sh
-  MODULE_FLAGS='-bs-module amdjs' make world
-  MODULE_FLAGS='-bs-module commonjs' make world
-  MODULE_FLAGS='-bs-module goog:buckle' make world
+  BS_RELEASE_BUILD=1 npm_package_name=bs-platform make world
   ```
 
 4. Test
