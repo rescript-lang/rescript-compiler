@@ -426,8 +426,13 @@ let lambda_as_module
     let lambda_output = compile ~filename output_prefix false env sigs lam in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
-    | Empty
     | Browser -> ()
+    | Empty -> 
+      (* script mode *)
+      Ext_pervasives.with_file_as_chan 
+        (Js_config.get_output_file `NodeJS filename)
+        (fun chan -> 
+           Js_dump.dump_deps_program `NodeJS lambda_output chan)
     | NonBrowser (_package_name, module_systems) -> 
       module_systems |> List.iter begin fun (module_system, _path) -> 
         Ext_pervasives.with_file_as_chan 

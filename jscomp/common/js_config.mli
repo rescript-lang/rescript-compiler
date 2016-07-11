@@ -47,8 +47,9 @@ val set_browser : unit -> unit
 
 val get_ext : unit -> string
 
-
+(** depends on [package_infos] *)
 val get_output_file : module_system -> string -> string
+
 val get_output_dir : module_system -> string -> string
 
 
