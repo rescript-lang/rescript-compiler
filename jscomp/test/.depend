@@ -597,6 +597,8 @@ test_literal.cmj :
 test_literal.cmx :
 test_match_exception.cmj :
 test_match_exception.cmx :
+test_mutliple.cmj : ../stdlib/list.cmi
+test_mutliple.cmx : ../stdlib/list.cmx
 test_nat64.cmj :
 test_nat64.cmx :
 test_nested_let.cmj :
@@ -1307,6 +1309,8 @@ test_literal.cmo :
 test_literal.cmj :
 test_match_exception.cmo :
 test_match_exception.cmj :
+test_mutliple.cmo : ../stdlib/list.cmi
+test_mutliple.cmj : ../stdlib/list.cmj
 test_nat64.cmo :
 test_nat64.cmj :
 test_nested_let.cmo :

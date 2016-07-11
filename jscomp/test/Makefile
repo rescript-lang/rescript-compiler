@@ -9,8 +9,9 @@ TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 ## since we use ppx
 $(addsuffix .cmi, $(SOURCE_LIST)): ../runtime/js.cmi
 
+
 COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
-COMPFLAGS+=  -bs-diagnose -bs-cross-module-opt -bs-npm-output-path $(npm_package_name):lib/js/test/
+COMPFLAGS+=  -bs-diagnose -bs-cross-module-opt -bs-package-name  $(npm_package_name) -bs-package-output lib/js/test/
 
 
 $(TESTS): $(CAMLC)

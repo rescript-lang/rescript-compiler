@@ -64,32 +64,51 @@ let set_noassert () =
 
 
 let buckle_script_flags = 
-  ("-bs-npm-output-path", Arg.String Js_config.set_npm_package_path, 
-   " set npm-output-path: package-name:path, for example `bs-platform:lib/js`")
+  ("-bs-package-name", 
+   Arg.String Js_config.set_package_name, 
+   " set package name, useful when you want to produce npm packages")
   ::
-  ("-bs-npm-package-include", Arg.String add_include_path, 
+  ("-bs-package-output", 
+   Arg.String Js_config.set_npm_package_path, 
+   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs' and 'goog:lib/gjs'")
+  ::
+  ("-bs-package-include", 
+   Arg.String add_include_path, 
    " set package names, for example bs-platform "  )
-  :: ("-bs-module", Arg.String Js_config.cmd_set_module, 
-    " set module system: commonjs (default), amdjs, google:package_name")
-  :: ("-bs-no-builtin-ppx-ml", Arg.Set Js_config.no_builtin_ppx_ml,
-      "disable built-in ppx for ml files (internal use)")
-  :: ("-bs-no-builtin-ppx-mli", Arg.Set Js_config.no_builtin_ppx_mli,
-      "disable built-in ppx for mli files (internal use)")
-  :: ("-bs-cross-module-opt", Arg.Set Js_config.cross_module_inline, 
-      "enable cross module inlining(experimental), default(false)")
-  :: ("-bs-gen-tds", Arg.Set Js_config.default_gen_tds, 
-    " set will generate `.d.ts` file for typescript (experimental)")
-  :: ("-bs-diagnose", Arg.Set Js_config.diagnose, 
-      " More verbose output")
-  :: ("-bs-no-check-div-by-zero", Arg.Clear Js_config.check_div_by_zero, 
-      " unsafe mode, don't check div by zero and mod by zero")
-  :: ("-bs-no-any-assert", Arg.Unit set_noassert, 
-      " no code containing any assertion"
-     )
-  :: ("-bs-files", Arg.Rest collect_file, 
-      " Provide batch of files, the compiler will sort it before compiling"
-     )
-
+  :: 
+  ("-bs-no-builtin-ppx-ml", 
+   Arg.Set Js_config.no_builtin_ppx_ml,
+   "disable built-in ppx for ml files (internal use)")
+  :: 
+  ("-bs-no-builtin-ppx-mli",
+   Arg.Set Js_config.no_builtin_ppx_mli,
+   "disable built-in ppx for mli files (internal use)")
+  :: 
+  ("-bs-cross-module-opt", 
+   Arg.Set Js_config.cross_module_inline, 
+   "enable cross module inlining(experimental), default(false)")
+  :: 
+  ("-bs-gen-tds",
+   Arg.Set Js_config.default_gen_tds, 
+   " set will generate `.d.ts` file for typescript (experimental)")
+  :: 
+  ("-bs-diagnose",
+   Arg.Set Js_config.diagnose, 
+   " More verbose output")
+  :: 
+  ("-bs-no-check-div-by-zero",
+   Arg.Clear Js_config.check_div_by_zero, 
+   " unsafe mode, don't check div by zero and mod by zero")
+  ::
+  ("-bs-no-any-assert",
+   Arg.Unit set_noassert, 
+   " no code containing any assertion"
+  )
+  :: 
+  ("-bs-files", 
+   Arg.Rest collect_file, 
+   " Provide batch of files, the compiler will sort it before compiling"
+  )
   :: Ocaml_options.mk_impl impl
   :: Ocaml_options.mk_intf intf 
   :: Ocaml_options.mk__ anonymous

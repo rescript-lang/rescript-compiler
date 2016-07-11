@@ -29,68 +29,82 @@
 
 
 type env = 
-  | Browser
+  | Browser   
+  (* "browser-internal" used internal *)
   | NodeJS
   | AmdJS
-  | Goog of string option
+  | Goog (* of string option *)
 
 let default_env = ref NodeJS 
 
+type path = string 
+type module_system = 
+  [ `NodeJS | `AmdJS | `Goog ]
+type package_info = 
+ ( module_system * string )
+
+type package_name  = string
+type packages_info =
+  | Empty (* No set *) 
+  | Browser 
+  | NonBrowser of (package_name * package_info  list)
+(** we don't force people to use package *)
+
+
+
 let ext = ref ".js"
 let cmj_ext = ".cmj"
-let get_ext () = !ext 
-let get_env () = !default_env
 
-let set_env env = default_env := env 
-let cmd_set_module str = 
-  match str with 
-  | "commonjs" -> default_env := NodeJS
-  | "amdjs" -> 
-    default_env := AmdJS
-  | "browser-internal" -> (* used internal *)
-    default_env := Browser
-  | _ -> 
-    if Ext_string.starts_with str "goog" then
-      let len = String.length str in
-      if  len = 4  then
-            begin 
-              default_env := Goog (Some "");
-              ext := ".g.js"
-            end
-      else
-      if str.[4] = ':' && len > 5 then 
-        begin 
-          default_env := Goog (Some (Ext_string.tail_from str 5  ));
-          ext := ".g.js";
-        end
-      else 
-        Ext_pervasives.bad_argf "invalid module system %s" str
-    else
-        Ext_pervasives.bad_argf "invalid module system %s" str
+let is_browser () = !default_env = Browser 
+
+let get_ext () = !ext
 
 
-let get_goog_package_name () = 
-  match !default_env with 
-  | Goog x -> x 
-  | Browser
-  | AmdJS
-  | NodeJS -> None
+let packages_info : packages_info ref = ref Empty
 
-let npm_package_path = ref None 
+let set_browser () = 
+  packages_info :=  Browser 
+
+let get_package_name () = 
+  match !packages_info with 
+  | Empty | Browser -> None
+  | NonBrowser(n,_) -> Some n
+
+
+
+let set_package_name name = 
+  match !packages_info with
+  | Empty -> packages_info := NonBrowser(name,  [])
+  |  _ -> 
+    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
+
 
 let set_npm_package_path s = 
-  match Ext_string.split ~keep_empty:false s ':' with 
-  | [ package_name; path]  -> 
-    if String.length package_name = 0 then   
-    (* TODO: check more [package_name] if it is a valid package name *)
+  match !packages_info  with 
+  | Empty -> 
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | Browser -> 
+    Ext_pervasives.bad_argf "invalid options, already set to browser ";
+  | NonBrowser(name,  envs) -> 
+    let env, path = 
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match package_name with 
+         | "commonjs" -> `NodeJS
+         | "amdjs" -> `AmdJS
+         | "goog" -> `Goog 
+         | _ ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        `NodeJS, path
+      | _ -> 
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs))
+   (** Browser is not set via command line only for internal use *)
 
-      Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    else 
-      npm_package_path := Some (package_name, path)
-  | _ -> 
-    Ext_pervasives.bad_argf "invalid npm package path: %s" s
 
-let get_npm_package_path () = !npm_package_path
+
 
 let cross_module_inline = ref false
 
@@ -104,28 +118,52 @@ let get_diagnose () = !diagnose
 let set_diagnose b = diagnose := b 
 
 let (//) = Filename.concat 
+
+let get_packages_info () = !packages_info
+
+type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+let query_package_infos package_infos module_system = 
+  match package_infos with 
+  | Browser -> 
+    assert false 
+  | Empty -> `Empty
+  | NonBrowser (name, paths) -> 
+    begin match List.find (fun (k, _) -> k = module_system) paths with 
+      | (_, x) -> `Found (name, x)
+      | exception _ -> `NotFound
+    end
+
+let get_current_package_name_and_path   module_system = 
+  query_package_infos !packages_info module_system
+
+
 (* for a single pass compilation, [output_dir] 
    can be cached 
 *)
-let get_output_dir filename =
-  match get_npm_package_path () with 
-  | None -> 
+let get_output_dir kind filename =
+  match !packages_info with 
+  | Empty | Browser -> 
     if Filename.is_relative filename then
       Lazy.force Ext_filename.cwd //
       Filename.dirname filename
     else 
       Filename.dirname filename
-  | Some (_package_name, x) -> 
-    Lazy.force Ext_filename.package_dir // x
+  | NonBrowser (_,  modules) -> 
+    begin match List.find (fun (k,_) -> k = kind) modules with 
+    | (_, x) -> Lazy.force Ext_filename.package_dir // x
+    |  exception _ -> assert false 
+    end
+
+
     
 
 
 (* Note that we can have different [basename] when passed 
    to many files
 *)
-let get_output_file filename = 
+let get_output_file kind filename = 
   let basename = Filename.basename filename in  
-  Filename.concat (get_output_dir filename)
+  Filename.concat (get_output_dir kind  filename)
     (Ext_filename.chop_extension ~loc:__LOC__ basename ^  get_ext())
     
       
@@ -251,7 +289,8 @@ let debug_file = ref ""
 let set_current_file f  = current_file := f 
 let get_current_file () = !current_file
 let get_module_name () = 
-  Filename.chop_extension (String.uncapitalize !current_file)
+  Filename.chop_extension 
+    (Filename.basename (String.uncapitalize !current_file))
 
 let iset_debug_file _ = ()
 let set_debug_file  f = debug_file := f

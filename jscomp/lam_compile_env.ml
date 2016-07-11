@@ -228,16 +228,13 @@ let is_pure id  =
     ~not_found:(fun _ -> false) 
     ~found:(fun x -> x.effect = None)
 
-let get_goog_package_name ({ kind; _} as id : Lam_module_ident.t) = 
-  query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> None) 
-    ~found:(fun x -> x.goog_package)
+
     
 
-let get_npm_package_path ( id : Lam_module_ident.t) = 
+let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> None) 
-    ~found:(fun x -> x.npm_package_path)
+    ~not_found:(fun _ -> `NotFound) 
+    ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
 
 
 (* TODO: [env] is not hard dependency *)

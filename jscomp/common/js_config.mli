@@ -23,42 +23,89 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type module_system = 
+  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
 
 
+type package_info = 
+ (module_system * string )
+
+type package_name  = string
+type packages_info =
+  | Empty 
+  | Browser 
+  | NonBrowser of (package_name * package_info  list)
 
 
-type env = 
-  | Browser
-  | NodeJS
-  | AmdJS
-  | Goog of string option
 
 val cmj_ext : string 
-val get_env : unit -> env
+
+
+val is_browser : unit -> bool 
+val set_browser : unit -> unit
+
+
 val get_ext : unit -> string
 
-val get_output_dir : string -> string 
-val get_output_file : string -> string
-val get_goog_package_name : unit -> string option
+(** depends on [package_infos] *)
+val get_output_file : module_system -> string -> string
 
+val get_output_dir : module_system -> string -> string
+
+
+(** used by command line option *)
 val set_npm_package_path : string -> unit 
-val get_npm_package_path : unit -> (string * string) option
+val get_packages_info : unit -> packages_info
 
+type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+
+val query_package_infos : 
+  packages_info ->
+  module_system ->
+  info_query
+
+(** return [package_name] and [path] *)
+val get_current_package_name_and_path : 
+  module_system -> info_query
+
+
+val set_package_name : string -> unit 
+val get_package_name : unit -> string option
+
+(** corss module inline option *)
 val cross_module_inline : bool ref
 val set_cross_module_inline : bool -> unit
 val get_cross_module_inline : unit -> bool
   
+(** diagnose option *)
 val diagnose : bool ref 
 val get_diagnose : unit -> bool 
 val set_diagnose : bool -> unit 
 
-val set_env : env -> unit
-val cmd_set_module : string -> unit  
+
+(** generate tds option *)
 val default_gen_tds : bool ref
 
+(** options for builtion ppx *)
 val no_builtin_ppx_ml : bool ref 
 val no_builtin_ppx_mli : bool ref 
 
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
+
+
+
+(** Internal use *)
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
 
@@ -103,15 +150,3 @@ val is_same_file : unit -> bool
 
 val tool_name : string
 
-val check_div_by_zero : bool ref 
-
-val get_check_div_by_zero : unit -> bool 
-
-(* It will imply [-noassert] be set too, note from the implmentation point of view, 
-   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
-   [if (3<>2) then assert false]
- *)
-val no_any_assert : bool ref 
-
-val set_no_any_assert : unit -> unit
-val get_no_any_assert : unit -> bool 

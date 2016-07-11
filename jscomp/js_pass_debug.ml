@@ -32,7 +32,7 @@ let log_counter = ref 0
 let dump name (prog : J.program) = 
   begin
     let () = 
-      if Js_config.get_env () <> Browser 
+      if (not (Js_config.is_browser () ))
       (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
       && Js_config.is_same_file ()
       then 
