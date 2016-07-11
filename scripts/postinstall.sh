@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+export BS_RELEASE_BUILD=1
+
 if [ $BS_TRAVIS_CI ]
 then 
     git submodule update --init --recursive
