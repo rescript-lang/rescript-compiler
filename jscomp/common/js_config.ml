@@ -121,16 +121,20 @@ let (//) = Filename.concat
 
 let get_packages_info () = !packages_info
 
-let get_npm_package_path kind  = 
-  match !packages_info with 
-  | Empty
-  | Browser -> None 
-  | NonBrowser (name,  paths) -> 
-    begin match List.find (fun (k,_) -> k = kind) paths with 
-    | (_ , package_path) -> 
-      Some (name, package_path)
-    | exception _ -> assert false
+type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+let query_package_infos package_infos module_system = 
+  match package_infos with 
+  | Browser -> 
+    assert false 
+  | Empty -> `Empty
+  | NonBrowser (name, paths) -> 
+    begin match List.find (fun (k, _) -> k = module_system) paths with 
+      | (_, x) -> `Found (name, x)
+      | exception _ -> `NotFound
     end
+
+let get_current_package_name_and_path   module_system = 
+  query_package_infos !packages_info module_system
 
 
 (* for a single pass compilation, [output_dir] 

@@ -75,37 +75,52 @@ let string_of_module_id (module_system : Lam_module_ident.system)
   | Ml  -> 
     let id = x.id in
     let file = Printf.sprintf "%s.js" id.name in
+    let modulename = String.uncapitalize id.name in
     let rebase dep =
       Ext_filename.node_relative_path 
         (`Dir (Js_config.get_output_dir module_system !Location.input_name)) dep 
     in 
-    begin match Lam_compile_env.get_package_path_from_cmj module_system x
-      with
-      | Some (package_name, x) -> 
-        begin match module_system with 
-          | `Goog  -> 
-            package_name  ^ "." ^  String.uncapitalize id.name
-          | `AmdJS
-          | `NodeJS -> 
-            let filename = String.uncapitalize id.name in
-            begin match Js_config.get_npm_package_path module_system with 
-              | None -> 
-                (* should fail earlier instead ? *)
-                package_name // x // filename
-              | Some (current_package, path) ->
-                if current_package <> package_name then 
-                  (*TODO: fix platform specific issue *)
-                  package_name // x // filename
-                else               
-                  rebase (`File (
-                      Lazy.force Ext_filename.package_dir // x // filename))
-
-            end
-        end
-      | None -> 
+    let dependency_pkg_info = 
+      Lam_compile_env.get_package_path_from_cmj module_system x 
+    in
+    let current_pkg_info = 
+      Js_config.get_current_package_name_and_path module_system  
+    in
+    begin match module_system,  dependency_pkg_info, current_pkg_info with
+      | _, `NotFound , _ -> 
         Ext_pervasives.failwithf ~loc:__LOC__ 
           "@[%s not found in search path - while compiling %s @] "
           file !Location.input_name 
+      | `Goog , `Found (package_name, x), _  -> 
+        package_name  ^ "." ^  String.uncapitalize id.name
+      | `Goog, `Empty, _ -> 
+        Ext_pervasives.failwithf ~loc:__LOC__ 
+          "@[%s was not compiled with goog support  in search path - while compiling %s @] "
+          file !Location.input_name 
+      | (`AmdJS | `NodeJS), `Empty , `Found _  -> 
+        Ext_pervasives.failwithf ~loc:__LOC__
+          "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
+          file !Location.input_name
+      | _ , _, `NotFound -> assert false 
+      | (`AmdJS | `NodeJS), `Found(package_name, x), `Found(current_package, path) -> 
+        if  current_package = package_name then 
+          rebase (`File (
+              Lazy.force Ext_filename.package_dir // x // modulename)) 
+        else 
+          package_name // x // modulename
+
+      | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
+        ->    package_name // x // modulename
+      |  (`AmdJS | `NodeJS), `Empty , `Empty 
+        -> 
+        begin match Config_util.find file with 
+        | file -> 
+          rebase (`File file) 
+        | exception Not_found -> 
+          Ext_pervasives.failwithf ~loc:__LOC__ 
+            "@[%s was not found  in search path - while compiling %s @] "
+            file !Location.input_name 
+        end
     end
   | External name -> name
 

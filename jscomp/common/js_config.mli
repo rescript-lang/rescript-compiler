@@ -32,7 +32,7 @@ type package_info =
 
 type package_name  = string
 type packages_info =
-  | Empty (* No set *) 
+  | Empty 
   | Browser 
   | NonBrowser of (package_name * package_info  list)
 
@@ -52,10 +52,21 @@ val get_output_file : module_system -> string -> string
 val get_output_dir : module_system -> string -> string
 
 
-(** return [package_name] and [path] *)
+(** used by command line option *)
 val set_npm_package_path : string -> unit 
 val get_packages_info : unit -> packages_info
-val get_npm_package_path :  module_system -> (string * string) option
+
+type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+
+val query_package_infos : 
+  packages_info ->
+  module_system ->
+  info_query
+
+(** return [package_name] and [path] *)
+val get_current_package_name_and_path : 
+  module_system -> info_query
+
 
 val set_package_name : string -> unit 
 val get_package_name : unit -> string option

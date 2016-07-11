@@ -93,7 +93,9 @@ val reset : unit -> unit
 val is_pure : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
-  Lam_module_ident.system -> Lam_module_ident.t -> (string * string) option 
+  Lam_module_ident.system -> Lam_module_ident.t -> 
+  Js_config.info_query
+
 
 (* The second argument is mostly from [runtime] modules 
     will change the input [hard_dependencies]

@@ -233,17 +233,8 @@ let is_pure id  =
 
 let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
   query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> None) 
-    ~found:(fun x -> 
-        match x.npm_package_path with 
-        | Empty 
-        | Browser -> None 
-        | NonBrowser (name, paths) -> 
-          begin match List.find (fun (k, _) -> k = module_system) paths with 
-          | (_, x) -> Some (name, x)
-          | exception _ -> None
-          end
-      )
+    ~not_found:(fun _ -> `NotFound) 
+    ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
 
 
 (* TODO: [env] is not hard dependency *)
