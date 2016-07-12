@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/11-16:58 *)
+(** Bundled by ocaml_pack 07/11-22:15 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2210,7 +2210,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.7.1"
+let version = "0.8.1"
 
 let runtime_set = 
   [
