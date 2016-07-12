@@ -65,3 +65,6 @@ val js_fn_mk : string
 
 (** callback actually, not exposed to user yet *)
 val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string

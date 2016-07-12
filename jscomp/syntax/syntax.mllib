@@ -8,3 +8,7 @@ ast_extract
 ast_util
 ast_attributes
 ast_external
+ast_structure
+ast_derive
+ast_signature
+

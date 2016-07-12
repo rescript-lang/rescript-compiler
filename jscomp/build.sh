@@ -37,6 +37,9 @@ echo "Remaking standard library" >> build.compile
 cd ./stdlib; ./build.sh ; cd ../
 echo "Remaking standard library Finished" >> build.compile
 
+echo "Making others"
+cd others && make all 2>> ../build.compile ; make depend; cd ..
+echo "Making others finished"
 
 TARGET=a
 

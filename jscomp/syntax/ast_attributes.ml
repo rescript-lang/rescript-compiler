@@ -104,22 +104,39 @@ let process_attributes_rev (attrs : t) =
 let process_class_type_decl_rev attrs = 
   List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
       match txt, st  with 
-      | "bs", `Nothing
+      | "bs", _
         -> 
         `Has, acc
       | _ , _ -> 
         st, attr::acc 
     ) ( `Nothing, []) attrs
 
-let process_const_string_rev attrs = 
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
-      match txt, st  with 
-      | "bs.re", `Nothing
+
+type derive_attr = {
+  explict_nonrec : bool;
+  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+}
+
+let process_derive_type attrs =
+  List.fold_left 
+    (fun (st, acc) 
+      (({txt ; loc}, payload  as attr): attr)  ->
+      match  st, txt  with
+      |  {bs_deriving = `Nothing}, "bs.deriving"
+        ->
+        {st with
+         bs_deriving = `Has_deriving 
+             (Ast_payload.as_record_and_process loc payload)}, acc 
+      | {bs_deriving = `Has_deriving _}, "bs.deriving"
         -> 
-        `Has_re, acc
-      | _ , _ -> 
-        st, attr::acc 
-    ) ( `Nothing, []) attrs
+        Location.raise_errorf ~loc "duplicated bs.deriving attribute"
+      | _ , _ ->
+        let st = 
+          if txt = "nonrec" then 
+            { st with explict_nonrec = true }
+          else st in 
+        st, attr::acc
+    ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
 
 
 let bs_obj  : attr 
