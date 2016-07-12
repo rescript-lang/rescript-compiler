@@ -1,11 +1,11 @@
 To make OCaml work smoothly with Javascript, we introduced several
 extensions to the OCaml language. These BuckleScript extensions
-facilitate the integration of native JavaScript code as well as
-improvement over the generated code.
+facilitate the integration of native JavaScript code and
+improve the generated code.
 
 Like TypeScript, when building typesafe bindings from JS to OCaml, the user has to write type declarations.
 In OCaml, unlike TypeScript, user does not need to create a separate `.d.ts` file, 
-since the type declaration langauge is the same langauge as OCaml.
+since the type declaration also written in OCaml.
 
 The FFI is divided into several components:
 
@@ -13,7 +13,7 @@ The FFI is divided into several components:
 - Binding to JS high-order functions
 - Binding to JS object literals
 - Binding to JS classes
-- Extensions to the Langauge for debugger, regex and embending raw JS code
+- Extensions to the language for debugger, regex and embedding raw JS code
 
 ## FFI to first-order JS functions
 
@@ -25,8 +25,8 @@ external value-name :  typexpr =  external-declaration  attributes
 external-declaration :=	 string-literal  
 ```
 
-Users need to declare types of the foreign function (JS function here) and 
-give it a type and customized attributes.
+Users need to declare types for foreign functions (JS functions here) and 
+provide customized attributes.
 
 ### Attributes
 
@@ -38,7 +38,7 @@ give it a type and customized attributes.
   external imul : int -> int -> int = "Math.imul" [@@bs.call]
   ```
 > Note that if you want to make a single FFI for both C functions and JavaScript functions, you can 
- give the JavaScript foreign function different name:
+ give the JavaScript foreign function a different name:
 
   ```ocaml
   external imul : int -> int -> int = "c_imul" [@@bs.call "Math.imul"]
@@ -46,16 +46,21 @@ give it a type and customized attributes.
 
 * `bs.new`
 
-  This attribute is to help the user create a JavaScript object.
+  This attribute is used to create a JavaScript object.
   Example:
 
   ```ocaml
   external create_date : unit -> t = "Date" [@@bs.new]
+  let date = create_date ()
+  ```
+  will be compiled as 
+  ```js
+  var date = new Date();
   ```
 
 * `bs.val` 
 
-   Bind to a JavaScript value
+  This attribute is used to bind to a JavaScript value
 
    ```OCaml
    type dom 
@@ -66,7 +71,7 @@ give it a type and customized attributes.
 
 * `bs.send`
   
-  This attribute is to help the user send a message to JS object
+  This attribute helps the user send a message to a JS object
 
   ```OCaml
   type id 
@@ -95,7 +100,7 @@ give it a type and customized attributes.
 
 * `bs.set_index` `bs.get_index`
 
-  This attribute helps dynamic access to a JavaScript property
+  This attribute allows dynamic access to a JavaScript property
 
   ```OCaml
   module Int32Array = struct
@@ -135,7 +140,7 @@ give it a type and customized attributes.
 
 ## FFI to high-order JS functions
 
-High order function means callback can be another function, for example, suppose
+High order functions are functions where the callback can be another function. For example, suppose
 JS has a map function as below:
 
 ```js
@@ -155,7 +160,7 @@ A naive external type declaration would be as below:
 external map : 'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array = "map" [@@bs.call]
 ```
 
-Unfortunately, this is not completely faithful. The issue is by 
+Unfortunately, this is not completely correct. The issue is by 
 reading the type `'a -> 'b -> 'c`, it can be in several cases:
 
 ```ocaml
@@ -166,14 +171,14 @@ let f x y = x + y
 let g x  = let z  = x + 1 in fun y -> x + z 
 ```
 
-In OCaml, they all have the same type, however, 
+In OCaml, they all have the same type; however, 
 `f` and `g` may be compiled into functions with
 different arities.
 
-A naive compilation, compile `f` as below:
+A naive compilation will compile `f` as below:
 
 ```ocaml
-let f  = fun x -> fun y -> x + y
+let f = fun x -> fun y -> x + y
 ```
 
 ```js
@@ -190,11 +195,11 @@ function g(x){
 }
 ```
 
-Its arity will be *consistent* but is *1* (returning another function), however, 
+Its arity will be *consistent* but is *1* (returning another function); however, 
 we expect *its arity to be 2*. 
 
 
-A more complex compilation strategy used in BuckleScript would compile `f` as
+Bucklescript uses a more complex compilation strategy, compiling `f` as
 
 ```js
 function f(x,y){
@@ -202,18 +207,18 @@ function f(x,y){
 }
 ```
 
-**No matter which startegy we use, by just using existing typing rules, we can not
+**No matter which strategy we use, existing typing rules cannot
 guarantee a function of type `'a -> 'b -> 'c` will have arity 2.**
 
-To solve the problem introduced by OCaml's curried calling convention, we 
-introduce a special attribute `[@bs]` in the type level.
+To solve this problem introduced by OCaml's curried calling convention, we 
+support a special attribute `[@bs]` at the type level.
 
 ```ocaml
 external map : 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
 = "map" [@@bs.call]
 ```
 
-Here `('a -> 'b -> 'c [@bs])` will be *always of arity 2*, in general 
+Here `('a -> 'b -> 'c [@bs])` will *always be of arity 2*, in general 
 `'a0 -> 'a1 ... 'aN -> 'b0 [@bs]` is the same as `'a0 -> 'a1 ... 'aN -> 'b0`
 except the former's arity is guaranteed to be `N` while the latter is unknown.
 
@@ -231,8 +236,8 @@ let b : 'b0 = f () [@bs]
 ```
 
 
-Note that this extension to the OCaml language is *sound*, if you add 
-an attribute in one place and miss it in other place, the type checker
+Note that this extension to the OCaml language is *sound*. If you add 
+an attribute in one place but miss it in other place, the type checker
 will complain.
 
 Another more complex example:
@@ -256,7 +261,7 @@ type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs]
 
 #### Background
   
-As we discussed before we can compile any OCaml function as arity 1 to 
+As we discussed before, we can compile any OCaml function as arity 1 to 
 support OCaml's curried calling convention. 
 
 This model is simple and easy to implement, but
@@ -269,7 +274,7 @@ let a = f 1 2 3
 let b = f 1 2 
 ```
 
-would be compiled as  
+can be compiled as  
 
 ```js
 function f(x){
@@ -283,8 +288,8 @@ var a = f (1) (2) (3)
 var b = f (1) (2)
 ```
 
-But as you can all see, this is *highly inefficient*, since the compiler already *saw the source definition* of `f`.
-It can be optimized as below:
+But as you can see, this is *highly inefficient*, since the compiler already *saw the source definition* of `f`,
+it can be optimized as below:
 
 ```js
 function f(x,y,z) {return x + y + z}
@@ -292,7 +297,7 @@ var a = f(1,2,3)
 var b = function(z){return f(1,2,z)}
 ```
 
-We do this optimization in the cross module level and try to infer the arity as much as we can.
+BuckleScript does this optimization in the cross module level and tries to infer the arity as much as it can.
 
 ### Callback optimization
 
@@ -314,7 +319,7 @@ function app(f,x){
 ```
 `Curry._1` is a function to dynamically support the curried calling convention. 
 
-Since we add uncurried calling convention support, you can write `app`
+Since we support the uncurried calling convention, you can write `app`
 as below
 
 ```ocaml
@@ -331,23 +336,23 @@ function app(f,x){
 ```
 
 
-> Note in OCaml, the compiler internally uncurried every function declared as `external`, 
-in that case, the compiler guaranteed that it is always fully applied, so 
-for `external` first-order FFI, its outermost function does not need `[@bs]` 
+> Note that in OCaml the compiler internally uncurries every function declared as `external`
+and guarantees that it is always fully applied.
+Therfore, for `external` first-order FFI, its outermost function does not need the `[@bs]` 
 annotation.
 
-### Bindings to callback which relies on `this`
+### Bindings to callbacks which relies on `this`
 
-It's quite common that in JS library, a callback relies on `this` (the source), for example:
+Many JS libraries have callbacks which rely on `this` (the source), for example:
 
 ```js
 x.onload = function(v){
   console.log(this.response + v )
 }
 ```
-Here, `this` would be the same as `x` (actually depends on how `onload` is called), it is clear that
-it is not exact to declare `x.onload` of type `unit -> unit [@bs]`, instead we introduced a special attribute
-`bs.this`, in that case we an type `x` as below:
+Here, `this` would be the same as `x` (actually depends on how `onload` is called). It is clear that
+it is not correct to declare `x.onload` of type `unit -> unit [@bs]`. Instead, we introduced a special attribute
+`bs.this` allowing us to type `x` as below:
 
 ```ocaml
 type x 
@@ -358,7 +363,7 @@ onload x begin fun [@bs.this] o v ->
 end
 ```
 
-The generated code would be as blow:
+The generated code would be as below:
 
 ```js
 x.onload = function(v){
@@ -367,7 +372,7 @@ x.onload = function(v){
 }
 ```
 
-`bs.obj` is the same as `bs`: except that its first parameter is reserved for `this`, and for arity of 0, there
+`bs.obj` is the same as `bs`: except that its first parameter is reserved for `this` and for arity of 0, there
 is no need for a redundant `unit` type:
 
 ```ocaml
@@ -375,9 +380,9 @@ let f : 'obj -> unit [@bs.this] = fun [@bs.this] obj -> ....
 let f1 : 'obj -> 'a0 -> 'b [@bs.this] = fun [@bs.this] obj a -> ...
 ```
 
-> Note there is no way to consume function of type `'obj -> 'a0 .. -> 'aN -> 'b0 [@bs.this]` on OCaml side,
-we don't encourage people to write code in this style, it was introduced mainly to be consumed by existing JS libraries.
-User can also type `x` a an JS class too (see later)
+> Note that there is no way to consume a function of type `'obj -> 'a0 .. -> 'aN -> 'b0 [@bs.this]` on the OCaml side and
+we don't encourage people to write code in this style. This was introduced mainly to be consumed by existing JS libraries.
+User can also type `x` as a JS class too (see later)
 
 
 ## FFI to JS plain objects
@@ -385,8 +390,8 @@ User can also type `x` a an JS class too (see later)
 
 ### Js object convention
 
-All JS object of type `'a` are lifted to type `'a Js.t` to avoid
-conflict with OCaml's own object system(We support both OCaml's own object system and FFI to JS's objects). 
+All JS objects of type `'a` are lifted to type `'a Js.t` to avoid
+conflict with OCaml's native object system (we support both OCaml's native object system and FFI to JS's objects). 
 
 `##` is used in JS's object method dispatch and field access, 
 while `#` is used in OCaml's object method dispatch.
@@ -406,7 +411,7 @@ Would be compiled as
 var u = { x : { y : { z : 3 }}}}
 ```
 
-The compiler would infer `u` has type
+The compiler would infer `u` as type
 
 ```ocaml
 val u : < x :  < y : < z : int > Js.t >  Js.t > Js.t
@@ -419,13 +424,13 @@ into the type level, so you can write
 val u : [%bs.obj: < x : < y < z : int > > > ]
 ```
 
-User can also write expression and types togehter as below:
+Users can also write expressione and types together as below:
 
 ```ocaml
 let u = [%bs.obj ( { x = { y = { z = 3 }}} : < x : < y : < z : int > > > ]
 ```
 
-Even better, user can also write Objects in a collection:
+Even better, users can also write Objects in a collection:
 
 ```ocaml
 var xs = [%bs.obj [| { x = 3 } ; {x = 3 } |] : < x : int  > array  ]
@@ -475,7 +480,7 @@ f##field (* field access should not come with any argument *)
 f##method args0 args1 args2 (* method with arities of 3 *)
 ```
 
-JS's **method is not a function**, a classis example is as below:
+JS's **method is not a function** is a classic example shown below:
 
 ```js
 console.log('fine')
@@ -483,7 +488,7 @@ var log = console.log;
 log('fine') // May cause exception, implementation dependent, `console.log` may depend on `this` 
 ```
 
-So to make it clearly type safe, for `field` access, it should not come with any argument.
+So to make it clearly type safe, `field` accesses should not come with any argument.
 
 ```ocaml
 let fn = f##field in
@@ -491,10 +496,10 @@ let a = fn a b
 (* f##field a b would think `field` as a method *)
 ```
 
-> Note that if user make such a mistake, the type checker would complain it expect `Js.method` but have a
+> Note that if a user were to make such a mistake, the type checker would complain by saying it expected `Js.method` but saw a
 function instead, so it is still sound and type safe.
 
-Currently `bs.obj` only supports plain JS object literal with no support of JS method, `class type` (discussed later) supports JS style method.
+Currently `bs.obj` only supports plain JS object literals with no support fpr JS methods, `class type` (discussed later) supports JS style methods.
 
 Another example: 
 ```ocaml
@@ -513,19 +518,19 @@ var a = h.fn
 var b = a(1,2)
 ```
 
-When the field is an uncurried function, there is a short-cut syntax as below:
+When the field is an uncurried function, there is a short-hand syntax as below:
 
 ```ocaml
 let b x y h = h#@fn x y
 ```
-It will be compiled as 
+Will be compiled as 
 
 ```js
 function b (x,y,h){
   return h.fn(x,y)
 }
 ```
-And compiler infer the type of `b` as
+And the compiler will infer the type of `b` as
 
 ```ocaml
 val b : 'a -> 'b -> [%bs.obj: < fn :  'a -> 'b -> 'c [@bs] ] -> 'c
@@ -547,15 +552,15 @@ class type _rect = object
 end [@bs]
 type rect = _rect Js.t
 ```
-As the example, `class type` annotated with `[@bs]` are treated as JS class type.
+In this example, `class type` annotated with `[@bs]` is treated as a JS class type.
 For JS classes, methods with arrow types are treated as real methods while methods with non-arrow types
-are treated as properties, since OCaml's object system does not have getter/setter, we introduce two
-attributes `bs.get` and `bs.set` to help inform BuckleScript to compile them as property getter/setter.
+are treated as properties. Since OCaml's object system does not have getters/setters, we introduced two
+attributes `bs.get` and `bs.set` to help inform BuckleScript to compile them as property getters/setters.
 
 
 #### Annotation to JS properties
 
-There are varous getter/setter decorations as below:
+There are various getter/setter decorations as below:
 
 ```ocaml
 class type _y = object 
@@ -612,17 +617,17 @@ function f(u){
 }
 ```
 
-Note the type system would guarteen that user can not write such code:
+Note the type system would guarantee that the user can not write such code:
 
 ```ocaml
 let v = u##draw 
-(* use v later -- this can not happen, type system will complain *)
+(* use v later -- this is not allowed, type system will complain *)
 ```
 
-This is more type safe, since in JS, **method is not function**.
+This is more type safe than JavaScript's **method is not function**.
 
 
-### Method chain
+### Method chaining
 
 ```ocaml
 f
@@ -633,8 +638,8 @@ f
 
 ## Embedding raw Javascript code
 
-Note this is not encouraged. The user is always encouraged to minimize and localize use cases 
-of embedding raw Javascript code, however, sometimes it's useful to get the job done quickly.
+Note that this is not encouraged. The user is should minimize and localize use cases 
+of embedding raw Javascript code; however, sometimes it's necessary to get the job done.
 
 - Embedding raw JS code as an expression
 
@@ -642,8 +647,8 @@ of embedding raw Javascript code, however, sometimes it's useful to get the job 
 let keys : t -> string array [@bs] = [%bs.raw "Object.keys" ]
 let unsafe_lt : 'a -> 'a -> Js.boolean [@bs] = [%bs.raw{|function(x,y){return x < y}|}]
 ```
-We recommend user to write type annotations for such unsafe code, it is unsafe to 
-refer external ocaml symbols in raw JS code
+We recommend writing type annotations for such unsafe code. It is unsafe to 
+refer to external OCaml symbols in raw JS code.
 
 - Embedding raw JS code as statements
 
@@ -675,13 +680,13 @@ Polyfill of `Math.imul`
    |}]
 ```
 
-Caveat:
-#. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
-#. User should not refer to symbols in OCaml code. It is not guaranteed that the order is correct. 
+Caveats:
+* So far we don't perform any sanity checks in the quoted text (syntax checking is a long-term goal).
+* Users should not refer to symbols in OCaml code. It is not guaranteed that the order is correct. 
 
 ## Debugger support
 
-We introduced  extension `bs.debugger`, for example:
+We introduced the extension `bs.debugger`, for example:
 
 ```ocaml
   let f x y = 
@@ -701,13 +706,13 @@ which will be compiled into:
 
 ## Regex support
 
-We introduce `bs.re` for Javascript regex expresion:
+We introduced `bs.re` for Javascript regex expresion:
 
 ```
 let f  = [%bs.re "/b/g"]
 ```
 
-The compiler will infer `f` has type `Js.re` and generate such code
+The compiler will infer `f` has type `Js.re` and generate code as below
 
 ```
 var f = /b/g
@@ -717,12 +722,11 @@ var f = /b/g
 
 ## Examples:
 
-Below is a simple example for [mocha](https://mochajs.org/) library, for more examples, please visit https://github.com/bloomberg/bucklescript-addons
+Below is a simple example for [mocha](https://mochajs.org/) library. For more examples, please visit https://github.com/bloomberg/bucklescript-addons
 
 ### A simple example: binding to mocha unit test library
 
-   If we want to provide bindings to the [mochajs](https://mochajs.org/) unit test framework, 
-   below is an example:
+   This is an example showing how too provide bindings to the [mochajs](https://mochajs.org/) unit test framework.
 
    ```OCaml
    external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.call]
