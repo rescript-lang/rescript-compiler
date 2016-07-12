@@ -1,17 +1,19 @@
 To make OCaml work smoothly with Javascript, we introduced several
 extensions to the OCaml language. These BuckleScript extensions
 facilitate the integration of native JavaScript code as well as
-improve the generated code.
+improvement over the generated code.
 
 Like TypeScript, when building typesafe bindings from JS to OCaml, the user has to write type declarations.
 In OCaml, unlike TypeScript, user does not need to create a separate `.d.ts` file, 
-since the type declaration langauge is the same langauge in OCaml.
+since the type declaration langauge is the same langauge as OCaml.
 
 The FFI is divided into several components:
 
-- Binding to JS functions
+- Binding to JS first-order functions
+- Binding to JS high-order functions
 - Binding to JS object literals
 - Binding to JS classes
+- Extensions to the Langauge for debugger, regex and embending raw JS code
 
 ## FFI to first-order JS functions
 
@@ -374,8 +376,8 @@ let f1 : 'obj -> 'a0 -> 'b [@bs.this] = fun [@bs.this] obj a -> ...
 ```
 
 > Note there is no way to consume function of type `'obj -> 'a0 .. -> 'aN -> 'b0 [@bs.this]` on OCaml side,
-we don't encourage people to write code in this style, it was introduced mainly for consumed by existing JS library
-you can also type `x` a an JS class too (see later)
+we don't encourage people to write code in this style, it was introduced mainly to be consumed by existing JS libraries.
+User can also type `x` a an JS class too (see later)
 
 
 ## FFI to JS plain objects
@@ -494,7 +496,7 @@ function instead, so it is still sound and type safe.
 
 Currently `bs.obj` only supports plain JS object literal with no support of JS method, `class type` (discussed later) supports JS style method.
 
-So, 
+Another example: 
 ```ocaml
 let u = [%bs.obj {x = { y = { z = 3 }}; fn = fun [@bs] u v -> u + v } ]
 let h = u##x##y##z
@@ -511,7 +513,7 @@ var a = h.fn
 var b = a(1,2)
 ```
 
-When the field is an uncurried function, there is a short cut syntax as below:
+When the field is an uncurried function, there is a short-cut syntax as below:
 
 ```ocaml
 let b x y h = h#@fn x y
@@ -614,81 +616,109 @@ Note the type system would guarteen that user can not write such code:
 
 ```ocaml
 let v = u##draw 
-(* use v later *)
+(* use v later -- this can not happen, type system will complain *)
 ```
 
-This is more type safe, since in JS, method is not function.
+This is more type safe, since in JS, **method is not function**.
 
+
+### Method chain
+
+```ocaml
+f
+##(meth0 ())
+##(meth1 a)
+##(meth2 a b)
+```
 
 ## Embedding raw Javascript code
 
-- extension `bs.raw`
-  
-   It can be either `[%bs.raw{|  this_is_arbitrary_js_expression |}]` or `[%%bs.raw{| this is arbitrary_js_statement |}`
-   
-   Use cases:
-   for example if you want to use a JavaScript string, you can write code like this:
-   
-   ```OCaml
-   let x  : string = [%bs.raw{|"\x01\x02"|}]
-   ```
+Note this is not encouraged. The user is always encouraged to minimize and localize use cases 
+of embedding raw Javascript code, however, sometimes it's useful to get the job done quickly.
 
-   which will be compiled into:
+- Embedding raw JS code as an expression
 
-   ```js
-   var x = "\x01\x02"
-   ``` 
+```ocaml
+let keys : t -> string array [@bs] = [%bs.raw "Object.keys" ]
+let unsafe_lt : 'a -> 'a -> Js.boolean [@bs] = [%bs.raw{|function(x,y){return x < y}|}]
+```
+We recommend user to write type annotations for such unsafe code, it is unsafe to 
+refer external ocaml symbols in raw JS code
 
-   ```OCaml
+- Embedding raw JS code as statements
+
+```ocaml
+[%%bs.raw{|
+console.log ("hey");
+|}]
+```
+
+Other examples: 
+
+```OCaml
+let x  : string = [%bs.raw{|"\x01\x02"|}]
+```
+It will be compiled into:
+
+```js
+var x = "\x01\x02"
+``` 
+
+Polyfill of `Math.imul`
+
+```OCaml
    [%%bs.raw{|
    // Math.imul polyfill
    if (!Math.imul){
        Math.imul = function (..) {..}
     }
    |}]
-   ```
-   In the expression level, i.e, `[%bs.raw ...]` user can add a type
-   annotation, for example:
+```
 
-   ```ocaml
-   let f : float -> float -> float [@bs] = [%bs.raw "Math.max" ]
-   in f 3.0 2.0 [@bs]
-   ```
-   will be translated into:
-
-   ```js
-   var f = Math.max ;
-   f(3.0,2.0)
-   ```
-   Caveat:
-   1. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
-   2. You should not refer to symbols in OCaml code. It is not guaranteed that the order is correct.
-      You should avoid introducing new symbols in the raw code, but if needed use the `$$` prefix (ie `$$your_func_name`) 
+Caveat:
+#. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
+#. User should not refer to symbols in OCaml code. It is not guaranteed that the order is correct. 
 
 ## Debugger support
 
-- extension `bs.debugger`
+We introduced  extension `bs.debugger`, for example:
 
-   It can be `[%bs.debugger]`
+```ocaml
+  let f x y = 
+    [%bs.debugger];
+    x + y
+```
 
-   use case
+which will be compiled into:
 
-   ```ocaml
-   let f x y = 
-      [%bs.debugger];
-      x + y
-   ```
-
-   which will be compiled into:
-
-   ```js
-   function f (x,y) {
+```js
+  function f (x,y) {
      debugger; // JavaScript developer tools will set an breakpoint and stop here
      x + y;
-   }
-   ```
+  }
+```
+
+
+## Regex support
+
+We introduce `bs.re` for Javascript regex expresion:
+
+```
+let f  = [%bs.re "/b/g"]
+```
+
+The compiler will infer `f` has type `Js.re` and generate such code
+
+```
+var f = /b/g
+```
+
+> Note that `Js.re` is an abstract type, we are working on providing bindings for it
 
 ## Examples:
+
+Below is a simple example for [mocha](https://mochajs.org/) library, for more examples, please visit https://github.com/bloomberg/bucklescript-addons
+
 ### A simple example: binding to mocha unit test library
 
    If we want to provide bindings to the [mochajs](https://mochajs.org/) unit test framework, 
