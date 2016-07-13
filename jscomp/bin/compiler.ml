@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/11-22:15 *)
+(** Bundled by ocaml_pack 07/13-10:03 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1867,6 +1867,11 @@ val query_package_infos :
   module_system ->
   info_query
 
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
 (** return [package_name] and [path] *)
 val get_current_package_name_and_path : 
   module_system -> info_query
@@ -2028,7 +2033,7 @@ let get_package_name () =
   | Empty | Browser -> None
   | NonBrowser(n,_) -> Some n
 
-
+let no_version_header = ref false 
 
 let set_package_name name = 
   match !packages_info with
@@ -18011,8 +18016,11 @@ let pp_deps_program
     (kind : [Lam_module_ident.system | `Browser])
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
-    P.string f bs_header;
-    P.newline f; 
+    if not !Js_config.no_version_header then 
+      begin 
+        P.string f bs_header;
+        P.newline f
+      end ; 
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 
@@ -30522,6 +30530,11 @@ let buckle_script_flags =
   ("-bs-package-name", 
    Arg.String Js_config.set_package_name, 
    " set package name, useful when you want to produce npm packages")
+  :: 
+  ("-bs-no-version-header", 
+   Arg.Set Js_config.no_version_header,
+   " Don't print version header"
+  )
   ::
   ("-bs-package-output", 
    Arg.String Js_config.set_npm_package_path, 
