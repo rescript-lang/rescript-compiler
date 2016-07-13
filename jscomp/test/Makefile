@@ -11,7 +11,7 @@ $(addsuffix .cmi, $(SOURCE_LIST)): ../runtime/js.cmi
 
 
 COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
-COMPFLAGS+=  -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name  $(npm_package_name) -bs-package-output lib/js/test/
+COMPFLAGS+=  -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name  $(npm_package_name) 
 
 
 $(TESTS): $(CAMLC)

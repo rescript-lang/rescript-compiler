@@ -54,7 +54,7 @@ module Lid = struct
   let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
 
   let pervasives_re_id = Longident.Ldot (Lident "Pervasives", "js_re")
-  let js_re_id = Longident.Ldot (Lident "Js", "re")
+  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
 end
 
 module No_loc = struct 
