@@ -424,24 +424,42 @@ let lambda_as_module
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "tuple_alloc.ml";
     let lambda_output = compile ~filename output_prefix false env sigs lam in
+    let (//) = Filename.concat in 
+    let basename =  
+      Ext_filename.chop_extension ~loc:__LOC__ 
+        (Filename.basename filename) ^  Js_config.get_ext() in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Browser -> ()
-    | Empty -> 
+    | Empty 
+    | NonBrowser (_, []) -> 
       (* script mode *)
+      let output_filename = 
+        (if Filename.is_relative filename then 
+           Lazy.force Ext_filename.cwd // 
+           Filename.dirname filename 
+         else 
+           Filename.dirname filename) // basename         
+      in 
       Ext_pervasives.with_file_as_chan 
-        (Js_config.get_output_file `NodeJS filename)
+        output_filename 
         (fun chan -> 
            Js_dump.dump_deps_program `NodeJS lambda_output chan)
+
     | NonBrowser (_package_name, module_systems) -> 
       module_systems |> List.iter begin fun (module_system, _path) -> 
+        let output_filename = 
+          Lazy.force Ext_filename.package_dir //
+          _path //
+          basename 
+        in
         Ext_pervasives.with_file_as_chan 
-          (Js_config.get_output_file module_system filename)
+          output_filename 
           (fun chan -> 
              Js_dump.dump_deps_program 
                (module_system :> [Js_config.module_system | `Browser])
                lambda_output
-	        chan)
+               chan)
       end
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 

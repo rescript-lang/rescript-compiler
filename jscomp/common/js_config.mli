@@ -47,9 +47,7 @@ val set_browser : unit -> unit
 
 val get_ext : unit -> string
 
-(** depends on [package_infos] *)
-val get_output_file : module_system -> string -> string
-
+(** depends on [package_infos], used in {!Js_program_loader} *)
 val get_output_dir : module_system -> string -> string
 
 
@@ -57,7 +55,12 @@ val get_output_dir : module_system -> string -> string
 val set_npm_package_path : string -> unit 
 val get_packages_info : unit -> packages_info
 
-type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+type info_query = 
+  [ `Empty 
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound 
+  ]
 
 val query_package_infos : 
   packages_info ->
@@ -65,11 +68,15 @@ val query_package_infos :
   info_query
 
 
+
 (** set/get header *)
 val no_version_header : bool ref 
 
 
-(** return [package_name] and [path] *)
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
 val get_current_package_name_and_path : 
   module_system -> info_query
 

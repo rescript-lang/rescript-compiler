@@ -93,25 +93,39 @@ let string_of_module_id (module_system : Lam_module_ident.system)
           file !Location.input_name 
       | `Goog , `Found (package_name, x), _  -> 
         package_name  ^ "." ^  String.uncapitalize id.name
-      | `Goog, `Empty, _ -> 
+      | `Goog, (`Empty | `Package_script _), _ 
+        -> 
         Ext_pervasives.failwithf ~loc:__LOC__ 
           "@[%s was not compiled with goog support  in search path - while compiling %s @] "
           file !Location.input_name 
-      | (`AmdJS | `NodeJS), `Empty , `Found _  -> 
+      | (`AmdJS | `NodeJS),
+        ( `Empty | `Package_script _) ,
+        `Found _  -> 
         Ext_pervasives.failwithf ~loc:__LOC__
           "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
           file !Location.input_name
       | _ , _, `NotFound -> assert false 
-      | (`AmdJS | `NodeJS), `Found(package_name, x), `Found(current_package, path) -> 
+      | (`AmdJS | `NodeJS), 
+        `Found(package_name, x),
+        `Found(current_package, path) -> 
         if  current_package = package_name then 
           rebase (`File (
               Lazy.force Ext_filename.package_dir // x // modulename)) 
         else 
           package_name // x // modulename
-
+      | (`AmdJS | `NodeJS), `Found(package_name, x), 
+        `Package_script(current_package)
+        ->    
+        if current_package = package_name then 
+          rebase (`File (
+              Lazy.force Ext_filename.package_dir // x // modulename)) 
+        else 
+          package_name // x // modulename
       | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
         ->    package_name // x // modulename
-      |  (`AmdJS | `NodeJS), `Empty , `Empty 
+      |  (`AmdJS | `NodeJS), 
+         (`Empty | `Package_script _) , 
+         (`Empty  | `Package_script _)
         -> 
         begin match Config_util.find file with 
         | file -> 
