@@ -70,7 +70,7 @@ let get_package_name () =
   | Empty | Browser -> None
   | NonBrowser(n,_) -> Some n
 
-
+let no_version_header = ref false 
 
 let set_package_name name = 
   match !packages_info with

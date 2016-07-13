@@ -1658,8 +1658,11 @@ let pp_deps_program
     (kind : [Lam_module_ident.system | `Browser])
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
-    P.string f bs_header;
-    P.newline f; 
+    if not !Js_config.no_version_header then 
+      begin 
+        P.string f bs_header;
+        P.newline f
+      end ; 
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match kind with 

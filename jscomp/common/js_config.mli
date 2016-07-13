@@ -64,6 +64,11 @@ val query_package_infos :
   module_system ->
   info_query
 
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
 (** return [package_name] and [path] *)
 val get_current_package_name_and_path : 
   module_system -> info_query
