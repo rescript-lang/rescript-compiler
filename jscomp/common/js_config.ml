@@ -121,12 +121,17 @@ let (//) = Filename.concat
 
 let get_packages_info () = !packages_info
 
-type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+type info_query = 
+  [ `Empty 
+  | `Package_script of string
+  | `Found of package_name * string 
+  | `NotFound ]
 let query_package_infos package_infos module_system = 
   match package_infos with 
   | Browser -> 
     assert false 
   | Empty -> `Empty
+  | NonBrowser (name, []) -> `Package_script name
   | NonBrowser (name, paths) -> 
     begin match List.find (fun (k, _) -> k = module_system) paths with 
       | (_, x) -> `Found (name, x)
@@ -140,31 +145,21 @@ let get_current_package_name_and_path   module_system =
 (* for a single pass compilation, [output_dir] 
    can be cached 
 *)
-let get_output_dir kind filename =
+let get_output_dir module_system filename =
   match !packages_info with 
-  | Empty | Browser -> 
+  | Empty | Browser | NonBrowser (_, [])-> 
     if Filename.is_relative filename then
       Lazy.force Ext_filename.cwd //
       Filename.dirname filename
     else 
       Filename.dirname filename
   | NonBrowser (_,  modules) -> 
-    begin match List.find (fun (k,_) -> k = kind) modules with 
-    | (_, x) -> Lazy.force Ext_filename.package_dir // x
-    |  exception _ -> assert false 
+    begin match List.find (fun (k,_) -> k = module_system) modules with 
+      | (_, _path) -> Lazy.force Ext_filename.package_dir // _path
+      |  exception _ -> assert false 
     end
 
 
-    
-
-
-(* Note that we can have different [basename] when passed 
-   to many files
-*)
-let get_output_file kind filename = 
-  let basename = Filename.basename filename in  
-  Filename.concat (get_output_dir kind  filename)
-    (Ext_filename.chop_extension ~loc:__LOC__ basename ^  get_ext())
     
       
 let default_gen_tds = ref false
