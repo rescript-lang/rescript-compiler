@@ -55,9 +55,9 @@ val node_relative_path : t -> [`File of string] -> string
 val chop_extension : ?loc:string -> string -> string
 
 
-val resolve : cwd:string -> string -> string
+val resolve_bs_package : cwd:string -> string -> string
 
-val resolve_package : string -> string 
+
 
 val cwd : string Lazy.t
 val package_dir : string Lazy.t

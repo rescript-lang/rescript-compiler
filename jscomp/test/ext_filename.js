@@ -243,15 +243,15 @@ function node_relative_path(file1, dep_file) {
   }
 }
 
-function resolve(cwd, module_name) {
+function resolve_bs_package(cwd, name) {
   var origin = cwd;
   var _cwd = cwd;
-  var module_name$1 = module_name;
+  var name$1 = name;
   while(true) {
     var cwd$1 = _cwd;
-    var v = Filename.concat(Filename.concat(cwd$1, node_modules), module_name$1);
-    if (Ext_sys.is_directory_no_exn(v)) {
-      return v;
+    var destdir = Filename.concat(Filename.concat(Filename.concat(Filename.concat(cwd$1, node_modules), name$1), "lib"), "ocaml");
+    if (Ext_sys.is_directory_no_exn(destdir)) {
+      return destdir;
     }
     else {
       var cwd$prime = Curry._1(Filename.dirname, cwd$1);
@@ -261,25 +261,59 @@ function resolve(cwd, module_name) {
         
       }
       else {
-        return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 198, characters 41-48', /* Format */[
-                        /* String */Block.__(2, [
-                            /* No_padding */0,
-                            /* String_literal */Block.__(11, [
-                                " not found in ",
+        try {
+          var destdir$1 = Filename.concat(Filename.concat(Filename.concat(Filename.concat(Caml_sys.caml_sys_getenv("npm_config_prefix"), "lib"), node_modules), "lib"), "ocaml");
+          if (Ext_sys.is_directory_no_exn(destdir$1)) {
+            return destdir$1;
+          }
+          else {
+            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 212, characters 19-26', /* Format */[
+                            /* Char_literal */Block.__(12, [
+                                /* " " */32,
                                 /* String */Block.__(2, [
                                     /* No_padding */0,
-                                    /* End_of_format */0
+                                    /* String_literal */Block.__(11, [
+                                        " not found in ",
+                                        /* String */Block.__(2, [
+                                            /* No_padding */0,
+                                            /* End_of_format */0
+                                          ])
+                                      ])
                                   ])
-                              ])
-                          ]),
-                        "%s not found in %s"
-                      ]), module_name$1, origin);
+                              ]),
+                            " %s not found in %s"
+                          ]), name$1, origin);
+          }
+        }
+        catch (exn){
+          if (exn === Caml_builtin_exceptions.not_found) {
+            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 217, characters 17-24', /* Format */[
+                            /* Char_literal */Block.__(12, [
+                                /* " " */32,
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* String_literal */Block.__(11, [
+                                        " not found in ",
+                                        /* String */Block.__(2, [
+                                            /* No_padding */0,
+                                            /* End_of_format */0
+                                          ])
+                                      ])
+                                  ])
+                              ]),
+                            " %s not found in %s"
+                          ]), name$1, origin);
+          }
+          else {
+            throw exn;
+          }
+        }
       }
     }
   };
 }
 
-function resolve_package(cwd) {
+function find_package_json_dir(cwd) {
   var _cwd = cwd;
   while(true) {
     var cwd$1 = _cwd;
@@ -294,7 +328,7 @@ function resolve_package(cwd) {
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 211, characters 31-38', /* Format */[
+        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 231, characters 15-22', /* Format */[
                         /* String_literal */Block.__(11, [
                             "package.json not found from ",
                             /* String */Block.__(2, [
@@ -311,7 +345,7 @@ function resolve_package(cwd) {
 
 var package_dir = Block.__(246, [function () {
       var tag = cwd.tag | 0;
-      return resolve_package(tag === 250 ? cwd[0] : (
+      return find_package_json_dir(tag === 250 ? cwd[0] : (
                     tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
                   ));
     }]);
@@ -320,22 +354,22 @@ var $slash$slash = Filename.concat;
 
 var node_modules_length = 12;
 
-exports.node_sep            = node_sep;
-exports.node_parent         = node_parent;
-exports.node_current        = node_current;
-exports.cwd                 = cwd;
-exports.$slash$slash        = $slash$slash;
-exports.combine             = combine;
-exports.path_as_directory   = path_as_directory;
-exports.absolute_path       = absolute_path;
-exports.chop_extension      = chop_extension;
-exports.try_chop_extension  = try_chop_extension;
-exports.relative_path       = relative_path;
-exports.node_modules        = node_modules;
-exports.node_modules_length = node_modules_length;
-exports.package_json        = package_json;
-exports.node_relative_path  = node_relative_path;
-exports.resolve             = resolve;
-exports.resolve_package     = resolve_package;
-exports.package_dir         = package_dir;
+exports.node_sep              = node_sep;
+exports.node_parent           = node_parent;
+exports.node_current          = node_current;
+exports.cwd                   = cwd;
+exports.$slash$slash          = $slash$slash;
+exports.combine               = combine;
+exports.path_as_directory     = path_as_directory;
+exports.absolute_path         = absolute_path;
+exports.chop_extension        = chop_extension;
+exports.try_chop_extension    = try_chop_extension;
+exports.relative_path         = relative_path;
+exports.node_modules          = node_modules;
+exports.node_modules_length   = node_modules_length;
+exports.package_json          = package_json;
+exports.node_relative_path    = node_relative_path;
+exports.resolve_bs_package    = resolve_bs_package;
+exports.find_package_json_dir = find_package_json_dir;
+exports.package_dir           = package_dir;
 /* Filename Not a pure module */

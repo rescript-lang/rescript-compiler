@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/13-21:43 *)
+(** Bundled by ocaml_pack 07/14-11:41 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1573,9 +1573,9 @@ val node_relative_path : t -> [`File of string] -> string
 val chop_extension : ?loc:string -> string -> string
 
 
-val resolve : cwd:string -> string -> string
+val resolve_bs_package : cwd:string -> string -> string
 
-val resolve_package : string -> string 
+
 
 val cwd : string Lazy.t
 val package_dir : string Lazy.t
@@ -1768,23 +1768,42 @@ let node_relative_path (file1 : t)
 
 
 
-(** [resolve cwd module_name], [cwd] is current working directory, absolute path
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
 *)
-let  resolve ~cwd module_name = 
-  let rec aux origin cwd module_name = 
-    let v =  cwd // node_modules // module_name 
-    in 
-    if Ext_sys.is_directory_no_exn v then v 
+let  resolve_bs_package ~cwd name = 
+  let rec aux origin cwd name = 
+    let destdir =  cwd // node_modules // name // "lib" // "ocaml" in 
+    if Ext_sys.is_directory_no_exn destdir then destdir
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
-        aux origin   cwd' module_name
-      else Ext_pervasives.failwithf ~loc:__LOC__ "%s not found in %s" module_name origin 
+        aux origin   cwd' name
+      else 
+        try 
+          let destdir = 
+            (Sys.getenv "npm_config_prefix" 
+             // "lib" // node_modules
+             // "lib" // "ocaml"
+            ) in
+          if Ext_sys.is_directory_no_exn destdir
+          then destdir
+          else
+            Ext_pervasives.failwithf
+              ~loc:__LOC__ " %s not found in %s" name origin 
+
+        with 
+          Not_found -> 
+          Ext_pervasives.failwithf
+            ~loc:__LOC__ " %s not found in %s" name origin 
   in
-  aux cwd cwd module_name
+  aux cwd cwd name
 
 
-let resolve_package cwd  = 
+let find_package_json_dir cwd  = 
   let rec aux cwd  = 
     if Sys.file_exists (cwd // package_json) then cwd
     else 
@@ -1792,11 +1811,13 @@ let resolve_package cwd  =
       if String.length cwd' < String.length cwd then  
         aux cwd'
       else 
-	Ext_pervasives.failwithf ~loc:__LOC__ "package.json not found from %s" cwd
+        Ext_pervasives.failwithf 
+          ~loc:__LOC__
+            "package.json not found from %s" cwd
   in
   aux cwd 
 
-let package_dir = lazy (resolve_package (Lazy.force cwd))
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 end
 module Js_config : sig 
@@ -2216,7 +2237,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.8.1"
+let version = "0.8.2"
 
 let runtime_set = 
   [
@@ -30547,8 +30568,8 @@ let collect_file name =
 let add_include_path s = 
   let (//) = Filename.concat in
   let path = 
-    Ext_filename.resolve 
-      (Lazy.force Ext_filename.cwd) s // "lib"// "ocaml"  in 
+    Ext_filename.resolve_bs_package
+      ~cwd:(Lazy.force Ext_filename.cwd) s   in 
   if Ext_sys.is_directory_no_exn path then 
     Clflags.include_dirs := path :: ! Clflags.include_dirs
   else 
