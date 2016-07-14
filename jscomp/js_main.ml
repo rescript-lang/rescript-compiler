@@ -51,8 +51,8 @@ let collect_file name =
 let add_include_path s = 
   let (//) = Filename.concat in
   let path = 
-    Ext_filename.resolve 
-      (Lazy.force Ext_filename.cwd) s // "lib"// "ocaml"  in 
+    Ext_filename.resolve_bs_package
+      ~cwd:(Lazy.force Ext_filename.cwd) s   in 
   if Ext_sys.is_directory_no_exn path then 
     Clflags.include_dirs := path :: ! Clflags.include_dirs
   else 

@@ -184,23 +184,42 @@ let node_relative_path (file1 : t)
 
 
 
-(** [resolve cwd module_name], [cwd] is current working directory, absolute path
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
 *)
-let  resolve ~cwd module_name = 
-  let rec aux origin cwd module_name = 
-    let v =  cwd // node_modules // module_name 
-    in 
-    if Ext_sys.is_directory_no_exn v then v 
+let  resolve_bs_package ~cwd name = 
+  let rec aux origin cwd name = 
+    let destdir =  cwd // node_modules // name // "lib" // "ocaml" in 
+    if Ext_sys.is_directory_no_exn destdir then destdir
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
-        aux origin   cwd' module_name
-      else Ext_pervasives.failwithf ~loc:__LOC__ "%s not found in %s" module_name origin 
+        aux origin   cwd' name
+      else 
+        try 
+          let destdir = 
+            (Sys.getenv "npm_config_prefix" 
+             // "lib" // node_modules
+             // "lib" // "ocaml"
+            ) in
+          if Ext_sys.is_directory_no_exn destdir
+          then destdir
+          else
+            Ext_pervasives.failwithf
+              ~loc:__LOC__ " %s not found in %s" name origin 
+
+        with 
+          Not_found -> 
+          Ext_pervasives.failwithf
+            ~loc:__LOC__ " %s not found in %s" name origin 
   in
-  aux cwd cwd module_name
+  aux cwd cwd name
 
 
-let resolve_package cwd  = 
+let find_package_json_dir cwd  = 
   let rec aux cwd  = 
     if Sys.file_exists (cwd // package_json) then cwd
     else 
@@ -208,8 +227,10 @@ let resolve_package cwd  =
       if String.length cwd' < String.length cwd then  
         aux cwd'
       else 
-	Ext_pervasives.failwithf ~loc:__LOC__ "package.json not found from %s" cwd
+        Ext_pervasives.failwithf 
+          ~loc:__LOC__
+            "package.json not found from %s" cwd
   in
   aux cwd 
 
-let package_dir = lazy (resolve_package (Lazy.force cwd))
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
