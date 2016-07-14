@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/14-13:31 *)
+(** Bundled by ocaml_pack 07/14-14:14 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1775,8 +1775,9 @@ let node_relative_path (file1 : t)
     [npm_package_name/lib/ocaml]
 *)
 let  resolve_bs_package ~cwd name = 
+  let sub_path = name // "lib" // "ocaml" in
   let rec aux origin cwd name = 
-    let destdir =  cwd // node_modules // name // "lib" // "ocaml" in 
+    let destdir =  cwd // node_modules // sub_path in 
     if Ext_sys.is_directory_no_exn destdir then destdir
     else 
       let cwd' = Filename.dirname cwd in 
@@ -1785,10 +1786,8 @@ let  resolve_bs_package ~cwd name =
       else 
         try 
           let destdir = 
-            (Sys.getenv "npm_config_prefix" 
-             // "lib" // node_modules
-             // "lib" // "ocaml"
-            ) in
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // node_modules // sub_path in
           if Ext_sys.is_directory_no_exn destdir
           then destdir
           else
@@ -15794,14 +15793,14 @@ let string_of_module_id (module_system : Lam_module_ident.system)
     begin match module_system,  dependency_pkg_info, current_pkg_info with
       | _, `NotFound , _ -> 
         Ext_pervasives.failwithf ~loc:__LOC__ 
-          "@[%s not found in search path - while compiling %s @] "
+          " @[%s not found in search path - while compiling %s @] "
           file !Location.input_name 
       | `Goog , `Found (package_name, x), _  -> 
         package_name  ^ "." ^  String.uncapitalize id.name
       | `Goog, (`Empty | `Package_script _), _ 
         -> 
         Ext_pervasives.failwithf ~loc:__LOC__ 
-          "@[%s was not compiled with goog support  in search path - while compiling %s @] "
+          " @[%s was not compiled with goog support  in search path - while compiling %s @] "
           file !Location.input_name 
       | (`AmdJS | `NodeJS),
         ( `Empty | `Package_script _) ,

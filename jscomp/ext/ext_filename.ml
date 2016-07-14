@@ -191,8 +191,9 @@ let node_relative_path (file1 : t)
     [npm_package_name/lib/ocaml]
 *)
 let  resolve_bs_package ~cwd name = 
+  let sub_path = name // "lib" // "ocaml" in
   let rec aux origin cwd name = 
-    let destdir =  cwd // node_modules // name // "lib" // "ocaml" in 
+    let destdir =  cwd // node_modules // sub_path in 
     if Ext_sys.is_directory_no_exn destdir then destdir
     else 
       let cwd' = Filename.dirname cwd in 
@@ -201,10 +202,8 @@ let  resolve_bs_package ~cwd name =
       else 
         try 
           let destdir = 
-            (Sys.getenv "npm_config_prefix" 
-             // "lib" // node_modules
-             // "lib" // "ocaml"
-            ) in
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // node_modules // sub_path in
           if Ext_sys.is_directory_no_exn destdir
           then destdir
           else

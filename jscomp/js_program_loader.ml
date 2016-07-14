@@ -89,14 +89,14 @@ let string_of_module_id (module_system : Lam_module_ident.system)
     begin match module_system,  dependency_pkg_info, current_pkg_info with
       | _, `NotFound , _ -> 
         Ext_pervasives.failwithf ~loc:__LOC__ 
-          "@[%s not found in search path - while compiling %s @] "
+          " @[%s not found in search path - while compiling %s @] "
           file !Location.input_name 
       | `Goog , `Found (package_name, x), _  -> 
         package_name  ^ "." ^  String.uncapitalize id.name
       | `Goog, (`Empty | `Package_script _), _ 
         -> 
         Ext_pervasives.failwithf ~loc:__LOC__ 
-          "@[%s was not compiled with goog support  in search path - while compiling %s @] "
+          " @[%s was not compiled with goog support  in search path - while compiling %s @] "
           file !Location.input_name 
       | (`AmdJS | `NodeJS),
         ( `Empty | `Package_script _) ,
