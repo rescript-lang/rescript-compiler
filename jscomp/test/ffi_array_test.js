@@ -30,7 +30,7 @@ eq('File "ffi_array_test.ml", line 12, characters 5-12', /* int array */[
         3,
         4
       ].map(function (x) {
-          return x + 3 | 0;
+          return x + 1 | 0;
         }), /* int array */[
       2,
       3,

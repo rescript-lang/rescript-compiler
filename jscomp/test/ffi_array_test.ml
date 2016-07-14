@@ -10,7 +10,7 @@ external map : 'a Js_array.t -> ('a -> 'b [@bs]) -> 'b Js_array.t = "map" [@@bs.
 
 let () = 
   eq __LOC__ 
-    (map [| 1;2;3;4 |] (fun[@bs] x  -> x +  3))
+    (map [| 1;2;3;4 |] (fun[@bs] x  -> x +  1))
     [|2;3;4;5|]
 
 ;; Mt.from_pair_suites __FILE__ !suites
