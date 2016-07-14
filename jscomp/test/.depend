@@ -205,6 +205,8 @@ fail_comp.cmj :
 fail_comp.cmx :
 ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
 ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
+ffi_array_test.cmj : mt.cmi ../runtime/js_array.cmi
+ffi_array_test.cmx : mt.cmx ../runtime/js_array.cmx
 ffi_js.cmj : ../stdlib/obj.cmi
 ffi_js.cmx : ../stdlib/obj.cmx
 ffi_test.cmj : ../runtime/js.cmj
@@ -319,8 +321,8 @@ lexer_test.cmj : number_lexer.cmj mt.cmi ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
 lexer_test.cmx : number_lexer.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/lexing.cmx arith_syntax.cmx arith_parser.cmx arith_lexer.cmx
-lib_js_test.cmj : mt.cmi ../runtime/js_string.cmj ../runtime/js.cmj
-lib_js_test.cmx : mt.cmx ../runtime/js_string.cmx ../runtime/js.cmx
+lib_js_test.cmj : mt.cmi ../runtime/js.cmj ../runtime/bs_string.cmj
+lib_js_test.cmx : mt.cmx ../runtime/js.cmx ../runtime/bs_string.cmx
 libarg_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/arg.cmi
 libarg_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
@@ -917,6 +919,8 @@ fail_comp.cmo :
 fail_comp.cmj :
 ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
 ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
+ffi_array_test.cmo : mt.cmi ../runtime/js_array.cmi
+ffi_array_test.cmj : mt.cmj ../runtime/js_array.cmj
 ffi_js.cmo : ../stdlib/obj.cmi
 ffi_js.cmj : ../stdlib/obj.cmj
 ffi_test.cmo : ../runtime/js.cmo
@@ -1031,8 +1035,8 @@ lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo arith_lexer.cmo
 lexer_test.cmj : number_lexer.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
-lib_js_test.cmo : mt.cmi ../runtime/js_string.cmo ../runtime/js.cmo
-lib_js_test.cmj : mt.cmj ../runtime/js_string.cmj ../runtime/js.cmj
+lib_js_test.cmo : mt.cmi ../runtime/js.cmo ../runtime/bs_string.cmo
+lib_js_test.cmj : mt.cmj ../runtime/js.cmj ../runtime/bs_string.cmj
 libarg_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/arg.cmi
 libarg_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \

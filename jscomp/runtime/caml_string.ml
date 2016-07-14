@@ -41,13 +41,13 @@ external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
 external length : bytes -> int = "%bytes_length"
 
 
-let js_string_of_char = Js_string.of_char
-let add = Js_string.append 
+let js_string_of_char = Bs_string.of_char
+let add = Bs_string.append 
 
 let caml_string_get s i= 
-  if i >=Js_string.length s || i < 0  then
+  if i >=Bs_string.length s || i < 0  then
     raise (Invalid_argument "index out of bounds") 
-  else Js_string.unsafe_get s i
+  else Bs_string.unsafe_get s i
 
 
 let caml_create_string len : bytes = 
@@ -72,7 +72,7 @@ let caml_fill_string (s : bytes) i l (c : char) =
  *)
 let caml_blit_string s1 i1 s2 i2 (len : int ) = 
   if len > 0 then
-    let off1 = Js_string.length s1 - i1 in
+    let off1 = Bs_string.length s1 - i1 in
     if len <= off1 then 
       for i = 0 to len - 1 do 
         unsafe_set s2 (i2 + i) s1.[i1 + i]
@@ -109,7 +109,7 @@ let caml_blit_bytes s1 i1 s2 i2 len =
 
 (** checkout [Bytes.empty] -- to be inlined? *)
 let bytes_of_string  s = 
-  let len = Js_string.length s in
+  let len = Bs_string.length s in
   let res = new_uninitialized len  in
   for i = 0 to len - 1 do 
     unsafe_set res i s.[i]
@@ -129,7 +129,7 @@ let string_of_large_bytes bytes i len =
   let s_len = ref len in
   let seg = 1024 in
   if i = 0 && len <= 4 * seg && len = length bytes then 
-    Js_string.of_small_int_array  (to_int_array bytes)
+    Bs_string.of_small_int_array  (to_int_array bytes)
   else 
     begin
       let offset = ref 0 in
@@ -137,7 +137,7 @@ let string_of_large_bytes bytes i len =
         let next = if !s_len < 1024 then !s_len else seg in
         let tmp_bytes = new_uninitialized next in
         let () = caml_blit_bytes bytes !offset tmp_bytes 0 next in 
-        s := Js_string.append !s (Js_string.of_small_int_array (to_int_array tmp_bytes));
+        s := Bs_string.append !s (Bs_string.of_small_int_array (to_int_array tmp_bytes));
         s_len := !s_len - next ; 
         offset := !offset + next;
       done;

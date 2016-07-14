@@ -46,7 +46,7 @@ type + 'a undefined
 type + 'a null_undefined
 type boolean 
 
-type re (* type for Js regular expression *)
+
 
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]

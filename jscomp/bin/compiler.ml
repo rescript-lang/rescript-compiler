@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/13-10:03 *)
+(** Bundled by ocaml_pack 07/13-21:43 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1850,9 +1850,7 @@ val set_browser : unit -> unit
 
 val get_ext : unit -> string
 
-(** depends on [package_infos] *)
-val get_output_file : module_system -> string -> string
-
+(** depends on [package_infos], used in {!Js_program_loader} *)
 val get_output_dir : module_system -> string -> string
 
 
@@ -1860,7 +1858,12 @@ val get_output_dir : module_system -> string -> string
 val set_npm_package_path : string -> unit 
 val get_packages_info : unit -> packages_info
 
-type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+type info_query = 
+  [ `Empty 
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound 
+  ]
 
 val query_package_infos : 
   packages_info ->
@@ -1868,11 +1871,15 @@ val query_package_infos :
   info_query
 
 
+
 (** set/get header *)
 val no_version_header : bool ref 
 
 
-(** return [package_name] and [path] *)
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
 val get_current_package_name_and_path : 
   module_system -> info_query
 
@@ -1916,7 +1923,7 @@ val get_no_any_assert : unit -> bool
 (** Internal use *)
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
-
+(** only used in {!Js_generate_require} *)
 
 val block : string
 val int32 : string
@@ -2084,12 +2091,17 @@ let (//) = Filename.concat
 
 let get_packages_info () = !packages_info
 
-type info_query = [ `Empty | `Found of package_name * string | `NotFound ]
+type info_query = 
+  [ `Empty 
+  | `Package_script of string
+  | `Found of package_name * string 
+  | `NotFound ]
 let query_package_infos package_infos module_system = 
   match package_infos with 
   | Browser -> 
     assert false 
   | Empty -> `Empty
+  | NonBrowser (name, []) -> `Package_script name
   | NonBrowser (name, paths) -> 
     begin match List.find (fun (k, _) -> k = module_system) paths with 
       | (_, x) -> `Found (name, x)
@@ -2103,31 +2115,21 @@ let get_current_package_name_and_path   module_system =
 (* for a single pass compilation, [output_dir] 
    can be cached 
 *)
-let get_output_dir kind filename =
+let get_output_dir module_system filename =
   match !packages_info with 
-  | Empty | Browser -> 
+  | Empty | Browser | NonBrowser (_, [])-> 
     if Filename.is_relative filename then
       Lazy.force Ext_filename.cwd //
       Filename.dirname filename
     else 
       Filename.dirname filename
   | NonBrowser (_,  modules) -> 
-    begin match List.find (fun (k,_) -> k = kind) modules with 
-    | (_, x) -> Lazy.force Ext_filename.package_dir // x
-    |  exception _ -> assert false 
+    begin match List.find (fun (k,_) -> k = module_system) modules with 
+      | (_, _path) -> Lazy.force Ext_filename.package_dir // _path
+      |  exception _ -> assert false 
     end
 
 
-    
-
-
-(* Note that we can have different [basename] when passed 
-   to many files
-*)
-let get_output_file kind filename = 
-  let basename = Filename.basename filename in  
-  Filename.concat (get_output_dir kind  filename)
-    (Ext_filename.chop_extension ~loc:__LOC__ basename ^  get_ext())
     
       
 let default_gen_tds = ref false
@@ -2165,7 +2167,6 @@ let stdlib_set = String_set.of_list [
     "stdLabels";
     "camlinternalLazy";
     "map";
-
     (* "std_exit"; *)
     (* https://developer.mozilla.org/de/docs/Web/Events/beforeunload *)
     "camlinternalMod";
@@ -2593,7 +2594,7 @@ module Lid = struct
   let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
 
   let pervasives_re_id = Longident.Ldot (Lident "Pervasives", "js_re")
-  let js_re_id = Longident.Ldot (Lident "Js", "re")
+  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
 end
 
 module No_loc = struct 
@@ -15776,25 +15777,39 @@ let string_of_module_id (module_system : Lam_module_ident.system)
           file !Location.input_name 
       | `Goog , `Found (package_name, x), _  -> 
         package_name  ^ "." ^  String.uncapitalize id.name
-      | `Goog, `Empty, _ -> 
+      | `Goog, (`Empty | `Package_script _), _ 
+        -> 
         Ext_pervasives.failwithf ~loc:__LOC__ 
           "@[%s was not compiled with goog support  in search path - while compiling %s @] "
           file !Location.input_name 
-      | (`AmdJS | `NodeJS), `Empty , `Found _  -> 
+      | (`AmdJS | `NodeJS),
+        ( `Empty | `Package_script _) ,
+        `Found _  -> 
         Ext_pervasives.failwithf ~loc:__LOC__
           "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
           file !Location.input_name
       | _ , _, `NotFound -> assert false 
-      | (`AmdJS | `NodeJS), `Found(package_name, x), `Found(current_package, path) -> 
+      | (`AmdJS | `NodeJS), 
+        `Found(package_name, x),
+        `Found(current_package, path) -> 
         if  current_package = package_name then 
           rebase (`File (
               Lazy.force Ext_filename.package_dir // x // modulename)) 
         else 
           package_name // x // modulename
-
+      | (`AmdJS | `NodeJS), `Found(package_name, x), 
+        `Package_script(current_package)
+        ->    
+        if current_package = package_name then 
+          rebase (`File (
+              Lazy.force Ext_filename.package_dir // x // modulename)) 
+        else 
+          package_name // x // modulename
       | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
         ->    package_name // x // modulename
-      |  (`AmdJS | `NodeJS), `Empty , `Empty 
+      |  (`AmdJS | `NodeJS), 
+         (`Empty | `Package_script _) , 
+         (`Empty  | `Package_script _)
         -> 
         begin match Config_util.find file with 
         | file -> 
@@ -29524,24 +29539,42 @@ let lambda_as_module
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "tuple_alloc.ml";
     let lambda_output = compile ~filename output_prefix false env sigs lam in
+    let (//) = Filename.concat in 
+    let basename =  
+      Ext_filename.chop_extension ~loc:__LOC__ 
+        (Filename.basename filename) ^  Js_config.get_ext() in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Browser -> ()
-    | Empty -> 
+    | Empty 
+    | NonBrowser (_, []) -> 
       (* script mode *)
+      let output_filename = 
+        (if Filename.is_relative filename then 
+           Lazy.force Ext_filename.cwd // 
+           Filename.dirname filename 
+         else 
+           Filename.dirname filename) // basename         
+      in 
       Ext_pervasives.with_file_as_chan 
-        (Js_config.get_output_file `NodeJS filename)
+        output_filename 
         (fun chan -> 
            Js_dump.dump_deps_program `NodeJS lambda_output chan)
+
     | NonBrowser (_package_name, module_systems) -> 
       module_systems |> List.iter begin fun (module_system, _path) -> 
+        let output_filename = 
+          Lazy.force Ext_filename.package_dir //
+          _path //
+          basename 
+        in
         Ext_pervasives.with_file_as_chan 
-          (Js_config.get_output_file module_system filename)
+          output_filename 
           (fun chan -> 
              Js_dump.dump_deps_program 
                (module_system :> [Js_config.module_system | `Browser])
                lambda_output
-	        chan)
+               chan)
       end
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 

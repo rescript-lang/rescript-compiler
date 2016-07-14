@@ -36,7 +36,7 @@
    the encoding of nativeint is platform dependent *)
 open Nativeint
 
-let (^) = Js_string.append 
+let (^) = Bs_string.append 
 
 let (>>>) = Nativeint.shift_right_logical
 let (>>) = Nativeint.shift_right
@@ -376,7 +376,7 @@ let to_int32 x = Nativeint.logor x.lo  0n (* signed integer *)
 
 let to_hex x =
   let aux v =
-    Js_string.of_int (Nativeint.to_int @@ Nativeint.shift_right_logical v 0) ~base:16 
+    Bs_string.of_int (Nativeint.to_int @@ Nativeint.shift_right_logical v 0) ~base:16 
   in
   match x.hi, x.lo with
   | 0n, 0n -> "0"
@@ -384,7 +384,7 @@ let to_hex x =
   | 0n, _ -> aux x.lo
   | _, _ ->
     let lo =  aux x.lo in
-    let pad = 8 -Js_string.length lo in
+    let pad = 8 -Bs_string.length lo in
     if pad <= 0 then             
       aux x.hi ^ lo
     else

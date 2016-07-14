@@ -712,13 +712,13 @@ We introduced `bs.re` for Javascript regex expresion:
 let f  = [%bs.re "/b/g"]
 ```
 
-The compiler will infer `f` has type `Js.re` and generate code as below
+The compiler will infer `f` has type `Js_re.t` and generate code as below
 
 ```
 var f = /b/g
 ```
 
-> Note that `Js.re` is an abstract type, we are working on providing bindings for it
+> Note that `Js_re.t` is an abstract type, we are working on providing bindings for it
 
 ## Examples:
 
