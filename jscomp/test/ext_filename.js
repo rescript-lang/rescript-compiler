@@ -244,12 +244,13 @@ function node_relative_path(file1, dep_file) {
 }
 
 function resolve_bs_package(cwd, name) {
+  var sub_path = Filename.concat(Filename.concat(name, "lib"), "ocaml");
   var origin = cwd;
   var _cwd = cwd;
   var name$1 = name;
   while(true) {
     var cwd$1 = _cwd;
-    var destdir = Filename.concat(Filename.concat(Filename.concat(Filename.concat(cwd$1, node_modules), name$1), "lib"), "ocaml");
+    var destdir = Filename.concat(Filename.concat(cwd$1, node_modules), sub_path);
     if (Ext_sys.is_directory_no_exn(destdir)) {
       return destdir;
     }
@@ -262,12 +263,12 @@ function resolve_bs_package(cwd, name) {
       }
       else {
         try {
-          var destdir$1 = Filename.concat(Filename.concat(Filename.concat(Filename.concat(Caml_sys.caml_sys_getenv("npm_config_prefix"), "lib"), node_modules), "lib"), "ocaml");
+          var destdir$1 = Filename.concat(Filename.concat(Filename.concat(Caml_sys.caml_sys_getenv("npm_config_prefix"), "lib"), node_modules), sub_path);
           if (Ext_sys.is_directory_no_exn(destdir$1)) {
             return destdir$1;
           }
           else {
-            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 212, characters 19-26', /* Format */[
+            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 211, characters 19-26', /* Format */[
                             /* Char_literal */Block.__(12, [
                                 /* " " */32,
                                 /* String */Block.__(2, [
@@ -287,7 +288,7 @@ function resolve_bs_package(cwd, name) {
         }
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
-            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 217, characters 17-24', /* Format */[
+            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 216, characters 17-24', /* Format */[
                             /* Char_literal */Block.__(12, [
                                 /* " " */32,
                                 /* String */Block.__(2, [
@@ -328,7 +329,7 @@ function find_package_json_dir(cwd) {
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 231, characters 15-22', /* Format */[
+        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 230, characters 15-22', /* Format */[
                         /* String_literal */Block.__(11, [
                             "package.json not found from ",
                             /* String */Block.__(2, [
