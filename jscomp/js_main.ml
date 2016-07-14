@@ -49,7 +49,6 @@ let collect_file name =
 
 
 let add_include_path s = 
-  let (//) = Filename.concat in
   let path = 
     Ext_filename.resolve_bs_package
       ~cwd:(Lazy.force Ext_filename.cwd) s   in 
