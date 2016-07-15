@@ -62,3 +62,11 @@ let a44 = Js_unsafe.mk4 (fun x y z d -> let u = x * x + y * y + z * z in  u + d)
 
 let b44 () = Js_unsafe.mk4 (fun x y z d -> (x,y,z,d))
 (* polymoprhic restriction *)
+
+let test_as : ('a -> 'a)  -> (_ as 'b)  ->  'b = List.map
+
+let xx : unit -> ( _ -> unit [@bs]) = fun () -> fun [@bs] _ -> Js.log 3 
+
+
+(* let test_hihi = hihi _ [@bs] *)
+

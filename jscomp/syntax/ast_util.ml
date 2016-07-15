@@ -141,7 +141,8 @@ let generic_apply  kind loc
   let len = List.length args in 
   let arity, fn, args  = 
   match args with 
-  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+  | [ {pexp_desc =
+         Pexp_construct ({txt = Lident "()"}, None)}]
     -> 
      0, cb loc obj, []
   | _ -> 
@@ -196,21 +197,19 @@ let generic_to_uncurry_type kind loc (mapper : Ast_mapper.mapper)
   let first_arg = mapper.typ mapper first_arg in
   let result, rev_extra_args = aux  [first_arg] typ in 
   let args  = List.rev rev_extra_args in 
+  let filter_args args  =  
+    match args with 
+    | [{Parsetree.ptyp_desc = 
+          (Ptyp_constr ({txt = Lident "unit"}, []) 
+          )}]
+      -> []
+    | _ -> args in
   match kind with 
-  | `Fn
-    ->
-    let args = 
-      match args with 
-      | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-        -> []
-      | _ -> args in
+  | `Fn ->
+    let args = filter_args args in
     lift_curry_type loc args result 
   | `Method -> 
-    let args = 
-      match args with 
-      | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-        -> []
-      | _ -> args in
+    let args = filter_args args in
     lift_method_type loc args result 
 
   | `Method_callback
@@ -249,7 +248,8 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
     match kind with 
     | `Fn  ->     
       begin match rev_extra_args with 
-        | [ {ppat_desc = Ppat_construct ({txt = Lident "()"}, None)}]
+        | [ {ppat_desc =
+               ( Ppat_construct ({txt = Lident "()"}, None) )}]
           -> 0 
         | _ -> len 
       end
