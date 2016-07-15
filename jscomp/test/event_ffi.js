@@ -2,6 +2,7 @@
 
 var Caml_int32 = require("../../lib/js/caml_int32");
 var Curry      = require("../../lib/js/curry");
+var List       = require("../../lib/js/list");
 
 function h0(x) {
   return x();
@@ -86,6 +87,15 @@ function b44() {
   };
 }
 
+function xx() {
+  return function () {
+    console.log(3);
+    return /* () */0;
+  };
+}
+
+var test_as = List.map;
+
 exports.h0        = h0;
 exports.h00       = h00;
 exports.h1        = h1;
@@ -101,4 +111,6 @@ exports.a3        = a3;
 exports.a4        = a4;
 exports.a44       = a44;
 exports.b44       = b44;
+exports.test_as   = test_as;
+exports.xx        = xx;
 /* partial_arg Not a pure module */
