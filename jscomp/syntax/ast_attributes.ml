@@ -88,9 +88,9 @@ let process_attributes_rev (attrs : t) =
       | "bs", (`Nothing | `Uncurry) 
         -> 
         `Uncurry, acc
-      | "bs.this", (`Nothing | `Meth)
-        ->  `Meth, acc
-      | "bs", `Meth 
+      | "bs.this", (`Nothing | `Meth_callback)
+        ->  `Meth_callback, acc
+      | "bs", `Meth_callback 
       | "bs.this", `Uncurry
         -> Location.raise_errorf 
              ~loc
