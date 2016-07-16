@@ -29,8 +29,13 @@ function test_set(x) {
   return x.length = 3;
 }
 
+function f(x) {
+  return x.bark("he");
+}
+
 exports.sum_float_array = sum_float_array;
 exports.sum_int_array   = sum_int_array;
 exports.sum_poly        = sum_poly;
 exports.test_set        = test_set;
+exports.f               = f;
 /* No side effect */

@@ -181,8 +181,10 @@ let handle_typ
     begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
       | `Uncurry , ptyp_attributes ->
         Ast_util.to_uncurry_type loc self args body 
-      |  `Meth, ptyp_attributes -> 
+      |  `Meth_callback, ptyp_attributes -> 
         Ast_util.to_method_callback_type loc self args body
+      | `Method, ptyp_attributes ->
+        Ast_util.to_method_type loc self args body
       | `Nothing , _ -> 
         if !uncurry_type then 
           Ast_util.to_uncurry_type loc  self  args body
@@ -217,7 +219,14 @@ let handle_typ
                 { core_type with 
                   ptyp_attributes = 
                     Ast_attributes.bs :: core_type.ptyp_attributes}
-            |  `Meth, ptyp_attrs 
+            | `Method, ptyp_attrs 
+              ->  
+              label , ptyp_attrs, 
+              check_auto_uncurry
+                { core_type with 
+                  ptyp_attributes = 
+                    Ast_attributes.bs_method :: core_type.ptyp_attributes}
+            | `Meth_callback, ptyp_attrs 
               ->  
               label , ptyp_attrs, 
               check_auto_uncurry
@@ -235,7 +244,12 @@ let handle_typ
                   { core_type with 
                     ptyp_attributes = 
                       Ast_attributes.bs :: core_type.ptyp_attributes}
-              |  `Meth, ptyp_attrs -> 
+              |  `Method, ptyp_attrs -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_attributes.bs_method :: core_type.ptyp_attributes}
+              |  `Meth_callback, ptyp_attrs -> 
                 label , ptyp_attrs, self.typ self 
                   { core_type with 
                     ptyp_attributes = 
@@ -298,7 +312,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             {e with 
              pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
              pexp_attributes}
-          | `Meth , pexp_attributes
+          | `Method , _
+            ->  Location.raise_errorf ~loc "bs.meth is not supported in function expression"
+          | `Meth_callback , pexp_attributes
             -> 
             {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;
                     pexp_attributes }
