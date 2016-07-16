@@ -90,11 +90,13 @@ let process_attributes_rev (attrs : t) =
         `Uncurry, acc
       | "bs.this", (`Nothing | `Meth_callback)
         ->  `Meth_callback, acc
-      | "bs", `Meth_callback 
-      | "bs.this", `Uncurry
+      | "bs.meth",  (`Nothing | `Method)
+        -> `Method, acc
+      | "bs", _
+      | "bs.this", _
         -> Location.raise_errorf 
              ~loc
-             "[@bs.this] and [@bs] can not be applied at the same time"
+             "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
       | _ , _ -> 
         st, attr::acc 
     ) ( `Nothing, []) attrs
@@ -127,3 +129,7 @@ let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
 let bs_this : attr
   =  {txt = "bs.this" ; loc = Location.none}, Ast_payload.empty
+
+let bs_method : attr 
+  =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
+

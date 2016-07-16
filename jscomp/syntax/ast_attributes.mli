@@ -33,7 +33,7 @@ val process_method_attributes_rev :
   (bool * bool , [`Get | `No_get ]) st * t 
 
 val process_attributes_rev : 
-  t -> [ `Meth_callback | `Nothing | `Uncurry ] * t 
+  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
 
 val process_class_type_decl_rev : 
   t -> [ `Nothing | `Has] * t 
@@ -41,6 +41,8 @@ val process_class_type_decl_rev :
 val process_const_string_rev : 
   t -> 
   [> `Has_re | `Nothing ] * t 
+
 val bs_obj : attr 
 val bs : attr 
 val bs_this : attr
+val bs_method : attr
