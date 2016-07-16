@@ -1,9 +1,9 @@
 'use strict';
 
+var Runtime = require("@runtime");
 var BUI     = require("@blp/ui");
 var UI      = require("@ui");
 var Curry   = require("../../lib/js/curry");
-var Runtime = require("@runtime");
 
 var data = /* array */[
   /* record */[
@@ -107,4 +107,4 @@ function ui_layout(compile, lookup, appContext) {
 
 exports.data      = data;
 exports.ui_layout = ui_layout;
-/* @blp/ui Not a pure module */
+/* @runtime Not a pure module */

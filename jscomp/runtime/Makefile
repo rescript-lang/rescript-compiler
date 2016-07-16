@@ -8,10 +8,10 @@ OTHERS= caml_array caml_string \
 	caml_float caml_lexer caml_parser caml_primitive\
 	caml_format caml_md5 caml_queue caml_hash caml_weak\
 	caml_backtrace caml_int32 caml_gc typed_array \
-	js_primitive caml_basic caml_oo curry caml_module js_unsafe \
+	js_primitive caml_basic caml_oo curry caml_module  \
 	bs_string  js_float js_obj js_nativeint js_int js_array js_string js_re
 
-SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js 
+SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe
 
 caml_oo.cmj : caml_array.cmj
 caml_format.cmj caml_io.cmj: curry.cmj
@@ -20,7 +20,7 @@ caml_format.cmj caml_io.cmj: curry.cmj
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj 
 
 ## since we use ppx
-$(addsuffix .cmi, $(OTHERS)): js.cmi
+$(addsuffix .cmi, $(OTHERS)): js.cmi js_unsafe.cmj js_unsafe.cmi
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 

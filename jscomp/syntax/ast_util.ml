@@ -109,17 +109,21 @@ let arrow = Typ.arrow
 
 
 let js_property loc obj name =
+  if Js_config.is_browser () then
   let downgrade ~loc () = 
     let var = Typ.var ~loc "a" in 
     Ast_comb.arrow_no_label ~loc
       (to_js_type loc var) var
   in
-  Ast_comb.local_extern_cont loc  
-    ~pval_prim:["js_unsafe_downgrade"] 
+  Ast_external.local_extern_cont loc  
+    ~pval_prim:[Literals.js_unsafe_downgrade] 
     ~pval_type:(downgrade ~loc ())
     ~local_fun_name:"cast" 
     (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
-
+  else 
+    Parsetree.Pexp_send
+      ((Exp.apply (Exp.ident {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+       ["",obj]), name)
 
 (* TODO: 
    have a final checking for property arities 
@@ -147,6 +151,18 @@ let generic_apply  kind loc
      0, cb loc obj, []
   | _ -> 
     len,  cb loc obj, args in
+  if not (Js_config.is_browser ()) && arity < 10 then 
+    let txt = 
+      match kind with 
+      | `Fn | `PropertyFn ->  
+        Longident.Ldot (Ast_literal.Lid.js_unsafe, 
+                        Literals.js_fn_run ^ string_of_int arity)
+      | `Method -> 
+        Longident.Ldot(Ast_literal.Lid.js_unsafe,
+                       Literals.js_method_run ^ string_of_int arity
+                      ) in 
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
+  else 
   let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
   let string_arity = string_of_int arity in
   let pval_prim, pval_type = 
@@ -158,7 +174,7 @@ let generic_apply  kind loc
       [Literals.js_method_run ; string_arity], 
       arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
   in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+  Ast_external.create_local_external loc ~pval_prim ~pval_type 
     (("", fn) :: List.map (fun x -> "",x) args )
 
 
@@ -254,10 +270,20 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | _ -> len 
       end
     | `Method_callback -> len  in 
-  let pval_prim =
+  if arity < 10 &&  not (Js_config.is_browser ()) then 
+    let txt = 
+      match kind with 
+      | `Fn -> 
+        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.js_fn_mk ^ string_of_int arity)
+      | `Method_callback -> 
+        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_fn_method ^ string_of_int arity) in
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
+
+  else 
+    let pval_prim =
       [ (match kind with 
-           | `Fn -> Literals.js_fn_mk
-           | `Method_callback -> Literals.js_fn_method); 
+            | `Fn -> Literals.js_fn_mk
+            | `Method_callback -> Literals.js_fn_method); 
         string_of_int arity]  in
     let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
     let pval_type = arrow ~loc "" fn_type (
@@ -267,7 +293,8 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | `Method_callback -> 
           lift_js_method_callback loc args_type result_type
       ) in
-    Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", body)]
+    Ast_external.local_extern_cont loc ~pval_prim ~pval_type 
+      (fun prim -> Exp.apply ~loc prim ["", body]) 
 
 let to_uncurry_fn   = 
   generic_to_uncurry_exp `Fn
@@ -287,12 +314,17 @@ let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type =
 
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
-    let predef_unit_type = Ast_literal.type_unit ~loc () in
-    let pval_prim = ["js_debugger"] in
-    Ast_comb.create_local_external loc 
-      ~pval_prim
-      ~pval_type:(arrow "" predef_unit_type predef_unit_type)
-      [("",  Ast_literal.val_unit ~loc ())]
+    if Js_config.is_browser () then 
+      let predef_unit_type = Ast_literal.type_unit ~loc () in
+      let pval_prim = [Literals.js_debugger] in
+      Ast_external.create_local_external loc 
+        ~pval_prim
+        ~pval_type:(arrow "" predef_unit_type predef_unit_type)
+        [("",  Ast_literal.val_unit ~loc ())]
+    else 
+      Parsetree.Pexp_apply
+        (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
+         ["", Ast_literal.val_unit ~loc ()])
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 
@@ -301,14 +333,24 @@ let handle_raw loc payload =
     | None -> 
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
     | Some exp -> 
-      let pval_prim = ["js_pure_expr"] in
-      { exp with pexp_desc = Ast_comb.create_local_external loc 
-                     ~pval_prim
-                     ~pval_type:(arrow "" 
-                                   (Ast_literal.type_string ~loc ()) 
-                                   (Ast_literal.type_any ~loc ()) )
-
-                     ["",exp]}
+      let pval_prim = [Literals.js_pure_expr] in
+      let pexp_desc = 
+        if Js_config.is_browser () then 
+          Ast_external.create_local_external loc 
+            ~pval_prim
+            ~pval_type:(arrow "" 
+                          (Ast_literal.type_string ~loc ()) 
+                          (Ast_literal.type_any ~loc ()) )
+            ["",exp] 
+        else Parsetree.Pexp_apply (
+            Exp.ident {loc; 
+                       txt = 
+                         Ldot (Ast_literal.Lid.js_unsafe, 
+                               Literals.js_pure_expr)},
+            ["",exp]
+          )
+      in
+      { exp with pexp_desc }
   end
 
 let handle_regexp loc payload = 
@@ -316,19 +358,26 @@ let handle_regexp loc payload =
   | None -> 
     Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   | Some exp -> 
-    let pval_prim = ["js_pure_expr"] in
-    {exp with pexp_desc = 
-                Ast_comb.local_extern_cont loc 
-                  ~pval_prim
-                  ~pval_type:(arrow "" 
-                                (Ast_literal.type_string ~loc ()) 
-                                (Ast_literal.type_any ~loc ()) )
-                  (fun f -> 
-                     Exp.constraint_ ~loc 
-                       (Exp.apply ~loc f ["", exp])
-                       (Typ.constr ~loc {txt = re_id (); loc} [])
-                  )
-    }
+    let pval_prim = [Literals.js_pure_expr] in
+    let ty = Typ.constr ~loc {txt = re_id (); loc} [] in
+    let pexp_desc = 
+      if Js_config.is_browser () then
+        Ast_external.local_extern_cont loc 
+          ~pval_prim
+          ~pval_type:(arrow "" 
+                        (Ast_literal.type_string ~loc ()) 
+                        (Ast_literal.type_any ~loc ()) )
+          (fun f -> 
+             Exp.constraint_ ~loc 
+               (Exp.apply ~loc f ["", exp]) ty
+               ) 
+      else 
+        Parsetree.Pexp_constraint(
+        Exp.apply ~loc 
+          (Exp.ident {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_pure_expr)})
+          ["",exp], ty)
+    in 
+    {exp with pexp_desc}
 
 
 
@@ -337,15 +386,22 @@ let handle_raw_structure loc payload =
   begin match Ast_payload.as_string_exp payload with 
     | Some exp 
       -> 
-      let pval_prim = ["js_pure_stmt"] in 
+      let pexp_desc = 
+        if Js_config.is_browser () then 
+          let pval_prim = [Literals.js_pure_stmt] in 
+          Ast_external.create_local_external loc 
+            ~pval_prim
+            ~pval_type:(arrow ""
+                          (Ast_literal.type_string ~loc ())
+                          (Ast_literal.type_any ~loc ()))
+            ["",exp]
+        else 
+          Parsetree.Pexp_apply(
+            Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
+            ["",exp]) in 
       Ast_helper.Str.eval 
-        { exp with pexp_desc =
-                     Ast_comb.create_local_external loc 
-                       ~pval_prim
-                       ~pval_type:(arrow ""
-                                     (Ast_literal.type_string ~loc ())
-                                     (Ast_literal.type_any ~loc ()))
-                       ["",exp]}
+        { exp with pexp_desc }
+
     | None
       -> 
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
@@ -366,7 +422,7 @@ let record_as_js_object
   let pval_prim = [ "" ] in 
   let pval_attributes = [Ast_attributes.bs_obj] in 
   let pval_type = from_labels ~loc labels in 
-  Ast_comb.create_local_external loc 
+  Ast_external.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
     args 

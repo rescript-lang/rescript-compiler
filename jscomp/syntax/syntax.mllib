@@ -7,3 +7,4 @@ depend
 ast_extract
 ast_util
 ast_attributes
+ast_external

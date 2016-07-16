@@ -962,7 +962,7 @@ let query (prim : Lam_compile_env.primitive_description)
         | [e] -> E.obj_length e 
         | _ -> assert false 
       end
-    | "js_pure_expr"
+    | "js_pure_expr" (* TODO: conver it even earlier *)
       -> 
       begin match args with 
       | [ { expression_desc = Str (_,s )}] -> 
@@ -974,7 +974,7 @@ let query (prim : Lam_compile_env.primitive_description)
         ;
         assert false
       end
-    | "js_pure_stmt"
+    | "js_pure_stmt" (* TODO: convert even ealier *)
       -> 
       begin match args with 
       | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Stmt s

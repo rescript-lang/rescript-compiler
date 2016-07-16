@@ -54,6 +54,10 @@ val setter_suffix : string
 val setter_suffix_len : int
 
 
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
 val js_fn_run : string
 val js_method_run : string
 val js_fn_method : string

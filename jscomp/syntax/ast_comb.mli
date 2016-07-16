@@ -22,22 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val create_local_external : Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Asttypes.label * Parsetree.expression) list -> Parsetree.expression_desc
-
-val local_extern_cont : 
-  Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
 
 val exp_apply_no_label : 
   ?loc:Location.t ->
