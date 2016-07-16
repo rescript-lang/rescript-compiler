@@ -20,7 +20,7 @@ caml_format.cmj caml_io.cmj: curry.cmj
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj 
 
 ## since we use ppx
-$(addsuffix .cmi, $(OTHERS)): js.cmi
+$(addsuffix .cmi, $(OTHERS)): js.cmi js_unsafe.cmj js_unsafe.cmi
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 

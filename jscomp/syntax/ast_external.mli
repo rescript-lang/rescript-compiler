@@ -23,33 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+val create_local_external : Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Asttypes.label * Parsetree.expression) list -> Parsetree.expression_desc
 
-val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
-
-val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
-
-
-val tuple_type_pair : 
-  ?loc:Ast_helper.loc ->
-  [< `Make | `Run ] ->
-  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
-
+val local_extern_cont : 
+  Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc

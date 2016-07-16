@@ -115,7 +115,7 @@ let js_property loc obj name =
     Ast_comb.arrow_no_label ~loc
       (to_js_type loc var) var
   in
-  Ast_comb.local_extern_cont loc  
+  Ast_external.local_extern_cont loc  
     ~pval_prim:[Literals.js_unsafe_downgrade] 
     ~pval_type:(downgrade ~loc ())
     ~local_fun_name:"cast" 
@@ -174,7 +174,7 @@ let generic_apply  kind loc
       [Literals.js_method_run ; string_arity], 
       arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
   in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+  Ast_external.create_local_external loc ~pval_prim ~pval_type 
     (("", fn) :: List.map (fun x -> "",x) args )
 
 
@@ -293,7 +293,7 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | `Method_callback -> 
           lift_js_method_callback loc args_type result_type
       ) in
-    Ast_comb.local_extern_cont loc ~pval_prim ~pval_type 
+    Ast_external.local_extern_cont loc ~pval_prim ~pval_type 
       (fun prim -> Exp.apply ~loc prim ["", body]) 
 
 let to_uncurry_fn   = 
@@ -317,7 +317,7 @@ let handle_debugger loc payload =
     if Js_config.is_browser () then 
       let predef_unit_type = Ast_literal.type_unit ~loc () in
       let pval_prim = [Literals.js_debugger] in
-      Ast_comb.create_local_external loc 
+      Ast_external.create_local_external loc 
         ~pval_prim
         ~pval_type:(arrow "" predef_unit_type predef_unit_type)
         [("",  Ast_literal.val_unit ~loc ())]
@@ -336,7 +336,7 @@ let handle_raw loc payload =
       let pval_prim = [Literals.js_pure_expr] in
       let pexp_desc = 
         if Js_config.is_browser () then 
-          Ast_comb.create_local_external loc 
+          Ast_external.create_local_external loc 
             ~pval_prim
             ~pval_type:(arrow "" 
                           (Ast_literal.type_string ~loc ()) 
@@ -362,7 +362,7 @@ let handle_regexp loc payload =
     let ty = Typ.constr ~loc {txt = re_id (); loc} [] in
     let pexp_desc = 
       if Js_config.is_browser () then
-        Ast_comb.local_extern_cont loc 
+        Ast_external.local_extern_cont loc 
           ~pval_prim
           ~pval_type:(arrow "" 
                         (Ast_literal.type_string ~loc ()) 
@@ -389,7 +389,7 @@ let handle_raw_structure loc payload =
       let pexp_desc = 
         if Js_config.is_browser () then 
           let pval_prim = [Literals.js_pure_stmt] in 
-          Ast_comb.create_local_external loc 
+          Ast_external.create_local_external loc 
             ~pval_prim
             ~pval_type:(arrow ""
                           (Ast_literal.type_string ~loc ())
@@ -422,7 +422,7 @@ let record_as_js_object
   let pval_prim = [ "" ] in 
   let pval_attributes = [Ast_attributes.bs_obj] in 
   let pval_type = from_labels ~loc labels in 
-  Ast_comb.create_local_external loc 
+  Ast_external.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
     args 
