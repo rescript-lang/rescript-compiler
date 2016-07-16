@@ -54,7 +54,10 @@ let imul = "imul" (* signed int32 mul *)
 let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
-
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
 let js_fn_run = "js_fn_run"
 let js_method_run = "js_method_run"
 

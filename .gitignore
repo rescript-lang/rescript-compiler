@@ -1,5 +1,6 @@
 *~
 _build
+*.out
 *.compile
 *.native
 *.byte

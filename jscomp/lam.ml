@@ -570,7 +570,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     let prim_name = a.prim_name in
     if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
       prim ~primitive:(Pccall a ) ~args else 
-    if prim_name =  "js_debugger" then 
+    if prim_name =  Literals.js_debugger then 
       prim ~primitive:Pdebugger ~args else 
     if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
       prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args else 
@@ -763,7 +763,8 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lsend (kind, a,b,ls, loc) -> 
     (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
     begin match convert b with 
-      | Lprim {primitive =  Pccall {prim_name = "js_unsafe_downgrade"};  args}
+      | Lprim {primitive =  Pccall {prim_name };  args}
+        when prim_name = Literals.js_unsafe_downgrade
         -> 
         begin match kind, ls with 
           | Public (Some name), [] -> 

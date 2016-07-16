@@ -41,15 +41,6 @@ let hh (x : 'a fn) = h (x : _ fn :>   (< l : int ; y :int > Js.t, int) u )
 
 (* let m = [%bs.method fun o (x,y) -> o##length < x && o##length > y ] *)
 
-external method0 : 
-  ('obj -> 'a0)  
-  -> 
-  ('obj ->  'a0 [@bs.this]) =
-  "js_fn_method" "0"
-external method1 : 
-  ('obj  -> 'a0 -> 'a1) ->
-  ('obj  -> 'a0 -> 'a1 [@bs.this])
-   = "js_fn_method" "1"
 
 
 

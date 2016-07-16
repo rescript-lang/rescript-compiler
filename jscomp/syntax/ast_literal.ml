@@ -55,6 +55,8 @@ module Lid = struct
 
   let pervasives_re_id = Longident.Ldot (Lident "Pervasives", "js_re")
   let js_re_id = Longident.Ldot (Lident "Js_re", "t")
+
+  let js_unsafe = Longident.Lident "Js_unsafe"
 end
 
 module No_loc = struct 

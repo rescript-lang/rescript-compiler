@@ -47,6 +47,8 @@ module Lid : sig
 
   val pervasives_re_id : t 
   val js_re_id : t 
+
+  val js_unsafe : t 
 end
 
 type expression_lit = Parsetree.expression lit 

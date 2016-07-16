@@ -95,7 +95,7 @@ install:
 	cp  ./bin/bsc ../bin/
 	cp ./runtime/*.cmt* ../lib/ocaml/
 	cp ./runtime/*.cmj* ../lib/ocaml/
-	cp ./runtime/js.cmi ./runtime/js_array.cmi ./runtime/js_string.cmi ./runtime/js_re.cmi ../lib/ocaml/	
+	cp ./runtime/js.cmi ./runtime/js_array.cmi ./runtime/js_string.cmi ./runtime/js_re.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
 	cp ./stdlib/*.cm* ../lib/ocaml/
 
 TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
