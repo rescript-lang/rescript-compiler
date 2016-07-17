@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/14-14:14 *)
+(** Bundled by ocaml_pack 07/17-10:06 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -133,6 +133,10 @@ val setter_suffix : string
 val setter_suffix_len : int
 
 
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
 val js_fn_run : string
 val js_method_run : string
 val js_fn_method : string
@@ -199,7 +203,10 @@ let imul = "imul" (* signed int32 mul *)
 let setter_suffix = "#="
 let setter_suffix_len = String.length setter_suffix
 
-
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
 let js_fn_run = "js_fn_run"
 let js_method_run = "js_method_run"
 
@@ -2236,7 +2243,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.8.2"
+let version = "0.8.3"
 
 let runtime_set = 
   [
@@ -2540,6 +2547,8 @@ module Lid : sig
 
   val pervasives_re_id : t 
   val js_re_id : t 
+
+  val js_unsafe : t 
 end
 
 type expression_lit = Parsetree.expression lit 
@@ -2615,6 +2624,8 @@ module Lid = struct
 
   let pervasives_re_id = Longident.Ldot (Lident "Pervasives", "js_re")
   let js_re_id = Longident.Ldot (Lident "Js_re", "t")
+
+  let js_unsafe = Longident.Lident "Js_unsafe"
 end
 
 module No_loc = struct 
@@ -2668,8 +2679,8 @@ let pat_unit ?loc () =
     Pat.construct ~loc {txt = Lid.val_unit; loc} None
 
 end
-module Ast_comb : sig 
-#1 "ast_comb.mli"
+module Ast_external : sig 
+#1 "ast_external.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2694,6 +2705,7 @@ module Ast_comb : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
 val create_local_external : Location.t ->
   ?pval_attributes:Parsetree.attributes ->
   pval_prim:string list ->
@@ -2711,39 +2723,8 @@ val local_extern_cont :
   ?local_fun_name:string ->
   (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
 
-val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
-
-val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
-
-val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
-
-
-val tuple_type_pair : 
-  ?loc:Ast_helper.loc ->
-  [< `Make | `Run ] ->
-  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
-
-
 end = struct
-#1 "ast_comb.ml"
+#1 "ast_external.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2832,6 +2813,92 @@ let local_extern_cont loc
          pexp_loc = loc}
 )
 
+end
+module Ast_comb : sig 
+#1 "ast_comb.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val exp_apply_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+
+val fun_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+
+val arrow_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression
+
+
+val tuple_type_pair : 
+  ?loc:Ast_helper.loc ->
+  [< `Make | `Run ] ->
+  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
+
+
+end = struct
+#1 "ast_comb.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
 open Ast_helper 
 
 let exp_apply_no_label ?loc ?attrs a b = 
@@ -2916,7 +2983,7 @@ val process_method_attributes_rev :
   (bool * bool , [`Get | `No_get ]) st * t 
 
 val process_attributes_rev : 
-  t -> [ `Meth | `Nothing | `Uncurry ] * t 
+  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
 
 val process_class_type_decl_rev : 
   t -> [ `Nothing | `Has] * t 
@@ -2924,9 +2991,11 @@ val process_class_type_decl_rev :
 val process_const_string_rev : 
   t -> 
   [> `Has_re | `Nothing ] * t 
+
 val bs_obj : attr 
 val bs : attr 
 val bs_this : attr
+val bs_method : attr
 
 end = struct
 #1 "ast_attributes.ml"
@@ -3020,13 +3089,15 @@ let process_attributes_rev (attrs : t) =
       | "bs", (`Nothing | `Uncurry) 
         -> 
         `Uncurry, acc
-      | "bs.this", (`Nothing | `Meth)
-        ->  `Meth, acc
-      | "bs", `Meth 
-      | "bs.this", `Uncurry
+      | "bs.this", (`Nothing | `Meth_callback)
+        ->  `Meth_callback, acc
+      | "bs.meth",  (`Nothing | `Method)
+        -> `Method, acc
+      | "bs", _
+      | "bs.this", _
         -> Location.raise_errorf 
              ~loc
-             "[@bs.this] and [@bs] can not be applied at the same time"
+             "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
       | _ , _ -> 
         st, attr::acc 
     ) ( `Nothing, []) attrs
@@ -3059,6 +3130,10 @@ let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
 let bs_this : attr
   =  {txt = "bs.this" ; loc = Location.none}, Ast_payload.empty
+
+let bs_method : attr 
+  =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
+
 
 end
 module Ast_util : sig 
@@ -3299,17 +3374,21 @@ let arrow = Typ.arrow
 
 
 let js_property loc obj name =
+  if Js_config.is_browser () then
   let downgrade ~loc () = 
     let var = Typ.var ~loc "a" in 
     Ast_comb.arrow_no_label ~loc
       (to_js_type loc var) var
   in
-  Ast_comb.local_extern_cont loc  
-    ~pval_prim:["js_unsafe_downgrade"] 
+  Ast_external.local_extern_cont loc  
+    ~pval_prim:[Literals.js_unsafe_downgrade] 
     ~pval_type:(downgrade ~loc ())
     ~local_fun_name:"cast" 
     (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
-
+  else 
+    Parsetree.Pexp_send
+      ((Exp.apply (Exp.ident {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+       ["",obj]), name)
 
 (* TODO: 
    have a final checking for property arities 
@@ -3331,11 +3410,24 @@ let generic_apply  kind loc
   let len = List.length args in 
   let arity, fn, args  = 
   match args with 
-  | [ {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)}]
+  | [ {pexp_desc =
+         Pexp_construct ({txt = Lident "()"}, None)}]
     -> 
      0, cb loc obj, []
   | _ -> 
     len,  cb loc obj, args in
+  if not (Js_config.is_browser ()) && arity < 10 then 
+    let txt = 
+      match kind with 
+      | `Fn | `PropertyFn ->  
+        Longident.Ldot (Ast_literal.Lid.js_unsafe, 
+                        Literals.js_fn_run ^ string_of_int arity)
+      | `Method -> 
+        Longident.Ldot(Ast_literal.Lid.js_unsafe,
+                       Literals.js_method_run ^ string_of_int arity
+                      ) in 
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
+  else 
   let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
   let string_arity = string_of_int arity in
   let pval_prim, pval_type = 
@@ -3347,7 +3439,7 @@ let generic_apply  kind loc
       [Literals.js_method_run ; string_arity], 
       arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
   in
-  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+  Ast_external.create_local_external loc ~pval_prim ~pval_type 
     (("", fn) :: List.map (fun x -> "",x) args )
 
 
@@ -3386,21 +3478,19 @@ let generic_to_uncurry_type kind loc (mapper : Ast_mapper.mapper)
   let first_arg = mapper.typ mapper first_arg in
   let result, rev_extra_args = aux  [first_arg] typ in 
   let args  = List.rev rev_extra_args in 
+  let filter_args args  =  
+    match args with 
+    | [{Parsetree.ptyp_desc = 
+          (Ptyp_constr ({txt = Lident "unit"}, []) 
+          )}]
+      -> []
+    | _ -> args in
   match kind with 
-  | `Fn
-    ->
-    let args = 
-      match args with 
-      | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-        -> []
-      | _ -> args in
+  | `Fn ->
+    let args = filter_args args in
     lift_curry_type loc args result 
   | `Method -> 
-    let args = 
-      match args with 
-      | [{ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, [])}]
-        -> []
-      | _ -> args in
+    let args = filter_args args in
     lift_method_type loc args result 
 
   | `Method_callback
@@ -3439,15 +3529,26 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
     match kind with 
     | `Fn  ->     
       begin match rev_extra_args with 
-        | [ {ppat_desc = Ppat_construct ({txt = Lident "()"}, None)}]
+        | [ {ppat_desc =
+               ( Ppat_construct ({txt = Lident "()"}, None) )}]
           -> 0 
         | _ -> len 
       end
     | `Method_callback -> len  in 
-  let pval_prim =
+  if arity < 10 &&  not (Js_config.is_browser ()) then 
+    let txt = 
+      match kind with 
+      | `Fn -> 
+        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.js_fn_mk ^ string_of_int arity)
+      | `Method_callback -> 
+        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_fn_method ^ string_of_int arity) in
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
+
+  else 
+    let pval_prim =
       [ (match kind with 
-           | `Fn -> Literals.js_fn_mk
-           | `Method_callback -> Literals.js_fn_method); 
+            | `Fn -> Literals.js_fn_mk
+            | `Method_callback -> Literals.js_fn_method); 
         string_of_int arity]  in
     let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
     let pval_type = arrow ~loc "" fn_type (
@@ -3457,7 +3558,8 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | `Method_callback -> 
           lift_js_method_callback loc args_type result_type
       ) in
-    Ast_comb.create_local_external loc ~pval_prim ~pval_type [("", body)]
+    Ast_external.local_extern_cont loc ~pval_prim ~pval_type 
+      (fun prim -> Exp.apply ~loc prim ["", body]) 
 
 let to_uncurry_fn   = 
   generic_to_uncurry_exp `Fn
@@ -3477,12 +3579,17 @@ let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type =
 
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
-    let predef_unit_type = Ast_literal.type_unit ~loc () in
-    let pval_prim = ["js_debugger"] in
-    Ast_comb.create_local_external loc 
-      ~pval_prim
-      ~pval_type:(arrow "" predef_unit_type predef_unit_type)
-      [("",  Ast_literal.val_unit ~loc ())]
+    if Js_config.is_browser () then 
+      let predef_unit_type = Ast_literal.type_unit ~loc () in
+      let pval_prim = [Literals.js_debugger] in
+      Ast_external.create_local_external loc 
+        ~pval_prim
+        ~pval_type:(arrow "" predef_unit_type predef_unit_type)
+        [("",  Ast_literal.val_unit ~loc ())]
+    else 
+      Parsetree.Pexp_apply
+        (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
+         ["", Ast_literal.val_unit ~loc ()])
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 
@@ -3491,14 +3598,24 @@ let handle_raw loc payload =
     | None -> 
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
     | Some exp -> 
-      let pval_prim = ["js_pure_expr"] in
-      { exp with pexp_desc = Ast_comb.create_local_external loc 
-                     ~pval_prim
-                     ~pval_type:(arrow "" 
-                                   (Ast_literal.type_string ~loc ()) 
-                                   (Ast_literal.type_any ~loc ()) )
-
-                     ["",exp]}
+      let pval_prim = [Literals.js_pure_expr] in
+      let pexp_desc = 
+        if Js_config.is_browser () then 
+          Ast_external.create_local_external loc 
+            ~pval_prim
+            ~pval_type:(arrow "" 
+                          (Ast_literal.type_string ~loc ()) 
+                          (Ast_literal.type_any ~loc ()) )
+            ["",exp] 
+        else Parsetree.Pexp_apply (
+            Exp.ident {loc; 
+                       txt = 
+                         Ldot (Ast_literal.Lid.js_unsafe, 
+                               Literals.js_pure_expr)},
+            ["",exp]
+          )
+      in
+      { exp with pexp_desc }
   end
 
 let handle_regexp loc payload = 
@@ -3506,19 +3623,26 @@ let handle_regexp loc payload =
   | None -> 
     Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   | Some exp -> 
-    let pval_prim = ["js_pure_expr"] in
-    {exp with pexp_desc = 
-                Ast_comb.local_extern_cont loc 
-                  ~pval_prim
-                  ~pval_type:(arrow "" 
-                                (Ast_literal.type_string ~loc ()) 
-                                (Ast_literal.type_any ~loc ()) )
-                  (fun f -> 
-                     Exp.constraint_ ~loc 
-                       (Exp.apply ~loc f ["", exp])
-                       (Typ.constr ~loc {txt = re_id (); loc} [])
-                  )
-    }
+    let pval_prim = [Literals.js_pure_expr] in
+    let ty = Typ.constr ~loc {txt = re_id (); loc} [] in
+    let pexp_desc = 
+      if Js_config.is_browser () then
+        Ast_external.local_extern_cont loc 
+          ~pval_prim
+          ~pval_type:(arrow "" 
+                        (Ast_literal.type_string ~loc ()) 
+                        (Ast_literal.type_any ~loc ()) )
+          (fun f -> 
+             Exp.constraint_ ~loc 
+               (Exp.apply ~loc f ["", exp]) ty
+               ) 
+      else 
+        Parsetree.Pexp_constraint(
+        Exp.apply ~loc 
+          (Exp.ident {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_pure_expr)})
+          ["",exp], ty)
+    in 
+    {exp with pexp_desc}
 
 
 
@@ -3527,15 +3651,22 @@ let handle_raw_structure loc payload =
   begin match Ast_payload.as_string_exp payload with 
     | Some exp 
       -> 
-      let pval_prim = ["js_pure_stmt"] in 
+      let pexp_desc = 
+        if Js_config.is_browser () then 
+          let pval_prim = [Literals.js_pure_stmt] in 
+          Ast_external.create_local_external loc 
+            ~pval_prim
+            ~pval_type:(arrow ""
+                          (Ast_literal.type_string ~loc ())
+                          (Ast_literal.type_any ~loc ()))
+            ["",exp]
+        else 
+          Parsetree.Pexp_apply(
+            Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
+            ["",exp]) in 
       Ast_helper.Str.eval 
-        { exp with pexp_desc =
-                     Ast_comb.create_local_external loc 
-                       ~pval_prim
-                       ~pval_type:(arrow ""
-                                     (Ast_literal.type_string ~loc ())
-                                     (Ast_literal.type_any ~loc ()))
-                       ["",exp]}
+        { exp with pexp_desc }
+
     | None
       -> 
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
@@ -3556,7 +3687,7 @@ let record_as_js_object
   let pval_prim = [ "" ] in 
   let pval_attributes = [Ast_attributes.bs_obj] in 
   let pval_type = from_labels ~loc labels in 
-  Ast_comb.create_local_external loc 
+  Ast_external.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
     args 
@@ -3816,8 +3947,10 @@ let handle_typ
     begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
       | `Uncurry , ptyp_attributes ->
         Ast_util.to_uncurry_type loc self args body 
-      |  `Meth, ptyp_attributes -> 
+      |  `Meth_callback, ptyp_attributes -> 
         Ast_util.to_method_callback_type loc self args body
+      | `Method, ptyp_attributes ->
+        Ast_util.to_method_type loc self args body
       | `Nothing , _ -> 
         if !uncurry_type then 
           Ast_util.to_uncurry_type loc  self  args body
@@ -3852,7 +3985,14 @@ let handle_typ
                 { core_type with 
                   ptyp_attributes = 
                     Ast_attributes.bs :: core_type.ptyp_attributes}
-            |  `Meth, ptyp_attrs 
+            | `Method, ptyp_attrs 
+              ->  
+              label , ptyp_attrs, 
+              check_auto_uncurry
+                { core_type with 
+                  ptyp_attributes = 
+                    Ast_attributes.bs_method :: core_type.ptyp_attributes}
+            | `Meth_callback, ptyp_attrs 
               ->  
               label , ptyp_attrs, 
               check_auto_uncurry
@@ -3870,7 +4010,12 @@ let handle_typ
                   { core_type with 
                     ptyp_attributes = 
                       Ast_attributes.bs :: core_type.ptyp_attributes}
-              |  `Meth, ptyp_attrs -> 
+              |  `Method, ptyp_attrs -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with 
+                    ptyp_attributes = 
+                      Ast_attributes.bs_method :: core_type.ptyp_attributes}
+              |  `Meth_callback, ptyp_attrs -> 
                 label , ptyp_attrs, self.typ self 
                   { core_type with 
                     ptyp_attributes = 
@@ -3933,7 +4078,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             {e with 
              pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
              pexp_attributes}
-          | `Meth , pexp_attributes
+          | `Method , _
+            ->  Location.raise_errorf ~loc "bs.meth is not supported in function expression"
+          | `Meth_callback , pexp_attributes
             -> 
             {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;
                     pexp_attributes }
@@ -6504,7 +6651,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     let prim_name = a.prim_name in
     if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
       prim ~primitive:(Pccall a ) ~args else 
-    if prim_name =  "js_debugger" then 
+    if prim_name =  Literals.js_debugger then 
       prim ~primitive:Pdebugger ~args else 
     if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
       prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args else 
@@ -6697,7 +6844,8 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lsend (kind, a,b,ls, loc) -> 
     (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
     begin match convert b with 
-      | Lprim {primitive =  Pccall {prim_name = "js_unsafe_downgrade"};  args}
+      | Lprim {primitive =  Pccall {prim_name };  args}
+        when prim_name = Literals.js_unsafe_downgrade
         -> 
         begin match kind, ls with 
           | Public (Some name), [] -> 
@@ -20350,7 +20498,7 @@ let query (prim : Lam_compile_env.primitive_description)
         | [e] -> E.obj_length e 
         | _ -> assert false 
       end
-    | "js_pure_expr"
+    | "js_pure_expr" (* TODO: conver it even earlier *)
       -> 
       begin match args with 
       | [ { expression_desc = Str (_,s )}] -> 
@@ -20362,7 +20510,7 @@ let query (prim : Lam_compile_env.primitive_description)
         ;
         assert false
       end
-    | "js_pure_stmt"
+    | "js_pure_stmt" (* TODO: convert even ealier *)
       -> 
       begin match args with 
       | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Stmt s
