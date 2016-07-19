@@ -70,3 +70,5 @@ type ffi =
 type prim = Types.type_expr option Primitive.description
 
 val check_ffi : ?loc:Location.t -> ffi -> unit
+
+val handle_attributes : prim -> Location.t option * ffi
