@@ -386,10 +386,10 @@ function $$caml_set_parser_trace(v) {
 
 external caml_parse_engine :     
   Parsing.parse_tables -> Parsing.parser_env -> 
-  (* Parsing.parser_input *) Obj.t -> Obj.t -> (* parser_output *) Obj.t = ""
-[@@bs.call "$$caml_parse_engine"][@@bs.local]
+  (* Parsing.parser_input *) Obj.t -> Obj.t -> (* parser_output *) Obj.t = "$$caml_parse_engine"
+[@@bs.call ][@@bs.local]
 
 
 external caml_set_parser_trace: bool -> bool
-    = ""
-[@@bs.call "$$caml_set_parser_trace"] [@@bs.local]
+    = "$$caml_set_parser_trace"
+      [@@bs.call ] [@@bs.local]

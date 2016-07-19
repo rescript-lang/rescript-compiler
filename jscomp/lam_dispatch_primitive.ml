@@ -41,10 +41,8 @@ There are two things we need consider:
     For example [Pervasives["^"] -> ^]
     We can collect all mli files in OCaml and replace it with an efficient javascript runtime
 *)
-let query (prim : Lam_compile_env.primitive_description) 
+let translate (prim_name : string) 
     (args : J.expression list) : J.expression  =
-
-  let prim_name = prim.prim_name in
   let call m = E.runtime_call m prim_name args in 
   begin match prim_name with 
   | "caml_gc_stat" 
