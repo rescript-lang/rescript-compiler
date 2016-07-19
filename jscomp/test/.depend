@@ -19,6 +19,8 @@ mt_global.cmi : mt.cmi
 ocaml_proto_test.cmi :
 polymorphism_test.cmi :
 scanf_reference_error_regression_test.cmi :
+simple_derive_test.cmi : ../others/js_dyn.cmi
+simple_derive_use.cmi :
 test_for_map2.cmi :
 test_http_server.cmi :
 test_is_js.cmi :
@@ -147,6 +149,10 @@ demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
 demo_page.cmj :
 demo_page.cmx :
+derive_dyntype.cmj : ../others/js_dyn.cmi
+derive_dyntype.cmx : ../others/js_dyn.cmx
+derive_type_test.cmj :
+derive_type_test.cmx :
 digest_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
     ext_array.cmj ../stdlib/digest.cmi ../stdlib/array.cmi
 digest_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx mt.cmx \
@@ -369,6 +375,10 @@ mt.cmj : ../stdlib/list.cmi mt.cmi
 mt.cmx : ../stdlib/list.cmx mt.cmi
 mt_global.cmj : mt.cmi mt_global.cmi
 mt_global.cmx : mt.cmx mt_global.cmi
+mutual_non_recursive_type.cmj :
+mutual_non_recursive_type.cmx :
+nested_include.cmj :
+nested_include.cmx :
 nested_obj_literal.cmj :
 nested_obj_literal.cmx :
 nested_obj_test.cmj :
@@ -463,6 +473,10 @@ scanf_test.cmj : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
 scanf_test.cmx : ../stdlib/scanf.cmx mt_global.cmx mt.cmx
 shift_test.cmj : ../stdlib/nativeint.cmi
 shift_test.cmx : ../stdlib/nativeint.cmx
+simple_derive_test.cmj : simple_derive_test.cmi
+simple_derive_test.cmx : simple_derive_test.cmi
+simple_derive_use.cmj : simple_derive_test.cmi simple_derive_use.cmi
+simple_derive_use.cmx : simple_derive_test.cmx simple_derive_use.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/lexing.cmx
 simplify_lambda_632o.cmj :
@@ -863,6 +877,10 @@ demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmo :
 demo_page.cmj :
+derive_dyntype.cmo : ../others/js_dyn.cmi
+derive_dyntype.cmj : ../others/js_dyn.cmj
+derive_type_test.cmo :
+derive_type_test.cmj :
 digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
     ext_array.cmo ../stdlib/digest.cmi ../stdlib/array.cmi
 digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
@@ -1085,6 +1103,10 @@ mt.cmo : ../stdlib/list.cmi mt.cmi
 mt.cmj : ../stdlib/list.cmj mt.cmi
 mt_global.cmo : mt.cmi mt_global.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
+mutual_non_recursive_type.cmo :
+mutual_non_recursive_type.cmj :
+nested_include.cmo :
+nested_include.cmj :
 nested_obj_literal.cmo :
 nested_obj_literal.cmj :
 nested_obj_test.cmo :
@@ -1179,6 +1201,10 @@ scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
 scanf_test.cmj : ../stdlib/scanf.cmj mt_global.cmj mt.cmj
 shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmj : ../stdlib/nativeint.cmj
+simple_derive_test.cmo : simple_derive_test.cmi
+simple_derive_test.cmj : simple_derive_test.cmi
+simple_derive_use.cmo : simple_derive_test.cmi simple_derive_use.cmi
+simple_derive_use.cmj : simple_derive_test.cmj simple_derive_use.cmi
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
 simplify_lambda_632o.cmo :

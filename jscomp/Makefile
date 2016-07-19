@@ -83,11 +83,22 @@ world:
 	cd stdlib && $(MAKE) all
 	@echo "Making stdlib finished"
 
+	@echo "Making others"
+	cd others && $(MAKE) all
+	@echo "Making others finished"
+
 world-test:
 	$(MAKE) world
 	@echo "Making test"
 	cd test && $(MAKE) all
 	@echo "Making test finsihed"
+
+travis-world-test:./bin/ocaml_pack
+	@echo "Generating the compiler"
+	rm -f bin/compiler.ml 	
+	./bin/ocaml_pack ./bin/compiler.mllib > bin/compiler.ml
+	@echo "Generating the compiler finished"	
+	$(MAKE) world-test
 
 # no depend on ./bin/ocaml_pack ./bin/bsc
 # since in npm mode, they are generated from a single file
@@ -97,30 +108,24 @@ install:
 	cp ./runtime/*.cmj* ../lib/ocaml/
 	cp ./runtime/js.cmi ./runtime/js_array.cmi ./runtime/js_string.cmi ./runtime/js_re.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
 	cp ./stdlib/*.cm* ../lib/ocaml/
-
+	cp ./others/*.cm* ../lib/ocaml/
 TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
 
 
-big-world:bin/big_compiler.ml bin/big_compiler.mli
-	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 1000 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
-	@echo "Making compiler finished"		
+# big-world:bin/big_compiler.ml bin/big_compiler.mli
+# 	@echo "Making compiler"		
+# 	ocamlopt.opt -g -inline 1000 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
+# 	@echo "Making compiler finished"		
 
-	@echo "Making runtime"
-	cd runtime && OCAMLLIB=$(TMP_OCAMLLIB) $(MAKE) all
-	@echo "Making runtime finished"
+# 	@echo "Making runtime"
+# 	cd runtime && OCAMLLIB=$(TMP_OCAMLLIB) $(MAKE) all
+# 	@echo "Making runtime finished"
 
-	@echo "Making stdlib"
-	cd stdlib && $(MAKE) all
-	@echo "Making stdlib finished"
+# 	@echo "Making stdlib"
+# 	cd stdlib && $(MAKE) all
+# 	@echo "Making stdlib finished"
 
 
-travis-world-test:./bin/ocaml_pack
-	@echo "Generating the compiler"
-	rm -f bin/compiler.ml 	
-	./bin/ocaml_pack ./bin/compiler.mllib > bin/compiler.ml
-	@echo "Generating the compiler finished"	
-	$(MAKE) world-test
 
 
 .PHONY: stdlib

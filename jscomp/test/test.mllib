@@ -356,4 +356,14 @@ gpr496_test
 local_class_type
 
 test_regex
+
 ffi_array_test
+derive_dyntype
+derive_type_test
+nested_include
+
+
+simple_derive_test
+simple_derive_use
+
+mutual_non_recursive_type

@@ -301,6 +301,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 (fun () -> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
+        | Pexp_extension({txt ; loc}, PTyp typ) 
+          when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
+          self.expr self @@ 
+          (Ast_payload.table_dispatch 
+            Ast_derive.derive_table 
+            ({loc ;
+              txt =
+                Lident 
+                  (Ext_string.tail_from txt (String.length Literals.bs_deriving_dot))}, None)).expression_gen typ
+            
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
@@ -423,27 +433,61 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                self {ctd with pcty_attributes}
            end
       );
-    class_signature = 
-      (fun self ({pcsig_self; pcsig_fields } as csg) -> 
-         if !bs_class_type then 
-           let pcsig_self = self.typ self pcsig_self in 
-           {
-             pcsig_self ;
-             pcsig_fields = List.fold_right (fun  f  acc ->
-               handle_class_type_field  acc self f 
-             )  pcsig_fields []
-           }
-         else 
-           Ast_mapper.default_mapper.class_signature self csg 
-      );
-    structure_item = (fun self (str : Parsetree.structure_item) -> 
+    class_signature = begin fun self ({pcsig_self; pcsig_fields } as csg) -> 
+      if !bs_class_type then 
+        let pcsig_self = self.typ self pcsig_self in 
+        {
+          pcsig_self ;
+          pcsig_fields = List.fold_right (fun  f  acc ->
+              handle_class_type_field  acc self f 
+            )  pcsig_fields []
+        }
+      else 
+        Ast_mapper.default_mapper.class_signature self csg 
+    end;
+    signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
+      match sigi.psig_desc with 
+      | Psig_type [{ptype_attributes} as tdcl] -> 
+        begin match Ast_attributes.process_derive_type ptype_attributes with 
+        | {bs_deriving = `Has_deriving actions; explict_nonrec}, ptype_attributes
+          -> Ast_signature.fuse 
+               {sigi with 
+                psig_desc = Psig_type [self.type_declaration self {tdcl with ptype_attributes}]
+               }
+               (self.signature 
+                  self @@ 
+                Ast_derive.type_deriving_signature tdcl actions explict_nonrec)
+        | {bs_deriving = `Nothing }, _ -> 
+          {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] } 
+        end
+      | _ -> Ast_mapper.default_mapper.signature_item self sigi
+    end;
+    structure_item = begin fun self (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
+        | Pstr_type [ {ptype_attributes} as tdcl ]-> 
+          begin match Ast_attributes.process_derive_type ptype_attributes with 
+          | {bs_deriving = `Has_deriving actions;
+             explict_nonrec 
+            }, ptype_attributes -> 
+            Ast_structure.fuse 
+              {str with 
+               pstr_desc =
+                 Pstr_type 
+                   [ self.type_declaration self {tdcl with ptype_attributes}]}
+              (self.structure self @@ Ast_derive.type_deriving_structure
+                 tdcl actions explict_nonrec )
+          | {bs_deriving = `Nothing}, _  -> 
+            {str with 
+             pstr_desc = 
+               Pstr_type
+                 [ self.type_declaration self tdcl]}
+          end
         | _ -> Ast_mapper.default_mapper.structure_item self str 
         end
-      )
+    end
   }
 
 
@@ -483,16 +527,6 @@ let signature_config_table :
   String_map.of_list common_actions_table
 
 
-let make_call_back table (action : Ast_payload.action)
-     = 
-  match action with 
-  | {txt = Lident name; loc  }, y -> 
-    begin match String_map.find name table with 
-      | fn -> fn y
-      | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
-    end
-  | { loc ; }, _  -> 
-    Location.raise_errorf ~loc "invalid label for config"
 
 let rewrite_signature : 
   (Parsetree.signature  -> Parsetree.signature) ref = 
@@ -503,7 +537,7 @@ let rewrite_signature :
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-            |> List.iter (make_call_back signature_config_table) ; 
+            |> List.iter (Ast_payload.table_dispatch signature_config_table) ; 
             unsafe_mapper.signature unsafe_mapper rest
           end
         | _ -> 
@@ -519,7 +553,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-            |> List.iter (make_call_back structural_config_table) ; 
+            |> List.iter (Ast_payload.table_dispatch structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
             if !no_export then
               [Str.include_ ~loc  

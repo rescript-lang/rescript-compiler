@@ -52,3 +52,6 @@ val as_record_and_process :
 val assert_bool_lit : Parsetree.expression -> bool
 
 val empty : t 
+
+val table_dispatch : 
+  (Parsetree.expression option  -> 'a) String_map.t -> action -> 'a

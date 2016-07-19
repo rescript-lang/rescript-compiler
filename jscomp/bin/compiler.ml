@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/17-10:06 *)
+(** Bundled by ocaml_pack 07/18-22:06 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -145,6 +145,9 @@ val js_fn_mk : string
 (** callback actually, not exposed to user yet *)
 val js_fn_runmethod : string 
 
+val bs_deriving : string
+val bs_deriving_dot : string
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -213,6 +216,412 @@ let js_method_run = "js_method_run"
 let js_fn_method = "js_fn_method"
 let js_fn_mk = "js_fn_mk"
 let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+
+
+end
+module Ext_bytes : sig 
+#1 "ext_bytes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
+
+val escaped : bytes -> bytes
+
+end = struct
+#1 "ext_bytes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+external char_code: char -> int = "%identity"
+external char_chr: int -> char = "%identity"
+
+let escaped s =
+  let n = ref 0 in
+  for i = 0 to Bytes.length s - 1 do
+    n := !n +
+      (match Bytes.unsafe_get s i with
+       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+       | ' ' .. '~' -> 1
+       | _ -> 4)
+  done;
+  if !n = Bytes.length s then Bytes.copy s else begin
+    let s' = Bytes.create !n in
+    n := 0;
+    for i = 0 to Bytes.length s - 1 do
+      begin match Bytes.unsafe_get s i with
+      | ('"' | '\\') as c ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
+      | '\n' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
+      | '\t' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
+      | '\r' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
+      | '\b' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
+      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+      | c ->
+          let a = char_code c in
+          Bytes.unsafe_set s' !n '\\';
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
+      end;
+      incr n
+    done;
+    s'
+  end
+
+end
+module Ext_string : sig 
+#1 "ext_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [String] module, avoid locale sensitivity *) 
+
+
+val trim : string -> string 
+
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
+(** default is false *)
+
+val split : ?keep_empty:bool -> string -> char -> string list
+(** default is false *)
+
+val starts_with : string -> string -> bool
+
+val ends_with : string -> string -> bool
+
+val escaped : string -> string
+
+val for_all : (char -> bool) -> string -> bool
+
+val is_empty : string -> bool
+
+val repeat : int -> string -> string 
+
+val equal : string -> string -> bool
+
+val find : ?start:int -> sub:string -> string -> int
+
+val rfind : sub:string -> string -> int
+
+val tail_from : string -> int -> string
+
+val digits_of_str : string -> offset:int -> int -> int
+
+val starts_with_and_number : string -> offset:int -> string -> int
+
+end = struct
+#1 "ext_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let split_by ?(keep_empty=false) is_delim str =
+  let len = String.length str in
+  let rec loop acc last_pos pos =
+    if pos = -1 then
+      String.sub str 0 last_pos :: acc
+    else
+      if is_delim str.[pos] then
+        let new_len = (last_pos - pos - 1) in
+        if new_len <> 0 || keep_empty then 
+          let v = String.sub str (pos + 1) new_len in
+          loop ( v :: acc)
+            pos (pos - 1)
+        else loop acc pos (pos - 1)
+    else loop acc last_pos (pos - 1)
+  in
+  loop [] len (len - 1)
+
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
+
+let split ?keep_empty  str on = 
+  if str = "" then [] else 
+  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+
+let starts_with s beg = 
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+   beg_len <=  s_len &&
+  (let i = ref 0 in
+    while !i <  beg_len 
+          && String.unsafe_get s !i =
+             String.unsafe_get beg !i do 
+      incr i 
+    done;
+    !i = beg_len
+  )
+
+
+(* TODO: optimization *)
+let ends_with s beg = 
+  let s_finish = String.length s - 1 in
+  let s_beg = String.length beg - 1 in
+  if s_beg > s_finish then false 
+  else
+    let rec aux j k = 
+      if k < 0 then true 
+      else if String.unsafe_get s j = String.unsafe_get beg k then 
+        aux (j - 1) (k - 1)
+      else  false in 
+    aux s_finish s_beg
+
+
+(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
+     this version try to make it not locale senstive, this bug is fixed
+     in the compiler trunk     
+*)
+let escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+  else
+    s
+
+
+let for_all (p : char -> bool) s = 
+  let len = String.length s in
+  let rec aux i = 
+    if i >= len then true 
+    else  p (String.unsafe_get s i) && aux (i + 1)
+  in aux 0 
+
+let is_empty s = String.length s = 0
+
+
+let repeat n s  =
+  let len = String.length s in
+  let res = Bytes.create(n * len) in
+  for i = 0 to pred n do
+    String.blit s 0 res (i * len) len
+  done;
+  Bytes.to_string res
+
+let equal (x : string) y  = x = y
+
+
+
+let _is_sub ~sub i s j ~len =
+  let rec check k =
+    if k = len
+    then true
+    else 
+      String.unsafe_get sub (i+k) = 
+      String.unsafe_get s (j+k) && check (k+1)
+  in
+  j+len <= String.length s && check 0
+
+
+
+let find ?(start=0) ~sub s =
+  let n = String.length sub in
+  let i = ref start in
+  let module M = struct exception Exit end  in
+  try
+    while !i + n <= String.length s do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      incr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+
+let rfind ~sub s =
+  let n = String.length sub in
+  let i = ref (String.length s - n) in
+  let module M = struct exception Exit end in 
+  try
+    while !i >= 0 do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      decr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+let tail_from s x = 
+  let len = String.length s  in 
+  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  else String.sub s x (len - x)
+
+
+(**
+   {[ 
+     digits_of_str "11_js" 2 == 11     
+   ]}
+*)
+let digits_of_str s ~offset x = 
+  let rec aux i acc s x  = 
+    if i >= x then acc 
+    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
+  aux 0 0 s x 
+
+
+
+(*
+   {[
+     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
+     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
+     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
+     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
+     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
+     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
+   ]}
+*)
+let starts_with_and_number s ~offset beg =
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+  let finish_delim = offset + beg_len in 
+
+   if finish_delim >  s_len  then -1 
+   else 
+     let i = ref offset  in
+      while !i <  finish_delim
+            && String.unsafe_get s !i =
+               String.unsafe_get beg (!i - offset) do 
+        incr i 
+      done;
+      if !i = finish_delim then 
+        digits_of_str ~offset:finish_delim s 2 
+      else 
+        -1 
 
 end
 module Ext_ref : sig 
@@ -846,408 +1255,6 @@ end = struct
 
 
 include Set.Make(String)
-
-end
-module Ext_bytes : sig 
-#1 "ext_bytes.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
-
-val escaped : bytes -> bytes
-
-end = struct
-#1 "ext_bytes.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
-
-let escaped s =
-  let n = ref 0 in
-  for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
-    let s' = Bytes.create !n in
-    n := 0;
-    for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
-      | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
-      | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
-      | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
-      | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
-      | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
-      incr n
-    done;
-    s'
-  end
-
-end
-module Ext_string : sig 
-#1 "ext_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [String] module, avoid locale sensitivity *) 
-
-
-val trim : string -> string 
-
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
-
-val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
-
-val starts_with : string -> string -> bool
-
-val ends_with : string -> string -> bool
-
-val escaped : string -> string
-
-val for_all : (char -> bool) -> string -> bool
-
-val is_empty : string -> bool
-
-val repeat : int -> string -> string 
-
-val equal : string -> string -> bool
-
-val find : ?start:int -> sub:string -> string -> int
-
-val rfind : sub:string -> string -> int
-
-val tail_from : string -> int -> string
-
-val digits_of_str : string -> offset:int -> int -> int
-
-val starts_with_and_number : string -> offset:int -> string -> int
-
-end = struct
-#1 "ext_string.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let split_by ?(keep_empty=false) is_delim str =
-  let len = String.length str in
-  let rec loop acc last_pos pos =
-    if pos = -1 then
-      String.sub str 0 last_pos :: acc
-    else
-      if is_delim str.[pos] then
-        let new_len = (last_pos - pos - 1) in
-        if new_len <> 0 || keep_empty then 
-          let v = String.sub str (pos + 1) new_len in
-          loop ( v :: acc)
-            pos (pos - 1)
-        else loop acc pos (pos - 1)
-    else loop acc last_pos (pos - 1)
-  in
-  loop [] len (len - 1)
-
-let trim s = 
-  let i = ref 0  in
-  let j = String.length s in 
-  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
-    incr i;
-  done;
-  let k = ref (j - 1)  in 
-  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
-    decr k ;
-  done;
-  String.sub s !i (!k - !i + 1)
-
-let split ?keep_empty  str on = 
-  if str = "" then [] else 
-  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
-
-let starts_with s beg = 
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-   beg_len <=  s_len &&
-  (let i = ref 0 in
-    while !i <  beg_len 
-          && String.unsafe_get s !i =
-             String.unsafe_get beg !i do 
-      incr i 
-    done;
-    !i = beg_len
-  )
-
-
-(* TODO: optimization *)
-let ends_with s beg = 
-  let s_finish = String.length s - 1 in
-  let s_beg = String.length beg - 1 in
-  if s_beg > s_finish then false 
-  else
-    let rec aux j k = 
-      if k < 0 then true 
-      else if String.unsafe_get s j = String.unsafe_get beg k then 
-        aux (j - 1) (k - 1)
-      else  false in 
-    aux s_finish s_beg
-
-
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
-
-
-let for_all (p : char -> bool) s = 
-  let len = String.length s in
-  let rec aux i = 
-    if i >= len then true 
-    else  p (String.unsafe_get s i) && aux (i + 1)
-  in aux 0 
-
-let is_empty s = String.length s = 0
-
-
-let repeat n s  =
-  let len = String.length s in
-  let res = Bytes.create(n * len) in
-  for i = 0 to pred n do
-    String.blit s 0 res (i * len) len
-  done;
-  Bytes.to_string res
-
-let equal (x : string) y  = x = y
-
-
-
-let _is_sub ~sub i s j ~len =
-  let rec check k =
-    if k = len
-    then true
-    else 
-      String.unsafe_get sub (i+k) = 
-      String.unsafe_get s (j+k) && check (k+1)
-  in
-  j+len <= String.length s && check 0
-
-
-
-let find ?(start=0) ~sub s =
-  let n = String.length sub in
-  let i = ref start in
-  let module M = struct exception Exit end  in
-  try
-    while !i + n <= String.length s do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
-      incr i
-    done;
-    -1
-  with M.Exit ->
-    !i
-
-
-let rfind ~sub s =
-  let n = String.length sub in
-  let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
-  try
-    while !i >= 0 do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
-      decr i
-    done;
-    -1
-  with M.Exit ->
-    !i
-
-let tail_from s x = 
-  let len = String.length s  in 
-  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
-  else String.sub s x (len - x)
-
-
-(**
-   {[ 
-     digits_of_str "11_js" 2 == 11     
-   ]}
-*)
-let digits_of_str s ~offset x = 
-  let rec aux i acc s x  = 
-    if i >= x then acc 
-    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
-  aux 0 0 s x 
-
-
-
-(*
-   {[
-     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
-     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
-     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
-     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
-     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
-     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
-   ]}
-*)
-let starts_with_and_number s ~offset beg =
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-  let finish_delim = offset + beg_len in 
-
-   if finish_delim >  s_len  then -1 
-   else 
-     let i = ref offset  in
-      while !i <  finish_delim
-            && String.unsafe_get s !i =
-               String.unsafe_get beg (!i - offset) do 
-        incr i 
-      done;
-      if !i = finish_delim then 
-        digits_of_str ~offset:finish_delim s 2 
-      else 
-        -1 
 
 end
 module Ext_pervasives : sig 
@@ -2243,7 +2250,8 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.8.3"
+let version = "0.8.4"
+
 
 let runtime_set = 
   [
@@ -2359,6 +2367,9 @@ val as_record_and_process :
 val assert_bool_lit : Parsetree.expression -> bool
 
 val empty : t 
+
+val table_dispatch : 
+  (Parsetree.expression option  -> 'a) String_map.t -> action -> 'a
 
 end = struct
 #1 "ast_payload.ml"
@@ -2494,6 +2505,18 @@ let assert_bool_lit  (e : Parsetree.expression) =
 
 
 let empty : t = Parsetree.PStr []
+
+
+let table_dispatch table (action : action)
+     = 
+  match action with 
+  | {txt = Lident name; loc  }, y -> 
+    begin match String_map.find name table with 
+      | fn -> fn y
+      | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
+    end
+  | { loc ; }, _  -> 
+    Location.raise_errorf ~loc "invalid label for config"
 
 end
 module Ast_literal : sig 
@@ -2988,9 +3011,14 @@ val process_attributes_rev :
 val process_class_type_decl_rev : 
   t -> [ `Nothing | `Has] * t 
 
-val process_const_string_rev : 
-  t -> 
-  [> `Has_re | `Nothing ] * t 
+type derive_attr = {
+  explict_nonrec : bool;
+  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+}
+
+val process_derive_type : 
+  t -> derive_attr * t 
+
 
 val bs_obj : attr 
 val bs : attr 
@@ -3105,22 +3133,39 @@ let process_attributes_rev (attrs : t) =
 let process_class_type_decl_rev attrs = 
   List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
       match txt, st  with 
-      | "bs", `Nothing
+      | "bs", _
         -> 
         `Has, acc
       | _ , _ -> 
         st, attr::acc 
     ) ( `Nothing, []) attrs
 
-let process_const_string_rev attrs = 
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
-      match txt, st  with 
-      | "bs.re", `Nothing
+
+type derive_attr = {
+  explict_nonrec : bool;
+  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+}
+
+let process_derive_type attrs =
+  List.fold_left 
+    (fun (st, acc) 
+      (({txt ; loc}, payload  as attr): attr)  ->
+      match  st, txt  with
+      |  {bs_deriving = `Nothing}, "bs.deriving"
+        ->
+        {st with
+         bs_deriving = `Has_deriving 
+             (Ast_payload.as_record_and_process loc payload)}, acc 
+      | {bs_deriving = `Has_deriving _}, "bs.deriving"
         -> 
-        `Has_re, acc
-      | _ , _ -> 
-        st, attr::acc 
-    ) ( `Nothing, []) attrs
+        Location.raise_errorf ~loc "duplicated bs.deriving attribute"
+      | _ , _ ->
+        let st = 
+          if txt = "nonrec" then 
+            { st with explict_nonrec = true }
+          else st in 
+        st, attr::acc
+    ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
 
 
 let bs_obj  : attr 
@@ -3182,6 +3227,7 @@ type uncurry_type_gen =
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
 
+(** TODO: the interface is not reusable, it depends on too much context *)
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   (Parsetree.expression ->
@@ -3693,6 +3739,598 @@ let record_as_js_object
     args 
 
 end
+module Ast_signature : sig 
+#1 "ast_signature.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type item = Parsetree.signature_item
+type t = item list 
+val fuse : ?loc:Ast_helper.loc -> item -> t -> item
+
+end = struct
+#1 "ast_signature.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type item = Parsetree.signature_item
+type t = item list 
+
+open Ast_helper
+let fuse ?(loc=Location.none) (item : item) (t : t) : item = 
+  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc (item::t)))
+
+end
+module Ast_structure : sig 
+#1 "ast_structure.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type item = Parsetree.structure_item
+
+type t = item list 
+
+val fuse : ?loc:Ast_helper.loc -> item -> t -> item
+
+val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
+
+end = struct
+#1 "ast_structure.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type item = Parsetree.structure_item
+
+type t = item list 
+
+open Ast_helper
+
+let fuse ?(loc=Location.none) (item : item ) (t : t) : item = 
+  Str.include_ ~loc 
+    (Incl.mk ~loc (Mod.structure ~loc (item :: t) ))
+
+let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) = 
+  Str.include_ ~loc
+    (Incl.mk ~loc 
+       (Mod.constraint_ ~loc (Mod.structure ~loc stru) (Mty.signature ~loc sign)))
+
+end
+module Ast_derive : sig 
+#1 "ast_derive.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val type_deriving_structure: 
+  Parsetree.type_declaration ->
+  Ast_payload.action list ->
+  bool -> 
+  Ast_structure.t
+val type_deriving_signature: 
+  Parsetree.type_declaration ->
+  Ast_payload.action list -> 
+  bool -> 
+  Ast_signature.t
+
+type gen = {
+  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
+  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
+  expression_gen : (Parsetree.core_type -> Parsetree.expression) ; 
+}
+
+val derive_table: (Parsetree.expression option -> gen) String_map.t
+
+end = struct
+#1 "ast_derive.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+let not_supported loc = 
+  Location.raise_errorf ~loc "not supported in deriving"
+
+let current_name_set : string list ref = ref []
+
+let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) = 
+  match tdcl with 
+  | {ptype_name = {txt ; loc};
+     ptype_params ;
+    } -> Typ.constr {txt = Lident txt ; loc} (List.map fst ptype_params)
+let loc = Location.none 
+
+let (+>) = Typ.arrow ""
+
+type lid = Longident.t Asttypes.loc
+
+
+let record_to_value = "record_to_value"
+let variant_to_value = "variant_to_value"
+let shape = "shape"
+let js_dyn = "Js_dyn"
+let value = "value"
+let record_shape = "record_shape"
+let to_value = "_to_value"
+let to_value_ = "_to_value_"
+let shape_of_variant = "shape_of_variant"
+let shape_of_record = "shape_of_record"
+let option_to_value = "option_to_value"
+(**
+   {[Ptyp_constr of Longident.t loc * core_type list ]}
+   ['u M.t]
+*)
+
+
+let bs_attrs = [Ast_attributes.bs]
+
+(** template for 
+    {[fun (value : t) -> 
+      match value with 
+        cases 
+    ]}
+*)
+let js_dyn_value_type () =
+  Typ.constr {txt = Longident.Ldot ((Lident  js_dyn), value) ; loc} []
+let get_js_dyn_record_shape_type () = 
+  Typ.constr {txt = Ldot (Lident js_dyn, record_shape); loc} []
+let js_dyn_shape_of_variant () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, shape_of_variant); loc}
+let js_dyn_shape_of_record () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, shape_of_record); loc}
+
+let js_dyn_to_value_type ty  = 
+  Typ.arrow "" ty  (js_dyn_value_type ())
+let js_dyn_to_value_uncurry_type ty = 
+  Typ.arrow "" ~attrs:bs_attrs ty (js_dyn_value_type ())
+
+let js_dyn_variant_to_value () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, variant_to_value); loc}
+
+let js_dyn_option_to_value () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, option_to_value); loc}
+
+let js_dyn_tuple_to_value i = 
+  Exp.ident {txt = Ldot (
+      Lident js_dyn,
+      "tuple_" ^ string_of_int i ^ "_to_value"); loc}
+
+
+let lift_string_list_to_array (labels : string list) = 
+  Exp.array
+    (List.map (fun s -> Exp.constant (Const_string (s, None)))
+       labels)
+let lift_int i = Exp.constant (Const_int i)
+let lift_int_list_to_array (labels : int list) = 
+  Exp.array (List.map lift_int labels)
+
+let bs_apply1 f v = 
+  Exp.apply f ["",v] ~attrs:bs_attrs
+
+
+
+(** [M.t]-> [M.t_to_value ] *)
+
+let fn_of_lid  suffix (x : lid) : lid = 
+  match x with
+  | { txt = Lident name} 
+    -> { x with  txt = Lident (name ^ suffix )}
+  | { txt = Ldot (v,name)} 
+    -> {x with txt = Ldot (v,  name ^ suffix )}
+  | { txt = Lapply _} -> not_supported x.loc 
+
+let rec exp_of_core_type prefix 
+    ({ptyp_loc = loc} as x : Parsetree.core_type)
+  : Parsetree.expression = 
+  match x.ptyp_desc with 
+  | Ptyp_constr (
+      {txt = 
+         Lident (
+           "int" 
+         | "int32" 
+         | "int64" 
+         | "nativeint"
+         | "bool"
+         | "float"
+         | "char"
+         | "string" 
+           as name );
+       loc }, ([] as params))
+  | Ptyp_constr (
+      {txt = 
+         Lident (
+           "option" 
+         | "list" 
+         | "array" 
+           as name );
+       loc }, ([_] as params))
+    -> exp_of_core_type prefix 
+         {x with 
+          ptyp_desc =
+            Ptyp_constr ({txt =  Ldot(Lident js_dyn,name);loc}, params)}
+  | Ptyp_constr ({txt ; loc} as lid, []) -> 
+    Exp.ident (fn_of_lid prefix lid)       
+  | Ptyp_constr (lid, params)
+    -> 
+    Exp.apply (Exp.ident (fn_of_lid prefix lid))
+      (List.map (fun x -> "",exp_of_core_type prefix x ) params) 
+  | Ptyp_tuple lst -> 
+    begin match lst with 
+    | [x] -> exp_of_core_type prefix x 
+    | [] -> assert false 
+    | _ -> 
+      let len = List.length lst in 
+      if len > 6 then 
+        Location.raise_errorf ~loc "tuple arity > 6 not supported yet"
+      else 
+        let fn = js_dyn_tuple_to_value len in 
+        let args = List.map (fun x -> "", exp_of_core_type prefix x) lst in 
+        Exp.apply fn args 
+    end
+
+
+  | _ -> assert false
+
+let mk_fun (typ : Parsetree.core_type) 
+    (value : string) body
+  : Parsetree.expression = 
+  Exp.fun_ 
+    "" None
+    (Pat.constraint_ (Pat.var {txt = value ; loc}) typ)
+    body
+
+let destruct_label_declarations
+    (arg_name : string)
+    (labels : Parsetree.label_declaration list) : 
+  (Parsetree.core_type * Parsetree.expression) list * string list 
+  =
+  List.fold_right
+    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
+      (core_type_exps, labels) -> 
+      ((pld_type, 
+        Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
+          {txt = Lident txt ; loc}) :: core_type_exps),
+      txt :: labels 
+    ) labels ([], [])
+
+
+(** return an expression node of array type *)
+let exp_of_core_type_exprs 
+    (core_type_exprs : (Parsetree.core_type * Parsetree.expression) list) 
+  : Parsetree.expression  = 
+    Exp.array 
+      (List.fold_right (fun (core_type, exp) acc -> 
+           bs_apply1
+             (exp_of_core_type to_value  core_type) exp
+
+           (* depends on [core_type] is in recursive name set or not ,
+              if not, then uncurried application, otherwise, since 
+              the uncurried version is not in scope yet, we 
+              have to use the curried version
+              the complexity is necessary
+              think about such scenario:
+              {[
+                type nonrec t = A of t (* t_to_value *)
+                and u = t (* t_to_value_ *)
+              ]}
+           *)
+           :: acc 
+       ) core_type_exprs [])
+
+let destruct_constructor_declaration 
+    ({pcd_name = {txt ;loc}; pcd_args} : Parsetree.constructor_declaration)  = 
+  let last_i, core_type_exprs, pats = 
+    List.fold_left (fun (i,core_type_exps, pats) core_type -> 
+      let  txt = "a" ^ string_of_int i  in
+      (i+1, (core_type, Exp.ident {txt = Lident txt  ;loc}) :: core_type_exps, 
+       Pat.var {txt ; loc} :: pats )
+    ) (0, [], []) pcd_args in 
+  let core_type_exprs, pats  = List.rev core_type_exprs, List.rev pats in
+  Pat.construct {txt = Lident txt ; loc}
+    (if last_i = 0 then 
+       None
+     else if last_i = 1 then 
+       Some (List.hd pats) 
+     else
+       Some (Pat.tuple pats)  ), core_type_exprs
+
+
+let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) = 
+    Exp.function_ 
+      (List.mapi (fun i ctdcl -> 
+           let pat, core_type_exprs = destruct_constructor_declaration ctdcl in 
+           Exp.case pat 
+             (Exp.apply 
+                (js_dyn_variant_to_value ())
+                [("", Exp.ident {txt = Lident shape ; loc});
+                 ("", lift_int i);
+                 ("", exp_of_core_type_exprs core_type_exprs);
+                ]
+             )) ctdcls
+      )
+let record args = 
+  Exp.apply 
+    (Exp.ident {txt = Ldot (Lident js_dyn, record_to_value ); loc})
+    ["", Exp.ident {txt = Lident shape ; loc};
+     ("",  args)
+    ]      
+
+
+let fun_1 name = 
+  Exp.fun_ "" None ~attrs:bs_attrs 
+    (Pat.var {txt = "x"; loc})
+    (Exp.apply (Exp.ident name)
+       ["",(Exp.ident {txt = Lident "x"; loc})])
+
+let record_exp  name core_type  labels : Ast_structure.t = 
+  let arg_name : string = "args" in
+  let core_type_exprs, labels = 
+    destruct_label_declarations arg_name labels in
+
+  [Str.value Nonrecursive @@ 
+   [Vb.mk 
+     (Pat.var {txt = shape;  loc}) 
+     (Exp.apply (js_dyn_shape_of_record ())
+        ["", (lift_string_list_to_array labels)]
+     ) ];
+   Str.value Nonrecursive @@ 
+   [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc })
+     (mk_fun core_type arg_name 
+        (record (exp_of_core_type_exprs core_type_exprs))
+     )];
+   Str.value Nonrecursive @@
+   [Vb.mk (Pat.var {txt = name ^ to_value; loc})
+      ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
+   ]        
+  ]
+
+
+
+    
+
+
+type gen = {
+  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
+  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
+  expression_gen : (Parsetree.core_type -> Parsetree.expression) ; 
+}
+let derive_table = 
+  String_map.of_list 
+    ["dynval",
+     begin fun (x : Parsetree.expression option) -> 
+       match x with 
+       | Some {pexp_loc = loc} 
+         -> Location.raise_errorf ~loc "such configuration is not supported"
+       | None -> 
+         { structure_gen = 
+             begin  fun (tdcl  : Parsetree.type_declaration) explict_nonrec -> 
+               let core_type = core_type_of_type_declaration tdcl in 
+               let name = tdcl.ptype_name.txt in
+               let loc = tdcl.ptype_loc in 
+               let signatures = 
+                 [Sig.value ~loc 
+                    (Val.mk {txt =  name ^ to_value  ; loc}
+                       (js_dyn_to_value_uncurry_type core_type))
+                 ] in
+               let constraint_ strs = 
+                 [Ast_structure.constraint_  ~loc strs signatures] in
+               match tdcl with 
+               | {ptype_params = [];
+                  ptype_kind  = Ptype_variant cd;
+                  ptype_loc = loc;
+                 } -> 
+                 if explict_nonrec then 
+                   let names, arities = 
+                     List.fold_right 
+                       (fun (ctdcl : Parsetree.constructor_declaration) 
+                         (names,arities) -> 
+                         ctdcl.pcd_name.txt :: names, 
+                         List.length ctdcl.pcd_args :: arities
+                       ) cd ([],[]) in 
+                   constraint_ 
+                     [
+                       Str.value Nonrecursive @@ 
+                       [Vb.mk (Pat.var {txt = shape ; loc})
+                          (      Exp.apply (js_dyn_shape_of_variant ())
+                                   [ "", (lift_string_list_to_array names);
+                                     "", (lift_int_list_to_array arities )
+                                   ])];
+                       Str.value Nonrecursive @@ 
+                       [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc})
+                          (case_of_ctdcl cd)
+                       ];
+                       Str.value Nonrecursive @@
+                       [Vb.mk (Pat.var {txt = name ^ to_value; loc})
+                          ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
+                       ]        
+                     ]
+                 else 
+                   []
+               | {ptype_params = []; 
+                  ptype_kind = Ptype_abstract; 
+                  ptype_manifest = Some x 
+                 } -> (** case {[ type t = int ]}*)
+                 constraint_ 
+                   [
+                     Str.value Nonrecursive @@ 
+                     [Vb.mk (Pat.var {txt = name ^ to_value  ; loc})
+                        (exp_of_core_type to_value x)
+                     ]
+                   ]
+
+               |{ptype_params = [];
+                 ptype_kind  = Ptype_record labels;
+                 ptype_loc = loc;
+                } -> 
+                 if explict_nonrec then constraint_ (record_exp name core_type labels) 
+                 else []
+
+               | _ -> 
+                 []
+             end; 
+           expression_gen =  begin fun core_type -> 
+               exp_of_core_type to_value core_type
+             end;
+           signature_gen = begin fun 
+             (tdcl : Parsetree.type_declaration)
+             (explict_nonrec : bool) -> 
+             let core_type = core_type_of_type_declaration tdcl in 
+             let name = tdcl.ptype_name.txt in
+             let loc = tdcl.ptype_loc in 
+             [Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
+                                (js_dyn_to_value_uncurry_type core_type))
+             ]
+           end
+
+         }
+     end]
+
+let type_deriving_structure 
+    (tdcl  : Parsetree.type_declaration)
+    (actions :  Ast_payload.action list ) 
+    (explict_nonrec : bool )
+  : Ast_structure.t = 
+  Ext_list.flat_map
+    (fun action -> 
+       (Ast_payload.table_dispatch derive_table action).structure_gen 
+         tdcl explict_nonrec) actions
+
+let type_deriving_signature
+    (tdcl  : Parsetree.type_declaration)
+    (actions :  Ast_payload.action list ) 
+    (explict_nonrec : bool )
+  : Ast_signature.t = 
+  Ext_list.flat_map
+    (fun action -> 
+       (Ast_payload.table_dispatch derive_table action).signature_gen
+         tdcl explict_nonrec) actions
+
+end
 module Ppx_entry : sig 
 #1 "ppx_entry.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4067,6 +4705,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 (fun () -> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
+        | Pexp_extension({txt ; loc}, PTyp typ) 
+          when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
+          self.expr self @@ 
+          (Ast_payload.table_dispatch 
+            Ast_derive.derive_table 
+            ({loc ;
+              txt =
+                Lident 
+                  (Ext_string.tail_from txt (String.length Literals.bs_deriving_dot))}, None)).expression_gen typ
+            
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
@@ -4189,27 +4837,61 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                self {ctd with pcty_attributes}
            end
       );
-    class_signature = 
-      (fun self ({pcsig_self; pcsig_fields } as csg) -> 
-         if !bs_class_type then 
-           let pcsig_self = self.typ self pcsig_self in 
-           {
-             pcsig_self ;
-             pcsig_fields = List.fold_right (fun  f  acc ->
-               handle_class_type_field  acc self f 
-             )  pcsig_fields []
-           }
-         else 
-           Ast_mapper.default_mapper.class_signature self csg 
-      );
-    structure_item = (fun self (str : Parsetree.structure_item) -> 
+    class_signature = begin fun self ({pcsig_self; pcsig_fields } as csg) -> 
+      if !bs_class_type then 
+        let pcsig_self = self.typ self pcsig_self in 
+        {
+          pcsig_self ;
+          pcsig_fields = List.fold_right (fun  f  acc ->
+              handle_class_type_field  acc self f 
+            )  pcsig_fields []
+        }
+      else 
+        Ast_mapper.default_mapper.class_signature self csg 
+    end;
+    signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
+      match sigi.psig_desc with 
+      | Psig_type [{ptype_attributes} as tdcl] -> 
+        begin match Ast_attributes.process_derive_type ptype_attributes with 
+        | {bs_deriving = `Has_deriving actions; explict_nonrec}, ptype_attributes
+          -> Ast_signature.fuse 
+               {sigi with 
+                psig_desc = Psig_type [self.type_declaration self {tdcl with ptype_attributes}]
+               }
+               (self.signature 
+                  self @@ 
+                Ast_derive.type_deriving_signature tdcl actions explict_nonrec)
+        | {bs_deriving = `Nothing }, _ -> 
+          {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] } 
+        end
+      | _ -> Ast_mapper.default_mapper.signature_item self sigi
+    end;
+    structure_item = begin fun self (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
+        | Pstr_type [ {ptype_attributes} as tdcl ]-> 
+          begin match Ast_attributes.process_derive_type ptype_attributes with 
+          | {bs_deriving = `Has_deriving actions;
+             explict_nonrec 
+            }, ptype_attributes -> 
+            Ast_structure.fuse 
+              {str with 
+               pstr_desc =
+                 Pstr_type 
+                   [ self.type_declaration self {tdcl with ptype_attributes}]}
+              (self.structure self @@ Ast_derive.type_deriving_structure
+                 tdcl actions explict_nonrec )
+          | {bs_deriving = `Nothing}, _  -> 
+            {str with 
+             pstr_desc = 
+               Pstr_type
+                 [ self.type_declaration self tdcl]}
+          end
         | _ -> Ast_mapper.default_mapper.structure_item self str 
         end
-      )
+    end
   }
 
 
@@ -4249,16 +4931,6 @@ let signature_config_table :
   String_map.of_list common_actions_table
 
 
-let make_call_back table (action : Ast_payload.action)
-     = 
-  match action with 
-  | {txt = Lident name; loc  }, y -> 
-    begin match String_map.find name table with 
-      | fn -> fn y
-      | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
-    end
-  | { loc ; }, _  -> 
-    Location.raise_errorf ~loc "invalid label for config"
 
 let rewrite_signature : 
   (Parsetree.signature  -> Parsetree.signature) ref = 
@@ -4269,7 +4941,7 @@ let rewrite_signature :
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-            |> List.iter (make_call_back signature_config_table) ; 
+            |> List.iter (Ast_payload.table_dispatch signature_config_table) ; 
             unsafe_mapper.signature unsafe_mapper rest
           end
         | _ -> 
@@ -4285,7 +4957,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
           -> 
           begin 
             Ast_payload.as_record_and_process loc payload 
-            |> List.iter (make_call_back structural_config_table) ; 
+            |> List.iter (Ast_payload.table_dispatch structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
             if !no_export then
               [Str.include_ ~loc  
