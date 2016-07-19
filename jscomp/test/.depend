@@ -209,6 +209,8 @@ ext_sys.cmj : ../stdlib/sys.cmi ext_sys.cmi
 ext_sys.cmx : ../stdlib/sys.cmx ext_sys.cmi
 extensible_variant_test.cmj : mt.cmi
 extensible_variant_test.cmx : mt.cmx
+external_ppx.cmj :
+external_ppx.cmx :
 fail_comp.cmj :
 fail_comp.cmx :
 ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
@@ -937,6 +939,8 @@ ext_sys.cmo : ../stdlib/sys.cmi ext_sys.cmi
 ext_sys.cmj : ../stdlib/sys.cmj ext_sys.cmi
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
+external_ppx.cmo :
+external_ppx.cmj :
 fail_comp.cmo :
 fail_comp.cmj :
 ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
