@@ -26,3 +26,6 @@ type t = Parsetree.core_type
 
 
 val list_of_arrow : t -> t * (string * t ) list 
+
+val is_unit : t -> bool 
+val is_array : t -> bool 

@@ -420,8 +420,8 @@ let record_as_js_object
           Location.raise_errorf ~loc "invalid js label "
   ) label_exprs in 
   let pval_prim = [ "" ] in 
-  let pval_attributes = [Ast_attributes.bs_obj] in 
   let pval_type = from_labels ~loc labels in 
+  let pval_attributes = Ast_attributes.bs_obj pval_type in 
   Ast_external.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 

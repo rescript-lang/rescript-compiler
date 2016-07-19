@@ -43,8 +43,8 @@ val filter_serializable_signatures : Types.signature -> Types.signature
 
 val find_serializable_signatures_by_path : Path.t -> Env.t -> Types.signature option
 
-val list_of_arrow : Types.type_expr -> Types.type_desc * (string * Types.type_expr) list
+
 
 val label_name : string -> [ `Label of string | `Optional of string ]
 
-val is_unit : Types.type_desc -> bool 
+

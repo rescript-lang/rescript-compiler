@@ -107,14 +107,6 @@ let query_type (id : Ident.t) (env : Env.t) =
       !Oprint.out_type 
       (Printtyp.tree_of_type_scheme val_type)
 
-let list_of_arrow ty =  
-  let rec aux  (ty : Types.type_expr) acc  =
-    match (Ctype.repr ty).desc  (* cannoical representation *) with
-    | Tarrow(label, t1, t2, _) -> 
-      aux t2 ((label,t1)::acc)
-    | return_type -> return_type, List.rev acc  in
-  aux ty []
-
 let is_optional l =
   String.length l > 0 && l.[0] = '?'
 
@@ -122,8 +114,3 @@ let label_name l =
   if is_optional l 
   then `Optional (String.sub l 1 (String.length l - 1))
   else `Label l
-
-let is_unit (x : Types.type_desc) =
-  match x with
-  | Tconstr(p,_,_) when Path.same p Predef.path_unit -> true
-  | _ -> false    

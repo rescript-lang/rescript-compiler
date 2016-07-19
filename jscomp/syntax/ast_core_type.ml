@@ -25,7 +25,7 @@
 type t = Parsetree.core_type 
 
 (** TODO check the polymorphic *)
-let list_of_arrow (ty : Parsetree.core_type) = 
+let list_of_arrow (ty : t) = 
   let rec aux (ty : Parsetree.core_type) acc = 
     match ty.ptyp_desc with 
     | Ptyp_arrow(label,t1,t2) -> 
@@ -34,3 +34,13 @@ let list_of_arrow (ty : Parsetree.core_type) =
       aux ty acc 
     | return_type -> ty, List.rev acc
   in aux ty []
+
+let is_unit (ty : t ) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "unit"}, []) -> true
+  | _ -> false 
+
+let is_array (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+  | _ -> false 
