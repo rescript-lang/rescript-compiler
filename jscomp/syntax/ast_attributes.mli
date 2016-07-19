@@ -38,6 +38,8 @@ val process_attributes_rev :
 val process_class_type_decl_rev : 
   t -> [ `Nothing | `Has] * t 
 
+val process_external : t -> bool 
+
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]

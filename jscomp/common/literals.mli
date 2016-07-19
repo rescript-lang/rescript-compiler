@@ -68,3 +68,4 @@ val js_fn_runmethod : string
 
 val bs_deriving : string
 val bs_deriving_dot : string
+val bs_type : string

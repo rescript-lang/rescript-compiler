@@ -485,6 +485,21 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                Pstr_type
                  [ self.type_declaration self tdcl]}
           end
+        | Pstr_primitive 
+            ({pval_attributes; 
+              pval_type; pval_loc} as prim) 
+          when Ast_attributes.process_external pval_attributes
+          -> 
+          let pval_type = self.typ self pval_type in 
+          {str with 
+           pstr_desc = 
+             Pstr_primitive
+               {prim with
+                pval_type ; 
+                pval_attributes = 
+                  ({txt = Literals.bs_type; loc = pval_loc}
+                  , PTyp pval_type) :: pval_attributes }}
+          
         | _ -> Ast_mapper.default_mapper.structure_item self str 
         end
     end

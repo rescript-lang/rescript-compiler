@@ -111,6 +111,11 @@ let process_class_type_decl_rev attrs =
         st, attr::acc 
     ) ( `Nothing, []) attrs
 
+let process_external attrs = 
+  List.exists (fun (({txt; }, _)  : attr) -> 
+      if Ext_string.starts_with txt "bs." then true 
+      else false
+    ) attrs
 
 type derive_attr = {
   explict_nonrec : bool;
