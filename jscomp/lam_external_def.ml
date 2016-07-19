@@ -66,8 +66,13 @@ type ffi =
   | Js_get of js_get
   | Js_get_index
   | Js_set_index
+
+type t  = 
+  | Bs of Parsetree.core_type * ffi
   | Normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
+
+
 type prim = Types.type_expr option Primitive.description
 
 let check_external_module_name ?loc x = 
@@ -90,7 +95,8 @@ let check_ffi ?loc ffi =
     -> Location.raise_errorf ?loc "empty name encountered"
   | Js_global _ | Js_send _ | Js_set _ | Js_get _  
   | Obj_create 
-  | Js_get_index | Js_set_index | Normal -> ()
+  | Js_get_index | Js_set_index 
+    -> ()
 
   | Js_global_as_var external_module_name 
     -> check_external_module_name external_module_name

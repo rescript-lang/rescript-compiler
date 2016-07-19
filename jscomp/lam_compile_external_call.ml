@@ -43,10 +43,11 @@ let handle_external
         bundle
     in Some id 
   | None -> None 
+type typ = Types.type_expr
 
 let ocaml_to_js last
     (js_splice : bool)
-    ((label : string), (ty : Types.type_expr))
+    ((label : string), (ty : typ))
     (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
@@ -95,7 +96,7 @@ let ocaml_to_js last
 
 let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
     (cxt  : Lam_compile_defs.cxt)
-    ( prim_ty : Types.type_expr option ) 
+    ( prim_ty :typ option ) 
     (args : J.expression list) = 
     match ffi with 
     | Obj_create -> 
@@ -106,23 +107,11 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
           let key loc label = 
             Js_op.Key (Lam_methname.translate ?loc  label) in 
           let kvs : J.property_map = 
-            Ext_list.filter_map2 (fun (label, (ty : Types.type_expr)) 
+            Ext_list.filter_map2 (fun (label, (ty : typ)) 
                                    ( arg : J.expression) -> 
                 match ty.desc, Type_util.label_name label with 
                 | Tconstr(p,_, _), _ when Path.same p Predef.path_unit 
                   -> None
-                | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool 
-                  -> 
-                  begin 
-                    match arg.expression_desc with 
-                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) 
-                      -> 
-                      Some (key loc label ,E.caml_false)
-                    | Number _ -> 
-                      Some (key loc label,E.caml_true)
-                    | _ -> Some (key loc label, (E.econd arg E.caml_true E.caml_false))
-                  end
-
                 | _, `Label label -> 
                   Some (key loc label, arg)
                 | _, `Optional label -> 
@@ -292,7 +281,7 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
 
 let translate cxt 
     ({prim_name ; prim_ty} as prim 
-     : Types.type_expr option Primitive.description) args  = 
+     : Lam_external_def.prim) args  = 
   let loc, ffi = Lam_external_def.handle_attributes prim in
   let () = Lam_external_def.check_ffi ?loc ffi in
   translate_ffi loc ffi prim_name cxt prim_ty args 
