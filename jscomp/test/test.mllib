@@ -367,3 +367,5 @@ simple_derive_test
 simple_derive_use
 
 mutual_non_recursive_type
+
+external_ppx
