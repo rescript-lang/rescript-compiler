@@ -8,6 +8,14 @@ then
     git submodule update --init --recursive
     OCAML=ocaml
 else 
+    if [  -f "ocaml.tar.gz" ]
+    then 
+        echo "ocaml.tar.gz already exists"
+    else
+        echo "creating ocaml.tar.gz"
+        git submodule update --init --recursive
+        cd ocaml && git clean -dfx && git archive HEAD -o ../ocaml.tar.gz && cd ..
+    fi
     OCAML=ocaml_src
     rm -rf $OCAML
     mkdir -p $OCAML
