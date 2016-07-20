@@ -30,3 +30,5 @@
 val js_is_nil_undef : 'a Js.Null_undefined.t -> bool
 
 val js_from_nullable_def : 'a Js.Null_undefined.t -> 'a option
+
+val option_get : 'a option -> 'a Js.Undefined.t 

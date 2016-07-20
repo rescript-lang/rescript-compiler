@@ -44,7 +44,7 @@ let handle_external
     in Some id 
   | None -> None 
 
-type typ = Parsetree.core_type
+type typ = Ast_core_type.t
 
 let ocaml_to_js last
     (js_splice : bool)
@@ -52,49 +52,25 @@ let ocaml_to_js last
     (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
-  then 
-    if Ast_core_type.is_array ty then 
-      begin 
-        match arg with 
-        | {expression_desc = Array (ls,_mutable_flag) } -> 
-          ls (* Invariant : Array encoding *)
-        | _ -> 
-          assert false  (* TODO: fix splice *)
-      end
+  then if Ast_core_type.is_array ty then 
+      match arg with 
+      | {expression_desc = Array (ls,_mutable_flag) } -> 
+        ls (* Invariant : Array encoding *)
+      | _ -> 
+        assert false  
+        (* TODO: fix splice, 
+           we need a static guarantee that it is static array construct
+           otherwise, we should provide a good error message here
+        *)
     else  assert false
-  else
-  if Ast_core_type.is_unit ty then []
+  else if Ast_core_type.is_unit ty then [] (* ignore unit *)
   else 
     (* for 
        [x:t] -> "x"
        [?x:t] -> "?x"
     *)
     match Type_util.label_name label with 
-    | `Optional label -> 
-      begin 
-        match (arg.expression_desc) with 
-        | Array ([x;y],_mutable_flag)  ->
-          [ y] (*Invrariant: optional encoding*)
-        | Number _ -> (*Invariant: None encoding*)
-          [ E.nil ] 
-        (* when no argumet is supplied, [undefined] 
-           if we detect that all rest arguments are [null], 
-           we can remove them
-        *)
-        | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
-                   is not a variable
-                *)
-          (* | Var _  ->  *)
-          (* can only bd detected at runtime thing *)
-          (* (E.bin EqEqEq (E.typeof arg) *)
-          (*   (E.str "number")) *)
-
-          [E.econd arg
-             (Js_of_lam_option.get arg )
-             E.undefined
-             ]
-
-      end
+    | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
     | _ ->  [arg]  
           
 
@@ -128,13 +104,7 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
                                               is not a variable [Var ]
                                               can only bd detected at runtime thing *)
                   Some ( key loc label, 
-                         E.econd arg
-                           (* (E.bin EqEqEq (E.typeof arg) *)
-                           (*   (E.str "number")) *)
-                           
-                           (Js_of_lam_option.get arg)
-                           E.undefined
-                       )
+                         Js_of_lam_option.get_default_undefined arg)
               end) arg_types args 
           (* (Ext_list.exclude_tail arg_types) (Ext_list.exclude_tail args) *)
       in 

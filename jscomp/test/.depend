@@ -413,6 +413,8 @@ of_string_test.cmj : mt.cmi
 of_string_test.cmx : mt.cmx
 offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
+optional_ffi_test.cmj : mt.cmi
+optional_ffi_test.cmx : mt.cmx
 polymorphism_test.cmj : polymorphism_test.cmi
 polymorphism_test.cmx : polymorphism_test.cmi
 ppx_apply_test.cmj : mt.cmi
@@ -1143,6 +1145,8 @@ of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
 offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
+optional_ffi_test.cmo : mt.cmi
+optional_ffi_test.cmj : mt.cmj
 polymorphism_test.cmo : polymorphism_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 ppx_apply_test.cmo : mt.cmi
