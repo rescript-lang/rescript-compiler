@@ -102,10 +102,10 @@ npm install  bs-platform
 It will install OCaml compiler, BuckleScript compiler and Standard library
 in three module systems (CommonJS, AMDJS, and Google Module).
 
-#. npm install from github
+#. npm install from github (latest one)
 
 ```
-npm install https://github.com/bloomberg/bucklescript/
+npm install git+https://github.com/bloomberg/bucklescript/
 ```
 
 #### Build from source
