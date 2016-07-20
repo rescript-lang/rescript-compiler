@@ -1199,6 +1199,15 @@ let of_block ?comment block e : t =
                             comment}]) , Js_fun_env.empty 0)
     } []
 
+(** TODO: merge with [of_block] *)
+let of_block_only ?comment block : t = 
+  call ~info:Js_call_info.ml_full_call
+    {
+      comment ;
+      expression_desc = 
+        Fun (false, [], block  , Js_fun_env.empty 0)
+    } []
+
 let is_nil ?comment x = triple_equal ?comment x nil 
 
 let js_bool ?comment x : t = 

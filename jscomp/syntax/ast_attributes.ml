@@ -155,6 +155,24 @@ let process_derive_type attrs =
     ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
 
 
+let process_bs_name attrs = 
+  List.fold_left 
+    (fun st
+      (({txt ; loc}, payload ): attr)  ->
+      match  txt, st  with
+      | "bs.name", None
+        ->
+        begin match Ast_payload.is_single_string payload with 
+        | None -> 
+          Location.raise_errorf ~loc "expect string literal "
+        | Some _ as v->  v 
+        end
+      | "bs.name", Some _ 
+        -> 
+          Location.raise_errorf ~loc "duplicated bs.name "
+      | _ , _ -> st 
+    ) None attrs
+
 
 let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty

@@ -22,19 +22,4 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.core_type 
-
-
-val list_of_arrow : t -> t * (string * t ) list 
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> [ `Label of string | `Optional of string  | `Empty]
-
-
-val string_type : t -> (int * string) list option
+val eval : J.expression -> (int * string) list -> J.expression

@@ -70,6 +70,7 @@ js_of_lam_string
 js_of_lam_block
 js_of_lam_array
 js_of_lam_module
+js_of_lam_variant
 js_of_lam_exception
 js_implementation
 js_closure

@@ -53,3 +53,26 @@ let label_name l =
   if is_optional l 
   then `Optional (String.sub l 1 (String.length l - 1))
   else `Label l
+
+let string_type (ty : t) = 
+  match ty with 
+  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
+    if List.exists (fun ({Location.txt;_}, _) -> txt = "bs.stringify" ) ptyp_attributes
+    then 
+      match ptyp_desc with 
+      | Ptyp_variant ( row_fields, Closed, None)
+        -> 
+        Some 
+          (List.map (function 
+          | Parsetree.Rtag (label, attrs, true,  [])
+            -> 
+            let name = 
+              match Ast_attributes.process_bs_name attrs with 
+              | Some name -> name 
+              | None -> label in
+            Btype.hash_variant label, name
+          | _ -> Location.raise_errorf ~loc "Not a valid string type"
+          ) row_fields)
+      | _ -> Location.raise_errorf ~loc "Not a valid string type"
+    else 
+      None 

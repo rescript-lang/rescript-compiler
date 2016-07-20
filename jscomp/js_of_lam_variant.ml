@@ -22,19 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.core_type 
+module E = Js_exp_make
+module S = Js_stmt_make
 
-
-val list_of_arrow : t -> t * (string * t ) list 
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> [ `Label of string | `Optional of string  | `Empty]
-
-
-val string_type : t -> (int * string) list option
+let eval (arg : J.expression) (dispatches : (int * string) list ) = 
+  match arg.expression_desc with
+  | Number (Int {i} | Uint i) -> 
+    E.str (List.assoc (Int32.to_int i) dispatches)
+  | _ ->  
+    E.of_block_only 
+      [(S.int_switch arg
+      (List.map (fun (i,r) -> 
+              {J.case = i ; 
+               body = [S.return (E.str r)],
+                      false (* FIXME: if true, still print break*)
+              }) dispatches))]
