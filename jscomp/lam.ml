@@ -192,38 +192,24 @@ and t =
      we should use record for trivial debugger info
   *)
 
+
 module Prim = struct 
   type t = primitive
+  let mk name arity = 
+    Pccall {prim_name = name ; 
+            prim_native_name = "" ;
+            prim_alloc = false;
+            prim_native_float = false;
+            prim_attributes = [];
+            prim_arity = arity;
+            prim_ty = None
+           }
   let js_is_nil : t = 
-    Pccall{ prim_name = "js_is_nil";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_nil";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
+    mk "js_is_nil" 1 
   let js_is_undef : t = 
-    Pccall{ prim_name = "js_is_undef";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_undef";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
+    mk "js_is_undef" 1 
   let js_is_nil_undef : t  = 
-    Pccall{ prim_name = "js_is_nil_undef";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_nil_undef";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
+    mk "js_is_nil_undef" 1 
 end
 
 

@@ -525,7 +525,7 @@ let translate
       | [e;e0;e1] -> decorate_side_effect cxt @@ Js_of_lam_array.set_array  e e0 e1
       | _ -> assert false
       end
-  | Pccall ({prim_attributes ; prim_ty } as prim) -> 
+  | Pccall prim -> 
       Lam_compile_external_call.translate cxt prim args 
      (* Test if the argument is a block or an immediate integer *)
   | Pisint -> 

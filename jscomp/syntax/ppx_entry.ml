@@ -460,6 +460,20 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | {bs_deriving = `Nothing }, _ -> 
           {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] } 
         end
+      | Psig_value
+          ({pval_attributes; 
+            pval_type; pval_loc} as prim) 
+        when Ast_attributes.process_external pval_attributes
+        -> 
+        let pval_type = self.typ self pval_type in 
+        {sigi with 
+         psig_desc = 
+           Psig_value
+             {prim with
+              pval_type ; 
+              pval_attributes = 
+                (Ast_attributes.mk_bs_type ~loc:pval_loc pval_type) :: pval_attributes }}
+
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
@@ -485,6 +499,21 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                Pstr_type
                  [ self.type_declaration self tdcl]}
           end
+        | Pstr_primitive 
+            ({pval_attributes; 
+              pval_type; pval_loc} as prim) 
+          when Ast_attributes.process_external pval_attributes
+          -> 
+          let pval_type = self.typ self pval_type in 
+          {str with 
+           pstr_desc = 
+             Pstr_primitive
+               {prim with
+                pval_type ; 
+                pval_attributes = 
+                  Ast_attributes.mk_bs_type ~loc:pval_loc pval_type
+                  :: pval_attributes }}
+          
         | _ -> Ast_mapper.default_mapper.structure_item self str 
         end
     end

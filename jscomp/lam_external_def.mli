@@ -65,10 +65,15 @@ type ffi =
   | Js_get of js_get
   | Js_get_index
   | Js_set_index
-  | Normal 
+
   (* When it's normal, it is handled as normal c functional ffi call *)
+
+type t = 
+  | Bs of Parsetree.core_type  * Location.t option *  ffi 
+  | Normal 
+
 type prim = Types.type_expr option Primitive.description
 
 val check_ffi : ?loc:Location.t -> ffi -> unit
 
-val handle_attributes : prim -> Location.t option * ffi
+val handle_attributes : prim -> t

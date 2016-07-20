@@ -22,13 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Parsetree.core_type 
 
 
+val list_of_arrow : t -> t * (string * t ) list 
 
+val is_unit : t -> bool 
+val is_array : t -> bool 
 
-
-val js_is_nil_undef : 'a Js.Null_undefined.t -> bool
-
-val js_from_nullable_def : 'a Js.Null_undefined.t -> 'a option
-
-val option_get : 'a option -> 'a Js.Undefined.t 
+(** for 
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)
+val label_name : string -> [ `Label of string | `Optional of string  | `Empty]

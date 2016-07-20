@@ -209,6 +209,8 @@ ext_sys.cmj : ../stdlib/sys.cmi ext_sys.cmi
 ext_sys.cmx : ../stdlib/sys.cmx ext_sys.cmi
 extensible_variant_test.cmj : mt.cmi
 extensible_variant_test.cmx : mt.cmx
+external_ppx.cmj :
+external_ppx.cmx :
 fail_comp.cmj :
 fail_comp.cmx :
 ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
@@ -411,6 +413,8 @@ of_string_test.cmj : mt.cmi
 of_string_test.cmx : mt.cmx
 offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
+optional_ffi_test.cmj : mt.cmi
+optional_ffi_test.cmx : mt.cmx
 polymorphism_test.cmj : polymorphism_test.cmi
 polymorphism_test.cmx : polymorphism_test.cmi
 ppx_apply_test.cmj : mt.cmi
@@ -937,6 +941,8 @@ ext_sys.cmo : ../stdlib/sys.cmi ext_sys.cmi
 ext_sys.cmj : ../stdlib/sys.cmj ext_sys.cmi
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
+external_ppx.cmo :
+external_ppx.cmj :
 fail_comp.cmo :
 fail_comp.cmj :
 ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
@@ -1139,6 +1145,8 @@ of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
 offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
+optional_ffi_test.cmo : mt.cmi
+optional_ffi_test.cmj : mt.cmj
 polymorphism_test.cmo : polymorphism_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 ppx_apply_test.cmo : mt.cmi

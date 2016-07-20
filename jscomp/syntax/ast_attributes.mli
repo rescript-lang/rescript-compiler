@@ -38,6 +38,8 @@ val process_attributes_rev :
 val process_class_type_decl_rev : 
   t -> [ `Nothing | `Has] * t 
 
+val process_external : t -> bool 
+val process_bs_type : t -> Parsetree.core_type option * t 
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
@@ -47,7 +49,9 @@ val process_derive_type :
   t -> derive_attr * t 
 
 
-val bs_obj : attr 
+val bs_obj : Parsetree.core_type -> t 
 val bs : attr 
 val bs_this : attr
 val bs_method : attr
+
+val mk_bs_type : ?loc:Location.t -> Parsetree.core_type -> attr

@@ -22,13 +22,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Parsetree.core_type 
 
+(** TODO check the polymorphic *)
+let list_of_arrow (ty : t) = 
+  let rec aux (ty : Parsetree.core_type) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      aux ty acc 
+    | return_type -> ty, List.rev acc
+  in aux ty []
 
+let is_unit (ty : t ) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "unit"}, []) -> true
+  | _ -> false 
 
+let is_array (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+  | _ -> false 
 
+let is_optional l =
+  String.length l > 0 && l.[0] = '?'
 
-val js_is_nil_undef : 'a Js.Null_undefined.t -> bool
-
-val js_from_nullable_def : 'a Js.Null_undefined.t -> 'a option
-
-val option_get : 'a option -> 'a Js.Undefined.t 
+let label_name l =
+  if l = "" then `Empty else 
+  if is_optional l 
+  then `Optional (String.sub l 1 (String.length l - 1))
+  else `Label l

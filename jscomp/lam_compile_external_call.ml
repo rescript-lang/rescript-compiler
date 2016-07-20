@@ -44,145 +44,97 @@ let handle_external
     in Some id 
   | None -> None 
 
+type typ = Ast_core_type.t
+
 let ocaml_to_js last
     (js_splice : bool)
-    ((label : string), (ty : Types.type_expr))
+    ((label : string), (ty : typ))
     (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
-  then 
-    match ty with 
-    | { desc = Tconstr(p,_,_) } when Path.same p Predef.path_array -> 
-      begin 
-        match arg with 
-        | {expression_desc = Array (ls,_mutable_flag) } -> 
-          ls (* Invariant : Array encoding *)
-        | _ -> 
-          assert false  (* TODO: fix splice *)
-      end
-    | _ -> assert false
-  else
-    match ty, Type_util.label_name label with 
-    | { desc = Tconstr(p,_, _)}, _ when Path.same p Predef.path_unit -> []
-    | _, `Optional label -> 
-      begin 
-        match (arg.expression_desc) with 
-        | Array ([x;y],_mutable_flag)  ->
-          [ y] (*Invrariant: optional encoding*)
-        | Number _ -> (*Invariant: None encoding*)
-          [ E.nil ] 
-        (* when no argumet is supplied, [undefined] 
-           if we detect that all rest arguments are [null], 
-           we can remove them
+  then if Ast_core_type.is_array ty then 
+      match arg with 
+      | {expression_desc = Array (ls,_mutable_flag) } -> 
+        ls (* Invariant : Array encoding *)
+      | _ -> 
+        assert false  
+        (* TODO: fix splice, 
+           we need a static guarantee that it is static array construct
+           otherwise, we should provide a good error message here
         *)
-        | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
-                   is not a variable
-                *)
-          (* | Var _  ->  *)
-          (* can only bd detected at runtime thing *)
-          (* (E.bin EqEqEq (E.typeof arg) *)
-          (*   (E.str "number")) *)
-
-          [E.econd arg
-             (Js_of_lam_option.get arg )
-             E.undefined
-             ]
-
-      end
-    | _ ->  [arg]  
+    else  assert false
+  else if Ast_core_type.is_unit ty then [] (* ignore unit *)
+  else 
+    match Ast_core_type.label_name label with 
+    | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
+    | `Label _ | `Empty ->  [arg]  
           
 
 
 let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
     (cxt  : Lam_compile_defs.cxt)
-    ( prim_ty : Types.type_expr option ) 
+    ( ty :typ ) 
     (args : J.expression list) = 
     match ffi with 
     | Obj_create -> 
-      begin 
-        match prim_ty with 
-        | Some ty -> 
-          let _return_type, arg_types = Type_util.list_of_arrow ty in
-          let key loc label = 
-            Js_op.Key (Lam_methname.translate ?loc  label) in 
-          let kvs : J.property_map = 
-            Ext_list.filter_map2 (fun (label, (ty : Types.type_expr)) 
-                                   ( arg : J.expression) -> 
-                match ty.desc, Type_util.label_name label with 
-                | Tconstr(p,_, _), _ when Path.same p Predef.path_unit 
-                  -> None
-                | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool 
-                  -> 
-                  begin 
-                    match arg.expression_desc with 
-                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) 
-                      -> 
-                      Some (key loc label ,E.caml_false)
-                    | Number _ -> 
-                      Some (key loc label,E.caml_true)
-                    | _ -> Some (key loc label, (E.econd arg E.caml_true E.caml_false))
-                  end
-
-                | _, `Label label -> 
-                  Some (key loc label, arg)
-                | _, `Optional label -> 
-                  begin 
-                    match arg.expression_desc with 
-                    | Array ([x;y], _mutable_flag)  ->
-                      Some (key loc label, y) (*Invrariant: optional encoding*)
-                    | Number _ -> (*Invariant: None encoding*)
-                      None
-                    | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
-                               is not a variable [Var ]
-                               can only bd detected at runtime thing *)
-                      Some ( key loc label, 
-                             E.econd arg
-                               (* (E.bin EqEqEq (E.typeof arg) *)
-                               (*   (E.str "number")) *)
-
-                               (Js_of_lam_option.get arg)
-                               E.undefined
-                           )
-                  end)                   
-              arg_types args 
-              (* (Ext_list.exclude_tail arg_types) (Ext_list.exclude_tail args) *)
-          in 
-          E.obj kvs 
-        | None -> assert false 
-
-      end
+      let arg_types = snd @@  Ast_core_type.list_of_arrow ty in
+      let key loc label = 
+        Js_op.Key (Lam_methname.translate ?loc  label) in 
+      E.obj @@ Ext_list.filter_map2 
+          (fun (label, (ty : typ)) 
+            ( arg : J.expression) -> 
+            if Ast_core_type.is_unit ty then None 
+            else 
+            match Ast_core_type.label_name label with 
+            | `Label label -> 
+              Some (key loc label, arg)
+            | `Optional label -> 
+              begin match arg.expression_desc with 
+                | Number _ -> (*Invariant: None encoding*)
+                  None
+                | _ ->  
+                  (* FIXME: can potentially be inconsistent, sometimes 
+                     {[
+                       { x : 3 , y : undefined}
+                     ]}
+                     and 
+                     {[
+                       {x : 3 }
+                     ]}
+                  *)
+                  Some ( key loc label, 
+                         Js_of_lam_option.get_default_undefined arg)
+              end
+            | `Empty -> Location.raise_errorf ?loc "expect a label name here"
+          ) arg_types args 
     | Js_call{ external_module_name = module_name; 
                txt = { name = fn; splice = js_splice ; 
                        qualifiers;
                      }} -> 
-      begin 
-        match prim_ty with 
-        | Some ty -> 
-          let _return_type, arg_types = Type_util.list_of_arrow ty in
-          let args = 
-            Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
-          let qualifiers =  List.rev qualifiers in
-          let fn =  
-            match handle_external module_name with 
-            | Some (id,_) -> 
-              (* FIXME: need add dependency here
-                  it's an external call 
-              *)
-              List.fold_left E.dot (E.var id) (qualifiers @ [ fn])
-            | None -> 
-              begin 
-                match  qualifiers @ [fn] with 
-                | y::ys  -> 
-                  List.fold_left E.dot (E.js_var y) ys
-                | _ -> assert false
-              end
-          in
-          if Type_util.is_unit _return_type then
-            E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) (E.unit)
-          else             
-            E.call ~info:{arity=Full; call_info = Call_na} fn args
-        | None -> assert false 
-      end
+      let result_type, arg_types = Ast_core_type.list_of_arrow ty in
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
+      let qualifiers =  List.rev qualifiers in
+      let fn =  
+        match handle_external module_name with 
+        | Some (id,_) -> 
+          (* FIXME: need add dependency here
+              it's an external call 
+          *)
+          List.fold_left E.dot (E.var id) (qualifiers @ [ fn])
+        | None -> 
+          begin 
+            match  qualifiers @ [fn] with 
+            | y::ys  -> 
+              List.fold_left E.dot (E.js_var y) ys
+            | _ -> assert false
+          end
+      in
+      if Ast_core_type.is_unit result_type then
+        E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+      else             
+        E.call ~info:{arity=Full; call_info = Call_na} fn args
+
     | Js_global_as_var module_name -> 
       begin match handle_external (Some module_name) with 
         | Some (id, name) -> 
@@ -192,41 +144,38 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
     | Js_new { external_module_name = module_name; 
                txt = { name = fn};
              } -> 
-      begin 
-        match prim_ty with 
-        | Some ty -> 
-          let _return_type, arg_types = Type_util.list_of_arrow ty in
-          let args = 
-            Ext_list.flat_map2_last (ocaml_to_js false) arg_types args  in 
-          let fn =  
-            match handle_external module_name with 
-            | Some (id,name) ->  
-              E.external_var_dot id name (Some fn)
+      let  arg_types = snd @@  Ast_core_type.list_of_arrow ty in
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args  in 
+      let fn =  
+        match handle_external module_name with 
+        | Some (id,name) ->  
+          E.external_var_dot id name (Some fn)
 
-            | None -> 
-              (** TODO: check, no [@@bs.module], 
-                  assume it's global *)
-              E.js_var fn
+        | None -> 
+          (** TODO: check, no [@@bs.module], 
+              assume it's global *)
+          E.js_var fn
 
-          in
-          (* This has some side effect, it will 
-             mark its identifier (If it has) as an object,
-             ATTENTION: 
-             order also matters here, since we mark its jsobject property, 
-             it  will affect the code gen later
-             TODO: we should propagate this property 
-             as much as we can(in alias table)
-          *)
-          (
-            match cxt.st with 
-            | Declare (_, id) | Assign id  ->
-              (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
-              Ext_ident.make_js_object id 
-            | EffectCall | NeedValue -> ()
-          );
-          E.new_ fn args
-        | None -> assert false 
-      end
+      in
+      (* This has some side effect, it will 
+         mark its identifier (If it has) as an object,
+         ATTENTION: 
+         order also matters here, since we mark its jsobject property, 
+         it  will affect the code gen later
+         TODO: we should propagate this property 
+         as much as we can(in alias table)
+      *)
+      (
+        match cxt.st with 
+        | Declare (_, id) | Assign id  ->
+          (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
+          Ext_ident.make_js_object id 
+        | EffectCall | NeedValue -> ()
+      );
+      E.new_ fn args
+
+
 
     | Js_global {name; external_module_name} -> 
 
@@ -247,11 +196,10 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
           E.var (Ext_ident.create_js name)
       end
     | Js_send {splice  = js_splice ; name } -> 
-      begin 
-        match args , prim_ty with
-        | self :: args, Some ty -> 
+      begin match args  with
+        | self :: args -> 
           let [@warning"-8"] (_return_type, self_type::arg_types )
-            = Type_util.list_of_arrow ty in
+            = Ast_core_type.list_of_arrow ty in
           let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
         | _ -> 
@@ -287,15 +235,17 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
         Js_array.set_array obj v value
       | _ -> Location.raise_errorf ?loc "Ill defined attribute"
       end
-    | Normal -> Lam_dispatch_primitive.translate prim_name args 
+    
 
 
 let translate cxt 
-    ({prim_name ; prim_ty} as prim 
-     : Types.type_expr option Primitive.description) args  = 
-  let loc, ffi = Lam_external_def.handle_attributes prim in
-  let () = Lam_external_def.check_ffi ?loc ffi in
-  translate_ffi loc ffi prim_name cxt prim_ty args 
+    ({prim_name ; } as prim 
+     : Lam_external_def.prim) args  = 
+  match Lam_external_def.handle_attributes prim with 
+  | Normal -> Lam_dispatch_primitive.translate prim_name args 
+  | Bs (ty, loc, ffi) -> 
+    let () = Lam_external_def.check_ffi ?loc ffi in
+    translate_ffi loc ffi prim_name cxt ty args 
 
 
 

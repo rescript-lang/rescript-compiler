@@ -29,9 +29,39 @@
 
 module E = Js_exp_make 
  
-let get arg : J.expression = 
-  E.index  arg 0l
+(**
+  Invrariant: 
+  - optional encoding
+  -  None encoding
 
+  when no argumet is supplied, [undefined] 
+  if we detect that all rest arguments are [null], 
+  we can remove them
+
+
+  - avoid duplicate evlauation of [arg] when it
+   is not a variable
+  {!Js_ast_util.named_expression} does not help 
+   since we need an expression here, it might be a statement
+*)
+let get_default_undefined (arg : J.expression) : J.expression = 
+  match arg.expression_desc with 
+  | Number _ -> E.undefined
+  | Array ([x],_) 
+  | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
+  | _ -> 
+    if Js_ast_util.is_simple_expression arg then 
+      E.econd arg (E.index arg 0l) E.undefined
+    else E.runtime_call Js_config.js_primitive "option_get" [arg]
+  
+(** Another way: 
+    {[
+      | Var _  ->
+        can only bd detected at runtime thing
+          (E.bin EqEqEq (E.typeof arg)
+             (E.str "number"))
+    ]}
+*)
 let none : J.expression = 
   {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
