@@ -9,10 +9,16 @@ then
     OCAML=ocaml
 else 
     OCAML=ocaml_src
-    rm -rf $OCAML
-    mkdir -p $OCAML
-    tar -zxvf ./ocaml.tar.gz -C $OCAML
-
+    if [  -f "ocaml.tar.gz" ]
+    then 
+        echo "ocaml.tar.gz already exists"
+        rm -rf $OCAML
+        mkdir -p $OCAML
+        tar -zxvf ./ocaml.tar.gz -C $OCAML
+    else
+        echo "creating ocaml from github"
+        git clone -b master --depth 1 https://github.com/bloomberg/ocaml $OCAML
+    fi
 fi 
 
 
