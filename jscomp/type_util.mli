@@ -45,6 +45,6 @@ val find_serializable_signatures_by_path : Path.t -> Env.t -> Types.signature op
 
 
 
-val label_name : string -> [ `Label of string | `Optional of string ]
+
 
 

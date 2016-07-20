@@ -65,13 +65,9 @@ let ocaml_to_js last
     else  assert false
   else if Ast_core_type.is_unit ty then [] (* ignore unit *)
   else 
-    (* for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-    *)
-    match Type_util.label_name label with 
+    match Ast_core_type.label_name label with 
     | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
-    | _ ->  [arg]  
+    | `Label _ | `Empty ->  [arg]  
           
 
 
@@ -81,62 +77,63 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
     (args : J.expression list) = 
     match ffi with 
     | Obj_create -> 
-      let _return_type, arg_types = Ast_core_type.list_of_arrow ty in
+      let arg_types = snd @@  Ast_core_type.list_of_arrow ty in
       let key loc label = 
         Js_op.Key (Lam_methname.translate ?loc  label) in 
-      let kvs : J.property_map = 
-        Ext_list.filter_map2 
+      E.obj @@ Ext_list.filter_map2 
           (fun (label, (ty : typ)) 
             ( arg : J.expression) -> 
             if Ast_core_type.is_unit ty then None 
             else 
-            match Type_util.label_name label with 
+            match Ast_core_type.label_name label with 
             | `Label label -> 
               Some (key loc label, arg)
             | `Optional label -> 
-              begin 
-                match arg.expression_desc with 
-                | Array ([x;y], _mutable_flag)  ->
-                  Some (key loc label, y) (*Invrariant: optional encoding*)
+              begin match arg.expression_desc with 
                 | Number _ -> (*Invariant: None encoding*)
                   None
-                | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
-                                              is not a variable [Var ]
-                                              can only bd detected at runtime thing *)
+                | _ ->  
+                  (* FIXME: can potentially be inconsistent, sometimes 
+                     {[
+                       { x : 3 , y : undefined}
+                     ]}
+                     and 
+                     {[
+                       {x : 3 }
+                     ]}
+                  *)
                   Some ( key loc label, 
                          Js_of_lam_option.get_default_undefined arg)
-              end) arg_types args 
-          (* (Ext_list.exclude_tail arg_types) (Ext_list.exclude_tail args) *)
-      in 
-      E.obj kvs 
-
+              end
+            | `Empty -> Location.raise_errorf ?loc "expect a label name here"
+          ) arg_types args 
     | Js_call{ external_module_name = module_name; 
                txt = { name = fn; splice = js_splice ; 
                        qualifiers;
                      }} -> 
-        let _return_type, arg_types = Ast_core_type.list_of_arrow ty in
-        let args = 
-          Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
-        let qualifiers =  List.rev qualifiers in
-        let fn =  
-          match handle_external module_name with 
-          | Some (id,_) -> 
-            (* FIXME: need add dependency here
-                it's an external call 
-            *)
-            List.fold_left E.dot (E.var id) (qualifiers @ [ fn])
-          | None -> 
-            begin 
-              match  qualifiers @ [fn] with 
-              | y::ys  -> 
-                List.fold_left E.dot (E.js_var y) ys
-              | _ -> assert false
-            end
-        in
-        if Ast_core_type.is_unit _return_type then
-          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) (E.unit)
-        else             
-          E.call ~info:{arity=Full; call_info = Call_na} fn args
+      let result_type, arg_types = Ast_core_type.list_of_arrow ty in
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
+      let qualifiers =  List.rev qualifiers in
+      let fn =  
+        match handle_external module_name with 
+        | Some (id,_) -> 
+          (* FIXME: need add dependency here
+              it's an external call 
+          *)
+          List.fold_left E.dot (E.var id) (qualifiers @ [ fn])
+        | None -> 
+          begin 
+            match  qualifiers @ [fn] with 
+            | y::ys  -> 
+              List.fold_left E.dot (E.js_var y) ys
+            | _ -> assert false
+          end
+      in
+      if Ast_core_type.is_unit result_type then
+        E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+      else             
+        E.call ~info:{arity=Full; call_info = Call_na} fn args
 
     | Js_global_as_var module_name -> 
       begin match handle_external (Some module_name) with 
@@ -147,7 +144,7 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
     | Js_new { external_module_name = module_name; 
                txt = { name = fn};
              } -> 
-      let _return_type, arg_types = Ast_core_type.list_of_arrow ty in
+      let  arg_types = snd @@  Ast_core_type.list_of_arrow ty in
       let args = 
         Ext_list.flat_map2_last (ocaml_to_js false) arg_types args  in 
       let fn =  

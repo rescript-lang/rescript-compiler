@@ -1,6 +1,5 @@
 'use strict';
 
-var Js_primitive = require("../../lib/js/js_primitive");
 
 function v(displayName, _) {
   return {
@@ -18,7 +17,7 @@ var v2 = {
 };
 
 var v3 = {
-  displayName: Js_primitive.option_get(/* Some */["display"]),
+  displayName: "display",
   test: 3,
   config: 3,
   hi: "ghos"

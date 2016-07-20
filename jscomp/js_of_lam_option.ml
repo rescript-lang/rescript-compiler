@@ -47,6 +47,8 @@ module E = Js_exp_make
 let get_default_undefined (arg : J.expression) : J.expression = 
   match arg.expression_desc with 
   | Number _ -> E.undefined
+  | Array ([x],_) 
+  | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
   | _ -> 
     if Js_ast_util.is_simple_expression arg then 
       E.econd arg (E.index arg 0l) E.undefined

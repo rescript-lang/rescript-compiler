@@ -1,9 +1,8 @@
 'use strict';
 
-var Js_primitive = require("../../lib/js/js_primitive");
-var Curry        = require("../../lib/js/curry");
-var React        = require("react");
-var ReactDom     = require("react-dom");
+var Curry    = require("../../lib/js/curry");
+var React    = require("react");
+var ReactDom = require("react-dom");
 
 function fib(n) {
   if (n === 2 || n === 1) {
@@ -44,9 +43,9 @@ function f(param) {
 
 ReactDom.render(React.createClass({
           render: function () {
-            return React.DOM.div(Js_primitive.option_get(/* Some */[{
-                              alt: Js_primitive.option_get(/* Some */["pic"])
-                            }]), React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"));
+            return React.DOM.div({
+                        alt: "pic"
+                      }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"));
           }
         }), document.getElementById("hi"));
 

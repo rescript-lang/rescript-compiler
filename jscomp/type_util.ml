@@ -107,10 +107,3 @@ let query_type (id : Ident.t) (env : Env.t) =
       !Oprint.out_type 
       (Printtyp.tree_of_type_scheme val_type)
 
-let is_optional l =
-  String.length l > 0 && l.[0] = '?'
-
-let label_name l =
-  if is_optional l 
-  then `Optional (String.sub l 1 (String.length l - 1))
-  else `Label l

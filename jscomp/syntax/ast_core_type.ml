@@ -44,3 +44,12 @@ let is_array (ty : t) =
   match ty.ptyp_desc with 
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
   | _ -> false 
+
+let is_optional l =
+  String.length l > 0 && l.[0] = '?'
+
+let label_name l =
+  if l = "" then `Empty else 
+  if is_optional l 
+  then `Optional (String.sub l 1 (String.length l - 1))
+  else `Label l
