@@ -93,14 +93,20 @@ See https://github.com/bloomberg/bucklescript-addons
 
 #### Build from package manager
 
-#. npm install
+#. npm install from npmjs registry
 
-  ```
-  npm install  bs-platform
-  ```
+```
+npm install  bs-platform
+```
 
 It will install OCaml compiler, BuckleScript compiler and Standard library
 in three module systems (CommonJS, AMDJS, and Google Module).
+
+#. npm install from github
+
+```
+npm install https://github.com/bloomberg/bucklescript/
+```
 
 #### Build from source
 
