@@ -30,10 +30,23 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) =
   | Number (Int {i} | Uint i) -> 
     E.str (List.assoc (Int32.to_int i) dispatches)
   | _ ->  
-    E.of_block_only 
+    E.of_block
       [(S.int_switch arg
       (List.map (fun (i,r) -> 
               {J.case = i ; 
                body = [S.return (E.str r)],
+                      false (* FIXME: if true, still print break*)
+              }) dispatches))]
+
+let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) = 
+  match arg.expression_desc with
+  | Number (Int {i} | Uint i) -> 
+    E.int (Int32.of_int (List.assoc (Int32.to_int i) dispatches))
+  | _ ->  
+    E.of_block
+      [(S.int_switch arg
+      (List.map (fun (i,r) -> 
+              {J.case = i ; 
+               body = [S.return (E.int (Int32.of_int  r))],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]

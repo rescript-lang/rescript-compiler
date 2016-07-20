@@ -267,9 +267,8 @@ val is_instance_array  : unary_op
 val dummy_obj : ?comment:string ->  unit -> t 
 
 (** convert a block to expresion by using IIFE *)    
-val of_block : ?comment:string -> J.statement list -> J.expression -> t
-val of_block_only : 
-  ?comment:string -> J.block -> t
+val of_block : ?comment:string -> ?e:J.expression -> J.statement list -> t
+
 val bind : binary_op
 
 val raw_js_code : ?comment:string -> J.code_info ->  string -> t

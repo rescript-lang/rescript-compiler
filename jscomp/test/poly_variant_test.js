@@ -1,37 +1,42 @@
 'use strict';
 
 
-function u() {
-  return hey("on_open");
+
+function hey_string (option){
+  switch(option){
+  case "on_closed" : return 1 ;
+  case "on_open" : return 2 ; 
+  case "in" : return 3;
+  default : throw Error ("impossible")
+ }
 }
+function hey_int (option){
+  switch (option){
+   case 0 : return 1;
+   case 3 : return 3;
+   case 4 : return 4;
+   default : throw Error("impossible")
+  }
+ }
 
-function v() {
-  return hey("on_closed");
-}
+;
 
-function ff(h) {
-  return hey(function () {
-                switch (h) {
-                  case 119688204 : 
-                      return "on_closed";
-                  case -2798038 : 
-                      return "on_open";
-                  case 5246170 : 
-                      return "in";
-                  
-                }
-              }());
-}
+var uu = /* int array */[
+  hey_string("on_open"),
+  hey_string("on_closed"),
+  hey_string("in")
+];
 
-function xx() {
-  return hey("in");
-}
+var vv = /* int array */[
+  hey_int(3),
+  hey_int(0),
+  hey_int(4)
+];
 
-var option = /* on_closed */119688204;
+hey_string("on_closed");
 
-exports.u      = u;
-exports.option = option;
-exports.v      = v;
-exports.ff     = ff;
-exports.xx     = xx;
-/* No side effect */
+hey_string("in");
+
+exports.uu = uu;
+exports.vv = vv;
+/*  Not a pure module */

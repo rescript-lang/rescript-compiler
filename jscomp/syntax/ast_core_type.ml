@@ -57,22 +57,45 @@ let label_name l =
 let string_type (ty : t) = 
   match ty with 
   | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
-    if List.exists (fun ({Location.txt;_}, _) -> txt = "bs.stringify" ) ptyp_attributes
-    then 
-      match ptyp_desc with 
+    match Ast_attributes.process_bs_string_int ptyp_attributes with 
+    | `String  -> 
+      begin match ptyp_desc with 
       | Ptyp_variant ( row_fields, Closed, None)
         -> 
-        Some 
+        `String
           (List.map (function 
           | Parsetree.Rtag (label, attrs, true,  [])
             -> 
             let name = 
-              match Ast_attributes.process_bs_name attrs with 
+              match Ast_attributes.process_bs_string_as attrs with 
               | Some name -> name 
               | None -> label in
             Btype.hash_variant label, name
           | _ -> Location.raise_errorf ~loc "Not a valid string type"
           ) row_fields)
       | _ -> Location.raise_errorf ~loc "Not a valid string type"
-    else 
-      None 
+      end
+    | `Int  -> 
+      begin match ptyp_desc with 
+      | Ptyp_variant ( row_fields, Closed, None)
+        -> 
+        let _, acc = 
+          (List.fold_left 
+             (fun (i,acc) rtag -> 
+                match rtag with 
+                | Parsetree.Rtag (label, attrs, true,  [])
+                  -> 
+                  let name = 
+                    match Ast_attributes.process_bs_int_as attrs with 
+                    | Some name -> name 
+                    | None -> i in
+                  name + 1, ((Btype.hash_variant label , name):: acc )
+                | _ -> Location.raise_errorf ~loc "Not a valid string type"
+             ) (0, []) row_fields) in 
+        `Int (List.rev acc)
+          
+      | _ -> Location.raise_errorf ~loc "Not a valid string type"
+      end
+
+    | `Nothing -> `Nothing
+      

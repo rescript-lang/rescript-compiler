@@ -34,6 +34,8 @@ type action =
    lid * Parsetree.expression option 
 
 val is_single_string : t -> string option
+val is_single_int : t -> int option 
+
 val as_string_exp : t -> Parsetree.expression option 
 val as_empty_structure :  t -> bool 
 val is_string_or_strings : 

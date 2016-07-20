@@ -37,4 +37,7 @@ val is_array : t -> bool
 val label_name : string -> [ `Label of string | `Optional of string  | `Empty]
 
 
-val string_type : t -> (int * string) list option
+val string_type : t -> 
+  [ `Int of (int * int) list |
+    `String of (int * string) list |
+    `Nothing ]
