@@ -23,4 +23,5 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val eval : J.expression -> (int * string) list -> J.expression
+val eval_as_event : J.expression -> (int * string) list -> J.expression list 
 val eval_as_int : J.expression -> (int * int) list -> J.expression

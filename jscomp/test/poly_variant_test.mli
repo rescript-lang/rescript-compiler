@@ -11,3 +11,11 @@ external test_int_type : ([`on_closed | `on_open | `in_ [@bs.as "in"]]
 
 val uu : int array
 val vv : int array
+
+type readline
+
+val register : readline -> unit
+
+val test : readline ->
+  [ `close of (unit -> unit [@bs])
+  | `line of (string -> unit [@bs]) ] -> unit

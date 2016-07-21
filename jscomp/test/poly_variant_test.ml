@@ -46,4 +46,19 @@ let ff h  = test_string_type h
 
 let xx = test_string_type `in_
 
+type readline
+external on : 
+  readline -> 
+  ([ `line of (string -> unit [@bs]) 
+   | `close of (unit -> unit [@bs])] 
+     [@bs.string]) ->
+  unit = 
+  "on" [@@bs.send]
 
+let register readline = 
+  on readline (`line begin fun[@bs] s -> Js.log s end);
+  on readline (`close begin fun[@bs] () -> Js.log "finished" end)
+
+
+let test readline x  = 
+  on readline x 

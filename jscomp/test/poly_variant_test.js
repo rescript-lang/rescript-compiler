@@ -37,6 +37,39 @@ hey_string("on_closed");
 
 hey_string("in");
 
-exports.uu = uu;
-exports.vv = vv;
+function register(readline) {
+  readline.on("line", function (s) {
+        console.log(s);
+        return /* () */0;
+      });
+  return readline.on("close", function () {
+              console.log("finished");
+              return /* () */0;
+            });
+}
+
+function test(readline, x) {
+  return readline.on(function (action) {
+              switch (x) {
+                case -944564236 : 
+                    return action[0];
+                case -933029960 : 
+                    return action[0];
+                
+              }
+            }, function (action) {
+              switch (x) {
+                case -944564236 : 
+                    return action[1];
+                case -933029960 : 
+                    return action[1];
+                
+              }
+            });
+}
+
+exports.uu       = uu;
+exports.vv       = vv;
+exports.register = register;
+exports.test     = test;
 /*  Not a pure module */

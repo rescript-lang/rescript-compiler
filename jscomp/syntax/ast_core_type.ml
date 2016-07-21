@@ -62,17 +62,31 @@ let string_type (ty : t) =
       begin match ptyp_desc with 
       | Ptyp_variant ( row_fields, Closed, None)
         -> 
-        `String
-          (List.map (function 
-          | Parsetree.Rtag (label, attrs, true,  [])
-            -> 
-            let name = 
-              match Ast_attributes.process_bs_string_as attrs with 
-              | Some name -> name 
-              | None -> label in
-            Btype.hash_variant label, name
-          | _ -> Location.raise_errorf ~loc "Not a valid string type"
-          ) row_fields)
+        let case, result = 
+          (List.fold_right (fun tag (nullary, acc) -> 
+               match nullary, tag with 
+               | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
+                 -> 
+                 let name = 
+                   match Ast_attributes.process_bs_string_as attrs with 
+                   | Some name -> name 
+                   | None -> label in
+                 `Null, ((Btype.hash_variant label, name) :: acc )
+               | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
+                 -> 
+                 let name = 
+                   match Ast_attributes.process_bs_string_as attrs with 
+                   | Some name -> name 
+                   | None -> label in
+                 `NonNull, ((Btype.hash_variant label, name) :: acc)
+
+               | _ -> Location.raise_errorf ~loc "Not a valid string type"
+             ) row_fields (`Nothing, [])) in 
+        begin match case with 
+        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
+        | `Null -> `NullString result 
+        | `NonNull -> `NonNullString result 
+        end
       | _ -> Location.raise_errorf ~loc "Not a valid string type"
       end
     | `Int  -> 

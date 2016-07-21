@@ -39,5 +39,6 @@ val label_name : string -> [ `Label of string | `Optional of string  | `Empty]
 
 val string_type : t -> 
   [ `Int of (int * int) list |
-    `String of (int * string) list |
+    `NonNullString of (int * string) list |
+    `NullString of (int * string) list  |
     `Nothing ]

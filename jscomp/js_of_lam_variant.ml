@@ -38,6 +38,35 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) =
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
 
+let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) = 
+  match arg.expression_desc with
+  | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
+  | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
+    -> 
+    [E.str (List.assoc (Int32.to_int i) dispatches); cb]
+  | _ ->  
+    let event = Ext_ident.create "action" in
+    [
+      E.ocaml_fun [event]
+      [(S.int_switch arg
+      (List.map (fun (i,r) -> 
+              {J.case = i ; 
+               body = [S.return (E.index (E.var event) 0l)],
+                      false (* FIXME: if true, still print break*)
+              }) dispatches))]
+      ; (* TODO: improve, one dispatch later, 
+           the problem is that we can not create bindings 
+           due to the 
+        *)
+      E.ocaml_fun [event]
+      [(S.int_switch arg
+      (List.map (fun (i,r) -> 
+              {J.case = i ; 
+               body = [S.return (E.index (E.var event) 1l)],
+                      false (* FIXME: if true, still print break*)
+              }) dispatches))]
+    ]
+
 let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) = 
   match arg.expression_desc with
   | Number (Int {i} | Uint i) -> 

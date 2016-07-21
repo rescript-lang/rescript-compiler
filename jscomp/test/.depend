@@ -416,8 +416,8 @@ offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
 optional_ffi_test.cmj : mt.cmi
 optional_ffi_test.cmx : mt.cmx
-poly_variant_test.cmj : poly_variant_test.cmi
-poly_variant_test.cmx : poly_variant_test.cmi
+poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
+poly_variant_test.cmx : ../runtime/js.cmx poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 polymorphism_test.cmx : polymorphism_test.cmi
 ppx_apply_test.cmj : mt.cmi
@@ -1150,8 +1150,8 @@ offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 optional_ffi_test.cmo : mt.cmi
 optional_ffi_test.cmj : mt.cmj
-poly_variant_test.cmo : poly_variant_test.cmi
-poly_variant_test.cmj : poly_variant_test.cmi
+poly_variant_test.cmo : ../runtime/js.cmo poly_variant_test.cmi
+poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmo : polymorphism_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 ppx_apply_test.cmo : mt.cmi
