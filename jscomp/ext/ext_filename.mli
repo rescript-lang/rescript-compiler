@@ -61,3 +61,5 @@ val resolve_bs_package : cwd:string -> string -> string
 
 val cwd : string Lazy.t
 val package_dir : string Lazy.t
+
+val replace_backward_slash : string -> string

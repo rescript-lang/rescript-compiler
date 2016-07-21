@@ -233,3 +233,8 @@ let find_package_json_dir cwd  =
   aux cwd 
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
+let replace_backward_slash (x : string)= 
+  String.map (function 
+    |'\\'-> '/'
+    | x -> x) x  

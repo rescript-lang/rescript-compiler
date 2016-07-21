@@ -351,26 +351,38 @@ var package_dir = Block.__(246, [function () {
                   ));
     }]);
 
+function replace_backward_slash(x) {
+  return $$String.map(function (x) {
+              if (x !== 92) {
+                return x;
+              }
+              else {
+                return /* "/" */47;
+              }
+            }, x);
+}
+
 var $slash$slash = Filename.concat;
 
 var node_modules_length = 12;
 
-exports.node_sep              = node_sep;
-exports.node_parent           = node_parent;
-exports.node_current          = node_current;
-exports.cwd                   = cwd;
-exports.$slash$slash          = $slash$slash;
-exports.combine               = combine;
-exports.path_as_directory     = path_as_directory;
-exports.absolute_path         = absolute_path;
-exports.chop_extension        = chop_extension;
-exports.try_chop_extension    = try_chop_extension;
-exports.relative_path         = relative_path;
-exports.node_modules          = node_modules;
-exports.node_modules_length   = node_modules_length;
-exports.package_json          = package_json;
-exports.node_relative_path    = node_relative_path;
-exports.resolve_bs_package    = resolve_bs_package;
-exports.find_package_json_dir = find_package_json_dir;
-exports.package_dir           = package_dir;
+exports.node_sep               = node_sep;
+exports.node_parent            = node_parent;
+exports.node_current           = node_current;
+exports.cwd                    = cwd;
+exports.$slash$slash           = $slash$slash;
+exports.combine                = combine;
+exports.path_as_directory      = path_as_directory;
+exports.absolute_path          = absolute_path;
+exports.chop_extension         = chop_extension;
+exports.try_chop_extension     = try_chop_extension;
+exports.relative_path          = relative_path;
+exports.node_modules           = node_modules;
+exports.node_modules_length    = node_modules_length;
+exports.package_json           = package_json;
+exports.node_relative_path     = node_relative_path;
+exports.resolve_bs_package     = resolve_bs_package;
+exports.find_package_json_dir  = find_package_json_dir;
+exports.package_dir            = package_dir;
+exports.replace_backward_slash = replace_backward_slash;
 /* Filename Not a pure module */
