@@ -64,7 +64,15 @@ let ocaml_to_js last
         *)
     else  assert false
   else if Ast_core_type.is_unit ty then [] (* ignore unit *)
-  else 
+  else match Ast_core_type.string_type ty with 
+  | `NullString dispatches -> 
+    [Js_of_lam_variant.eval arg dispatches]
+  | `NonNullString dispatches -> 
+    Js_of_lam_variant.eval_as_event arg dispatches
+  | `Int dispatches -> 
+    [Js_of_lam_variant.eval_as_int arg dispatches]
+
+  | `Nothing  -> 
     match Ast_core_type.label_name label with 
     | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
     | `Label _ | `Empty ->  [arg]  

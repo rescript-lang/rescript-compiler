@@ -156,6 +156,59 @@ let process_derive_type attrs =
 
 
 
+let process_bs_string_int attrs = 
+  List.fold_left 
+    (fun st
+      (({txt ; loc}, payload ): attr)  ->
+      match  txt, st  with
+      | "bs.string", (`Nothing | `String)
+        -> `String
+      | "bs.int", (`Nothing | `Int)
+        ->  `Int
+      | "bs.int", _
+      | "bs.string", _
+        -> 
+        Location.raise_errorf ~loc "conflict attributes "
+      | _ , _ -> st 
+    ) `Nothing attrs
+
+let process_bs_string_as  attrs = 
+  List.fold_left 
+    (fun st
+      (({txt ; loc}, payload ): attr)  ->
+      match  txt, st  with
+      | "bs.as", None
+        ->
+        begin match Ast_payload.is_single_string payload with 
+          | None -> 
+            Location.raise_errorf ~loc "expect string literal "
+          | Some  _ as v->  v  
+        end
+      | "bs.as",  _ 
+        -> 
+          Location.raise_errorf ~loc "duplicated bs.as "
+      | _ , _ -> st 
+    ) None attrs
+
+let process_bs_int_as  attrs = 
+  List.fold_left 
+    (fun st
+      (({txt ; loc}, payload ): attr)  ->
+      match  txt, st  with
+      | "bs.as", None
+        ->
+        begin match Ast_payload.is_single_int payload with 
+          | None -> 
+            Location.raise_errorf ~loc "expect string literal "
+          | Some  _ as v->  v  
+        end
+      | "bs.as",  _ 
+        -> 
+          Location.raise_errorf ~loc "duplicated bs.as "
+      | _ , _ -> st 
+    ) None attrs
+
+
 let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
 let bs_this : attr

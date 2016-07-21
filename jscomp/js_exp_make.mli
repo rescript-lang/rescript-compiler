@@ -103,6 +103,7 @@ val float : ?comment:string -> string -> t
 
 (* TODO: we can do hash consing for small integers *)
 val zero_int_literal : t
+val one_int_literal : t
 val zero_float_lit : t 
 val obj_int_tag_literal : t
 
@@ -267,7 +268,7 @@ val is_instance_array  : unary_op
 val dummy_obj : ?comment:string ->  unit -> t 
 
 (** convert a block to expresion by using IIFE *)    
-val of_block : ?comment:string -> J.statement list -> J.expression -> t
+val of_block : ?comment:string -> ?e:J.expression -> J.statement list -> t
 
 val bind : binary_op
 

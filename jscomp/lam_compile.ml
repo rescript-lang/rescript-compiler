@@ -1310,7 +1310,7 @@ and
          let e = 
            match block with
            | [] -> e 
-           | _ -> E.of_block block e  in
+           | _ -> E.of_block block ~e  in
          let block = 
            [
              S.while_

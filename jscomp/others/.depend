@@ -1,5 +1,5 @@
-js_dyn.cmi :
-js_dyn.cmj : js_dyn.cmi
-js_dyn.cmx : js_dyn.cmi
-js_dyn.cmo : js_dyn.cmi
-js_dyn.cmj : js_dyn.cmi
+bs_node.cmi :
+bs_node.cmj : bs_node.cmi
+bs_node.cmx : bs_node.cmi
+bs_node.cmo : bs_node.cmi
+bs_node.cmj : bs_node.cmi

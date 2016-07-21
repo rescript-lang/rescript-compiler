@@ -1190,13 +1190,19 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) : J.expressi
 (* TODO -- alpha conversion 
     remember to add parens..
 *)
-let of_block ?comment block e : t = 
+let of_block ?comment ?e block : t = 
   call ~info:Js_call_info.ml_full_call
     {
       comment ;
       expression_desc = 
-        Fun (false, [], (block @ [{J.statement_desc = Return {return_value = e } ;
-                            comment}]) , Js_fun_env.empty 0)
+        Fun (false, [], 
+             begin match e with 
+               | None -> block 
+               | Some e -> 
+                 block @ [{J.statement_desc = Return {return_value = e } ;
+                           comment}]
+             end
+            , Js_fun_env.empty 0)
     } []
 
 let is_nil ?comment x = triple_equal ?comment x nil 

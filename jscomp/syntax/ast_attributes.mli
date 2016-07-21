@@ -44,6 +44,14 @@ type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
+val process_bs_string_int : 
+  t -> [`Nothing | `String | `Int] 
+
+val process_bs_string_as :
+  t -> string option 
+val process_bs_int_as : 
+  t -> int option 
+
 
 val process_derive_type : 
   t -> derive_attr * t 
