@@ -13,6 +13,7 @@ float_record.cmi :
 gpr_405_test.cmi :
 inline_edge_cases.cmi :
 inline_map_test.cmi :
+js_dyn.cmi :
 map_test.cmi :
 mt.cmi :
 mt_global.cmi : mt.cmi
@@ -20,7 +21,7 @@ ocaml_proto_test.cmi :
 poly_variant_test.cmi :
 polymorphism_test.cmi :
 scanf_reference_error_regression_test.cmi :
-simple_derive_test.cmi : ../others/js_dyn.cmi
+simple_derive_test.cmi : js_dyn.cmi
 simple_derive_use.cmi :
 test_for_map2.cmi :
 test_http_server.cmi :
@@ -150,8 +151,8 @@ demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
 demo_page.cmj :
 demo_page.cmx :
-derive_dyntype.cmj : ../others/js_dyn.cmi
-derive_dyntype.cmx : ../others/js_dyn.cmx
+derive_dyntype.cmj : js_dyn.cmi
+derive_dyntype.cmx : js_dyn.cmx
 derive_type_test.cmj :
 derive_type_test.cmx :
 digest_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
@@ -320,6 +321,8 @@ js_date.cmj : ../runtime/js.cmj
 js_date.cmx : ../runtime/js.cmx
 js_date_test.cmj : mt.cmi js_date.cmj
 js_date_test.cmx : mt.cmx js_date.cmx
+js_dyn.cmj : ../stdlib/array.cmi js_dyn.cmi
+js_dyn.cmx : ../stdlib/array.cmx js_dyn.cmi
 js_obj_test.cmj : mt.cmi
 js_obj_test.cmx : mt.cmx
 js_val.cmj :
@@ -884,8 +887,8 @@ demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmo :
 demo_page.cmj :
-derive_dyntype.cmo : ../others/js_dyn.cmi
-derive_dyntype.cmj : ../others/js_dyn.cmj
+derive_dyntype.cmo : js_dyn.cmi
+derive_dyntype.cmj : js_dyn.cmj
 derive_type_test.cmo :
 derive_type_test.cmj :
 digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
@@ -1054,6 +1057,8 @@ js_date.cmo : ../runtime/js.cmo
 js_date.cmj : ../runtime/js.cmj
 js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
+js_dyn.cmo : ../stdlib/array.cmi js_dyn.cmi
+js_dyn.cmj : ../stdlib/array.cmj js_dyn.cmi
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
 js_val.cmo :

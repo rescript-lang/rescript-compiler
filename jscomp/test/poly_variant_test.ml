@@ -59,6 +59,25 @@ let register readline =
   on readline (`line begin fun[@bs] s -> Js.log s end);
   on readline (`close begin fun[@bs] () -> Js.log "finished" end)
 
+(* external on :  *)
+(*       ([ `line of (string -> unit [@bs])  *)
+(*        | `close of (unit -> unit [@bs])]  *)
+(*          [@bs.string]) ->  *)
+(*       readline -> readline  =  *)
+(*   "on" [@@bs.send] *)
 
+(**
+let register readline = 
+  readline 
+  |> on (`line begin fun [@bs] s -> Js.log s end)
+  |> on (`close begin fun [@bs] () -> Js.log "finished" end)
+
+{[
+let register readline = 
+  on (`line begin fun [@bs] s -> Js.log s end) readline; 
+  on (`close begin fun [@bs] () -> Js.log "finished" end) readline
+
+]}
+*)
 let test readline x  = 
   on readline x 

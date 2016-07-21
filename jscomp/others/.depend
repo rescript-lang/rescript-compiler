@@ -1,5 +1,0 @@
-js_dyn.cmi :
-js_dyn.cmj : js_dyn.cmi
-js_dyn.cmx : js_dyn.cmi
-js_dyn.cmo : js_dyn.cmi
-js_dyn.cmj : js_dyn.cmi

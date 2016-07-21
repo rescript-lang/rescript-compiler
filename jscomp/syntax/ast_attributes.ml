@@ -186,7 +186,7 @@ let process_bs_string_as  attrs =
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.name "
+          Location.raise_errorf ~loc "duplicated bs.as "
       | _ , _ -> st 
     ) None attrs
 
@@ -204,7 +204,7 @@ let process_bs_int_as  attrs =
         end
       | "bs.as",  _ 
         -> 
-          Location.raise_errorf ~loc "duplicated bs.name "
+          Location.raise_errorf ~loc "duplicated bs.as "
       | _ , _ -> st 
     ) None attrs
 

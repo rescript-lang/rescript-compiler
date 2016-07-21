@@ -372,3 +372,5 @@ external_ppx
 
 optional_ffi_test
 poly_variant_test
+
+js_dyn
