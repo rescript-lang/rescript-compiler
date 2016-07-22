@@ -55,7 +55,9 @@ OTHERS := a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope
 	div_by_zero_test unsafe_this obj_type_test polymorphism_test class_error_message\
 	test_bs_this class_setter_getter gpr496_test local_class_type test_regex ffi_array_test\
 	derive_dyntype derive_type_test nested_include simple_derive_test simple_derive_use\
-	mutual_non_recursive_type external_ppx optional_ffi_test poly_variant_test 
+	mutual_non_recursive_type external_ppx \
+	optional_ffi_test poly_variant_test \
+	bs_rest_test	
 
 SOURCE_LIST := js_dyn $(OTHERS) 
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
