@@ -28,7 +28,11 @@ module S = Js_stmt_make
 let eval (arg : J.expression) (dispatches : (int * string) list ) = 
   match arg.expression_desc with
   | Number (Int {i} | Uint i) -> 
-    E.str (List.assoc (Int32.to_int i) dispatches)
+    begin match List.assoc (Int32.to_int i) dispatches with 
+    | exception Not_found -> assert false 
+    | v ->  E.str v 
+    end
+
   | _ ->  
     E.of_block
       [(S.int_switch arg
@@ -43,7 +47,11 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
     -> 
-    [E.str (List.assoc (Int32.to_int i) dispatches); cb]
+    begin match (List.assoc (Int32.to_int i) dispatches) with 
+    | v ->     [E.str v ; cb]
+    | exception Not_found -> assert false 
+    end
+
   | _ ->  
     let event = Ext_ident.create "action" in
     [
@@ -69,8 +77,11 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
 
 let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) = 
   match arg.expression_desc with
-  | Number (Int {i} | Uint i) -> 
-    E.int (Int32.of_int (List.assoc (Int32.to_int i) dispatches))
+  | Number (Int {i} | Uint i) ->
+    begin match  (List.assoc (Int32.to_int i) dispatches) with
+    | e -> E.int (Int32.of_int e)
+    | exception Not_found -> assert false 
+    end
   | _ ->  
     E.of_block
       [(S.int_switch arg
