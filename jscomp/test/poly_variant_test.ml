@@ -65,6 +65,14 @@ let register readline =
 (*          [@bs.string]) ->  *)
 (*       readline -> readline  =  *)
 (*   "on" [@@bs.send] *)
+external on2 : 
+  readline -> 
+  ([ `line of (string -> unit [@bs]) 
+   | `close of (unit -> unit [@bs])] 
+     [@bs.string]) ->
+  unit = 
+  "on" [@@bs.send]
+
 
 (**
 let register readline = 

@@ -19,3 +19,12 @@ val register : readline -> unit
 val test : readline ->
   [ `close of (unit -> unit [@bs])
   | `line of (string -> unit [@bs]) ] -> unit
+
+
+
+val on2 : 
+  readline -> 
+  ([ `line of (string -> unit [@bs]) 
+   | `close of (unit -> unit [@bs])] 
+     [@bs.string]) ->
+  unit

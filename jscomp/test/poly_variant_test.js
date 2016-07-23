@@ -68,8 +68,29 @@ function test(readline, x) {
             });
 }
 
+function on2(prim, prim$1) {
+  return prim.on(function (action) {
+              switch (prim$1) {
+                case -944564236 : 
+                    return action[0];
+                case -933029960 : 
+                    return action[0];
+                
+              }
+            }, function (action) {
+              switch (prim$1) {
+                case -944564236 : 
+                    return action[1];
+                case -933029960 : 
+                    return action[1];
+                
+              }
+            });
+}
+
 exports.uu       = uu;
 exports.vv       = vv;
 exports.register = register;
 exports.test     = test;
+exports.on2      = on2;
 /*  Not a pure module */
