@@ -32,8 +32,8 @@ external string_of_char : char -> string = "js_string_of_char"
 *)
 
 external of_char : char -> string = "String.fromCharCode" 
-    [@@bs.call]
-external toUpperCase : string -> string = "toUpperCase" [@@bs.send]
+    [@@bs.call] 
+external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
 external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
 external slice : string -> int -> int -> string = "slice" 

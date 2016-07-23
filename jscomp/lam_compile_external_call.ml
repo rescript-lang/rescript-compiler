@@ -48,54 +48,54 @@ type typ = Ast_core_type.t
 
 let ocaml_to_js last
     (js_splice : bool)
-    ((label : string), (ty : typ))
+    ({ Lam_external_def.arg_label;  arg_type = ty })
     (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
-  then if Ast_core_type.is_array ty then 
-      match arg with 
-      | {expression_desc = Array (ls,_mutable_flag) } -> 
-        ls (* Invariant : Array encoding *)
-      | _ -> 
-        assert false  
-        (* TODO: fix splice, 
-           we need a static guarantee that it is static array construct
-           otherwise, we should provide a good error message here
-        *)
-    else  assert false
-  else if Ast_core_type.is_unit ty then [] (* ignore unit *)
-  else match Ast_core_type.string_type ty with 
-  | `NullString dispatches -> 
-    [Js_of_lam_variant.eval arg dispatches]
-  | `NonNullString dispatches -> 
-    Js_of_lam_variant.eval_as_event arg dispatches
-  | `Int dispatches -> 
-    [Js_of_lam_variant.eval_as_int arg dispatches]
+  then
+    match ty with 
+    | `Array -> 
+      begin match arg with 
+        | {expression_desc = Array (ls,_mutable_flag) } -> 
+          ls (* Invariant : Array encoding *)
+        | _ -> 
+          assert false  
+          (* TODO: fix splice, 
+             we need a static guarantee that it is static array construct
+             otherwise, we should provide a good error message here
+          *)
+      end
+    | _ -> assert  false
+  else 
+    match ty with
+    | `Unit ->  [] (* ignore unit *)
+    | `NullString dispatches -> 
+      [Js_of_lam_variant.eval arg dispatches]
+    | `NonNullString dispatches -> 
+      Js_of_lam_variant.eval_as_event arg dispatches
+    | `Int dispatches -> 
+      [Js_of_lam_variant.eval_as_int arg dispatches]
+    | `Nothing  | `Array -> 
+      begin match arg_label with 
+      | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
+      | `Label _ | `Empty ->  [arg]  
+      end
 
-  | `Nothing  -> 
-    match Ast_core_type.label_name label with 
-    | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
-    | `Label _ | `Empty ->  [arg]  
           
 
 
-let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
+let translate_ffi (ffi : Lam_external_def.ffi ) prim_name
     (cxt  : Lam_compile_defs.cxt)
-    ( ty :typ ) 
+    arg_types result_type
     (args : J.expression list) = 
     match ffi with 
-    | Obj_create -> 
-      let arg_types = snd @@  Ast_core_type.list_of_arrow ty in
-      let key loc label = 
-        Js_op.Key (Lam_methname.translate ?loc  label) in 
+    | Obj_create labels -> 
       E.obj @@ Ext_list.filter_map2 
-          (fun (label, (ty : typ)) 
-            ( arg : J.expression) -> 
-            if Ast_core_type.is_unit ty then None 
-            else 
-            match Ast_core_type.label_name label with 
+          (fun label ( arg : J.expression) -> 
+            match label with 
+            | `Empty ->  None 
             | `Label label -> 
-              Some (key loc label, arg)
+              Some ( Js_op.Key label, arg)
             | `Optional label -> 
               begin match arg.expression_desc with 
                 | Number _ -> (*Invariant: None encoding*)
@@ -110,39 +110,39 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
                        {x : 3 }
                      ]}
                   *)
-                  Some ( key loc label, 
+                  Some ( Js_op.Key label, 
                          Js_of_lam_option.get_default_undefined arg)
               end
-            | `Empty -> Location.raise_errorf ?loc "expect a label name here"
-          ) arg_types args 
+          ) labels args 
     | Js_call{ external_module_name = module_name; 
                txt = { name = fn; splice = js_splice ; 
-                       qualifiers;
+
                      }} -> 
-      let result_type, arg_types = Ast_core_type.list_of_arrow ty in
+
       let args = 
         Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
-      let qualifiers =  List.rev qualifiers in
+      (* let qualifiers =  List.rev qualifiers in *)
       let fn =  
         match handle_external module_name with 
         | Some (id,_) -> 
           (* FIXME: need add dependency here
               it's an external call 
           *)
-          List.fold_left E.dot (E.var id) (qualifiers @ [ fn])
+          List.fold_left E.dot (E.var id) ([ fn])
         | None -> 
           begin 
-            match  qualifiers @ [fn] with 
+            match   [fn] with 
             | y::ys  -> 
               List.fold_left E.dot (E.js_var y) ys
             | _ -> assert false
           end
       in
-      if Ast_core_type.is_unit result_type then
+      begin match result_type with 
+      | `Unit -> 
         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-      else             
+      | _ -> 
         E.call ~info:{arity=Full; call_info = Call_na} fn args
-
+      end
     | Js_global_as_var module_name -> 
       begin match handle_external (Some module_name) with 
         | Some (id, name) -> 
@@ -150,9 +150,9 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
         | None -> assert false 
       end
     | Js_new { external_module_name = module_name; 
-               txt = { name = fn};
+               txt = fn;
              } -> 
-      let  arg_types = snd @@  Ast_core_type.list_of_arrow ty in
+
       let args = 
         Ext_list.flat_map2_last (ocaml_to_js false) arg_types args  in 
       let fn =  
@@ -185,7 +185,7 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
 
 
 
-    | Js_global {name; external_module_name} -> 
+    | Js_global {txt = name; external_module_name} -> 
 
       (* TODO #11
          1. check args -- error checking 
@@ -206,42 +206,39 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
     | Js_send {splice  = js_splice ; name } -> 
       begin match args  with
         | self :: args -> 
-          let [@warning"-8"] (_return_type, self_type::arg_types )
-            = Ast_core_type.list_of_arrow ty in
+          let [@warning"-8"] ( self_type::arg_types )
+            = arg_types in
           let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
         | _ -> 
-          Location.raise_errorf ?loc "Ill defined attribute"
+          assert false 
       end
-    | Js_get {name} -> 
+    | Js_get name -> 
       begin match args with 
       | [obj] ->
         E.dot obj name        
-      | _ ->  
-          Location.raise_errorf ?loc "Ill defined attribute"
-        (* There is a minor drawback here, only when it is called, 
-           the error will be triggered *)
+      | _ -> assert false 
       end  
-    | Js_set {name} -> 
+    | Js_set name -> 
       begin match args with 
       | [obj; v] -> 
         E.assign (E.dot obj name) v         
       | _ -> 
-        Location.raise_errorf ?loc "Ill defined attribute"
+        assert false 
       end
     | Js_get_index 
       -> 
       begin match args with
         | [obj; v ] -> 
           Js_array.ref_array obj v
-        | _ -> Location.raise_errorf ?loc "Ill defined attribute"
+        | _ -> assert false 
       end
     | Js_set_index 
       -> 
       begin match args with 
       | [obj; v ; value] -> 
         Js_array.set_array obj v value
-      | _ -> Location.raise_errorf ?loc "Ill defined attribute"
+      | _ -> assert false
       end
     
 
@@ -251,9 +248,8 @@ let translate cxt
      : Lam_external_def.prim) args  = 
   match Lam_external_def.handle_attributes prim with 
   | Normal -> Lam_dispatch_primitive.translate prim_name args 
-  | Bs (ty, loc, ffi) -> 
-    let () = Lam_external_def.check_ffi ?loc ffi in
-    translate_ffi loc ffi prim_name cxt ty args 
+  | Bs (arg_types, result_type, ffi) -> 
+    translate_ffi  ffi prim_name cxt arg_types result_type args 
 
 
 
