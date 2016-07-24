@@ -36,7 +36,6 @@ type 'a external_module = {
 
 type js_call = { 
   splice : bool ;
-  qualifiers : string list;
   name : string;
 }
 
@@ -45,33 +44,37 @@ type js_send = {
   name : string 
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_val = { 
-  name : string ;
-  external_module_name : external_module_name option;
-  
-} 
+type js_val = string external_module 
 
-type js_new = {  name : string }
-type js_set = { name : string }
-type js_get = { name : string }
+
+
+type arg_type =
+  [ `NullString of (int * string) list 
+  | `NonNullString of (int * string) list 
+  | `Int of (int * int ) list 
+  | `Array 
+  | `Unit
+  | `Nothing
+  ]
+type arg_label =
+  [ `Label of string | `Optional of string | `Empty]
+type arg_kind = 
+  {
+    arg_type : arg_type;
+    arg_label : arg_label
+  }
 
 type ffi = 
-  | Obj_create 
+  | Obj_create of arg_label list
   | Js_global of js_val 
   | Js_global_as_var of  external_module_name
   | Js_call of js_call external_module
   | Js_send of js_send
-  | Js_new of js_new external_module
-  | Js_set of js_set
-  | Js_get of js_get
+  | Js_new of js_val
+  | Js_set of string
+  | Js_get of string
   | Js_get_index
   | Js_set_index
-
-type t  = 
-  | Bs of Parsetree.core_type * Location.t option * ffi
-  | Normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
 
 type prim = Types.type_expr option Primitive.description
 
@@ -88,19 +91,19 @@ let check_external_module_name_opt ?loc x =
 
 let check_ffi ?loc ffi = 
   match ffi with 
-  | Js_global {name = ""} 
+  | Js_global {txt = ""} 
   | Js_send {name = ""}
-  | Js_set {name = ""}
-  | Js_get {name = ""}
+  | Js_set  ""
+  | Js_get ""
     -> Location.raise_errorf ?loc "empty name encountered"
   | Js_global _ | Js_send _ | Js_set _ | Js_get _  
-  | Obj_create 
+  | Obj_create _
   | Js_get_index | Js_set_index 
     -> ()
 
   | Js_global_as_var external_module_name 
     -> check_external_module_name external_module_name
-  | Js_new {external_module_name ; txt = {name ; _}}
+  | Js_new {external_module_name ; txt = name}
   | Js_call {external_module_name ; txt = {name ; _}}
     -> 
     check_external_module_name_opt ?loc external_module_name ; 
@@ -122,164 +125,261 @@ let check_ffi ?loc ffi =
    two external files to the same module name
 *)
 
+type st = 
+  { val_name : string option;
+    external_module_name : external_module_name option;
+    val_of_module : external_module_name option; 
+    val_send : string option;
+    splice : bool ; (* mutable *)
+    set_index : bool; (* mutable *)
+    get_index : bool;
+    new_name : string option ;
+    call_name : string option;
+    set_name : string option ;
+    get_name : string option ;
+    mk_obj : bool ;
 
+  }
 
-let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim )
-  :  t  = 
-  let typ, prim_attributes = 
-    Ast_attributes.process_bs_type prim_attributes in 
-  match typ with 
-  | None ->  Normal 
-  | Some type_annotation -> 
-    let loc, ffi = 
-      let qualifiers = ref [] in
-      let call_name = ref None in
-      let external_module_name  = ref None in
-      let is_obj =  ref false in
-      let js_val = ref `None in
-      let js_val_of_module = ref `None in 
-      let js_send = ref `None in
-      let js_set = ref `None in
-      let js_get = ref `None in
-      let js_set_index = ref false in 
-      let js_get_index = ref false in
+let init_st = 
+  {
+    val_name = None; 
+    external_module_name = None ;
+    val_of_module = None;
+    val_send = None;
+    splice = false;
+    set_index = false;
+    get_index = false;
+    new_name = None;
+    call_name = None;
+    set_name = None ;
+    get_name = None ;
+    mk_obj = false ; 
 
-      let js_splice = ref false in
-      let start_loc : Location.t option ref = ref None in
-      let finish_loc = ref None in
-      let js_new = ref None in
-      let () = 
-        prim_attributes |> List.iter
-          (fun ((( x : string Asttypes.loc ), pay_load) : Parsetree.attribute) -> 
-             (if !start_loc = None  then 
-                start_loc := Some x.loc 
-             ); 
-             (finish_loc := Some x.loc);
-             match x.txt with  (* TODO: Check duplicate attributes *)
-             | "bs.val"
-               (* can be generalized into 
-                  {[
-                    [@@bs.val]
-                  ]}
-                  and combined with 
-                  {[
-                    [@@bs.value] [@@bs.module]
-                  ]}
-               *)
-               -> 
-               begin  match Ast_payload.is_single_string pay_load with
-                 | Some name -> 
-                   js_val := `Value name 
-                 | None -> 
-                   js_val := `Value prim_name
-                   (* we can report error here ... *)
-               end
-             | "bs.val_of_module" 
-               (* {[ [@@bs.val_of_module]]}
-               *)
-               -> 
-               js_val_of_module := 
-                 `Value ({bundle = prim_name ; bind_name = Ast_payload.is_single_string pay_load})
-             |"bs.splice"
-               -> 
-               js_splice := true
+  }
 
-             |"bs.send" 
-               ->
-               begin match Ast_payload.is_single_string pay_load with 
-                 | Some name -> js_send := `Value name
-                 | None -> js_send := `Value prim_name
-               end
-             | "bs.set"
-               ->
-               begin match Ast_payload.is_single_string pay_load with
-                 | Some name -> js_set := `Value name
-                 | None -> js_set := `Value prim_name
-               end
-             | "bs.get"
-               ->
-               begin match Ast_payload.is_single_string pay_load with
-                 | Some name -> js_get := `Value name
-                 | None -> js_get := `Value prim_name
-               end
+type t  = 
+  | Bs of arg_kind list  * arg_type * ffi
+  | Normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
 
-             | "bs.call"
-               (*TODO: check duplicate attributes, at least we should give a warning
-                 [@@bs.call "xx"] [@@bs.call]
-               *)
-               ->
-               begin match Ast_payload.is_single_string pay_load with 
-                 | Some name -> call_name :=  Some (x.loc, name)
-                 | None -> call_name := Some(x.loc, prim_name)
-               end
-             | "bs.module" -> 
-               begin match Ast_payload.is_string_or_strings pay_load with 
-                 | `Single name ->
-                   external_module_name:= Some ({ bundle =  name; bind_name = None})
-                 | `Some [bundle;bind_name] -> 
-                   external_module_name := 
-                     Some ({bundle ; bind_name = Some bind_name})
-                 | `Some _ -> ()
-                 | `None -> () (* should emit a warning instead *)
-               end
+let handle_attributes ({prim_attributes ; prim_name}   : prim )  = 
+  let typ, prim_attributes =
+    Ast_attributes.process_bs_type prim_attributes in
+  match typ with
+  | None ->  Normal
+  | Some type_annotation ->
+    (* all bs ffi should come with types *)
+    let name_from_payload_or_prim payload = 
+      match Ast_payload.is_single_string payload with 
+      | Some _ as val_name ->  val_name
+      | None -> Some prim_name  (* need check name *)
+    in 
+    let loc_start, loc_end,  st = 
+      List.fold_left 
+        (fun 
+          (loc_start, loc_end, st)
+          (({txt ; loc}, payload) : Ast_attributes.attr) 
+          ->  
+            (if Bs_loc.is_ghost loc_start then loc else loc_start) ,
+            (if not @@ Bs_loc.is_ghost loc then loc else loc_end),
+            begin match txt with 
+              | "bs.val" ->  
+                (* can be generalized into 
+                   {[
+                     [@@bs.val]
+                   ]}
+                   and combined with 
+                   {[
+                     [@@bs.value] [@@bs.module]
+                   ]}
+                *)
 
-             | "bs.new" -> 
-               begin match Ast_payload.is_single_string pay_load with 
-                 | Some x -> js_new := Some x 
-                 | None -> js_new := Some prim_name
-               end
-             | "bs.set_index" 
-               -> js_set_index := true
-             | "bs.get_index"
-               -> js_get_index := true
-             |"bs.obj"
-               -> 
-               is_obj := true
-             | _ ->  () (* ignore *)
-          ) in
-      let loc : Location.t option  = 
-        match !start_loc, !finish_loc  with
-        | None, None -> None 
-        | Some {loc_start;_}, Some{loc_end; _} -> Some {loc_start; loc_end; loc_ghost = false}
-        | _ -> assert false in
-      loc, 
-      if !is_obj then Obj_create 
-      else if !js_get_index then
-        Js_get_index
-      else if !js_set_index then 
-        Js_set_index
-      else 
-        begin match !js_val_of_module with 
-          | `Value v -> Js_global_as_var v 
-          | `None -> 
-            begin match !call_name, !js_val, !js_send, !js_new, !js_set, !js_get  with 
-              | Some (_,fn),
-                `None, `None, _, `None, `None -> 
-                Js_call { txt = { splice = !js_splice; qualifiers = !qualifiers; name = fn};
-                          external_module_name = !external_module_name}
-              | None, `Value name, `None ,_, `None, `None  ->  
-                Js_global {name = name; external_module_name = !external_module_name}
-              | None, `None, `Value name, _, `None, `None   -> 
-                Js_send {splice = !js_splice; name }
-              | None, `None, `None, Some name, `None, `None  -> 
-                Js_new { txt = { name  };
-                         external_module_name = ! external_module_name}
-              |  None, `None, `None, None, `Value name, `None 
-                -> Js_set { name}
-              |  None, `None, `None, None, `None,  `Value name
-                -> Js_get {name} (* TODO, we should also have index *)
-              | _ -> 
-                Location.raise_errorf ?loc "Ill defined attribute"
+                {st with val_name = name_from_payload_or_prim payload}
+              | "bs.val_of_module"
+                -> { st with
+                     val_of_module = 
+                       Some { bundle = prim_name ; bind_name = Ast_payload.is_single_string payload}
+                   }
+              | "bs.splice" -> {st with splice = true}
+              | "bs.send" -> 
+                { st with val_send = name_from_payload_or_prim payload}
+              | "bs.set" -> 
+                {st with set_name = name_from_payload_or_prim payload}
+              | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
+              | "bs.call" -> {st with call_name = name_from_payload_or_prim payload}
+              | "bs.module" -> 
+                let external_module_name = 
+                  begin match Ast_payload.is_string_or_strings payload with 
+                    | `Single name -> Some {bundle=name; bind_name = None}
+                    | `Some [bundle;bind_name] -> 
+                      Some {bundle; bind_name = Some bind_name}
+                    | `Some _| `None  -> Location.raise_errorf ~loc "Illegal attributes"
+                  end in {st with external_module_name}
+              | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
+              | "bs.set_index" -> {st with set_index = true}
+              | "bs.get_index"-> {st with get_index = true}
+              | "bs.obj" -> {st with mk_obj = true}
+              | "bs.type"
+              | _ -> st (* warning*)
             end
-        end in 
-    Bs (type_annotation, loc, ffi)
-(* Given label, type and the argument --> encode it into 
-   javascript meaningful value 
-   -- check whether splice or not for the last element
-*)
-    (*
-      special treatment to None for [bs.call] as well
-      None --> null or undefined 
-      Some -> original value
-      unit -->
-     *)
+        )
+        (Bs_loc.none, Bs_loc.none, init_st) prim_attributes in 
+    let loc = Bs_loc.merge loc_start loc_end in
+    let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
+    let aux ty = 
+      if Ast_core_type.is_array ty then `Array
+      else if Ast_core_type.is_unit ty then `Unit
+      else (Ast_core_type.string_type ty :> arg_type) in
+    let arg_types = 
+      List.map (fun (label, ty) -> 
+          { arg_label = Ast_core_type.label_name label ;
+            arg_type =  aux ty 
+          }) arg_types in
+    let result_type = aux result_type in 
+    let ffi = 
+      match st with 
+      | {mk_obj = true} -> 
+        let labels = List.map (function
+          | {arg_type = `Unit ; arg_label = (`Empty as l)}
+            -> l 
+          | {arg_label = `Label name } -> 
+            `Label (Lam_methname.translate ~loc name)            
+          | {arg_label = `Optional name} 
+            -> `Optional (Lam_methname.translate ~loc name)
+          | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
+          arg_types in
+        Obj_create labels(* Need fetch label here, for better error message *)
+      | {set_index = true} 
+        ->
+        begin match arg_types with 
+        | [_obj; _v ; _value] 
+          -> 
+          Js_set_index
+        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+        end
+      | {get_index = true} -> 
+        begin match arg_types with 
+        | [_obj; _v ] -> 
+          Js_get_index
+        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
+        end
+      | {val_of_module = Some v } -> Js_global_as_var v 
+      | {call_name = Some name ;
+         splice; 
+         external_module_name;
+
+         val_name = None ;
+         val_of_module = None;
+         val_send = None ;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None 
+        } -> 
+        Js_call {txt = {splice; name}; external_module_name}
+      | {call_name = Some _ } 
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {val_name = Some name;
+         external_module_name;
+
+         call_name = None ;
+         val_of_module = None;
+         val_send = None ;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None 
+
+        } 
+        -> 
+        Js_global {txt = name; external_module_name}
+      | {val_name = Some _ }
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {val_send = Some name; 
+         splice;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None ;
+         external_module_name = None ;
+        } -> 
+        begin match arg_types with 
+        | _self :: _args -> 
+          Js_send {splice ; name}
+        | _ ->
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+        end
+      | {val_send = Some _} 
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {new_name = Some name;
+         external_module_name;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         val_send = None ;
+         set_name = None ;
+         get_name = None 
+        } 
+        -> Js_new {txt =name; external_module_name}
+      | {new_name = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {set_name = Some name;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         val_send = None ;
+         new_name = None ;
+         get_name = None ;
+         external_module_name = None
+        } 
+        -> 
+        begin match arg_types with 
+        | [_obj; _v] -> 
+          Js_set name 
+        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+        end
+      | {set_name = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {get_name = Some name;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         val_send = None ;
+         new_name = None ;
+         set_name = None ;
+         external_module_name = None
+        }
+        ->
+        begin match arg_types with 
+        | [_ ] -> Js_get name
+        | _ ->
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+        end
+      | {get_name = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found"
+      | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
+    check_ffi ~loc ffi;
+    Bs(arg_types, result_type,  ffi)
+

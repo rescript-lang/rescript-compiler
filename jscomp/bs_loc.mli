@@ -22,67 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
 
-type external_module_name = 
-  { bundle : string ; 
-    bind_name : string option
-  }
-type 'a external_module = {
-  txt : 'a ;
-  external_module_name : external_module_name option;
-}
+val is_ghost : t -> bool
+val merge : t -> t -> t 
+val none : t 
 
-
-type js_call = { 
-  splice : bool ;
-  name : string;
-}
-
-type js_send = { 
-  splice : bool ; 
-  name : string 
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_val = string external_module 
-
-
-
-type arg_type =
-  [ `NullString of (int * string) list 
-  | `NonNullString of (int * string) list 
-  | `Int of (int * int ) list 
-  | `Array 
-  | `Unit
-  | `Nothing
-  ]
-type arg_label =
-  [ `Label of string | `Optional of string | `Empty]
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
-
-type ffi = 
-  | Obj_create of arg_label list
-  | Js_global of js_val 
-  | Js_global_as_var of  external_module_name
-  | Js_call of js_call external_module
-  | Js_send of js_send
-  | Js_new of js_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
-
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
-type t  = 
-  | Bs of arg_kind list  * arg_type *   ffi
-  | Normal 
-
-type prim = Types.type_expr option Primitive.description
-
-
-
-val handle_attributes : prim -> t
