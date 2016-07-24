@@ -419,9 +419,12 @@ let record_as_js_object
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label "
   ) label_exprs in 
-  let pval_prim = [ "" ] in 
+  
   let pval_type = from_labels ~loc labels in 
   let pval_attributes = Ast_attributes.bs_obj pval_type in 
+  let pval_prim = 
+    [ "" ; 
+      Ast_external_attributes.(to_string (handle_attributes pval_type pval_attributes ""))] in 
   Ast_external.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 

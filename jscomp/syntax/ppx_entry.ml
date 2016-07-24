@@ -462,17 +462,33 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         end
       | Psig_value
           ({pval_attributes; 
-            pval_type; pval_loc} as prim) 
+            pval_type; 
+            pval_loc;
+            pval_prim;
+            pval_name ;
+           } as prim) 
         when Ast_attributes.process_external pval_attributes
         -> 
         let pval_type = self.typ self pval_type in 
+        let pval_attributes =
+          (Ast_attributes.mk_bs_type ~loc:pval_loc pval_type)
+          :: pval_attributes in
+        let pval_prim = 
+          match pval_prim with 
+          | [ v ] -> 
+            [ v; 
+              Ast_external_attributes.(
+                to_string @@ handle_attributes pval_type pval_attributes v)
+            ]
+          | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
         {sigi with 
          psig_desc = 
            Psig_value
              {prim with
               pval_type ; 
-              pval_attributes = 
-                (Ast_attributes.mk_bs_type ~loc:pval_loc pval_type) :: pval_attributes }}
+              pval_prim ;
+              pval_attributes 
+                 }}
 
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
     end;
@@ -501,18 +517,29 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end
         | Pstr_primitive 
             ({pval_attributes; 
-              pval_type; pval_loc} as prim) 
+              pval_prim; 
+              pval_type;
+              pval_loc} as prim) 
           when Ast_attributes.process_external pval_attributes
           -> 
           let pval_type = self.typ self pval_type in 
+          let pval_prim = 
+            match pval_prim with 
+            | [ v] -> 
+              [ v; 
+                Ast_external_attributes.(
+                  to_string @@
+                  handle_attributes pval_type pval_attributes v)
+              ]
+            | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
           {str with 
            pstr_desc = 
              Pstr_primitive
                {prim with
                 pval_type ; 
-                pval_attributes = 
-                  Ast_attributes.mk_bs_type ~loc:pval_loc pval_type
-                  :: pval_attributes }}
+                pval_prim;
+                pval_attributes 
+               }}
           
         | _ -> Ast_mapper.default_mapper.structure_item self str 
         end

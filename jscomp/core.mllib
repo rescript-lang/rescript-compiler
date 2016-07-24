@@ -5,7 +5,7 @@ ident_util
 idents_analysis
 config_util
 
-bs_loc
+
 
 ocaml_options
 ocaml_batch_compile
@@ -14,7 +14,7 @@ ocaml_parse
 lam
 lam_iter
 lam_print
-lam_external_def
+
 lam_compile_env
 lam_dispatch_primitive
 lam_stats
@@ -44,7 +44,7 @@ lam_dce
 lam_analysis
 lam_group
 
-lam_methname 
+
 
 j
 js_ast_util

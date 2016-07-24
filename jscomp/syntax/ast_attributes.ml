@@ -199,7 +199,7 @@ let process_bs_int_as  attrs =
         ->
         begin match Ast_payload.is_single_int payload with 
           | None -> 
-            Location.raise_errorf ~loc "expect string literal "
+            Location.raise_errorf ~loc "expect int literal "
           | Some  _ as v->  v  
         end
       | "bs.as",  _ 

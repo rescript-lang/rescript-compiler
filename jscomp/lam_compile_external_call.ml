@@ -30,7 +30,7 @@ module E = Js_exp_make
 
 
 let handle_external 
-    (module_name : Lam_external_def.external_module_name option) = 
+    (module_name : Ast_external_attributes.external_module_name option) = 
   match module_name with 
   | Some {bundle ; bind_name} -> 
     let id  = 
@@ -48,7 +48,7 @@ type typ = Ast_core_type.t
 
 let ocaml_to_js last
     (js_splice : bool)
-    ({ Lam_external_def.arg_label;  arg_type = ty })
+    ({ Ast_external_attributes.arg_label;  arg_type = ty })
     (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
@@ -84,7 +84,7 @@ let ocaml_to_js last
           
 
 
-let translate_ffi (ffi : Lam_external_def.ffi ) prim_name
+let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     (cxt  : Lam_compile_defs.cxt)
     arg_types result_type
     (args : J.expression list) = 
@@ -244,17 +244,18 @@ let translate_ffi (ffi : Lam_external_def.ffi ) prim_name
 
 
 let translate cxt 
-    ({prim_name ; } as prim 
-     : Lam_external_def.prim) args  = 
-  match Lam_external_def.handle_attributes prim with 
-  | Normal -> Lam_dispatch_primitive.translate prim_name args 
-  | Bs (arg_types, result_type, ffi) -> 
-    translate_ffi  ffi prim_name cxt arg_types result_type args 
+    ({prim_name ; prim_attributes; prim_native_name} 
+     : Ast_external_attributes.prim) args  = 
+  if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
+    begin 
+      match Ast_external_attributes.unsafe_from_string prim_native_name with 
+      | Normal -> 
+        Lam_dispatch_primitive.translate prim_name args 
+      | Bs (arg_types, result_type, ffi) -> 
+        translate_ffi  ffi prim_name cxt arg_types result_type args 
+    end
+  else 
+    begin 
+      Lam_dispatch_primitive.translate prim_name args 
+    end
 
-
-
-(* TODO:
-  Also need to mark that CamlPrimtivie is used and
-  add such dependency in
-  module loader 
-*)

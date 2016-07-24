@@ -5,7 +5,7 @@ external test_string_type : ([`on_closed | `on_open | `in_ [@bs.as "in"]]
                 [@bs.string]) -> int  = 
   "hey_string" [@@bs.call]
 
-external test_int_type : ([`on_closed | `on_open | `in_ [@bs.as "in"]]
+external test_int_type : ([`on_closed | `on_open [@bs.as 3] | `in_   ]
                 [@bs.int]) -> int  = 
   "hey_int" [@@bs.call]
 
