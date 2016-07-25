@@ -45,8 +45,6 @@ type js_send = {
 
 type js_val = string external_module 
 
-
-
 type arg_type =
   [ `NullString of (int * string) list 
   | `NonNullString of (int * string) list 
@@ -85,4 +83,11 @@ type prim = Types.type_expr option Primitive.description
 
 
 
-val handle_attributes : prim -> t
+val handle_attributes : Parsetree.core_type  -> Ast_attributes.t -> string -> t
+
+val bs_external : string 
+val to_string : t -> string 
+val from_string : string -> t 
+val unsafe_from_string : string -> t 
+val is_bs_external_prefix : string -> bool
+

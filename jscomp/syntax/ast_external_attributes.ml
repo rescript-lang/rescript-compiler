@@ -163,13 +163,8 @@ type t  =
   | Normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
-let handle_attributes ({prim_attributes ; prim_name}   : prim )  = 
-  let typ, prim_attributes =
-    Ast_attributes.process_bs_type prim_attributes in
-  match typ with
-  | None ->  Normal
-  | Some type_annotation ->
-    (* all bs ffi should come with types *)
+let handle_attributes (type_annotation : Parsetree.core_type)
+    (prim_attributes : Ast_attributes.t) (prim_name : string) = 
     let name_from_payload_or_prim payload = 
       match Ast_payload.is_single_string payload with 
       | Some _ as val_name ->  val_name
@@ -383,3 +378,19 @@ let handle_attributes ({prim_attributes ; prim_name}   : prim )  =
     check_ffi ~loc ffi;
     Bs(arg_types, result_type,  ffi)
 
+let bs_external = "BS_EXTERN:" ^ Js_config.version
+
+let bs_external_length = (String.length bs_external)
+
+let is_bs_external_prefix s = 
+  Ext_string.starts_with s bs_external
+
+let to_string  t = 
+  bs_external ^ Marshal.to_string t []
+let unsafe_from_string s = 
+    Marshal.from_string  s bs_external_length 
+
+let from_string s : t  = 
+  if is_bs_external_prefix s then 
+    Marshal.from_string  s (String.length bs_external)
+  else Ext_pervasives.failwithf ~loc:__LOC__ "compiler version mismatch, please do a clean build" 

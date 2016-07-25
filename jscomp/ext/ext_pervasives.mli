@@ -50,4 +50,4 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
 
 val dump : 'a -> string 
-[@@ocaml.deprecated "only for debugging purpose"]
+
