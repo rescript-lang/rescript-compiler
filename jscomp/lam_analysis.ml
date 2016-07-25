@@ -318,13 +318,13 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
 and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
   match p, p1 with 
   | Pccall {prim_name = n0 ; 
-            prim_attributes = [];
+            prim_native_name = nn0;
            },  
     Pccall {prim_name = n1; 
-            prim_attributes = [] ;
+            prim_native_name = nn1;
 
            } -> 
-    n0 = n1 (* No attributes, should be class api, comparison by name is good *)
+    n0 = n1 && nn0 = nn1 (* No attributes, should be class api, comparison by name is good *)
   | Pfield (n0, _dbg_info0),  Pfield (n1, _dbg_info1) 
     -> n0 = n1
   | Psetfield(i0, b0, _dbg_info0), Psetfield(i1, b1, _dbg_info1)

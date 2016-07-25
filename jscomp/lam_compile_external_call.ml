@@ -244,7 +244,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
 
 let translate cxt 
-    ({prim_name ; prim_attributes; prim_native_name} 
+    ({prim_name ;  prim_native_name} 
      : Ast_external_attributes.prim) args  = 
   if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
     begin 

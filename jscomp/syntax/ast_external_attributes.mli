@@ -79,7 +79,7 @@ type t  =
   | Bs of arg_kind list  * arg_type *   ffi
   | Normal 
 
-type prim = Types.type_expr option Primitive.description
+type prim =  Primitive.description
 
 
 

@@ -76,7 +76,7 @@ type ffi =
   | Js_get_index
   | Js_set_index
 
-type prim = Types.type_expr option Primitive.description
+type prim =  Primitive.description
 
 let check_external_module_name ?loc x = 
   match x with 
