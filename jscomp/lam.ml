@@ -54,7 +54,7 @@ type primitive =
   (* Force lazy values *)
   | Plazyforce
   (* External call *)
-  | Pccall of Types.type_expr option Primitive.description
+  | Pccall of  Primitive.description
   (* Exceptions *)
   | Praise
   (* Boolean operations *)
@@ -200,9 +200,8 @@ module Prim = struct
             prim_native_name = "" ;
             prim_alloc = false;
             prim_native_float = false;
-            prim_attributes = [];
             prim_arity = arity;
-            prim_ty = None
+
            }
   let js_is_nil : t = 
     mk "js_is_nil" 1 

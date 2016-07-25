@@ -50,7 +50,7 @@ type primitive =
   | Psetfloatfield of int * Lambda.set_field_dbg_info
   | Pduprecord of Types.record_representation * int
   | Plazyforce
-  | Pccall of Types.type_expr option Primitive.description
+  | Pccall of  Primitive.description
   | Praise 
   | Psequand | Psequor | Pnot
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint

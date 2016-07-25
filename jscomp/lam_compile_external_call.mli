@@ -45,6 +45,6 @@
 
 val translate : 
   Lam_compile_defs.cxt -> 
-  Types.type_expr option Primitive.description -> 
+  Primitive.description -> 
   J.expression list -> 
   J.expression

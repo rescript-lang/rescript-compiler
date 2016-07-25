@@ -31,7 +31,7 @@
 
 (** Helper for global Ocaml module index into meaningful names  *) 
 
-type primitive_description = Types.type_expr option Primitive.description
+type primitive_description =  Primitive.description
 
 type key = 
   Ident.t * Env.t * bool 

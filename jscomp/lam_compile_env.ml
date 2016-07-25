@@ -54,7 +54,7 @@ type module_info = {
   pure : bool 
 }
 
-type primitive_description = Types.type_expr option Primitive.description
+type primitive_description =  Primitive.description
 
 type key = 
 
