@@ -163,21 +163,40 @@ type t  =
   | Normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
-let handle_attributes (type_annotation : Parsetree.core_type)
+let bs_external = "BS_EXTERN:" ^ Js_config.version
+
+let bs_external_length = (String.length bs_external)
+
+let is_bs_external_prefix s = 
+  Ext_string.starts_with s bs_external
+
+let to_string  t = 
+  bs_external ^ Marshal.to_string t []
+let unsafe_from_string s = 
+    Marshal.from_string  s bs_external_length 
+let from_string s : t  = 
+  if is_bs_external_prefix s then 
+    Marshal.from_string  s (String.length bs_external)
+  else Ext_pervasives.failwithf ~loc:__LOC__
+      "compiler version mismatch, please do a clean build" 
+
+
+let handle_attributes 
+    (loc : Bs_loc.t)
+    (pval_prim : string ) 
+    (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string) = 
     let name_from_payload_or_prim payload = 
       match Ast_payload.is_single_string payload with 
       | Some _ as val_name ->  val_name
       | None -> Some prim_name  (* need check name *)
     in 
-    let loc_start, loc_end,  st = 
+    let st = 
       List.fold_left 
         (fun 
-          (loc_start, loc_end, st)
+          ( st)
           (({txt ; loc}, payload) : Ast_attributes.attr) 
           ->  
-            (if Bs_loc.is_ghost loc_start then loc else loc_start) ,
-            (if not @@ Bs_loc.is_ghost loc then loc else loc_end),
             begin match txt with 
               | "bs.val" ->  
                 (* can be generalized into 
@@ -219,8 +238,7 @@ let handle_attributes (type_annotation : Parsetree.core_type)
               | _ -> st (* warning*)
             end
         )
-        (Bs_loc.none, Bs_loc.none, init_st) prim_attributes in 
-    let loc = Bs_loc.merge loc_start loc_end in
+         init_st prim_attributes in 
     let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
     let aux ty = 
       if Ast_core_type.is_array ty then `Array
@@ -244,6 +262,8 @@ let handle_attributes (type_annotation : Parsetree.core_type)
             -> `Optional (Lam_methname.translate ~loc name)
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
           arg_types in
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.obj] except empty name";
         Obj_create labels(* Need fetch label here, for better error message *)
       | {set_index = true} 
         ->
@@ -376,21 +396,16 @@ let handle_attributes (type_annotation : Parsetree.core_type)
         -> Location.raise_errorf ~loc "conflict attributes found"
       | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
     check_ffi ~loc ffi;
+    (* match ffi , prim_name with  *)
+    (* | Obj_create _ , _ -> prim_name *)
+    (* | *)
     Bs(arg_types, result_type,  ffi)
 
-let bs_external = "BS_EXTERN:" ^ Js_config.version
 
-let bs_external_length = (String.length bs_external)
+let handle_attributes_as_string 
+    pval_loc
+    pval_prim 
+    typ attrs v = 
+  to_string 
+    (handle_attributes pval_loc pval_prim typ attrs v )
 
-let is_bs_external_prefix s = 
-  Ext_string.starts_with s bs_external
-
-let to_string  t = 
-  bs_external ^ Marshal.to_string t []
-let unsafe_from_string s = 
-    Marshal.from_string  s bs_external_length 
-
-let from_string s : t  = 
-  if is_bs_external_prefix s then 
-    Marshal.from_string  s (String.length bs_external)
-  else Ext_pervasives.failwithf ~loc:__LOC__ "compiler version mismatch, please do a clean build" 
