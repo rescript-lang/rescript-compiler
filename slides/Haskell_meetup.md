@@ -50,7 +50,8 @@ July 27, 2016
 
 # R & B (Facebook Reason and Bloomberg BuckleScript)
 
-- Reason is a new interface to OCaml created by the same people who created ReactJS
+- Reason is a new interface to OCaml created by the same people who
+  created ReactJS, ReactNative
 - It provides a Javascript like syntax and toolchain for editing, building, and sharing code
 - Facebook uses OCaml a lot in its infrastructure: Flow JS type checker, Infer static analyzer, and Hack compiler, etc
 - [It works with Bloomberg's BuckleScript nicely](http://bloomberg.github.io/bucklescript/reason-demo/)
@@ -396,34 +397,35 @@ Http_lib.create_server(http);
 - Code motion, Purity analysis, Cross module inliner, Constant folding/propogation, Strength reduction, escape analysis etc
 - One example: optimized curry calling convention
 
-```ocaml
-let f x y z = x + y + z
-let a = f 1 2 3 
-let b = f 1 2 
-```
-==Naive-compilation=>
-```js
-function f(x){
-  return function (y){
-    return function (z){
+  ```ocaml
+  let f x y z = x + y + z
+  let a = f 1 2 3 
+  let b = f 1 2 
+  ```
+  `Compilation used in Elm/PureScript`
+
+  ```js
+  function f(x){
+    return function (y){
+     return function (z){
       return x + y + z
+     }
     }
   }
-}
-var a = f (1) (2) (3)
-var b = f (1) (2)
-```
-==Optimized-compilation used in BuckleScript =>
-```js
-function f(x,y,z) {return x + y + z}
-var a = f(1,2,3)
-var b = function(z){return f(1,2,z)}
-```
+  var a = f (1) (2) (3)
+  var b = f (1) (2)
+  ```
+  `Optimized  in BuckleScript(cross modules arities infererence)`
+  ```js
+  function f(x,y,z) {return x + y + z}
+  var a = f(1,2,3)
+  var b = function(z){return f(1,2,z)}
+  ```
 
 
 ---
 
-# Comparison with  PureScript and GHCJS
+# Comparison with  Elm, PureScript and GHCJS
 
 
 - PureScript:
