@@ -33,7 +33,7 @@ let std_files =
     (fun x -> "./stdlib/" ^  x ) 
 let runtime_files = 
   String_set.elements Js_config.runtime_set 
-  |> List.map (fun x -> "./runtime/" ^  x) 
+  |> List.map (fun x -> "./stdlib/" ^  x) 
 
 let () = 
   Ext_pervasives.with_file_as_chan "./pre_load.js" 

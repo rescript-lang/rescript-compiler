@@ -6,7 +6,7 @@ git clean -dfx . ../lib
 export BS_RELEASE_BUILD=1
 
 . ./build.sh
-# make release
+make release
 
 
 # git clean -dfx
