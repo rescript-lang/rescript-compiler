@@ -11,39 +11,39 @@ July 27, 2016
 
 ---
 
-# What's BuckleScript
+# What's [BuckleScript](https://github.com/bloomberg/bucklescript)
 
 - Readable JavaScript backend for OCaml
 - *module to module* compiler
 - *Seamless integration* with existing JS libs
 - Works with multiple front-end: vanilla OCaml and [Facebook Reason](https://facebook.github.io/reason/)
+
+
 ---
 
-# Why do we care about JS platform
+# Why target JS platform
 
 - JS is the only language of the browser
-
 - JS is everywhere (Electron for Desktop App, NodeJS on server
-  side, huge potential on IoT)
-
+  side,  IoT etc)
 - JS is where people are (npm: [largest package manager 2 years ago](http://www.modulecounts.com/))
+- WebAssembly will make it more capable
 
 ---
 
 
 # Major Benefits of BuckleScript
 
-- It's OCaml, not a new language (30 years distilled research in PL and continous effort of compiler engineering)
+- It's OCaml, not a new language (30 years distilled research in PL and amazing effort of compiler engineering)
   - Native backends: AMD64, IA32, PowerPC, ARM, SPARC
-  - Language based Unikernel: Mirage
+  - Language based OS: Mirage Unikernel (acquired by Docker)
   - Battle tested: Used for high-frequency trading in volumes of billions of
     dollars per day.
 - BuckleScript backend :
-  - Higher (both compile-time and runtime) performance
+  - Great performance with regard to compile-time and runtime
   - *Expressive* and *efficient* FFI
-  - Smaller size (a fairly small runtime *linked only when needed*)
-  - Seamless integration with existing JS ecosystem (module to module
-    compilation, support for various module systems: Google module/ AMDJS and CommonJS)
+  - Small size (small runtime: *linked only when needed like int64 support*)
+  - Module to module separate compilation, support various module systems: Google module/ AMDJS and CommonJS
   
   
 ---
@@ -57,9 +57,7 @@ July 27, 2016
 
 ---
 
-
-
-# What BuckleScript looks like
+# A small example of BuckleScript
 
 ```ocaml
 let test () =
@@ -73,7 +71,7 @@ let test () =
   done;;
 test()
 ```
-
+==Generated code=>
 ```js
 
 "use strict";
@@ -170,7 +168,7 @@ JavaScript Libraries.
 - *extensible* language by extension points and attributes.
   - No re-inventing a new language needed
 -  *expressive* type system to model different  paradigms in Javascript
-  - Structual typing (model JavaScript Objects)
+  - Structural typing (model JavaScript Objects)
   - Polymorphic variants (model Event handler)
   - Label and optional arguments (model JSON configuration)
 
@@ -233,41 +231,9 @@ xs.map(function(v,i){
 },xs)
 ```
 
-
 ---
 
-# Optimized curry calling convention
-
-```ocaml
-let f x y z = x + y + z
-let a = f 1 2 3 
-let b = f 1 2 
-```
-==Naive-compilation=>
-```js
-function f(x){
-  return function (y){
-    return function (z){
-      return x + y + z
-    }
-  }
-}
-var a = f (1) (2) (3)
-var b = f (1) (2)
-```
-==Optimized-compilation=>
-```js
-function f(x,y,z) {return x + y + z}
-var a = f(1,2,3)
-var b = function(z){return f(1,2,z)}
-```
-
-
-
-
----
-
-# String and int literal type : [Polymorphic variant](http://andrewray.github.io/iocamljs/min402.html)
+# FFI highlights: String and int literal type 
 
 
 ```ocaml
@@ -286,7 +252,7 @@ var content = Fs.readFileSync("file.txt", "utf8")
 
 ---
 
-# Event handlers using bucklescript
+# FFI highlights: type-safe event handlers
 
 Typescript binding:
 ```ts
@@ -320,13 +286,10 @@ function register(readline) {
 }
 ```
 
-
 ---
 
-# External JavaScript objects declaration
+# FFI highlights: structural typing and type safe JSON literals
 
-- [row polymorphism](http://andrewray.github.io/iocamljs/min402.html)
-- class type, subtyping, and inhertiance
 - In BuckleScript, `##` is used as method dispatch
 
 ```ocaml
@@ -343,29 +306,8 @@ function f (obj){
 var a = f ({height : 3, width : 32})
 var b = f ({height : 3 , width : 32 , unused : 3})
 ```
+- class type, subtyping, and inhertiance are also supported in FFI
 
----
-# Another way to define object type
-
-```ocaml
-class type _heigth = object
-  method height : int
-end [@bs]
-class type _width = object
-  method width : int 
-end [@bs]
-class type _rect = object
-   inherit _height
-   inherit _width 
-end [@bs]
-type rect = _rect Js.t
-```
-subtyping rules
-
-```ocaml
-_rect :> _height
-_rect Js.t :> _height Js.t 
-```
 
 ---
 # A stand alone HTTP server: part one  
@@ -449,110 +391,64 @@ Http_lib.create_server(http);
 
 ---
 
-# How can it be possible? (What's the magic?) 
+# Optimizations 
 
-1. OCaml is like a *formal* Javascript
+- Code motion, Purity analysis, Cross module inliner, Constant folding/propogation, Strength reduction, escape analysis etc
+- One example: optimized curry calling convention
 
-   Both OCaml and Javascript have similar concepts which make compiling OCaml to Javascript posible:
-
-    ![](OCaml_Javascript_features.png)
-
-2. OCaml has a similar **module system** to Javascript 2015, it supports both Javascript like structural typing
-   and ML style type inference.
-3. ML is used in some of the foundational work of JavaScript:
-   - ES4 (abandoned standard) reference implementation
-   - The first prototype of Facebook's ReactJS implementation
-   - Official reference implementation of WebAssembly
-
-
----
-
-# Internals of BuckleScript - an optimizing JS backend for OCaml
-
-Leverage the (high-level, strongly typed) OCaml language tool-chain to generate optimized JS
-
-
-- Dev mode:
-  - *No name mangling*, easy to debug
-  - Separate and **blazing fast** compilation
-  - Simple integration with existing JS libraries
-  - Dead code elimination and Purity analysis
-  - Local and cross module optimization
-- Production mode:
-  - Link time optimization (combination with Google Closure Compiler)
-  - Remove unused functions further in the library level
-- Result:
-  - **Faster, Smaller, and Safer!**
-
-
----
-
-# The OCaml compiler workflow
-
+```ocaml
+let f x y z = x + y + z
+let a = f 1 2 3 
+let b = f 1 2 
 ```
- Source code
-        |
-        | parsing and preprocessing
-        |
-        v
-    Parsetree (untyped AST)
-        |
-        | type inference and checking
-        v
-    Typedtree (type-annotated AST)
-        |
-        | pattern-matching compilation
-        | elimination of modules and classes
-        v
-     Lambda ------------------------(our work)----------+
-      /   \                                              \  
-     /     \ closure conversion, inlining, uncurrying,    \
-    v       \  data representation strategy                \ 
- Bytecode    \                                              |
-    |         +-----+                                       |
-    |              Cmm                                      IR
-    |ocamlrun       |                                       |
-    |               | code generation                       | code generation 
-    |               | assembly & linking                    |
-    v               v                                       v
- Interpreted    Compiled                                 Javacript(and meta data for optimizations)
+==Naive-compilation=>
+```js
+function f(x){
+  return function (y){
+    return function (z){
+      return x + y + z
+    }
+  }
+}
+var a = f (1) (2) (3)
+var b = f (1) (2)
 ```
+==Optimized-compilation used in BuckleScript =>
+```js
+function f(x,y,z) {return x + y + z}
+var a = f(1,2,3)
+var b = function(z){return f(1,2,z)}
+```
+
 
 ---
 
 # Comparison with  PureScript and GHCJS
 
-* Similarities with PureScript: generates readable code, support for both strutural types and
-  object oriented FFI
 
-* Similarities with GHCJS: not a new language
+- PureScript:
+  Both generates readable code and support strutural types 
+  BuckleScript also support OO FFI and have different backends and frontends
 
-* Optimizing compilers: (still early days)
-  - Code motion
-  - Effect analysis
-  - Cross module inlining
-  - Constant folding/propagation
-  - Strength reduction
-  
+- GHCJS
+  Compile vanilla Haskell into JS (whole program compiler, semantics mismatch)
 
 ---
 
 # Future work
 
-* Bindings to existing JS libraries (using typescript compiler API or
+- Bindings to existing JS libraries (using typescript compiler API or
   Facebook Flow type checker  (also written in OCaml))
-
-* Toolings and help get people started
-
-* More Optimizations
+- Toolings and help get people started
+- Better integration with Reason and its tool chain
+- More Optimizations
+- Follow me for the latest development on BuckleScript
+  twitter @bobzhang1988
 
 
 
 ---
 
-Follow me for the latest developments on BuckleScript
-
-twitter @bobzhang1988
 
 
 
