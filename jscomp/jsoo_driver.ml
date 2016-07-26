@@ -39,7 +39,7 @@
      *  }
 *)
 let () = 
-  Js_config.set_env Browser;
+  Js_config.set_browser ();
   Clflags.unsafe_string := false
 
 let implementation no_export ppf  str  =
@@ -63,8 +63,8 @@ let implementation no_export ppf  str  =
   |>  Translmod.transl_implementation modulename
   |> (* Printlambda.lambda ppf *) (fun lam -> 
       let buffer = Buffer.create 1000 in 
-      let () = Js_dump.(pp_deps_program 
-                          (Lam_compile_group.compile ~filename:"" no_export
+      let () = Js_dump.(pp_deps_program `NodeJS
+                          (Lam_compile_group.compile ~filename:"" "" no_export
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in
       let v = Buffer.contents buffer in 

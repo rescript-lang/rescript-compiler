@@ -13,6 +13,14 @@ ocamlbuild -use-ocamlfind -no-hygiene -no-links js_generate_require.byte --
 rm -rf  $BUCKLESCRIPT_DOC/js-demo/pre_load.js
 cp ./pre_load.js $BUCKLESCRIPT_DOC/js-demo/
 # TODO: build with amd first 
-cp runtime/*.js $BUCKLESCRIPT_DOC/js-demo/runtime
-cp stdlib/*.js $BUCKLESCRIPT_DOC/js-demo/stdlib
+cp ../lib/amdjs/*.js $BUCKLESCRIPT_DOC/js-demo/stdlib
+
+
+
+
+
+
+
+
+
 
