@@ -35,6 +35,17 @@ let list_of_arrow (ty : t) =
     | return_type -> ty, List.rev acc
   in aux ty []
 
+let replace_result ty result = 
+  let rec aux (ty : Parsetree.core_type) = 
+    match ty with 
+    | { ptyp_desc = 
+          Ptyp_arrow (label,t1,t2)
+      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
+    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
+    | _ -> result in 
+  aux ty 
+
 let is_unit (ty : t ) = 
   match ty.ptyp_desc with 
   | Ptyp_constr({txt =Lident "unit"}, []) -> true

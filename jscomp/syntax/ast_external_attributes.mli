@@ -83,7 +83,12 @@ type prim =  Primitive.description
 
 
 
-val handle_attributes : Parsetree.core_type  -> Ast_attributes.t -> string -> t
+
+val handle_attributes_as_string : 
+  Bs_loc.t ->
+  string  ->
+  Parsetree.core_type -> Ast_attributes.t -> 
+  string   -> string list
 
 val bs_external : string 
 val to_string : t -> string 

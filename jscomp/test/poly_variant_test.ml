@@ -53,7 +53,7 @@ external on :
    | `close of (unit -> unit [@bs])] 
      [@bs.string]) ->
   unit = 
-  "on" [@@bs.send]
+  "" [@@bs.send]
 
 let register readline = 
   on readline (`line begin fun[@bs] s -> Js.log s end);
@@ -71,7 +71,16 @@ external on2 :
    | `close of (unit -> unit [@bs])] 
      [@bs.string]) ->
   unit = 
-  "on" [@@bs.send]
+  "" [@@bs.send]
+
+external readFileSync :
+  string -> ([`utf8 | `ascii] [@bs.string]) ->
+  string = "readFileSync"
+  [@@bs.call]
+  [@@bs.module "fs"]
+
+let read name = 
+  readFileSync name `utf8
 
 
 (**
