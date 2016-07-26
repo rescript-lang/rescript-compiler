@@ -71,76 +71,82 @@ let (//) = Filename.concat
 let string_of_module_id 
     (module_system : Lam_module_ident.system)
     (x : Lam_module_ident.t) : string =           
-  let result = 
-    match x.kind  with 
-    | Runtime  
-    | Ml  -> 
-      let id = x.id in
-      let file = Printf.sprintf "%s.js" id.name in
-      let modulename = String.uncapitalize id.name in
-      let rebase dep =
-        Ext_filename.node_relative_path 
-          (`Dir (Js_config.get_output_dir module_system !Location.input_name)) dep 
-      in 
-      let dependency_pkg_info = 
-        Lam_compile_env.get_package_path_from_cmj module_system x 
-      in
-      let current_pkg_info = 
-        Js_config.get_current_package_name_and_path module_system  
-      in
-      begin match module_system,  dependency_pkg_info, current_pkg_info with
-        | _, `NotFound , _ -> 
-          Ext_pervasives.failwithf ~loc:__LOC__ 
-            " @[%s not found in search path - while compiling %s @] "
-            file !Location.input_name 
-        | `Goog , `Found (package_name, x), _  -> 
-          package_name  ^ "." ^  String.uncapitalize id.name
-        | `Goog, (`Empty | `Package_script _), _ 
-          -> 
-          Ext_pervasives.failwithf ~loc:__LOC__ 
-            " @[%s was not compiled with goog support  in search path - while compiling %s @] "
-            file !Location.input_name 
-        | (`AmdJS | `NodeJS),
-          ( `Empty | `Package_script _) ,
-          `Found _  -> 
-          Ext_pervasives.failwithf ~loc:__LOC__
-            "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
-            file !Location.input_name
-        | _ , _, `NotFound -> assert false 
-        | (`AmdJS | `NodeJS), 
-          `Found(package_name, x),
-          `Found(current_package, path) -> 
-          if  current_package = package_name then 
-            rebase (`File (
-                Lazy.force Ext_filename.package_dir // x // modulename)) 
-          else 
-            package_name // x // modulename
-        | (`AmdJS | `NodeJS), `Found(package_name, x), 
-          `Package_script(current_package)
-          ->    
-          if current_package = package_name then 
-            rebase (`File (
-                Lazy.force Ext_filename.package_dir // x // modulename)) 
-          else 
-            package_name // x // modulename
-        | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
-          ->    package_name // x // modulename
-        |  (`AmdJS | `NodeJS), 
-           (`Empty | `Package_script _) , 
-           (`Empty  | `Package_script _)
-          -> 
-          begin match Config_util.find file with 
-            | file -> 
-              rebase (`File file) 
-            | exception Not_found -> 
-              Ext_pervasives.failwithf ~loc:__LOC__ 
-                "@[%s was not found  in search path - while compiling %s @] "
-                file !Location.input_name 
-          end
-      end
-    | External name -> name in 
-  if Js_config.is_windows then Ext_filename.replace_backward_slash result 
-  else result 
+  if Js_config.is_browser () then
+    match x.kind with
+    | Runtime | Ml -> 
+      "stdlib" // String.uncapitalize x.id.name
+    | External name -> name
+  else
+    let result = 
+      match x.kind  with 
+      | Runtime  
+      | Ml  -> 
+        let id = x.id in
+        let file = Printf.sprintf "%s.js" id.name in
+        let modulename = String.uncapitalize id.name in
+        let rebase dep =
+          Ext_filename.node_relative_path 
+            (`Dir (Js_config.get_output_dir module_system !Location.input_name)) dep 
+        in 
+        let dependency_pkg_info = 
+          Lam_compile_env.get_package_path_from_cmj module_system x 
+        in
+        let current_pkg_info = 
+          Js_config.get_current_package_name_and_path module_system  
+        in
+        begin match module_system,  dependency_pkg_info, current_pkg_info with
+          | _, `NotFound , _ -> 
+            Ext_pervasives.failwithf ~loc:__LOC__ 
+              " @[%s not found in search path - while compiling %s @] "
+              file !Location.input_name 
+          | `Goog , `Found (package_name, x), _  -> 
+            package_name  ^ "." ^  String.uncapitalize id.name
+          | `Goog, (`Empty | `Package_script _), _ 
+            -> 
+            Ext_pervasives.failwithf ~loc:__LOC__ 
+              " @[%s was not compiled with goog support  in search path - while compiling %s @] "
+              file !Location.input_name 
+          | (`AmdJS | `NodeJS),
+            ( `Empty | `Package_script _) ,
+            `Found _  -> 
+            Ext_pervasives.failwithf ~loc:__LOC__
+              "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
+              file !Location.input_name
+          | _ , _, `NotFound -> assert false 
+          | (`AmdJS | `NodeJS), 
+            `Found(package_name, x),
+            `Found(current_package, path) -> 
+            if  current_package = package_name then 
+              rebase (`File (
+                  Lazy.force Ext_filename.package_dir // x // modulename)) 
+            else 
+              package_name // x // modulename
+          | (`AmdJS | `NodeJS), `Found(package_name, x), 
+            `Package_script(current_package)
+            ->    
+            if current_package = package_name then 
+              rebase (`File (
+                  Lazy.force Ext_filename.package_dir // x // modulename)) 
+            else 
+              package_name // x // modulename
+          | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
+            ->    package_name // x // modulename
+          |  (`AmdJS | `NodeJS), 
+             (`Empty | `Package_script _) , 
+             (`Empty  | `Package_script _)
+            -> 
+            begin match Config_util.find file with 
+              | file -> 
+                rebase (`File file) 
+              | exception Not_found -> 
+                Ext_pervasives.failwithf ~loc:__LOC__ 
+                  "@[%s was not found  in search path - while compiling %s @] "
+                  file !Location.input_name 
+            end
+        end
+      | External name -> name in 
+    if Js_config.is_windows then Ext_filename.replace_backward_slash result 
+    else result 
 
 
 
