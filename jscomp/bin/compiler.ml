@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/21-14:58 *)
+(** Bundled by ocaml_pack 07/25-21:45 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1119,7 +1119,7 @@ let process_bs_int_as  attrs =
         ->
         begin match Ast_payload.is_single_int payload with 
           | None -> 
-            Location.raise_errorf ~loc "expect string literal "
+            Location.raise_errorf ~loc "expect int literal "
           | Some  _ as v->  v  
         end
       | "bs.as",  _ 
@@ -2000,7 +2000,7 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
 
 val dump : 'a -> string 
-[@@ocaml.deprecated "only for debugging purpose"]
+
 
 end = struct
 #1 "ext_pervasives.ml"
@@ -2947,7 +2947,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.8.5"
+let version = "0.8.6"
 
 
 let runtime_set = 
@@ -3194,6 +3194,661 @@ let pat_unit ?loc () =
   | None -> No_loc.pat_unit
   | Some loc -> 
     Pat.construct ~loc {txt = Lid.val_unit; loc} None
+
+end
+module Lam_methname : sig 
+#1 "lam_methname.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val translate : ?loc:Location.t -> string -> string
+
+end = struct
+#1 "lam_methname.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let translate ?loc name = 
+  let i = Ext_string.rfind ~sub:"_" name  in 
+  if name.[0] = '_' then 
+    if i <= 0 then 
+      let len = (String.length name - 1) in 
+      if len = 0 then 
+        Location.raise_errorf ?loc "invalid label %s" name
+      else String.sub name 1 len
+    else 
+      let len = (i - 1) in
+      if len = 0 then 
+        Location.raise_errorf ?loc "invlid label %s" name 
+      else 
+        String.sub name 1 len
+  else if i > 0 then 
+    String.sub name 0 i 
+  else name 
+
+end
+module Bs_loc : sig 
+#1 "bs_loc.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+val is_ghost : t -> bool
+val merge : t -> t -> t 
+val none : t 
+
+
+end = struct
+#1 "bs_loc.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+let is_ghost x = x.loc_ghost
+
+let merge (l: t) (r : t) = 
+  if is_ghost l then r 
+  else if is_ghost r then l 
+  else match l,r with 
+  | {loc_start ; }, {loc_end; _} (* TODO: improve*)
+    -> 
+    {loc_start ;loc_end; loc_ghost = false}
+
+let none = Location.none
+
+end
+module Ast_external_attributes : sig 
+#1 "ast_external_attributes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type external_module_name = 
+  { bundle : string ; 
+    bind_name : string option
+  }
+type 'a external_module = {
+  txt : 'a ;
+  external_module_name : external_module_name option;
+}
+
+
+type js_call = { 
+  splice : bool ;
+  name : string;
+}
+
+type js_send = { 
+  splice : bool ; 
+  name : string 
+} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+type js_val = string external_module 
+
+type arg_type =
+  [ `NullString of (int * string) list 
+  | `NonNullString of (int * string) list 
+  | `Int of (int * int ) list 
+  | `Array 
+  | `Unit
+  | `Nothing
+  ]
+type arg_label =
+  [ `Label of string | `Optional of string | `Empty]
+type arg_kind = 
+  {
+    arg_type : arg_type;
+    arg_label : arg_label
+  }
+
+type ffi = 
+  | Obj_create of arg_label list
+  | Js_global of js_val 
+  | Js_global_as_var of  external_module_name
+  | Js_call of js_call external_module
+  | Js_send of js_send
+  | Js_new of js_val
+  | Js_set of string
+  | Js_get of string
+  | Js_get_index
+  | Js_set_index
+
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
+type t  = 
+  | Bs of arg_kind list  * arg_type *   ffi
+  | Normal 
+
+type prim =  Primitive.description
+
+
+
+val handle_attributes : Parsetree.core_type  -> Ast_attributes.t -> string -> t
+
+val bs_external : string 
+val to_string : t -> string 
+val from_string : string -> t 
+val unsafe_from_string : string -> t 
+val is_bs_external_prefix : string -> bool
+
+
+end = struct
+#1 "ast_external_attributes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type external_module_name = 
+  { bundle : string ; 
+    bind_name : string option
+  }
+type 'a external_module = {
+  txt : 'a ;
+  external_module_name : external_module_name option;
+}
+
+
+type js_call = { 
+  splice : bool ;
+  name : string;
+}
+
+type js_send = { 
+  splice : bool ; 
+  name : string 
+} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+type js_val = string external_module 
+
+
+
+type arg_type =
+  [ `NullString of (int * string) list 
+  | `NonNullString of (int * string) list 
+  | `Int of (int * int ) list 
+  | `Array 
+  | `Unit
+  | `Nothing
+  ]
+type arg_label =
+  [ `Label of string | `Optional of string | `Empty]
+type arg_kind = 
+  {
+    arg_type : arg_type;
+    arg_label : arg_label
+  }
+
+type ffi = 
+  | Obj_create of arg_label list
+  | Js_global of js_val 
+  | Js_global_as_var of  external_module_name
+  | Js_call of js_call external_module
+  | Js_send of js_send
+  | Js_new of js_val
+  | Js_set of string
+  | Js_get of string
+  | Js_get_index
+  | Js_set_index
+
+type prim =  Primitive.description
+
+let check_external_module_name ?loc x = 
+  match x with 
+  | {bundle = ""; _ } | {bind_name = Some ""} -> 
+    Location.raise_errorf ?loc "empty name encountered"
+  | _ -> ()
+let check_external_module_name_opt ?loc x = 
+  match x with 
+  | None -> ()
+  | Some v -> check_external_module_name ?loc v 
+
+
+let check_ffi ?loc ffi = 
+  match ffi with 
+  | Js_global {txt = ""} 
+  | Js_send {name = ""}
+  | Js_set  ""
+  | Js_get ""
+    -> Location.raise_errorf ?loc "empty name encountered"
+  | Js_global _ | Js_send _ | Js_set _ | Js_get _  
+  | Obj_create _
+  | Js_get_index | Js_set_index 
+    -> ()
+
+  | Js_global_as_var external_module_name 
+    -> check_external_module_name external_module_name
+  | Js_new {external_module_name ; txt = name}
+  | Js_call {external_module_name ; txt = {name ; _}}
+    -> 
+    check_external_module_name_opt ?loc external_module_name ; 
+    if name = "" then
+      Location.raise_errorf ?loc "empty name in externals"
+
+
+
+(** 
+   [@@bs.module "react"]
+   [@@bs.module "react"]
+   ---
+   [@@bs.module "@" "react"]
+   [@@bs.module "@" "react"]
+
+   They should have the same module name 
+
+   TODO: we should emit an warning if we bind 
+   two external files to the same module name
+*)
+
+type st = 
+  { val_name : string option;
+    external_module_name : external_module_name option;
+    val_of_module : external_module_name option; 
+    val_send : string option;
+    splice : bool ; (* mutable *)
+    set_index : bool; (* mutable *)
+    get_index : bool;
+    new_name : string option ;
+    call_name : string option;
+    set_name : string option ;
+    get_name : string option ;
+    mk_obj : bool ;
+
+  }
+
+let init_st = 
+  {
+    val_name = None; 
+    external_module_name = None ;
+    val_of_module = None;
+    val_send = None;
+    splice = false;
+    set_index = false;
+    get_index = false;
+    new_name = None;
+    call_name = None;
+    set_name = None ;
+    get_name = None ;
+    mk_obj = false ; 
+
+  }
+
+type t  = 
+  | Bs of arg_kind list  * arg_type * ffi
+  | Normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
+let handle_attributes (type_annotation : Parsetree.core_type)
+    (prim_attributes : Ast_attributes.t) (prim_name : string) = 
+    let name_from_payload_or_prim payload = 
+      match Ast_payload.is_single_string payload with 
+      | Some _ as val_name ->  val_name
+      | None -> Some prim_name  (* need check name *)
+    in 
+    let loc_start, loc_end,  st = 
+      List.fold_left 
+        (fun 
+          (loc_start, loc_end, st)
+          (({txt ; loc}, payload) : Ast_attributes.attr) 
+          ->  
+            (if Bs_loc.is_ghost loc_start then loc else loc_start) ,
+            (if not @@ Bs_loc.is_ghost loc then loc else loc_end),
+            begin match txt with 
+              | "bs.val" ->  
+                (* can be generalized into 
+                   {[
+                     [@@bs.val]
+                   ]}
+                   and combined with 
+                   {[
+                     [@@bs.value] [@@bs.module]
+                   ]}
+                *)
+
+                {st with val_name = name_from_payload_or_prim payload}
+              | "bs.val_of_module"
+                -> { st with
+                     val_of_module = 
+                       Some { bundle = prim_name ; bind_name = Ast_payload.is_single_string payload}
+                   }
+              | "bs.splice" -> {st with splice = true}
+              | "bs.send" -> 
+                { st with val_send = name_from_payload_or_prim payload}
+              | "bs.set" -> 
+                {st with set_name = name_from_payload_or_prim payload}
+              | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
+              | "bs.call" -> {st with call_name = name_from_payload_or_prim payload}
+              | "bs.module" -> 
+                let external_module_name = 
+                  begin match Ast_payload.is_string_or_strings payload with 
+                    | `Single name -> Some {bundle=name; bind_name = None}
+                    | `Some [bundle;bind_name] -> 
+                      Some {bundle; bind_name = Some bind_name}
+                    | `Some _| `None  -> Location.raise_errorf ~loc "Illegal attributes"
+                  end in {st with external_module_name}
+              | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
+              | "bs.set_index" -> {st with set_index = true}
+              | "bs.get_index"-> {st with get_index = true}
+              | "bs.obj" -> {st with mk_obj = true}
+              | "bs.type"
+              | _ -> st (* warning*)
+            end
+        )
+        (Bs_loc.none, Bs_loc.none, init_st) prim_attributes in 
+    let loc = Bs_loc.merge loc_start loc_end in
+    let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
+    let aux ty = 
+      if Ast_core_type.is_array ty then `Array
+      else if Ast_core_type.is_unit ty then `Unit
+      else (Ast_core_type.string_type ty :> arg_type) in
+    let arg_types = 
+      List.map (fun (label, ty) -> 
+          { arg_label = Ast_core_type.label_name label ;
+            arg_type =  aux ty 
+          }) arg_types in
+    let result_type = aux result_type in 
+    let ffi = 
+      match st with 
+      | {mk_obj = true} -> 
+        let labels = List.map (function
+          | {arg_type = `Unit ; arg_label = (`Empty as l)}
+            -> l 
+          | {arg_label = `Label name } -> 
+            `Label (Lam_methname.translate ~loc name)            
+          | {arg_label = `Optional name} 
+            -> `Optional (Lam_methname.translate ~loc name)
+          | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
+          arg_types in
+        Obj_create labels(* Need fetch label here, for better error message *)
+      | {set_index = true} 
+        ->
+        begin match arg_types with 
+        | [_obj; _v ; _value] 
+          -> 
+          Js_set_index
+        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+        end
+      | {get_index = true} -> 
+        begin match arg_types with 
+        | [_obj; _v ] -> 
+          Js_get_index
+        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
+        end
+      | {val_of_module = Some v } -> Js_global_as_var v 
+      | {call_name = Some name ;
+         splice; 
+         external_module_name;
+
+         val_name = None ;
+         val_of_module = None;
+         val_send = None ;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None 
+        } -> 
+        Js_call {txt = {splice; name}; external_module_name}
+      | {call_name = Some _ } 
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {val_name = Some name;
+         external_module_name;
+
+         call_name = None ;
+         val_of_module = None;
+         val_send = None ;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None 
+
+        } 
+        -> 
+        Js_global {txt = name; external_module_name}
+      | {val_name = Some _ }
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {val_send = Some name; 
+         splice;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None ;
+         external_module_name = None ;
+        } -> 
+        begin match arg_types with 
+        | _self :: _args -> 
+          Js_send {splice ; name}
+        | _ ->
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+        end
+      | {val_send = Some _} 
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {new_name = Some name;
+         external_module_name;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         val_send = None ;
+         set_name = None ;
+         get_name = None 
+        } 
+        -> Js_new {txt =name; external_module_name}
+      | {new_name = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {set_name = Some name;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         val_send = None ;
+         new_name = None ;
+         get_name = None ;
+         external_module_name = None
+        } 
+        -> 
+        begin match arg_types with 
+        | [_obj; _v] -> 
+          Js_set name 
+        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+        end
+      | {set_name = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {get_name = Some name;
+
+         val_name = None  ;
+         call_name = None ;
+         val_of_module = None;
+         set_index = false;
+         get_index = false;
+         val_send = None ;
+         new_name = None ;
+         set_name = None ;
+         external_module_name = None
+        }
+        ->
+        begin match arg_types with 
+        | [_ ] -> Js_get name
+        | _ ->
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+        end
+      | {get_name = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found"
+      | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
+    check_ffi ~loc ffi;
+    Bs(arg_types, result_type,  ffi)
+
+let bs_external = "BS_EXTERN:" ^ Js_config.version
+
+let bs_external_length = (String.length bs_external)
+
+let is_bs_external_prefix s = 
+  Ext_string.starts_with s bs_external
+
+let to_string  t = 
+  bs_external ^ Marshal.to_string t []
+let unsafe_from_string s = 
+    Marshal.from_string  s bs_external_length 
+
+let from_string s : t  = 
+  if is_bs_external_prefix s then 
+    Marshal.from_string  s (String.length bs_external)
+  else Ext_pervasives.failwithf ~loc:__LOC__ "compiler version mismatch, please do a clean build" 
 
 end
 module Ast_external : sig 
@@ -4012,9 +4667,12 @@ let record_as_js_object
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label "
   ) label_exprs in 
-  let pval_prim = [ "" ] in 
+  
   let pval_type = from_labels ~loc labels in 
   let pval_attributes = Ast_attributes.bs_obj pval_type in 
+  let pval_prim = 
+    [ "" ; 
+      Ast_external_attributes.(to_string (handle_attributes pval_type pval_attributes ""))] in 
   Ast_external.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
@@ -5148,17 +5806,33 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         end
       | Psig_value
           ({pval_attributes; 
-            pval_type; pval_loc} as prim) 
+            pval_type; 
+            pval_loc;
+            pval_prim;
+            pval_name ;
+           } as prim) 
         when Ast_attributes.process_external pval_attributes
         -> 
         let pval_type = self.typ self pval_type in 
+        let pval_attributes =
+          (Ast_attributes.mk_bs_type ~loc:pval_loc pval_type)
+          :: pval_attributes in
+        let pval_prim = 
+          match pval_prim with 
+          | [ v ] -> 
+            [ v; 
+              Ast_external_attributes.(
+                to_string @@ handle_attributes pval_type pval_attributes v)
+            ]
+          | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
         {sigi with 
          psig_desc = 
            Psig_value
              {prim with
               pval_type ; 
-              pval_attributes = 
-                (Ast_attributes.mk_bs_type ~loc:pval_loc pval_type) :: pval_attributes }}
+              pval_prim ;
+              pval_attributes 
+                 }}
 
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
     end;
@@ -5187,18 +5861,29 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end
         | Pstr_primitive 
             ({pval_attributes; 
-              pval_type; pval_loc} as prim) 
+              pval_prim; 
+              pval_type;
+              pval_loc} as prim) 
           when Ast_attributes.process_external pval_attributes
           -> 
           let pval_type = self.typ self pval_type in 
+          let pval_prim = 
+            match pval_prim with 
+            | [ v] -> 
+              [ v; 
+                Ast_external_attributes.(
+                  to_string @@
+                  handle_attributes pval_type pval_attributes v)
+              ]
+            | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
           {str with 
            pstr_desc = 
              Pstr_primitive
                {prim with
                 pval_type ; 
-                pval_attributes = 
-                  Ast_attributes.mk_bs_type ~loc:pval_loc pval_type
-                  :: pval_attributes }}
+                pval_prim;
+                pval_attributes 
+               }}
           
         | _ -> Ast_mapper.default_mapper.structure_item self str 
         end
@@ -6858,7 +7543,7 @@ type primitive =
   | Psetfloatfield of int * Lambda.set_field_dbg_info
   | Pduprecord of Types.record_representation * int
   | Plazyforce
-  | Pccall of Types.type_expr option Primitive.description
+  | Pccall of  Primitive.description
   | Praise 
   | Psequand | Psequor | Pnot
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
@@ -7118,7 +7803,7 @@ type primitive =
   (* Force lazy values *)
   | Plazyforce
   (* External call *)
-  | Pccall of Types.type_expr option Primitive.description
+  | Pccall of  Primitive.description
   (* Exceptions *)
   | Praise
   (* Boolean operations *)
@@ -7264,9 +7949,8 @@ module Prim = struct
             prim_native_name = "" ;
             prim_alloc = false;
             prim_native_float = false;
-            prim_attributes = [];
             prim_arity = arity;
-            prim_ty = None
+
            }
   let js_is_nil : t = 
     mk "js_is_nil" 1 
@@ -9405,13 +10089,13 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
 and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
   match p, p1 with 
   | Pccall {prim_name = n0 ; 
-            prim_attributes = [];
+            prim_native_name = nn0;
            },  
     Pccall {prim_name = n1; 
-            prim_attributes = [] ;
+            prim_native_name = nn1;
 
            } -> 
-    n0 = n1 (* No attributes, should be class api, comparison by name is good *)
+    n0 = n1 && nn0 = nn1 (* No attributes, should be class api, comparison by name is good *)
   | Pfield (n0, _dbg_info0),  Pfield (n1, _dbg_info1) 
     -> n0 = n1
   | Psetfield(i0, b0, _dbg_info0), Psetfield(i1, b1, _dbg_info1)
@@ -15232,7 +15916,7 @@ module Lam_compile_env : sig
 
 (** Helper for global Ocaml module index into meaningful names  *) 
 
-type primitive_description = Types.type_expr option Primitive.description
+type primitive_description =  Primitive.description
 
 type key = 
   Ident.t * Env.t * bool 
@@ -15365,7 +16049,7 @@ type module_info = {
   pure : bool 
 }
 
-type primitive_description = Types.type_expr option Primitive.description
+type primitive_description =  Primitive.description
 
 type key = 
 
@@ -16462,82 +17146,6 @@ let prepare  ast_table =
   let stack = sort_files_by_dependencies tbl !files in 
   !stack, tbl 
 
-
-end
-module Lam_methname : sig 
-#1 "lam_methname.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-val translate : ?loc:Location.t -> string -> string
-
-end = struct
-#1 "lam_methname.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let translate ?loc name = 
-  let i = Ext_string.rfind ~sub:"_" name  in 
-  if name.[0] = '_' then 
-    if i <= 0 then 
-      let len = (String.length name - 1) in 
-      if len = 0 then 
-        Location.raise_errorf ?loc "invalid label %s" name
-      else String.sub name 1 len
-    else 
-      let len = (i - 1) in
-      if len = 0 then 
-        Location.raise_errorf ?loc "invlid label %s" name 
-      else 
-        String.sub name 1 len
-  else if i > 0 then 
-    String.sub name 0 i 
-  else name 
 
 end
 module Lam_exit_code : sig 
@@ -19949,377 +20557,6 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
 
 
 end
-module Lam_external_def : sig 
-#1 "lam_external_def.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type external_module_name = 
-  { bundle : string ; 
-    bind_name : string option
-  }
-type 'a external_module = {
-  txt : 'a ;
-  external_module_name : external_module_name option;
-}
-
-
-type js_call = { 
-  splice : bool ;
-  qualifiers : string list;
-  name : string;
-}
-
-type js_send = { 
-  splice : bool ; 
-  name : string 
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_val = { 
-  name : string ;
-  external_module_name : external_module_name option;
-  
-} 
-
-type js_new = {  name : string }
-type js_set = { name : string }
-type js_get = { name : string }
-
-type ffi = 
-  | Obj_create 
-  | Js_global of js_val 
-  | Js_global_as_var of  external_module_name
-  | Js_call of js_call external_module
-  | Js_send of js_send
-  | Js_new of js_new external_module
-  | Js_set of js_set
-  | Js_get of js_get
-  | Js_get_index
-  | Js_set_index
-
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
-type t = 
-  | Bs of Parsetree.core_type  * Location.t option *  ffi 
-  | Normal 
-
-type prim = Types.type_expr option Primitive.description
-
-val check_ffi : ?loc:Location.t -> ffi -> unit
-
-val handle_attributes : prim -> t
-
-end = struct
-#1 "lam_external_def.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type external_module_name = 
-  { bundle : string ; 
-    bind_name : string option
-  }
-type 'a external_module = {
-  txt : 'a ;
-  external_module_name : external_module_name option;
-}
-
-
-type js_call = { 
-  splice : bool ;
-  qualifiers : string list;
-  name : string;
-}
-
-type js_send = { 
-  splice : bool ; 
-  name : string 
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_val = { 
-  name : string ;
-  external_module_name : external_module_name option;
-  
-} 
-
-type js_new = {  name : string }
-type js_set = { name : string }
-type js_get = { name : string }
-
-type ffi = 
-  | Obj_create 
-  | Js_global of js_val 
-  | Js_global_as_var of  external_module_name
-  | Js_call of js_call external_module
-  | Js_send of js_send
-  | Js_new of js_new external_module
-  | Js_set of js_set
-  | Js_get of js_get
-  | Js_get_index
-  | Js_set_index
-
-type t  = 
-  | Bs of Parsetree.core_type * Location.t option * ffi
-  | Normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
-
-type prim = Types.type_expr option Primitive.description
-
-let check_external_module_name ?loc x = 
-  match x with 
-  | {bundle = ""; _ } | {bind_name = Some ""} -> 
-    Location.raise_errorf ?loc "empty name encountered"
-  | _ -> ()
-let check_external_module_name_opt ?loc x = 
-  match x with 
-  | None -> ()
-  | Some v -> check_external_module_name ?loc v 
-
-
-let check_ffi ?loc ffi = 
-  match ffi with 
-  | Js_global {name = ""} 
-  | Js_send {name = ""}
-  | Js_set {name = ""}
-  | Js_get {name = ""}
-    -> Location.raise_errorf ?loc "empty name encountered"
-  | Js_global _ | Js_send _ | Js_set _ | Js_get _  
-  | Obj_create 
-  | Js_get_index | Js_set_index 
-    -> ()
-
-  | Js_global_as_var external_module_name 
-    -> check_external_module_name external_module_name
-  | Js_new {external_module_name ; txt = {name ; _}}
-  | Js_call {external_module_name ; txt = {name ; _}}
-    -> 
-    check_external_module_name_opt ?loc external_module_name ; 
-    if name = "" then
-      Location.raise_errorf ?loc "empty name in externals"
-
-
-
-(** 
-   [@@bs.module "react"]
-   [@@bs.module "react"]
-   ---
-   [@@bs.module "@" "react"]
-   [@@bs.module "@" "react"]
-
-   They should have the same module name 
-
-   TODO: we should emit an warning if we bind 
-   two external files to the same module name
-*)
-
-
-
-let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim )
-  :  t  = 
-  let typ, prim_attributes = 
-    Ast_attributes.process_bs_type prim_attributes in 
-  match typ with 
-  | None ->  Normal 
-  | Some type_annotation -> 
-    let loc, ffi = 
-      let qualifiers = ref [] in
-      let call_name = ref None in
-      let external_module_name  = ref None in
-      let is_obj =  ref false in
-      let js_val = ref `None in
-      let js_val_of_module = ref `None in 
-      let js_send = ref `None in
-      let js_set = ref `None in
-      let js_get = ref `None in
-      let js_set_index = ref false in 
-      let js_get_index = ref false in
-
-      let js_splice = ref false in
-      let start_loc : Location.t option ref = ref None in
-      let finish_loc = ref None in
-      let js_new = ref None in
-      let () = 
-        prim_attributes |> List.iter
-          (fun ((( x : string Asttypes.loc ), pay_load) : Parsetree.attribute) -> 
-             (if !start_loc = None  then 
-                start_loc := Some x.loc 
-             ); 
-             (finish_loc := Some x.loc);
-             match x.txt with  (* TODO: Check duplicate attributes *)
-             | "bs.val"
-               (* can be generalized into 
-                  {[
-                    [@@bs.val]
-                  ]}
-                  and combined with 
-                  {[
-                    [@@bs.value] [@@bs.module]
-                  ]}
-               *)
-               -> 
-               begin  match Ast_payload.is_single_string pay_load with
-                 | Some name -> 
-                   js_val := `Value name 
-                 | None -> 
-                   js_val := `Value prim_name
-                   (* we can report error here ... *)
-               end
-             | "bs.val_of_module" 
-               (* {[ [@@bs.val_of_module]]}
-               *)
-               -> 
-               js_val_of_module := 
-                 `Value ({bundle = prim_name ; bind_name = Ast_payload.is_single_string pay_load})
-             |"bs.splice"
-               -> 
-               js_splice := true
-
-             |"bs.send" 
-               ->
-               begin match Ast_payload.is_single_string pay_load with 
-                 | Some name -> js_send := `Value name
-                 | None -> js_send := `Value prim_name
-               end
-             | "bs.set"
-               ->
-               begin match Ast_payload.is_single_string pay_load with
-                 | Some name -> js_set := `Value name
-                 | None -> js_set := `Value prim_name
-               end
-             | "bs.get"
-               ->
-               begin match Ast_payload.is_single_string pay_load with
-                 | Some name -> js_get := `Value name
-                 | None -> js_get := `Value prim_name
-               end
-
-             | "bs.call"
-               (*TODO: check duplicate attributes, at least we should give a warning
-                 [@@bs.call "xx"] [@@bs.call]
-               *)
-               ->
-               begin match Ast_payload.is_single_string pay_load with 
-                 | Some name -> call_name :=  Some (x.loc, name)
-                 | None -> call_name := Some(x.loc, prim_name)
-               end
-             | "bs.module" -> 
-               begin match Ast_payload.is_string_or_strings pay_load with 
-                 | `Single name ->
-                   external_module_name:= Some ({ bundle =  name; bind_name = None})
-                 | `Some [bundle;bind_name] -> 
-                   external_module_name := 
-                     Some ({bundle ; bind_name = Some bind_name})
-                 | `Some _ -> ()
-                 | `None -> () (* should emit a warning instead *)
-               end
-
-             | "bs.new" -> 
-               begin match Ast_payload.is_single_string pay_load with 
-                 | Some x -> js_new := Some x 
-                 | None -> js_new := Some prim_name
-               end
-             | "bs.set_index" 
-               -> js_set_index := true
-             | "bs.get_index"
-               -> js_get_index := true
-             |"bs.obj"
-               -> 
-               is_obj := true
-             | _ ->  () (* ignore *)
-          ) in
-      let loc : Location.t option  = 
-        match !start_loc, !finish_loc  with
-        | None, None -> None 
-        | Some {loc_start;_}, Some{loc_end; _} -> Some {loc_start; loc_end; loc_ghost = false}
-        | _ -> assert false in
-      loc, 
-      if !is_obj then Obj_create 
-      else if !js_get_index then
-        Js_get_index
-      else if !js_set_index then 
-        Js_set_index
-      else 
-        begin match !js_val_of_module with 
-          | `Value v -> Js_global_as_var v 
-          | `None -> 
-            begin match !call_name, !js_val, !js_send, !js_new, !js_set, !js_get  with 
-              | Some (_,fn),
-                `None, `None, _, `None, `None -> 
-                Js_call { txt = { splice = !js_splice; qualifiers = !qualifiers; name = fn};
-                          external_module_name = !external_module_name}
-              | None, `Value name, `None ,_, `None, `None  ->  
-                Js_global {name = name; external_module_name = !external_module_name}
-              | None, `None, `Value name, _, `None, `None   -> 
-                Js_send {splice = !js_splice; name }
-              | None, `None, `None, Some name, `None, `None  -> 
-                Js_new { txt = { name  };
-                         external_module_name = ! external_module_name}
-              |  None, `None, `None, None, `Value name, `None 
-                -> Js_set { name}
-              |  None, `None, `None, None, `None,  `Value name
-                -> Js_get {name} (* TODO, we should also have index *)
-              | _ -> 
-                Location.raise_errorf ?loc "Ill defined attribute"
-            end
-        end in 
-    Bs (type_annotation, loc, ffi)
-(* Given label, type and the argument --> encode it into 
-   javascript meaningful value 
-   -- check whether splice or not for the last element
-*)
-    (*
-      special treatment to None for [bs.call] as well
-      None --> null or undefined 
-      Some -> original value
-      unit -->
-     *)
-
-end
 module Js_of_lam_tuple : sig 
 #1 "js_of_lam_tuple.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21924,7 +22161,11 @@ module S = Js_stmt_make
 let eval (arg : J.expression) (dispatches : (int * string) list ) = 
   match arg.expression_desc with
   | Number (Int {i} | Uint i) -> 
-    E.str (List.assoc (Int32.to_int i) dispatches)
+    begin match List.assoc (Int32.to_int i) dispatches with 
+    | exception Not_found -> assert false 
+    | v ->  E.str v 
+    end
+
   | _ ->  
     E.of_block
       [(S.int_switch arg
@@ -21939,7 +22180,11 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
     -> 
-    [E.str (List.assoc (Int32.to_int i) dispatches); cb]
+    begin match (List.assoc (Int32.to_int i) dispatches) with 
+    | v ->     [E.str v ; cb]
+    | exception Not_found -> assert false 
+    end
+
   | _ ->  
     let event = Ext_ident.create "action" in
     [
@@ -21965,8 +22210,11 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
 
 let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) = 
   match arg.expression_desc with
-  | Number (Int {i} | Uint i) -> 
-    E.int (Int32.of_int (List.assoc (Int32.to_int i) dispatches))
+  | Number (Int {i} | Uint i) ->
+    begin match  (List.assoc (Int32.to_int i) dispatches) with
+    | e -> E.int (Int32.of_int e)
+    | exception Not_found -> assert false 
+    end
   | _ ->  
     E.of_block
       [(S.int_switch arg
@@ -22102,7 +22350,7 @@ module Lam_compile_external_call : sig
 
 val translate : 
   Lam_compile_defs.cxt -> 
-  Types.type_expr option Primitive.description -> 
+  Primitive.description -> 
   J.expression list -> 
   J.expression
 
@@ -22140,7 +22388,7 @@ module E = Js_exp_make
 
 
 let handle_external 
-    (module_name : Lam_external_def.external_module_name option) = 
+    (module_name : Ast_external_attributes.external_module_name option) = 
   match module_name with 
   | Some {bundle ; bind_name} -> 
     let id  = 
@@ -22158,54 +22406,54 @@ type typ = Ast_core_type.t
 
 let ocaml_to_js last
     (js_splice : bool)
-    ((label : string), (ty : typ))
+    ({ Ast_external_attributes.arg_label;  arg_type = ty })
     (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
-  then if Ast_core_type.is_array ty then 
-      match arg with 
-      | {expression_desc = Array (ls,_mutable_flag) } -> 
-        ls (* Invariant : Array encoding *)
-      | _ -> 
-        assert false  
-        (* TODO: fix splice, 
-           we need a static guarantee that it is static array construct
-           otherwise, we should provide a good error message here
-        *)
-    else  assert false
-  else if Ast_core_type.is_unit ty then [] (* ignore unit *)
-  else match Ast_core_type.string_type ty with 
-  | `NullString dispatches -> 
-    [Js_of_lam_variant.eval arg dispatches]
-  | `NonNullString dispatches -> 
-    Js_of_lam_variant.eval_as_event arg dispatches
-  | `Int dispatches -> 
-    [Js_of_lam_variant.eval_as_int arg dispatches]
+  then
+    match ty with 
+    | `Array -> 
+      begin match arg with 
+        | {expression_desc = Array (ls,_mutable_flag) } -> 
+          ls (* Invariant : Array encoding *)
+        | _ -> 
+          assert false  
+          (* TODO: fix splice, 
+             we need a static guarantee that it is static array construct
+             otherwise, we should provide a good error message here
+          *)
+      end
+    | _ -> assert  false
+  else 
+    match ty with
+    | `Unit ->  [] (* ignore unit *)
+    | `NullString dispatches -> 
+      [Js_of_lam_variant.eval arg dispatches]
+    | `NonNullString dispatches -> 
+      Js_of_lam_variant.eval_as_event arg dispatches
+    | `Int dispatches -> 
+      [Js_of_lam_variant.eval_as_int arg dispatches]
+    | `Nothing  | `Array -> 
+      begin match arg_label with 
+      | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
+      | `Label _ | `Empty ->  [arg]  
+      end
 
-  | `Nothing  -> 
-    match Ast_core_type.label_name label with 
-    | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
-    | `Label _ | `Empty ->  [arg]  
           
 
 
-let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
+let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     (cxt  : Lam_compile_defs.cxt)
-    ( ty :typ ) 
+    arg_types result_type
     (args : J.expression list) = 
     match ffi with 
-    | Obj_create -> 
-      let arg_types = snd @@  Ast_core_type.list_of_arrow ty in
-      let key loc label = 
-        Js_op.Key (Lam_methname.translate ?loc  label) in 
+    | Obj_create labels -> 
       E.obj @@ Ext_list.filter_map2 
-          (fun (label, (ty : typ)) 
-            ( arg : J.expression) -> 
-            if Ast_core_type.is_unit ty then None 
-            else 
-            match Ast_core_type.label_name label with 
+          (fun label ( arg : J.expression) -> 
+            match label with 
+            | `Empty ->  None 
             | `Label label -> 
-              Some (key loc label, arg)
+              Some ( Js_op.Key label, arg)
             | `Optional label -> 
               begin match arg.expression_desc with 
                 | Number _ -> (*Invariant: None encoding*)
@@ -22220,39 +22468,39 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
                        {x : 3 }
                      ]}
                   *)
-                  Some ( key loc label, 
+                  Some ( Js_op.Key label, 
                          Js_of_lam_option.get_default_undefined arg)
               end
-            | `Empty -> Location.raise_errorf ?loc "expect a label name here"
-          ) arg_types args 
+          ) labels args 
     | Js_call{ external_module_name = module_name; 
                txt = { name = fn; splice = js_splice ; 
-                       qualifiers;
+
                      }} -> 
-      let result_type, arg_types = Ast_core_type.list_of_arrow ty in
+
       let args = 
         Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
-      let qualifiers =  List.rev qualifiers in
+      (* let qualifiers =  List.rev qualifiers in *)
       let fn =  
         match handle_external module_name with 
         | Some (id,_) -> 
           (* FIXME: need add dependency here
               it's an external call 
           *)
-          List.fold_left E.dot (E.var id) (qualifiers @ [ fn])
+          List.fold_left E.dot (E.var id) ([ fn])
         | None -> 
           begin 
-            match  qualifiers @ [fn] with 
+            match   [fn] with 
             | y::ys  -> 
               List.fold_left E.dot (E.js_var y) ys
             | _ -> assert false
           end
       in
-      if Ast_core_type.is_unit result_type then
+      begin match result_type with 
+      | `Unit -> 
         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-      else             
+      | _ -> 
         E.call ~info:{arity=Full; call_info = Call_na} fn args
-
+      end
     | Js_global_as_var module_name -> 
       begin match handle_external (Some module_name) with 
         | Some (id, name) -> 
@@ -22260,9 +22508,9 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
         | None -> assert false 
       end
     | Js_new { external_module_name = module_name; 
-               txt = { name = fn};
+               txt = fn;
              } -> 
-      let  arg_types = snd @@  Ast_core_type.list_of_arrow ty in
+
       let args = 
         Ext_list.flat_map2_last (ocaml_to_js false) arg_types args  in 
       let fn =  
@@ -22295,7 +22543,7 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
 
 
 
-    | Js_global {name; external_module_name} -> 
+    | Js_global {txt = name; external_module_name} -> 
 
       (* TODO #11
          1. check args -- error checking 
@@ -22316,62 +22564,59 @@ let translate_ffi  loc (ffi : Lam_external_def.ffi ) prim_name
     | Js_send {splice  = js_splice ; name } -> 
       begin match args  with
         | self :: args -> 
-          let [@warning"-8"] (_return_type, self_type::arg_types )
-            = Ast_core_type.list_of_arrow ty in
+          let [@warning"-8"] ( self_type::arg_types )
+            = arg_types in
           let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
         | _ -> 
-          Location.raise_errorf ?loc "Ill defined attribute"
+          assert false 
       end
-    | Js_get {name} -> 
+    | Js_get name -> 
       begin match args with 
       | [obj] ->
         E.dot obj name        
-      | _ ->  
-          Location.raise_errorf ?loc "Ill defined attribute"
-        (* There is a minor drawback here, only when it is called, 
-           the error will be triggered *)
+      | _ -> assert false 
       end  
-    | Js_set {name} -> 
+    | Js_set name -> 
       begin match args with 
       | [obj; v] -> 
         E.assign (E.dot obj name) v         
       | _ -> 
-        Location.raise_errorf ?loc "Ill defined attribute"
+        assert false 
       end
     | Js_get_index 
       -> 
       begin match args with
         | [obj; v ] -> 
           Js_array.ref_array obj v
-        | _ -> Location.raise_errorf ?loc "Ill defined attribute"
+        | _ -> assert false 
       end
     | Js_set_index 
       -> 
       begin match args with 
       | [obj; v ; value] -> 
         Js_array.set_array obj v value
-      | _ -> Location.raise_errorf ?loc "Ill defined attribute"
+      | _ -> assert false
       end
     
 
 
 let translate cxt 
-    ({prim_name ; } as prim 
-     : Lam_external_def.prim) args  = 
-  match Lam_external_def.handle_attributes prim with 
-  | Normal -> Lam_dispatch_primitive.translate prim_name args 
-  | Bs (ty, loc, ffi) -> 
-    let () = Lam_external_def.check_ffi ?loc ffi in
-    translate_ffi loc ffi prim_name cxt ty args 
+    ({prim_name ;  prim_native_name} 
+     : Ast_external_attributes.prim) args  = 
+  if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
+    begin 
+      match Ast_external_attributes.unsafe_from_string prim_native_name with 
+      | Normal -> 
+        Lam_dispatch_primitive.translate prim_name args 
+      | Bs (arg_types, result_type, ffi) -> 
+        translate_ffi  ffi prim_name cxt arg_types result_type args 
+    end
+  else 
+    begin 
+      Lam_dispatch_primitive.translate prim_name args 
+    end
 
-
-
-(* TODO:
-  Also need to mark that CamlPrimtivie is used and
-  add such dependency in
-  module loader 
-*)
 
 end
 module Js_of_lam_string : sig 
