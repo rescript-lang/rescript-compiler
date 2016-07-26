@@ -476,13 +476,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         let pval_prim = 
           match pval_prim with 
           | [ v ] -> 
-            [ v; 
-              Ast_external_attributes.handle_attributes_as_string
-                pval_loc 
-                pval_name.txt 
-                pval_type 
-                pval_attributes v
-            ]
+            Ast_external_attributes.handle_attributes_as_string
+              pval_loc 
+              pval_name.txt 
+              pval_type 
+              pval_attributes v
           | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
         {sigi with 
          psig_desc = 
@@ -530,12 +528,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           let pval_prim = 
             match pval_prim with 
             | [ v] -> 
-              [ v; 
-                Ast_external_attributes.handle_attributes_as_string
-                  pval_loc
-                  pval_name.txt
-                  pval_type pval_attributes v
-              ]
+              Ast_external_attributes.handle_attributes_as_string
+                pval_loc
+                pval_name.txt
+                pval_type pval_attributes v
+
             | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
           {str with 
            pstr_desc = 

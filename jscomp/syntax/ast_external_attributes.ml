@@ -189,7 +189,9 @@ let handle_attributes
     let name_from_payload_or_prim payload = 
       match Ast_payload.is_single_string payload with 
       | Some _ as val_name ->  val_name
-      | None -> Some prim_name  (* need check name *)
+      | None -> 
+        if String.length prim_name = 0 then Some pval_prim
+        else Some prim_name  (* need check name *)
     in 
     let st = 
       List.fold_left 
@@ -396,16 +398,18 @@ let handle_attributes
         -> Location.raise_errorf ~loc "conflict attributes found"
       | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
     check_ffi ~loc ffi;
-    (* match ffi , prim_name with  *)
-    (* | Obj_create _ , _ -> prim_name *)
-    (* | *)
-    Bs(arg_types, result_type,  ffi)
+    (match ffi , prim_name with
+    | Obj_create _ , _ -> prim_name
+    | _ , "" -> pval_prim
+    | _, _ -> prim_name), Bs(arg_types, result_type,  ffi)
 
 
 let handle_attributes_as_string 
     pval_loc
     pval_prim 
     typ attrs v = 
-  to_string 
-    (handle_attributes pval_loc pval_prim typ attrs v )
+  let prim_name, ffi = 
+    (handle_attributes pval_loc pval_prim typ attrs v ) in
+  [prim_name; to_string ffi]
+    
 

@@ -28,3 +28,5 @@ val on2 :
    | `close of (unit -> unit [@bs])] 
      [@bs.string]) ->
   unit
+
+val read : string -> string

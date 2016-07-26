@@ -1,5 +1,6 @@
 'use strict';
 
+var Fs = require("fs");
 
 
 function hey_string (option){
@@ -48,6 +49,10 @@ function register(readline) {
             });
 }
 
+function read(name) {
+  return Fs.readFileSync(name, "utf8");
+}
+
 function test(readline, x) {
   return readline.on(function (action) {
               switch (x) {
@@ -69,7 +74,7 @@ function test(readline, x) {
 }
 
 function on2(prim, prim$1) {
-  return prim.on(function (action) {
+  return prim.on2(function (action) {
               switch (prim$1) {
                 case -944564236 : 
                     return action[0];
@@ -93,4 +98,5 @@ exports.vv       = vv;
 exports.register = register;
 exports.test     = test;
 exports.on2      = on2;
+exports.read     = read;
 /*  Not a pure module */
