@@ -1,0 +1,812 @@
+<!DOCTYPE HTML>
+<html lang="en" >
+    
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Language Extenions | Why JavaScript?</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 2.6.7">
+        
+        
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+        <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+        
+    <link rel="stylesheet" href="gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-highlight/website.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-search/search.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-fontsettings/website.css">
+        
+    
+    
+
+        
+    
+    
+    <link rel="next" href="./JS-call-OCaml.html" />
+    
+    
+    <link rel="prev" href="./Compiler-overview.html" />
+    
+
+        
+    </head>
+    <body>
+        
+        
+    <div class="book"
+        data-level="5.1"
+        data-chapter-title="Language Extenions"
+        data-filepath="Extensions.md"
+        data-basepath="."
+        data-revision="Thu Jul 07 2016 15:25:41 GMT-0400 (EDT)"
+        data-innerlanguage="">
+    
+
+<div class="book-summary">
+    <nav role="navigation">
+        <ul class="summary">
+            
+            
+            
+            
+
+            
+
+            
+    
+        <li class="chapter " data-level="0" data-path="index.html">
+            
+                
+                    <a href="./index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                        Home
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1" >
+            
+            <span><b>1.</b> Playground</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.1" data-path="Playground.html">
+            
+                
+                    <a href="./Playground.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.1.</b>
+                        
+                        OCaml &amp; Reason Playgrounds
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="2" >
+            
+            <span><b>2.</b> Get Started</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.1" data-path="Installation.html">
+            
+                
+                    <a href="./Installation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.</b>
+                        
+                        Installation
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" data-path="Create-a-simple-example-with-NPM.html">
+            
+                
+                    <a href="./Create-a-simple-example-with-NPM.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.2.</b>
+                        
+                        Create a simple example with NPM
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="NPM-Support.html">
+            
+                
+                    <a href="./NPM-Support.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.3.</b>
+                        
+                        NPM Support
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="3" >
+            
+            <span><b>3.</b> BuckleScript Basics</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="3.1" data-path="FAQ.html">
+            
+                
+                    <a href="./FAQ.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.1.</b>
+                        
+                        FAQ
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.2" >
+            
+                
+                    <a target="_blank" href="https:/ocaml.org/">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                        About OCaml
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.3" data-path="Compiler-options.html">
+            
+                
+                    <a href="./Compiler-options.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.3.</b>
+                        
+                        Compiler options
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.4" data-path="How-to-adapt-your-build-system.html">
+            
+                
+                    <a href="./How-to-adapt-your-build-system.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.4.</b>
+                        
+                        How to adapt your build system
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.5" data-path="Semantic-differences-from-other-backends.html">
+            
+                
+                    <a href="./Semantic-differences-from-other-backends.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.5.</b>
+                        
+                        Semantic differences from other backends
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.6" data-path="JavaScript-target-versions.html">
+            
+                
+                    <a href="./JavaScript-target-versions.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.6.</b>
+                        
+                        JavaScript target versions
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="4" >
+            
+            <span><b>4.</b> BuckleScript Overview</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="4.1" data-path="Compiler-overview.html">
+            
+                
+                    <a href="./Compiler-overview.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.1.</b>
+                        
+                        Compiler overview
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="5" >
+            
+            <span><b>5.</b> BuckleScript FFI</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter active" data-level="5.1" data-path="Extensions.html">
+            
+                
+                    <a href="./Extensions.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.1.</b>
+                        
+                        Language Extenions
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.2" data-path="JS-call-OCaml.html">
+            
+                
+                    <a href="./JS-call-OCaml.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.2.</b>
+                        
+                        JS call OCaml
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.3" data-path="OCaml-call-JS.html">
+            
+                
+                    <a href="./OCaml-call-JS.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.3.</b>
+                        
+                        OCaml call JS
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="Runtime-representation.html">
+            
+                
+                    <a href="./Runtime-representation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.4.</b>
+                        
+                        Runtime representation
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.5" data-path="Experimental-support-of-typescript.html">
+            
+                
+                    <a href="./Experimental-support-of-typescript.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.5.</b>
+                        
+                        Experimental support of typescript
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.6" data-path="Unsupported-IO-primitives.html">
+            
+                
+                    <a href="./Unsupported-IO-primitives.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.6.</b>
+                        
+                        Unsupported IO primitives
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="6" >
+            
+            <span><b>6.</b> Contributions</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="6.1" data-path="Dev-mode-How-to.html">
+            
+                
+                    <a href="./Dev-mode-How-to.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                        Dev mode How to
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="6.2" data-path="Help-move-runtime-functions-from-OCaml-to-Javascript.html">
+            
+                
+                    <a href="./Help-move-runtime-functions-from-OCaml-to-Javascript.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.2.</b>
+                        
+                        Help move runtime functions from OCaml to Javascript
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="7" >
+            
+            <span><b>7.</b> Roadmap</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="7.1" data-path="Roadmap.html">
+            
+                
+                    <a href="./Roadmap.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.1.</b>
+                        
+                        Roadmap
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="8" >
+            
+            <span><b>8.</b> Comparisons</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="8.1" data-path="Differences-from-js_of_ocaml.html">
+            
+                
+                    <a href="./Differences-from-js_of_ocaml.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.1.</b>
+                        
+                        Differences from js_of_ocaml
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+
+            
+            <li class="divider"></li>
+            <li>
+                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+                    Published with GitBook
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+
+    <div class="book-body">
+        <div class="body-inner">
+            <div class="book-header" role="navigation">
+    <!-- Actions Left -->
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="./" >Why JavaScript?</a>
+    </h1>
+</div>
+
+            <div class="page-wrapper" tabindex="-1" role="main">
+                <div class="page-inner">
+                
+                
+                    <section class="normal" id="section-">
+                    
+                        <h1 id="embedding-raw-js-code-in-expression-and-structure-level">Embedding raw js code in expression and structure level</h1>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">let</span> x = [%bs.raw .. ]
+[%%bs.raw]
+</code></pre>
+<h1 id="debugger-in-expression-level">Debugger in expression level</h1>
+<pre><code class="lang-ocaml">[%bs.debugger]
+</code></pre>
+<h1 id="create-simple-js-object-in-expression-and-coretype-level">Create Simple JS object in expression and core-type level</h1>
+<ul>
+<li><p>Types and expressions nested </p>
+<pre><code class="lang-ocaml">[%bs.obj ({ x = <span class="hljs-number">3</span> } : &lt; x : <span class="hljs-built_in">int</span> &gt; )]
+</code></pre>
+</li>
+<li><p>Types and expressions separate </p>
+<pre><code class="lang-ocaml">[%bs.obj {x = <span class="hljs-number">3</span> } ] : [%bs.obj: &lt; x : <span class="hljs-built_in">int</span> &gt; ]
+</code></pre>
+</li>
+<li><p>Object collections </p>
+<pre><code>[%bs.obj
+([ {x = {y = 3}}]
+: &lt; x : &lt;y : int &gt; &gt; list )
+]
+</code></pre><pre><code class="lang-ocaml">[%bs.obj {
+x = <span class="hljs-number">3</span> ;
+y  = {z : <span class="hljs-number">3</span> } ;
+u = <span class="hljs-keyword">fun</span>[@bs] x y -&gt; x + y;
+}
+] : [%bs.obj: &lt;
+x : <span class="hljs-built_in">int</span> ;
+y : &lt; z : <span class="hljs-built_in">int</span> &gt; ;
+u : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span>  [@bs];
+&gt; ]
+</code></pre>
+<pre><code class="lang-ocaml">[%bs.obj: &lt;
+x : <span class="hljs-built_in">int</span> ;
+y : <span class="hljs-symbol">&apos;a</span> -&gt; <span class="hljs-built_in">int</span> 
+&gt;  <span class="hljs-keyword">as</span> <span class="hljs-symbol">&apos;a</span>]
+</code></pre>
+</li>
+</ul>
+<h1 id="uncurry-function-js-methods-and-js-method-callback">Uncurry function, JS methods and JS method callback</h1>
+<h2 id="uncurried-function">Uncurried function</h2>
+<p>Note that OCaml&apos;s calling convention is curried by default, while JS
+does not have native support. Curried and uncurried functions can be
+told from type signatures.</p>
+<p>For example</p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">val</span> f0 : <span class="hljs-built_in">unit</span> -&gt; <span class="hljs-built_in">string</span> [@bs] <span class="hljs-comment">(* arity of 0 *)</span>
+<span class="hljs-keyword">val</span> f1 : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> [@bs] <span class="hljs-comment">(* arity of 1 *)</span>
+<span class="hljs-keyword">val</span> f2 : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> -&gt; <span class="hljs-built_in">int</span> [@bs] <span class="hljs-comment">(* arity of 2 *)</span>
+
+<span class="hljs-keyword">val</span> f : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> -&gt; <span class="hljs-built_in">int</span>
+<span class="hljs-keyword">val</span> f_uncurry : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> -&gt; <span class="hljs-built_in">int</span> [@bs]
+</code></pre>
+<ul>
+<li><p>How BuckleScript compiles function application</p>
+<p>To apply a function, you can do this</p>
+</li>
+</ul>
+<pre><code class="lang-ocaml">f <span class="hljs-number">3</span> <span class="hljs-string">&quot;x&quot;</span> <span class="hljs-comment">(* curried calling convention *)</span>
+f_uncurry <span class="hljs-number">3</span> <span class="hljs-string">&quot;x&quot;</span> [@bs]
+</code></pre>
+<p>Note if you missed arguments or supply more arguments to <code>f_uncurry</code>
+the type checker would complain.</p>
+<p>For uncurried function applicaton, BuckleScript is guaranteed to
+compile it in the same way as JS code</p>
+<pre><code class="lang-js">f_uncurry(<span class="hljs-number">3</span>,<span class="hljs-string">&quot;x&quot;</span>)
+</code></pre>
+<p>However, for curried function application, it depends on how compiler
+optimizations goes, for most cases, when the compiler see the
+definition of <code>f</code>, it will compile it in the most efficient way, i.e,
+JS full aplication, if the compiler can not see the definition of <code>f</code>,
+it will do a runtime dispath, so there are two possible outputs:</p>
+<pre><code class="lang-js">Curry._2(f, <span class="hljs-number">3</span>, <span class="hljs-string">&quot;x&quot;</span>) <span class="hljs-comment">// compiler fails to optimize</span>
+f(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;x&quot;</span>) <span class="hljs-comment">// compiler optimized correctly</span>
+</code></pre>
+<p>Both are correct code, but the second one is more efficient.</p>
+<ul>
+<li>How BuckleScript handles function definition</li>
+</ul>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">let</span> f = <span class="hljs-keyword">fun</span> a b -&gt; a + string_of_int b
+<span class="hljs-keyword">let</span> f_uncurry = <span class="hljs-keyword">fun</span> [@bs] a b -&gt; a + string_of_int b
+</code></pre>
+<ul>
+<li><p>When is uncurried function recommended</p>
+<ul>
+<li><p>For FFI to JS functions, all object methods are <em>strongly recommended</em>
+ to type it as uncurried function.</p>
+</li>
+<li><p>When function is passed as a callback</p>
+<p>This is mostly for performance issues, it is hard to optimize in
+such scenario.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Caveat: when return function you have to write separately</p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">type</span> <span class="hljs-symbol">&apos;a</span> return = <span class="hljs-built_in">int</span> -&gt; <span class="hljs-symbol">&apos;a</span> [@bs]
+<span class="hljs-keyword">type</span> <span class="hljs-symbol">&apos;a</span> u0 = <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> -&gt; <span class="hljs-symbol">&apos;a</span> return  [@bs]
+<span class="hljs-keyword">type</span> <span class="hljs-symbol">&apos;a</span> u1 = <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> -&gt; <span class="hljs-built_in">int</span> -&gt; <span class="hljs-symbol">&apos;a</span> [@bs]
+<span class="hljs-keyword">type</span> <span class="hljs-symbol">&apos;a</span> u2 = <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> -&gt; (<span class="hljs-built_in">int</span> -&gt; <span class="hljs-symbol">&apos;a</span> [@bs]) [@bs]
+</code></pre>
+<p><code>u0</code> is the same as <code>u2</code> while <code>u1</code> is different, it expects 3 arguments</p>
+<ul>
+<li>application </li>
+</ul>
+<pre><code class="lang-ocaml">f0 <span class="hljs-literal">()</span> [@bs] <span class="hljs-comment">(* arguments of 0 *)</span>
+f1 a [@bs] <span class="hljs-comment">(* arguments of 1 *)</span>
+f2 a b [@bs] <span class="hljs-comment">(* arguments of 2 *)</span>
+</code></pre>
+<ul>
+<li>function create</li>
+</ul>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">fun</span> [@bs] <span class="hljs-literal">()</span> -&gt; x
+<span class="hljs-keyword">fun</span> [@bs] _ -&gt; x <span class="hljs-comment">(* arity of 0*)</span>
+<span class="hljs-keyword">fun</span> [@bs] x -&gt; x <span class="hljs-comment">(* arity of 1*)</span>
+<span class="hljs-keyword">fun</span> [@bs] x y -&gt; x + y <span class="hljs-comment">(* arity of 2*)</span>
+</code></pre>
+<h1 id="method">method</h1>
+<h2 id="method-type-declaration">method type declaration</h2>
+<ul>
+<li>class type</li>
+</ul>
+<p>BuckleScript overrides OCaml <code>class type</code> syntax for FFI, to trigger this, 
+you have to put a file level configuration in the beginning.</p>
+<pre><code class="lang-ocaml">[@@@bs.config {bs_class_type } ]
+</code></pre>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _x = <span class="hljs-keyword">object</span>
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set]
+  <span class="hljs-keyword">method</span> bark : <span class="hljs-built_in">unit</span> -&gt; <span class="hljs-built_in">int</span>
+  <span class="hljs-keyword">method</span> hi : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span>
+  <span class="hljs-keyword">method</span> hey : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span>   -&gt; <span class="hljs-built_in">int</span>
+<span class="hljs-keyword">end</span> 
+<span class="hljs-keyword">type</span> x = _x <span class="hljs-type">Js</span>.t
+</code></pre>
+<ul>
+<li>getter setter attributs</li>
+</ul>
+<p>Such combinations:</p>
+<pre><code class="lang-ocaml">[@@@bs.config{bs_class_type}]
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set {no_get}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y = _y <span class="hljs-type">Js</span>.t 
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y0 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set] [@@bs.get {null}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y0 = _y0 <span class="hljs-type">Js</span>.t 
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y1 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set] [@@bs.get {undefined}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y1 = _y1 <span class="hljs-type">Js</span>.t 
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y2 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> [@@bs.set] [@@bs.get {undefined; null}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y2 = _y2 <span class="hljs-type">Js</span>.t 
+
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y3 = <span class="hljs-keyword">object</span> 
+  <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span>  [@@bs.get {undefined ; null}]
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y3 = _y3 <span class="hljs-type">Js</span>.t
+</code></pre>
+<p>Which is equivalent to type definitions as below:
+(Note that user can not write such type definitions, but its semantics-equivalent )</p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y =
+  <span class="hljs-keyword">object</span> <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y = _y <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y0 =
+  <span class="hljs-keyword">object</span>
+    <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.null
+    <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y0 = _y0 <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y1 =
+  <span class="hljs-keyword">object</span>
+    <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.undefined
+    <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y1 = _y1 <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y2 =
+  <span class="hljs-keyword">object</span>
+    <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.null_undefined
+    <span class="hljs-keyword">method</span> height#= : ([ <span class="hljs-tag">`Arity_1</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> ], <span class="hljs-built_in">unit</span>) <span class="hljs-type">Js</span>.meth
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y2 = _y2 <span class="hljs-type">Js</span>.t
+<span class="hljs-keyword">class</span> <span class="hljs-keyword">type</span> _y3 = <span class="hljs-keyword">object</span> <span class="hljs-keyword">method</span> height : <span class="hljs-built_in">int</span> <span class="hljs-type">Js</span>.null_undefined <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">type</span> y3 = _y3 <span class="hljs-type">Js</span>.t
+</code></pre>
+<ul>
+<li>object application</li>
+</ul>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">let</span> h (f : x ) : <span class="hljs-built_in">int</span> =  
+   f##bark <span class="hljs-literal">()</span>; 
+   f##hi a;
+   f##hey a b ;
+   x##height#= <span class="hljs-number">32</span> ;
+   x##height
+</code></pre>
+<ul>
+<li>object application chain</li>
+</ul>
+<pre><code class="lang-ocaml">f
+##(meth0 <span class="hljs-literal">()</span>)
+##(meth1 a)
+##(meth2 a b)
+</code></pre>
+<p>Note that the only way to consume is <code>method</code> is via <code>##</code> syntax.</p>
+<h2 id="method-call-back">method call back</h2>
+<p>This is useful for event-handler which will have a implicit this</p>
+<ul>
+<li>create </li>
+</ul>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">let</span> uu :[%bs.obj: &lt; length : <span class="hljs-built_in">int</span> &gt; ] -&gt; <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span> [@bs.this] 
+  =
+  <span class="hljs-keyword">fun</span>[@bs.this] o x y -&gt; o##length + x + y
+</code></pre>
+<p>and it will be compiled as</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">uu</span>(<span class="hljs-params">x,y</span>)</span>{
+  <span class="hljs-keyword">var</span> o = <span class="hljs-keyword">this</span>;
+  <span class="hljs-keyword">return</span> o.length + x + y
+}
+</code></pre>
+
+                    
+                    </section>
+                
+                
+                </div>
+            </div>
+        </div>
+
+        
+        <a href="./Compiler-overview.html" class="navigation navigation-prev " aria-label="Previous page: Compiler overview"><i class="fa fa-angle-left"></i></a>
+        
+        
+        <a href="./JS-call-OCaml.html" class="navigation navigation-next " aria-label="Next page: JS call OCaml"><i class="fa fa-angle-right"></i></a>
+        
+    </div>
+</div>
+
+        
+<script src="gitbook/app.js"></script>
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-edit-link/plugin.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/search.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-sharing/buttons.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
+    
+
+<script>
+require(["gitbook"], function(gitbook) {
+    var config = {"edit-link":{"base":"https://github.com/bloomberg/bucklescript/tree/master/docs","label":"Edit This Page"},"highlight":{},"search":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    gitbook.start(config);
+});
+</script>
+
+        
+    </body>
+    
+</html>

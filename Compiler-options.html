@@ -53,7 +53,7 @@
         data-chapter-title="Compiler options"
         data-filepath="Compiler-options.md"
         data-basepath="."
-        data-revision="Fri May 27 2016 14:23:27 GMT-0400 (EDT)"
+        data-revision="Thu Jul 07 2016 15:25:41 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -307,16 +307,16 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="5.1" data-path="Curry-and-Uncurry-functions.html">
+        <li class="chapter " data-level="5.1" data-path="Extensions.html">
             
                 
-                    <a href="./Curry-and-Uncurry-functions.html">
+                    <a href="./Extensions.html">
                 
                         <i class="fa fa-check"></i>
                         
                             <b>5.1.</b>
                         
-                        Curry and Uncurry functions
+                        Language Extenions
                     </a>
             
             
@@ -535,6 +535,13 @@
                     <section class="normal" id="section-">
                     
                         <p>BuckleScript inherits the command line arguments of the <a href="http://caml.inria.fr/pub/docs/manual-ocaml/comp.html" target="_blank">OCaml compiler</a>. It also adds several flags:</p>
+<ul>
+<li>-bs-files</li>
+</ul>
+<p>so that you can do</p>
+<pre><code class="lang-bash">bsc -bs-files *.ml *.mli
+</code></pre>
+<p>The compiler will sort the order of input files before starting compilation</p>
 <ul>
 <li>-bs-module</li>
 </ul>

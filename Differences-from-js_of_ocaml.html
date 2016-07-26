@@ -51,7 +51,7 @@
         data-chapter-title="Differences from js_of_ocaml"
         data-filepath="Differences-from-js_of_ocaml.md"
         data-basepath="."
-        data-revision="Fri May 27 2016 14:23:27 GMT-0400 (EDT)"
+        data-revision="Thu Jul 07 2016 15:25:41 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -305,16 +305,16 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="5.1" data-path="Curry-and-Uncurry-functions.html">
+        <li class="chapter " data-level="5.1" data-path="Extensions.html">
             
                 
-                    <a href="./Curry-and-Uncurry-functions.html">
+                    <a href="./Extensions.html">
                 
                         <i class="fa fa-check"></i>
                         
                             <b>5.1.</b>
                         
-                        Curry and Uncurry functions
+                        Language Extenions
                     </a>
             
             
@@ -533,41 +533,12 @@
                     <section class="normal" id="section-">
                     
                         <p><a href="https://github.com/ocsigen/js_of_ocaml" target="_blank">js_of_ocaml</a> is a popular compiler which compiles OCaml&apos;s bytecode into JavaScript. It is the inspiration for this project, and has already been under development for several years and is ready for production. In comparison, BuckleScript, while moving fast, is still a very young project. BuckleScript&apos;s motivation, like <code>js_of_ocaml</code>, is to unify the ubiquity of the JavaScript platform and the truly sophisticated type system of OCaml, however, there are some areas where we view things differently from <code>js_of_ocaml</code>. We describe below, some of these differences, and also refer readers to some of the original informal <a href="https://github.com/ocsigen/js_of_ocaml/issues/338" target="_blank">discussions</a>.</p>
-<h2 id="readable-output">Readable Output</h2>
-<p>One of the main BuckleScript goal is to generate readable JavaScript code. From the start we believed developers using BuckleScript for JavaScript development will look at the generated code an order of magnitude more than an OCaml developer will look at the assembly one. Part of our intent is to make it easier for a JavaScript developer to transition to the OCaml language. Furthermore looking at existing transpilers for JavaScript:  <a href="http://coffeescript.org/" target="_blank">coffescript</a>, <a href="https://babeljs.io/" target="_blank">babel</a> and <a href="https://github.com/Microsoft/TypeScript" target="_blank">typescript</a>, the most widely adopted ones are the one that favors code readability.
-The generated code by BuckleScript is pretty close to the JavaScript code one might write by hand, especially if you use mostly the language features which are shared between JavaScript and OCaml. Indeed if you use OCaml language constructs which are specific to OCaml the generated code will differ a lot more but should still be readable. Such examples includes complex pattern matching for which OCaml offers a succint and powerful syntax while JavaScript code will most likely results in nested <code>if</code>.  </p>
-<p>One of the major use case we anticipate (especially at early stages of adoption) is that developers will use BuckleScript to implement a component of their JavaScript application (maybe do gradual replacement of modules). The main application will therefore still be JavaScript and we therefore believe readable output should improve that use case.</p>
-<h2 id="runtime-representations--ffi">Runtime Representations &amp;&amp; FFI</h2>
-<p><strong>Runtime Representation</strong></p>
-<p><code>js_of_ocaml</code> runtime representation favors exact semantic to the native/byte compiler. One advantage is that it makes it easy to port existing OCaml libraries. The most notable difference is the string representation in <code>js_of_ocaml</code> is not a JavaScript string like in BuckleScript but rather a dedicated runtime structure. This allows <code>js_of_ocaml</code> to preserve the assumption that string are sequence of 8-bit integers.</p>
-<p>BuckleScript runtime representation is closer to JavaScript. This is particularly helpful for both the ability to debug OCaml values in JavaScript but also when writing the FFI.</p>
-<p>Some example of differences are:</p>
 <ul>
-<li><code>string</code> : In BuckleScript the string is represented as a JavaScript string while in <code>js_of_ocaml</code> it&apos;s a much more involved data structure. </li>
-<li><code>array</code>: In BuckleScript the array has the same indexing as a JavaScript array while for <code>js_of_ocaml</code> the index starts at 1.  </li>
-<li><code>tuple</code>: In BuckleScript the array has the same indexing as a JavaScript array while for <code>js_of_ocaml</code> the index starts at 1.</li>
+<li>Js_of_ocaml takes lowlevel bytecode from OCaml compiler, BuckleScript takes the highlevel rawlambda representation from OCaml compiler</li>
+<li>Js_of_ocaml focuses more on existing OCaml eco-system(opam) while BuckleScript&apos;s major goal is to target npm</li>
+<li>Js_of_ocaml and BuckleScript have slightly different runtime encoding in several places, for example, BuckleScript encodes OCaml Array as JS Array while js_of_ocaml requires its index 0 to be of value 0.</li>
 </ul>
-<p><strong>FFI</strong></p>
-<p>Regarding the FFI, BuckleScript favors using only <a href="http://caml.inria.fr/pub/docs/manual-ocaml/extn.html#sec245" target="_blank">attributes</a>; one drawback that we plan to address on the future is that it lacks some expressiveness. </p>
-<p><code>js_of_ocaml</code> introduces a very sophisticated and expressive syntax extension, which works great most of the time, but can sometimes generate confusing compiler errors. </p>
-<p>The introduction of <a href="https://github.com/LexiFi/gen_js_api" target="_blank">gen_js_api</a> tool as an alternative FFI makes it easier to write FFI with <code>js_of_ocaml</code>. <code>gen_js_api</code> could be a nice way to implement FFIs to support both <code>BuckleScript</code> and <code>js_of_ocaml</code>.</p>
-<p><strong>Runtime library</strong></p>
-<p>BuckleScript runtime library is mostly implemented in OCaml while <code>js_of_ocaml</code> runtime is purely in JavaScript. The difference is actually significant since we believe it reflects how easy it is to write JavaScript code in OCaml using the BuckleScript model (FFI and Runtime representation).</p>
-<h2 id="separate-compilation">Separate Compilation</h2>
-<p>BuckleScript compiles one OCaml module into one Javascript module. This follows the modern JavaScript development and makes it easier to gradually use OCaml in an existing code base. This is particularly relevant for our use cases for which we plan to implement components in OCaml while the larger application is written in JavaScript. The JavaScript ecosystem also has plenty of tools and support for modules, making it easy and natural to integrate modules generated by BuckleScript. It also opens the door for supporting <a href="http://webpack.github.io/docs/hot-module-replacement.html" target="_blank">hot module replacement</a> in future.
-The module compilation strategy allows more granular compilation and as consequence faster feedback loop during development. </p>
-<p><code>js_of_ocaml</code> compiles a whole OCaml program in JavaScript. This makes it easier when the main application is written in OCaml but less natural when integrating OCaml as a component in a larger JavaScript application.</p>
-<h2 id="integration-with-existing-ecosystems">Integration with existing ecosystems</h2>
-<p>BuckleScript is aware of <code>npm</code> module paths and favor libraries development. In contrast with <code>js_of_ocaml</code>&apos; focus on developing executable. 
-BuckleScript does not provide a whole program compilation mode out of the box; it rather delegates this to existing linker/bundler (such as webpack or Google Closure compiler).</p>
-<p>When integrating code generated by BuckleScript developers only need to look at the <code>.mli</code> files. BuckleScript respect those interfaces and will only export the functions from the `.mli file. No special code needs to be added to expose OCaml code to the JavaScript.</p>
-<p><code>js_of_ocaml</code> requires specific code to export functions OCaml code to the larger JavaScript application.</p>
-<h2 id="intrusiveness">Intrusiveness</h2>
-<p>The major advantage of <code>js_of_ocaml</code> is that it is non intrusive; you can reuse your existing project setup (build system) and simply convert the bytecode output to JavaScript output as a post-processing step. </p>
-<p>With BuckleScript, however, users have to adapt their build system for existing OCaml code base. In BuckleScript, we traded intrusiveness for being able to extract more information from the code. </p>
-<p>We think there&apos;s a need for both tools to exist simultaneously. If you have some OCaml code, and your primary motivation is that it should run inside a browser, then <code>js_of_ocaml</code> is a very good choice. However, if you target JavaScript (browser/Node.Js) as the primary backend for your application and care about the integration with the JavaScript environment then we believe BuckleScript can offer a better experience. We also think both projects can help and learn from each other.</p>
-<h2 id="performance">Performance</h2>
-<p>We have not conducted exhaustive benchmarks yet, however, our initial results show similar performance between <code>js_of_ocaml</code> and BuckleScript (using Google Closure simple optimization level).</p>
+<p>Both projects are improving quickly, so this can change in the future!</p>
 
                     
                     </section>
