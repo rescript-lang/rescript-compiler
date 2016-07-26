@@ -16,7 +16,7 @@ July 27, 2016
 - Readable JavaScript backend for OCaml
 - *module to module* compiler
 - *Seamless integration* with existing JS libs
-
+- Works with multiple front-end: vanilla OCaml and [Facebook Reason](https://facebook.github.io/reason/)
 ---
 
 # Why do we care about JS platform
@@ -24,7 +24,7 @@ July 27, 2016
 - JS is the only language of the browser
 
 - JS is everywhere (Electron for Desktop App, NodeJS on server
-  side, huge potential on [IoT](https://blogs.windows.com/buildingapps/2015/05/12/bringing-node-js-to-windows-10-iot-core/))
+  side, huge potential on IoT)
 
 - JS is where people are (npm: [largest package manager 2 years ago](http://www.modulecounts.com/))
 
@@ -46,6 +46,14 @@ July 27, 2016
     compilation, support for various module systems: Google module/ AMDJS and CommonJS)
   
   
+---
+
+# R & B (Facebook Reason and Bloomberg BuckleScript)
+
+- Reason is a new interface to OCaml created by the same people who created ReactJS
+- It provides a Javascript like syntax and toolchain for editing, building, and sharing code
+- Facebook uses OCaml a lot in its infrastructure: Flow JS type checker, Infer static analyzer, and Hack compiler, etc
+- [It works with Bloomberg's BuckleScript nicely](http://bloomberg.github.io/bucklescript/reason-demo/)
 
 ---
 
@@ -128,13 +136,13 @@ Runtime performance of identical functionality:
              BS: 0m0.063s
              TS: 0m1.427s
    ```
-- Even worse for whole program compilation transpliers 
+- Even worse for whole program compilation transpilers 
 
 ---
 
 # Beyond performance:
 
->  Expressive and efficient FFI is the #1 design goal
+>  Expressive and efficient FFI is the major design goal
   
 ---
 
@@ -148,9 +156,9 @@ Runtime performance of identical functionality:
 - [demo](https://tonicdev.com/npm/bs-platform)
 
 ```ocaml
-var arr = require("bs-platform/lib/js/array")
-var str = require("bs-platform/lib/js/string")
-str.concat(",",arr.to_list(["hello","bucklescript"]))
+var $$Array = require("bs-platform/lib/js/array")
+var $$String = require("bs-platform/lib/js/string")
+$$String.concat(",",$$Array.to_list(["hello","bucklescript"]))
 ```
 
 ---
@@ -159,23 +167,29 @@ str.concat(",",arr.to_list(["hello","bucklescript"]))
 Like typescript, users must write *type declarations* for existing
 JavaScript Libraries.
 
-- OCaml is *extensible* by extension points and attributes.
-  - Native JavaScript uncurried calling convention 
-  - Native JavaScript methods (In JS, methods are not the same as
-    Functions)
-  - Native Javascript implicit  `this` based callback
-- OCaml's type system is *expressive* to model different  paradigms in Javascript
+- *extensible* language by extension points and attributes.
+  - No re-inventing a new language needed
+-  *expressive* type system to model different  paradigms in Javascript
   - Structual typing (model JavaScript Objects)
   - Polymorphic variants (model Event handler)
   - Label and optional arguments (model JSON configuration)
 
-FFI is divided into two parts:
+```
+external val_name : types_to_js_object_or_function 
+```
 - *external* function type declarations
 - *external* object signature
 
 ---
+A dummy example:
 
-# External function types: native uncurried calling convention support
+```ocaml
+external exp : float -> float = "Math.exp" [@@bs.call]
+let v = exp 3.
+```
+---
+
+# FFI highlights: native uncurried calling convention support
 
 ```ocaml
 let f = fun [@bs] x y -> x + y
@@ -193,15 +207,32 @@ function f(x,y){
 }
 f (1,2)
 ```
+---
 
-```OCaml
-external array_mapi : 'a array -> ('a -> int ->  'b [@bs]) -> 'b array =  "map" [@@bs.send]
-let v = array_mapi [|1; 2; 3|] (fun[@bs] x i -> x+ i )
+# FFI hightlights: built-in *this* callback support
+
+```ocaml
+let f = fun [@bs.this] o x y -> body
+val f : 'o -> 'x -> 'y -> 'body [@bs.this]
 ```
+
+```ocaml
+external array_map_this :
+  'a array -> ('obj -> 'a -> int -> 'b [@bs.this]) -> 'obj -> 'b array
+  = "map"  [@@bs.send]
+
+array_map_this xs (fun [@bs.this] o v i -> (o,v,i)) xs 
+```
+
 ==>
+
 ```js
-var v = [1,2,3].map(function(x,i){return x + i})
+xs.map(function(v,i){
+  var o = this;
+  return [o,v,i]
+},xs)
 ```
+
 
 ---
 
@@ -232,31 +263,6 @@ var b = function(z){return f(1,2,z)}
 ```
 
 
----
-
-# Built-in *this* callback support
-
-```ocaml
-let f = fun [@bs.this] o x y -> body
-val f : 'o -> 'x -> 'y -> 'body [@bs.this]
-```
-
-```ocaml
-external array_map_this :
-  'a array -> ('obj -> 'a -> int -> 'b [@bs.this]) -> 'obj -> 'b array
-  = "map"  [@@bs.send]
-
-array_map_this xs (fun [@bs.this] o v i -> (o,v,i)) xs 
-```
-
-==>
-
-```js
-xs.map(function(v,i){
-  var o = this;
-  return [o,v,i]
-},xs)
-```
 
 
 ---
@@ -282,6 +288,13 @@ var content = Fs.readFileSync("file.txt", "utf8")
 
 # Event handlers using bucklescript
 
+Typescript binding:
+```ts
+interface readline {
+  on : (event:string, callback: Function)
+}
+```
+
 ```ocaml
 type readline
 external on : readline -> 
@@ -306,19 +319,8 @@ function register(readline) {
             });
 }
 ```
-Typescript binding:
-```ts
-interface readline {
-  on : (event:string, callback: Function)
-}
-```
 
----
 
-# Other attributes for external function declarations
-
- > [@bs.get] [@bs.set] [@bs.send] [@bs.set_index] [@bs.get_index] [@bs.module]
- 
 ---
 
 # External JavaScript objects declaration
