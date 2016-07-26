@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./pervasives", "../runtime/caml_int32", "./sys", "../runtime/curry", "../runtime/caml_array", "./array", "../runtime/caml_weak"],
+define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./pervasives", "./caml_int32", "./sys", "./curry", "./caml_array", "./array", "./caml_weak"],
   function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Caml_int32, Sys, Curry, Caml_array, $$Array, Caml_weak){
     'use strict';
     function length(x) {

@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_format"],
+define(["exports", "./caml_obj", "./caml_format"],
   function(exports, Caml_obj, Caml_format){
     'use strict';
     function succ(n) {

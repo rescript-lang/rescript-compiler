@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasives", "../runtime/caml_exceptions", "../runtime/caml_format", "../runtime/caml_int32", "../runtime/block", "../runtime/curry", "./printf", "./camlinternalFormatBasics", "./buffer", "./string", "../runtime/caml_string", "./list", "./camlinternalFormat"],
+define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./caml_exceptions", "./caml_format", "./caml_int32", "./block", "./curry", "./printf", "./camlinternalFormatBasics", "./buffer", "./string", "./caml_string", "./list", "./camlinternalFormat"],
   function(exports, Caml_builtin_exceptions, Bytes, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Curry, Printf, CamlinternalFormatBasics, Buffer, $$String, Caml_string, List, CamlinternalFormat){
     'use strict';
     function next_char(ib) {

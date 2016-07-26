@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "../runtime/caml_sys", "../runtime/caml_exceptions", "./pervasives", "./hashtbl", "../runtime/caml_format", "./callback", "../runtime/block", "./sys", "../runtime/curry", "./printf", "./array", "./printexc", "../runtime/caml_string", "./list"],
+define(["exports", "./caml_builtin_exceptions", "./caml_io", "./caml_sys", "./caml_exceptions", "./pervasives", "./hashtbl", "./caml_format", "./callback", "./block", "./sys", "./curry", "./printf", "./array", "./printexc", "./caml_string", "./list"],
   function(exports, Caml_builtin_exceptions, Caml_io, Caml_sys, Caml_exceptions, Pervasives, Hashtbl, Caml_format, Callback, Block, Sys, Curry, Printf, $$Array, Printexc, Caml_string, List){
     'use strict';
     var Unix_error = Caml_exceptions.create("Unix.Unix_error");

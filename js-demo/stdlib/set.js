@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/curry", "./list"],
+define(["exports", "./caml_builtin_exceptions", "./curry", "./list"],
   function(exports, Caml_builtin_exceptions, Curry, List){
     'use strict';
     function Make(funarg) {

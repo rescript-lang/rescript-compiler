@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./bytes", "../runtime/caml_io", "../runtime/caml_exceptions", "./pervasives", "../runtime/block", "../runtime/curry", "./buffer", "./string", "../runtime/caml_string", "./camlinternalFormat"],
+define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml_io", "./caml_exceptions", "./pervasives", "./block", "./curry", "./buffer", "./string", "./caml_string", "./camlinternalFormat"],
   function(exports, Caml_obj, Caml_builtin_exceptions, Bytes, Caml_io, Caml_exceptions, Pervasives, Block, Curry, Buffer, $$String, Caml_string, CamlinternalFormat){
     'use strict';
     function add_queue(x, q) {
@@ -1013,12 +1012,12 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       return "</" + (s + ">");
     }
     
-    function default_pp_print_open_tag(prim) {
-      return prim;
+    function default_pp_print_open_tag() {
+      return /* () */0;
     }
     
-    function default_pp_print_close_tag(prim) {
-      return prim;
+    function default_pp_print_close_tag() {
+      return /* () */0;
     }
     
     function pp_make_formatter(f, g, h, i) {
@@ -1075,10 +1074,10 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     }
     
     function make_formatter(output, flush) {
-      var ppf = pp_make_formatter(output, flush, function (prim) {
-            return prim;
-          }, function (prim) {
-            return prim;
+      var ppf = pp_make_formatter(output, flush, function () {
+            return /* () */0;
+          }, function () {
+            return /* () */0;
           });
       ppf[/* pp_out_newline */18] = function (param) {
         return display_newline(ppf, param);
@@ -1100,8 +1099,8 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     function formatter_of_buffer(b) {
       return make_formatter(function (param, param$1, param$2) {
                   return Buffer.add_substring(b, param, param$1, param$2);
-                }, function (prim) {
-                  return prim;
+                }, function () {
+                  return /* () */0;
                 });
     }
     
@@ -1752,14 +1751,14 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     }
     
     function fprintf(ppf, fmt) {
-      return kfprintf(function (prim) {
-                  return prim;
+      return kfprintf(function () {
+                  return /* () */0;
                 }, ppf, fmt);
     }
     
     function ifprintf(ppf, fmt) {
-      return ikfprintf(function (prim) {
-                  return prim;
+      return ikfprintf(function () {
+                  return /* () */0;
                 }, ppf, fmt);
     }
     

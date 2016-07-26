@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl", "./stream", "../runtime/caml_format", "../runtime/caml_int32", "../runtime/block", "./char", "../runtime/caml_string", "./list"],
+define(["exports", "./bytes", "./caml_builtin_exceptions", "./hashtbl", "./stream", "./caml_format", "./caml_int32", "./block", "./char", "./caml_string", "./list"],
   function(exports, Bytes, Caml_builtin_exceptions, Hashtbl, Stream, Caml_format, Caml_int32, Block, Char, Caml_string, List){
     'use strict';
     var initial_buffer = new Array(32);

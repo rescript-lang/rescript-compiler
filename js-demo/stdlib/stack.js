@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_exceptions", "./list"],
+define(["exports", "./caml_exceptions", "./list"],
   function(exports, Caml_exceptions, List){
     'use strict';
     var Empty = Caml_exceptions.create("Stack.Empty");

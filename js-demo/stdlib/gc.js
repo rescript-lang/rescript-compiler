@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/block", "../runtime/caml_gc", "./sys", "../runtime/curry", "./printf"],
+define(["exports", "./block", "./caml_gc", "./sys", "./curry", "./printf"],
   function(exports, Block, Caml_gc, Sys, Curry, Printf){
     'use strict';
     function print_stat(c) {

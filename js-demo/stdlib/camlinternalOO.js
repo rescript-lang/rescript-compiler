@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./obj", "../runtime/caml_exceptions", "../runtime/caml_oo", "../runtime/caml_int32", "./sys", "../runtime/curry", "../runtime/caml_array", "./array", "../runtime/caml_string", "./list"],
+define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_exceptions", "./caml_oo", "./caml_int32", "./sys", "./curry", "./caml_array", "./array", "./caml_string", "./list"],
   function(exports, Caml_obj, Caml_builtin_exceptions, Obj, Caml_exceptions, Caml_oo, Caml_int32, Sys, Curry, Caml_array, $$Array, Caml_string, List){
     'use strict';
     function copy(o) {

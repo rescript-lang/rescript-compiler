@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_int32", "../runtime/caml_string", "./list"],
+define(["exports", "./bytes", "./caml_int32", "./caml_string", "./list"],
   function(exports, Bytes, Caml_int32, Caml_string, List){
     'use strict';
     function make(n, c) {
@@ -97,46 +96,31 @@ define(["exports", "./bytes", "../runtime/caml_int32", "../runtime/caml_string",
             return /* false */0;
           }
           else {
-            var c = s.charCodeAt(i);
-            var exit = 0;
-            if (c >= 14) {
-              if (c !== 34) {
-                if (c !== 92) {
-                  exit = 1;
-                }
-                else {
+            var match = s.charCodeAt(i);
+            if (match >= 32) {
+              var switcher = match - 34 | 0;
+              if (switcher > 58 || switcher < 0) {
+                if (switcher >= 93) {
                   return /* true */1;
                 }
+                else {
+                  _i = i + 1 | 0;
+                  continue ;
+                  
+                }
               }
-              else {
+              else if (switcher > 57 || switcher < 1) {
                 return /* true */1;
               }
-            }
-            else if (c >= 11) {
-              if (c >= 13) {
-                return /* true */1;
-              }
               else {
-                exit = 1;
-              }
-            }
-            else if (c >= 8) {
-              return /* true */1;
-            }
-            else {
-              exit = 1;
-            }
-            if (exit === 1) {
-              if (Caml_string.caml_is_printable(c)) {
                 _i = i + 1 | 0;
                 continue ;
                 
               }
-              else {
-                return /* true */1;
-              }
             }
-            
+            else {
+              return /* true */1;
+            }
           }
         };
       };

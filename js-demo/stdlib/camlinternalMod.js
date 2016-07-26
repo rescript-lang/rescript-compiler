@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./camlinternalOO"],
+define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./camlinternalOO"],
   function(exports, Caml_builtin_exceptions, Caml_obj, CamlinternalOO){
     'use strict';
     function init_mod(loc, shape) {

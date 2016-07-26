@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_int64", "../runtime/caml_format"],
+define(["exports", "./caml_int64", "./caml_format"],
   function(exports, Caml_int64, Caml_format){
     'use strict';
     function succ(n) {

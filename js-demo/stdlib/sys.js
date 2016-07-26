@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_exceptions"],
+define(["exports", "./caml_exceptions"],
   function(exports, Caml_exceptions){
     'use strict';
     var is_js = /* true */1;
@@ -23,24 +22,14 @@ define(["exports", "../runtime/caml_exceptions"],
     
     var interactive = [/* false */0];
     
-    function set_signal(sig_num, sig_beh) {
-      ;
-      return sig_beh;
+    function set_signal(_, _$1) {
+      return /* () */0;
     }
     
     var Break = Caml_exceptions.create("Sys.Break");
     
-    function catch_break(on) {
-      if (on) {
-        -6;
-        return /* Signal_handle */[function () {
-                  throw Break;
-                }];
-      }
-      else {
-        -6;
-        return /* Signal_default */0;
-      }
+    function catch_break() {
+      return /* () */0;
     }
     
     var argv = match_001;

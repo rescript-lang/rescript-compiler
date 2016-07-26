@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_int64", "../runtime/caml_builtin_exceptions", "../runtime/caml_sys", "./pervasives", "./nativeint", "./int32", "./digest", "../runtime/curry", "./int64", "../runtime/caml_array", "./array"],
+define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", "./pervasives", "./nativeint", "./int32", "./digest", "./curry", "./int64", "./caml_array", "./array"],
   function(exports, Caml_int64, Caml_builtin_exceptions, Caml_sys, Pervasives, Nativeint, Int32, Digest, Curry, Int64, Caml_array, $$Array){
     'use strict';
     function new_state() {

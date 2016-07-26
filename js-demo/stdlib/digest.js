@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./pervasives", "./char", "../runtime/caml_md5", "./string", "../runtime/caml_string"],
+define(["exports", "./caml_builtin_exceptions", "./pervasives", "./char", "./caml_md5", "./string", "./caml_string"],
   function(exports, Caml_builtin_exceptions, Pervasives, Char, Caml_md5, $$String, Caml_string){
     'use strict';
     function string(str) {

@@ -140,16 +140,3 @@ function onEditChanges(cm, change) {
 myCode1Mirror.on("changes", onEditChanges);
 
 jsCode1Mirror.setSize(null,codeMirrorDefaultHeight);
-
-//var editor = CodeMirror.fromTextArea(document.getElementById('ocamlCode'), {
-//    mode: 'text/x-ocaml',
-//    lineNumbers: true,
-//    matchBrackets: true
-//})
-
-//var jseditor = CodeMirror(document.getElementById('jsoutput')
-//        ,
-//        {
-//    mode: 'javascript',
-//    value: "var x= 3"
-//})

@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./pervasives", "../runtime/caml_lexer", "./sys", "../runtime/curry", "../runtime/caml_string"],
+define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./caml_lexer", "./sys", "./curry", "./caml_string"],
   function(exports, Bytes, Caml_builtin_exceptions, Pervasives, Caml_lexer, Sys, Curry, Caml_string){
     'use strict';
     function engine(tbl, state, buf) {

@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_sys", "./pervasives", "../runtime/block", "./sys", "../runtime/curry", "../runtime/caml_array", "./array", "../runtime/caml_string", "../runtime/caml_hash", "./random"],
+define(["exports", "./bytes", "./caml_obj", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sys", "./pervasives", "./block", "./sys", "./curry", "./caml_array", "./array", "./caml_string", "./caml_hash", "./random"],
   function(exports, Bytes, Caml_obj, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Block, Sys, Curry, Caml_array, $$Array, Caml_string, Caml_hash, Random){
     'use strict';
     function hash(x) {

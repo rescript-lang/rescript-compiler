@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./marshal"],
+define(["exports", "./caml_builtin_exceptions", "./marshal"],
   function(exports, Caml_builtin_exceptions, Marshal){
     'use strict';
     function double_field(x, i) {

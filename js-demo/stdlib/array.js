@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_exceptions", "../runtime/curry", "../runtime/caml_array"],
+define(["exports", "./caml_builtin_exceptions", "./caml_exceptions", "./curry", "./caml_array"],
   function(exports, Caml_builtin_exceptions, Caml_exceptions, Curry, Caml_array){
     'use strict';
     function init(l, f) {

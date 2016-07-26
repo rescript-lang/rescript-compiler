@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_sys", "./pervasives", "../runtime/block", "../runtime/curry", "./printf", "./buffer", "./string", "./random"],
+define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sys", "./pervasives", "./block", "./curry", "./printf", "./buffer", "./string", "./random"],
   function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Block, Curry, Printf, Buffer, $$String, Random){
     'use strict';
     function generic_basename(is_dir_sep, current_dir_name, name) {

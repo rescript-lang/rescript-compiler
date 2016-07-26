@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_string"],
+define(["exports", "./caml_builtin_exceptions", "./caml_string"],
   function(exports, Caml_builtin_exceptions, Caml_string){
     'use strict';
     function to_buffer(buff, ofs, len, _, _$1) {

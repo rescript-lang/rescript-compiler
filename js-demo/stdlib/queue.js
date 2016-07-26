@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_exceptions", "../runtime/curry"],
+define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
   function(exports, Caml_obj, Caml_exceptions, Curry){
     'use strict';
     var Empty = Caml_exceptions.create("Queue.Empty");

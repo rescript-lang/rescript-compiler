@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./pervasives", "../runtime/curry", "./buffer", "./camlinternalFormat"],
+define(["exports", "./pervasives", "./curry", "./buffer", "./camlinternalFormat"],
   function(exports, Pervasives, Curry, Buffer, CamlinternalFormat){
     'use strict';
     function kfprintf(k, o, param) {
@@ -24,20 +23,20 @@ define(["exports", "./pervasives", "../runtime/curry", "./buffer", "./camlintern
     }
     
     function fprintf(oc, fmt) {
-      return kfprintf(function (prim) {
-                  return prim;
+      return kfprintf(function () {
+                  return /* () */0;
                 }, oc, fmt);
     }
     
     function bprintf(b, fmt) {
-      return kbprintf(function (prim) {
-                  return prim;
+      return kbprintf(function () {
+                  return /* () */0;
                 }, b, fmt);
     }
     
     function ifprintf(oc, fmt) {
-      return ikfprintf(function (prim) {
-                  return prim;
+      return ikfprintf(function () {
+                  return /* () */0;
                 }, oc, fmt);
     }
     

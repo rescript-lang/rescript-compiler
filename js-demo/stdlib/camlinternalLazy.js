@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./obj", "../runtime/caml_exceptions", "../runtime/curry"],
+define(["exports", "./obj", "./caml_exceptions", "./curry"],
   function(exports, Obj, Caml_exceptions, Curry){
     'use strict';
     var Undefined = Caml_exceptions.create("CamlinternalLazy.Undefined");

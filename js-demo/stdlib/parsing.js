@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_parser", "../runtime/caml_exceptions", "./lexing", "../runtime/curry", "../runtime/caml_array", "./array"],
+define(["exports", "./caml_obj", "./caml_parser", "./caml_exceptions", "./lexing", "./curry", "./caml_array", "./array"],
   function(exports, Caml_obj, Caml_parser, Caml_exceptions, Lexing, Curry, Caml_array, $$Array){
     'use strict';
     var YYexit = Caml_exceptions.create("Parsing.YYexit");

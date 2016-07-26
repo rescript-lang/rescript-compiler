@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./bytes", "../runtime/caml_exceptions", "./pervasives", "../runtime/caml_format", "../runtime/block", "./sys", "../runtime/curry", "./printf", "./buffer", "./string", "./list", "../runtime/caml_string"],
+define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml_exceptions", "./pervasives", "./caml_format", "./block", "./sys", "./curry", "./printf", "./buffer", "./string", "./list", "./caml_string"],
   function(exports, Caml_obj, Caml_builtin_exceptions, Bytes, Caml_exceptions, Pervasives, Caml_format, Block, Sys, Curry, Printf, Buffer, $$String, List, Caml_string){
     'use strict';
     var Bad = Caml_exceptions.create("Arg.Bad");

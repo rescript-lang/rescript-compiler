@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_string"],
+define(["exports", "./caml_builtin_exceptions", "./caml_string"],
   function(exports, Caml_builtin_exceptions, Caml_string){
     'use strict';
     function chr(n) {
@@ -17,59 +16,65 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_string
     
     function escaped(c) {
       var exit = 0;
-      if (c !== 39) {
+      if (c >= 40) {
         if (c !== 92) {
-          if (c >= 14) {
-            exit = 1;
-          }
-          else {
-            switch (c) {
-              case 8 : 
-                  return "\\b";
-              case 9 : 
-                  return "\\t";
-              case 10 : 
-                  return "\\n";
-              case 0 : 
-              case 1 : 
-              case 2 : 
-              case 3 : 
-              case 4 : 
-              case 5 : 
-              case 6 : 
-              case 7 : 
-              case 11 : 
-              case 12 : 
-                  exit = 1;
-                  break;
-              case 13 : 
-                  return "\\r";
-              
-            }
-          }
+          exit = c >= 127 ? 1 : 2;
         }
         else {
           return "\\\\";
         }
       }
-      else {
-        return "\\'";
-      }
-      if (exit === 1) {
-        if (Caml_string.caml_is_printable(c)) {
-          return Caml_string.caml_string_of_char_array(/* int array */[c]);
+      else if (c >= 32) {
+        if (c >= 39) {
+          return "\\'";
         }
         else {
-          var n = c;
-          return Caml_string.caml_string_of_char_array(/* int array */[
-                      /* "\\" */92,
-                      48 + (n / 100 | 0) | 0,
-                      48 + (n / 10 | 0) % 10 | 0,
-                      48 + n % 10 | 0
-                    ]);
+          exit = 2;
         }
       }
-      
+      else if (c >= 14) {
+        exit = 1;
+      }
+      else {
+        switch (c) {
+          case 8 : 
+              return "\\b";
+          case 9 : 
+              return "\\t";
+          case 10 : 
+              return "\\n";
+          case 0 : 
+          case 1 : 
+          case 2 : 
+          case 3 : 
+          case 4 : 
+          case 5 : 
+          case 6 : 
+          case 7 : 
+          case 11 : 
+          case 12 : 
+              exit = 1;
+              break;
+          case 13 : 
+              return "\\r";
+          
+        }
+      }
+      switch (exit) {
+        case 1 : 
+            var n = c;
+            var s = new Array(4);
+            s[0] = /* "\\" */92;
+            s[1] = 48 + (n / 100 | 0) | 0;
+            s[2] = 48 + (n / 10 | 0) % 10 | 0;
+            s[3] = 48 + n % 10 | 0;
+            return Caml_string.bytes_to_string(s);
+        case 2 : 
+            var s$1 = new Array(1);
+            s$1[0] = c;
+            return Caml_string.bytes_to_string(s$1);
+        
+      }
     }
     
     function lowercase(c) {

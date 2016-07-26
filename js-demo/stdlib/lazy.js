@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "./obj", "./camlinternalLazy", "../runtime/block"],
+define(["exports", "./caml_obj", "./obj", "./camlinternalLazy", "./block"],
   function(exports, Caml_obj, Obj, CamlinternalLazy, Block){
     'use strict';
     function from_fun(f) {

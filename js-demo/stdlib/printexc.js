@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "./obj", "./pervasives", "../runtime/caml_backtrace", "../runtime/block", "../runtime/curry", "./printf", "./array", "./buffer"],
+define(["exports", "./caml_builtin_exceptions", "./caml_io", "./obj", "./pervasives", "./caml_backtrace", "./block", "./curry", "./printf", "./array", "./buffer"],
   function(exports, Caml_builtin_exceptions, Caml_io, Obj, Pervasives, Caml_backtrace, Block, Curry, Printf, $$Array, Buffer){
     'use strict';
     var printers = [/* [] */0];

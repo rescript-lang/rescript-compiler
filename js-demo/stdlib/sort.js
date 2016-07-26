@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/curry"],
+define(["exports", "./caml_builtin_exceptions", "./curry"],
   function(exports, Caml_builtin_exceptions, Curry){
     'use strict';
     function merge(order, l1, l2) {

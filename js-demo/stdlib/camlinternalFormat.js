@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "../runtime/caml_io", "../runtime/caml_float", "./pervasives", "../runtime/caml_exceptions", "../runtime/caml_format", "../runtime/caml_int32", "../runtime/block", "./char", "./sys", "../runtime/curry", "./camlinternalFormatBasics", "./buffer", "./string", "../runtime/caml_string"],
+define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./caml_float", "./pervasives", "./caml_exceptions", "./caml_format", "./caml_int32", "./block", "./char", "./sys", "./curry", "./camlinternalFormatBasics", "./buffer", "./string", "./caml_string"],
   function(exports, Bytes, Caml_builtin_exceptions, Caml_obj, Caml_io, Caml_float, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Char, Sys, Curry, CamlinternalFormatBasics, Buffer, $$String, Caml_string){
     'use strict';
     function create_char_set() {
@@ -5810,7 +5809,8 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "../runtime/
         else if (fmt.tag === 11) {
           if (typeof fmt[1] === "number") {
             try {
-              return open_box_of_string(fmt[0]);
+              open_box_of_string(fmt[0]);
+              return /* () */0;
             }
             catch (exn){
               if (exn[0] === Caml_builtin_exceptions.failure) {

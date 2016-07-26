@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/block"],
+define(["exports", "./block"],
   function(exports, Block){
     'use strict';
     function erase_rel(param) {

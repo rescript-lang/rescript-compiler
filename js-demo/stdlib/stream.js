@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_exceptions", "./pervasives", "../runtime/block", "../runtime/curry", "./list"],
+define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_exceptions", "./pervasives", "./block", "./curry", "./list"],
   function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_exceptions, Pervasives, Block, Curry, List){
     'use strict';
     var Failure = Caml_exceptions.create("Stream.Failure");

@@ -1,6 +1,5 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "../runtime/caml_io", "../runtime/caml_exceptions", "../runtime/caml_format", "../runtime/curry", "./camlinternalFormatBasics", "../runtime/caml_string"],
+define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./caml_exceptions", "./caml_format", "./curry", "./camlinternalFormatBasics", "./caml_string"],
   function(exports, Caml_builtin_exceptions, Caml_obj, Caml_io, Caml_exceptions, Caml_format, Curry, CamlinternalFormatBasics, Caml_string){
     'use strict';
     function failwith(s) {
@@ -50,9 +49,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
       return x ^ -1;
     }
     
-    var max_int = 2147483647;
-    
-    var min_int = max_int + 1 | 0;
+    var min_int = -2147483648;
     
     function $caret(a, b) {
       return a + b;
@@ -539,6 +536,8 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
                 throw "caml_sys_exit not implemented by bucklescript yet\n";
               }();
     }
+    
+    var max_int = 2147483647;
     
     var infinity = Infinity;
     
