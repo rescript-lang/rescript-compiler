@@ -19,11 +19,11 @@ let f2 = (+) 3
 let g = f 3 4 
 
 
-external ext  : int -> int -> int = "test_primit"[@@bs.call "test_primit"] [@@bs.module "U"]
+external ext  : int -> int -> int = "test_primit"[@@bs.val "test_primit"] [@@bs.module "U"]
 
 let ff = ext 3 
 type u = int -> int 
-external ext  : int -> u  = "test_primit2" [@@bs.call "test_primit2"][@@bs.module "VV"]
+external ext  : int -> u  = "test_primit2" [@@bs.val "test_primit2"][@@bs.module "VV"]
 let fff = ext 3  
 
 let rec length_aux len = function

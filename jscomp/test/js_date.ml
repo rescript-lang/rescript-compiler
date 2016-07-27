@@ -103,17 +103,17 @@ class type date =
 type t = date Js.t 
 
 external current_date_as_string : unit -> string = "" 
-  [@@bs.call "Date"] [@@bs.nullary]
+  [@@bs.val "Date"] [@@bs.nullary]
 (* Note here [Date(0)] is the same as [Date()], 
    but this is not always true
 *)
 
 
 external parse : string -> number = ""
-  [@@bs.call "Date.parse"]
+  [@@bs.val "Date.parse"]
 
 external now : unit -> number = ""
-  [@@bs.call "Date.now"]
+  [@@bs.val "Date.now"]
 
 external current : unit -> t = "Date"
   [@@bs.new ] [@@bs.nullary]
@@ -124,17 +124,17 @@ external of_string : string -> t = "Date"
 
 external utc_of_y_m :   
   year:number -> month:number -> unit -> number = ""
-  [@@bs.call "Date.UTC"]
+  [@@bs.val "Date.UTC"]
 
 external utc_of_y_m_d :  
   year:number -> month:number -> day:number ->   unit -> number = ""
-  [@@bs.call "Date.UTC"]
+  [@@bs.val "Date.UTC"]
 
 external utc_of_y_m_d_h :  
   year:number -> month:number -> 
   day:number -> hour:number ->
   unit -> number = ""
-  [@@bs.call "Date.UTC"]
+  [@@bs.val "Date.UTC"]
 
 
 external utc_of_y_m_d_h_m :
@@ -142,7 +142,7 @@ external utc_of_y_m_d_h_m :
   day:number -> hour:number ->
   minute:number -> 
   unit -> number = ""
-  [@@bs.call "Date.UTC"]
+  [@@bs.val "Date.UTC"]
 
 
 external utc_of_y_m_d_h_m_s :
@@ -150,14 +150,14 @@ external utc_of_y_m_d_h_m_s :
   day:number -> hour:number ->
   minute:number -> second:number -> 
   unit -> number = ""
-  [@@bs.call "Date.UTC"]
+  [@@bs.val "Date.UTC"]
 
 external utc_of_y_m_d_h_m_s_m :
   year:number -> month:number -> 
   day:number -> hour:number  -> 
   minute:number  -> second:number  ->
   millisecond:number -> unit -> t = ""
-  [@@bs.call "Date.UTC"]
+  [@@bs.val "Date.UTC"]
 
 
 external of_y_m:   year:number -> month:number -> unit -> t = "Date"

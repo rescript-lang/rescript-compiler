@@ -1,6 +1,6 @@
 
 
-external f : int -> int = "xx" [@@bs.call ]
+external f : int -> int = "xx" [@@bs.val ]
 
 
 let u () = f 3 

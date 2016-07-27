@@ -1,4 +1,4 @@
-external log : 'a -> unit = "" [@@bs.call "console.log"]
+external log : 'a -> unit = "" [@@bs.val "console.log"]
 let u = object
   method hi v z = v + z
   method id1 = 3

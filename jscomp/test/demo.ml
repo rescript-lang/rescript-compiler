@@ -26,10 +26,10 @@ external stringify : 'a -> string = ""
     [@@bs.new "String"] 
 
 external random : unit -> float = ""
-    [@@bs.call "Math.random"] 
+    [@@bs.val "Math.random"] 
 
 external array_map : 'a array -> ('a -> 'b [@bs]) -> 'b array = ""
-    [@@bs.call"Array.prototype.map.call"] 
+    [@@bs.val"Array.prototype.map.call"] 
 
 type env 
 external mk_bid_ask : bid:float -> ask:float -> env = "" [@@bs.obj]  

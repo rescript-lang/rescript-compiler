@@ -14,7 +14,7 @@ let s =
      ("3",'b');
      ("7",'c');
      ("20",'d') ]
-external log : 'a -> unit = "" [@@bs.call "console.log"]
+external log : 'a -> unit = "" [@@bs.val "console.log"]
 
 ;; Mt.from_pair_suites __FILE__ @@ [
                                   "int",  (fun _ -> 

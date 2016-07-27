@@ -8,7 +8,7 @@ let m = List.fold_left (fun acc (k,v) -> IntMap.add k v  acc ) empty [(10,'a'); 
 
 
 
-(* external log : 'a -> unit = "" [@@bs.call "console.log"] *)
+(* external log : 'a -> unit = "" [@@bs.val "console.log"] *)
 
 let assert_test () = 
   begin

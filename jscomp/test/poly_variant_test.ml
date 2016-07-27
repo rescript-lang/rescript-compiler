@@ -23,12 +23,12 @@ type u = [`on_closed | `on_open | `in_ [@bs.as "in"]]
 external test_string_type : 
   ([`on_closed | `on_open | `in_ [@bs.as "in"]]
                 [@bs.string]) -> int  = 
-  "hey_string" [@@bs.call]
+  "hey_string" [@@bs.val]
 
 external test_int_type : 
   ([`on_closed | `on_open [@bs.as 3] | `in_ ]
                 [@bs.int])  -> int  = 
-  "hey_int" [@@bs.call]
+  "hey_int" [@@bs.val]
 
 let uu =
   [| test_string_type `on_open; test_string_type `on_closed; test_string_type `in_ |]
@@ -75,14 +75,23 @@ external on2 :
 
 external readFileSync :
   string -> ([`utf8 | `ascii] [@bs.string]) ->
-  string = "readFileSync"
-  [@@bs.call]
+  string = ""
+  [@@bs.val]
   [@@bs.module "fs"]
 
 let read name = 
   readFileSync name `utf8
 
+module N = struct
+  external readFileSync :
+    string -> ([`utf8 | `ascii] [@bs.string]) ->
+    string = ""
+      [@@bs.module "fs"]
+  let read name = 
+    readFileSync name `utf8
 
+end  
+let readN = N.read
 (**
 let register readline = 
   readline 

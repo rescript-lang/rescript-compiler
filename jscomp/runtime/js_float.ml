@@ -30,24 +30,24 @@ external to_fixed : float -> int -> string = "toFixed"
     [@@bs.send]
 
 external is_finite : float -> bool = "isFinite"
-    [@@bs.call ]
+    [@@bs.val ]
 
 external is_nan : float -> bool = "isNaN"
-    [@@bs.call ] 
+    [@@bs.val ] 
 
 external exp : float -> float = "Math.exp"
-    [@@bs.call ]
+    [@@bs.val ]
 
 external log : float -> float = "Math.log"
-    [@@bs.call ]
+    [@@bs.val ]
 
 external to_exponential : float -> prec:int ->  string = "toExponential"
     [@@bs.send]
 
 external log2 : float = "Math.LN2" [@@ bs.val ]  
 external max : float -> float -> float = "Math.max" 
-    [@@bs.call]
+    [@@bs.val]
 external random : unit -> float = "Math.random"
-    [@@bs.call ]
+    [@@bs.val ]
 external of_any : 'a -> float = "js_anything_to_number"
 

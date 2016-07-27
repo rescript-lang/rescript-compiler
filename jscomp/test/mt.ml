@@ -2,23 +2,23 @@
 
 
 external describe : string -> ((unit -> unit)[@bs.nullary]) -> unit = "describe"
-    [@@bs.call]
+    [@@bs.val]
 
 external it : string -> (unit -> unit) -> unit = "it" 
-    [@@bs.call ]
+    [@@bs.val ]
 
 external eq : 'a -> 'a -> unit = "deepEqual"
-    [@@bs.call ]
+    [@@bs.val ]
     [@@bs.module "assert"]
 
 external neq : 'a -> 'a -> unit = "notDeepEqual"
-    [@@bs.call ]
+    [@@bs.val ]
     [@@bs.module "assert"]
 
 
 
-external dump : 'a array -> unit = "console.log" [@@bs.call ] [@@bs.splice]
-external throws : (unit -> unit) -> unit = "throws" [@@bs.call] [@@bs.module "assert"]
+external dump : 'a array -> unit = "console.log" [@@bs.val ] [@@bs.splice]
+external throws : (unit -> unit) -> unit = "throws" [@@bs.val] [@@bs.module "assert"]
 (** There is a problem --
     it does not return [unit ]
  *)

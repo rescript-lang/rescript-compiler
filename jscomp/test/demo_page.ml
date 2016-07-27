@@ -74,10 +74,10 @@ external div : vdom -> ?attrs:attrs -> component array ->  component = "div"
 
 external createClass :
       config -> component_class = "createClass"
-        [@@bs.call "createClass"]
+        [@@bs.val "createClass"]
         [@@bs.module "react"]
 external render : component_class -> element -> unit = ""
-    [@@bs.call "render"]
+    [@@bs.val "render"]
     [@@bs.module "react-dom"]
 ;;
 (** Do the rendering *)

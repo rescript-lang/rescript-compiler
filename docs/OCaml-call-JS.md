@@ -30,18 +30,18 @@ provide customized attributes.
 
 ### Attributes
 
-* `bs.call`
+* `bs.val`
 
   Example 
 
   ```ocaml
-  external imul : int -> int -> int = "Math.imul" [@@bs.call]
+  external imul : int -> int -> int = "Math.imul" [@@bs.val]
   ```
 > Note that if you want to make a single FFI for both C functions and JavaScript functions, you can 
  give the JavaScript foreign function a different name:
 
   ```ocaml
-  external imul : int -> int -> int = "c_imul" [@@bs.call "Math.imul"]
+  external imul : int -> int -> int = "c_imul" [@@bs.val "Math.imul"]
   ```
 
 * `bs.new`
@@ -117,7 +117,7 @@ provide customized attributes.
    Qualify the JavaScript value by a module name
 
    ```OCaml
-   external add : int -> int -> int = "add" [@@bs.call] [@@bs.module "x"]
+   external add : int -> int -> int = "add" [@@bs.val] [@@bs.module "x"]
    let f = add 3 4
    ```
    will be compiled as 
@@ -128,7 +128,7 @@ provide customized attributes.
    ```
 
    ```OCaml
-   external add : int -> int -> int = "add" [@@bs.call] [@@bs.module "x" "U"]
+   external add : int -> int -> int = "add" [@@bs.val] [@@bs.module "x" "U"]
    let f = add 3 4
    ```
    Will be compiled as
@@ -157,7 +157,7 @@ function map (a, b, f){
 A naive external type declaration would be as below:
 
 ```ocaml
-external map : 'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array = "map" [@@bs.call]
+external map : 'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array = "map" [@@bs.val]
 ```
 
 Unfortunately, this is not completely correct. The issue is by 
@@ -215,7 +215,7 @@ support a special attribute `[@bs]` at the type level.
 
 ```ocaml
 external map : 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
-= "map" [@@bs.call]
+= "map" [@@bs.val]
 ```
 
 Here `('a -> 'b -> 'c [@bs])` will *always be of arity 2*, in general 
@@ -729,8 +729,8 @@ Below is a simple example for [mocha](https://mochajs.org/) library. For more ex
    This is an example showing how too provide bindings to the [mochajs](https://mochajs.org/) unit test framework.
 
    ```OCaml
-   external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.call]
-   external it : string -> (unit -> unit [@bs]) -> unit = "it" [@@bs.call "it"]
+   external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.val]
+   external it : string -> (unit -> unit [@bs]) -> unit = "it" [@@bs.val "it"]
    ```
 
    Since, `mochajs` is a test framework, we also need some assertion
@@ -738,7 +738,7 @@ Below is a simple example for [mocha](https://mochajs.org/) library. For more ex
    nodejs `assert` library:
 
    ```ocaml
-   external eq : 'a -> 'a -> unit = "deepEqual"  [@@bs.call] [@@bs.module "assert"]
+   external eq : 'a -> 'a -> unit = "deepEqual"  [@@bs.call] [@@bs.val "assert"]
    ```
 
 On top of this we can write normal OCaml functions, for example:
