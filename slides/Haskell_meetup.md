@@ -16,7 +16,7 @@ July 27, 2016
 - Readable JavaScript backend for OCaml
 - *module to module* compiler
 - *Seamless integration* with existing JS libraries
-- Works with multiple front-end: vanilla OCaml and [Facebook Reason](https://facebook.github.io/reason/)
+- Works with multiple front-end: vanilla OCaml and [Reason](https://facebook.github.io/reason/)
 
 
 ---
@@ -48,13 +48,16 @@ July 27, 2016
   
 ---
 
-# R & B (Facebook Reason & Bloomberg BuckleScript)
+# R & B ( Reason & BuckleScript)
+
+- Growing support to make OCaml more JavaScript friendly
 
 - Reason is a new interface to OCaml created by the same people who
   created ReactJS, ReactNative
+
 - It provides a Javascript like syntax and toolchain for editing, building, and sharing code
-- Facebook uses OCaml a lot in its infrastructure: Flow JS type checker, Infer static analyzer, and Hack compiler, etc
-- [It works with Bloomberg's BuckleScript nicely](http://bloomberg.github.io/bucklescript/reason-demo/)
+
+- [It works with BuckleScript nicely](http://bloomberg.github.io/bucklescript/reason-demo/)
 
 ---
 
@@ -98,7 +101,7 @@ test(/* () */0);
 # Comparison with hand-written JS
 
 ```js
-// Immutable map from Facebook immutable library
+// Immutable map from  immutablejs library
 
 'use strict';
 var Immutable = require('immutable');
@@ -120,7 +123,7 @@ Runtime performance of identical functionality:
 | Technology   |  Time(ms) | Code Size  |
 |--------------|----------| -----------|
 | OCaml with Javascript Backend   |1186ms (Google Closure bundler: simple mode) |   1 KB | 
-| Handwritten Facebook Javascript  |3415ms |  55.3 KBytes|
+| Handwritten  Javascript  |3415ms |  55.3 KBytes|
 
 ---
 
@@ -336,7 +339,7 @@ https://github.com/bloomberg/bucklescript-addons/tree/master/examples/node-http-
 
 
 - Elm/PureScript:
-  - Both generates readable code and support strutural types
+  - Both generate readable code and support structural types
   - PuresScript is pure, while OCaml allows both imperative style and
     OO style and also OO FFI
   - BuckleScript have *different backends* and frontends
@@ -356,7 +359,7 @@ https://github.com/bloomberg/bucklescript-addons/tree/master/examples/node-http-
 - Reaches 1.0 soon!
 - Testing
 - Bindings to existing JS libraries (using typescript compiler API or
-  Facebook Flow type checker  (also written in OCaml))
+   Flow type checker  (also written in OCaml))
 - Better integration with Reason and its tool chain
 - Documentation and tutorials
 - More Optimizations
