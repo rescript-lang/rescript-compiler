@@ -4,7 +4,7 @@ let to_array q =
   let v = Array.make (Queue.length q ) 0 in
   ignore @@ Queue.fold (fun i e -> v.(i)<-e; i + 1 ) 0 q ; 
   v
-external dump : 'a array -> unit = "" [@@bs.call "console.log"] [@@bs.splice]
+external dump : 'a array -> unit = "" [@@bs.val "console.log"] [@@bs.splice]
 
 let queue_1 x =
   let q = Queue.create () in

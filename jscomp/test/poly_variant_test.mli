@@ -3,11 +3,11 @@
 
 external test_string_type : ([`on_closed | `on_open | `in_ [@bs.as "in"]]
                 [@bs.string]) -> int  = 
-  "hey_string" [@@bs.call]
+  "hey_string" [@@bs.val]
 
 external test_int_type : ([`on_closed | `on_open [@bs.as 3] | `in_   ]
                 [@bs.int]) -> int  = 
-  "hey_int" [@@bs.call]
+  "hey_int" [@@bs.val]
 
 val uu : int array
 val vv : int array

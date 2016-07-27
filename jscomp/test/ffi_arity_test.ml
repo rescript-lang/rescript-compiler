@@ -3,8 +3,8 @@
 external map : 'a array -> ('a -> 'b [@bs])  -> 'b array = "map" [@@bs.send]
 external mapi : 'a array -> ('a -> int -> 'b [@bs])  -> 'b array = "map" [@@bs.send]
 
-external parseInt : string -> int = "parseInt" [@@bs.call]
-external parseInt_radix : string -> int -> int = "parseInt" [@@bs.call]
+external parseInt : string -> int = "parseInt" [@@bs.val]
+external parseInt_radix : string -> int -> int = "parseInt" [@@bs.val]
 
 let f v = 
   if v mod 2 = 0 then 

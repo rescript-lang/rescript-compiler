@@ -42,7 +42,7 @@ let u h = max2 3. h [@bs]
 let max3 = ([%bs.raw "Math.max"] :  float * float -> float [@bs])
 let uu h = max2 3. h [@bs]
     
-external test : int -> int -> int = "" [@@bs.call "$$test"]
+external test : int -> int -> int = "" [@@bs.val "$$test"]
 
 let empty = ([%bs.raw {| Object.keys|} ] :  _ -> string array [@bs]) 3 [@bs]
 

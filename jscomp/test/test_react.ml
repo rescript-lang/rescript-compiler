@@ -23,7 +23,7 @@ let v = console##log "hey";;
 let u = console
 let v = doc##getElementById "haha"
 
-external log : 'a -> unit = "" [@@bs.call "console.log"]
+external log : 'a -> unit = "" [@@bs.val "console.log"]
 let v = log 32
 type t 
 type element
@@ -78,11 +78,11 @@ external div : vdom -> ?attrs:attrs -> component array ->  component = "div"
 type component_class
 external createClass : 
       config -> component_class = "createClass" 
-        [@@bs.call "createClass"]
+        [@@bs.val "createClass"]
         [@@bs.module "react"]
 
 external render : component_class -> element -> unit = "" 
-    [@@bs.call "render"]
+    [@@bs.val "render"]
     [@@bs.module "react-dom"] (* TODO: error checking -- attributes todo*)
 ;;
 

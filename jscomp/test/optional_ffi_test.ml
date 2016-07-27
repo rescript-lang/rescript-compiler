@@ -13,7 +13,7 @@ function hey(x, y) {
   }
 |}
 ]
-external xx : ?x:int -> y:int -> unit -> int  = "hey" [@@bs.call]
+external xx : ?x:int -> y:int -> unit -> int  = "hey" [@@bs.val]
 
 let u = xx ~y:3 ()
 
@@ -50,7 +50,7 @@ function heystr(x, y) {
   }
   |}]
 
-external kk : ?name:string -> string -> string = "heystr" [@@bs.call]
+external kk : ?name:string -> string -> string = "heystr" [@@bs.val]
 
 let () = 
   let pair = ("name4", kk ~name:"name" "4") in

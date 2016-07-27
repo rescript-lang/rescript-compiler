@@ -32,7 +32,7 @@ external string_of_char : char -> string = "js_string_of_char"
 *)
 
 external of_char : char -> string = "String.fromCharCode" 
-    [@@bs.call] 
+    [@@bs.val] 
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
 external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]

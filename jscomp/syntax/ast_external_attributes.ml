@@ -193,6 +193,7 @@ let handle_attributes
         if String.length prim_name = 0 then Some pval_prim
         else Some prim_name  (* need check name *)
     in 
+    let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
     let st = 
       List.fold_left 
         (fun 
@@ -210,8 +211,13 @@ let handle_attributes
                      [@@bs.value] [@@bs.module]
                    ]}
                 *)
-
-                {st with val_name = name_from_payload_or_prim payload}
+                begin match arg_types with 
+                | [] -> 
+                  {st with val_name = name_from_payload_or_prim payload}
+                | _ -> 
+                  {st with call_name = name_from_payload_or_prim payload}
+                end
+              (* | "bs.val" -> {st with call_name = name_from_payload_or_prim payload} *)
               | "bs.val_of_module"
                 -> { st with
                      val_of_module = 
@@ -223,7 +229,7 @@ let handle_attributes
               | "bs.set" -> 
                 {st with set_name = name_from_payload_or_prim payload}
               | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
-              | "bs.call" -> {st with call_name = name_from_payload_or_prim payload}
+
               | "bs.module" -> 
                 let external_module_name = 
                   begin match Ast_payload.is_string_or_strings payload with 
@@ -241,7 +247,7 @@ let handle_attributes
             end
         )
          init_st prim_attributes in 
-    let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
+
     let aux ty = 
       if Ast_core_type.is_array ty then `Array
       else if Ast_core_type.is_unit ty then `Unit
