@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/26-10:51 *)
+(** Bundled by ocaml_pack 07/27-13:21 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1177,6 +1177,7 @@ type t = Parsetree.core_type
 
 
 val list_of_arrow : t -> t * (string * t ) list 
+val replace_result : t -> t -> t
 
 val is_unit : t -> bool 
 val is_array : t -> bool 
@@ -1232,6 +1233,17 @@ let list_of_arrow (ty : t) =
       aux ty acc 
     | return_type -> ty, List.rev acc
   in aux ty []
+
+let replace_result ty result = 
+  let rec aux (ty : Parsetree.core_type) = 
+    match ty with 
+    | { ptyp_desc = 
+          Ptyp_arrow (label,t1,t2)
+      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
+    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
+    | _ -> result in 
+  aux ty 
 
 let is_unit (ty : t ) = 
   match ty.ptyp_desc with 
@@ -2948,7 +2960,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.8.6"
+let version = "0.8.7"
 
 
 let runtime_set = 
@@ -3443,7 +3455,12 @@ type prim =  Primitive.description
 
 
 
-val handle_attributes : Parsetree.core_type  -> Ast_attributes.t -> string -> t
+
+val handle_attributes_as_string : 
+  Bs_loc.t ->
+  string  ->
+  Parsetree.core_type -> Ast_attributes.t -> 
+  string   -> string list
 
 val bs_external : string 
 val to_string : t -> string 
@@ -3619,21 +3636,43 @@ type t  =
   | Normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
-let handle_attributes (type_annotation : Parsetree.core_type)
+let bs_external = "BS_EXTERN:" ^ Js_config.version
+
+let bs_external_length = (String.length bs_external)
+
+let is_bs_external_prefix s = 
+  Ext_string.starts_with s bs_external
+
+let to_string  t = 
+  bs_external ^ Marshal.to_string t []
+let unsafe_from_string s = 
+    Marshal.from_string  s bs_external_length 
+let from_string s : t  = 
+  if is_bs_external_prefix s then 
+    Marshal.from_string  s (String.length bs_external)
+  else Ext_pervasives.failwithf ~loc:__LOC__
+      "compiler version mismatch, please do a clean build" 
+
+
+let handle_attributes 
+    (loc : Bs_loc.t)
+    (pval_prim : string ) 
+    (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string) = 
     let name_from_payload_or_prim payload = 
       match Ast_payload.is_single_string payload with 
       | Some _ as val_name ->  val_name
-      | None -> Some prim_name  (* need check name *)
+      | None -> 
+        if String.length prim_name = 0 then Some pval_prim
+        else Some prim_name  (* need check name *)
     in 
-    let loc_start, loc_end,  st = 
+    let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
+    let st = 
       List.fold_left 
         (fun 
-          (loc_start, loc_end, st)
+          ( st)
           (({txt ; loc}, payload) : Ast_attributes.attr) 
           ->  
-            (if Bs_loc.is_ghost loc_start then loc else loc_start) ,
-            (if not @@ Bs_loc.is_ghost loc then loc else loc_end),
             begin match txt with 
               | "bs.val" ->  
                 (* can be generalized into 
@@ -3645,8 +3684,13 @@ let handle_attributes (type_annotation : Parsetree.core_type)
                      [@@bs.value] [@@bs.module]
                    ]}
                 *)
-
-                {st with val_name = name_from_payload_or_prim payload}
+                begin match arg_types with 
+                | [] -> 
+                  {st with val_name = name_from_payload_or_prim payload}
+                | _ -> 
+                  {st with call_name = name_from_payload_or_prim payload}
+                end
+              (* | "bs.val" -> {st with call_name = name_from_payload_or_prim payload} *)
               | "bs.val_of_module"
                 -> { st with
                      val_of_module = 
@@ -3658,7 +3702,7 @@ let handle_attributes (type_annotation : Parsetree.core_type)
               | "bs.set" -> 
                 {st with set_name = name_from_payload_or_prim payload}
               | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
-              | "bs.call" -> {st with call_name = name_from_payload_or_prim payload}
+
               | "bs.module" -> 
                 let external_module_name = 
                   begin match Ast_payload.is_string_or_strings payload with 
@@ -3675,9 +3719,8 @@ let handle_attributes (type_annotation : Parsetree.core_type)
               | _ -> st (* warning*)
             end
         )
-        (Bs_loc.none, Bs_loc.none, init_st) prim_attributes in 
-    let loc = Bs_loc.merge loc_start loc_end in
-    let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
+         init_st prim_attributes in 
+
     let aux ty = 
       if Ast_core_type.is_array ty then `Array
       else if Ast_core_type.is_unit ty then `Unit
@@ -3700,6 +3743,8 @@ let handle_attributes (type_annotation : Parsetree.core_type)
             -> `Optional (Lam_methname.translate ~loc name)
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
           arg_types in
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.obj] except empty name";
         Obj_create labels(* Need fetch label here, for better error message *)
       | {set_index = true} 
         ->
@@ -3715,7 +3760,7 @@ let handle_attributes (type_annotation : Parsetree.core_type)
           Js_get_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
         end
-      | {val_of_module = Some v } -> Js_global_as_var v 
+      | {val_of_module = Some v } -> Js_global_as_var v
       | {call_name = Some name ;
          splice; 
          external_module_name;
@@ -3750,6 +3795,29 @@ let handle_attributes (type_annotation : Parsetree.core_type)
         Js_global {txt = name; external_module_name}
       | {val_name = Some _ }
         -> Location.raise_errorf ~loc "conflict attributes found"
+      | {splice ;
+         external_module_name = (Some _ as external_module_name);
+
+         val_name = None ;         
+         call_name = None ;
+         val_of_module = None;
+         val_send = None ;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None 
+
+        }
+        ->
+        let name =
+          if String.length prim_name = 0 then  pval_prim
+          else  prim_name          
+        in
+        begin match arg_types with
+          | [] -> Js_global {txt = name; external_module_name}
+          | _ -> Js_call {txt = {splice; name}; external_module_name}                     
+        end        
 
       | {val_send = Some name; 
          splice;
@@ -3832,24 +3900,21 @@ let handle_attributes (type_annotation : Parsetree.core_type)
         -> Location.raise_errorf ~loc "conflict attributes found"
       | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
     check_ffi ~loc ffi;
-    Bs(arg_types, result_type,  ffi)
+    (match ffi , prim_name with
+    | Obj_create _ , _ -> prim_name
+    | _ , "" -> pval_prim
+    | _, _ -> prim_name), Bs(arg_types, result_type,  ffi)
 
-let bs_external = "BS_EXTERN:" ^ Js_config.version
 
-let bs_external_length = (String.length bs_external)
+let handle_attributes_as_string 
+    pval_loc
+    pval_prim 
+    typ attrs v = 
+  let prim_name, ffi = 
+    (handle_attributes pval_loc pval_prim typ attrs v ) in
+  [prim_name; to_string ffi]
+    
 
-let is_bs_external_prefix s = 
-  Ext_string.starts_with s bs_external
-
-let to_string  t = 
-  bs_external ^ Marshal.to_string t []
-let unsafe_from_string s = 
-    Marshal.from_string  s bs_external_length 
-
-let from_string s : t  = 
-  if is_bs_external_prefix s then 
-    Marshal.from_string  s (String.length bs_external)
-  else Ext_pervasives.failwithf ~loc:__LOC__ "compiler version mismatch, please do a clean build" 
 
 end
 module Ast_external : sig 
@@ -4671,12 +4736,17 @@ let record_as_js_object
   
   let pval_type = from_labels ~loc labels in 
   let pval_attributes = Ast_attributes.bs_obj pval_type in 
+  let local_fun_name = "mk" in
   let pval_prim = 
-    [ "" ; 
-      Ast_external_attributes.(to_string (handle_attributes pval_type pval_attributes ""))] in 
+    Ast_external_attributes.handle_attributes_as_string
+      loc 
+      local_fun_name
+      pval_type pval_attributes "" in 
   Ast_external.create_local_external loc 
     ~pval_prim
-    ~pval_type ~pval_attributes 
+    ~pval_type 
+    ~pval_attributes 
+    ~local_fun_name
     args 
 
 end
@@ -5821,10 +5891,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         let pval_prim = 
           match pval_prim with 
           | [ v ] -> 
-            [ v; 
-              Ast_external_attributes.(
-                to_string @@ handle_attributes pval_type pval_attributes v)
-            ]
+            Ast_external_attributes.handle_attributes_as_string
+              pval_loc 
+              pval_name.txt 
+              pval_type 
+              pval_attributes v
           | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
         {sigi with 
          psig_desc = 
@@ -5864,6 +5935,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             ({pval_attributes; 
               pval_prim; 
               pval_type;
+              pval_name;
               pval_loc} as prim) 
           when Ast_attributes.process_external pval_attributes
           -> 
@@ -5871,11 +5943,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           let pval_prim = 
             match pval_prim with 
             | [ v] -> 
-              [ v; 
-                Ast_external_attributes.(
-                  to_string @@
-                  handle_attributes pval_type pval_attributes v)
-              ]
+              Ast_external_attributes.handle_attributes_as_string
+                pval_loc
+                pval_name.txt
+                pval_type pval_attributes v
+
             | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
           {str with 
            pstr_desc = 
@@ -6897,7 +6969,7 @@ type call_info =
   | Call_ml (* called by plain ocaml expression *)
   | Call_builtin_runtime (* built-in externals *)
   | Call_na 
-  (* either from [@@bs.call] or not available, 
+  (* either from [@@bs.val] or not available, 
      such calls does not follow such rules
      {[ fun x y -> f x y === f ]} when [f] is an atom     
   *) 
@@ -6955,7 +7027,7 @@ type call_info =
   | Call_ml (* called by plain ocaml expression *)
   | Call_builtin_runtime (* built-in externals *)
   | Call_na 
-  (* either from [@@bs.call] or not available, 
+  (* either from [@@bs.val] or not available, 
      such calls does not follow such rules
      {[ fun x y -> (f x y) === f ]} when [f] is an atom     
 
@@ -15737,7 +15809,7 @@ let cmj_data_sets = String_map.of_list [
   ("bs_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001#\000\000\000J\000\000\000\248\000\000\000\234\176\208\208\208@/caml_array_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A1caml_array_concat\160\176@\160\160A\144\160\176\001\004\t!l@@@@@@B.caml_array_sub\160\176@\160\160C\144\160\176\001\003\244!x@\160\176\001\003\245&offset@\160\176\001\003\246#len@@@@@\208@.caml_make_vect\160\176@\160\160B\144\160\176\001\004\020#len@\160\176\001\004\021$init@@@@@@AC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_backtrace.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\209\000\000\000+\000\000\000\148\000\000\000\132\176\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\003\241%param@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\198\000\000\000|\000\000\001\152\000\000\001}\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!y@@@@\144\147\192B@\004\t\150\160\178@\160\"::A@\160\144\004\015\160\144\004\014@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\003\252!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\208%false@A\t3BS_EXTERN:0.8.6\132\149\166\190\000\000\000\016\000\000\000\004\000\000\000\012\000\000\000\011\176@\002\028\176\195\237\145\160%false@@@\150\160\152\208$true@A\t2BS_EXTERN:0.8.6\132\149\166\190\000\000\000\015\000\000\000\004\000\000\000\012\000\000\000\011\176@\002\028\176\195\237\145\160$true@@@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\004\026@\150\160\152\004\023@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\147\192A@\004\006\150\160\178@\160$SomeA@\160\144\004\012@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\198\000\000\000|\000\000\001\152\000\000\001}\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!y@@@@\144\147\192B@\004\t\150\160\178@\160\"::A@\160\144\004\015\160\144\004\014@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\003\252!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\208%false@A\t3BS_EXTERN:0.8.7\132\149\166\190\000\000\000\016\000\000\000\004\000\000\000\012\000\000\000\011\176@\002\028\176\195\237\145\160%false@@@\150\160\152\208$true@A\t2BS_EXTERN:0.8.7\132\149\166\190\000\000\000\015\000\000\000\004\000\000\000\012\000\000\000\011\176@\002\028\176\195\237\145\160$true@@@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\004\026@\150\160\152\004\023@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\147\192A@\004\006\150\160\178@\160$SomeA@\160\144\004\012@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_builtin_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\0017\000\000\0001\000\000\000\210\000\000\000\185\176\208\208\208\208@.assert_failure\160@@@A0division_by_zero\160@@@B+end_of_file\160@@\208@'failure\160@@@AC0invalid_argument\160@@\208\208\208@-match_failure\160@@@A)not_found\160@@@B-out_of_memory\160@@\208\208@.stack_overflow\160@@\208@.sys_blocked_io\160@@@AB)sys_error\160@@\208@:undefined_recursive_module\160@@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\166\000\000\000+\000\000\000\144\000\000\000\135\176\208@.caml_set_oo_id\160\176@\160\160A\144\160\176\001\003\242!b@@@@@\208\208@&create\160\176@\160\160A\144\160\176\001\003\245#str@@@@@@A&get_id\160\176@\160\160A\144\160\176\001\003\247%param@@@@@@BC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_float.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\236\000\000\000h\000\000\001\131\000\000\001e\176\208\208\208\208@3caml_classify_float\160\176A\160\160A\144\160\176\001\004\022!x@@@@@@A3caml_copysign_float\160\176@\160\160B\144\160\176\001\004#!x@\160\176\001\004$!y@@@@@\208\208@0caml_expm1_float\160\176@\160\160A\144\160\176\001\004(!x@@@@@@A2caml_float_compare\160\176A\160\160B\144\160\176\001\004 !x@\160\176\001\004!!y@@@@@@BC0caml_frexp_float\160\176@@@@\208\208@0caml_hypot_float\160\004\005@@A8caml_int32_bits_of_float\160\176@\160\160A\144\160\176\001\004\019!x@@@@@@BD8caml_int32_float_of_bits\160\176@\160\160A\144\160\176\001\004\003!x@@@@@\208\208@0caml_ldexp_float\160\004\027@\208@0caml_log10_float\160\004\030@@AB/caml_modf_float\160\176A\160\160A\144\160\176\001\004\024!x@@@@@@CE\1440caml_ldexp_float\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
@@ -15747,16 +15819,16 @@ let cmj_data_sets = String_map.of_list [
   ("caml_int32.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\255\000\000\000D\000\000\000\233\000\000\000\219\176\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\247!x@@@@@\208@0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\249!x@@@@@\208@4caml_nativeint_bswap\160\004\n@@ABC#div\160\176A\160\160B\144\160\176\001\003\241!x@\160\176\001\003\242!y@@@@@\208\208@$imul\160\176@@@@@A$mod_\160\176A\160\160B\144\160\176\001\003\244!x@\160\176\001\003\245!y@@@@@@BD\144$imul\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_int64.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\167\000\000\001}\000\000\004\231\000\000\004\187\176\208\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\004\225%param@\160\176\001\004\226%param@@@@@@A$asr_\160\176@\160\160B\144\160\176\001\004*!x@\160\176\001\004+'numBits@@@@@\208\208\208@-bits_of_float\160\176A\160\160A\144\160\176\001\004\170!x@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004w$self@\160\176\001\004x%other@@@@@\208@,discard_sign\160\176A\160\160A\144\160\176\001\004\133!x@@@@@@AB#div\160\176@\160\160B\144\160\176\001\004`$self@\160\176\001\004a%other@@@@@\208\208@'div_mod\160\176A\160\160B\144\160\176\001\004s$self@\160\176\001\004t%other@@@@@@A\"eq\160\176A\160\160B\144\160\176\001\004\019!x@\160\176\001\004\020!y@@@@@\208@-float_of_bits\160\176@\160\160A\144\160\176\001\004\153!x@@@@@@ABCD\"ge\160\176A\160\160B\144\160\176\001\004\204\004j@\160\176\001\004\205\004i@@@@@\208\208\208@%get64\160\176A\160\160B\144\160\176\001\004\176!s@\160\176\001\004\177!i@@@@@@A\"gt\160\176A\160\160B\144\160\176\001\004R!x@\160\176\001\004S!y@@@@@@B'is_zero\160\176A\160\160A\144\160\176\001\004\219\004\140@@@@@\208@\"le\160\176A\160\160B\144\160\176\001\004U!x@\160\176\001\004V!y@@@@@@ACE$lsl_\160\176@\160\160B\144\160\176\001\004\031!x@\160\176\001\004 'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\144\160\176\001\004$!x@\160\176\001\004%'numBits@@@@@\208@\"lt\160\176A\160\160B\144\160\176\001\004O!x@\160\176\001\004P!y@@@@@@AB'max_int\160@@@CF'min_int\160@@\208\208\208\208\208@$mod_\160\176A\160\160B\144\160\176\001\004p$self@\160\176\001\004q%other@@@@@@A#mul\160\176@\160\160B\144\160\176\001\004.$this@\160\176\001\004/%other@@@@@@B#neg\160\176@\160\160A\144\160\176\001\004\024!x@@@@@\208@#neq\160\176A\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@@@AC#not\160\176A\160\160A\144\160\176\001\004\224\004\255@@@@@\208\208@(of_float\160\176@\160\160A\144\160\176\001\004^!x@@@@@@A(of_int32\160\176A\160\160A\144\160\176\001\004{\"lo@@@@@@BD#one\160@@\208\208\208@#sub\160\176A\160\160B\144\160\176\001\004\026!x@\160\176\001\004\027!y@@@@@@A$swap\160\176A\160\160A\144\160\176\001\004\206\005\001,@@@@@\208@(to_float\160\176@\160\160A\144\160\176\001\004\203\005\0015@@@@@\208@&to_hex\160\176@\160\160A\144\160\176\001\004\127!x@@@@@@ABC(to_int32\160\176A\160\160A\144\160\176\001\004}!x@@@@\144\147\192A@\004\006\150\160\b\000\000\004\029@\160\150\160\163A\144\"lo\160\144\004\016@\160\145\144\150\018_n\000\001\000\000\000\000@\208@$zero\160@@@ADEG\144.two_ptr_32_dbl\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_io.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\160\000\000\000\229\000\000\003\011\000\000\002\211\176\208\208\208\208@!^\160\176@\160\160B\144\160\176\001\004+$prim@\160\176\001\004*\004\003@@@@\144\147\192B@\004\b\150\160\152\2080js_string_appendBA @\160\144\004\015\160\144\004\014@@A-caml_ml_flush\160\176A\160\160A\144\160\176\001\004\001\"oc@@@@@\208@-caml_ml_input\160\176A\160\160D\144\160\176\001\004\014\"ic@\160\176\001\004\015%bytes@\160\176\001\004\016&offset@\160\176\001\004\017#len@@@A\144\147\192D@\004\015\150\160E\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t caml_ml_input ic not implemented@@@\208@2caml_ml_input_char\160\176A\160\160A\144\160\176\001\004\019\"ic@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\004\030@\160\145\144\162\t!caml_ml_input_char not implemnted@@@@ABC:caml_ml_open_descriptor_in\160\176A\160\160A\144\160\176\001\003\253!i@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\0049@\160\145\144\162\t*caml_ml_open_descriptor_in not implemented@@@\208\208@;caml_ml_open_descriptor_out\160\176A\160\160A\144\160\176\001\003\255!i@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\004V@\160\145\144\162\t+caml_ml_open_descriptor_out not implemented@@@\208@9caml_ml_out_channels_list\160\176A\160\160A\144\160\176\001\004#%param@@@@@@AB.caml_ml_output\160\176A\160\160D\144\160\176\001\004\004\"oc@\160\176\001\004\005#str@\160\176\001\004\006&offset@\160\176\001\004\007#len@@@@@\208\208@3caml_ml_output_char\160\176A\160\160B\144\160\176\001\004\011\"oc@\160\176\001\004\012$char@@@@@@A/node_std_output\160\176@@@@@BCD&stderr\160\176A@@@\208@%stdin\160\004\007@\208@&stdout\160\004\007@@ABE\144%stdin\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\005\000\000\000^\000\000\001Z\000\000\0012\176\208\208@/caml_lex_engine\160@\144\147\192C@\160\176\001\003\248$prim@\160\176\001\003\247\004\003@\160\176\001\003\246\004\005@@\150\160\152\208 CA\teBS_EXTERN:0.8.6\132\149\166\190\000\000\000B\000\000\000\011\000\000\000$\000\000\000\"\176\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@1$$caml_lex_engine@@\160\144\004\014\160\144\004\r\160\144\004\r@\208@3caml_new_lex_engine\160@\144\147\192C@\160\176\001\003\245\004\025@\160\176\001\003\244\004\027@\160\176\001\003\243\004\029@@\150\160\152\208 CA\tiBS_EXTERN:0.8.6\132\149\166\190\000\000\000F\000\000\000\011\000\000\000%\000\000\000\"\176\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@5$$caml_new_lex_engine@@\160\144\004\r\160\144\004\r\160\144\004\r@@AB$fail\160\176A\160\160A\144\160\176\001\003\249%param@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\1623lexing: empty token@@@@C\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002+\000\000\000^\000\000\001c\000\000\0016\176\208\208@/caml_lex_engine\160@\144\147\192C@\160\176\001\003\248$prim@\160\176\001\003\247\004\003@\160\176\001\003\246\004\005@@\150\160\152\2081$$caml_lex_engineCA\teBS_EXTERN:0.8.7\132\149\166\190\000\000\000B\000\000\000\011\000\000\000$\000\000\000\"\176\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@1$$caml_lex_engine@@\160\144\004\014\160\144\004\r\160\144\004\r@\208@3caml_new_lex_engine\160@\144\147\192C@\160\176\001\003\245\004\025@\160\176\001\003\244\004\027@\160\176\001\003\243\004\029@@\150\160\152\2085$$caml_new_lex_engineCA\tiBS_EXTERN:0.8.7\132\149\166\190\000\000\000F\000\000\000\011\000\000\000%\000\000\000\"\176\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@5$$caml_new_lex_engine@@\160\144\004\r\160\144\004\r\160\144\004\r@@AB$fail\160\176A\160\160A\144\160\176\001\003\249%param@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\1623lexing: empty token@@@@C\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_md5.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000}\000\000\000\029\000\000\000`\000\000\000Y\176\208@/caml_md5_string\160\176@\160\160C\144\160\176\001\004/!s@\160\176\001\0040%start@\160\176\001\0041#len@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_module.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\163\000\000\000*\000\000\000\139\000\000\000\131\176\208@(init_mod\160\176A\160\160B\144\160\176\001\003\242#loc@\160\176\001\003\243%shape@@@@@\208@*update_mod\160\176A\160\160C\144\160\176\001\004\001%shape@\160\176\001\004\002!o@\160\176\001\004\003!n@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\170\000\000\000\177\000\000\002f\000\000\002D\176\208\208\208\208@,caml_compare\160\176@\160\160B\144\160\176\001\004\014!a@\160\176\001\004\015!b@@@@@@A*caml_equal\160\176@\160\160B\144\160\176\001\004&!a@\160\176\001\004'!b@@@@@\208@1caml_greaterequal\160\176A\160\160B\144\160\176\001\0046!a@\160\176\001\0047!b@@@@@\208@0caml_greaterthan\160\176A\160\160B\144\160\176\001\0049!a@\160\176\001\004:!b@@@@@@ABC2caml_int32_compare\160\176A\160\160B\144\160\176\001\004\002!x@\160\176\001\004\003!y@@@@@\208@0caml_int_compare\160\004\r@@AD6caml_lazy_make_forward\160\176A\160\160A\144\160\176\001\003\251!x@@@@\144\147\192A@\004\006\150\160\178\001\000\250B@\160\144\004\n@\208\208\208\208@.caml_lessequal\160\176A\160\160B\144\160\176\001\004<!a@\160\176\001\004=!b@@@@@@A-caml_lessthan\160\176A\160\160B\144\160\176\001\004?!a@\160\176\001\004@!b@@@@@@B6caml_nativeint_compare\160\004<@\208@-caml_notequal\160\176A\160\160B\144\160\176\001\0041!a@\160\176\001\0042!b@@@@@@AC,caml_obj_dup\160\176@\160\160A\144\160\176\001\003\241!x@@@@@\208@1caml_obj_truncate\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247(new_size@@@@@\208@1caml_update_dummy\160\176@\160\160B\144\160\176\001\003\253!x@\160\176\001\003\254!y@@@@@@ABDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_oo.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\136\000\000\000\029\000\000\000b\000\000\000Z\176\208@6caml_get_public_method\160\176A\160\160C\144\160\176\001\003\243#obj@\160\176\001\003\244#tag@\160\176\001\003\245'cacheid@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\255\000\000\000#\000\000\000\143\000\000\000x\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\147\192A@\160\176\001\003\242$prim@@\150\160\152\2087$$caml_set_parser_traceAA\tSBS_EXTERN:0.8.6\132\149\166\190\000\000\0000\000\000\000\007\000\000\000\025\000\000\000\022\176\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@7$$caml_set_parser_trace@@\160\144\004\n@@AB\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\255\000\000\000#\000\000\000\143\000\000\000x\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\147\192A@\160\176\001\003\242$prim@@\150\160\152\2087$$caml_set_parser_traceAA\tSBS_EXTERN:0.8.7\132\149\166\190\000\000\0000\000\000\000\007\000\000\000\025\000\000\000\022\176\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@7$$caml_set_parser_trace@@\160\144\004\n@@AB\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_primitive.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_queue.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\011\000\000\000\\\000\000\001\024\000\000\001\012\176\208@&create\160\176A\160\160A\144\160\176\001\004\006%param@@@@\144\147\192A@\004\006\150\160\178@\146\160&length$tailA\160\145\144\144@\160\145\161@\144$None@\208\208@(is_empty\160\176A\160\160A\144\160\176\001\004\003!q@@@@\144\147\192A@\004\006\150\160\153@\160\150\160\163@\144\004!\160\144\004\015@\160\145\144\144@@@A$push\160\176A\160\160B\144\160\176\001\003\248!x@\160\176\001\003\249!q@@@@@\208@*unsafe_pop\160\176@\160\160A\144\160\176\001\003\255!q@@@@@@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003P\000\000\000\199\000\000\002\187\000\000\002\142\176\208\208\208@/bytes_of_string\160\176@\160\160A\144\160\176\001\004\027!s@@@@@@A/bytes_to_string\160\176@\160\160A\144\160\176\001\004*!a@@@@@\208\208\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\017\"s1@\160\176\001\004\018\"i1@\160\176\001\004\019\"s2@\160\176\001\004\020\"i2@\160\176\001\004\021#len@@@@@@A0caml_blit_string\160\176A\160\160E\144\160\176\001\004\007\"s1@\160\176\001\004\b\"i1@\160\176\001\004\t\"s2@\160\176\001\004\n\"i2@\160\176\001\004\011#len@@@@@@B2caml_create_string\160\176@\160\160A\144\160\176\001\003\252#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\004\001!s@\160\176\001\004\002!i@\160\176\001\004\003!l@\160\176\001\004\004!c@@@@@@ACD1caml_is_printable\160\176A\160\160A\144\160\176\001\0041!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\254\"s1@\160\176\001\003\255\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\249!s@\160\176\001\003\250!i@@@@@\208\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\0044!s@\160\176\001\0045!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0047!s@\160\176\001\0048!i@@@@@@AB9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004,%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\004<$prim@@@@\144\147\192A@\004\006\150\160\152\2083String.fromCharCodeAA\tOBS_EXTERN:0.8.6\132\149\166\190\000\000\000,\000\000\000\007\000\000\000\024\000\000\000\022\176\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@3String.fromCharCode@@\160\144\004\r@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\197\000\000\000\160\000\000\002.\000\000\001\251\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\147\192A@\004\006\150\160E\160\150\160\144\176T)Not_foundC@@\208\208@4caml_sys_file_exists\160\176A\160\160A\144\160\176\001\003\251\"_s@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t$caml_sys_file_exists not implemented@@@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\0043@@@@\144\147\192A@\004\005\145\144\162!/@@BC/caml_sys_getenv\160@\144\147\192A@\160\176\001\003\252$prim@@\150\160\152\2081$$caml_sys_getenvAA\tMBS_EXTERN:0.8.6\132\149\166\190\000\000\000*\000\000\000\007\000\000\000\024\000\000\000\022\176\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@1$$caml_sys_getenv@@\160\144\004\n@\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\249\"_s@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\004?@\160\145\144\162\t%caml_sys_is_directory not implemented@@@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004p@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004y@@@@\144\147\192A@\004\005\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004\135@@@@@@CD\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003P\000\000\000\199\000\000\002\187\000\000\002\142\176\208\208\208@/bytes_of_string\160\176@\160\160A\144\160\176\001\004\027!s@@@@@@A/bytes_to_string\160\176@\160\160A\144\160\176\001\004*!a@@@@@\208\208\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\017\"s1@\160\176\001\004\018\"i1@\160\176\001\004\019\"s2@\160\176\001\004\020\"i2@\160\176\001\004\021#len@@@@@@A0caml_blit_string\160\176A\160\160E\144\160\176\001\004\007\"s1@\160\176\001\004\b\"i1@\160\176\001\004\t\"s2@\160\176\001\004\n\"i2@\160\176\001\004\011#len@@@@@@B2caml_create_string\160\176@\160\160A\144\160\176\001\003\252#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\004\001!s@\160\176\001\004\002!i@\160\176\001\004\003!l@\160\176\001\004\004!c@@@@@@ACD1caml_is_printable\160\176A\160\160A\144\160\176\001\0041!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\254\"s1@\160\176\001\003\255\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\249!s@\160\176\001\003\250!i@@@@@\208\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\0044!s@\160\176\001\0045!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0047!s@\160\176\001\0048!i@@@@@@AB9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004,%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\004<$prim@@@@\144\147\192A@\004\006\150\160\152\2083String.fromCharCodeAA\tOBS_EXTERN:0.8.7\132\149\166\190\000\000\000,\000\000\000\007\000\000\000\024\000\000\000\022\176\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@3String.fromCharCode@@\160\144\004\r@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\197\000\000\000\160\000\000\002.\000\000\001\251\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\147\192A@\004\006\150\160E\160\150\160\144\176T)Not_foundC@@\208\208@4caml_sys_file_exists\160\176A\160\160A\144\160\176\001\003\251\"_s@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t$caml_sys_file_exists not implemented@@@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\0043@@@@\144\147\192A@\004\005\145\144\162!/@@BC/caml_sys_getenv\160@\144\147\192A@\160\176\001\003\252$prim@@\150\160\152\2081$$caml_sys_getenvAA\tMBS_EXTERN:0.8.7\132\149\166\190\000\000\000*\000\000\000\007\000\000\000\024\000\000\000\022\176\160\160\002\028\176\195\237\002\003\007\170m@\002\028\176\195\237\147\160\160@1$$caml_sys_getenv@@\160\144\004\n@\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\249\"_s@@@A\144\147\192A@\004\006\150\160E\160\150\160\178@B@\160\150\160\144\004?@\160\145\144\162\t%caml_sys_is_directory not implemented@@@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004p@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004y@@@@\144\147\192A@\004\005\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004\135@@@@@@CD\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_utils.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000X\000\000\000\019\000\000\000?\000\000\0009\176\208@&repeat\160\176@@@@@A\144&repeat\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_weak.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\198\000\000\000\128\000\000\001\161\000\000\001\142\176\208\208\208\208@.caml_weak_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A/caml_weak_check\160\176A\160\160B\144\160\176\001\004\000\"xs@\160\176\001\004\001!i@@@@@@B0caml_weak_create\160\176@\160\160A\144\160\176\001\003\242!n@@@@\144\147\192A@\004\006\150\160\152\208/js_create_arrayAA @\160\144\004\r@@C-caml_weak_get\160\176@\160\160B\144\160\176\001\003\249\"xs@\160\176\001\003\250!i@@@@\144\147\192B@\004\t\150\160\152\208+js_from_defAA @\160\150\160\b\000\000\004\017@\160\144\004\020\160\144\004\019@@\208\208@2caml_weak_get_copy\160\176A\160\160B\144\160\176\001\003\252\"xs@\160\176\001\003\253!i@@@@@@A-caml_weak_set\160\176A\160\160C\144\160\176\001\003\244\"xs@\160\176\001\003\245!i@\160\176\001\003\246!v@@@@@@BD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("curry.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\005\140\000\000\001\205\000\000\005\166\000\000\005\140\176\208\208\208\208@\"_1\160\176@\160\160B\144\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@@A\"_2\160\176@\160\160C\144\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@B\"_3\160\176@\160\160D\144\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208@\"_4\160\176@\160\160E\144\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A\"_5\160\176@\160\160F\144\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@@BC\"_6\160\176@\160\160G\144\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@\208\208\208@\"_7\160\176@\160\160H\144\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208@\"_8\160\176@\160\160I\144\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@AB#app\160\176@\160\160B\144\160\176\001\003\252!f@\160\176\001\003\253$args@@@@@\208\208@&curry1\160\176@\160\160C\144\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@@A\"js\160\176@\160\160D\144\160\176\001\004E%label@\160\176\001\004F'cacheid@\160\176\001\004G#obj@\160\176\001\004H$args@@@@@\208@#js1\160\176@\160\160C\144\160\176\001\004K%label@\160\176\001\004L'cacheid@\160\176\001\004M#obj@@@@@@ABC#js2\160\176@\160\160D\144\160\176\001\004P%label@\160\176\001\004Q'cacheid@\160\176\001\004R#obj@\160\176\001\004S\"a1@@@@@\208\208@#js3\160\176@\160\160E\144\160\176\001\004V%label@\160\176\001\004W'cacheid@\160\176\001\004X#obj@\160\176\001\004Y\"a1@\160\176\001\004Z\"a2@@@@@@A#js4\160\176@\160\160F\144\160\176\001\004]%label@\160\176\001\004^'cacheid@\160\176\001\004_#obj@\160\176\001\004`\"a1@\160\176\001\004a\"a2@\160\176\001\004b\"a3@@@@@\208\208@#js5\160\176@\160\160G\144\160\176\001\004e%label@\160\176\001\004f'cacheid@\160\176\001\004g#obj@\160\176\001\004h\"a1@\160\176\001\004i\"a2@\160\176\001\004j\"a3@\160\176\001\004k\"a4@@@@@@A#js6\160\176@\160\160H\144\160\176\001\004n%label@\160\176\001\004o'cacheid@\160\176\001\004p#obj@\160\176\001\004q\"a1@\160\176\001\004r\"a2@\160\176\001\004s\"a3@\160\176\001\004t\"a4@\160\176\001\004u\"a5@@@@@\208@#js7\160\176@\160\160I\144\160\176\001\004x%label@\160\176\001\004y'cacheid@\160\176\001\004z#obj@\160\176\001\004{\"a1@\160\176\001\004|\"a2@\160\176\001\004}\"a3@\160\176\001\004~\"a4@\160\176\001\004\127\"a5@\160\176\001\004\128\"a6@@@@@\208@#js8\160\176@\160\160J\144\160\176\001\004\131%label@\160\176\001\004\132'cacheid@\160\176\001\004\133#obj@\160\176\001\004\134\"a1@\160\176\001\004\135\"a2@\160\176\001\004\136\"a3@\160\176\001\004\137\"a4@\160\176\001\004\138\"a5@\160\176\001\004\139\"a6@\160\176\001\004\140\"a7@@@@@@ABCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
