@@ -44,7 +44,7 @@ lam_dce
 lam_analysis
 lam_group
 
-
+bs_exception
 
 j
 js_ast_util
