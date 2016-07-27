@@ -53,6 +53,10 @@ function read(name) {
   return Fs.readFileSync(name, "utf8");
 }
 
+function read$1(name) {
+  return Fs.readFileSync(name, "utf8");
+}
+
 function test(readline, x) {
   return readline.on(function (action) {
               switch (x) {
@@ -93,10 +97,13 @@ function on2(prim, prim$1) {
             });
 }
 
+var readN = read$1;
+
 exports.uu       = uu;
 exports.vv       = vv;
 exports.register = register;
 exports.test     = test;
 exports.on2      = on2;
 exports.read     = read;
+exports.readN    = readN;
 /*  Not a pure module */

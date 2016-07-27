@@ -75,14 +75,23 @@ external on2 :
 
 external readFileSync :
   string -> ([`utf8 | `ascii] [@bs.string]) ->
-  string = "readFileSync"
+  string = ""
   [@@bs.val]
   [@@bs.module "fs"]
 
 let read name = 
   readFileSync name `utf8
 
+module N = struct
+  external readFileSync :
+    string -> ([`utf8 | `ascii] [@bs.string]) ->
+    string = ""
+      [@@bs.module "fs"]
+  let read name = 
+    readFileSync name `utf8
 
+end  
+let readN = N.read
 (**
 let register readline = 
   readline 

@@ -287,7 +287,7 @@ let handle_attributes
           Js_get_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
         end
-      | {val_of_module = Some v } -> Js_global_as_var v 
+      | {val_of_module = Some v } -> Js_global_as_var v
       | {call_name = Some name ;
          splice; 
          external_module_name;
@@ -322,6 +322,29 @@ let handle_attributes
         Js_global {txt = name; external_module_name}
       | {val_name = Some _ }
         -> Location.raise_errorf ~loc "conflict attributes found"
+      | {splice ;
+         external_module_name = (Some _ as external_module_name);
+
+         val_name = None ;         
+         call_name = None ;
+         val_of_module = None;
+         val_send = None ;
+         set_index = false;
+         get_index = false;
+         new_name = None;
+         set_name = None ;
+         get_name = None 
+
+        }
+        ->
+        let name =
+          if String.length prim_name = 0 then  pval_prim
+          else  prim_name          
+        in
+        begin match arg_types with
+          | [] -> Js_global {txt = name; external_module_name}
+          | _ -> Js_call {txt = {splice; name}; external_module_name}                     
+        end        
 
       | {val_send = Some name; 
          splice;

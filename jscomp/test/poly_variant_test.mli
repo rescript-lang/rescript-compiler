@@ -30,3 +30,4 @@ val on2 :
   unit
 
 val read : string -> string
+val readN : string -> string
