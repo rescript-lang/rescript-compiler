@@ -15,7 +15,7 @@ July 27, 2016
 
 - Readable JavaScript backend for OCaml
 - *module to module* compiler
-- *Seamless integration* with existing JS libs
+- *Seamless integration* with existing JS libraries
 - Works with multiple front-end: vanilla OCaml and [Facebook Reason](https://facebook.github.io/reason/)
 
 
@@ -38,9 +38,9 @@ July 27, 2016
   - Native backends: AMD64, IA32, PowerPC, ARM, SPARC
   - Language based OS: Mirage Unikernel (acquired by Docker)
   - Battle tested: Used for high-frequency trading in volumes of billions of
-    dollars per day.
+    dollars per day
 - BuckleScript backend :
-  - Great performance with regard to compile-time and runtime
+  - Great performance with regard to both compile-time and runtime
   - *Expressive* and *efficient* FFI
   - Small size (small runtime: *linked only when needed like int64 support*)
   - Module to module separate compilation, support various module systems: Google module/ AMDJS and CommonJS
@@ -48,7 +48,7 @@ July 27, 2016
   
 ---
 
-# R & B (Facebook Reason and Bloomberg BuckleScript)
+# R & B (Facebook Reason & Bloomberg BuckleScript)
 
 - Reason is a new interface to OCaml created by the same people who
   created ReactJS, ReactNative
@@ -72,7 +72,8 @@ let test () =
   done;;
 test()
 ```
-==Generated code=>
+`Generated code`
+
 ```js
 
 "use strict";
@@ -123,9 +124,9 @@ Runtime performance of identical functionality:
 
 ---
 
-# Finishes before others warm up
+# Finishes before others warm up 
 
-- A truly fast compiler
+- A truly fast compiler (cold startup)
 
   <img src="images/compile-time.PNG" title="OCamlscript" alt="Drawing" style="width: 450px;"/>
 - A micro benchmark vs TypeScript 
@@ -152,12 +153,12 @@ Runtime performance of identical functionality:
 - BuckleScript can also emit `.d.ts` files for TypeScript compiler (*experimental*)
 
 - [Publish and consume npm packages out of box](https://www.npmjs.com/package/bs-platform)
-- [demo](https://tonicdev.com/npm/bs-platform)
-
+- [OCaml standard library consumed by Javascript developers](http://caml.inria.fr/pub/docs/manual-ocaml/stdlib.html)
+- [Demo](https://tonicdev.com/npm/bs-platform)  
 ```ocaml
-var $$Array = require("bs-platform/lib/js/array")
-var $$String = require("bs-platform/lib/js/string")
-$$String.concat(",",$$Array.to_list(["hello","bucklescript"]))
+var Array = require("bs-platform/lib/js/array")
+var String = require("bs-platform/lib/js/string")
+String.concat(",",Array.to_list(["hello","bucklescript"]))
 ```
 
 ---
@@ -167,7 +168,7 @@ Like typescript, users must write *type declarations* for existing
 JavaScript Libraries.
 
 - *extensible* language by extension points and attributes.
-  - No re-inventing a new language needed
+  - Not re-inventing a new language, still OCaml
 -  *expressive* type system to model different  paradigms in Javascript
   - Structural typing (model JavaScript Objects)
   - Polymorphic variants (model Event handler)
@@ -183,7 +184,7 @@ external val_name : types_to_js_object_or_function
 A dummy example:
 
 ```ocaml
-external exp : float -> float = "Math.exp" [@@bs.call]
+external exp : float -> float = "Math.exp" [@@bs.val]
 let v = exp 3.
 ```
 ---
@@ -192,13 +193,14 @@ let v = exp 3.
 
 ```ocaml
 let f = fun [@bs] x y -> x + y
-val f : int -> int -> int [@bs]
-f 1 2 [@bs]
-f 1  (* compile error *)
-f 1 2 3 (* compile error *)
 
+let u = f 1 2 [@bs]
+let u = f 1  (* compile error *)
+let u = f 1 2 3 (* compile error *)
+
+val f : int -> int -> int [@bs]
 ```
-==> 
+`Generated code`
 
 ```js
 function f(x,y){
@@ -218,18 +220,10 @@ val f : 'o -> 'x -> 'y -> 'body [@bs.this]
 ```ocaml
 external array_map_this :
   'a array -> ('obj -> 'a -> int -> 'b [@bs.this]) -> 'obj -> 'b array
-  = "map"  [@@bs.send]
-
-array_map_this xs (fun [@bs.this] o v i -> (o,v,i)) xs 
-```
-
-==>
-
-```js
-xs.map(function(v,i){
-  var o = this;
-  return [o,v,i]
-},xs)
+    = "map"  [@@bs.send]
+let v =
+  let arr = [|1;2;3|] in
+  array_map_this arr (fun [@bs.this] o v i -> (o,v,i)) arr
 ```
 
 ---
@@ -239,18 +233,13 @@ xs.map(function(v,i){
 
 ```ocaml
 external readFileSync :
-  string -> ([`utf8 | `ascii] [@bs.string]) ->
-  string = "readFileSync"
-  [@@bs.call]
+  name:string ->
+  ([`utf8 | `ascii] [@bs.string]) ->
+  string = ""
   [@@bs.module "fs"]
-let content = readFileSync "file.txt" `utf8
-```
-==>
-```js
-var Fs = require("fs");
-var content = Fs.readFileSync("file.txt", "utf8")
-```
 
+let content = readFileSync `utf8  ~name:"file.txt"
+```
 ---
 
 # FFI highlights: type-safe event handlers
@@ -267,24 +256,12 @@ type readline
 external on : readline -> 
   ([ `line of string -> unit  (* can be customized [@bs.as "another_name"]*)
    | `close of unit -> unit ] 
-     [@bs.string]) ->  unit = "on" [@@bs.send] 
+     [@bs.string]) ->  unit = "" [@@bs.send] 
 
 let register readline = 
   on readline (`line begin fun s -> prerr_endline s end);
-  on readline (`close begin fun () -> prerr_endline "finished" end)
-```
-==>
-```js
-function register(readline) {
-  readline.on("line", function (s) {
-        console.log(s);
-        return /* () */0;
-      });
-  return readline.on("close", function () {
-              console.log("finished");
-              return /* () */0;
-            });
-}
+  on readline (`close begin fun () -> prerr_endline "finished" end);
+  print_endline "done"
 ```
 
 ---
@@ -299,110 +276,40 @@ val f : [%bs.obj: < height : int ; width : int ; .. > ] -> int
 let a = f [%bs.obj { height = 3; width = 32}] (* compiles *)
 let b = f [%bs.obj {height = 3 ; width  = 32; unused = 3 }] (* compiles *)
 ```
-==>
-```js
-function f (obj){
-  return obj.height + obj.width;
-}
-var a = f ({height : 3, width : 32})
-var b = f ({height : 3 , width : 32 , unused : 3})
-```
 - class type, subtyping, and inhertiance are also supported in FFI
 
-
----
-# A stand alone HTTP server: part one  
-
-```OCaml
-(** [Http_lib.ml] *)
-let port = 3000
-let hostname = "127.0.0.1"
-let create_server  http = 
-  let server = http##createServer begin fun [@bs]  req  resp  -> 
-      resp##statusCode #= 200; 
-      resp##setHeader "Content-Type" "text/plain";
-      resp##_end "Hello world\n" (* end is a key word in OCaml *)
-    end
-  in
-  server##listen port hostname  begin fun [@bs] () -> 
-      Js.log ("Server running at http://"^ hostname ^ ":" ^ Pervasives.string_of_int port ^ "/")
-  end
-
-```
-
-```js
-var hostname = "127.0.0.1";
-
-function create_server(http) {
-  var server = http.createServer(function (_, resp) {
-        resp.statusCode = 200;
-        resp.setHeader("Content-Type", "text/plain");
-        return resp.end("Hello world\n");
-      });
-  return server.listen(3000, hostname, function () {
-              console.log("Server running at http://" + (hostname + (":" + (Pervasives.string_of_int(3000) + "/"))));
-              return /* () */0;
-            });
-}
-```
----
-
-# A stand alone HTTP server: part two 
-
 ```ocaml
-type req 
+class type title = object
+  method title : string
+  end [@bs]
 
-class type _resp = object 
-  method statusCode : int [@@bs.set]
-  method setHeader : string -> string -> unit 
-  method _end : string -> unit 
-end [@bs]
-type resp = _resp Js.t 
+class type widget = object
+   inherit title
+   end [@bs]
 
-class type _server = object 
-  method listen : int -> string -> (unit -> unit [@bs]) -> unit 
-end [@bs]
-type server = _server Js.t 
-
-class type _http  = object 
-  method createServer : (req  ->  resp  -> unit [@bs] ) ->  server
-end [@bs]
-type http = _http Js.t
-
-external http : http = "http" [@@bs.val_of_module]
+let f (x : widget )  = (x :> title)
 ```
-
 
 ---
 
-# A stand alone HTTP server: part three
+# Demo: A stand alone HTTP server
 
-```OCaml
-(** [Http_start.ml]*)
+https://github.com/bloomberg/bucklescript-addons/tree/master/examples/node-http-server
 
-let () =
-  Http_lib.create_server Http_binding.http
-```
-
-```js
-var Http_lib = require('./http_lib');
-var http = require('http');
-Http_lib.create_server(http);
-```
 
 ---
 
 # Optimizations 
 
 - Code motion, Purity analysis, Cross module inliner, Constant folding/propogation, Strength reduction, escape analysis etc
-- One example: optimized curry calling convention
+- Examples: optimized curry calling convention
 
   ```ocaml
   let f x y z = x + y + z
   let a = f 1 2 3 
   let b = f 1 2 
   ```
-  `Compilation used in Elm/PureScript`
+  `Compilation used in PureScript`
 
   ```js
   function f(x){
@@ -428,28 +335,37 @@ Http_lib.create_server(http);
 # Comparison with  Elm, PureScript and GHCJS
 
 
-- PureScript:
-  Both generates readable code and support strutural types 
-  BuckleScript also support OO FFI and have different backends and frontends
+- Elm/PureScript:
+  - Both generates readable code and support strutural types
+  - PuresScript is pure, while OCaml allows both imperative style and
+    OO style and also OO FFI
+  - BuckleScript have *different backends* and frontends
 
 - GHCJS
-  Compile vanilla Haskell into JS (whole program compiler, semantics mismatch)
-
+   - Compile vanilla Haskell into JS
+     - Whole program compiler
+     - Monolithic Javascript
+     - Semantics mismatch
+   - All great features of Haskell
+   - Large size, unreadable code, slow compile
+   
 ---
 
 # Future work
 
+- Reaches 1.0 soon!
+- Testing
 - Bindings to existing JS libraries (using typescript compiler API or
   Facebook Flow type checker  (also written in OCaml))
-- Toolings and help get people started
 - Better integration with Reason and its tool chain
+- Documentation and tutorials
 - More Optimizations
-- Follow me for the latest development on BuckleScript
+
+Follow me for the latest development on BuckleScript
   twitter @bobzhang1988
 
 
 
----
 
 
 
