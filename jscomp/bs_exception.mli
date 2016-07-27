@@ -22,50 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type error =
+  | Cmj_not_found of string
 
 
-
-
-
-
-
-
-(* ATTENTION: lazy to wait [Config.load_path] populated *)
-let find file =  Misc.find_in_path_uncap !Config.load_path file 
-
-
-
-(* strategy:
-   If not installed, use the distributed [cmj] files, 
-   make sure that the distributed files are platform independent
-*)
-let find_cmj file = 
-  match find file with
-  | f
-    -> 
-    Js_cmj_format.from_file f             
-  | exception Not_found -> 
-    (* ONLY read the stored cmj data in browser environment *)
-    if Js_config.is_browser () then     
-      let target = String.uncapitalize (Filename.basename file) in
-      match 
-        String_map.find  target
-          Js_cmj_datasets.cmj_data_sets with 
-      | v
-        -> 
-        begin match Lazy.force v with
-          | exception _ 
-            -> 
-            Ext_log.warn __LOC__ 
-              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Js_config.get_current_file ())  ;
-            Js_cmj_format.no_pure_dummy; (* FIXME *)
-          | v -> v 
-        end
-      | exception Not_found 
-        ->     
-        Ext_log.warn __LOC__ "@[%s not found @]" file ;
-        Js_cmj_format.no_pure_dummy 
-    else
-      Bs_exception.error (Cmj_not_found file)      
-
-
+val error : error -> 'a 
