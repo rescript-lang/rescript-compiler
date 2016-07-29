@@ -64,3 +64,7 @@ val newline : t -> unit
 val to_out_channel : out_channel -> t
 
 val flush : t -> unit -> unit
+
+val pp_print_queue :
+  ?pp_sep:(Format.formatter -> unit -> unit) ->
+  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit

@@ -24,11 +24,11 @@
 
 
 
+module String_set = Depend.StringSet
 
-
-let read_parse_and_extract ast extract_function : Depend.StringSet.t =
-  Depend.free_structure_names := Depend.StringSet.empty;
-  (let bound_vars = Depend.StringSet.empty in
+let read_parse_and_extract ast extract_function : String_set.t =
+  Depend.free_structure_names := String_set.empty;
+  (let bound_vars = String_set.empty in
   List.iter
     (fun modname  ->
       Depend.open_module bound_vars (Longident.Lident modname))
@@ -45,55 +45,49 @@ type ast =
 
 type  info = 
   { source_file : string ; 
-    ast : ast
+    ast : ast;
+    module_name : string     
   }
 
 
-
-let normalize tbl file  =
-  let module_name = 
+let module_name_of_file file =
     String.capitalize 
-      (Filename.chop_extension @@ Filename.basename file)  in
-  Hashtbl.add tbl module_name file;
-  (* could have both mli and ml *)
-  module_name 
-
-let merge tbl (files : (info * Depend.StringSet.t) list ) : 
-  (string, Depend.StringSet.t) Hashtbl.t  
-  =
+      (Filename.chop_extension @@ Filename.basename file)  
 
 
-  let domain = 
-    Depend.StringSet.of_list 
-      (List.map (fun ({ source_file },_)-> normalize tbl source_file) files) in
-  let local_tbl = Hashtbl.create 31 in 
-  List.iter 
-    (fun  ({source_file = file; _}, deps) ->
-       let modname = String.capitalize 
-           (Filename.chop_extension @@ Filename.basename file) in
-       match Hashtbl.find local_tbl modname with 
+let merge (files : (info * String_set.t) list )  =
+  let tbl = Hashtbl.create 31 in     
+  let domain =
+    List.fold_left
+      (fun acc ({ source_file ; module_name}, _)
+        ->
+          Hashtbl.add tbl module_name source_file;
+          String_set.add module_name acc           
+      ) String_set.empty files in
+
+  tbl,domain, List.fold_left
+    (fun  acc ({source_file = file; module_name  ; _}, deps) ->
+       match String_map.find  module_name acc with 
        | new_deps -> 
-         Hashtbl.replace local_tbl modname 
-           (Depend.StringSet.inter domain 
-              (Depend.StringSet.union deps new_deps))
+         String_map.add  module_name
+           (String_set.inter domain 
+              (String_set.union deps new_deps)) acc
        | exception Not_found -> 
-         Hashtbl.add local_tbl  modname (Depend.StringSet.inter deps domain)
-    ) files  ;
-  local_tbl
+         String_map.add  module_name
+           (String_set.inter deps domain) acc
+    ) String_map.empty  files
 
-exception Cyclic_dependends of string list
+
+
   
-let sort_files_by_dependencies tbl files
+let sort_files_by_dependencies  files
   =
-  let h : (string, Depend.StringSet.t) Hashtbl.t = merge tbl files in
+  let tbl, domain, h  = merge  files in
   let next current =
-    Depend.StringSet.elements (Hashtbl.find h current) in    
-  let worklist = 
-    ref (Hashtbl.fold
-           (fun key _  acc ->
-              String_set.add key acc) h String_set.empty) in
+    String_set.elements (String_map.find  current h) in    
+  let worklist = ref domain in
 
-  let result = Ext_list.create_ref_empty () in
+  let result = Queue.create () in
   let visited = Hashtbl.create 31 in (* Temporary mark *)  
 
   (* only visit nodes that are currently in the domain *)
@@ -108,11 +102,11 @@ let sort_files_by_dependencies tbl files
         let depends = next current in
         List.iter
           (fun node ->
-             if  Hashtbl.mem h node then
+             if  String_map.mem node  h then
                visit (current::path) node)
           depends ;
         worklist := String_set.remove  current !worklist;
-        Ext_list.ref_push current result ;
+        Queue.push current result ;
         Hashtbl.remove visited current;
       end in        
   while not (String_set.is_empty !worklist) do 
@@ -120,10 +114,12 @@ let sort_files_by_dependencies tbl files
   done;
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter
-      "Reverse order: @[%a@]@."    
-      (Format.pp_print_list ~pp_sep:Format.pp_print_space Format.pp_print_string)
-      !result ;       
-  !result
+      "Order: @[%a@]@."    
+      (Ext_format.pp_print_queue
+         ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      result ;       
+  result,tbl 
 ;;
 
 
@@ -136,9 +132,9 @@ let prepare  ast_table =
         (  match ast with
            | Ml (ast,_) -> fun set _ ->  Depend.add_implementation set ast 
            | Mli (ast,_) -> fun set _ ->   Depend.add_signature set ast ) in
-    ({source_file ; ast }, extracted_deps) :: acc  in
+    ({source_file ; ast ; module_name = module_name_of_file source_file },
+     extracted_deps) :: acc  in
   let files = Hashtbl.fold file_dependencies ast_table []  in
-  let tbl = Hashtbl.create 31 in   
-  let stack = sort_files_by_dependencies tbl files in 
-  stack, tbl 
+  sort_files_by_dependencies  files 
+
 

@@ -23,13 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+
 type ast = 
   | Ml of Parsetree.structure * string  (* outputprefix *)
   | Mli of Parsetree.signature * string (* outputprefix *)
 
 type  info = 
-  { source_file : string ; 
-    ast : ast
+  { source_file : string; 
+    ast : ast;
+    module_name : string     
   }
 
 (** 
@@ -44,7 +46,9 @@ type  info =
    for mapping, the key is the module and value is filename
 *)
 
-val prepare : 
-  (string, ast) Hashtbl.t -> string list * (string, string) Hashtbl.t
+val prepare :
+  (string, ast) Hashtbl.t -> string Queue.t * (string, string) Hashtbl.t  
+
+
 
 

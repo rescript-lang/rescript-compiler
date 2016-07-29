@@ -41,9 +41,8 @@ let batch_compile ppf files =
             (Mli (Ocaml_parse.parse_interface ppf name, opref))
 
       end;
-      let stack,mapping = Ast_extract.prepare batch_files in 
-      stack |> Ext_list.rev_iter (fun modname -> 
-          (* prerr_endline ("compiling " ^ modname);  *)
+      let stack, mapping = Ast_extract.prepare batch_files in 
+      stack |> Queue.iter (fun modname -> 
           match Hashtbl.find_all mapping modname with
           | [] -> ()
           | [sourcefile] -> 
