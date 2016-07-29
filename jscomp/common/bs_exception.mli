@@ -24,6 +24,6 @@
 
 type error =
   | Cmj_not_found of string
-
+  | Bs_cyclic_depends of string  list
 
 val error : error -> 'a 
