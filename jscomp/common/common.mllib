@@ -2,4 +2,5 @@ js_config
 literals
 ext_log
 bs_loc
+bs_exception
 lam_methname

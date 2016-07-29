@@ -48,14 +48,6 @@ type  info =
     ast : ast
   }
 
-let file_dependencies (files : (info * Depend.StringSet.t) list ref)
-    source_file ast  =
-  let extracted_deps =
-    read_parse_and_extract ast 
-     (  match ast with
-     | Ml (ast,_) -> fun set _ ->  Depend.add_implementation set ast 
-     | Mli (ast,_) -> fun set _ ->   Depend.add_signature set ast ) in
-  files := ({source_file ; ast }, extracted_deps) :: !files
 
 
 let normalize tbl file  =
@@ -89,47 +81,64 @@ let merge tbl (files : (info * Depend.StringSet.t) list ) :
     ) files  ;
   local_tbl
 
-
+exception Cyclic_dependends of string list
+  
 let sort_files_by_dependencies tbl files
-    =
-  let h = merge tbl files in
-  let worklist = Ext_list.create_ref_empty () in
-  let ()= 
-    Hashtbl.iter (fun key _     ->  Ext_list.ref_push key worklist) h in
+  =
+  let h : (string, Depend.StringSet.t) Hashtbl.t = merge tbl files in
+  let next current =
+    Depend.StringSet.elements (Hashtbl.find h current) in    
+  let worklist = 
+    ref (Hashtbl.fold
+           (fun key _  acc ->
+              String_set.add key acc) h String_set.empty) in
+
   let result = Ext_list.create_ref_empty () in
-  let visited = Hashtbl.create 31 in
-  while not @@ Ext_list.ref_empty worklist do 
-    let current = Ext_list.ref_top worklist  in 
+  let visited = Hashtbl.create 31 in (* Temporary mark *)  
+
+  (* only visit nodes that are currently in the domain *)
+  (* https://en.wikipedia.org/wiki/Topological_sorting *)
+  (* dfs   *)
+  let rec visit path current =
     if Hashtbl.mem visited current then
-      ignore (Ext_list.ref_pop worklist)
-    else 
-      match Depend.StringSet.elements (Hashtbl.find h current) with 
-      | depends -> 
-          let really_depends = 
-            List.filter 
-              (fun x ->  (Hashtbl.mem h x && (not (Hashtbl.mem visited x ))))
-              depends in
-          begin match really_depends with 
-          |[] -> 
-            begin
-              let v = Ext_list.ref_pop worklist in 
-              Hashtbl.add visited  v () ;
-              Ext_list.ref_push current result 
-            end
-          | _ -> 
-              List.iter  (fun x -> Ext_list.ref_push x worklist) really_depends
-          end
-      | exception Not_found ->  assert false 
+      Bs_exception.error (Bs_cyclic_depends path)
+    else if String_set.mem current !worklist then
+      begin
+        Hashtbl.add visited current () ;
+        let depends = next current in
+        List.iter
+          (fun node ->
+             if  Hashtbl.mem h node then
+               visit (current::path) node)
+          depends ;
+        worklist := String_set.remove  current !worklist;
+        Ext_list.ref_push current result ;
+        Hashtbl.remove visited current;
+      end in        
+  while not (String_set.is_empty !worklist) do 
+    visit  [] (String_set.choose !worklist)
   done;
-  result
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter
+      "Reverse order: @[%a@]@."    
+      (Format.pp_print_list ~pp_sep:Format.pp_print_space Format.pp_print_string)
+      !result ;       
+  !result
 ;;
 
 
 
 let prepare  ast_table = 
-  let tbl = Hashtbl.create 31 in 
-  let files = ref [] in
-  Hashtbl.iter (fun sourcefile ast  -> file_dependencies files sourcefile ast) ast_table;
-  let stack = sort_files_by_dependencies tbl !files in 
-  !stack, tbl 
+  let file_dependencies 
+      source_file ast  acc =
+    let extracted_deps =
+      read_parse_and_extract ast 
+        (  match ast with
+           | Ml (ast,_) -> fun set _ ->  Depend.add_implementation set ast 
+           | Mli (ast,_) -> fun set _ ->   Depend.add_signature set ast ) in
+    ({source_file ; ast }, extracted_deps) :: acc  in
+  let files = Hashtbl.fold file_dependencies ast_table []  in
+  let tbl = Hashtbl.create 31 in   
+  let stack = sort_files_by_dependencies tbl files in 
+  stack, tbl 
 

@@ -26,7 +26,9 @@ let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg;
   arg
 
-let after_parsing_sig ppf sourcefile outputprefix ast  = 
+let after_parsing_sig ppf sourcefile outputprefix ast  =
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter "Building %s@." sourcefile;    
   let modulename = module_of_filename ppf sourcefile outputprefix in
   let initial_env = Compmisc.initial_env () in
   Env.set_unit_name modulename;
@@ -54,6 +56,8 @@ let interface ppf sourcefile outputprefix =
   |> after_parsing_sig ppf sourcefile outputprefix 
 
 let after_parsing_impl ppf sourcefile outputprefix ast =
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter "Building %s@." sourcefile;      
   let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
   let env = Compmisc.initial_env() in
   Env.set_unit_name modulename;
