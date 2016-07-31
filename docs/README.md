@@ -43,7 +43,7 @@ While a strong type-system helps in countering these problems, at the same time 
    strategy of OCaml, allows us to avoid [name-mangling](https://en.wikipedia.org/wiki/Name_mangling), and produce JavaScript code that is human-readable and easier to debug and maintain.
 
 3. **Loss of code-structure:**
-   Many systems generate JavaScript code that is essentially a [big ball of mud](https://en.wikipedia.org/wiki/Big_ball_of_mud). We try to keep the original structure of the code by mapping mapping one OCaml module to one JS module.
+   Many systems generate JavaScript code that is essentially a [big ball of mud](https://en.wikipedia.org/wiki/Big_ball_of_mud). We try to keep the original structure of the code by mapping one OCaml module to one JS module.
 
 # Resources for Learning OCaml
 
