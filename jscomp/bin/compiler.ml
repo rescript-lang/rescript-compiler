@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 07/27-13:21 *)
+(** Bundled by ocaml_pack 08/01-16:04 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -667,8 +667,10 @@ val is_single_int : t -> int option
 
 val as_string_exp : t -> Parsetree.expression option 
 val as_empty_structure :  t -> bool 
-val is_string_or_strings : 
-  t -> [ `None | `Single of string | `Some of string list ]
+
+
+val assert_strings :
+  Location.t -> t -> string list  
 
 (** as a record or empty 
     it will accept 
@@ -791,27 +793,28 @@ let as_record_and_process
   | _ -> 
     Location.raise_errorf ~loc "this is not a valid record config"
 
-let is_string_or_strings (x : t) : 
-  [ `None | `Single of string | `Some of string list ] = 
+
+
+let assert_strings loc (x : t) : string list
+   = 
   let module M = struct exception Not_str end  in 
   match x with 
   | PStr [ {pstr_desc =  
               Pstr_eval (
                 {pexp_desc = 
-                   Pexp_apply
-                     ({pexp_desc = Pexp_constant (Const_string (name,_)); _},
-                      args
-                     );
+                   Pexp_tuple strs;
                  _},_);
+            pstr_loc = loc ;            
             _}] ->
     (try 
-       `Some (name :: (args |> List.map (fun (_label,e) ->
+        strs |> List.map (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
              name
-           | _ -> raise M.Not_str)))
-
-     with M.Not_str -> `None )
+           | _ -> raise M.Not_str)
+     with M.Not_str ->
+       Location.raise_errorf ~loc "expect string tuple list"
+    )
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
@@ -819,9 +822,11 @@ let is_string_or_strings (x : t) :
              Pexp_constant 
                (Const_string (name,_));
            _},_);
-      _}] -> `Single name 
-  | _ -> `None
-
+      _}] ->  [name] 
+  | PStr [] ->  []
+  | PStr _                
+  | PTyp _ | PPat _ ->
+    Location.raise_errorf ~loc "expect string tuple list"
 let assert_bool_lit  (e : Parsetree.expression) = 
   match e.pexp_desc with
   | Pexp_construct ({txt = Lident "true" }, None)
@@ -3658,13 +3663,15 @@ let handle_attributes
     (loc : Bs_loc.t)
     (pval_prim : string ) 
     (type_annotation : Parsetree.core_type)
-    (prim_attributes : Ast_attributes.t) (prim_name : string) = 
-    let name_from_payload_or_prim payload = 
-      match Ast_payload.is_single_string payload with 
-      | Some _ as val_name ->  val_name
-      | None -> 
-        if String.length prim_name = 0 then Some pval_prim
-        else Some prim_name  (* need check name *)
+    (prim_attributes : Ast_attributes.t) (prim_name : string) =
+  let prim_name_or_pval_prim =
+    if String.length prim_name = 0 then  pval_prim
+    else  prim_name  (* need check name *)
+  in    
+  let name_from_payload_or_prim payload = 
+    match Ast_payload.is_single_string payload with 
+    | Some _ as val_name ->  val_name
+    | None -> Some prim_name_or_pval_prim
     in 
     let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
     let st = 
@@ -3691,11 +3698,23 @@ let handle_attributes
                   {st with call_name = name_from_payload_or_prim payload}
                 end
               (* | "bs.val" -> {st with call_name = name_from_payload_or_prim payload} *)
-              | "bs.val_of_module"
-                -> { st with
-                     val_of_module = 
-                       Some { bundle = prim_name ; bind_name = Ast_payload.is_single_string payload}
-                   }
+              | "bs.module" -> 
+                begin match Ast_payload.assert_strings loc payload with 
+                  | [name] ->
+                    {st with external_module_name =
+                               Some {bundle=name; bind_name = None}}
+                  | [bundle;bind_name] -> 
+                    {st with external_module_name =
+                               Some {bundle; bind_name = Some bind_name}}
+                  | [] ->
+                    { st with
+                      val_of_module = 
+                        Some
+                          { bundle = prim_name_or_pval_prim ;
+                            bind_name = Some pval_prim}
+                    }                      
+                  | _  -> Location.raise_errorf ~loc "Illegal attributes"
+                end
               | "bs.splice" -> {st with splice = true}
               | "bs.send" -> 
                 { st with val_send = name_from_payload_or_prim payload}
@@ -3703,14 +3722,6 @@ let handle_attributes
                 {st with set_name = name_from_payload_or_prim payload}
               | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
 
-              | "bs.module" -> 
-                let external_module_name = 
-                  begin match Ast_payload.is_string_or_strings payload with 
-                    | `Single name -> Some {bundle=name; bind_name = None}
-                    | `Some [bundle;bind_name] -> 
-                      Some {bundle; bind_name = Some bind_name}
-                    | `Some _| `None  -> Location.raise_errorf ~loc "Illegal attributes"
-                  end in {st with external_module_name}
               | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
               | "bs.set_index" -> {st with set_index = true}
               | "bs.get_index"-> {st with get_index = true}
@@ -3810,10 +3821,7 @@ let handle_attributes
 
         }
         ->
-        let name =
-          if String.length prim_name = 0 then  pval_prim
-          else  prim_name          
-        in
+        let name = prim_name_or_pval_prim in
         begin match arg_types with
           | [] -> Js_global {txt = name; external_module_name}
           | _ -> Js_call {txt = {splice; name}; external_module_name}                     
@@ -4226,7 +4234,8 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (Parsetree.core_type ->
+  (string -> (* label for error checking *)
+   Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
 
@@ -4346,7 +4355,8 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (Parsetree.core_type ->
+  (string ->
+   Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
 let js_obj_type_id () = 
@@ -4503,9 +4513,12 @@ let method_apply loc self obj name args =
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-let generic_to_uncurry_type kind loc (mapper : Ast_mapper.mapper)
+let generic_to_uncurry_type  kind loc (mapper : Ast_mapper.mapper) label
     (first_arg : Parsetree.core_type) 
-    (typ : Parsetree.core_type)  = 
+    (typ : Parsetree.core_type)  =
+  if label <> "" then
+    Location.raise_errorf ~loc "label is not allowed";                 
+
   let rec aux acc (typ : Parsetree.core_type) = 
     (* in general, 
        we should collect [typ] in [int -> typ] before transformation, 
@@ -5504,17 +5517,18 @@ let handle_class_type_field  acc =
          | {get = None; set = None}, _  -> 
            let ty = 
              match ty.ptyp_desc with 
-             | Ptyp_arrow ("", args, body) 
-               -> 
+             | Ptyp_arrow (label, args, body) 
+               ->
                Ast_util.to_method_type
-                 ty.ptyp_loc  self  args body
+                 ty.ptyp_loc  self label args body
 
-             | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
-               -> 
+             | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
+                                 ptyp_loc})
+               ->
                {ty with ptyp_desc = 
                           Ptyp_poly(strs,             
                                     Ast_util.to_method_type
-                                      ptyp_loc  self args body  )}
+                                      ptyp_loc  self label args body  )}
              | _ -> 
                self.typ self ty
            in 
@@ -5560,7 +5574,7 @@ let handle_class_type_field  acc =
                              private_flag,
                              virtual_flag,
                              Ast_util.to_method_type
-                               loc self ty
+                               loc self "" ty
                                (Ast_literal.type_unit ~loc ())
                             );
               pctf_attributes}
@@ -5590,19 +5604,22 @@ let handle_typ
     Ext_ref.non_exn_protect obj_type_as_js_obj_type true 
       (fun _ -> self.typ self ty )
   | {ptyp_attributes ;
-     ptyp_desc = Ptyp_arrow ("", args, body);
+     ptyp_desc = Ptyp_arrow (label, args, body);
+     (* let it go without regard label names, 
+        it will report error later when the label is not empty
+     *)     
      ptyp_loc = loc
    } ->
     begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
       | `Uncurry , ptyp_attributes ->
-        Ast_util.to_uncurry_type loc self args body 
-      |  `Meth_callback, ptyp_attributes -> 
-        Ast_util.to_method_callback_type loc self args body
+        Ast_util.to_uncurry_type loc self label args body 
+      |  `Meth_callback, ptyp_attributes ->
+        Ast_util.to_method_callback_type loc self label args body
       | `Method, ptyp_attributes ->
-        Ast_util.to_method_type loc self args body
+        Ast_util.to_method_type loc self label args body
       | `Nothing , _ -> 
         if !uncurry_type then 
-          Ast_util.to_uncurry_type loc  self  args body
+          Ast_util.to_uncurry_type loc  self  label args body
         else 
           Ast_mapper.default_mapper.typ self ty
     end
@@ -6453,6 +6470,10 @@ val to_out_channel : out_channel -> t
 
 val flush : t -> unit -> unit
 
+val pp_print_queue :
+  ?pp_sep:(Format.formatter -> unit -> unit) ->
+  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
+
 end = struct
 #1 "ext_format.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6558,6 +6579,9 @@ let to_out_channel = formatter_of_out_channel
 let flush = pp_print_flush
 
 let list = pp_print_list
+
+let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
+  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
 
 end
 module Ident_set : sig 
@@ -7605,8 +7629,6 @@ type ident = Ident.t
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pchar_to_int
-  | Pchar_of_int
   | Pgetglobal of ident
   | Psetglobal of ident
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
@@ -7709,11 +7731,15 @@ type switch  =
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
+and apply_status =
+  | App_na
+  | App_ml_full
+  | App_js_full      
 and apply_info = private
   { fn : t ; 
     args : t list ; 
     loc : Location.t;
-    status : Lambda.apply_status
+    status : apply_status
   }
 
 and prim_info = private
@@ -7769,7 +7795,7 @@ type unop = t ->  t
 val var : ident -> t
 val const : Lambda.structured_constant -> t
 
-val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
+val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
   arity:int ->
   kind:Lambda.function_kind -> params:ident list -> body:t -> t
@@ -7860,8 +7886,6 @@ type ident = Ident.t
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pchar_to_int
-  | Pchar_of_int
   (* Globals *)
   | Pgetglobal of ident
   | Psetglobal of ident
@@ -7977,11 +8001,15 @@ and prim_info =
   { primitive : primitive ; 
     args : t list ; 
   }
+and apply_status =
+  | App_na
+  | App_ml_full
+  | App_js_full    
 and apply_info = 
   { fn : t ; 
     args : t list ; 
     loc : Location.t;
-    status : Lambda.apply_status
+    status : apply_status
   }
 and function_info = 
   { arity : int ; 
@@ -8015,6 +8043,7 @@ and t =
   *)
 
 
+
 module Prim = struct 
   type t = primitive
   let mk name arity = 
@@ -8032,7 +8061,6 @@ module Prim = struct
   let js_is_nil_undef : t  = 
     mk "js_is_nil_undef" 1 
 end
-
 
 
 
@@ -8331,10 +8359,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pbytes_to_string 
     -> prim ~primitive:Pbytes_to_string ~args
   | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args
-  | Pchar_to_int -> prim ~primitive:Pchar_to_int ~args
-  | Pchar_of_int -> prim ~primitive:Pchar_of_int ~args
-  | Pmark_ocaml_object -> 
-    begin match args with [l] -> l | _ -> assert false end
   | Pignore -> (* Pignore means return unit, it is not an nop *)
     begin match args with [x] -> seq x unit | _ -> assert false end
   | Prevapply loc 
@@ -8491,7 +8515,7 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lvar x -> Lvar x 
   | Lconst x -> 
     Lconst x 
-  | Lapply (fn,args,info) 
+  | Lapply (fn,args,loc) 
     ->  
     begin match fn with 
     | Lprim (
@@ -8528,7 +8552,7 @@ let rec convert (lam : Lambda.lambda) : t =
         end
     | _ -> 
         apply (convert fn) (List.map convert args) 
-          info.apply_loc info.apply_status
+          loc App_na
     end
   | Lfunction (kind,  params,body)
     ->  function_ 
@@ -9111,8 +9135,6 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
-  | Pchar_to_int  -> fprintf ppf "char_to_int"
-  | Pchar_of_int -> fprintf ppf "char_of_int"
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
@@ -9913,8 +9935,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
       | Pbytes_to_string 
       | Pbytes_of_string 
-      | Pchar_to_int (* might throw .. *)
-      | Pchar_of_int  
+      
 
 
       | Pgetglobal _ 
@@ -11388,7 +11409,7 @@ val is_function : Lam.t -> bool
 
 val eta_conversion : 
   int ->
-  Location.t -> Lambda.apply_status -> Lam.t -> Lam.t list -> Lam.t
+  Location.t -> Lam.apply_status -> Lam.t -> Lam.t list -> Lam.t
 
 
 
@@ -15847,6 +15868,93 @@ let cmj_data_sets = String_map.of_list [
   
 ]
 end
+module Bs_exception : sig 
+#1 "bs_exception.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error =
+  | Cmj_not_found of string
+  | Bs_cyclic_depends of string  list
+
+val error : error -> 'a 
+
+end = struct
+#1 "bs_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type error =
+  | Cmj_not_found of string
+  | Bs_cyclic_depends of string  list
+        
+exception Error of error
+
+let error err = raise (Error err)
+
+let report_error ppf = function
+  | Cmj_not_found s ->
+    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
+  | Bs_cyclic_depends  str
+    ->
+    Format.fprintf ppf "Cyclic depends : @[%a@]"
+      (Format.pp_print_list ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      str       
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err
+        -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
+
+
+end
 module Config_util : sig 
 #1 "config_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15960,8 +16068,9 @@ let find_cmj file =
         ->     
         Ext_log.warn __LOC__ "@[%s not found @]" file ;
         Js_cmj_format.no_pure_dummy 
-    else 
-      Ext_pervasives.failwithf ~loc:__LOC__ "@[ %s not found @]"   file 
+    else
+      Bs_exception.error (Cmj_not_found file)      
+
 
 
 end
@@ -17067,13 +17176,15 @@ module Ast_extract : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+
 type ast = 
   | Ml of Parsetree.structure * string  (* outputprefix *)
   | Mli of Parsetree.signature * string (* outputprefix *)
 
 type  info = 
-  { source_file : string ; 
-    ast : ast
+  { source_file : string; 
+    ast : ast;
+    module_name : string     
   }
 
 (** 
@@ -17088,8 +17199,10 @@ type  info =
    for mapping, the key is the module and value is filename
 *)
 
-val prepare : 
-  (string, ast) Hashtbl.t -> string list * (string, string) Hashtbl.t
+val prepare :
+  (string, ast) Hashtbl.t -> string Queue.t * (string, string) Hashtbl.t  
+
+
 
 
 
@@ -17121,11 +17234,11 @@ end = struct
 
 
 
+module String_set = Depend.StringSet
 
-
-let read_parse_and_extract ast extract_function : Depend.StringSet.t =
-  Depend.free_structure_names := Depend.StringSet.empty;
-  (let bound_vars = Depend.StringSet.empty in
+let read_parse_and_extract ast extract_function : String_set.t =
+  Depend.free_structure_names := String_set.empty;
+  (let bound_vars = String_set.empty in
   List.iter
     (fun modname  ->
       Depend.open_module bound_vars (Longident.Lident modname))
@@ -17142,93 +17255,98 @@ type ast =
 
 type  info = 
   { source_file : string ; 
-    ast : ast
+    ast : ast;
+    module_name : string     
   }
 
-let file_dependencies (files : (info * Depend.StringSet.t) list ref)
-    source_file ast  =
-  let extracted_deps =
-    read_parse_and_extract ast 
-     (  match ast with
-     | Ml (ast,_) -> fun set _ ->  Depend.add_implementation set ast 
-     | Mli (ast,_) -> fun set _ ->   Depend.add_signature set ast ) in
-  files := ({source_file ; ast }, extracted_deps) :: !files
 
-
-let normalize tbl file  =
-  let module_name = 
+let module_name_of_file file =
     String.capitalize 
-      (Filename.chop_extension @@ Filename.basename file)  in
-  Hashtbl.add tbl module_name file;
-  (* could have both mli and ml *)
-  module_name 
-
-let merge tbl (files : (info * Depend.StringSet.t) list ) : 
-  (string, Depend.StringSet.t) Hashtbl.t  
-  =
+      (Filename.chop_extension @@ Filename.basename file)  
 
 
-  let domain = 
-    Depend.StringSet.of_list 
-      (List.map (fun ({ source_file },_)-> normalize tbl source_file) files) in
-  let local_tbl = Hashtbl.create 31 in 
-  List.iter 
-    (fun  ({source_file = file; _}, deps) ->
-       let modname = String.capitalize 
-           (Filename.chop_extension @@ Filename.basename file) in
-       match Hashtbl.find local_tbl modname with 
+let merge (files : (info * String_set.t) list )  =
+  let tbl = Hashtbl.create 31 in     
+  let domain =
+    List.fold_left
+      (fun acc ({ source_file ; module_name}, _)
+        ->
+          Hashtbl.add tbl module_name source_file;
+          String_set.add module_name acc           
+      ) String_set.empty files in
+
+  tbl,domain, List.fold_left
+    (fun  acc ({source_file = file; module_name  ; _}, deps) ->
+       match String_map.find  module_name acc with 
        | new_deps -> 
-         Hashtbl.replace local_tbl modname 
-           (Depend.StringSet.inter domain 
-              (Depend.StringSet.union deps new_deps))
+         String_map.add  module_name
+           (String_set.inter domain 
+              (String_set.union deps new_deps)) acc
        | exception Not_found -> 
-         Hashtbl.add local_tbl  modname (Depend.StringSet.inter deps domain)
-    ) files  ;
-  local_tbl
+         String_map.add  module_name
+           (String_set.inter deps domain) acc
+    ) String_map.empty  files
 
 
-let sort_files_by_dependencies tbl files
-    =
-  let h = merge tbl files in
-  let worklist = Ext_list.create_ref_empty () in
-  let ()= 
-    Hashtbl.iter (fun key _     ->  Ext_list.ref_push key worklist) h in
-  let result = Ext_list.create_ref_empty () in
-  let visited = Hashtbl.create 31 in
-  while not @@ Ext_list.ref_empty worklist do 
-    let current = Ext_list.ref_top worklist  in 
+
+  
+let sort_files_by_dependencies  files
+  =
+  let tbl, domain, h  = merge  files in
+  let next current =
+    String_set.elements (String_map.find  current h) in    
+  let worklist = ref domain in
+
+  let result = Queue.create () in
+  let visited = Hashtbl.create 31 in (* Temporary mark *)  
+
+  (* only visit nodes that are currently in the domain *)
+  (* https://en.wikipedia.org/wiki/Topological_sorting *)
+  (* dfs   *)
+  let rec visit path current =
     if Hashtbl.mem visited current then
-      ignore (Ext_list.ref_pop worklist)
-    else 
-      match Depend.StringSet.elements (Hashtbl.find h current) with 
-      | depends -> 
-          let really_depends = 
-            List.filter 
-              (fun x ->  (Hashtbl.mem h x && (not (Hashtbl.mem visited x ))))
-              depends in
-          begin match really_depends with 
-          |[] -> 
-            begin
-              let v = Ext_list.ref_pop worklist in 
-              Hashtbl.add visited  v () ;
-              Ext_list.ref_push current result 
-            end
-          | _ -> 
-              List.iter  (fun x -> Ext_list.ref_push x worklist) really_depends
-          end
-      | exception Not_found ->  assert false 
+      Bs_exception.error (Bs_cyclic_depends path)
+    else if String_set.mem current !worklist then
+      begin
+        Hashtbl.add visited current () ;
+        let depends = next current in
+        List.iter
+          (fun node ->
+             if  String_map.mem node  h then
+               visit (current::path) node)
+          depends ;
+        worklist := String_set.remove  current !worklist;
+        Queue.push current result ;
+        Hashtbl.remove visited current;
+      end in        
+  while not (String_set.is_empty !worklist) do 
+    visit  [] (String_set.choose !worklist)
   done;
-  result
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter
+      "Order: @[%a@]@."    
+      (Ext_format.pp_print_queue
+         ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      result ;       
+  result,tbl 
 ;;
 
 
 
 let prepare  ast_table = 
-  let tbl = Hashtbl.create 31 in 
-  let files = ref [] in
-  Hashtbl.iter (fun sourcefile ast  -> file_dependencies files sourcefile ast) ast_table;
-  let stack = sort_files_by_dependencies tbl !files in 
-  !stack, tbl 
+  let file_dependencies 
+      source_file ast  acc =
+    let extracted_deps =
+      read_parse_and_extract ast 
+        (  match ast with
+           | Ml (ast,_) -> fun set _ ->  Depend.add_implementation set ast 
+           | Mli (ast,_) -> fun set _ ->   Depend.add_signature set ast ) in
+    ({source_file ; ast ; module_name = module_name_of_file source_file },
+     extracted_deps) :: acc  in
+  let files = Hashtbl.fold file_dependencies ast_table []  in
+  sort_files_by_dependencies  files 
+
 
 
 end
@@ -23673,16 +23791,6 @@ let translate
          in the first step [ (x - 1) > 1 or ( x - 1 ) < 0 ]
       *)
       | [range; e] -> E.is_out e range
-      | _ -> assert false
-    end
-  | Pchar_of_int -> 
-    begin match args with 
-      | [e] -> Js_of_lam_string.caml_char_of_int e 
-      | _ -> assert false
-    end
-  | Pchar_to_int -> 
-    begin match args with 
-      | [e] -> Js_of_lam_string.caml_char_to_int e 
       | _ -> assert false
     end
   | Pbytes_of_string -> 
@@ -31321,7 +31429,9 @@ let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg;
   arg
 
-let after_parsing_sig ppf sourcefile outputprefix ast  = 
+let after_parsing_sig ppf sourcefile outputprefix ast  =
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter "Building %s@." sourcefile;    
   let modulename = module_of_filename ppf sourcefile outputprefix in
   let initial_env = Compmisc.initial_env () in
   Env.set_unit_name modulename;
@@ -31349,6 +31459,8 @@ let interface ppf sourcefile outputprefix =
   |> after_parsing_sig ppf sourcefile outputprefix 
 
 let after_parsing_impl ppf sourcefile outputprefix ast =
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter "Building %s@." sourcefile;      
   let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
   let env = Compmisc.initial_env() in
   Env.set_unit_name modulename;
@@ -31372,14 +31484,17 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
               sourcefile  outputprefix lambda  with
           | e -> e 
           | exception e -> 
-            (* Save to a file instead so that it will not scare user *)            
-            let file = "bsc.dump" in
-            Ext_pervasives.with_file_as_chan file
-              (fun ch -> output_string ch @@             
-                Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
-            Ext_log.err __LOC__
-              "Compilation fatal error, stacktrace saved into %s when compiling %s"
-              file sourcefile;             
+            (* Save to a file instead so that it will not scare user *)
+            if Js_config.get_diagnose () then
+              begin              
+                let file = "bsc.dump" in
+                Ext_pervasives.with_file_as_chan file
+                  (fun ch -> output_string ch @@             
+                    Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
+                Ext_log.err __LOC__
+                  "Compilation fatal error, stacktrace saved into %s when compiling %s"
+                  file sourcefile;
+              end;            
             raise e             
         );
     end;
@@ -31469,9 +31584,8 @@ let batch_compile ppf files =
             (Mli (Ocaml_parse.parse_interface ppf name, opref))
 
       end;
-      let stack,mapping = Ast_extract.prepare batch_files in 
-      stack |> Ext_list.rev_iter (fun modname -> 
-          (* prerr_endline ("compiling " ^ modname);  *)
+      let stack, mapping = Ast_extract.prepare batch_files in 
+      stack |> Queue.iter (fun modname -> 
           match Hashtbl.find_all mapping modname with
           | [] -> ()
           | [sourcefile] -> 
