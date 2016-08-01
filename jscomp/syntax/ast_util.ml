@@ -427,7 +427,7 @@ let record_as_js_object
   let pval_type = from_labels ~loc labels in 
   let pval_attributes = Ast_attributes.bs_obj pval_type in 
   let local_fun_name = "mk" in
-  let pval_prim = 
+  let pval_type, pval_prim = 
     Ast_external_attributes.handle_attributes_as_string
       loc 
       local_fun_name

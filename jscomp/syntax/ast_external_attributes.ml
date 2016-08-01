@@ -198,28 +198,27 @@ let handle_attributes
     let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
     let st = 
       List.fold_left 
-        (fun 
-          ( st)
+        (fun st
           (({txt ; loc}, payload) : Ast_attributes.attr) 
-          ->  
+          ->
+            (* can be generalized into 
+               {[
+                 [@@bs.val]
+               ]}
+               and combined with 
+               {[
+                 [@@bs.value] [@@bs.module]
+               ]}
+            *)
+
             begin match txt with 
               | "bs.val" ->  
-                (* can be generalized into 
-                   {[
-                     [@@bs.val]
-                   ]}
-                   and combined with 
-                   {[
-                     [@@bs.value] [@@bs.module]
-                   ]}
-                *)
                 begin match arg_types with 
                 | [] -> 
                   {st with val_name = name_from_payload_or_prim payload}
                 | _ -> 
                   {st with call_name = name_from_payload_or_prim payload}
                 end
-              (* | "bs.val" -> {st with call_name = name_from_payload_or_prim payload} *)
               | "bs.module" -> 
                 begin match Ast_payload.assert_strings loc payload with 
                   | [name] ->
@@ -249,7 +248,7 @@ let handle_attributes
               | "bs.get_index"-> {st with get_index = true}
               | "bs.obj" -> {st with mk_obj = true}
               | "bs.type"
-              | _ -> st (* warning*)
+              | _ -> st (* TODO: warning*)
             end
         )
          init_st prim_attributes in 
@@ -430,6 +429,7 @@ let handle_attributes
         -> Location.raise_errorf ~loc "conflict attributes found"
       | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
     check_ffi ~loc ffi;
+    type_annotation,
     (match ffi , prim_name with
     | Obj_create _ , _ -> prim_name
     | _ , "" -> pval_prim
@@ -440,8 +440,8 @@ let handle_attributes_as_string
     pval_loc
     pval_prim 
     typ attrs v = 
-  let prim_name, ffi = 
-    (handle_attributes pval_loc pval_prim typ attrs v ) in
-  [prim_name; to_string ffi]
+  let pval_type, prim_name, ffi = 
+    handle_attributes pval_loc pval_prim typ attrs v  in
+  pval_type, [prim_name; to_string ffi]
     
 
