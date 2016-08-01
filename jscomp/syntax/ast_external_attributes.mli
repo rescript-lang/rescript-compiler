@@ -53,8 +53,8 @@ type arg_type =
   | `Unit
   | `Nothing
   ]
-type arg_label =
-  [ `Label of string | `Optional of string | `Empty]
+type arg_label = Ast_core_type.arg_label 
+
 type arg_kind = 
   {
     arg_type : arg_type;

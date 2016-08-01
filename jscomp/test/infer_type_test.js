@@ -6,8 +6,7 @@ var hh = {
   lo: 20
 };
 
-var v = hh.width;
+hh.width;
 
 exports.hh = hh;
-exports.v  = v;
 /* hh Not a pure module */

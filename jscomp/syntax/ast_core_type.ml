@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = Parsetree.core_type 
-
+open Ast_helper
 (** TODO check the polymorphic *)
 let list_of_arrow (ty : t) = 
   let rec aux (ty : Parsetree.core_type) acc = 
@@ -124,3 +124,19 @@ let string_type (ty : t) =
 
     | `Nothing -> `Nothing
       
+
+
+let from_labels ~loc tyvars (labels : string list)
+  : t = 
+  let result_type =
+    Ast_comb.to_js_type loc  
+     (Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed)
+  in 
+  List.fold_right2 
+    (fun label tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+
+
+type arg_label =
+  [ `Label of string | `Optional of string | `Empty]
+
+

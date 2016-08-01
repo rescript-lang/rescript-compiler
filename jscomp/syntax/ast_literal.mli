@@ -45,6 +45,8 @@ module Lid : sig
   val js_undefined : t
   val js_null_undefined : t 
 
+  val pervasives_js_undefined : t
+    
   val pervasives_re_id : t 
   val js_re_id : t 
 

@@ -56,8 +56,9 @@ type arg_type =
   | `Unit
   | `Nothing
   ]
-type arg_label =
-  [ `Label of string | `Optional of string | `Empty]
+
+type arg_label = Ast_core_type.arg_label
+
 type arg_kind = 
   {
     arg_type : arg_type;
@@ -195,7 +196,8 @@ let handle_attributes
     | Some _ as val_name ->  val_name
     | None -> Some prim_name_or_pval_prim
     in 
-    let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
+    let result_type_ty, arg_types_ty =
+      Ast_core_type.list_of_arrow type_annotation in
     let st = 
       List.fold_left 
         (fun st
@@ -213,7 +215,7 @@ let handle_attributes
 
             begin match txt with 
               | "bs.val" ->  
-                begin match arg_types with 
+                begin match arg_types_ty with 
                 | [] -> 
                   {st with val_name = name_from_payload_or_prim payload}
                 | _ -> 
@@ -261,8 +263,8 @@ let handle_attributes
       List.map (fun (label, ty) -> 
           { arg_label = Ast_core_type.label_name label ;
             arg_type =  aux ty 
-          }) arg_types in
-    let result_type = aux result_type in 
+          }) arg_types_ty in
+    let result_type = aux result_type_ty in 
     let ffi = 
       match st with 
       | {mk_obj = true} -> 
@@ -429,7 +431,22 @@ let handle_attributes
         -> Location.raise_errorf ~loc "conflict attributes found"
       | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
     check_ffi ~loc ffi;
-    type_annotation,
+    (match ffi, result_type_ty with
+     | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
+       ->
+       let result =
+         Ast_comb.to_js_type loc @@
+         Ast_helper.Typ.object_  ~loc   (
+         List.fold_right2  (fun arg label acc ->
+           match arg, label with
+           | (_, ty), `Label s
+             -> (s , [], ty) :: acc                 
+           | (_, ty), `Optional s
+             ->  (s, [], Ast_comb.to_js_undefined_type loc ty) :: acc
+           | (_, _), `Empty -> acc                
+           ) arg_types_ty arg_labels []) Closed  in
+       Ast_core_type.replace_result type_annotation result 
+     | _, _ -> type_annotation) ,
     (match ffi , prim_name with
     | Obj_create _ , _ -> prim_name
     | _ , "" -> pval_prim

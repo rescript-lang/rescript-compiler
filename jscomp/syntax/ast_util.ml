@@ -36,10 +36,6 @@ type uncurry_type_gen =
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
-let js_obj_type_id () = 
-  if Js_config.is_browser () then
-    Ast_literal.Lid.pervasives_js_obj
-  else Ast_literal.Lid.js_obj 
     
 let uncurry_type_id () = 
   if Js_config.is_browser () then 
@@ -103,8 +99,6 @@ let lift_js_method_callback loc
 *)
 
 
-let to_js_type loc  x  = 
-  Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 
 let arrow = Typ.arrow
 
@@ -114,7 +108,7 @@ let js_property loc obj name =
   let downgrade ~loc () = 
     let var = Typ.var ~loc "a" in 
     Ast_comb.arrow_no_label ~loc
-      (to_js_type loc var) var
+      (Ast_comb.to_js_type loc var) var
   in
   Ast_external.local_extern_cont loc  
     ~pval_prim:[Literals.js_unsafe_downgrade] 
@@ -305,16 +299,6 @@ let to_uncurry_fn   =
 let to_method_callback  = 
   generic_to_uncurry_exp `Method_callback 
 
-let from_labels ~loc (labels : Asttypes.label list) : Parsetree.core_type = 
-  let arity = List.length labels in 
-  let tyvars = (Ext_list.init arity (fun i ->      
-      Typ.var ~loc ("a" ^ string_of_int i))) in 
-  let result_type =
-    to_js_type loc  
-     (Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed)
-  in 
-  List.fold_right2 
-    (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
 
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
@@ -411,6 +395,7 @@ let handle_raw_structure loc payload =
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   end
 
+
 let record_as_js_object 
     loc 
     (self : Ast_mapper.mapper)
@@ -419,12 +404,16 @@ let record_as_js_object
   let labels, args = 
     Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
         match txt with
-        | Longident.Lident x -> (x, (x, self.expr self e))
+        | Longident.Lident x ->
+          (x, (x, self.expr self e))
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label "
   ) label_exprs in 
+  let arity = List.length labels in 
+  let tyvars = (Ext_list.init arity (fun i ->      
+      Typ.var ~loc ("a" ^ string_of_int i))) in 
   
-  let pval_type = from_labels ~loc labels in 
+  let pval_type = Ast_core_type.from_labels ~loc tyvars labels in 
   let pval_attributes = Ast_attributes.bs_obj pval_type in 
   let local_fun_name = "mk" in
   let pval_type, pval_prim = 

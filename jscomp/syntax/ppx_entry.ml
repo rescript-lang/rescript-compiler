@@ -267,7 +267,7 @@ let handle_typ
         with ptyp_desc = Ptyp_object(methods, closed_flag);
              ptyp_attributes } in 
     if !obj_type_as_js_obj_type then 
-      Ast_util.to_js_type loc inner_type          
+      Ast_comb.to_js_type loc inner_type          
     else inner_type
   | _ -> super.typ self ty
 

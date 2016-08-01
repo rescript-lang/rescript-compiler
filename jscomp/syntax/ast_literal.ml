@@ -24,6 +24,7 @@
 
 open Ast_helper
 
+let pervasives = "Pervasives"
 module Lid = struct 
   type t = Longident.t 
   let val_unit : t = Lident "()"
@@ -35,25 +36,33 @@ module Lid = struct
 
 
   let js_fn = Longident.Ldot (Lident "Js", "fn")
-  let pervasives_fn = Longident.Ldot (Lident "Pervasives", "js_fn")
+  let pervasives_fn = Longident.Ldot (Lident pervasives, "js_fn")
 
   let js_meth = Longident.Ldot (Lident "Js", "meth")
-  let pervasives_meth = Longident.Ldot (Lident "Pervasives", "js_meth")
+  let pervasives_meth = Longident.Ldot (Lident pervasives, "js_meth")
 
 
   let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
-  let pervasives_meth_callback = Longident.Ldot (Lident "Pervasives", "js_meth_callback")
+  let pervasives_meth_callback = Longident.Ldot (Lident pervasives, "js_meth_callback")
 
   let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_t") 
+  let pervasives_js_obj = Longident.Ldot (Lident pervasives, "js_t") 
 
-  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+  let ignore_id = Longident.Ldot (Lident pervasives, "ignore")
 
   let js_null  = Longident.Ldot (Lident "Js", "null")
   let js_undefined = Longident.Ldot (Lident "Js", "undefined")
   let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
 
-  let pervasives_re_id = Longident.Ldot (Lident "Pervasives", "js_re")
+  let pervasives_js_null =
+    Longident.Ldot (Lident pervasives, "js_null")
+  let pervasives_js_undefined =
+    Longident.Ldot (Lident pervasives, "js_undefined")
+
+  let pervasives_js_null_undefined =
+    Longident.Ldot (Lident pervasives, "null_undefined")
+      
+  let pervasives_re_id = Longident.Ldot (Lident pervasives, "js_re")
   let js_re_id = Longident.Ldot (Lident "Js_re", "t")
 
   let js_unsafe = Longident.Lident "Js_unsafe"
