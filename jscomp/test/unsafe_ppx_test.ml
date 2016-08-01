@@ -48,7 +48,13 @@ let empty = ([%bs.raw {| Object.keys|} ] :  _ -> string array [@bs]) 3 [@bs]
 
 let v = test 1 2 
 
+(* type v = width:int -> int [@bs] *)
+(* class type t = object *)
+(*   method exit : ?code:int -> unit -> unit *)
+(* end [@bs] *)
+(* see #570 *)
 
+type vv = int -> int [@bs]    
 
 ;; Mt.from_pair_suites __FILE__ Mt.[
     "unsafe_max", (fun _ -> Eq(2., max 1. 2. [@bs]));

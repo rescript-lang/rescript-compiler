@@ -89,17 +89,18 @@ let handle_class_type_field  acc =
          | {get = None; set = None}, _  -> 
            let ty = 
              match ty.ptyp_desc with 
-             | Ptyp_arrow ("", args, body) 
-               -> 
+             | Ptyp_arrow (label, args, body) 
+               ->
                Ast_util.to_method_type
-                 ty.ptyp_loc  self  args body
+                 ty.ptyp_loc  self label args body
 
-             | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow ("", args, body); ptyp_loc})
-               -> 
+             | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
+                                 ptyp_loc})
+               ->
                {ty with ptyp_desc = 
                           Ptyp_poly(strs,             
                                     Ast_util.to_method_type
-                                      ptyp_loc  self args body  )}
+                                      ptyp_loc  self label args body  )}
              | _ -> 
                self.typ self ty
            in 
@@ -145,7 +146,7 @@ let handle_class_type_field  acc =
                              private_flag,
                              virtual_flag,
                              Ast_util.to_method_type
-                               loc self ty
+                               loc self "" ty
                                (Ast_literal.type_unit ~loc ())
                             );
               pctf_attributes}
@@ -175,19 +176,22 @@ let handle_typ
     Ext_ref.non_exn_protect obj_type_as_js_obj_type true 
       (fun _ -> self.typ self ty )
   | {ptyp_attributes ;
-     ptyp_desc = Ptyp_arrow ("", args, body);
+     ptyp_desc = Ptyp_arrow (label, args, body);
+     (* let it go without regard label names, 
+        it will report error later when the label is not empty
+     *)     
      ptyp_loc = loc
    } ->
     begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
       | `Uncurry , ptyp_attributes ->
-        Ast_util.to_uncurry_type loc self args body 
-      |  `Meth_callback, ptyp_attributes -> 
-        Ast_util.to_method_callback_type loc self args body
+        Ast_util.to_uncurry_type loc self label args body 
+      |  `Meth_callback, ptyp_attributes ->
+        Ast_util.to_method_callback_type loc self label args body
       | `Method, ptyp_attributes ->
-        Ast_util.to_method_type loc self args body
+        Ast_util.to_method_type loc self label args body
       | `Nothing , _ -> 
         if !uncurry_type then 
-          Ast_util.to_uncurry_type loc  self  args body
+          Ast_util.to_uncurry_type loc  self  label args body
         else 
           Ast_mapper.default_mapper.typ self ty
     end
