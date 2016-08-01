@@ -100,27 +100,28 @@ let as_record_and_process
   | _ -> 
     Location.raise_errorf ~loc "this is not a valid record config"
 
-let is_string_or_strings (x : t) : 
-  [ `None | `Single of string | `Some of string list ] = 
+
+
+let assert_strings loc (x : t) : string list
+   = 
   let module M = struct exception Not_str end  in 
   match x with 
   | PStr [ {pstr_desc =  
               Pstr_eval (
                 {pexp_desc = 
-                   Pexp_apply
-                     ({pexp_desc = Pexp_constant (Const_string (name,_)); _},
-                      args
-                     );
+                   Pexp_tuple strs;
                  _},_);
+            pstr_loc = loc ;            
             _}] ->
     (try 
-       `Some (name :: (args |> List.map (fun (_label,e) ->
+        strs |> List.map (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
              name
-           | _ -> raise M.Not_str)))
-
-     with M.Not_str -> `None )
+           | _ -> raise M.Not_str)
+     with M.Not_str ->
+       Location.raise_errorf ~loc "expect string tuple list"
+    )
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
@@ -128,9 +129,11 @@ let is_string_or_strings (x : t) :
              Pexp_constant 
                (Const_string (name,_));
            _},_);
-      _}] -> `Single name 
-  | _ -> `None
-
+      _}] ->  [name] 
+  | PStr [] ->  []
+  | PStr _                
+  | PTyp _ | PPat _ ->
+    Location.raise_errorf ~loc "expect string tuple list"
 let assert_bool_lit  (e : Parsetree.expression) = 
   match e.pexp_desc with
   | Pexp_construct ({txt = Lident "true" }, None)
