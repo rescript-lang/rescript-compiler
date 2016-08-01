@@ -32,7 +32,8 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (Parsetree.core_type ->
+  (string ->
+   Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
 let js_obj_type_id () = 
@@ -189,9 +190,12 @@ let method_apply loc self obj name args =
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-let generic_to_uncurry_type kind loc (mapper : Ast_mapper.mapper)
+let generic_to_uncurry_type  kind loc (mapper : Ast_mapper.mapper) label
     (first_arg : Parsetree.core_type) 
-    (typ : Parsetree.core_type)  = 
+    (typ : Parsetree.core_type)  =
+  if label <> "" then
+    Location.raise_errorf ~loc "label is not allowed";                 
+
   let rec aux acc (typ : Parsetree.core_type) = 
     (* in general, 
        we should collect [typ] in [int -> typ] before transformation, 
