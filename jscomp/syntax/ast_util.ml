@@ -105,20 +105,23 @@ let arrow = Typ.arrow
 
 let js_property loc obj name =
   if Js_config.is_browser () then
-  let downgrade ~loc () = 
-    let var = Typ.var ~loc "a" in 
-    Ast_comb.arrow_no_label ~loc
-      (Ast_comb.to_js_type loc var) var
-  in
-  Ast_external.local_extern_cont loc  
-    ~pval_prim:[Literals.js_unsafe_downgrade] 
-    ~pval_type:(downgrade ~loc ())
-    ~local_fun_name:"cast" 
-    (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
+    let downgrade ~loc () = 
+      let var = Typ.var ~loc "a" in 
+      Ast_comb.arrow_no_label ~loc
+        (Ast_comb.to_js_type loc var) var
+    in
+    Ast_external.local_extern_cont loc  
+      ~pval_prim:[Literals.js_unsafe_downgrade] 
+      ~pval_type:(downgrade ~loc ())
+      ~local_fun_name:"cast" 
+      (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
   else 
     Parsetree.Pexp_send
-      ((Exp.apply (Exp.ident {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
-       ["",obj]), name)
+      ((Exp.apply ~loc
+          (Exp.ident ~loc
+             {loc;
+              txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+          ["",obj]), name)
 
 (* TODO: 
    have a final checking for property arities 
