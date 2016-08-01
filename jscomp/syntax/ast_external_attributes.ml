@@ -442,7 +442,16 @@ let handle_attributes
            | (_, ty), `Label s
              -> (s , [], ty) :: acc                 
            | (_, ty), `Optional s
-             ->  (s, [], Ast_comb.to_js_undefined_type loc ty) :: acc
+             ->
+             begin match (ty : Ast_core_type.t) with
+               | {ptyp_desc =
+                    Ptyp_constr({txt =
+                                   Ldot (Lident "*predef*", "option") },
+                                [ty])}
+                 ->                
+                 (s, [], Ast_comb.to_js_undefined_type loc ty) :: acc
+               | _ -> assert false                 
+             end                 
            | (_, _), `Empty -> acc                
            ) arg_types_ty arg_labels []) Closed  in
        Ast_core_type.replace_result type_annotation result 
