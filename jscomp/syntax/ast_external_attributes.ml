@@ -185,13 +185,15 @@ let handle_attributes
     (loc : Bs_loc.t)
     (pval_prim : string ) 
     (type_annotation : Parsetree.core_type)
-    (prim_attributes : Ast_attributes.t) (prim_name : string) = 
-    let name_from_payload_or_prim payload = 
-      match Ast_payload.is_single_string payload with 
-      | Some _ as val_name ->  val_name
-      | None -> 
-        if String.length prim_name = 0 then Some pval_prim
-        else Some prim_name  (* need check name *)
+    (prim_attributes : Ast_attributes.t) (prim_name : string) =
+  let prim_name_or_pval_prim =
+    if String.length prim_name = 0 then  pval_prim
+    else  prim_name  (* need check name *)
+  in    
+  let name_from_payload_or_prim payload = 
+    match Ast_payload.is_single_string payload with 
+    | Some _ as val_name ->  val_name
+    | None -> Some prim_name_or_pval_prim
     in 
     let result_type, arg_types = Ast_core_type.list_of_arrow type_annotation in
     let st = 
@@ -218,11 +220,23 @@ let handle_attributes
                   {st with call_name = name_from_payload_or_prim payload}
                 end
               (* | "bs.val" -> {st with call_name = name_from_payload_or_prim payload} *)
-              | "bs.val_of_module"
-                -> { st with
-                     val_of_module = 
-                       Some { bundle = prim_name ; bind_name = Ast_payload.is_single_string payload}
-                   }
+              | "bs.module" -> 
+                begin match Ast_payload.assert_strings loc payload with 
+                  | [name] ->
+                    {st with external_module_name =
+                               Some {bundle=name; bind_name = None}}
+                  | [bundle;bind_name] -> 
+                    {st with external_module_name =
+                               Some {bundle; bind_name = Some bind_name}}
+                  | [] ->
+                    { st with
+                      val_of_module = 
+                        Some
+                          { bundle = prim_name_or_pval_prim ;
+                            bind_name = Some pval_prim}
+                    }                      
+                  | _  -> Location.raise_errorf ~loc "Illegal attributes"
+                end
               | "bs.splice" -> {st with splice = true}
               | "bs.send" -> 
                 { st with val_send = name_from_payload_or_prim payload}
@@ -230,14 +244,6 @@ let handle_attributes
                 {st with set_name = name_from_payload_or_prim payload}
               | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
 
-              | "bs.module" -> 
-                let external_module_name = 
-                  begin match Ast_payload.is_string_or_strings payload with 
-                    | `Single name -> Some {bundle=name; bind_name = None}
-                    | `Some [bundle;bind_name] -> 
-                      Some {bundle; bind_name = Some bind_name}
-                    | `Some _| `None  -> Location.raise_errorf ~loc "Illegal attributes"
-                  end in {st with external_module_name}
               | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
               | "bs.set_index" -> {st with set_index = true}
               | "bs.get_index"-> {st with get_index = true}
@@ -337,10 +343,7 @@ let handle_attributes
 
         }
         ->
-        let name =
-          if String.length prim_name = 0 then  pval_prim
-          else  prim_name          
-        in
+        let name = prim_name_or_pval_prim in
         begin match arg_types with
           | [] -> Js_global {txt = name; external_module_name}
           | _ -> Js_call {txt = {splice; name}; external_module_name}                     

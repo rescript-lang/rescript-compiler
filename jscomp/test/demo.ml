@@ -3,22 +3,22 @@ external addChild : stackPanel -> #widget -> unit = "x" [@@bs.send]
 
 
 external new_HostedWindow : unit -> hostedWindow Js.t = "HostedWindow"
-    [@@bs.new ] [@@bs.module "@blp/ui" "BUI"]
+    [@@bs.new ] [@@bs.module "@blp/ui", "BUI"]
 
 external new_HostedContent : unit -> hostedContent Js.t = "" 
-    [@@bs.new "HostedContent"] [@@bs.module "@blp/ui" "BUI"]
+    [@@bs.new "HostedContent"] [@@bs.module "@blp/ui", "BUI"]
 
 external new_StackPanel : unit -> stackPanel Js.t = "" 
-    [@@bs.new "StackPanel"] [@@bs.module "@ui" "UI"]
+    [@@bs.new "StackPanel"] [@@bs.module "@ui", "UI"]
 
 external new_textArea : unit -> textArea Js.t = "" 
-    [@@bs.new "TextArea"] [@@bs.module "@ui" "UI"]
+    [@@bs.new "TextArea"] [@@bs.module "@ui", "UI"]
 
 external new_button : unit -> button Js.t = ""
-    [@@bs.new "Button"] [@@bs.module "@ui" "UI"]
+    [@@bs.new "Button"] [@@bs.module "@ui", "UI"]
 
 external new_grid : unit -> grid Js.t = ""
-    [@@bs.new "Grid"] [@@bs.module "@ui" "UI"]
+    [@@bs.new "Grid"] [@@bs.module "@ui", "UI"]
 
 (* Note, strictly speaking, it 's not returning a primitive string, it returns
    an object string *)
