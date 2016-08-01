@@ -39,8 +39,6 @@ type ident = Ident.t
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pchar_to_int
-  | Pchar_of_int
   | Pgetglobal of ident
   | Psetglobal of ident
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
@@ -143,11 +141,15 @@ type switch  =
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
+and apply_status =
+  | App_na
+  | App_ml_full
+  | App_js_full      
 and apply_info = private
   { fn : t ; 
     args : t list ; 
     loc : Location.t;
-    status : Lambda.apply_status
+    status : apply_status
   }
 
 and prim_info = private
@@ -203,7 +205,7 @@ type unop = t ->  t
 val var : ident -> t
 val const : Lambda.structured_constant -> t
 
-val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
+val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
   arity:int ->
   kind:Lambda.function_kind -> params:ident list -> body:t -> t

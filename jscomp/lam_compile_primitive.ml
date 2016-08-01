@@ -400,16 +400,6 @@ let translate
       | [range; e] -> E.is_out e range
       | _ -> assert false
     end
-  | Pchar_of_int -> 
-    begin match args with 
-      | [e] -> Js_of_lam_string.caml_char_of_int e 
-      | _ -> assert false
-    end
-  | Pchar_to_int -> 
-    begin match args with 
-      | [e] -> Js_of_lam_string.caml_char_to_int e 
-      | _ -> assert false
-    end
   | Pbytes_of_string -> 
     begin 
       (* TODO: write a js primitive  - or is it necessary ?
