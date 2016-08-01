@@ -38,8 +38,6 @@ type ident = Ident.t
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pchar_to_int
-  | Pchar_of_int
   (* Globals *)
   | Pgetglobal of ident
   | Psetglobal of ident
@@ -155,11 +153,15 @@ and prim_info =
   { primitive : primitive ; 
     args : t list ; 
   }
+and apply_status =
+  | App_na
+  | App_ml_full
+  | App_js_full    
 and apply_info = 
   { fn : t ; 
     args : t list ; 
     loc : Location.t;
-    status : Lambda.apply_status
+    status : apply_status
   }
 and function_info = 
   { arity : int ; 
@@ -193,6 +195,7 @@ and t =
   *)
 
 
+
 module Prim = struct 
   type t = primitive
   let mk name arity = 
@@ -210,7 +213,6 @@ module Prim = struct
   let js_is_nil_undef : t  = 
     mk "js_is_nil_undef" 1 
 end
-
 
 
 
@@ -509,10 +511,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pbytes_to_string 
     -> prim ~primitive:Pbytes_to_string ~args
   | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args
-  | Pchar_to_int -> prim ~primitive:Pchar_to_int ~args
-  | Pchar_of_int -> prim ~primitive:Pchar_of_int ~args
-  | Pmark_ocaml_object -> 
-    begin match args with [l] -> l | _ -> assert false end
   | Pignore -> (* Pignore means return unit, it is not an nop *)
     begin match args with [x] -> seq x unit | _ -> assert false end
   | Prevapply loc 
@@ -669,7 +667,7 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lvar x -> Lvar x 
   | Lconst x -> 
     Lconst x 
-  | Lapply (fn,args,info) 
+  | Lapply (fn,args,loc) 
     ->  
     begin match fn with 
     | Lprim (
@@ -706,7 +704,7 @@ let rec convert (lam : Lambda.lambda) : t =
         end
     | _ -> 
         apply (convert fn) (List.map convert args) 
-          info.apply_loc info.apply_status
+          loc App_na
     end
   | Lfunction (kind,  params,body)
     ->  function_ 

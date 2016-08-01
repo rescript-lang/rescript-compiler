@@ -69,8 +69,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
       | Pbytes_to_string 
       | Pbytes_of_string 
-      | Pchar_to_int (* might throw .. *)
-      | Pchar_of_int  
+      
 
 
       | Pgetglobal _ 

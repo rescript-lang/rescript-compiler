@@ -16,7 +16,7 @@ open Obj
 (**** Object representation ****)
 
 external set_id: 'a -> 'a = "caml_set_oo_id" "noalloc"
-external mark_ocaml_object: 'a -> 'a = "%mark_ocaml_object" 
+
 (**** Object copy ****)
 
 let copy o =
@@ -349,7 +349,7 @@ let dummy_class loc =
 
 let create_object table =
   (* XXX Appel de [obj_block] *)
-  let obj = mark_ocaml_object @@ Obj.new_block Obj.object_tag table.size in
+  let obj = Obj.new_block Obj.object_tag table.size in
   (* XXX Appel de [caml_modify] *)
   Obj.set_field obj 0 (Obj.repr table.methods);
   Obj.obj (set_id obj)
@@ -357,7 +357,7 @@ let create_object table =
 let create_object_opt obj_0 table =
   if (Obj.magic obj_0 : bool) then obj_0 else begin
     (* XXX Appel de [obj_block] *)
-    let obj = mark_ocaml_object @@ Obj.new_block Obj.object_tag table.size in
+    let obj = Obj.new_block Obj.object_tag table.size in
     (* XXX Appel de [caml_modify] *)
     Obj.set_field obj 0 (Obj.repr table.methods);
     Obj.obj (set_id obj)
