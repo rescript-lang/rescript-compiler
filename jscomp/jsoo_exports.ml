@@ -54,7 +54,13 @@ let export (field : string) v =
 ;;
  
 
-let () = JsooTop.initialize()
+let () = 
+  Sys.interactive := false;
+  Topdirs.dir_directory "/cmis";
+  Toploop.initialize_toplevel_env ();
+  Toploop.input_name := "//toplevel//";
+  Sys.interactive := true
+
 
 
 let _ =
