@@ -43,3 +43,10 @@ val string_type : t ->
     `NonNullString of (int * string) list |
     `NullString of (int * string) list  |
     `Nothing ]
+
+(** return a function type *)
+val from_labels :
+  loc:Location.t -> t list -> string list -> t
+
+type arg_label =
+  [ `Label of string | `Optional of string | `Empty]

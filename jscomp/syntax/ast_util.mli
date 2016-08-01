@@ -97,8 +97,6 @@ val to_method_type : uncurry_type_gen
 *)
 val to_method_callback_type : uncurry_type_gen
 
-val to_js_type : 
-  loc -> Parsetree.core_type -> Parsetree.core_type
 
 
 

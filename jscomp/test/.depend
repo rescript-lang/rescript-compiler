@@ -11,6 +11,7 @@ ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
 ext_sys.cmi :
 float_record.cmi :
 gpr_405_test.cmi :
+infer_type_test.cmi : ../runtime/js.cmj
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 js_dyn.cmi :
@@ -279,6 +280,8 @@ http_types.cmj : ../runtime/js.cmj
 http_types.cmx : ../runtime/js.cmx
 ignore_test.cmj : mt.cmi ../runtime/js.cmj
 ignore_test.cmx : mt.cmx ../runtime/js.cmx
+infer_type_test.cmj : ../runtime/js.cmj infer_type_test.cmi
+infer_type_test.cmx : ../runtime/js.cmx infer_type_test.cmi
 inline_edge_cases.cmj : inline_edge_cases.cmi
 inline_edge_cases.cmx : inline_edge_cases.cmi
 inline_map2_test.cmj : mt.cmi ../stdlib/list.cmi
@@ -1015,6 +1018,8 @@ http_types.cmo : ../runtime/js.cmo
 http_types.cmj : ../runtime/js.cmj
 ignore_test.cmo : mt.cmi ../runtime/js.cmo
 ignore_test.cmj : mt.cmj ../runtime/js.cmj
+infer_type_test.cmo : ../runtime/js.cmo infer_type_test.cmi
+infer_type_test.cmj : ../runtime/js.cmj infer_type_test.cmi
 inline_edge_cases.cmo : inline_edge_cases.cmi
 inline_edge_cases.cmj : inline_edge_cases.cmi
 inline_map2_test.cmo : mt.cmi ../stdlib/list.cmi
