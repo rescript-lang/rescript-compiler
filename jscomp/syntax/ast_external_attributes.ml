@@ -48,15 +48,7 @@ type js_val = string external_module
 
 
 
-type arg_type =
-  [ `NullString of (int * string) list 
-  | `NonNullString of (int * string) list 
-  | `Int of (int * int ) list 
-  | `Array 
-  | `Unit
-  | `Nothing
-  ]
-
+type arg_type = Ast_core_type.arg_type
 type arg_label = Ast_core_type.arg_label
 
 type arg_kind = 
@@ -269,12 +261,12 @@ let handle_attributes
       match st with 
       | {mk_obj = true} -> 
         let labels = List.map (function
-          | {arg_type = `Unit ; arg_label = (`Empty as l)}
+          | {arg_type = `Unit ; arg_label = (Empty as l)}
             -> l 
-          | {arg_label = `Label name } -> 
-            `Label (Lam_methname.translate ~loc name)            
-          | {arg_label = `Optional name} 
-            -> `Optional (Lam_methname.translate ~loc name)
+          | {arg_label = Label name } -> 
+            Label (Lam_methname.translate ~loc name)            
+          | {arg_label = Optional name} 
+            -> Optional (Lam_methname.translate ~loc name)
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
           arg_types in
         if String.length prim_name <> 0 then 
@@ -439,9 +431,9 @@ let handle_attributes
          Ast_helper.Typ.object_  ~loc   (
          List.fold_right2  (fun arg label acc ->
            match arg, label with
-           | (_, ty), `Label s
+           | (_, ty), Ast_core_type.Label s
              -> (s , [], ty) :: acc                 
-           | (_, ty), `Optional s
+           | (_, ty), Optional s
              ->
              begin match (ty : Ast_core_type.t) with
                | {ptyp_desc =
@@ -452,7 +444,7 @@ let handle_attributes
                  (s, [], Ast_comb.to_js_undefined_type loc ty) :: acc
                | _ -> assert false                 
              end                 
-           | (_, _), `Empty -> acc                
+           | (_, _), Ast_core_type.Empty -> acc                
            ) arg_types_ty arg_labels []) Closed  in
        Ast_core_type.replace_result type_annotation result 
      | _, _ -> type_annotation) ,

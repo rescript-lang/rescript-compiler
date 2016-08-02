@@ -77,8 +77,8 @@ let ocaml_to_js last
       [Js_of_lam_variant.eval_as_int arg dispatches]
     | `Nothing  | `Array -> 
       begin match arg_label with 
-      | `Optional label -> [Js_of_lam_option.get_default_undefined arg]
-      | `Label _ | `Empty ->  [arg]  
+      | Optional label -> [Js_of_lam_option.get_default_undefined arg]
+      | Label _ | Empty ->  [arg]  
       end
 
           
@@ -92,11 +92,11 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     | Obj_create labels -> 
       E.obj @@ Ext_list.filter_map2 
           (fun label ( arg : J.expression) -> 
-            match label with 
-            | `Empty ->  None 
-            | `Label label -> 
+            match (label : Ast_core_type.arg_label) with 
+            | Empty ->  None 
+            | Label label -> 
               Some ( Js_op.Key label, arg)
-            | `Optional label -> 
+            | Optional label -> 
               begin match arg.expression_desc with 
                 | Number _ -> (*Invariant: None encoding*)
                   None

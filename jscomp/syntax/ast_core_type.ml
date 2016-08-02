@@ -23,6 +23,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = Parsetree.core_type 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty
+
+type arg_type = 
+  [ `NullString of (int * string) list 
+  | `NonNullString of (int * string) list 
+  | `Int of (int * int ) list 
+  | `Array 
+  | `Unit
+  | `Nothing
+  ]
+
 open Ast_helper
 (** TODO check the polymorphic *)
 let list_of_arrow (ty : t) = 
@@ -59,11 +73,11 @@ let is_array (ty : t) =
 let is_optional l =
   String.length l > 0 && l.[0] = '?'
 
-let label_name l =
-  if l = "" then `Empty else 
+let label_name l : arg_label =
+  if l = "" then Empty else 
   if is_optional l 
-  then `Optional (String.sub l 1 (String.length l - 1))
-  else `Label l
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Label l
 
 let string_type (ty : t) = 
   match ty with 
@@ -134,9 +148,5 @@ let from_labels ~loc tyvars (labels : string list)
   in 
   List.fold_right2 
     (fun label tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
-
-
-type arg_label =
-  [ `Label of string | `Optional of string | `Empty]
 
 
