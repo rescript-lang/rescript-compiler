@@ -62,12 +62,11 @@ define(["exports", "./caml_builtin_exceptions", "./caml_string"],
       }
       switch (exit) {
         case 1 : 
-            var n = c;
             var s = new Array(4);
             s[0] = /* "\\" */92;
-            s[1] = 48 + (n / 100 | 0) | 0;
-            s[2] = 48 + (n / 10 | 0) % 10 | 0;
-            s[3] = 48 + n % 10 | 0;
+            s[1] = 48 + (c / 100 | 0) | 0;
+            s[2] = 48 + (c / 10 | 0) % 10 | 0;
+            s[3] = 48 + c % 10 | 0;
             return Caml_string.bytes_to_string(s);
         case 2 : 
             var s$1 = new Array(1);

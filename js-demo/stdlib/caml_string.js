@@ -144,9 +144,8 @@ define(["exports", "./caml_builtin_exceptions"],
     }
     
     function caml_is_printable(c) {
-      var code = c;
-      if (code > 31) {
-        return +(code < 127);
+      if (c > 31) {
+        return +(c < 127);
       }
       else {
         return /* false */0;
