@@ -29,13 +29,13 @@ type arg_label =
   | Empty
 
 type arg_type = 
-  [ `NullString of (int * string) list 
-  | `NonNullString of (int * string) list 
-  | `Int of (int * int ) list 
-  | `Array 
-  | `Unit
-  | `Nothing
-  ]
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Array 
+  | Unit
+  | Nothing
+
 
 open Ast_helper
 (** TODO check the polymorphic *)
@@ -79,7 +79,7 @@ let label_name l : arg_label =
   then Optional (String.sub l 1 (String.length l - 1))
   else Label l
 
-let string_type (ty : t) = 
+let string_type (ty : t) : arg_type = 
   match ty with 
   | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
     match Ast_attributes.process_bs_string_int ptyp_attributes with 
@@ -109,8 +109,8 @@ let string_type (ty : t) =
              ) row_fields (`Nothing, [])) in 
         begin match case with 
         | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
-        | `Null -> `NullString result 
-        | `NonNull -> `NonNullString result 
+        | `Null -> NullString result 
+        | `NonNull -> NonNullString result 
         end
       | _ -> Location.raise_errorf ~loc "Not a valid string type"
       end
@@ -131,12 +131,12 @@ let string_type (ty : t) =
                   name + 1, ((Btype.hash_variant label , name):: acc )
                 | _ -> Location.raise_errorf ~loc "Not a valid string type"
              ) (0, []) row_fields) in 
-        `Int (List.rev acc)
+        Int (List.rev acc)
           
       | _ -> Location.raise_errorf ~loc "Not a valid string type"
       end
 
-    | `Nothing -> `Nothing
+    | `Nothing -> Nothing
       
 
 

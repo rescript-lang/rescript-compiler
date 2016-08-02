@@ -35,13 +35,13 @@ type arg_label =
   | Optional of string 
   | Empty
 type arg_type = 
-  [ `NullString of (int * string) list 
-  | `NonNullString of (int * string) list 
-  | `Int of (int * int ) list 
-  | `Array 
-  | `Unit
-  | `Nothing
-  ]
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Array 
+  | Unit
+  | Nothing
+
 
 (** for 
        [x:t] -> "x"

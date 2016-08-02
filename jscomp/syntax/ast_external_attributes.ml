@@ -247,9 +247,9 @@ let handle_attributes
         )
          init_st prim_attributes in 
 
-    let aux ty = 
-      if Ast_core_type.is_array ty then `Array
-      else if Ast_core_type.is_unit ty then `Unit
+    let aux ty : arg_type = 
+      if Ast_core_type.is_array ty then Array
+      else if Ast_core_type.is_unit ty then Unit
       else (Ast_core_type.string_type ty :> arg_type) in
     let arg_types = 
       List.map (fun (label, ty) -> 
@@ -261,7 +261,7 @@ let handle_attributes
       match st with 
       | {mk_obj = true} -> 
         let labels = List.map (function
-          | {arg_type = `Unit ; arg_label = (Empty as l)}
+          | {arg_type = Unit ; arg_label = (Empty as l)}
             -> l 
           | {arg_label = Label name } -> 
             Label (Lam_methname.translate ~loc name)            
