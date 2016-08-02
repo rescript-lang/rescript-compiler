@@ -294,33 +294,24 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             ({txt = "bs.node"; loc},
              payload)
           ->
-          begin match payload with
-            | PStr [
-                {pstr_desc =
-                   Pstr_eval (
-                     {
-                       pexp_desc =
-                         Pexp_ident
-                           {txt =
-                              Lident ("__filename" | "__dirname" as name) }
-                     } as pexp, attrs)
-                }
-                as pstr                 
-              ]
+          begin match Ast_payload.as_ident payload with
+            | Some {txt = Lident ("__filename" | "__dirname" as name); loc}
+              ->
+
+              Exp.constraint_ ~loc
+                (Ast_util.handle_raw loc
+                   (Ast_payload.raw_string_payload loc
+                      name ))                
+                (Ast_literal.type_string ~loc ())
+            | Some {txt = Lident "__module"}
               ->
               Exp.constraint_ ~loc
                 (Ast_util.handle_raw loc
-                   (PStr [ {pstr
-                            with pstr_desc  =
-                                   Pstr_eval
-                                     ({pexp with
-                                      pexp_desc =
-                                        Pexp_constant(
-                                          Const_string
-                                            ( "\"" ^ name ^ "\"", None)) 
-                                     }, attrs) }]) )                
-                (Ast_literal.type_string ~loc ())
-            | _ -> Location.raise_errorf ~loc "Ilegal payload"              
+                   (Ast_payload.raw_string_payload loc "module"))                
+                (Typ.constr ~loc
+                   { txt = Ldot (Lident "Bs_node", "node_module") ;
+                     loc} [] )              
+            | Some _ | None -> Location.raise_errorf ~loc "Ilegal payload"              
           end             
 
         (** [bs.debugger], its output should not be rewritten any more*)

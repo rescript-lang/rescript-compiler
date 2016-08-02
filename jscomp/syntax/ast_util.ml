@@ -316,8 +316,10 @@ let handle_debugger loc payload =
 
 let handle_raw loc payload = 
   begin match Ast_payload.as_string_exp payload with 
-    | None -> 
-      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+    | None ->
+      Location.raise_errorf ~loc
+        "bs.raw can only be applied to a string "
+
     | Some exp -> 
       let pval_prim = [Literals.js_pure_expr] in
       let pexp_desc = 

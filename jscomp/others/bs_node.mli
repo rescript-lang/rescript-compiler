@@ -25,3 +25,16 @@
 (** place holder for node bindings *)
 
 module Path = Bs_node_path
+
+module Fs = Bs_node_fs
+
+type node_exports = [%bs.obj:<
+       filename : string ;
+       loaded : Js.boolean;
+       children : node_module array        
+     > ]
+and node_module = [%bs.obj: <
+       id : string ;
+       exports : node_exports ;
+       paths : string array       
+> ]

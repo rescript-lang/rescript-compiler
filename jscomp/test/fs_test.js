@@ -1,9 +1,8 @@
 'use strict';
 
-var Path  = require("path");
-var Mt    = require("./mt");
-var Block = require("../../lib/js/block");
 var Fs    = require("fs");
+var Path  = require("path");
+var Block = require("../../lib/js/block");
 
 var suites = [/* [] */0];
 
@@ -34,16 +33,21 @@ var current_dir_name = (__dirname);
 
 Fs.readFileSync(current_file, "utf8");
 
-Fs.readdirSync(".");
+Fs.readdirSync(current_dir_name);
 
 var pathobj = Path.parse(current_dir_name);
 
-eq('File "fs_test.ml", line 41, characters 5-12', /* tuple */[
+var module_ = (module);
+
+console.log(/* tuple */[
+      module_.id,
+      module_.paths
+    ]);
+
+eq('File "fs_test.ml", line 38, characters 5-12', /* tuple */[
       pathobj.name,
       "test"
     ]);
-
-Mt.from_pair_suites("fs_test.ml", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
