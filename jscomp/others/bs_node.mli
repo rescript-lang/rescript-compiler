@@ -28,13 +28,18 @@ module Path = Bs_node_path
 
 module Fs = Bs_node_fs
 
-type node_exports = [%bs.obj:<
-       filename : string ;
-       loaded : Js.boolean;
-       children : node_module array        
-     > ]
-and node_module = [%bs.obj: <
+type node_exports 
+type node_module = <
        id : string ;
        exports : node_exports ;
-       paths : string array       
-> ]
+       parrent : node_module Js.null_undefined;
+       (* in REPL V4 it is [undefined]
+          in CLI it can be [null]
+       *)              
+       
+       filename : string ;       
+
+       loaded : Js.boolean;
+       children : node_module array ;
+       paths : string array;       
+> Js.t
