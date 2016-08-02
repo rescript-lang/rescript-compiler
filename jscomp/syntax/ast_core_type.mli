@@ -30,23 +30,30 @@ val replace_result : t -> t -> t
 
 val is_unit : t -> bool 
 val is_array : t -> bool 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty
+type arg_type = 
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Array 
+  | Unit
+  | Nothing
+
 
 (** for 
        [x:t] -> "x"
        [?x:t] -> "?x"
 *)
-val label_name : string -> [ `Label of string | `Optional of string  | `Empty]
+val label_name : string -> arg_label
 
 
-val string_type : t -> 
-  [ `Int of (int * int) list |
-    `NonNullString of (int * string) list |
-    `NullString of (int * string) list  |
-    `Nothing ]
+val string_type : t -> arg_type
+
 
 (** return a function type *)
 val from_labels :
   loc:Location.t -> t list -> string list -> t
 
-type arg_label =
-  [ `Label of string | `Optional of string | `Empty]

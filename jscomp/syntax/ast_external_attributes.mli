@@ -45,14 +45,8 @@ type js_send = {
 
 type js_val = string external_module 
 
-type arg_type =
-  [ `NullString of (int * string) list 
-  | `NonNullString of (int * string) list 
-  | `Int of (int * int ) list 
-  | `Array 
-  | `Unit
-  | `Nothing
-  ]
+type arg_type = Ast_core_type.arg_type
+  
 type arg_label = Ast_core_type.arg_label 
 
 type arg_kind = 
