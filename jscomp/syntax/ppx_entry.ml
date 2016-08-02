@@ -286,8 +286,42 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           Ast_util.handle_raw loc payload
         | Pexp_extension (
             {txt = "bs.re"; loc} , payload)
-          -> 
-          Ast_util.handle_regexp loc payload
+          ->
+          Exp.constraint_ ~loc
+            (Ast_util.handle_raw loc payload)
+            (Ast_comb.to_js_re_type loc)            
+        | Pexp_extension
+            ({txt = "bs.node"; loc},
+             payload)
+          ->
+          begin match payload with
+            | PStr [
+                {pstr_desc =
+                   Pstr_eval (
+                     {
+                       pexp_desc =
+                         Pexp_ident
+                           {txt =
+                              Lident ("__filename" | "__dirname" as name) }
+                     } as pexp, attrs)
+                }
+                as pstr                 
+              ]
+              ->
+              Exp.constraint_ ~loc
+                (Ast_util.handle_raw loc
+                   (PStr [ {pstr
+                            with pstr_desc  =
+                                   Pstr_eval
+                                     ({pexp with
+                                      pexp_desc =
+                                        Pexp_constant(
+                                          Const_string
+                                            ( "\"" ^ name ^ "\"", None)) 
+                                     }, attrs) }]) )                
+                (Ast_literal.type_string ~loc ())
+            | _ -> Location.raise_errorf ~loc "Ilegal payload"              
+          end             
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
