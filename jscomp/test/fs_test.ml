@@ -39,4 +39,4 @@ let () =
 
 
   
-(* let () = Mt.from_pair_suites __FILE__ !suites *)
+let () = Mt.from_pair_suites __FILE__ !suites

@@ -1,8 +1,9 @@
 'use strict';
 
 var Fs    = require("fs");
-var Path  = require("path");
+var Mt    = require("./mt");
 var Block = require("../../lib/js/block");
+var Path  = require("path");
 
 var suites = [/* [] */0];
 
@@ -48,6 +49,8 @@ eq('File "fs_test.ml", line 38, characters 5-12', /* tuple */[
       pathobj.name,
       "test"
     ]);
+
+Mt.from_pair_suites("fs_test.ml", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
