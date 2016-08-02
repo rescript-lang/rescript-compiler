@@ -22,7 +22,6 @@
 
 * BuckleScript FFI
 
-  * [Language Extensions](./Extensions.md)
   * [JS calling OCaml](./JS-call-OCaml.md)
   * [OCaml calling JS](./OCaml-call-JS.md)
   * [Runtime representation](./Runtime-representation.md)
