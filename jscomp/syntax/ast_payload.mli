@@ -38,8 +38,8 @@ val is_single_int : t -> int option
 
 val as_string_exp : t -> Parsetree.expression option 
 val as_empty_structure :  t -> bool 
-
-
+val as_ident : t -> lid option
+val raw_string_payload : Location.t -> string -> t 
 val assert_strings :
   Location.t -> t -> string list  
 

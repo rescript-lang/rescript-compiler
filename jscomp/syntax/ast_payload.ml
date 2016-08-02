@@ -60,6 +60,24 @@ let as_string_exp (x : t ) =
       _}] -> Some e
   | _  -> None
 
+let as_ident (x : t ) =
+  match x with
+  | PStr [
+      {pstr_desc =
+         Pstr_eval (
+           {
+             pexp_desc =
+               Pexp_ident ident 
+                 
+           } , _)
+      }
+    ] -> Some ident
+  | _ -> None
+open Ast_helper
+
+let raw_string_payload loc (s : string) : t =
+  PStr [ Str.eval ~loc (Exp.constant ~loc (Const_string (s,None)  ))]
+    
 let as_empty_structure (x : t ) = 
   match x with 
   | PStr ([]) -> true

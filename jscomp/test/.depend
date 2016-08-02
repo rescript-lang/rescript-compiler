@@ -246,8 +246,8 @@ format_regression.cmj :
 format_regression.cmx :
 format_test.cmj : mt.cmi ../stdlib/format.cmi
 format_test.cmx : mt.cmx ../stdlib/format.cmx
-fs_test.cmj : mt.cmi ../others/bs_node.cmi
-fs_test.cmx : mt.cmx ../others/bs_node.cmx
+fs_test.cmj : mt.cmi ../runtime/js.cmj ../others/bs_node.cmi
+fs_test.cmx : mt.cmx ../runtime/js.cmx ../others/bs_node.cmi
 genlex_test.cmj : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/genlex.cmi
 genlex_test.cmx : ../stdlib/stream.cmx mt.cmx ../stdlib/list.cmx \
@@ -986,8 +986,8 @@ format_regression.cmo :
 format_regression.cmj :
 format_test.cmo : mt.cmi ../stdlib/format.cmi
 format_test.cmj : mt.cmj ../stdlib/format.cmj
-fs_test.cmo : mt.cmi ../others/bs_node.cmi
-fs_test.cmj : mt.cmj ../others/bs_node.cmj
+fs_test.cmo : mt.cmi ../runtime/js.cmo ../others/bs_node.cmi
+fs_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs_node.cmi
 genlex_test.cmo : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/genlex.cmi
 genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \

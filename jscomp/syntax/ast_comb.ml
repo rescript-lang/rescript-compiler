@@ -69,10 +69,19 @@ let js_obj_type_id () =
   if Js_config.is_browser () then
     Ast_literal.Lid.pervasives_js_obj
   else Ast_literal.Lid.js_obj 
-    
+
+let re_id () = 
+  if Js_config.is_browser () then
+    Ast_literal.Lid.pervasives_re_id 
+  else 
+    Ast_literal.Lid.js_re_id 
+
 let to_js_type loc  x  = 
   Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 
+let to_js_re_type loc  =
+  Typ.constr ~loc { txt = re_id (); loc} []
+    
 let to_js_undefined_type loc x =
   Typ.constr ~loc
     {txt = Ast_literal.Lid.js_undefined ; loc}

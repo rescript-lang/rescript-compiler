@@ -115,8 +115,6 @@ val handle_debugger :
 val handle_raw : 
   loc -> Ast_payload.t -> Parsetree.expression
 
-val handle_regexp : 
-  loc -> Ast_payload.t -> Parsetree.expression
 
 val handle_raw_structure : 
   loc -> Ast_payload.t -> Parsetree.structure_item

@@ -55,11 +55,6 @@ let method_call_back_id () =
   else 
     Ast_literal.Lid.js_meth_callback
 
-let re_id () = 
-  if Js_config.is_browser () then
-    Ast_literal.Lid.pervasives_re_id 
-  else 
-    Ast_literal.Lid.js_re_id 
 let arity_lit = "Arity_"
 
 let mk_args loc n tys = 
@@ -321,8 +316,10 @@ let handle_debugger loc payload =
 
 let handle_raw loc payload = 
   begin match Ast_payload.as_string_exp payload with 
-    | None -> 
-      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+    | None ->
+      Location.raise_errorf ~loc
+        "bs.raw can only be applied to a string "
+
     | Some exp -> 
       let pval_prim = [Literals.js_pure_expr] in
       let pexp_desc = 
@@ -343,32 +340,6 @@ let handle_raw loc payload =
       in
       { exp with pexp_desc }
   end
-
-let handle_regexp loc payload = 
-  match Ast_payload.as_string_exp payload with 
-  | None -> 
-    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-  | Some exp -> 
-    let pval_prim = [Literals.js_pure_expr] in
-    let ty = Typ.constr ~loc {txt = re_id (); loc} [] in
-    let pexp_desc = 
-      if Js_config.is_browser () then
-        Ast_external.local_extern_cont loc 
-          ~pval_prim
-          ~pval_type:(arrow "" 
-                        (Ast_literal.type_string ~loc ()) 
-                        (Ast_literal.type_any ~loc ()) )
-          (fun f -> 
-             Exp.constraint_ ~loc 
-               (Exp.apply ~loc f ["", exp]) ty
-               ) 
-      else 
-        Parsetree.Pexp_constraint(
-        Exp.apply ~loc 
-          (Exp.ident {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_pure_expr)})
-          ["",exp], ty)
-    in 
-    {exp with pexp_desc}
 
 
 

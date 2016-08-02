@@ -9,11 +9,6 @@ let eq loc (x, y) =
 external readFileSync : string -> ([`utf8 | `ascii] [@bs.string]) -> string
   = "" [@@bs.module "fs"]
 
-external readlinkSync : string -> string
-  = "" [@@bs.module "fs"]
-
-external readdirSync : string -> string array
-  = "" [@@bs.module "fs"]    
 
 type watcher   
 
@@ -33,11 +28,13 @@ external on :
 
 open Bs_node 
 let () =
-  let current_file : string = [%bs.raw "__filename"] in
-  let current_dir_name : string = [%bs.raw "__dirname"] in
+  let current_file : string = [%bs.node __filename] in
+  let current_dir_name : string = [%bs.node __dirname] in
   let _content = readFileSync current_file `utf8 in
-  let _file_list = readdirSync "." in
+  let _file_list = Fs.readdirSync current_dir_name in
   let pathobj =   Path.parse current_dir_name in
+  let module_  = [%bs.node __module] in
+  Js.log (module_##id, module_##paths) ;   
   eq __LOC__ (pathobj##name, "test" )
 
 
