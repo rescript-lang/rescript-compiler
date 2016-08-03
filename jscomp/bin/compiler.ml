@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 08/01-21:20 *)
+(** Bundled by ocaml_pack 08/03-09:56 *)
 module String_set : sig 
 #1 "string_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2251,6 +2251,8 @@ val to_js_type :
 val to_js_undefined_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type  
 
+val to_js_re_type : Location.t -> Parsetree.core_type
+
 end = struct
 #1 "ast_comb.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2324,10 +2326,19 @@ let js_obj_type_id () =
   if Js_config.is_browser () then
     Ast_literal.Lid.pervasives_js_obj
   else Ast_literal.Lid.js_obj 
-    
+
+let re_id () = 
+  if Js_config.is_browser () then
+    Ast_literal.Lid.pervasives_re_id 
+  else 
+    Ast_literal.Lid.js_re_id 
+
 let to_js_type loc  x  = 
   Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 
+let to_js_re_type loc  =
+  Typ.constr ~loc { txt = re_id (); loc} []
+    
 let to_js_undefined_type loc x =
   Typ.constr ~loc
     {txt = Ast_literal.Lid.js_undefined ; loc}
@@ -2601,8 +2612,8 @@ val is_single_int : t -> int option
 
 val as_string_exp : t -> Parsetree.expression option 
 val as_empty_structure :  t -> bool 
-
-
+val as_ident : t -> lid option
+val raw_string_payload : Location.t -> string -> t 
 val assert_strings :
   Location.t -> t -> string list  
 
@@ -2687,6 +2698,24 @@ let as_string_exp (x : t ) =
       _}] -> Some e
   | _  -> None
 
+let as_ident (x : t ) =
+  match x with
+  | PStr [
+      {pstr_desc =
+         Pstr_eval (
+           {
+             pexp_desc =
+               Pexp_ident ident 
+                 
+           } , _)
+      }
+    ] -> Some ident
+  | _ -> None
+open Ast_helper
+
+let raw_string_payload loc (s : string) : t =
+  PStr [ Str.eval ~loc (Exp.constant ~loc (Const_string (s,None)  ))]
+    
 let as_empty_structure (x : t ) = 
   match x with 
   | PStr ([]) -> true
@@ -4393,8 +4422,6 @@ val handle_debugger :
 val handle_raw : 
   loc -> Ast_payload.t -> Parsetree.expression
 
-val handle_regexp : 
-  loc -> Ast_payload.t -> Parsetree.expression
 
 val handle_raw_structure : 
   loc -> Ast_payload.t -> Parsetree.structure_item
@@ -4458,11 +4485,6 @@ let method_call_back_id () =
   else 
     Ast_literal.Lid.js_meth_callback
 
-let re_id () = 
-  if Js_config.is_browser () then
-    Ast_literal.Lid.pervasives_re_id 
-  else 
-    Ast_literal.Lid.js_re_id 
 let arity_lit = "Arity_"
 
 let mk_args loc n tys = 
@@ -4724,8 +4746,10 @@ let handle_debugger loc payload =
 
 let handle_raw loc payload = 
   begin match Ast_payload.as_string_exp payload with 
-    | None -> 
-      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+    | None ->
+      Location.raise_errorf ~loc
+        "bs.raw can only be applied to a string "
+
     | Some exp -> 
       let pval_prim = [Literals.js_pure_expr] in
       let pexp_desc = 
@@ -4746,32 +4770,6 @@ let handle_raw loc payload =
       in
       { exp with pexp_desc }
   end
-
-let handle_regexp loc payload = 
-  match Ast_payload.as_string_exp payload with 
-  | None -> 
-    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-  | Some exp -> 
-    let pval_prim = [Literals.js_pure_expr] in
-    let ty = Typ.constr ~loc {txt = re_id (); loc} [] in
-    let pexp_desc = 
-      if Js_config.is_browser () then
-        Ast_external.local_extern_cont loc 
-          ~pval_prim
-          ~pval_type:(arrow "" 
-                        (Ast_literal.type_string ~loc ()) 
-                        (Ast_literal.type_any ~loc ()) )
-          (fun f -> 
-             Exp.constraint_ ~loc 
-               (Exp.apply ~loc f ["", exp]) ty
-               ) 
-      else 
-        Parsetree.Pexp_constraint(
-        Exp.apply ~loc 
-          (Exp.ident {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_pure_expr)})
-          ["",exp], ty)
-    in 
-    {exp with pexp_desc}
 
 
 
@@ -5786,8 +5784,33 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           Ast_util.handle_raw loc payload
         | Pexp_extension (
             {txt = "bs.re"; loc} , payload)
-          -> 
-          Ast_util.handle_regexp loc payload
+          ->
+          Exp.constraint_ ~loc
+            (Ast_util.handle_raw loc payload)
+            (Ast_comb.to_js_re_type loc)            
+        | Pexp_extension
+            ({txt = "bs.node"; loc},
+             payload)
+          ->
+          begin match Ast_payload.as_ident payload with
+            | Some {txt = Lident ("__filename" | "__dirname" as name); loc}
+              ->
+
+              Exp.constraint_ ~loc
+                (Ast_util.handle_raw loc
+                   (Ast_payload.raw_string_payload loc
+                      name ))                
+                (Ast_literal.type_string ~loc ())
+            | Some {txt = Lident "__module"}
+              ->
+              Exp.constraint_ ~loc
+                (Ast_util.handle_raw loc
+                   (Ast_payload.raw_string_payload loc "module"))                
+                (Typ.constr ~loc
+                   { txt = Ldot (Lident "Bs_node", "node_module") ;
+                     loc} [] )              
+            | Some _ | None -> Location.raise_errorf ~loc "Ilegal payload"              
+          end             
 
         (** [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
