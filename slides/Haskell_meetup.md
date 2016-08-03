@@ -37,7 +37,7 @@ July 27, 2016
 - It's OCaml, not a new language (30 years distilled research in PL and amazing effort of compiler engineering)
   - Native backends: AMD64, IA32, PowerPC, ARM, SPARC
   - Language based OS: Mirage Unikernel (acquired by Docker)
-  - Battle tested: Used for high-frequency trading in volumes of billions of
+  - Battle tested: Used for trading in volumes of billions of
     dollars per day
 - BuckleScript backend :
   - Great performance with regard to both compile-time and runtime
