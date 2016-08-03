@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 08/03-09:56 *)
+(** Bundled by ocaml_pack 08/03-14:17 *)
 module String_set : sig 
 #1 "string_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3664,7 +3664,8 @@ type arg_kind =
 type ffi = 
   | Obj_create of arg_label list
   | Js_global of js_val 
-  | Js_global_as_var of  external_module_name
+  | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of external_module_name            
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_val
@@ -3763,7 +3764,8 @@ type arg_kind =
 type ffi = 
   | Obj_create of arg_label list
   | Js_global of js_val 
-  | Js_global_as_var of  external_module_name
+  | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of external_module_name      
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_val
@@ -3797,7 +3799,8 @@ let check_ffi ?loc ffi =
   | Js_get_index | Js_set_index 
     -> ()
 
-  | Js_global_as_var external_module_name 
+  | Js_module_as_var external_module_name
+  | Js_module_as_fn external_module_name       
     -> check_external_module_name external_module_name
   | Js_new {external_module_name ; txt = name}
   | Js_call {external_module_name ; txt = {name ; _}}
@@ -3824,7 +3827,7 @@ let check_ffi ?loc ffi =
 type st = 
   { val_name : string option;
     external_module_name : external_module_name option;
-    val_of_module : external_module_name option; 
+    module_as_val : external_module_name option;
     val_send : string option;
     splice : bool ; (* mutable *)
     set_index : bool; (* mutable *)
@@ -3841,7 +3844,7 @@ let init_st =
   {
     val_name = None; 
     external_module_name = None ;
-    val_of_module = None;
+    module_as_val = None;
     val_send = None;
     splice = false;
     set_index = false;
@@ -3926,11 +3929,11 @@ let handle_attributes
                                Some {bundle; bind_name = Some bind_name}}
                   | [] ->
                     { st with
-                      val_of_module = 
+                      module_as_val = 
                         Some
                           { bundle = prim_name_or_pval_prim ;
                             bind_name = Some pval_prim}
-                    }                      
+                    }
                   | _  -> Location.raise_errorf ~loc "Illegal attributes"
                 end
               | "bs.splice" -> {st with splice = true}
@@ -3989,13 +3992,17 @@ let handle_attributes
           Js_get_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
         end
-      | {val_of_module = Some v } -> Js_global_as_var v
+      | {module_as_val = Some v } ->
+        begin match arg_types_ty with         
+          | [] -> Js_module_as_var v
+          | _ -> Js_module_as_fn v                    
+        end              
       | {call_name = Some name ;
          splice; 
          external_module_name;
 
          val_name = None ;
-         val_of_module = None;
+         module_as_val = None;
          val_send = None ;
          set_index = false;
          get_index = false;
@@ -4011,7 +4018,7 @@ let handle_attributes
          external_module_name;
 
          call_name = None ;
-         val_of_module = None;
+         module_as_val = None;
          val_send = None ;
          set_index = false;
          get_index = false;
@@ -4029,13 +4036,13 @@ let handle_attributes
 
          val_name = None ;         
          call_name = None ;
-         val_of_module = None;
+         module_as_val = None;
          val_send = None ;
          set_index = false;
          get_index = false;
          new_name = None;
          set_name = None ;
-         get_name = None 
+         get_name = None ;
 
         }
         ->
@@ -4050,7 +4057,7 @@ let handle_attributes
 
          val_name = None  ;
          call_name = None ;
-         val_of_module = None;
+         module_as_val = None;
          set_index = false;
          get_index = false;
          new_name = None;
@@ -4072,7 +4079,7 @@ let handle_attributes
 
          val_name = None  ;
          call_name = None ;
-         val_of_module = None;
+         module_as_val = None;
          set_index = false;
          get_index = false;
          val_send = None ;
@@ -4087,7 +4094,7 @@ let handle_attributes
 
          val_name = None  ;
          call_name = None ;
-         val_of_module = None;
+         module_as_val = None;
          set_index = false;
          get_index = false;
          val_send = None ;
@@ -4108,7 +4115,7 @@ let handle_attributes
 
          val_name = None  ;
          call_name = None ;
-         val_of_module = None;
+         module_as_val = None;
          set_index = false;
          get_index = false;
          val_send = None ;
@@ -22779,37 +22786,43 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
                txt = { name = fn; splice = js_splice ; 
 
                      }} -> 
-
-      let args = 
-        Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
-      (* let qualifiers =  List.rev qualifiers in *)
       let fn =  
         match handle_external module_name with 
         | Some (id,_) -> 
-          (* FIXME: need add dependency here
-              it's an external call 
-          *)
-          List.fold_left E.dot (E.var id) ([ fn])
-        | None -> 
-          begin 
-            match   [fn] with 
-            | y::ys  -> 
-              List.fold_left E.dot (E.js_var y) ys
-            | _ -> assert false
-          end
+          E.dot (E.var id) fn
+        | None ->  E.js_var fn
       in
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
       begin match (result_type : Ast_core_type.arg_type) with 
       | Unit -> 
         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
       | _ -> 
         E.call ~info:{arity=Full; call_info = Call_na} fn args
       end
-    | Js_global_as_var module_name -> 
+    | Js_module_as_var module_name -> 
       begin match handle_external (Some module_name) with 
         | Some (id, name) -> 
           E.external_var_dot id name None
         | None -> assert false 
       end
+    | Js_module_as_fn module_name ->
+      let fn =
+        match handle_external (Some module_name) with
+        | Some (id,name) ->
+          E.external_var_dot id name None           
+        | None -> assert false in           
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args
+        (* TODO: fix in rest calling convention *)          
+      in 
+      begin match (result_type : Ast_core_type.arg_type) with 
+        | Unit -> 
+          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+        | _ -> 
+          E.call ~info:{arity=Full; call_info = Call_na} fn args
+      end
+
     | Js_new { external_module_name = module_name; 
                txt = fn;
              } -> 
