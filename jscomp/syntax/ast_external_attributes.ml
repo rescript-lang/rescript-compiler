@@ -61,6 +61,7 @@ type ffi =
   | Obj_create of arg_label list
   | Js_global of js_val 
   | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of external_module_name      
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_val
@@ -94,7 +95,8 @@ let check_ffi ?loc ffi =
   | Js_get_index | Js_set_index 
     -> ()
 
-  | Js_module_as_var external_module_name 
+  | Js_module_as_var external_module_name
+  | Js_module_as_fn external_module_name       
     -> check_external_module_name external_module_name
   | Js_new {external_module_name ; txt = name}
   | Js_call {external_module_name ; txt = {name ; _}}
@@ -121,7 +123,7 @@ let check_ffi ?loc ffi =
 type st = 
   { val_name : string option;
     external_module_name : external_module_name option;
-    module_as_val : external_module_name option; 
+    module_as_val : external_module_name option;
     val_send : string option;
     splice : bool ; (* mutable *)
     set_index : bool; (* mutable *)
@@ -222,16 +224,12 @@ let handle_attributes
                     {st with external_module_name =
                                Some {bundle; bind_name = Some bind_name}}
                   | [] ->
-                    begin match arg_types_ty with
-                    | [] ->                       
-                      { st with
-                        module_as_val = 
-                          Some
-                            { bundle = prim_name_or_pval_prim ;
-                              bind_name = Some pval_prim}
-                      }
-                    | _ ->
-                      Location.raise_errorf ~loc "Illegal attributes"                                    end                    
+                    { st with
+                      module_as_val = 
+                        Some
+                          { bundle = prim_name_or_pval_prim ;
+                            bind_name = Some pval_prim}
+                    }
                   | _  -> Location.raise_errorf ~loc "Illegal attributes"
                 end
               | "bs.splice" -> {st with splice = true}
@@ -290,7 +288,11 @@ let handle_attributes
           Js_get_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
         end
-      | {module_as_val = Some v } -> Js_module_as_var v
+      | {module_as_val = Some v } ->
+        begin match arg_types_ty with         
+          | [] -> Js_module_as_var v
+          | _ -> Js_module_as_fn v                    
+        end              
       | {call_name = Some name ;
          splice; 
          external_module_name;

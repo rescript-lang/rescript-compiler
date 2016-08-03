@@ -138,6 +138,23 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
           E.external_var_dot id name None
         | None -> assert false 
       end
+    | Js_module_as_fn module_name ->
+      let fn =
+        match handle_external (Some module_name) with
+        | Some (id,name) ->
+          E.external_var_dot id name None           
+        | None -> assert false in           
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args
+        (* TODO: fix in rest calling convention *)          
+      in 
+      begin match (result_type : Ast_core_type.arg_type) with 
+        | Unit -> 
+          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+        | _ -> 
+          E.call ~info:{arity=Full; call_info = Call_na} fn args
+      end
+
     | Js_new { external_module_name = module_name; 
                txt = fn;
              } -> 

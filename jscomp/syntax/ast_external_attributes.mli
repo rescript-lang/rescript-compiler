@@ -59,6 +59,7 @@ type ffi =
   | Obj_create of arg_label list
   | Js_global of js_val 
   | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of external_module_name            
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_val
