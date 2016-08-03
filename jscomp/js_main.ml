@@ -38,11 +38,13 @@ let intf filename =
   Compenv.readenv ppf Before_compile; process_interface_file ppf filename;;
 
 let batch_files  = ref []
-
+let main_file  = ref ""
+    
 let collect_file name = 
   batch_files := name :: !batch_files
 
-
+let set_main_entry name =
+  main_file := name  
 
 
 
@@ -108,6 +110,10 @@ let buckle_script_flags =
    Arg.Unit set_noassert, 
    " no code containing any assertion"
   )
+  ::
+  ("-bs-main",
+   Arg.String set_main_entry,   
+   " set the Main entry file")
   :: 
   ("-bs-files", 
    Arg.Rest collect_file, 
@@ -128,7 +134,7 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-    Ocaml_batch_compile.batch_compile ppf !batch_files; 
+    Ocaml_batch_compile.batch_compile ppf !batch_files !main_file; 
     exit 0
   with x ->
     Location.report_exception ppf x;

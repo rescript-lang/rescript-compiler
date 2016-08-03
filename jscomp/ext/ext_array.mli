@@ -39,3 +39,4 @@ val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
+val to_list_f : ('a -> 'b option) -> 'a array -> 'b list 
