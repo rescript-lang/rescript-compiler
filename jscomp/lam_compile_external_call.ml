@@ -118,37 +118,43 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
                txt = { name = fn; splice = js_splice ; 
 
                      }} -> 
-
-      let args = 
-        Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
-      (* let qualifiers =  List.rev qualifiers in *)
       let fn =  
         match handle_external module_name with 
         | Some (id,_) -> 
-          (* FIXME: need add dependency here
-              it's an external call 
-          *)
-          List.fold_left E.dot (E.var id) ([ fn])
-        | None -> 
-          begin 
-            match   [fn] with 
-            | y::ys  -> 
-              List.fold_left E.dot (E.js_var y) ys
-            | _ -> assert false
-          end
+          E.dot (E.var id) fn
+        | None ->  E.js_var fn
       in
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
       begin match (result_type : Ast_core_type.arg_type) with 
       | Unit -> 
         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
       | _ -> 
         E.call ~info:{arity=Full; call_info = Call_na} fn args
       end
-    | Js_global_as_var module_name -> 
+    | Js_module_as_var module_name -> 
       begin match handle_external (Some module_name) with 
         | Some (id, name) -> 
           E.external_var_dot id name None
         | None -> assert false 
       end
+    | Js_module_as_fn module_name ->
+      let fn =
+        match handle_external (Some module_name) with
+        | Some (id,name) ->
+          E.external_var_dot id name None           
+        | None -> assert false in           
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args
+        (* TODO: fix in rest calling convention *)          
+      in 
+      begin match (result_type : Ast_core_type.arg_type) with 
+        | Unit -> 
+          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+        | _ -> 
+          E.call ~info:{arity=Full; call_info = Call_na} fn args
+      end
+
     | Js_new { external_module_name = module_name; 
                txt = fn;
              } -> 
