@@ -2,25 +2,69 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/codemirror.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/mode/mllike/mllike.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/mode/javascript/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.15.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/addon/edit/closebrackets.min.js"></script>
     <link rel="stylesheet" type="text/css" href="theme.css">
   <script src="https://code.jquery.com/jquery-2.2.4.min.js" 
     integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
    crossorigin="anonymous"></script>
-    <title>OCaml to Javascript transplier playground</title>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <title>OCaml to Javascript transpiler playground</title>
 </head>
 
-<body>
+<body style="background-color: #272822; font-family: 'Open Sans', sans-serif;">
 
-<a href="https://github.com/bloomberg/bucklescript">Fork me on GitHub</a>
+<nav class="navbar navbar-inverse navbar-static-top" style="margin-bottom: 0px">
+  <div class="container-fluid">
+    <div class="navbar-brand" style="color: white">BuckleScript</div>
+
+    <div>
+      <ul class="nav navbar-nav">
+        <li><a href="https://github.com/bloomberg/bucklescript" target="_blank">Fork me on GitHub</a></li>
+        <div class="navbar-brand examples">  Examples:</div>
+        <li class="dropdown">
+          <a href="#" id = "examplesLabel" class="dropdown-toggle" data-toggle="dropdown">Default<span class="caret"></span></a>
+          <ul id="examplesDropdown" class="dropdown-menu">
+            <li><a href="#" id="ex1">Default</a></li>
+            <li><a href="#" id="ex2">Event Handler</a></li>
+          </ul>
+        </li>
+      </ul>
+
+        <div class="checkbox navbar-btn navbar-right">
+          <label class="navbar-link repl-toolbar" >
+              <input type="checkbox" id="option-non-export">
+              Remove unused code
+          </label>
+          <label class="navbar-link repl-toolbar">
+              <input type="checkbox" id="option-eval" checked>
+              Eval
+          </label>
+        </div>
+
+
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 
 <div style="height: 10000px">
 
+  <div class="tab-full">
+    <div class="tab" style="width: 50%">
+    <h3>OCaml</h2>
+    </div>
+    <div class="tab" style="width: 25%">
+      <h3>JavaScript</h2>
+    </div>
+  </div>
 
-    <div style="width: 50%;float:left">
+    <div class = "right-border" style="width: 50%;float:left">
         <textarea id="ocamlcode#1">
 external to_str : 'a -> string = "js_anything_to_string"
 external to_json_string : 'a -> string = "js_json_stringify"
@@ -70,19 +114,6 @@ let () =
         <textarea id="output" style="background-color: #e0e0e0">
 
         </textarea>
-    </div>
-
-    <div style="width:50%; float:right;  display: inline">
-        <form class="form repl-toolbar">
-            <label for="option-non-export">
-                <input id="option-non-export" type="checkbox">
-                Remove unused code
-            </label>
-            <label style="float:right" >
-                <input id="option-eval" type="checkbox" checked>
-                Eval
-            </label>
-        </form>
     </div>
 
     <div style="width: 50%;float:right"; >
@@ -186,11 +217,11 @@ exports.f          = f;
     </div>
 </div>
 <!--<p> can you  see me</p>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.22/require.js"></script>
 <script type="text/javascript" src="./edit.js" >
 </script>
 
 <script type="text/javascript" src="./exports.js">    </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.22/require.js"></script>
 <script src="./pre_load.js"></script>
 <!-- <script src="./require.js"></script> -->
 <script src="./init.js"></script>
