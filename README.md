@@ -222,7 +222,7 @@ JavaScript specific optimization purposes.
 * [`jscomp/js_main.ml`](jscomp/js_main.ml)
 
 `jscomp/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is not
-actively used but demonstrates that it is easy to assemble a whole compler using the OCaml compiler
+actively used but demonstrates that it is easy to assemble a whole compiler using the OCaml compiler
 libraries. It also shows how to add more compilation flags to a JS backend.
 
 * [`jscomp/stdlib`](jscomp/stdlib)
