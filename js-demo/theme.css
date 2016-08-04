@@ -1,4 +1,14 @@
 
 
 /*position: absolute; top: 0; left: 0; height: 50px; width: 100%;*/
-.repl-toolbar { background: white; color: black; width: 100%; padding: 0px; margin-bottom: 3px }
+.repl-toolbar { color: white !important; margin-right: 15px; vertical-align: middle}
+
+.tab { float: left; position: relative; margin-left: 10px; }
+
+.tab-full { float: left; width: 100%; color: white; }
+
+.right-border { border-right: grey; border-right-style: solid; border-right-width: thin; }
+
+.examples { font-size: 14px; padding-right: 0px; padding-left: 30px; }
+
+.examples:hover { color: #9D9D9D !important;}
