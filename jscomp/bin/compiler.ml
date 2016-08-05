@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 08/03-14:17 *)
+(** Bundled by ocaml_pack 08/05-11:18 *)
 module String_set : sig 
 #1 "string_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1474,7 +1474,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.8.8"
+let version = "0.9.0"
 
 
 let runtime_set = 
@@ -6192,6 +6192,10 @@ val parse_interface : Format.formatter -> string -> Parsetree.signature
 
 val parse_implementation : Format.formatter -> string -> Parsetree.structure
 
+val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature lazy_t
+
+val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
+    
 val check_suffix :  string -> [> `Ml | `Mli ] * string
 
 end = struct
@@ -6224,12 +6228,18 @@ let parse_interface ppf sourcefile =
   let ast = Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile in
   if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast
 
+let lazy_parse_interface ppf sourcefile =
+  lazy (parse_interface ppf sourcefile)
+
 let parse_implementation ppf sourcefile = 
   let ast = 
     Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile in 
   if !Js_config.no_builtin_ppx_ml then ast else
     !Ppx_entry.rewrite_implementation ast 
 
+let lazy_parse_implementation ppf sourcefile =
+  lazy (parse_implementation ppf sourcefile)
+    
 let check_suffix  name  = 
   if Filename.check_suffix name ".ml"
   || Filename.check_suffix name ".mlt" then 
@@ -15932,7 +15942,7 @@ let cmj_data_sets = String_map.of_list [
   ("bs_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001#\000\000\000J\000\000\000\248\000\000\000\234\176\208\208\208@/caml_array_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A1caml_array_concat\160\176@\160\160A\144\160\176\001\004\t!l@@@@@@B.caml_array_sub\160\176@\160\160C\144\160\176\001\003\244!x@\160\176\001\003\245&offset@\160\176\001\003\246#len@@@@@\208@.caml_make_vect\160\176@\160\160B\144\160\176\001\004\020#len@\160\176\001\004\021$init@@@@@@AC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_backtrace.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\209\000\000\000+\000\000\000\148\000\000\000\132\176\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\003\241%param@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\190\000\000\000|\000\000\001\150\000\000\001{\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!y@@@@\144\147\192B@\004\t\150\160\178@\160\"::A@\160\144\004\015\160\144\004\014@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\003\252!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\208%false@A\t/BS_EXTERN:0.8.8\132\149\166\190\000\000\000\012\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160%false@@@\150\160\152\208$true@A\t.BS_EXTERN:0.8.8\132\149\166\190\000\000\000\011\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160$true@@@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\004\026@\150\160\152\004\023@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\147\192A@\004\006\150\160\178@\160$SomeA@\160\144\004\012@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\190\000\000\000|\000\000\001\150\000\000\001{\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!y@@@@\144\147\192B@\004\t\150\160\178@\160\"::A@\160\144\004\015\160\144\004\014@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\003\252!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\208%false@A\t/BS_EXTERN:0.9.0\132\149\166\190\000\000\000\012\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160%false@@@\150\160\152\208$true@A\t.BS_EXTERN:0.9.0\132\149\166\190\000\000\000\011\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160$true@@@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\147\192A@\004\006\188\144\004\007\150\160\152\004\026@\150\160\152\004\023@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\147\192A@\004\006\150\160\178@\160$SomeA@\160\144\004\012@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_builtin_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\0017\000\000\0001\000\000\000\210\000\000\000\185\176\208\208\208\208@.assert_failure\160@@@A0division_by_zero\160@@@B+end_of_file\160@@\208@'failure\160@@@AC0invalid_argument\160@@\208\208\208@-match_failure\160@@@A)not_found\160@@@B-out_of_memory\160@@\208\208@.stack_overflow\160@@\208@.sys_blocked_io\160@@@AB)sys_error\160@@\208@:undefined_recursive_module\160@@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\166\000\000\000+\000\000\000\144\000\000\000\135\176\208@.caml_set_oo_id\160\176@\160\160A\144\160\176\001\003\242!b@@@@@\208\208@&create\160\176@\160\160A\144\160\176\001\003\245#str@@@@@@A&get_id\160\176@\160\160A\144\160\176\001\003\247%param@@@@@@BC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_float.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\236\000\000\000h\000\000\001\131\000\000\001e\176\208\208\208\208@3caml_classify_float\160\176A\160\160A\144\160\176\001\004\022!x@@@@@@A3caml_copysign_float\160\176@\160\160B\144\160\176\001\004#!x@\160\176\001\004$!y@@@@@\208\208@0caml_expm1_float\160\176@\160\160A\144\160\176\001\004(!x@@@@@@A2caml_float_compare\160\176A\160\160B\144\160\176\001\004 !x@\160\176\001\004!!y@@@@@@BC0caml_frexp_float\160\176@@@@\208\208@0caml_hypot_float\160\004\005@@A8caml_int32_bits_of_float\160\176@\160\160A\144\160\176\001\004\019!x@@@@@@BD8caml_int32_float_of_bits\160\176@\160\160A\144\160\176\001\004\003!x@@@@@\208\208@0caml_ldexp_float\160\004\027@\208@0caml_log10_float\160\004\030@@AB/caml_modf_float\160\176A\160\160A\144\160\176\001\004\024!x@@@@@@CE\1440caml_ldexp_float\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
@@ -15942,16 +15952,16 @@ let cmj_data_sets = String_map.of_list [
   ("caml_int32.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\255\000\000\000D\000\000\000\233\000\000\000\219\176\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\247!x@@@@@\208@0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\249!x@@@@@\208@4caml_nativeint_bswap\160\004\n@@ABC#div\160\176A\160\160B\144\160\176\001\003\241!x@\160\176\001\003\242!y@@@@@\208\208@$imul\160\176@@@@@A$mod_\160\176A\160\160B\144\160\176\001\003\244!x@\160\176\001\003\245!y@@@@@@BD\144$imul\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_int64.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\167\000\000\001}\000\000\004\231\000\000\004\187\176\208\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\004\225%param@\160\176\001\004\226%param@@@@@@A$asr_\160\176@\160\160B\144\160\176\001\004*!x@\160\176\001\004+'numBits@@@@@\208\208\208@-bits_of_float\160\176A\160\160A\144\160\176\001\004\170!x@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004w$self@\160\176\001\004x%other@@@@@\208@,discard_sign\160\176A\160\160A\144\160\176\001\004\133!x@@@@@@AB#div\160\176@\160\160B\144\160\176\001\004`$self@\160\176\001\004a%other@@@@@\208\208@'div_mod\160\176A\160\160B\144\160\176\001\004s$self@\160\176\001\004t%other@@@@@@A\"eq\160\176A\160\160B\144\160\176\001\004\019!x@\160\176\001\004\020!y@@@@@\208@-float_of_bits\160\176@\160\160A\144\160\176\001\004\153!x@@@@@@ABCD\"ge\160\176A\160\160B\144\160\176\001\004\204\004j@\160\176\001\004\205\004i@@@@@\208\208\208@%get64\160\176A\160\160B\144\160\176\001\004\176!s@\160\176\001\004\177!i@@@@@@A\"gt\160\176A\160\160B\144\160\176\001\004R!x@\160\176\001\004S!y@@@@@@B'is_zero\160\176A\160\160A\144\160\176\001\004\219\004\140@@@@@\208@\"le\160\176A\160\160B\144\160\176\001\004U!x@\160\176\001\004V!y@@@@@@ACE$lsl_\160\176@\160\160B\144\160\176\001\004\031!x@\160\176\001\004 'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\144\160\176\001\004$!x@\160\176\001\004%'numBits@@@@@\208@\"lt\160\176A\160\160B\144\160\176\001\004O!x@\160\176\001\004P!y@@@@@@AB'max_int\160@@@CF'min_int\160@@\208\208\208\208\208@$mod_\160\176A\160\160B\144\160\176\001\004p$self@\160\176\001\004q%other@@@@@@A#mul\160\176@\160\160B\144\160\176\001\004.$this@\160\176\001\004/%other@@@@@@B#neg\160\176@\160\160A\144\160\176\001\004\024!x@@@@@\208@#neq\160\176A\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@@@AC#not\160\176A\160\160A\144\160\176\001\004\224\004\255@@@@@\208\208@(of_float\160\176@\160\160A\144\160\176\001\004^!x@@@@@@A(of_int32\160\176A\160\160A\144\160\176\001\004{\"lo@@@@@@BD#one\160@@\208\208\208@#sub\160\176A\160\160B\144\160\176\001\004\026!x@\160\176\001\004\027!y@@@@@@A$swap\160\176A\160\160A\144\160\176\001\004\206\005\001,@@@@@\208@(to_float\160\176@\160\160A\144\160\176\001\004\203\005\0015@@@@@\208@&to_hex\160\176@\160\160A\144\160\176\001\004\127!x@@@@@@ABC(to_int32\160\176A\160\160A\144\160\176\001\004}!x@@@@\144\147\192A@\004\006\150\160\b\000\000\004\029@\160\150\160\163A\144\"lo\160\144\004\016@\160\145\144\150\018_n\000\001\000\000\000\000@\208@$zero\160@@@ADEG\144.two_ptr_32_dbl\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_io.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\160\000\000\000\229\000\000\003\011\000\000\002\211\176\208\208\208\208@!^\160\176@\160\160B\144\160\176\001\004+$prim@\160\176\001\004*\004\003@@@@\144\147\192B@\004\b\150\160\152\2080js_string_appendBA @\160\144\004\015\160\144\004\014@@A-caml_ml_flush\160\176A\160\160A\144\160\176\001\004\001\"oc@@@@@\208@-caml_ml_input\160\176A\160\160D\144\160\176\001\004\014\"ic@\160\176\001\004\015%bytes@\160\176\001\004\016&offset@\160\176\001\004\017#len@@@A\144\147\192D@\004\015\150\160C\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t caml_ml_input ic not implemented@@@\208@2caml_ml_input_char\160\176A\160\160A\144\160\176\001\004\019\"ic@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\004\030@\160\145\144\162\t!caml_ml_input_char not implemnted@@@@ABC:caml_ml_open_descriptor_in\160\176A\160\160A\144\160\176\001\003\253!i@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\0049@\160\145\144\162\t*caml_ml_open_descriptor_in not implemented@@@\208\208@;caml_ml_open_descriptor_out\160\176A\160\160A\144\160\176\001\003\255!i@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\004V@\160\145\144\162\t+caml_ml_open_descriptor_out not implemented@@@\208@9caml_ml_out_channels_list\160\176A\160\160A\144\160\176\001\004#%param@@@@@@AB.caml_ml_output\160\176A\160\160D\144\160\176\001\004\004\"oc@\160\176\001\004\005#str@\160\176\001\004\006&offset@\160\176\001\004\007#len@@@@@\208\208@3caml_ml_output_char\160\176A\160\160B\144\160\176\001\004\011\"oc@\160\176\001\004\012$char@@@@@@A/node_std_output\160\176@@@@@BCD&stderr\160\176A@@@\208@%stdin\160\004\007@\208@&stdout\160\004\007@@ABE\144%stdin\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\243\000\000\000^\000\000\001U\000\000\001/\176\208\208@/caml_lex_engine\160@\144\147\192C@\160\176\001\003\248$prim@\160\176\001\003\247\004\003@\160\176\001\003\246\004\005@@\150\160\152\2081$$caml_lex_engineCA\tIBS_EXTERN:0.8.8\132\149\166\190\000\000\000&\000\000\000\011\000\000\000$\000\000\000\"\176\160\160B@\160\160B@\160\160B@@B\147\160\160@1$$caml_lex_engine@@\160\144\004\014\160\144\004\r\160\144\004\r@\208@3caml_new_lex_engine\160@\144\147\192C@\160\176\001\003\245\004\025@\160\176\001\003\244\004\027@\160\176\001\003\243\004\029@@\150\160\152\2085$$caml_new_lex_engineCA\tMBS_EXTERN:0.8.8\132\149\166\190\000\000\000*\000\000\000\011\000\000\000%\000\000\000\"\176\160\160B@\160\160B@\160\160B@@B\147\160\160@5$$caml_new_lex_engine@@\160\144\004\r\160\144\004\r\160\144\004\r@@AB$fail\160\176A\160\160A\144\160\176\001\003\249%param@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\1623lexing: empty token@@@@C\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\243\000\000\000^\000\000\001U\000\000\001/\176\208\208@/caml_lex_engine\160@\144\147\192C@\160\176\001\003\248$prim@\160\176\001\003\247\004\003@\160\176\001\003\246\004\005@@\150\160\152\2081$$caml_lex_engineCA\tIBS_EXTERN:0.9.0\132\149\166\190\000\000\000&\000\000\000\011\000\000\000$\000\000\000\"\176\160\160B@\160\160B@\160\160B@@B\148\160\160@1$$caml_lex_engine@@\160\144\004\014\160\144\004\r\160\144\004\r@\208@3caml_new_lex_engine\160@\144\147\192C@\160\176\001\003\245\004\025@\160\176\001\003\244\004\027@\160\176\001\003\243\004\029@@\150\160\152\2085$$caml_new_lex_engineCA\tMBS_EXTERN:0.9.0\132\149\166\190\000\000\000*\000\000\000\011\000\000\000%\000\000\000\"\176\160\160B@\160\160B@\160\160B@@B\148\160\160@5$$caml_new_lex_engine@@\160\144\004\r\160\144\004\r\160\144\004\r@@AB$fail\160\176A\160\160A\144\160\176\001\003\249%param@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\1623lexing: empty token@@@@C\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_md5.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000}\000\000\000\029\000\000\000`\000\000\000Y\176\208@/caml_md5_string\160\176@\160\160C\144\160\176\001\004/!s@\160\176\001\0040%start@\160\176\001\0041#len@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_module.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\163\000\000\000*\000\000\000\139\000\000\000\131\176\208@(init_mod\160\176A\160\160B\144\160\176\001\003\242#loc@\160\176\001\003\243%shape@@@@@\208@*update_mod\160\176A\160\160C\144\160\176\001\004\001%shape@\160\176\001\004\002!o@\160\176\001\004\003!n@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\170\000\000\000\177\000\000\002f\000\000\002D\176\208\208\208\208@,caml_compare\160\176@\160\160B\144\160\176\001\004\014!a@\160\176\001\004\015!b@@@@@@A*caml_equal\160\176@\160\160B\144\160\176\001\004&!a@\160\176\001\004'!b@@@@@\208@1caml_greaterequal\160\176A\160\160B\144\160\176\001\0046!a@\160\176\001\0047!b@@@@@\208@0caml_greaterthan\160\176A\160\160B\144\160\176\001\0049!a@\160\176\001\004:!b@@@@@@ABC2caml_int32_compare\160\176A\160\160B\144\160\176\001\004\002!x@\160\176\001\004\003!y@@@@@\208@0caml_int_compare\160\004\r@@AD6caml_lazy_make_forward\160\176A\160\160A\144\160\176\001\003\251!x@@@@\144\147\192A@\004\006\150\160\178\001\000\250B@\160\144\004\n@\208\208\208\208@.caml_lessequal\160\176A\160\160B\144\160\176\001\004<!a@\160\176\001\004=!b@@@@@@A-caml_lessthan\160\176A\160\160B\144\160\176\001\004?!a@\160\176\001\004@!b@@@@@@B6caml_nativeint_compare\160\004<@\208@-caml_notequal\160\176A\160\160B\144\160\176\001\0041!a@\160\176\001\0042!b@@@@@@AC,caml_obj_dup\160\176@\160\160A\144\160\176\001\003\241!x@@@@@\208@1caml_obj_truncate\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247(new_size@@@@@\208@1caml_update_dummy\160\176@\160\160B\144\160\176\001\003\253!x@\160\176\001\003\254!y@@@@@@ABDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_oo.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\136\000\000\000\029\000\000\000b\000\000\000Z\176\208@6caml_get_public_method\160\176A\160\160C\144\160\176\001\003\243#obj@\160\176\001\003\244#tag@\160\176\001\003\245'cacheid@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\243\000\000\000#\000\000\000\140\000\000\000v\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\147\192A@\160\176\001\003\242$prim@@\150\160\152\2087$$caml_set_parser_traceAA\tGBS_EXTERN:0.8.8\132\149\166\190\000\000\000$\000\000\000\007\000\000\000\025\000\000\000\022\176\160\160B@@B\147\160\160@7$$caml_set_parser_trace@@\160\144\004\n@@AB\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\243\000\000\000#\000\000\000\140\000\000\000v\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\147\192A@\160\176\001\003\242$prim@@\150\160\152\2087$$caml_set_parser_traceAA\tGBS_EXTERN:0.9.0\132\149\166\190\000\000\000$\000\000\000\007\000\000\000\025\000\000\000\022\176\160\160B@@B\148\160\160@7$$caml_set_parser_trace@@\160\144\004\n@@AB\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_primitive.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_queue.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\011\000\000\000\\\000\000\001\024\000\000\001\012\176\208@&create\160\176A\160\160A\144\160\176\001\004\006%param@@@@\144\147\192A@\004\006\150\160\178@\146\160&length$tailA\160\145\144\144@\160\145\161@\144$None@\208\208@(is_empty\160\176A\160\160A\144\160\176\001\004\003!q@@@@\144\147\192A@\004\006\150\160\153@\160\150\160\163@\144\004!\160\144\004\015@\160\145\144\144@@@A$push\160\176A\160\160B\144\160\176\001\003\248!x@\160\176\001\003\249!q@@@@@\208@*unsafe_pop\160\176@\160\160A\144\160\176\001\003\255!q@@@@@@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003D\000\000\000\199\000\000\002\184\000\000\002\141\176\208\208\208@/bytes_of_string\160\176@\160\160A\144\160\176\001\004\027!s@@@@@@A/bytes_to_string\160\176@\160\160A\144\160\176\001\004*!a@@@@@\208\208\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\017\"s1@\160\176\001\004\018\"i1@\160\176\001\004\019\"s2@\160\176\001\004\020\"i2@\160\176\001\004\021#len@@@@@@A0caml_blit_string\160\176A\160\160E\144\160\176\001\004\007\"s1@\160\176\001\004\b\"i1@\160\176\001\004\t\"s2@\160\176\001\004\n\"i2@\160\176\001\004\011#len@@@@@@B2caml_create_string\160\176@\160\160A\144\160\176\001\003\252#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\004\001!s@\160\176\001\004\002!i@\160\176\001\004\003!l@\160\176\001\004\004!c@@@@@@ACD1caml_is_printable\160\176A\160\160A\144\160\176\001\0041!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\254\"s1@\160\176\001\003\255\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\249!s@\160\176\001\003\250!i@@@@@\208\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\0044!s@\160\176\001\0045!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0047!s@\160\176\001\0048!i@@@@@@AB9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004,%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\004<$prim@@@@\144\147\192A@\004\006\150\160\152\2083String.fromCharCodeAA\tCBS_EXTERN:0.8.8\132\149\166\190\000\000\000 \000\000\000\007\000\000\000\024\000\000\000\022\176\160\160B@@B\147\160\160@3String.fromCharCode@@\160\144\004\r@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\185\000\000\000\160\000\000\002+\000\000\001\250\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\147\192A@\004\006\150\160C\160\150\160\144\176T)Not_foundC@@\208\208@4caml_sys_file_exists\160\176A\160\160A\144\160\176\001\003\251\"_s@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t$caml_sys_file_exists not implemented@@@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\0043@@@@\144\147\192A@\004\005\145\144\162!/@@BC/caml_sys_getenv\160@\144\147\192A@\160\176\001\003\252$prim@@\150\160\152\2081$$caml_sys_getenvAA\tABS_EXTERN:0.8.8\132\149\166\190\000\000\000\030\000\000\000\007\000\000\000\024\000\000\000\022\176\160\160B@@B\147\160\160@1$$caml_sys_getenv@@\160\144\004\n@\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\249\"_s@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\004?@\160\145\144\162\t%caml_sys_is_directory not implemented@@@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004p@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004y@@@@\144\147\192A@\004\005\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004\135@@@@@@CD\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003D\000\000\000\199\000\000\002\184\000\000\002\141\176\208\208\208@/bytes_of_string\160\176@\160\160A\144\160\176\001\004\027!s@@@@@@A/bytes_to_string\160\176@\160\160A\144\160\176\001\004*!a@@@@@\208\208\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\017\"s1@\160\176\001\004\018\"i1@\160\176\001\004\019\"s2@\160\176\001\004\020\"i2@\160\176\001\004\021#len@@@@@@A0caml_blit_string\160\176A\160\160E\144\160\176\001\004\007\"s1@\160\176\001\004\b\"i1@\160\176\001\004\t\"s2@\160\176\001\004\n\"i2@\160\176\001\004\011#len@@@@@@B2caml_create_string\160\176@\160\160A\144\160\176\001\003\252#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\004\001!s@\160\176\001\004\002!i@\160\176\001\004\003!l@\160\176\001\004\004!c@@@@@@ACD1caml_is_printable\160\176A\160\160A\144\160\176\001\0041!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\254\"s1@\160\176\001\003\255\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\249!s@\160\176\001\003\250!i@@@@@\208\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\0044!s@\160\176\001\0045!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0047!s@\160\176\001\0048!i@@@@@@AB9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004,%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\004<$prim@@@@\144\147\192A@\004\006\150\160\152\2083String.fromCharCodeAA\tCBS_EXTERN:0.9.0\132\149\166\190\000\000\000 \000\000\000\007\000\000\000\024\000\000\000\022\176\160\160B@@B\148\160\160@3String.fromCharCode@@\160\144\004\r@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\185\000\000\000\160\000\000\002+\000\000\001\250\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\147\192A@\004\006\150\160C\160\150\160\144\176T)Not_foundC@@\208\208@4caml_sys_file_exists\160\176A\160\160A\144\160\176\001\003\251\"_s@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\176S'FailureC@\160\145\144\162\t$caml_sys_file_exists not implemented@@@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\0043@@@@\144\147\192A@\004\005\145\144\162!/@@BC/caml_sys_getenv\160@\144\147\192A@\160\176\001\003\252$prim@@\150\160\152\2081$$caml_sys_getenvAA\tABS_EXTERN:0.9.0\132\149\166\190\000\000\000\030\000\000\000\007\000\000\000\024\000\000\000\022\176\160\160B@@B\148\160\160@1$$caml_sys_getenv@@\160\144\004\n@\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\249\"_s@@@A\144\147\192A@\004\006\150\160C\160\150\160\178@B@\160\150\160\144\004?@\160\145\144\162\t%caml_sys_is_directory not implemented@@@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004p@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004y@@@@\144\147\192A@\004\005\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004\135@@@@@@CD\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_utils.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000X\000\000\000\019\000\000\000?\000\000\0009\176\208@&repeat\160\176@@@@@A\144&repeat\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_weak.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\198\000\000\000\128\000\000\001\161\000\000\001\142\176\208\208\208\208@.caml_weak_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A/caml_weak_check\160\176A\160\160B\144\160\176\001\004\000\"xs@\160\176\001\004\001!i@@@@@@B0caml_weak_create\160\176@\160\160A\144\160\176\001\003\242!n@@@@\144\147\192A@\004\006\150\160\152\208/js_create_arrayAA @\160\144\004\r@@C-caml_weak_get\160\176@\160\160B\144\160\176\001\003\249\"xs@\160\176\001\003\250!i@@@@\144\147\192B@\004\t\150\160\152\208+js_from_defAA @\160\150\160\b\000\000\004\017@\160\144\004\020\160\144\004\019@@\208\208@2caml_weak_get_copy\160\176A\160\160B\144\160\176\001\003\252\"xs@\160\176\001\003\253!i@@@@@@A-caml_weak_set\160\176A\160\160C\144\160\176\001\003\244\"xs@\160\176\001\003\245!i@\160\176\001\003\246!v@@@@@@BD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("curry.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\005\140\000\000\001\205\000\000\005\166\000\000\005\140\176\208\208\208\208@\"_1\160\176@\160\160B\144\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@@A\"_2\160\176@\160\160C\144\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@B\"_3\160\176@\160\160D\144\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208@\"_4\160\176@\160\160E\144\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A\"_5\160\176@\160\160F\144\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@@BC\"_6\160\176@\160\160G\144\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@\208\208\208@\"_7\160\176@\160\160H\144\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208@\"_8\160\176@\160\160I\144\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@AB#app\160\176@\160\160B\144\160\176\001\003\252!f@\160\176\001\003\253$args@@@@@\208\208@&curry1\160\176@\160\160C\144\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@@A\"js\160\176@\160\160D\144\160\176\001\004E%label@\160\176\001\004F'cacheid@\160\176\001\004G#obj@\160\176\001\004H$args@@@@@\208@#js1\160\176@\160\160C\144\160\176\001\004K%label@\160\176\001\004L'cacheid@\160\176\001\004M#obj@@@@@@ABC#js2\160\176@\160\160D\144\160\176\001\004P%label@\160\176\001\004Q'cacheid@\160\176\001\004R#obj@\160\176\001\004S\"a1@@@@@\208\208@#js3\160\176@\160\160E\144\160\176\001\004V%label@\160\176\001\004W'cacheid@\160\176\001\004X#obj@\160\176\001\004Y\"a1@\160\176\001\004Z\"a2@@@@@@A#js4\160\176@\160\160F\144\160\176\001\004]%label@\160\176\001\004^'cacheid@\160\176\001\004_#obj@\160\176\001\004`\"a1@\160\176\001\004a\"a2@\160\176\001\004b\"a3@@@@@\208\208@#js5\160\176@\160\160G\144\160\176\001\004e%label@\160\176\001\004f'cacheid@\160\176\001\004g#obj@\160\176\001\004h\"a1@\160\176\001\004i\"a2@\160\176\001\004j\"a3@\160\176\001\004k\"a4@@@@@@A#js6\160\176@\160\160H\144\160\176\001\004n%label@\160\176\001\004o'cacheid@\160\176\001\004p#obj@\160\176\001\004q\"a1@\160\176\001\004r\"a2@\160\176\001\004s\"a3@\160\176\001\004t\"a4@\160\176\001\004u\"a5@@@@@\208@#js7\160\176@\160\160I\144\160\176\001\004x%label@\160\176\001\004y'cacheid@\160\176\001\004z#obj@\160\176\001\004{\"a1@\160\176\001\004|\"a2@\160\176\001\004}\"a3@\160\176\001\004~\"a4@\160\176\001\004\127\"a5@\160\176\001\004\128\"a6@@@@@\208@#js8\160\176@\160\160J\144\160\176\001\004\131%label@\160\176\001\004\132'cacheid@\160\176\001\004\133#obj@\160\176\001\004\134\"a1@\160\176\001\004\135\"a2@\160\176\001\004\136\"a3@\160\176\001\004\137\"a4@\160\176\001\004\138\"a5@\160\176\001\004\139\"a6@\160\176\001\004\140\"a7@@@@@@ABCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
@@ -15999,7 +16009,7 @@ module Bs_exception : sig
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-
+  | Bs_duplicated_module of string * string         
 val error : error -> 'a 
 
 end = struct
@@ -16032,7 +16042,7 @@ end = struct
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-        
+  | Bs_duplicated_module of string * string         
 exception Error of error
 
 let error err = raise (Error err)
@@ -16045,7 +16055,10 @@ let report_error ppf = function
     Format.fprintf ppf "Cyclic depends : @[%a@]"
       (Format.pp_print_list ~pp_sep:Format.pp_print_space
          Format.pp_print_string)
-      str       
+      str
+  | Bs_duplicated_module (a,b)
+    ->
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b    
 
 let () =
   Location.register_error_of_exn
@@ -17279,16 +17292,38 @@ module Ast_extract : sig
 
 
 
-type ast = 
-  | Ml of Parsetree.structure * string  (* outputprefix *)
-  | Mli of Parsetree.signature * string (* outputprefix *)
 
-type  info = 
-  { source_file : string; 
-    ast : ast;
-    module_name : string     
-  }
+type _ kind =
+  | Ml_kind : Parsetree.structure kind
+  | Mli_kind : Parsetree.signature kind
 
+type module_name = private string
+  
+module String_set = Depend.StringSet
+
+val read_parse_and_extract : 'a kind -> 'a -> String_set.t
+
+type ('a,'b) ast_info =
+  | Ml of
+      string * (* sourcefile *)
+      'a *
+      string (* opref *)      
+  | Mli of string * (* sourcefile *)
+           'b *
+           string (* opref *)
+  | Ml_mli of
+      string * (* sourcefile *)
+      'a *
+      string  * (* opref1 *)
+      string * (* sourcefile *)      
+      'b *
+      string (* opref2*)
+
+type ('a,'b) t =
+  { module_name : string ; ast_info : ('a,'b) ast_info }
+
+val sort_files_by_dependencies :
+  domain:String_set.t -> String_set.t String_map.t -> string Queue.t
 (** 
    {[ let stack,mapping = prepare ast_table ]}
 
@@ -17301,8 +17336,10 @@ type  info =
    for mapping, the key is the module and value is filename
 *)
 
-val prepare :
-  (string, ast) Hashtbl.t -> string Queue.t * (string, string) Hashtbl.t  
+
+val sort :
+  (Parsetree.structure, Parsetree.signature) t  String_map.t -> string Queue.t  
+
 
 
 
@@ -17334,95 +17371,71 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+type module_name = private string
 
 module String_set = Depend.StringSet
 
-let read_parse_and_extract ast extract_function : String_set.t =
+type _ kind =
+  | Ml_kind : Parsetree.structure kind
+  | Mli_kind : Parsetree.signature kind
+        
+let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
-  (let bound_vars = String_set.empty in
+  let bound_vars = String_set.empty in
   List.iter
     (fun modname  ->
-      Depend.open_module bound_vars (Longident.Lident modname))
+       Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
-  extract_function bound_vars ast;
-  !Depend.free_structure_names)
+  (match k with
+   | Ml_kind  -> Depend.add_implementation bound_vars ast
+   | Mli_kind  -> Depend.add_signature bound_vars ast  ); 
+  !Depend.free_structure_names
 
 
+type ('a,'b) ast_info =
+  | Ml of
+      string * (* sourcefile *)
+      'a *
+      string (* opref *)      
+  | Mli of string * (* sourcefile *)
+           'b *
+           string (* opref *)
+  | Ml_mli of
+      string * (* sourcefile *)
+      'a *
+      string  * (* opref1 *)
+      string * (* sourcefile *)      
+      'b *
+      string (* opref2*)
+
+type ('a,'b) t =
+  { module_name : string ; ast_info : ('a,'b) ast_info }
 
 
-type ast = 
-  | Ml of Parsetree.structure * string 
-  | Mli of Parsetree.signature * string 
-
-type  info = 
-  { source_file : string ; 
-    ast : ast;
-    module_name : string     
-  }
-
-
-let module_name_of_file file =
-    String.capitalize 
-      (Filename.chop_extension @@ Filename.basename file)  
-
-
-let merge (files : (info * String_set.t) list )  =
-  let tbl = Hashtbl.create 31 in     
-  let domain =
-    List.fold_left
-      (fun acc ({ source_file ; module_name}, _)
-        ->
-          Hashtbl.add tbl module_name source_file;
-          String_set.add module_name acc           
-      ) String_set.empty files in
-
-  tbl,domain, List.fold_left
-    (fun  acc ({source_file = file; module_name  ; _}, deps) ->
-       match String_map.find  module_name acc with 
-       | new_deps -> 
-         String_map.add  module_name
-           (String_set.inter domain 
-              (String_set.union deps new_deps)) acc
-       | exception Not_found -> 
-         String_map.add  module_name
-           (String_set.inter deps domain) acc
-    ) String_map.empty  files
-
-
-
-  
-let sort_files_by_dependencies  files
-  =
-  let tbl, domain, h  = merge  files in
+(* only visit nodes that are currently in the domain *)
+(* https://en.wikipedia.org/wiki/Topological_sorting *)
+(* dfs   *)
+let sort_files_by_dependencies ~domain dependency_graph =
   let next current =
-    String_set.elements (String_map.find  current h) in    
+    (String_map.find  current dependency_graph) in    
   let worklist = ref domain in
-
   let result = Queue.create () in
-  let visited = Hashtbl.create 31 in (* Temporary mark *)  
-
-  (* only visit nodes that are currently in the domain *)
-  (* https://en.wikipedia.org/wiki/Topological_sorting *)
-  (* dfs   *)
-  let rec visit path current =
-    if Hashtbl.mem visited current then
-      Bs_exception.error (Bs_cyclic_depends path)
+  let rec visit visiting path current =
+    if String_set.mem current visiting then
+      Bs_exception.error (Bs_cyclic_depends (current::path))
     else if String_set.mem current !worklist then
       begin
-        Hashtbl.add visited current () ;
-        let depends = next current in
-        List.iter
+        next current |>        
+        String_set.iter
           (fun node ->
-             if  String_map.mem node  h then
-               visit (current::path) node)
-          depends ;
+             if  String_map.mem node  dependency_graph then
+               visit (String_set.add current visiting) (current::path) node)
+        ;
         worklist := String_set.remove  current !worklist;
         Queue.push current result ;
-        Hashtbl.remove visited current;
       end in        
   while not (String_set.is_empty !worklist) do 
-    visit  [] (String_set.choose !worklist)
+    visit String_set.empty []  (String_set.choose !worklist)
   done;
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter
@@ -17431,23 +17444,35 @@ let sort_files_by_dependencies  files
          ~pp_sep:Format.pp_print_space
          Format.pp_print_string)
       result ;       
-  result,tbl 
+  result
 ;;
 
 
 
-let prepare  ast_table = 
-  let file_dependencies 
-      source_file ast  acc =
-    let extracted_deps =
-      read_parse_and_extract ast 
-        (  match ast with
-           | Ml (ast,_) -> fun set _ ->  Depend.add_implementation set ast 
-           | Mli (ast,_) -> fun set _ ->   Depend.add_signature set ast ) in
-    ({source_file ; ast ; module_name = module_name_of_file source_file },
-     extracted_deps) :: acc  in
-  let files = Hashtbl.fold file_dependencies ast_table []  in
-  sort_files_by_dependencies  files 
+let sort  (ast_table : _ t String_map.t) = 
+  let domain =
+    String_map.fold
+      (fun k _ acc -> String_set.add k acc)
+      ast_table String_set.empty in
+  let h =
+    String_map.map
+      (fun
+        ({ast_info})
+        ->
+          match ast_info with
+          | Ml (_, ast,  _)
+            ->
+            read_parse_and_extract Ml_kind ast            
+          | Mli (_, ast, _)
+            ->
+            read_parse_and_extract Mli_kind ast
+          | Ml_mli (_, impl, _, _, intf, _)
+            ->
+            String_set.union
+              (read_parse_and_extract Ml_kind impl)
+              (read_parse_and_extract Mli_kind intf)              
+      ) ast_table in    
+  sort_files_by_dependencies  domain h
 
 
 
@@ -31619,6 +31644,155 @@ let implementation ppf sourcefile outputprefix =
   |> after_parsing_impl ppf sourcefile outputprefix 
 
 end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+
+val reverse_in_place : 'a array -> unit
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_f : ('a -> 'b option) -> 'a array -> 'b list 
+
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let reverse_in_place a =
+  let aux a i len =
+    if len=0 then ()
+    else
+      for k = 0 to (len-1)/2 do
+        let t = Array.unsafe_get a (i+k) in
+        Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+        Array.unsafe_set a (i+len-1-k) t;
+      done
+  in
+  aux a 0 (Array.length a)
+
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map (f : _ -> _ option) a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+let to_list_f f a =
+  let rec tolist i res =
+    if i < 0 then res else
+      let v = Array.unsafe_get a i in
+      tolist (i - 1)
+        (match f v with
+         | Some v -> v :: res
+         | None -> res) in
+  tolist (Array.length a - 1) []
+
+end
 module Ocaml_batch_compile : sig 
 #1 "ocaml_batch_compile.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -31645,7 +31819,8 @@ module Ocaml_batch_compile : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val batch_compile : Format.formatter -> string list -> unit
+(** reutrn value is the error code *)
+val batch_compile : Format.formatter -> string list -> string ->  int
 
 end = struct
 #1 "ocaml_batch_compile.ml"
@@ -31674,65 +31849,190 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let batch_compile ppf files =
+let module_name_of_file file =
+    String.capitalize 
+      (Filename.chop_extension @@ Filename.basename file)  
+
+let build_queue ppf queue (ast_table : _ Ast_extract.t String_map.t) =
+  queue |> Queue.iter (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,ast, opref)}
+        -> 
+        Js_implementation.after_parsing_impl ppf source_file 
+          opref ast 
+      | {ast_info = Mli (source_file,ast,opref) ; }  
+        ->
+        Js_implementation.after_parsing_sig ppf source_file 
+              opref ast 
+      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
+        -> 
+        Js_implementation.after_parsing_sig ppf source_file1 opref1 intf ;
+        Js_implementation.after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
+
+let build_lazy_queue ppf queue (ast_table : _ Ast_extract.t String_map.t) =
+  queue |> Queue.iter (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,lazy ast, opref)}
+        -> 
+        Js_implementation.after_parsing_impl ppf source_file 
+          opref ast 
+      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
+        ->
+        Js_implementation.after_parsing_sig ppf source_file 
+              opref ast 
+      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
+        -> 
+        Js_implementation.after_parsing_sig ppf source_file1 opref1 intf ;
+        Js_implementation.after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
+
+let build_ast_table ppf files parse_implementation parse_interface  =
+  List.fold_left
+    (fun (acc : _ Ast_extract.t String_map.t)
+      source_file ->
+      match Ocaml_parse.check_suffix source_file with
+      | `Ml, opref ->
+        let module_name = module_name_of_file source_file in             
+        begin match String_map.find module_name acc with
+          | exception Not_found ->
+            String_map.add module_name
+              {Ast_extract.ast_info =
+                 (Ml (source_file, parse_implementation
+                        ppf source_file, opref));
+               module_name ;                       
+              } acc
+          | {ast_info = (Ml (source_file2, _, _)
+                        | Ml_mli(source_file2, _, _,_,_,_))} ->
+            Bs_exception.error
+              (Bs_duplicated_module (source_file, source_file2))
+          | {ast_info =  Mli (source_file2, intf, opref2)}
+            ->
+            String_map.add module_name
+              {Ast_extract.ast_info =                     
+                 Ml_mli (source_file,
+                         parse_implementation ppf source_file,
+                         opref,
+                         source_file2,
+                         intf,
+                         opref2                        
+                        );
+               module_name} acc                     
+        end                
+      | `Mli, opref ->
+        let module_name = module_name_of_file source_file in
+        begin match String_map.find module_name acc with
+          | exception Not_found ->
+            String_map.add module_name
+              {Ast_extract.ast_info = (Mli (source_file, parse_interface
+                                              ppf source_file, opref));
+               module_name } acc                      
+          | {ast_info =
+               (Mli (source_file2, _, _) |
+                Ml_mli(_,_,_,source_file2,_,_)) } ->
+            Bs_exception.error
+              (Bs_duplicated_module (source_file, source_file2))
+          | {ast_info = Ml (source_file2, impl, opref2)}
+            ->
+            String_map.add module_name
+              {Ast_extract.ast_info =
+                 Ml_mli
+                   (source_file2,
+                    impl,
+                    opref2,
+                    source_file,
+                    parse_interface ppf source_file,
+                    opref
+                   );
+               module_name} acc                      
+        end              
+    ) String_map.empty files 
+
+
+module String_set = Depend.StringSet
+
+
+let handle_main_file ppf main_file =
+  let dirname = Filename.dirname main_file in
+  let files =
+    Sys.readdir dirname
+    |> Ext_array.to_list_f
+      (fun source_file ->
+         if Ext_string.ends_with source_file ".ml" ||
+            Ext_string.ends_with source_file ".mli" then
+           Some (Filename.concat dirname source_file)
+         else None
+      ) in
+  let ast_table =
+    build_ast_table ppf files
+      Ocaml_parse.lazy_parse_implementation
+      Ocaml_parse.lazy_parse_interface in 
+
+  let visited = Hashtbl.create 31 in
+  let result = Queue.create () in  
+  let next module_name =
+    match String_map.find module_name ast_table with
+    | exception _ -> String_set.empty
+    | {ast_info = Ml (_, lazy impl, _)} ->
+      Ast_extract.read_parse_and_extract Ml_kind impl
+    | {ast_info = Mli (_, lazy intf,_)} ->
+      Ast_extract.read_parse_and_extract Mli_kind intf
+    | {ast_info = Ml_mli(_,lazy impl, _, _, lazy intf, _)}
+      -> 
+      String_set.union
+        (Ast_extract.read_parse_and_extract Ml_kind impl)
+        (Ast_extract.read_parse_and_extract Mli_kind intf)
+  in
+  let rec visit visiting path current =
+    if String_set.mem current visiting  then
+      Bs_exception.error (Bs_cyclic_depends (current::path))
+    else
+    if not (Hashtbl.mem visited current)
+    && String_map.mem current ast_table then
+      begin
+        String_set.iter
+          (visit
+             (String_set.add current visiting)
+             (current::path))
+          (next current) ;
+        Queue.push current result;
+        Hashtbl.add visited current ();
+      end in
+  visit (String_set.empty) [] (module_name_of_file main_file) ;
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter
+      "Order: @[%a@]@."
+      (Ext_format.pp_print_queue
+         ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      result ;
+  build_lazy_queue ppf result ast_table;
+  if not (!Clflags.compile_only) then
+    Sys.command
+      ("node " ^ Filename.chop_extension main_file ^ ".js")
+  else 0
+
+let batch_compile ppf files main_file =
+  Compenv.readenv ppf Before_compile; 
+  Compmisc.init_path  false;
   if files <> [] then 
-    begin 
-      Compenv.readenv ppf Before_compile; 
-      Compmisc.init_path  false;
-      let batch_files  : (string, Ast_extract.ast) Hashtbl.t =
-        Hashtbl.create 31 in 
-      files |> List.iter begin fun name -> 
-        match Ocaml_parse.check_suffix name with 
-        | `Ml, opref -> 
-          Hashtbl.add batch_files 
-            name
-            (Ml (Ocaml_parse.parse_implementation ppf name, opref) )
-        | `Mli, opref -> 
-          Hashtbl.add batch_files name
-            (Mli (Ocaml_parse.parse_interface ppf name, opref))
+    begin
+      let ast_table =
+        build_ast_table ppf files
+          Ocaml_parse.parse_implementation
+          Ocaml_parse.parse_interface in
+      build_queue ppf (Ast_extract.sort ast_table) ast_table
+    end        
+  ;
+  if String.length main_file <> 0 then
+    handle_main_file ppf main_file
+  else 0
 
-      end;
-      let stack, mapping = Ast_extract.prepare batch_files in 
-      stack |> Queue.iter (fun modname -> 
-          match Hashtbl.find_all mapping modname with
-          | [] -> ()
-          | [sourcefile] -> 
-            begin match Hashtbl.find batch_files sourcefile with
-              | exception _ -> assert false 
-              | Ml (ast,opref) 
-                ->
-                Js_implementation.after_parsing_impl ppf sourcefile 
-                  opref ast 
-              | Mli (ast,opref)  
-                ->
-                Js_implementation.after_parsing_sig ppf sourcefile 
-                  opref ast 
-            end
-          | [sourcefile1;sourcefile2] 
-            -> (* TODO: check duplicated names *)
-            begin match Hashtbl.find batch_files sourcefile1 with 
-              | exception _ -> assert false 
-              | Mli (ast,opref) -> 
-                Js_implementation.after_parsing_sig ppf sourcefile1 opref ast ;
-                begin match Hashtbl.find batch_files sourcefile2 with 
-                  | Ml (ast,opref) -> 
-                    Js_implementation.after_parsing_impl ppf sourcefile2 
-                      opref ast ;
-                  | _ -> assert false 
-                end
-              | Ml (ast0,opref0) -> 
-                begin match Hashtbl.find batch_files sourcefile2 with 
-                  | Mli (ast,opref) -> 
-                    Js_implementation.after_parsing_sig ppf sourcefile2 opref ast ;
-                    Js_implementation.after_parsing_impl ppf sourcefile1 
-                      opref0 ast0 ;
 
-                  | _ -> assert false
-                end
-            end
-          | _ -> assert false 
-        )
-    end
+
+                    
 
 end
 module 
@@ -32336,11 +32636,13 @@ let intf filename =
   Compenv.readenv ppf Before_compile; process_interface_file ppf filename;;
 
 let batch_files  = ref []
-
+let main_file  = ref ""
+    
 let collect_file name = 
   batch_files := name :: !batch_files
 
-
+let set_main_entry name =
+  main_file := name  
 
 
 
@@ -32406,6 +32708,10 @@ let buckle_script_flags =
    Arg.Unit set_noassert, 
    " no code containing any assertion"
   )
+  ::
+  ("-bs-main",
+   Arg.String set_main_entry,   
+   " set the Main entry file")
   :: 
   ("-bs-files", 
    Arg.Rest collect_file, 
@@ -32426,153 +32732,13 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-    Ocaml_batch_compile.batch_compile ppf !batch_files; 
-    exit 0
+    exit (Ocaml_batch_compile.batch_compile ppf !batch_files !main_file) 
   with x ->
     Location.report_exception ppf x;
     exit 2
 
 
 
-
-
-end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-
-val reverse_in_place : 'a array -> unit
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let reverse_in_place a =
-  let aux a i len =
-    if len=0 then ()
-    else
-      for k = 0 to (len-1)/2 do
-        let t = Array.unsafe_get a (i+k) in
-        Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-        Array.unsafe_set a (i+len-1-k) t;
-      done
-  in
-  aux a 0 (Array.length a)
-
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map (f : _ -> _ option) a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
 
 end
