@@ -33,18 +33,18 @@
     on compiler API
 *)
 
-val query : Path.t -> Env.t -> Types.signature option 
-
-val name_of_signature_item : Types.signature_item -> Ident.t 
 
 val get_name : Types.signature -> int -> string
 
-val filter_serializable_signatures : Types.signature -> Types.signature
 
-val find_serializable_signatures_by_path : Path.t -> Env.t -> Types.signature option
+(* Input path is a global module 
+    TODO: it should be fine for local module*)
+val find_serializable_signatures_by_path :
+  Ident.t -> Env.t -> Types.signature option
 
 
-
+(* val find_name : *)
+(*   Ident.t -> int -> Env.t -> string option *)
 
 
 

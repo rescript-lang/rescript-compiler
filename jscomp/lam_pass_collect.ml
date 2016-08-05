@@ -32,7 +32,7 @@
 
 let annotate (meta : Lam_stats.meta)
     rec_flag    
-    (k:Ident.t) (v : Lam_stats.function_arities) lambda = 
+    (k:Ident.t) (v : Lam.function_arities) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
   match Hashtbl.find  meta.ident_tbl k  with 
   | exception Not_found -> 

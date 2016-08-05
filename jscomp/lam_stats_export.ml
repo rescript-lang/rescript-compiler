@@ -32,10 +32,10 @@ let pp = Format.fprintf
 
 let meaningless_names  = ["*opt*"; "param";]
 
-let rec dump_ident fmt (id : Ident.t) (arity : Lam_stats.function_arities)  = 
+let rec dump_ident fmt (id : Ident.t) (arity : Lam.function_arities)  = 
   pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert true id.name ) dump_arity arity
 
-and dump_arity fmt (arity : Lam_stats.function_arities) = 
+and dump_arity fmt (arity : Lam.function_arities) = 
   match arity with 
   | NA -> pp fmt "any"
   | Determin (_, [], _) -> pp fmt "any"

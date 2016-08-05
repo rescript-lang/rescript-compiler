@@ -31,7 +31,7 @@
 
 let pp = Format.fprintf
 
-let pp_arities (fmt : Format.formatter) (x : Lam_stats.function_arities) = 
+let pp_arities (fmt : Format.formatter) (x : Lam.function_arities) = 
   match x with 
   | NA -> pp fmt "?"
   | Determin (b,ls,tail) -> 
@@ -51,8 +51,8 @@ let pp_arities (fmt : Format.formatter) (x : Lam_stats.function_arities) =
 
 let pp_arities_tbl 
     (fmt : Format.formatter) 
-    (arities_tbl : (Ident.t, Lam_stats.function_arities ref) Hashtbl.t) = 
-  Hashtbl.fold (fun (i:Ident.t) (v : Lam_stats.function_arities ref) _ -> 
+    (arities_tbl : (Ident.t, Lam.function_arities ref) Hashtbl.t) = 
+  Hashtbl.fold (fun (i:Ident.t) (v : Lam.function_arities ref) _ -> 
       pp Format.err_formatter "@[%s -> %a@]@."i.name pp_arities !v ) arities_tbl ()
 
 let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
@@ -61,7 +61,7 @@ let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) =
 
 let merge 
     ((n : int ), params as y)
-    (x : Lam_stats.function_arities) : Lam_stats.function_arities = 
+    (x : Lam.function_arities) : Lam.function_arities = 
   match x with 
   | NA -> Determin(false, [y], false)
   | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
@@ -74,7 +74,7 @@ let merge
 let rec get_arity 
     (meta : Lam_stats.meta) 
     (lam : Lam.t) : 
-  Lam_stats.function_arities = 
+  Lam.function_arities = 
   match lam with 
   | Lconst _ -> Determin (true,[], false)
   | Lvar v -> 
@@ -83,12 +83,12 @@ let rec get_arity
     *)
     begin 
       match Hashtbl.find meta.ident_tbl v with 
-      | exception Not_found -> (NA : Lam_stats.function_arities) 
+      | exception Not_found -> (NA : Lam.function_arities) 
       | Function {arity;_} -> arity
       | _ ->
         (* Format.fprintf Format.err_formatter *)
         (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
-        (NA : Lam_stats.function_arities)
+        (NA : Lam.function_arities)
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
@@ -136,7 +136,7 @@ let rec get_arity
         let rec take (xs : _ list) arg_length = 
           match xs with 
           | (x,y) :: xs ->
-            if arg_length = x then Lam_stats.Determin (b, xs, tail) 
+            if arg_length = x then Lam.Determin (b, xs, tail) 
             else if arg_length > x then
               take xs (arg_length - x)
             else Determin (b, 
@@ -193,7 +193,7 @@ and all_lambdas meta (xs : Lam.t list) =
   | y :: ys -> 
     let arity =  get_arity meta y in 
     List.fold_left (fun exist (v : Lam.t) -> 
-        match (exist : Lam_stats.function_arities) with 
+        match (exist : Lam.function_arities) with 
         | NA -> NA 
         | Determin (b, xs, tail) -> 
           begin 

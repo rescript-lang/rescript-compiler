@@ -35,6 +35,11 @@ type field_dbg_info = Lambda.field_dbg_info
 type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
+
+type function_arities = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+  | NA 
+               
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -73,6 +78,7 @@ type primitive =
   | Pstringlength 
   | Pstringrefu 
   | Pstringrefs
+  | Pstringadd  
   | Pbyteslength
   | Pbytesrefu
   | Pbytessetu 
@@ -142,7 +148,8 @@ type primitive =
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
-  | Pjs_fn_runmethod of int 
+  | Pjs_fn_runmethod of int
+
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -680,28 +687,34 @@ let rec convert (lam : Lambda.lambda) : t =
         ]
       ) -> (* replace all {!CamlinternalMod} function *)
       let args = List.map convert args in
-      if id = 0 then 
-        match args with 
-        | [_loc ; shape]  -> 
+      begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
+      | "init_mod" ,  [_loc ; shape]  -> 
           begin match shape with 
             | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
               -> unit  (* see {!Translmod.init_shape}*)
             | _ ->  prim ~primitive:Pinit_mod ~args 
           end
-        | _ -> assert false 
-      else       
-        begin 
-          assert (id = 1);
-          match args with 
-          | [shape ;  _obj1; _obj2] -> 
+      | "update_mod", [shape ;  _obj1; _obj2] -> 
             (* here array access will have side effect .. *)
             begin match shape with 
             | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
               -> unit (* see {!Translmod.init_shape}*)
             | _ -> prim ~primitive:Pupdate_mod ~args 
             end
-          | _ -> assert false
-        end
+      | _ -> assert false
+      end
+
+    | Lprim ( Pfield (id, _),
+              [Lprim (Pgetglobal ({name  = "Pervasives"} ), _)]              
+            )
+      ->
+      let args = List.map convert args in
+      begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
+        | "^", [ l; r ] 
+          ->
+          prim ~primitive:Pstringadd ~args:[l;r]
+        | _ ->  apply (convert fn) args loc  App_na
+      end
     | _ -> 
         apply (convert fn) (List.map convert args) 
           loc App_na

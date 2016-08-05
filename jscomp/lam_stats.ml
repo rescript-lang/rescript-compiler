@@ -43,9 +43,7 @@
     in the  beginning, when we do alpha conversion, we can instrument the table 
  *)
 
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  | NA 
+type function_arities = Lam.function_arities
 
 type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
 
