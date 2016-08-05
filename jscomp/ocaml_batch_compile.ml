@@ -125,10 +125,6 @@ let build_ast_table ppf files parse_implementation parse_interface  =
     ) String_map.empty files 
 
 
-type ast = 
-  | Ml of Parsetree.structure * string 
-  | Mli of Parsetree.signature * string 
-
 module String_set = Depend.StringSet
 
 
