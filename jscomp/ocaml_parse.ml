@@ -26,12 +26,18 @@ let parse_interface ppf sourcefile =
   let ast = Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile in
   if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast
 
+let lazy_parse_interface ppf sourcefile =
+  lazy (parse_interface ppf sourcefile)
+
 let parse_implementation ppf sourcefile = 
   let ast = 
     Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile in 
   if !Js_config.no_builtin_ppx_ml then ast else
     !Ppx_entry.rewrite_implementation ast 
 
+let lazy_parse_implementation ppf sourcefile =
+  lazy (parse_implementation ppf sourcefile)
+    
 let check_suffix  name  = 
   if Filename.check_suffix name ".ml"
   || Filename.check_suffix name ".mlt" then 

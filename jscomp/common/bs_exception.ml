@@ -26,7 +26,7 @@
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-        
+  | Bs_duplicated_module of string * string         
 exception Error of error
 
 let error err = raise (Error err)
@@ -39,7 +39,10 @@ let report_error ppf = function
     Format.fprintf ppf "Cyclic depends : @[%a@]"
       (Format.pp_print_list ~pp_sep:Format.pp_print_space
          Format.pp_print_string)
-      str       
+      str
+  | Bs_duplicated_module (a,b)
+    ->
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b    
 
 let () =
   Location.register_error_of_exn

@@ -24,16 +24,38 @@
 
 
 
-type ast = 
-  | Ml of Parsetree.structure * string  (* outputprefix *)
-  | Mli of Parsetree.signature * string (* outputprefix *)
 
-type  info = 
-  { source_file : string; 
-    ast : ast;
-    module_name : string     
-  }
+type _ kind =
+  | Ml_kind : Parsetree.structure kind
+  | Mli_kind : Parsetree.signature kind
 
+type module_name = private string
+  
+module String_set = Depend.StringSet
+
+val read_parse_and_extract : 'a kind -> 'a -> String_set.t
+
+type ('a,'b) ast_info =
+  | Ml of
+      string * (* sourcefile *)
+      'a *
+      string (* opref *)      
+  | Mli of string * (* sourcefile *)
+           'b *
+           string (* opref *)
+  | Ml_mli of
+      string * (* sourcefile *)
+      'a *
+      string  * (* opref1 *)
+      string * (* sourcefile *)      
+      'b *
+      string (* opref2*)
+
+type ('a,'b) t =
+  { module_name : string ; ast_info : ('a,'b) ast_info }
+
+val sort_files_by_dependencies :
+  domain:String_set.t -> String_set.t String_map.t -> string Queue.t
 (** 
    {[ let stack,mapping = prepare ast_table ]}
 
@@ -46,8 +68,10 @@ type  info =
    for mapping, the key is the module and value is filename
 *)
 
-val prepare :
-  (string, ast) Hashtbl.t -> string Queue.t * (string, string) Hashtbl.t  
+
+val sort :
+  (Parsetree.structure, Parsetree.signature) t  String_map.t -> string Queue.t  
+
 
 
 

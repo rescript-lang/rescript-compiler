@@ -138,10 +138,34 @@ function map2i(f, a, b) {
   }
 }
 
+function to_list_f(f, a) {
+  var _i = a.length - 1 | 0;
+  var _res = /* [] */0;
+  while(true) {
+    var res = _res;
+    var i = _i;
+    if (i < 0) {
+      return res;
+    }
+    else {
+      var v = a[i];
+      var match = Curry._1(f, v);
+      _res = match ? /* :: */[
+          match[0],
+          res
+        ] : res;
+      _i = i - 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
 exports.reverse_in_place = reverse_in_place;
 exports.reverse_of_list  = reverse_of_list;
 exports.filter           = filter;
 exports.filter_map       = filter_map;
 exports.range            = range;
 exports.map2i            = map2i;
+exports.to_list_f        = to_list_f;
 /* No side effect */

@@ -26,4 +26,8 @@ val parse_interface : Format.formatter -> string -> Parsetree.signature
 
 val parse_implementation : Format.formatter -> string -> Parsetree.structure
 
+val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature lazy_t
+
+val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
+    
 val check_suffix :  string -> [> `Ml | `Mli ] * string
