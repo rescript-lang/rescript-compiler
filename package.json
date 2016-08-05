@@ -24,7 +24,7 @@
     "postinstall": "./scripts/postinstall.sh"
   },
   "name": "bs-platform",
-  "version": "0.8.8",
+  "version": "0.9.0",
   "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",
