@@ -134,8 +134,7 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-    Ocaml_batch_compile.batch_compile ppf !batch_files !main_file; 
-    exit 0
+    exit (Ocaml_batch_compile.batch_compile ppf !batch_files !main_file) 
   with x ->
     Location.report_exception ppf x;
     exit 2

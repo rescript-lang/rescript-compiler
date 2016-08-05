@@ -186,7 +186,11 @@ let handle_main_file ppf main_file =
          ~pp_sep:Format.pp_print_space
          Format.pp_print_string)
       result ;
-  build_lazy_queue ppf result ast_table
+  build_lazy_queue ppf result ast_table;
+  if not (!Clflags.compile_only) then
+    Sys.command
+      ("node " ^ Filename.chop_extension main_file ^ ".js")
+  else 0
 
 let batch_compile ppf files main_file =
   Compenv.readenv ppf Before_compile; 
@@ -201,7 +205,9 @@ let batch_compile ppf files main_file =
     end        
   ;
   if String.length main_file <> 0 then
-    ignore (handle_main_file ppf main_file)
+    handle_main_file ppf main_file
+  else 0
+
 
 
                     
