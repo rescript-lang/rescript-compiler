@@ -148,25 +148,30 @@ myCode1Mirror.on("changes", onEditChanges);
 
 jsCode1Mirror.setSize(null,codeMirrorDefaultHeight);
 
-
-//Examples to be shown in playground
-var defaultExample =
-"external to_str : \'a -> string = \"js_anything_to_string\"\r\nexternal to_json_string : \'a -> string = \"js_json_stringify\"\r\nlet debug x = print_endline (to_str x )\r\nlet pprint x = print_endline (to_json_string x)\r\nlet rec fib = function\r\n  | 1 | 2 -> 1\r\n  | n -> fib (n - 1 )  + fib (n - 2)\r\n(** Imperative style *)\r\nlet sum n =\r\n    let v  = ref 0 in\r\n    for i = 0 to n do\r\n       v := !v + i\r\n    done;\r\n    !v\r\nlet tail_sum n =\r\n  let rec aux acc i =\r\n    if i <= n then\r\n      aux (acc + i) (i + 1)\r\n    else acc\r\n  in aux 0 0\r\n\r\n(** List map *)\r\ntype \'a list =\r\n  | Nil\r\n  | Cons of \'a * \'a list\r\n\r\nlet rec map f = function\r\n  | Nil -> Nil\r\n  | Cons (x,xs) ->  Cons (f x [@bs], map f xs)\r\n\r\n(** Test curry and uncurry calling convention *)\r\nlet test_curry x  y =  x + y\r\nlet f = test_curry 32\r\n\r\nlet () =\r\n let hello_ocaml = [|\"h\";\"e\";\"y\";\"o\";\"c\";\"a\";\"m\";\"l\"|] in\r\n hello_ocaml |> Array.to_list |> String.concat \",\" |> pprint"
-var eventHandlerExample = 
-"(* node.js readline class *)\r\ntype readline\r\n\r\n\r\n(* bindings to event handler for \'close\' and \'line\' events *)\r\nexternal on : readline -> \r\n    ([`close of unit -> unit \r\n    | `line of string -> unit] [@bs.string])\r\n    -> unit = \"\" [@@bs.module \"readline\"]\r\n\r\n\r\n(* register event handlers *)\r\nlet register rl =\r\n  on rl (`close (fun event ->  () ));\r\n  on rl (`line (fun line -> print_endline line));";
-
 //Event handler for examples dropdown
 $('#examplesDropdown').click(function(e) {
   var text = e.target.text;
   var id = e.target.id;
+  var filename = "";
+
   if (id === "ex1") {
     changeEvalButton(true);
-    myCode1Mirror.setValue(defaultExample);
+    filename = 'examples/default.ml';
   }
   else if (id === "ex2") {
     changeEvalButton(false);
-    myCode1Mirror.setValue(eventHandlerExample);
+    filename = 'examples/event_handler.ml';
   }
+
+  //make ajax request
+  $
+    .ajax({ url: filename, 
+            cache: true })
+    .done(function (response) {
+      myCode1Mirror.setValue(response);
+    });
+
+  //update dropdown label
   $('#examplesLabel').html(text + ' <span class="caret"></span>');
 })
 
