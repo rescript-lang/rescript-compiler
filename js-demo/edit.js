@@ -173,10 +173,54 @@ $('#examplesDropdown').click(function(e) {
 
   //update dropdown label
   $('#examplesLabel').html(text + ' <span class="caret"></span>');
-})
+});
 
 //checks or unchecks the eval button
 function changeEvalButton(bool) {
   $('#option-eval').prop('checked', bool);
   onEvalButtonChange();
 }
+
+//creates a gist from OCaml code
+$('#share').click(function (e) {
+  var state = $(this).button('loading');
+  var request = 
+  {
+    "description": "BuckleScript Gist",
+    "public": true,
+    "files": {
+      "gist.ml": {
+        "content": myCode1Mirror.getValue()
+      }
+    }
+  };
+
+  $
+    .ajax({ url:'https://api.github.com/gists',
+            type: 'POST',
+            data: JSON.stringify(request)
+          })
+    .done(function (response) {
+      state.button('reset');
+      $('#shareModal').modal('show');
+      var url = 'https://bloomberg.github.io/bucklescript/js-demo/?gist=' + response.id;
+      $('#shareModalBody').html('<a href=' + '"' + url + '"' + 'target="_blank"' + '>' + url + '</a>');
+    })
+    .error(function (err) {
+      state.button('reset');
+      $('#shareModal').modal('show');
+      $('#shareModalBody').text('Sorry! Currently GitHub\'s API limits the number of requests we can send per hour. Please try again later.');
+    })
+});
+
+//copy link to clipboard
+var copy = new Clipboard('#copyButton');
+copy.on('success', function(e) {
+  e.clearSelection();
+  $('#copyGlyph').attr('class', 'glyphicon glyphicon-ok');
+}); 
+
+//reset clipboard icon when modal is closed
+$('#shareModal').on('hidden.bs.modal', function (e) {
+  $('#copyGlyph').attr('class', 'glyphicon glyphicon-copy');
+});

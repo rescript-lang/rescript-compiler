@@ -12,3 +12,7 @@
 .examples { font-size: 14px; padding-right: 0px; padding-left: 30px; }
 
 .examples:hover { color: #9D9D9D !important;}
+
+.navbar-button { color: #9D9D9D; background-color: #222222;}
+
+.navbar-button:hover { color: white; }
