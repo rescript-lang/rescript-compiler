@@ -34,6 +34,7 @@ val no_side_effects : Lam.t -> bool
 
 val size : Lam.t -> int
 
+val ok_to_inline : Lam.t -> Lam.t list -> bool
 val eq_lambda : Lam.t -> Lam.t -> bool 
 (** a conservative version of comparing two lambdas, mostly 
     for looking for similar cases in switch

@@ -428,6 +428,8 @@ poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
 poly_variant_test.cmx : ../runtime/js.cmx poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 polymorphism_test.cmx : polymorphism_test.cmi
+polyvar_test.cmj : ../runtime/js.cmj
+polyvar_test.cmx : ../runtime/js.cmx
 ppx_apply_test.cmj : mt.cmi
 ppx_apply_test.cmx : mt.cmx
 pq_test.cmj :
@@ -1168,6 +1170,8 @@ poly_variant_test.cmo : ../runtime/js.cmo poly_variant_test.cmi
 poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmo : polymorphism_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
+polyvar_test.cmo : ../runtime/js.cmo
+polyvar_test.cmj : ../runtime/js.cmj
 ppx_apply_test.cmo : mt.cmi
 ppx_apply_test.cmj : mt.cmj
 pq_test.cmo :

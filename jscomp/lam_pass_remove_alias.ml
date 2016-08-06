@@ -154,7 +154,6 @@ let simplify_alias
                     rec_flag;                     
                     _ }
           -> 
-          let lam_size = Lam_analysis.size body in            
         
           if Ext_list.same_length args params (* && false *)
           then               
@@ -172,7 +171,9 @@ let simplify_alias
                 simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) 
               end
             else 
-              if lam_size < Lam_analysis.small_inline_size then 
+            if (* Lam_analysis.size body < Lam_analysis.small_inline_size *)
+              Lam_analysis.ok_to_inline body args              
+            then 
 
                 (* let param_map =  *)
                 (*   Lam_analysis.free_variables meta.export_idents  *)

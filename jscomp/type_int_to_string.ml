@@ -22,58 +22,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let name_of_signature_item (x : Types.signature_item )=
+  match x with 
+  | Sig_value (i,_) 
+  | Sig_module (i,_,_) -> i 
+  | Sig_typext (i,_,_) -> i 
+  | Sig_modtype(i,_) -> i 
+  | Sig_class (i,_,_) -> i 
+  | Sig_class_type(i,_,_) -> i 
+  | Sig_type(i,_,_) -> i  
 
 
-
-
-
-
-
-(** Define intemediate format to be serialized for cross module optimization
- *)
-
-(** In this module, 
-    currently only arity information is  exported, 
-
-    Short term: constant literals are also exported 
-
-    Long term:
-    Benefit? since Google Closure Compiler already did such huge amount of work
-    TODO: simple expression, literal small function  can be stored, 
-    but what would happen if small function captures other environment
-    for example 
-
-    {[
-      let f  = fun x -> g x 
-    ]}
-
-    {[
-      let f = g 
-    ]}
-*)
-
-type cmj_value = {
-  arity : Lam.function_arities ;
-  closed_lambda : Lam.t option ; 
-  (* Either constant or closed functor *)
-}
-
-type effect = string option
-
-
-
-type t = {
-  values : cmj_value String_map.t;
-  effect : effect;
-  (* goog_package : string option; *)
-  npm_package_path : Js_config.packages_info;
-}
-
-val pure_dummy : t
-val no_pure_dummy : t
-
-
-val from_file : string -> t
-val from_string : string -> t
-
-val to_file : string -> t -> unit
+(** It should be safe to replace Pervasives[], 
+    we should test cases  like module Pervasives = List *)
+let serializable_signature =
+  (fun x ->
+     match (x : Types.signature_item) with 
+     | Sig_value(_, {val_kind = Val_prim _}) -> false
+     | Sig_typext _ 
+     | Sig_module _
+     | Sig_class _ 
+     | Sig_value _ -> true
+     | _ -> false)
+  
+let filter_serializable_signatures (signature : Types.signature)
+  : Types.signature = 
+  List.filter serializable_signature signature

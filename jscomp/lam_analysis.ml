@@ -127,7 +127,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Integer to external pointer *)
 
       | Poffsetint _
-
+      | Pstringadd 
         -> true
       | Pinit_mod
       | Pupdate_mod
@@ -279,9 +279,18 @@ and size_constant x =
 
 and size_lams acc (lams : Lam.t list) = 
   List.fold_left (fun acc l -> acc  + size l ) acc lams
-
+let args_all_const args =
+  List.for_all (fun x -> match x with Lam.Lconst _ -> true | _ -> false) args
+    
 let exit_inline_size = 7 
 let small_inline_size = 5
+
+(** Hints to inlining *)
+let ok_to_inline fn args =
+  let s = size fn in
+  s < small_inline_size (* || *)
+  (* (args_all_const args && s < 10 && no_side_effects fn) *)
+  
 (* compared two lambdas in case analysis, note that we only compare some small lambdas
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction

@@ -57,7 +57,6 @@ type module_info = {
 type primitive_description =  Primitive.description
 
 type key = 
-
   Ident.t * Env.t  * bool (** we need register which global variable is an dependency *)
 
 
@@ -65,7 +64,7 @@ type ident_info = {
   id : Ident.t;
   name : string;
   signatures : Types.signature;
-  arity : Lam_stats.function_arities; 
+  arity : Lam.function_arities; 
   closed_lambda : Lam.t option 
 }
 
@@ -102,7 +101,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
       let cmj_table = Config_util.find_cmj (id.name ^ Js_config.cmj_ext) in
       begin match
           Type_util.find_serializable_signatures_by_path
-            (Pident id) env with 
+            ( id) env with 
       | None -> not_found id 
       | Some signature -> 
         add_cached_tbl oid (Visit {signatures = signature; 
@@ -177,7 +176,7 @@ let query_and_add_if_not_exist (type u)
         begin match env with 
           | Has_env env -> 
             begin match 
-                Type_util.find_serializable_signatures_by_path (Pident oid.id) env with 
+                Type_util.find_serializable_signatures_by_path ( oid.id) env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some signature -> 
               add_cached_tbl oid (Visit {signatures = signature; cmj_table }) ;

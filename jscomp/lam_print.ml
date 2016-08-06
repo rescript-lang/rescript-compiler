@@ -129,6 +129,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pnot -> fprintf ppf "not"
   | Pnegint -> fprintf ppf "~"
   | Paddint -> fprintf ppf "+"
+  | Pstringadd -> fprintf ppf "+*"                 
   | Psubint -> fprintf ppf "-"
   | Pmulint -> fprintf ppf "*"
   | Pdivint -> fprintf ppf "/"

@@ -192,9 +192,8 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                   /* tuple */[
                     'File "digest_test.ml", line 12, characters 4-11',
                     function () {
-                      var x = "The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.";
                       return /* Eq */Block.__(0, [
-                                Digest.to_hex(Digest.string(x)),
+                                Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
                                 "7065cc36bba1d155fb09f9d02f22e8bf"
                               ]);
                     }
@@ -203,9 +202,8 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                     /* tuple */[
                       'File "digest_test.ml", line 13, characters 4-11',
                       function () {
-                        var x = "The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.";
                         return /* Eq */Block.__(0, [
-                                  Digest.to_hex(Digest.string(x)),
+                                  Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
                                   "b9193d1df4b7a8f0a25ffdd1005c5b2b"
                                 ]);
                       }

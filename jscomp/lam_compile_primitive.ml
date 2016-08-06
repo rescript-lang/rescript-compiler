@@ -54,6 +54,12 @@ let translate
   | Pjs_fn_runmethod _ 
     -> assert false (* already handled by {!Lam_compile} *)
   | Pjs_fn_method _ -> assert false
+  | Pstringadd ->
+    begin match args with      
+      | [a;b] ->
+        E.string_append a b
+      | _ -> assert false          
+    end          
   | Pinit_mod -> 
     E.runtime_call Js_config.module_ "init_mod" args
   | Pupdate_mod ->

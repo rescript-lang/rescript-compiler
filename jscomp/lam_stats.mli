@@ -31,15 +31,6 @@
 
 (** Types defined for lambda analysis *)
 
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  (** when the first argument is true, it is for sure 
-
-      approximation sound but not complete 
-      the last one means it can take any params later, 
-      for an exception: it is (Determin (true,[], true))
-   *)
-  | NA 
 
 type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
 (** Keep track of which identifiers are aliased
@@ -61,7 +52,7 @@ type rec_flag =
 
 type function_id = {
   kind : function_kind ; 
-  mutable arity : function_arities;
+  mutable arity : Lam.function_arities;
   lambda  : Lam.t ;
   (* TODO: This may contain some closure environment,
      check how it will interact with dead code elimination

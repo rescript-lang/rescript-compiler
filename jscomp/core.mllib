@@ -1,6 +1,7 @@
+type_int_to_string
 type_util
 ident_map
-
+ocaml_stdlib_slots
 ident_util
 idents_analysis
 config_util
