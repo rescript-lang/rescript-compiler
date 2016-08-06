@@ -286,12 +286,50 @@ let args_all_const args =
 let exit_inline_size = 7 
 let small_inline_size = 5
 
+(** destruct pattern will work better 
+    if it is closed lambda, otherwise
+    you can not do full evaluation
+
+    We still should avoid inline too big code, 
+
+    ideally we should also evaluate its size after inlining, 
+    since after partial evaluation, it might still be *very big*
+*)
+let destruct_pattern (body : Lam.t) params args =
+  let rec aux v params args =
+    match params, args with
+    | x::xs, b::bs ->
+      if Ident.same x v then Some b
+      else aux v xs bs
+    | [] , _ -> None
+    | x::xs, [] -> assert false                  
+  in   
+  match body with
+  | Lswitch (Lvar v , switch)
+    ->
+    begin match aux v params args with
+      | Some (Lam.Lconst _ as lam) ->
+        size (Lam.switch lam switch) < small_inline_size
+      | Some _ | None -> false
+    end        
+  | Lifthenelse(Lvar v, then_, else_)
+    ->
+    begin match aux v params args with
+      | Some (Lconst _ as lam) ->
+        size (Lam.if_ lam then_ else_) < small_inline_size
+      | Some _ | None -> false          
+    end      
+  | _ -> false
+    
 (** Hints to inlining *)
-let ok_to_inline fn args =
-  let s = size fn in
-  s < small_inline_size (* || *)
-  (* (args_all_const args && s < 10 && no_side_effects fn) *)
-  
+let ok_to_inline ~body params args =
+  let s = size body in
+  s < small_inline_size ||
+  (destruct_pattern body params args) ||  
+  (args_all_const args &&
+   (s < 10 && no_side_effects body )) 
+
+
 (* compared two lambdas in case analysis, note that we only compare some small lambdas
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction

@@ -57,14 +57,6 @@ releasebuild:
 stdlib:
 	cd stdlib && ./build.sh
 
-
-
-
-# Example:
-# MODULE_FLAGS='-bs-module amdjs' make world
-# MODULE_FLAGS='-bs-module commonjs' make world
-# MODULE_FLAGS='-bs-module goog:buckle' make world
-
 world:
 	@echo "Making compiler"		
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc

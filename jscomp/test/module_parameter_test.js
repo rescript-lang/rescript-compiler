@@ -58,7 +58,7 @@ var suites_001 = /* :: */[
     function () {
       return /* Eq */Block.__(0, [
                 3,
-                v("abc")
+                3
               ]);
     }
   ],

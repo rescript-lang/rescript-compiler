@@ -172,7 +172,7 @@ let simplify_alias
               end
             else 
             if (* Lam_analysis.size body < Lam_analysis.small_inline_size *)
-              Lam_analysis.ok_to_inline body args              
+              Lam_analysis.ok_to_inline ~body params args 
             then 
 
                 (* let param_map =  *)
