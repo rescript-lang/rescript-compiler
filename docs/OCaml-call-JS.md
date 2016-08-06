@@ -449,7 +449,7 @@ var ys = [ { x : 3 },  {x : 4 } ]
 `bs.obj` can also be used as an attribute in external declarations, like as below:
 
 ```OCaml
-external make_config : hi:int -> lo:int -> unit -> t [@@bs.obj]
+external make_config : hi:int -> lo:int -> unit -> t = "" [@@bs.obj]
 let v = make_config ~hi:2 ~lo:3
 ```
 will be compiled as 
