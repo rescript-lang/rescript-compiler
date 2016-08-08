@@ -57,8 +57,8 @@ OTHERS := a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope
 	derive_dyntype derive_type_test nested_include simple_derive_test simple_derive_use\
 	mutual_non_recursive_type external_ppx \
 	optional_ffi_test poly_variant_test \
-	bs_rest_test infer_type_test fs_test module_as_function	\
-	test_case_set test_mutliple string_bound_get_test		
+	bs_rest_test infer_type_test fs_test module_as_function\
+	test_case_set test_mutliple string_bound_get_test inline_string_test
 
 
 SOURCE_LIST := js_dyn $(OTHERS) 

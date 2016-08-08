@@ -57,12 +57,18 @@ function g1(x, y) {
   };
 }
 
-var x = g(3, 5)(6);
+var u = 8;
 
-var partial_arg = g1(3, 4);
+var x = function (z) {
+    return u + z | 0;
+  }(6);
+
+var u$1 = 7;
 
 function v(param) {
-  return partial_arg(6, param);
+  var xx = 6;
+  var yy = param;
+  return (xx + yy | 0) + u$1 | 0;
 }
 
 var nil = /* Nil */0;

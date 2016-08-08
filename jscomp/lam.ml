@@ -268,8 +268,25 @@ let if_ (a : t) (b : t) c =
     end
   | _ ->  Lifthenelse (a,b,c)
 
-let switch lam lam_switch : t = 
-  Lswitch(lam,lam_switch)
+let switch lam (lam_switch : switch) : t =
+  match lam with
+  | Lconst ((Const_pointer (i,_) | Const_base (Const_int i)))
+    ->
+    begin try List.assoc i lam_switch.sw_consts
+      with  Not_found ->
+      match lam_switch.sw_failaction with
+      | Some x -> x
+      | None -> assert false
+    end
+  | Lconst (Const_block (i,_,_)) ->
+    begin try List.assoc i lam_switch.sw_blocks
+      with  Not_found ->
+      match lam_switch.sw_failaction with
+      | Some x -> x
+      | None -> assert false
+    end
+  | _ -> 
+    Lswitch(lam,lam_switch)
 
 let stringswitch (lam : t) cases default : t = 
   match lam with
@@ -410,9 +427,10 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
         -> Lift.bool (comparison cmp a b)
       | Pfloatcomp  cmp, Const_base (Const_nativeint a), Const_base (Const_nativeint b)
         -> Lift.bool (comparison cmp a b)
-      | Pintcomp cmp , Const_base (Const_int a), Const_base (Const_int b)
+      | Pintcomp cmp ,
+        (Const_base (Const_int a) | Const_pointer (a,_)),
+        (Const_base (Const_int b) | Const_pointer (b,_))
         -> Lift.bool (comparison cmp a b)
-
       | (Paddint
         | Psubint
         | Pmulint

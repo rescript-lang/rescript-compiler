@@ -165,9 +165,6 @@ function dump(r) {
               ];
       }
     };
-    var opaque = function (name) {
-      return "<" + (name + ">");
-    };
     var s = r.length;
     var t = r.tag | 0;
     if (is_list(r)) {
@@ -176,10 +173,10 @@ function dump(r) {
     }
     else if (t !== 0) {
       if (t === Obj.lazy_tag) {
-        return opaque("lazy");
+        return "<lazy>";
       }
       else if (t === Obj.closure_tag) {
-        return opaque("closure");
+        return "<closure>";
       }
       else if (t === Obj.object_tag) {
         var fields$1 = get_fields(/* [] */0, s);
@@ -217,10 +214,10 @@ function dump(r) {
         return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
       }
       else if (t === Obj.infix_tag) {
-        return opaque("infix");
+        return "<infix>";
       }
       else if (t === Obj.forward_tag) {
-        return opaque("forward");
+        return "<forward>";
       }
       else if (t < Obj.no_scan_tag) {
         var fields$2 = get_fields(/* [] */0, s);
@@ -233,38 +230,39 @@ function dump(r) {
         return Pervasives.string_of_float(r);
       }
       else if (t === Obj.abstract_tag) {
-        return opaque("abstract");
+        return "<abstract>";
       }
       else if (t === Obj.custom_tag) {
-        return opaque("custom");
+        return "<custom>";
       }
       else if (t === Obj.custom_tag) {
-        return opaque("final");
+        return "<final>";
       }
       else if (t === Obj.double_array_tag) {
         return "[|" + ($$String.concat(";", $$Array.to_list($$Array.map(Pervasives.string_of_float, r))) + "|]");
       }
       else {
-        return opaque(Curry._2(Printf.sprintf(/* Format */[
-                            /* String_literal */Block.__(11, [
-                                "unknown: tag ",
-                                /* Int */Block.__(4, [
-                                    /* Int_d */0,
-                                    /* No_padding */0,
-                                    /* No_precision */0,
-                                    /* String_literal */Block.__(11, [
-                                        " size ",
-                                        /* Int */Block.__(4, [
-                                            /* Int_d */0,
-                                            /* No_padding */0,
-                                            /* No_precision */0,
-                                            /* End_of_format */0
-                                          ])
-                                      ])
-                                  ])
-                              ]),
-                            "unknown: tag %d size %d"
-                          ]), t, s));
+        var name = Curry._2(Printf.sprintf(/* Format */[
+                  /* String_literal */Block.__(11, [
+                      "unknown: tag ",
+                      /* Int */Block.__(4, [
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* String_literal */Block.__(11, [
+                              " size ",
+                              /* Int */Block.__(4, [
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ])
+                    ]),
+                  "unknown: tag %d size %d"
+                ]), t, s);
+        return "<" + (name + ">");
       }
     }
     else {

@@ -8,13 +8,6 @@ var g = 7;
 
 var h = [0];
 
-function gg(x, y) {
-  var u = x + y | 0;
-  return function (z) {
-    return u + z | 0;
-  };
-}
-
 function g1(x, y) {
   var u = x + y | 0;
   h[0] = h[0] + 1 | 0;
@@ -23,7 +16,11 @@ function g1(x, y) {
   };
 }
 
-var x = gg(3, 5)(6);
+var u = 8;
+
+var x = function (z) {
+    return u + z | 0;
+  }(6);
 
 var partial_arg = g1(3, 4);
 
