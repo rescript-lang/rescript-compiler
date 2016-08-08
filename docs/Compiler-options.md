@@ -1,5 +1,20 @@
 BuckleScript inherits the command line arguments of the [OCaml compiler](http://caml.inria.fr/pub/docs/manual-ocaml/comp.html). It also adds several flags:
 
+* -bs-main (single directory build)
+
+```bash
+bsc -bs-main main.ml
+```
+
+`bsc` will build module `Main` and all its dependencies, when it
+finishes, it will run `node main.js`.
+
+```bash
+bsc -c -bs-main main.ml
+```
+
+The same as above, but will not run `node`.
+
 * -bs-files
 
 So that you can do
