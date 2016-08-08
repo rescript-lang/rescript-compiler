@@ -443,24 +443,41 @@ let translate
 
       | _ -> assert false
       end
-  | Pbytesrefu 
-  | Pbytesrefs ->
+  | Pbytesrefu ->
       begin match args with
       | [e;e1] -> Js_of_lam_string.ref_byte e e1
       | _ -> assert false
       end
-
+    
+  | Pbytesrefs ->
+    begin match args with
+      | [e ; e1] ->
+        if !Clflags.fast then
+          Js_of_lam_string.ref_byte e e1
+        else E.runtime_call Js_config.bytes "get" args            
+      | _ -> assert false         
+    end
    (* For bytes and string, they both return [int] in ocaml 
        we need tell Pbyteref from Pstringref
        1. Pbyteref -> a[i]
        2. Pstringref -> a.charCodeAt (a[i] is wrong)
     *)
-  | Pstringrefu 
-  | Pstringrefs ->
+  | Pstringrefu  ->
       begin match args with
       | [e;e1] -> Js_of_lam_string.ref_string e e1 
       | _ -> assert false
       end
+
+  | Pstringrefs ->
+      begin match args with
+        | [e;e1] ->
+          if !Clflags.fast then
+            Js_of_lam_string.ref_string e e1             
+          else       
+            E.runtime_call Js_config.string "get" args          
+      | _ -> assert false
+      end
+    
   | Pgetglobal i   -> 
     (* TODO -- check args, case by case -- 
         1. include Array --> let include  = Array 

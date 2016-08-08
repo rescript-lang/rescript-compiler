@@ -5,6 +5,7 @@ var Mt          = require("./mt");
 var Lexing      = require("../../lib/js/lexing");
 var Block       = require("../../lib/js/block");
 var Curry       = require("../../lib/js/curry");
+var Caml_bytes  = require("../../lib/js/caml_bytes");
 var Caml_string = require("../../lib/js/caml_string");
 
 var __ocaml_lex_tables = /* record */[
@@ -40,7 +41,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
         case 0 : 
             return "." + __ocaml_lex_translate_rec(lexbuf, 0);
         case 1 : 
-            var c = lexbuf[/* lex_buffer */1][lexbuf[/* lex_start_pos */4]];
+            var c = Caml_bytes.get(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4]);
             return Caml_string.bytes_to_string(Bytes.make(1, c)) + __ocaml_lex_translate_rec(lexbuf, 0);
         case 2 : 
             return "";

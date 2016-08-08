@@ -25,7 +25,7 @@ function split_by($staropt$star, is_delim, str) {
               acc
             ];
     }
-    else if (Curry._1(is_delim, str.charCodeAt(pos))) {
+    else if (Curry._1(is_delim, Caml_string.get(str, pos))) {
       var new_len = (last_pos - pos | 0) - 1 | 0;
       if (new_len !== 0 || keep_empty) {
         var v = $$String.sub(str, pos + 1 | 0, new_len);
@@ -57,14 +57,14 @@ function trim(s) {
   var i = 0;
   var j = s.length;
   while(function () {
-        var u = s.charCodeAt(i);
+        var u = Caml_string.get(s, i);
         return +(i < j && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32));
       }()) {
     i = i + 1 | 0;
   };
   var k = j - 1 | 0;
   while(function () {
-        var u = s.charCodeAt(k);
+        var u = Caml_string.get(s, k);
         return +(k >= i && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32));
       }()) {
     k = k - 1 | 0;
@@ -302,7 +302,7 @@ function digits_of_str(s, offset, x) {
       return acc;
     }
     else {
-      _acc = (Caml_int32.imul(10, acc) + s$1.charCodeAt(offset + i | 0) | 0) - 48 | 0;
+      _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
       _i = i + 1 | 0;
       continue ;
       

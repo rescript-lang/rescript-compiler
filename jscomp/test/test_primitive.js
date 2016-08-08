@@ -3,6 +3,7 @@
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
 var Pervasives       = require("../../lib/js/pervasives");
 var Curry            = require("../../lib/js/curry");
+var Caml_string      = require("../../lib/js/caml_string");
 
 function a4(prim) {
   return [
@@ -41,7 +42,7 @@ var v = /* float array */[
 
 var xxx = "a";
 
-var a = xxx.charCodeAt(0);
+var a = Caml_string.get(xxx, 0);
 
 function u(b) {
   if (b) {

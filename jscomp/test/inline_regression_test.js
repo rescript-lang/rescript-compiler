@@ -1,10 +1,11 @@
 'use strict';
 
-var Filename = require("../../lib/js/filename");
-var Mt       = require("./mt");
-var Block    = require("../../lib/js/block");
-var Curry    = require("../../lib/js/curry");
-var $$String = require("../../lib/js/string");
+var Filename    = require("../../lib/js/filename");
+var Mt          = require("./mt");
+var Block       = require("../../lib/js/block");
+var Curry       = require("../../lib/js/curry");
+var $$String    = require("../../lib/js/string");
+var Caml_string = require("../../lib/js/caml_string");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
   if (name === "") {
@@ -46,7 +47,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
 
 function basename(param) {
   return generic_basename(function (s, i) {
-              return +(s[i] === "/");
+              return +(Caml_string.get(s, i) === /* "/" */47);
             }, Filename.current_dir_name, param);
 }
 
