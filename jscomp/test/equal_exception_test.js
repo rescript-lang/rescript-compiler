@@ -4,11 +4,13 @@ var Bytes                   = require("../../lib/js/bytes");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
 var Mt                      = require("./mt");
+var Caml_bytes              = require("../../lib/js/caml_bytes");
+var Caml_string             = require("../../lib/js/caml_string");
 
 var v = "gso";
 
 function is_equal() {
-  if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
+  if (Caml_bytes.get(Bytes.make(3, /* "a" */97), 0) !== /* "a" */97) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -40,7 +42,7 @@ function is_equal() {
           ]
         ];
   }
-  if (v[0] === "g") {
+  if (Caml_string.get(v, 0) === /* "g" */103) {
     return 0;
   }
   else {

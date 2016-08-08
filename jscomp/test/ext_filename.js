@@ -12,6 +12,7 @@ var Ext_pervasives          = require("./ext_pervasives");
 var Ext_sys                 = require("./ext_sys");
 var $$String                = require("../../lib/js/string");
 var Format                  = require("../../lib/js/format");
+var Caml_string             = require("../../lib/js/caml_string");
 var List                    = require("../../lib/js/list");
 
 var node_sep = "/";
@@ -142,7 +143,7 @@ function try_chop_extension(s) {
 }
 
 function relative_path(file_or_dir_1, file_or_dir_2) {
-  var sep_char = Filename.dir_sep.charCodeAt(0);
+  var sep_char = Caml_string.get(Filename.dir_sep, 0);
   var relevant_dir1 = file_or_dir_1[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_1[1]) : file_or_dir_1[1];
   var relevant_dir2 = file_or_dir_2[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_2[1]) : file_or_dir_2[1];
   var dir1 = Ext_string.split(/* None */0, relevant_dir1, sep_char);
@@ -224,7 +225,7 @@ function node_relative_path(file1, dep_file) {
                         ]), file2);
         }
         else {
-          var match = file2.charCodeAt(i);
+          var match = Caml_string.get(file2, i);
           if (match === 47 || match === 46) {
             _i = i + 1 | 0;
             continue ;

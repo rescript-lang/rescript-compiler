@@ -4129,7 +4129,7 @@ function unresolved_of_string(s) {
     return /* record */[
             /* scope */List.rev(match[1]),
             /* type_name */match[0],
-            /* from_root */+(s[0] === ".")
+            /* from_root */+(Caml_string.get(s, 0) === /* "." */46)
           ];
   }
   else {

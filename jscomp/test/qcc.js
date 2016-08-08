@@ -12,6 +12,7 @@ var Sys                     = require("../../lib/js/sys");
 var Curry                   = require("../../lib/js/curry");
 var Printf                  = require("../../lib/js/printf");
 var Caml_array              = require("../../lib/js/caml_array");
+var Caml_bytes              = require("../../lib/js/caml_bytes");
 var $$String                = require("../../lib/js/string");
 var Caml_string             = require("../../lib/js/caml_string");
 var List                    = require("../../lib/js/list");
@@ -341,7 +342,7 @@ function next() {
           var param = _param;
           if (param) {
             var lop = param[0];
-            if (lop.charCodeAt(0) === ch$2 && lop.charCodeAt(1) === peekch(/* () */0)) {
+            if (Caml_string.get(lop, 0) === ch$2 && Caml_string.get(lop, 1) === peekch(/* () */0)) {
               Curry._1(getch, /* () */0);
               return /* Op */Block.__(0, [lop]);
             }
@@ -401,7 +402,7 @@ function le(n, x) {
 }
 
 function get32(l) {
-  return ((obuf[l] + (obuf[l + 1 | 0] << 8) | 0) + (obuf[l + 2 | 0] << 16) | 0) + (obuf[l + 3 | 0] << 24) | 0;
+  return ((Caml_bytes.get(obuf, l) + (Caml_bytes.get(obuf, l + 1 | 0) << 8) | 0) + (Caml_bytes.get(obuf, l + 2 | 0) << 16) | 0) + (Caml_bytes.get(obuf, l + 3 | 0) << 24) | 0;
 }
 
 function patch(rel, loc, n) {

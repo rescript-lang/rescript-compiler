@@ -2,7 +2,7 @@ include ../Makefile.shared
 
 COMPILER=../bin/bsc
 
-OTHERS= caml_array caml_string \
+OTHERS= caml_array caml_string caml_bytes\
 	caml_obj caml_int64 \
 	caml_exceptions	caml_utils caml_sys caml_io\
 	caml_float caml_lexer caml_parser caml_primitive\

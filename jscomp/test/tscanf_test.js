@@ -3799,7 +3799,7 @@ function next_char(ob, _) {
   var s = Buffer.contents(ob);
   var len = s.length;
   if (len) {
-    var c = s.charCodeAt(0);
+    var c = Caml_string.get(s, 0);
     ob[/* position */1] = 0;
     Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
     return c;

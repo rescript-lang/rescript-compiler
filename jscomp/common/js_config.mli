@@ -137,7 +137,8 @@ val parser : string
 val obj_runtime : string
 val array : string
 val format : string
-val string : string 
+val string : string
+val bytes : string  
 val float : string 
 val curry : string 
 (* val bigarray : string *)
