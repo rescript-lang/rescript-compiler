@@ -186,6 +186,12 @@ function $$caml_lex_engine(tbl, start_state, lexbuf) {
 /***********************************************/
 /* New lexer engine, with memory of positions  */
 /***********************************************/
+
+/**
+ * s -> Lexing.lex_tables.lex_code
+ * mem -> Lexing.lexbuf.lex_mem (* int array *)
+ */          
+          
 function caml_lex_run_mem(s, i, mem, curr_pos) {
     for (;;) {
         var dst = s.charCodeAt(i);
@@ -195,11 +201,18 @@ function caml_lex_run_mem(s, i, mem, curr_pos) {
         var src = s.charCodeAt(i);
         i++;
         if (src == 0xff)
-            mem[dst + 1] = curr_pos;
+            mem[dst] = curr_pos;
         else
-            mem[dst + 1] = mem[src + 1];
+            mem[dst] = mem[src];
     }
 }
+
+
+/**
+ * s -> Lexing.lex_tables.lex_code
+ * mem -> Lexing.lexbuf.lex_mem (* int array *)
+ */
+  
 function caml_lex_run_tag(s, i, mem) {
     for (;;) {
         var dst = s.charCodeAt(i);
@@ -209,9 +222,9 @@ function caml_lex_run_tag(s, i, mem) {
         var src = s.charCodeAt(i);
         i++;
         if (src == 0xff)
-            mem[dst + 1] = -1;
+            mem[dst] = -1;
         else
-            mem[dst + 1] = mem[src + 1];
+            mem[dst] = mem[src];
     }
 }
 /**
