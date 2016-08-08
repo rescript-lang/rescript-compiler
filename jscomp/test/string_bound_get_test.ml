@@ -6,7 +6,7 @@ let u_a = v.[0]
 let u_b () = v.[-1]
 let u_c = "ghos".[0]
 
-let u_d = "ghos".[-1]
+let u_d () = "ghos".[-1]
 
 let u_e = Bytes.create 32
 

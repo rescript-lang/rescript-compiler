@@ -11,7 +11,9 @@ function u_b() {
   return Caml_string.get(v, -1);
 }
 
-var u_d = Caml_string.get("ghos", -1);
+function u_d() {
+  return Caml_string.get("ghos", -1);
+}
 
 var u_e = new Array(32);
 

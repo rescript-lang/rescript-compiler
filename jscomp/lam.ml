@@ -676,7 +676,13 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args
   | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args
   | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args
-  | Pctconst x -> prim ~primitive:(Pctconst x) ~args
+  | Pctconst x ->
+    begin match x with
+      | Word_size ->
+        Lift.int 32 (* TODO: documentation*)        
+      | _ -> prim ~primitive:(Pctconst x) ~args         
+    end
+
   | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args
   | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args
   | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args
