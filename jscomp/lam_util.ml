@@ -65,16 +65,12 @@ let sort_dag_args  param_args =
 
 
 let add_required_module (x : Ident.t) (meta : Lam_stats.meta) = 
-  if not @@ Ident.is_predef_exn x then   
-    meta.required_modules <- Lam_module_ident.of_ml x :: meta.required_modules 
+  meta.required_modules <- Lam_module_ident.of_ml x :: meta.required_modules 
 
 let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) = 
   let required_modules = 
-    Ext_list.filter_map 
-      (fun x ->
-         if Ident.is_predef_exn x then
-           None 
-         else Some ( Lam_module_ident.of_ml x))  x
+    List.map 
+      (fun x -> Lam_module_ident.of_ml x)  x
     @ meta.required_modules in
   meta.required_modules <- required_modules
 

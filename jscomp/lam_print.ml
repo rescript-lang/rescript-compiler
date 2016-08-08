@@ -111,6 +111,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
+  | Pglobal_exception id ->
+    fprintf ppf "global exception %a" Ident.print id                       
   | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
