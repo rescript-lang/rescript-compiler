@@ -232,7 +232,9 @@ let propogate_beta_reduce
            end;
            arg 
          | Lprim {primitive = Pgetglobal ident;  args = [];  _} -> 
-           (* It's not completeness, its to make it sound.. *)
+           (* It's not completeness, its to make it sound.. 
+              Pass global module as an argument
+           *)
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
