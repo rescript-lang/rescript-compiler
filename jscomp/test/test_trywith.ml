@@ -1,6 +1,33 @@
-let f g x = 
-  try g x 
-  with Not_found -> 0 
+let ff g x =
+  (
+    try g x 
+    with Not_found -> ());
+  (try g x
+   with
+     Out_of_memory  -> ();   
+  );
+  (try g x
+   with
+     Sys_error _ -> ();   
+  );
+  (try g x with
+     Invalid_argument _ -> ();   
+  );
+  (try g x with
+     End_of_file -> ()  );
+  (try g x with
+     Match_failure _ -> ()   
+  );
+  (try g x with
+   |Stack_overflow  -> ()  )  ;
+  (try g x with
+     Sys_blocked_io  -> ()  );
+
+  (try g x with
+     Assert_failure _ -> ()  );
+  (try g x with
+     Undefined_recursive_module _ -> ()  )
+
 
 [@@@warning "-21"]
 

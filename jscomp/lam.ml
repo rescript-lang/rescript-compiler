@@ -46,6 +46,7 @@ type primitive =
   (* Globals *)
   | Pgetglobal of ident
   | Psetglobal of ident
+  | Pglobal_exception of ident       
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag
   | Pfield of int * field_dbg_info
@@ -553,7 +554,11 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     | _ -> assert false 
     end
   | Ploc loc -> assert false (* already compiled away here*)
-  | Pgetglobal id -> prim ~primitive:(Pgetglobal id) ~args
+  | Pgetglobal id ->
+    if Ident.is_predef_exn id then
+      prim ~primitive:(Pglobal_exception id) ~args      
+    else       
+      prim ~primitive:(Pgetglobal id) ~args
   | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args
   | Pmakeblock (tag,info, mutable_flag) 
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args
@@ -592,7 +597,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
       begin match args with 
         | [Lprim {primitive = Pmakeblock (0, _, _) ; 
                   args = [ 
-                    Lprim {primitive = Pgetglobal ({name = "Assert_failure"} as id); args =  []}; 
+                    Lprim {primitive = Pglobal_exception ({name = "Assert_failure"} as id); args =  []}; 
                     _
                   ]
                  } ] when Ident.global id

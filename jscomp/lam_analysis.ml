@@ -72,7 +72,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       
 
 
-      | Pgetglobal _ 
+      | Pgetglobal _
+      | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
       | Pfloatfield _ 
@@ -188,7 +189,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
                     args = [Lconst _]; _},exn,
               Lifthenelse(Lprim{args =  
                                   [Lvar exn1; 
-                                   Lprim {primitive = Pgetglobal ({name="Not_found"}); args = []; _}]
+                                   Lprim {primitive = Pglobal_exception ({name="Not_found"}); args = []; _}]
                                ; _},
                           then_, _)) when Ident.same exn1 exn
     (** we might put this in an optimization pass 

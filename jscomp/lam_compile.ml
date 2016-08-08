@@ -1464,7 +1464,7 @@ and
         Lifthenelse
           (Lprim{primitive = Pintcomp(Ceq);
                  args = [Lvar id2 ; 
-                         Lprim{primitive = Pgetglobal {name = "Not_found"}; _}]},
+                         Lprim{primitive = Pglobal_exception {name = "Not_found"}; _}]},
            cont, _reraise )
       )
       | Ltrywith(
@@ -1473,7 +1473,7 @@ and
           id, 
           Lifthenelse(Lprim{primitive = Pintcomp(Ceq);
                             args = [ 
-                              Lprim { primitive = Pgetglobal {name = "Not_found"; _}; _}; Lvar id2 ]},
+                              Lprim { primitive = Pglobal_exception {name = "Not_found"; _}; _}; Lvar id2 ]},
                       cont, _reraise )
         )) when Ident.same id id2 
       -> 

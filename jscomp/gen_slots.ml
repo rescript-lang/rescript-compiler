@@ -23,4 +23,12 @@ let code_of_array files =
     ATTENTION: we need re-run the code when we upgrade the compiler
     We do this to avoid dependencies
 *)
-let _ = print_endline (code_of_array ["pervasives.cmi"; "camlinternalOO.cmi"; "camlinternalMod.cmi"])
+let _ = print_endline
+    (code_of_array
+       ["pervasives.cmi";
+        "camlinternalOO.cmi";
+        "camlinternalMod.cmi";
+        "string.cmi";
+        "array.cmi";
+        "list.cmi"        
+       ])

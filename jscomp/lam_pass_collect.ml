@@ -131,10 +131,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
 
   and collect  (lam : Lam.t)  =
     match lam with 
-    (* | Lprim (Pgetglobal ident,[]) *)
-    (*   -> *)
-    (*     if not @@ Ident.is_predef_exn ident  then *)
-    (*       Lam_util.add_required_module ident meta *)
+
         (** TODO: 
             how about module aliases..
             record dependency
