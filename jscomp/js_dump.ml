@@ -374,17 +374,25 @@ let rec pp_function method_
             formal_parameter_list inner_cxt  f (List.tl l) env )
         in
         P.space f ;
-        ignore @@ P.brace_vgroup f 1 (fun _ -> 
-            P.string f L.var ; 
-            P.space f; 
-            let cxt = ident cxt f (List.hd l) in 
-            P.space f ; 
-            P.string f L.eq ; 
-            P.space f ;
-            P.string f L.this;
-            P.space f ; 
-            semi f ; 
-            P.newline f ;
+        ignore @@ P.brace_vgroup f 1 (fun _ ->
+            let cxt =
+              if not (Js_fun_env.get_unused env 0) then
+                begin               
+                  P.string f L.var ; 
+                  P.space f; 
+                  let cxt = ident cxt f (List.hd l) in 
+                  P.space f ; 
+                  P.string f L.eq ; 
+                  P.space f ;
+                  P.string f L.this;
+                  P.space f ; 
+                  semi f ;
+                  P.newline f ;
+                  cxt ;                
+                end
+              else
+                cxt
+            in
             statement_list false cxt f b 
           );
 
