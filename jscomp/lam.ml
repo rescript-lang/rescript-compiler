@@ -395,7 +395,6 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
         Lift.int64 (Int64.neg a)
       | Pnot , Const_pointer (a,_) 
         -> Lift.bool (a = 0 )
-
       | _ -> default ()
     end
 
