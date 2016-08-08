@@ -39,3 +39,4 @@ let f (x : x ) =
     end
   end
 
+let u = fun [@bs.this] (_ : int) (x : int) -> x 

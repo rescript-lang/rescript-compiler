@@ -774,6 +774,8 @@ undef_regression_test.cmj : ../runtime/js_obj.cmj ../runtime/js.cmj
 undef_regression_test.cmx : ../runtime/js_obj.cmx ../runtime/js.cmx
 unitest_string.cmj :
 unitest_string.cmx :
+unsafe_obj_external.cmj : ../runtime/js.cmj
+unsafe_obj_external.cmx : ../runtime/js.cmx
 unsafe_ppx_test.cmj : mt.cmi ffi_js.cmj
 unsafe_ppx_test.cmx : mt.cmx ffi_js.cmx
 unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
@@ -1520,6 +1522,8 @@ undef_regression_test.cmo : ../runtime/js_obj.cmo ../runtime/js.cmo
 undef_regression_test.cmj : ../runtime/js_obj.cmj ../runtime/js.cmj
 unitest_string.cmo :
 unitest_string.cmj :
+unsafe_obj_external.cmo : ../runtime/js.cmo
+unsafe_obj_external.cmj : ../runtime/js.cmj
 unsafe_ppx_test.cmo : mt.cmi ffi_js.cmo
 unsafe_ppx_test.cmj : mt.cmj ffi_js.cmj
 unsafe_this.cmo : ../runtime/js.cmo unsafe_this.cmi
