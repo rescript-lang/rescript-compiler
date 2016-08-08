@@ -1,589 +1,646 @@
+
 <!DOCTYPE HTML>
-<html lang="en" >
-    
+<html lang="" >
     <head>
-        
+        <title>Unsupported IO primitives · GitBook</title>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>Unsupported IO primitives | Why JavaScript?</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 2.6.7">
+        <meta name="generator" content="GitBook 3.2.0">
         
         
-        <meta name="HandheldFriendly" content="true"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
-        <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
         
+    
     <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
     
         
-        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-highlight/website.css">
+    
         
     
         
-        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-search/search.css">
+    
         
     
         
-        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-fontsettings/website.css">
-        
     
+        
     
 
         
     
     
-    <link rel="next" href="./Dev-mode-How-to.html" />
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
     
     
-    <link rel="prev" href="./Experimental-support-of-typescript.html" />
+    <link rel="prev" href="Experimental-support-of-typescript.html" />
     
 
-        
     </head>
     <body>
         
+<div class="book">
+    <div class="book-summary">
         
-    <div class="book"
-        data-level="5.6"
-        data-chapter-title="Unsupported IO primitives"
-        data-filepath="Unsupported-IO-primitives.md"
-        data-basepath="."
-        data-revision="Thu Jul 07 2016 15:25:41 GMT-0400 (EDT)"
-        data-innerlanguage="">
-    
-
-<div class="book-summary">
-    <nav role="navigation">
-        <ul class="summary">
             
-            
-            
-            
-
-            
-
-            
-    
-        <li class="chapter " data-level="0" data-path="index.html">
-            
-                
-                    <a href="./index.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                        Home
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="1" >
-            
-            <span><b>1.</b> Playground</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="1.1" data-path="Playground.html">
-            
-                
-                    <a href="./Playground.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>1.1.</b>
-                        
-                        OCaml &amp; Reason Playgrounds
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-        <li class="chapter " data-level="2" >
-            
-            <span><b>2.</b> Get Started</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="2.1" data-path="Installation.html">
-            
-                
-                    <a href="./Installation.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>2.1.</b>
-                        
-                        Installation
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="2.2" data-path="Create-a-simple-example-with-NPM.html">
-            
-                
-                    <a href="./Create-a-simple-example-with-NPM.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>2.2.</b>
-                        
-                        Create a simple example with NPM
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="2.3" data-path="NPM-Support.html">
-            
-                
-                    <a href="./NPM-Support.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>2.3.</b>
-                        
-                        NPM Support
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-        <li class="chapter " data-level="3" >
-            
-            <span><b>3.</b> BuckleScript Basics</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="3.1" data-path="FAQ.html">
-            
-                
-                    <a href="./FAQ.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.1.</b>
-                        
-                        FAQ
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="3.2" >
-            
-                
-                    <a target="_blank" href="https:/ocaml.org/">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.2.</b>
-                        
-                        About OCaml
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="3.3" data-path="Compiler-options.html">
-            
-                
-                    <a href="./Compiler-options.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.3.</b>
-                        
-                        Compiler options
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="3.4" data-path="How-to-adapt-your-build-system.html">
-            
-                
-                    <a href="./How-to-adapt-your-build-system.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.4.</b>
-                        
-                        How to adapt your build system
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="3.5" data-path="Semantic-differences-from-other-backends.html">
-            
-                
-                    <a href="./Semantic-differences-from-other-backends.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.5.</b>
-                        
-                        Semantic differences from other backends
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="3.6" data-path="JavaScript-target-versions.html">
-            
-                
-                    <a href="./JavaScript-target-versions.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.6.</b>
-                        
-                        JavaScript target versions
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-        <li class="chapter " data-level="4" >
-            
-            <span><b>4.</b> BuckleScript Overview</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="4.1" data-path="Compiler-overview.html">
-            
-                
-                    <a href="./Compiler-overview.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>4.1.</b>
-                        
-                        Compiler overview
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-        <li class="chapter " data-level="5" >
-            
-            <span><b>5.</b> BuckleScript FFI</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="5.1" data-path="Extensions.html">
-            
-                
-                    <a href="./Extensions.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.1.</b>
-                        
-                        Language Extenions
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="5.2" data-path="JS-call-OCaml.html">
-            
-                
-                    <a href="./JS-call-OCaml.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.2.</b>
-                        
-                        JS call OCaml
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="5.3" data-path="OCaml-call-JS.html">
-            
-                
-                    <a href="./OCaml-call-JS.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.3.</b>
-                        
-                        OCaml call JS
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="5.4" data-path="Runtime-representation.html">
-            
-                
-                    <a href="./Runtime-representation.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.4.</b>
-                        
-                        Runtime representation
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="5.5" data-path="Experimental-support-of-typescript.html">
-            
-                
-                    <a href="./Experimental-support-of-typescript.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.5.</b>
-                        
-                        Experimental support of typescript
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter active" data-level="5.6" data-path="Unsupported-IO-primitives.html">
-            
-                
-                    <a href="./Unsupported-IO-primitives.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.6.</b>
-                        
-                        Unsupported IO primitives
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-        <li class="chapter " data-level="6" >
-            
-            <span><b>6.</b> Contributions</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="6.1" data-path="Dev-mode-How-to.html">
-            
-                
-                    <a href="./Dev-mode-How-to.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>6.1.</b>
-                        
-                        Dev mode How to
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="6.2" data-path="Help-move-runtime-functions-from-OCaml-to-Javascript.html">
-            
-                
-                    <a href="./Help-move-runtime-functions-from-OCaml-to-Javascript.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>6.2.</b>
-                        
-                        Help move runtime functions from OCaml to Javascript
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-        <li class="chapter " data-level="7" >
-            
-            <span><b>7.</b> Roadmap</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="7.1" data-path="Roadmap.html">
-            
-                
-                    <a href="./Roadmap.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>7.1.</b>
-                        
-                        Roadmap
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-        <li class="chapter " data-level="8" >
-            
-            <span><b>8.</b> Comparisons</span>
-            
-            
-            <ul class="articles">
-                
-    
-        <li class="chapter " data-level="8.1" data-path="Differences-from-js_of_ocaml.html">
-            
-                
-                    <a href="./Differences-from-js_of_ocaml.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>8.1.</b>
-                        
-                        Differences from js_of_ocaml
-                    </a>
-            
-            
-        </li>
-    
-
-            </ul>
-            
-        </li>
-    
-
-
-            
-            <li class="divider"></li>
-            <li>
-                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-                    Published with GitBook
-                </a>
-            </li>
-            
-        </ul>
-    </nav>
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
 </div>
 
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Home
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" >
+            
+                <span>
+            
+                    
+                    Playground
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="Playground.html">
+            
+                <a href="Playground.html">
+            
+                    
+                    OCaml & Reason Playgrounds
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" >
+            
+                <span>
+            
+                    
+                    Get Started
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="Installation.html">
+            
+                <a href="Installation.html">
+            
+                    
+                    Installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="Create-a-simple-example-with-NPM.html">
+            
+                <a href="Create-a-simple-example-with-NPM.html">
+            
+                    
+                    Create a simple example with NPM
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="NPM-Support.html">
+            
+                <a href="NPM-Support.html">
+            
+                    
+                    NPM Support
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" >
+            
+                <span>
+            
+                    
+                    BuckleScript Basics
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="FAQ.html">
+            
+                <a href="FAQ.html">
+            
+                    
+                    FAQ
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" >
+            
+                <a target="_blank" href="https://ocaml.org/">
+            
+                    
+                    About OCaml
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="Compiler-options.html">
+            
+                <a href="Compiler-options.html">
+            
+                    
+                    Compiler options
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="How-to-adapt-your-build-system.html">
+            
+                <a href="How-to-adapt-your-build-system.html">
+            
+                    
+                    How to adapt your build system
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="Semantic-differences-from-other-backends.html">
+            
+                <a href="Semantic-differences-from-other-backends.html">
+            
+                    
+                    Semantic differences from other backends
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="JavaScript-target-versions.html">
+            
+                <a href="JavaScript-target-versions.html">
+            
+                    
+                    JavaScript target versions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+        
+        <li class="divider"></li>
+        
+        
+    
+        <li class="chapter " data-level="2.1" >
+            
+                <span>
+            
+                    
+                    BuckleScript Overview
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.1.1" data-path="Compiler-overview.html">
+            
+                <a href="Compiler-overview.html">
+            
+                    
+                    Compiler overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" >
+            
+                <span>
+            
+                    
+                    BuckleScript FFI
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.2.1" data-path="JS-call-OCaml.html">
+            
+                <a href="JS-call-OCaml.html">
+            
+                    
+                    JS calling OCaml
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2.2" data-path="OCaml-call-JS.html">
+            
+                <a href="OCaml-call-JS.html">
+            
+                    
+                    OCaml calling JS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2.3" data-path="Runtime-representation.html">
+            
+                <a href="Runtime-representation.html">
+            
+                    
+                    Runtime representation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2.4" data-path="Experimental-support-of-typescript.html">
+            
+                <a href="Experimental-support-of-typescript.html">
+            
+                    
+                    Experimental support of typescript
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="2.2.5" data-path="Unsupported-IO-primitives.html">
+            
+                <a href="Unsupported-IO-primitives.html">
+            
+                    
+                    Unsupported IO primitives
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" >
+            
+                <span>
+            
+                    
+                    Contributions
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.3.1" data-path="Dev-mode-How-to.html">
+            
+                <a href="Dev-mode-How-to.html">
+            
+                    
+                    Dev mode How to
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3.2" data-path="Help-move-runtime-functions-from-OCaml-to-Javascript.md">
+            
+                <span>
+            
+                    
+                    Help move runtime functions from OCaml to Javascript
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="2.4" >
+            
+                <span>
+            
+                    
+                    Roadmap
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.4.1" data-path="Roadmap.html">
+            
+                <a href="Roadmap.html">
+            
+                    
+                    Roadmap
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="2.5" >
+            
+                <span>
+            
+                    
+                    Comparisons
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.5.1" data-path="Differences-from-js_of_ocaml.html">
+            
+                <a href="Differences-from-js_of_ocaml.html">
+            
+                    
+                    Differences from js_of_ocaml
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
     <div class="book-body">
-        <div class="body-inner">
-            <div class="book-header" role="navigation">
-    <!-- Actions Left -->
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
     
 
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="./" >Why JavaScript?</a>
+        <a href="." >Unsupported IO primitives</a>
     </h1>
 </div>
 
-            <div class="page-wrapper" tabindex="-1" role="main">
-                <div class="page-inner">
-                
-                
-                    <section class="normal" id="section-">
-                    
-                        <p>Because of the JavaScript environment limitation <code>Pervasives.stdin</code> is not supported but both <code>Pervasives.stdout</code> and <code>Pervasives.stderr</code> are. </p>
 
-                    
-                    </section>
-                
-                
-                </div>
-            </div>
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <p>Because of the JavaScript environment limitation, <code>Pervasives.stdin</code> is not supported but both <code>Pervasives.stdout</code> and <code>Pervasives.stderr</code> are.</p>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
         </div>
-
-        
-        <a href="./Experimental-support-of-typescript.html" class="navigation navigation-prev " aria-label="Previous page: Experimental support of typescript"><i class="fa fa-angle-left"></i></a>
-        
-        
-        <a href="./Dev-mode-How-to.html" class="navigation navigation-next " aria-label="Next page: Dev mode How to"><i class="fa fa-angle-right"></i></a>
-        
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
     </div>
 </div>
 
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="Experimental-support-of-typescript.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Experimental support of typescript">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
         
-<script src="gitbook/app.js"></script>
+    </div>
 
-    
-    <script src="gitbook/plugins/gitbook-plugin-edit-link/plugin.js"></script>
-    
-
-    
-    <script src="gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
-    
-
-    
-    <script src="gitbook/plugins/gitbook-plugin-search/search.js"></script>
-    
-
-    
-    <script src="gitbook/plugins/gitbook-plugin-sharing/buttons.js"></script>
-    
-
-    
-    <script src="gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
-    
-
-<script>
-require(["gitbook"], function(gitbook) {
-    var config = {"edit-link":{"base":"https://github.com/bloomberg/bucklescript/tree/master/docs","label":"Edit This Page"},"highlight":{},"search":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
-    gitbook.start(config);
-});
-</script>
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Unsupported IO primitives","level":"2.2.5","depth":2,"next":{"title":"Contributions","level":"2.3","depth":1,"ref":"","articles":[{"title":"Dev mode How to","level":"2.3.1","depth":2,"path":"Dev-mode-How-to.md","ref":"./Dev-mode-How-to.md","articles":[]},{"title":"Help move runtime functions from OCaml to Javascript","level":"2.3.2","depth":2,"path":"Help-move-runtime-functions-from-OCaml-to-Javascript.md","ref":"./Help-move-runtime-functions-from-OCaml-to-Javascript.md","articles":[]}]},"previous":{"title":"Experimental support of typescript","level":"2.2.4","depth":2,"path":"Experimental-support-of-typescript.md","ref":"./Experimental-support-of-typescript.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["edit-link@2.0.2"],"pluginsConfig":{"edit-link":{"label":"Edit This Page","base":"https://github.com/bloomberg/bucklescript/tree/master/docs"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"Unsupported-IO-primitives.md","mtime":"2016-08-04T18:21:25.000Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2016-08-07T23:58:07.032Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
 
         
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
     </body>
-    
 </html>
+
