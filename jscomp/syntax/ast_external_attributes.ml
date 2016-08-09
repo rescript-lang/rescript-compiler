@@ -272,7 +272,7 @@ let handle_attributes
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
           arg_types in
         if String.length prim_name <> 0 then 
-          Location.raise_errorf ~loc "[@@bs.obj] except empty name";
+          Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
         Obj_create labels(* Need fetch label here, for better error message *)
       | {set_index = true} 
         ->
