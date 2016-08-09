@@ -47,7 +47,11 @@ let v4 =
     method x () = 1.      
   end [@bs]
 
-
+(* let v5 =  *)
+(*   object *)
+(*     method x = x      *)
+(*   end [@bs]     *)
+    
 (** guarantee they have the same type *)
 let collection = [| v ; v2 ; v3 ; v4 |]
                  

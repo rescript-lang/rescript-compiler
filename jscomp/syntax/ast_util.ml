@@ -416,12 +416,10 @@ let ocaml_obj_as_js_object
             Cfk_concrete
               (Fresh, e))
            ->
-           begin match e with
-             | {
-               pexp_desc =
-                 Pexp_poly
-                   (({pexp_desc = Pexp_fun ("", None, pat, e)} as f),
-                    None)} ->  
+           begin match e.pexp_desc with
+             | Pexp_poly
+                 (({pexp_desc = Pexp_fun ("", None, pat, e)} as f),
+                  None) ->  
                let arity = Ast_pat.arity_of_fun pat e in
                let method_type, label_type =
                  generate_callback_method_pair x.pcf_loc mapper label.txt arity in 
@@ -433,9 +431,18 @@ let ocaml_obj_as_js_object
                    let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
                    to_method_callback loc mapper self_pat f
                 } :: exprs)
+             | Pexp_poly( _, Some _)
+               ->
+               Location.raise_errorf ~loc:x.pcf_loc
+                 "polymorphic type annotation not supported yet"
+               
+             | Pexp_poly (_, None) ->
+               Location.raise_errorf
+                 ~loc:x.pcf_loc
+                 "Unsupported syntax, expect syntax like `method x () = x ` "
              | _ ->
                Location.raise_errorf ~loc:x.pcf_loc
-                 "polymorphic type annotation not supported"
+                 "Unsupported syntax in js object"               
            end
          | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
            Location.raise_errorf ~loc:x.pcf_loc
