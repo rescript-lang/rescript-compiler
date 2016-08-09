@@ -13,3 +13,5 @@ ast_derive
 ast_signature
 ast_core_type
 ast_external_attributes
+ast_pat
+ast_exp

@@ -446,13 +446,25 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             }
           else 
             Ast_mapper.default_mapper.expr  self e
+        | Pexp_object {pcstr_self;  pcstr_fields} ->
+          begin match Ast_attributes.process_bs e.pexp_attributes with
+            | `Has, pexp_attributes
+              ->
+              {e with
+               pexp_desc = 
+                 Ast_util.ocaml_obj_as_js_object
+                   loc self pcstr_self pcstr_fields;
+               pexp_attributes               
+              }                          
+            | `Nothing , _ ->
+              Ast_mapper.default_mapper.expr  self e              
+          end            
         | _ ->  Ast_mapper.default_mapper.expr self e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
     class_type = 
       (fun self ({pcty_attributes} as ctd) -> 
-         match Ast_attributes.process_class_type_decl_rev 
-                 pcty_attributes with 
+         match Ast_attributes.process_bs pcty_attributes with 
          | `Nothing,  _ -> 
            Ast_mapper.default_mapper.class_type
              self ctd 

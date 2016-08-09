@@ -150,3 +150,6 @@ let from_labels ~loc tyvars (labels : string list)
     (fun label tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
 
 
+let make_obj ~loc xs =
+  Ast_comb.to_js_type loc @@
+  Ast_helper.Typ.object_  ~loc xs   Closed

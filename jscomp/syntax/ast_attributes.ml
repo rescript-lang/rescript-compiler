@@ -101,7 +101,7 @@ let process_attributes_rev (attrs : t) =
         st, attr::acc 
     ) ( `Nothing, []) attrs
 
-let process_class_type_decl_rev attrs = 
+let process_bs attrs = 
   List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
       match txt, st  with 
       | "bs", _

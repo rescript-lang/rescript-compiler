@@ -433,8 +433,7 @@ let handle_attributes
      | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
        ->
        let result =
-         Ast_comb.to_js_type loc @@
-         Ast_helper.Typ.object_  ~loc   (
+         Ast_core_type.make_obj ~loc (
          List.fold_right2  (fun arg label acc ->
            match arg, label with
            | (_, ty), Ast_core_type.Label s
@@ -451,7 +450,7 @@ let handle_attributes
                | _ -> assert false                 
              end                 
            | (_, _), Ast_core_type.Empty -> acc                
-           ) arg_types_ty arg_labels []) Closed  in
+           ) arg_types_ty arg_labels [])  in
        Ast_core_type.replace_result type_annotation result 
      | _, _ -> type_annotation) ,
     (match ffi , prim_name with

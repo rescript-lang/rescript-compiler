@@ -22,42 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.core_type 
+type t = Parsetree.pattern
 
+val is_unit_cont : yes:'a -> no:'a -> t -> 'a
 
-val list_of_arrow : t -> t * (string * t ) list 
-val replace_result : t -> t -> t
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Array 
-  | Unit
-  | Nothing
-
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-val string_type : t -> arg_type
-
-
-(** return a function type *)
-val from_labels :
-  loc:Location.t -> t list -> string list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]*)
+val arity_of_fun : t -> Parsetree.expression -> int
