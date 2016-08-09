@@ -149,7 +149,7 @@ myCode1Mirror.on("changes", onEditChanges);
 jsCode1Mirror.setSize(null,codeMirrorDefaultHeight);
 
 //Event handler for examples dropdown
-$('#examplesDropdown').click(function(e) {
+$('#examplesDropdown').click(function (e) {
   var text = e.target.text;
   var id = e.target.id;
   var filename = "";
@@ -162,11 +162,16 @@ $('#examplesDropdown').click(function(e) {
     changeEvalButton(false);
     filename = 'examples/event_handler.ml';
   }
-
+  else if(id === "ex3"){
+    changeEvalButton(true);
+    filename = 'examples/quick_sort.ml';
+  }
   //make ajax request
   $
-    .ajax({ url: filename, 
-            cache: true })
+    .ajax({
+      url: filename,
+      cache: true
+    })
     .done(function (response) {
       myCode1Mirror.setValue(response);
     });
