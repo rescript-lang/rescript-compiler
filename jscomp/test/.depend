@@ -434,6 +434,8 @@ polyvar_test.cmj : ../runtime/js.cmj
 polyvar_test.cmx : ../runtime/js.cmx
 ppx_apply_test.cmj : mt.cmi
 ppx_apply_test.cmx : mt.cmx
+ppx_this_obj_test.cmj : mt.cmi
+ppx_this_obj_test.cmx : mt.cmx
 pq_test.cmj :
 pq_test.cmx :
 pr6726.cmj :
@@ -1182,6 +1184,8 @@ polyvar_test.cmo : ../runtime/js.cmo
 polyvar_test.cmj : ../runtime/js.cmj
 ppx_apply_test.cmo : mt.cmi
 ppx_apply_test.cmj : mt.cmj
+ppx_this_obj_test.cmo : mt.cmi
+ppx_this_obj_test.cmj : mt.cmj
 pq_test.cmo :
 pq_test.cmj :
 pr6726.cmo :

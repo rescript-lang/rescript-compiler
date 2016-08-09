@@ -258,11 +258,12 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
   let len = List.length rev_extra_args in 
   let arity = 
     match kind with 
-    | `Fn  ->     
+    | `Fn  ->
       begin match rev_extra_args with 
-        | [ {ppat_desc =
-               ( Ppat_construct ({txt = Lident "()"}, None) )}]
-          -> 0 
+        | [ p]
+          ->
+          Ast_pat.is_unit_cont ~yes:0 ~no:len p           
+
         | _ -> len 
       end
     | `Method_callback -> len  in 
@@ -369,6 +370,124 @@ let handle_raw_structure loc payload =
       Location.raise_errorf ~loc "bs.raw can only be applied to a string"
   end
 
+    
+let ocaml_obj_as_js_object
+    loc (mapper : Ast_mapper.mapper)
+    (self_pat : Parsetree.pattern)
+    (clfs : Parsetree.class_field list) =
+  let self_type_lit = "self_type"   in 
+  (** Attention: we should avoid type variable conflict for each method   *)
+  (* Since the method name is unique, there would be no conflict *)
+  (* Note mapper is only for API compatible *)  
+  let self_type loc = Typ.var ~loc self_type_lit in 
+  let generate_callback_method_pair loc
+      (mapper : Ast_mapper.mapper) method_name arity
+    : (Ast_core_type.t * Ast_core_type.t)  =
+    let result = Typ.var ~loc method_name in   
+    let self_type = self_type loc in  
+    if arity = 0 then
+      to_method_type loc mapper "" (Ast_literal.type_unit ~loc ()) result ,
+      to_method_callback_type loc mapper  "" self_type result      
+    else
+      let tyvars =
+        Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
+      in
+      begin match tyvars with
+        | x :: rest ->
+          let method_rest =
+            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+              rest result in         
+          (to_method_type loc mapper "" x method_rest,
+           to_method_callback_type loc mapper  "" self_type
+             (Typ.arrow ~loc "" x method_rest))
+        | _ -> assert false
+      end in          
+  let (labels,  label_types, method_types, exprs) =
+    List.fold_right
+      (fun (x  : Parsetree.class_field)
+        (labels,
+         label_types,
+         method_types,
+         exprs) ->
+        match x.pcf_desc with
+        | Pcf_method (
+            label,
+            Public,
+            Cfk_concrete
+              (Fresh, e))
+           ->
+           begin match e with
+             | {
+               pexp_desc =
+                 Pexp_poly
+                   (({pexp_desc = Pexp_fun ("", None, pat, e)} as f),
+                    None)} ->  
+               let arity = Ast_pat.arity_of_fun pat e in
+               let method_type, label_type =
+                 generate_callback_method_pair x.pcf_loc mapper label.txt arity in 
+               (label::labels,
+                label_type::label_types,
+                method_type :: method_types,
+                {f with
+                 pexp_desc =
+                   let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
+                   to_method_callback loc mapper self_pat f
+                } :: exprs)
+             | _ ->
+               Location.raise_errorf ~loc:x.pcf_loc
+                 "polymorphic type annotation not supported"
+           end
+         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
+           Location.raise_errorf ~loc:x.pcf_loc
+             "override flag not supported"
+       
+         | Pcf_method (_, _, Cfk_virtual _ )
+           ->
+           Location.raise_errorf ~loc:x.pcf_loc
+             "virtural method not supported"
+           
+         | Pcf_method (_, Private,_ )
+           -> (** TODO: support Private *)             
+           Location.raise_errorf ~loc:x.pcf_loc
+             "Private method not supported yet"
+         | Pcf_inherit _ 
+         | Pcf_val _ 
+         | Pcf_initializer _
+         | Pcf_attribute _
+         | Pcf_extension _
+         | Pcf_constraint _ ->
+           Location.raise_errorf
+             ~loc:x.pcf_loc "Only method support currently"
+      ) clfs  ([], [], [],  []) in
+  let result_type =
+    Typ.alias ~loc (Ast_core_type.make_obj  ~loc
+      (List.map2 (fun label method_type ->
+           label.Asttypes.txt , [], method_type           
+         ) labels method_types)) self_type_lit  in      
+  let pval_type =
+    List.fold_right2
+      (fun label label_type acc ->
+         Typ.arrow
+           ~loc:label.Asttypes.loc
+           label.Asttypes.txt
+           label_type acc           
+      ) labels label_types result_type in
+  let pval_attributes = Ast_attributes.bs_obj pval_type in
+  let local_fun_name = "mk" in
+  let pval_type, pval_prim =
+    Ast_external_attributes.handle_attributes_as_string
+      loc
+      local_fun_name      
+      pval_type pval_attributes "" in
+  Ast_external.local_extern_cont
+    loc
+    ~pval_attributes
+    ~pval_prim
+    ~local_fun_name
+    (fun e ->
+       Exp.apply ~loc e
+         (List.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
+    ~pval_type
 
 let record_as_js_object 
     loc 

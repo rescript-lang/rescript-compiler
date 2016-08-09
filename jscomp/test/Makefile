@@ -58,7 +58,8 @@ OTHERS := a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope
 	mutual_non_recursive_type external_ppx \
 	optional_ffi_test poly_variant_test \
 	bs_rest_test infer_type_test fs_test module_as_function\
-	test_case_set test_mutliple string_bound_get_test inline_string_test
+	test_case_set test_mutliple string_bound_get_test inline_string_test\
+	ppx_this_obj_test unsafe_obj_external	
 
 
 SOURCE_LIST := js_dyn $(OTHERS) 

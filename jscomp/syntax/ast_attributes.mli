@@ -35,7 +35,7 @@ val process_method_attributes_rev :
 val process_attributes_rev : 
   t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
 
-val process_class_type_decl_rev : 
+val process_bs : 
   t -> [ `Nothing | `Has] * t 
 
 val process_external : t -> bool 
