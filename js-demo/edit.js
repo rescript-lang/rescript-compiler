@@ -121,6 +121,52 @@ function evalCode(js){
 
 }
 
+function createExample(name){
+    var li = document.createElement('li');
+    var a = document.createElement('a')
+    a.setAttribute('href', '#' + name);
+    a.setAttribute('data-key', name);
+    a.appendChild(document.createTextNode(name))
+    li.appendChild(a)
+    return li
+}
+
+var examplesDropdown = document.getElementById("examplesDropdown")
+var examplesDataSet ;
+
+
+//Event handler for examples dropdown
+$('#examplesDropdown').click(clickHandler);
+
+function switchExample(id){
+    var filename = "";
+    var example = examplesDataSet [id];
+    if (example){
+        changeEvalButton(example.eval)
+        filename = "examples/" + example.file
+    }
+    //make ajax request
+    $
+    .ajax({
+        url: filename,
+        cache: true
+    })
+    .done(function (response) {
+        myCode1Mirror.setValue(response);
+    });
+
+    //update dropdown label
+    $('#examplesLabel').html(id + ' <span class="caret"></span>');
+
+}
+
+function clickHandler(e) {
+    var id = e.target.getAttribute('data-key');
+    switchExample(id)
+}
+
+
+
 function onEditChanges(cm, change) {  
   if(typeof compile_code === 'undefined'){
     console.log('init....');
@@ -148,37 +194,7 @@ myCode1Mirror.on("changes", onEditChanges);
 
 jsCode1Mirror.setSize(null,codeMirrorDefaultHeight);
 
-//Event handler for examples dropdown
-$('#examplesDropdown').click(function (e) {
-  var text = e.target.text;
-  var id = e.target.id;
-  var filename = "";
 
-  if (id === "ex1") {
-    changeEvalButton(true);
-    filename = 'examples/default.ml';
-  }
-  else if (id === "ex2") {
-    changeEvalButton(false);
-    filename = 'examples/event_handler.ml';
-  }
-  else if(id === "ex3"){
-    changeEvalButton(true);
-    filename = 'examples/quick_sort.ml';
-  }
-  //make ajax request
-  $
-    .ajax({
-      url: filename,
-      cache: true
-    })
-    .done(function (response) {
-      myCode1Mirror.setValue(response);
-    });
-
-  //update dropdown label
-  $('#examplesLabel').html(text + ' <span class="caret"></span>');
-});
 
 //checks or unchecks the eval button
 function changeEvalButton(bool) {

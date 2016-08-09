@@ -1,0 +1,14 @@
+{
+    "Default" :
+    { "file" : "default.ml",
+      "eval" : true
+    }, 
+    "Event Handler" :
+    { "file" :  "event_handler.ml",
+      "eval" : false},
+    "Quick Sort":
+    {"file" : "quick_sort.ml",
+     "eval" : true
+    }
+    
+}

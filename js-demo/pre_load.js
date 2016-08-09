@@ -23,6 +23,26 @@ function start(gist) {
         if(gist){
             contentFromResponse(gist)
         }
+        
+        $.
+        ajax(
+        {url : "examples/examples.json",
+            dataType : "json",
+            cache: true})
+        .done(function (response){
+            examplesDataSet = response;
+            for(var k in examplesDataSet){
+                examplesDropdown.appendChild(createExample(k))
+            }
+            if(location && location.hash ){
+                var id =  location.hash.substr(1)
+                switchExample(id)
+            }
+        })
+        .fail(function(xhr, textStatus, thrown){
+            console.log(arguments)
+        })
+
     })
 }
 function queryGist() {
