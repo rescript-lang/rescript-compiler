@@ -33,11 +33,11 @@ _build
 *.zip
 *.gz
 # special file 
-ocaml_pack
+
 bsc
 bscc
-ocaml_pack0.ml
-ocaml_pack1.ml
+jscomp/tools/ocamlpack*
+
 .idea
 exports.js
 node_modules

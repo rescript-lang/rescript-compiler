@@ -3,6 +3,6 @@
 ../ext/ext_string
 ../syntax/depend
 
-line_process
-ocaml_extract
-ocaml_pack_main
+../syntax/line_process
+../syntax/ocaml_extract
+../syntax/ocaml_pack_main
