@@ -1,6 +1,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Bytes                   = require("../../lib/js/bytes");
 var Filename                = require("../../lib/js/filename");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy");
 var Caml_sys                = require("../../lib/js/caml_sys");
@@ -363,6 +364,25 @@ function replace_backward_slash(x) {
             }, x);
 }
 
+function module_name_of_file(file) {
+  var s = Filename.chop_extension(Curry._1(Filename.basename, file));
+  return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
+}
+
+function chop_extension_if_any(fname) {
+  try {
+    return Filename.chop_extension(fname);
+  }
+  catch (exn){
+    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+      return fname;
+    }
+    else {
+      throw exn;
+    }
+  }
+}
+
 var $slash$slash = Filename.concat;
 
 var node_modules_length = 12;
@@ -386,4 +406,6 @@ exports.resolve_bs_package     = resolve_bs_package;
 exports.find_package_json_dir  = find_package_json_dir;
 exports.package_dir            = package_dir;
 exports.replace_backward_slash = replace_backward_slash;
+exports.module_name_of_file    = module_name_of_file;
+exports.chop_extension_if_any  = chop_extension_if_any;
 /* Filename Not a pure module */

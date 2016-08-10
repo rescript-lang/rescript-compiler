@@ -70,9 +70,15 @@ val sort_files_by_dependencies :
 
 
 val sort :
-  (Parsetree.structure, Parsetree.signature) t  String_map.t -> string Queue.t  
+  ('a -> Parsetree.structure) ->
+  ('b -> Parsetree.signature) ->
+  ('a, 'b) t String_map.t -> string Queue.t  
 
 
 
-
-
+val build :
+  Format.formatter ->
+  string list ->
+  (Format.formatter -> string -> 'b) ->
+  (Format.formatter -> string -> 'c) ->
+  ('b, 'c) t String_map.t

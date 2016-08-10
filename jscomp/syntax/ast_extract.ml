@@ -100,7 +100,7 @@ let sort_files_by_dependencies ~domain dependency_graph =
 
 
 
-let sort  (ast_table : _ t String_map.t) = 
+let sort  project_ml project_mli (ast_table : _ t String_map.t) = 
   let domain =
     String_map.fold
       (fun k _ acc -> String_set.add k acc)
@@ -113,16 +113,88 @@ let sort  (ast_table : _ t String_map.t) =
           match ast_info with
           | Ml (_, ast,  _)
             ->
-            read_parse_and_extract Ml_kind ast            
+            read_parse_and_extract Ml_kind (project_ml ast)            
           | Mli (_, ast, _)
             ->
-            read_parse_and_extract Mli_kind ast
+            read_parse_and_extract Mli_kind (project_mli ast)
           | Ml_mli (_, impl, _, _, intf, _)
             ->
             String_set.union
-              (read_parse_and_extract Ml_kind impl)
-              (read_parse_and_extract Mli_kind intf)              
+              (read_parse_and_extract Ml_kind (project_ml impl))
+              (read_parse_and_extract Mli_kind (project_mli intf))              
       ) ast_table in    
   sort_files_by_dependencies  domain h
 
+(** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
+let check_suffix  name  = 
+  if Filename.check_suffix name ".ml"
+  || Filename.check_suffix name ".mlt" then 
+    `Ml,
+    Ext_filename.chop_extension_if_any  name 
+  else if Filename.check_suffix name !Config.interface_suffix then 
+    `Mli,   Ext_filename.chop_extension_if_any  name 
+  else 
+    raise(Arg.Bad("don't know what to do with " ^ name))
+
+
+let build ppf files parse_implementation parse_interface  =
+  List.fold_left
+    (fun (acc : _ t String_map.t)
+      source_file ->
+      match check_suffix source_file with
+      | `Ml, opref ->
+        let module_name = Ext_filename.module_name_of_file source_file in
+        begin match String_map.find module_name acc with
+          | exception Not_found ->
+            String_map.add module_name
+              {ast_info =
+                 (Ml (source_file, parse_implementation
+                        ppf source_file, opref));
+               module_name ;
+              } acc
+          | {ast_info = (Ml (source_file2, _, _)
+                        | Ml_mli(source_file2, _, _,_,_,_))} ->
+            Bs_exception.error
+              (Bs_duplicated_module (source_file, source_file2))
+          | {ast_info =  Mli (source_file2, intf, opref2)}
+            ->
+            String_map.add module_name
+              {ast_info =
+                 Ml_mli (source_file,
+                         parse_implementation ppf source_file,
+                         opref,
+                         source_file2,
+                         intf,
+                         opref2
+                        );
+               module_name} acc
+        end
+      | `Mli, opref ->
+        let module_name = Ext_filename.module_name_of_file source_file in
+        begin match String_map.find module_name acc with
+          | exception Not_found ->
+            String_map.add module_name
+              {ast_info = (Mli (source_file, parse_interface
+                                              ppf source_file, opref));
+               module_name } acc
+          | {ast_info =
+               (Mli (source_file2, _, _) |
+                Ml_mli(_,_,_,source_file2,_,_)) } ->
+            Bs_exception.error
+              (Bs_duplicated_module (source_file, source_file2))
+          | {ast_info = Ml (source_file2, impl, opref2)}
+            ->
+            String_map.add module_name
+              {ast_info =
+                 Ml_mli
+                   (source_file2,
+                    impl,
+                    opref2,
+                    source_file,
+                    parse_interface ppf source_file,
+                    opref
+                   );
+               module_name} acc
+        end
+    ) String_map.empty files
 

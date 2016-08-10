@@ -238,3 +238,11 @@ let replace_backward_slash (x : string)=
   String.map (function 
     |'\\'-> '/'
     | x -> x) x  
+
+let module_name_of_file file =
+    String.capitalize 
+      (Filename.chop_extension @@ Filename.basename file)  
+
+
+let chop_extension_if_any fname =
+  try Filename.chop_extension fname with Invalid_argument _ -> fname

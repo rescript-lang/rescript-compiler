@@ -21,33 +21,3 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let parse_interface ppf sourcefile = 
-  let ast = Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile in
-  if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast
-
-let lazy_parse_interface ppf sourcefile =
-  lazy (parse_interface ppf sourcefile)
-
-let parse_implementation ppf sourcefile = 
-  let ast = 
-    Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile in 
-  if !Js_config.no_builtin_ppx_ml then ast else
-    !Ppx_entry.rewrite_implementation ast 
-
-let lazy_parse_implementation ppf sourcefile =
-  lazy (parse_implementation ppf sourcefile)
-    
-let check_suffix  name  = 
-  if Filename.check_suffix name ".ml"
-  || Filename.check_suffix name ".mlt" then 
-    `Ml,
-    (** This is per-file based, 
-        when [ocamlc] [-c -o another_dir/xx.cmi] 
-        it will return (another_dir/xx)
-    *)    
-    Compenv.output_prefix name 
-  else if Filename.check_suffix name !Config.interface_suffix then 
-    `Mli,  Compenv.output_prefix name 
-  else 
-    raise(Arg.Bad("don't know what to do with " ^ name))

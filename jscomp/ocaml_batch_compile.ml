@@ -23,9 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let module_name_of_file file =
-    String.capitalize 
-      (Filename.chop_extension @@ Filename.basename file)  
 
 let build_queue ppf queue (ast_table : _ Ast_extract.t String_map.t) =
   queue |> Queue.iter (fun modname -> 
@@ -63,66 +60,6 @@ let build_lazy_queue ppf queue (ast_table : _ Ast_extract.t String_map.t) =
       | exception Not_found -> assert false 
     )
 
-let build_ast_table ppf files parse_implementation parse_interface  =
-  List.fold_left
-    (fun (acc : _ Ast_extract.t String_map.t)
-      source_file ->
-      match Ocaml_parse.check_suffix source_file with
-      | `Ml, opref ->
-        let module_name = module_name_of_file source_file in             
-        begin match String_map.find module_name acc with
-          | exception Not_found ->
-            String_map.add module_name
-              {Ast_extract.ast_info =
-                 (Ml (source_file, parse_implementation
-                        ppf source_file, opref));
-               module_name ;                       
-              } acc
-          | {ast_info = (Ml (source_file2, _, _)
-                        | Ml_mli(source_file2, _, _,_,_,_))} ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info =  Mli (source_file2, intf, opref2)}
-            ->
-            String_map.add module_name
-              {Ast_extract.ast_info =                     
-                 Ml_mli (source_file,
-                         parse_implementation ppf source_file,
-                         opref,
-                         source_file2,
-                         intf,
-                         opref2                        
-                        );
-               module_name} acc                     
-        end                
-      | `Mli, opref ->
-        let module_name = module_name_of_file source_file in
-        begin match String_map.find module_name acc with
-          | exception Not_found ->
-            String_map.add module_name
-              {Ast_extract.ast_info = (Mli (source_file, parse_interface
-                                              ppf source_file, opref));
-               module_name } acc                      
-          | {ast_info =
-               (Mli (source_file2, _, _) |
-                Ml_mli(_,_,_,source_file2,_,_)) } ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info = Ml (source_file2, impl, opref2)}
-            ->
-            String_map.add module_name
-              {Ast_extract.ast_info =
-                 Ml_mli
-                   (source_file2,
-                    impl,
-                    opref2,
-                    source_file,
-                    parse_interface ppf source_file,
-                    opref
-                   );
-               module_name} acc                      
-        end              
-    ) String_map.empty files 
 
 
 module String_set = Depend.StringSet
@@ -140,7 +77,7 @@ let handle_main_file ppf main_file =
          else None
       ) in
   let ast_table =
-    build_ast_table ppf files
+    Ast_extract.build ppf files
       Ocaml_parse.lazy_parse_implementation
       Ocaml_parse.lazy_parse_interface in 
 
@@ -174,7 +111,7 @@ let handle_main_file ppf main_file =
         Queue.push current result;
         Hashtbl.add visited current ();
       end in
-  visit (String_set.empty) [] (module_name_of_file main_file) ;
+  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter
       "Order: @[%a@]@."
@@ -188,16 +125,17 @@ let handle_main_file ppf main_file =
       ("node " ^ Filename.chop_extension main_file ^ ".js")
   else 0
 
+
 let batch_compile ppf files main_file =
   Compenv.readenv ppf Before_compile; 
   Compmisc.init_path  false;
   if files <> [] then 
     begin
       let ast_table =
-        build_ast_table ppf files
+        Ast_extract.build ppf files
           Ocaml_parse.parse_implementation
           Ocaml_parse.parse_interface in
-      build_queue ppf (Ast_extract.sort ast_table) ast_table
+      build_queue ppf (Ast_extract.sort (fun x -> x ) (fun x -> x )ast_table) ast_table
     end        
   ;
   if String.length main_file <> 0 then

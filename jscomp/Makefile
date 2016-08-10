@@ -36,13 +36,17 @@ release:snapshot
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
 
-./bin/ocaml_pack: ./bin/ocaml_pack.mli ./bin/ocaml_pack.ml 
+./bin/ocamlpack: ./bin/ocamlpack.mli ./bin/ocamlpack.ml 
 	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
 
-snapshot: ./bin/ocaml_pack snapshotcmj
+## order matters
+_build/ocamlpack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/syntax/pack.cmxa _build/syntax/ocaml_pack_main.cmx
+	$(NATIVE) -I +compiler-libs ocamlcommon.cmxa unix.cmxa $^ -o $@
+
+snapshot: ./bin/ocamlpack snapshotcmj
 	$(MAKE) snapshotml
 
-snapshotml:./bin/ocaml_pack ./bin/compiler.mllib
+snapshotml:./bin/ocamlpack ./bin/compiler.mllib
 	@echo "Snapshot ml"
 	$< bin/compiler.mllib > bin/compiler.ml
 snapshotcmj:
@@ -85,14 +89,14 @@ world-test:
 	cd test && $(MAKE) all
 	@echo "Making test finsihed"
 
-travis-world-test:./bin/ocaml_pack
+travis-world-test:./bin/ocamlpack
 	@echo "Generating the compiler"
 	rm -f bin/compiler.ml 	
-	./bin/ocaml_pack ./bin/compiler.mllib > bin/compiler.ml
+	./bin/ocamlpack ./bin/compiler.mllib > bin/compiler.ml
 	@echo "Generating the compiler finished"	
 	$(MAKE) world-test
 
-# no depend on ./bin/ocaml_pack ./bin/bsc
+# no depend on ./bin/ocamlpack ./bin/bsc
 # since in npm mode, they are generated from a single file
 install:
 	cp  ./bin/bsc ../bin/
