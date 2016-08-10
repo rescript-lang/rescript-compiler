@@ -33,7 +33,20 @@ let _ =
       Array.to_list
         (Array.sub Sys.argv 1 (Array.length Sys.argv - 1)) 
   in 
-  let tasks = Ocaml_extract.process files in 
+
+  let ast_table =
+    Ast_extract.build
+      Format.err_formatter files
+      (fun _ppf sourcefile ->
+         let content = Line_process.load_file sourcefile in 
+         Parse.implementation (Lexing.from_string content), content
+      )
+      (fun _ppf sourcefile ->
+         let content = Line_process.load_file sourcefile in
+         Parse.interface (Lexing.from_string content), content         
+      ) in
+  let tasks = Ast_extract.sort fst  fst ast_table in
+  
   let emit name = 
     output_string stdout "#1 \"";
     (*Note here we do this is mostly to avoid leaking user's 
@@ -51,7 +64,17 @@ let _ =
          local_time.tm_hour local_time.tm_min 
                          );
     output_string stdout "\n";
-    tasks |> List.iter (fun t ->
+    tasks |> Queue.iter (fun module_ ->
+      let t = (match (String_map.find  module_ ast_table).ast_info with
+      | exception Not_found -> failwith (module_ ^ "not found")
+      | Ml (sourcefile, (_, content), _)
+        ->
+        `Ml (module_, content, sourcefile)
+      | Mli (sourcefile , (_, content), _) -> 
+          `Mli (module_, content, sourcefile)
+      | Ml_mli (ml_sourcefile, (_, ml_content), _, mli_sourcefile,  (_, mli_content), _)
+        ->
+        `All (module_, ml_content, ml_sourcefile, mli_content, mli_sourcefile)) in         
         match t with
         | `All (base, ml_content,ml_name, mli_content, mli_name) -> 
           let base = String.capitalize base in 

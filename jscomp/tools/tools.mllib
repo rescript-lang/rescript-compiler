@@ -12,5 +12,5 @@
 ../common/js_config
 
 ../syntax/line_process
-../syntax/ocaml_extract
+# ../syntax/ocaml_extract
 ../syntax/ocaml_pack_main
