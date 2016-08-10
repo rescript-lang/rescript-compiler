@@ -63,3 +63,7 @@ echo "........" >> ./build.compile
 # npm run cover&
 
 echo "Done"
+
+echo "Make pack tools" >> ./build.compile
+make _build/ocamlpack 2>> ./build.compile
+echo "Done" >> ./build.compile

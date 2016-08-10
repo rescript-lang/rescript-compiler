@@ -39,7 +39,8 @@ release:snapshot
 ./bin/ocamlpack: ./bin/ocamlpack.mli ./bin/ocamlpack.ml 
 	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
 
-_build/ocamlpack: _build/ext/ext.cmxa _build/syntax/pack.cmxa _build/syntax/ocaml_pack_main.cmx
+## order matters
+_build/ocamlpack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/syntax/pack.cmxa _build/syntax/ocaml_pack_main.cmx
 	$(NATIVE) -I +compiler-libs ocamlcommon.cmxa unix.cmxa $^ -o $@
 
 snapshot: ./bin/ocamlpack snapshotcmj

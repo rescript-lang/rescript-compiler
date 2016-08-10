@@ -41,7 +41,12 @@ let lazy_parse_implementation ppf sourcefile =
 let check_suffix  name  = 
   if Filename.check_suffix name ".ml"
   || Filename.check_suffix name ".mlt" then 
-    `Ml,  Compenv.output_prefix name 
+    `Ml,
+    (** This is per-file based, 
+        when [ocamlc] [-c -o another_dir/xx.cmi] 
+        it will return (another_dir/xx)
+    *)    
+    Compenv.output_prefix name 
   else if Filename.check_suffix name !Config.interface_suffix then 
     `Mli,  Compenv.output_prefix name 
   else 

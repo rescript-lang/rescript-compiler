@@ -1,3 +1,15 @@
+type output =
+  [ `All of
+      string *
+      string *
+      string *
+      string *
+      string
+  | `Ml of string * string * string
+  | `Mli of string * string * string ]  
+
+type outputs  = output list  
+
 module C = Stack
 let read_parse_and_extract ast extract_function =
   Depend.free_structure_names := Depend.StringSet.empty;
@@ -104,7 +116,7 @@ type mli_info = Parsetree.signature code_info
 
 let _loc = Location.none 
 
-let assemble  ast_tbl  stack = 
+let assemble  ast_tbl  stack  = 
   let structure_items = ref [] in
   let visited = Hashtbl.create 31 in
   Stack.iter
@@ -191,15 +203,15 @@ let assemble  ast_tbl  stack =
   }
 
 
-let assemble_as_string  ast_tbl  stack = 
-  let structure_items = ref [] in
+let assemble_as_string  ast_tbl  stack  = 
+  let structure_items : outputs ref = ref [] in
   let visited = Hashtbl.create 31 in
   Stack.iter
     (fun base  ->
       match Hashtbl.find visited base with 
       | exception Not_found ->
           Hashtbl.add visited base ();
-          begin match Hashtbl.find_all ast_tbl base with
+          (begin match Hashtbl.find_all ast_tbl base with
             | [`ml {content = ml_content; name = ml_name};
               `mli { content = mli_content; name = mli_name}]
             | [`mli {content = mli_content; name = mli_name} ;
@@ -211,10 +223,11 @@ let assemble_as_string  ast_tbl  stack =
               structure_items := 
                 `Ml (base, ml_content, name) :: !structure_items
             | _ -> assert false
-          end
+          end)
       | _ -> () 
     ) stack;
   !structure_items
+
 
 
 let prepare arg_files = 
@@ -261,13 +274,40 @@ let prepare arg_files =
       else assert false) in
   ast_tbl, sort_files_by_dependencies (!files)
 
-let process arg_files  : Parsetree.structure_item =
-  let ast_tbl, stack_files = prepare arg_files in
-  assemble ast_tbl stack_files
+(* let process arg_files  : Parsetree.structure_item = *)
+(*   let ast_tbl, stack_files = prepare arg_files in *)
+(*   assemble ast_tbl stack_files *)
 
-let process_as_string  arg_files  = 
+let process_as_string  (arg_files : string list)  : outputs = 
   let ast_tbl, stack_files = prepare arg_files in
-  assemble_as_string ast_tbl stack_files
+  (assemble_as_string ast_tbl stack_files ) 
+
+let process  (arg_files : string list)  : outputs =
+  let ast_table =
+    Ast_extract.build
+      Format.err_formatter arg_files
+      (fun _ppf sourcefile ->
+         let content = Line_process.load_file sourcefile in 
+         Parse.implementation (Lexing.from_string content), content
+      )
+      (fun _ppf sourcefile ->
+         let content = Line_process.load_file sourcefile in
+         Parse.interface (Lexing.from_string content), content         
+      ) in
+  let queue = Ast_extract.sort fst  fst ast_table in
+  List.rev @@ Queue.fold (fun acc module_ ->
+      (match (String_map.find  module_ ast_table).ast_info with
+      | exception Not_found -> failwith (module_ ^ "not found")
+      | Ml (sourcefile, (_, content), _)
+        ->
+        `Ml (module_, content, sourcefile)
+      | Mli (sourcefile , (_, content), _) -> 
+          `Mli (module_, content, sourcefile)
+      | Ml_mli (ml_sourcefile, (_, ml_content), _, mli_sourcefile,  (_, mli_content), _)
+        ->
+        `All (module_, ml_content, ml_sourcefile, mli_content, mli_sourcefile))
+      :: acc      
+    )  [] queue
 
 
 (**
