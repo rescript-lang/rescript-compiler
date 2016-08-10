@@ -20,7 +20,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 	@echo "Regenrating lambda_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
 
-./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
+./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/depends/depends.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 # Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
@@ -40,7 +40,7 @@ release:snapshot
 	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
 
 ## order matters
-_build/ocamlpack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/syntax/pack.cmxa _build/syntax/ocaml_pack_main.cmx
+_build/ocamlpack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/depends/depends.cmxa  _build/depends/ocaml_pack_main.cmx
 	$(NATIVE) -I +compiler-libs ocamlcommon.cmxa unix.cmxa $^ -o $@
 
 snapshot: ./bin/ocamlpack snapshotcmj

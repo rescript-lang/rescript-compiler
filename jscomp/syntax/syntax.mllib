@@ -3,8 +3,6 @@ ast_payload
 ppx_entry
 ast_literal
 ast_comb
-depend
-ast_extract
 ast_util
 ast_attributes
 ast_external

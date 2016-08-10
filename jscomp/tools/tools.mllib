@@ -6,11 +6,12 @@
 ../ext/ext_filename
 ../ext/ext_format
 ../ext/ext_sys
-../syntax/depend
-../syntax/ast_extract
+
+../depends/depend
+../depends/ast_extract
 ../common/bs_exception
 ../common/js_config
 
-../syntax/line_process
+../depends/line_process
 # ../syntax/ocaml_extract
-../syntax/ocaml_pack_main
+../depends/ocaml_pack_main
