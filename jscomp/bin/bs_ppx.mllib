@@ -1,5 +1,5 @@
 
-include ./syntax.mllib
+include ../syntax/syntax.mllib
 
 ../ext/string_map
 ../ext/string_set

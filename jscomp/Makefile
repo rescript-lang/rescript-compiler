@@ -49,6 +49,7 @@ snapshot: ./bin/ocamlpack snapshotcmj
 snapshotml:./bin/ocamlpack ./bin/compiler.mllib
 	@echo "Snapshot ml"
 	$< bin/compiler.mllib > bin/compiler.ml
+	$< bin/bs_ppx.mllib   > bin/bs_ppx.ml
 snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
