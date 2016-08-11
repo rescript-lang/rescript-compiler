@@ -112,7 +112,7 @@ travis-world-test:./bin/ocamlpack
 install:
 	cp  ./bin/bsc ./bin/bsppx  ../bin/
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm*   ./others/*.cm* ../lib/ocaml/
-	cp ./runtime/js.ml ./runtime/js.mli ./runtime/js.cmi ./runtime/js_array.mli ./runtime/js_array.ml ./runtime/js_array.cmi  ./runtime/js_string.ml ./runtime/js_string.mli ./runtime/js_string.cmi ./runtime/js_re.ml ./runtime/js_re.mli ./runtime/js_re.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
+	cp ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_array.mli ./runtime/js_array.ml ./runtime/js_array.cmi  ./runtime/js_string.ml ./runtime/js_string.mli ./runtime/js_string.cmi ./runtime/js_re.ml ./runtime/js_re.mli ./runtime/js_re.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
 
 
 
