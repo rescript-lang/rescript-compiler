@@ -23,26 +23,77 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+
+
+let (@>) (b, v) acc = 
+  if b then 
+    v :: acc 
+  else
+      acc 
+
+
+let (//) = Filename.concat
+
+let rec process_line cwd filedir  line = 
+  let line = Ext_string.trim line in 
+  let len = String.length line in 
+  if len = 0 then []
+  else 
+    match line.[0] with 
+    | '#' -> []
+    | _ -> 
+      let segments = 
+        Ext_string.split_by ~keep_empty:false (fun x -> x = ' ' || x = '\t' ) line 
+      in
+      begin 
+        match segments with 
+        | ["include" ;  path ]
+          ->  
+          (* prerr_endline path;  *)
+          read_lines cwd  (filedir// path)
+        | [ x ]  -> 
+          let ml = filedir // x ^ ".ml" in 
+          let mli = filedir // x ^ ".mli" in 
+          let ml_exists, mli_exists = Sys.file_exists ml , Sys.file_exists mli in 
+          if not ml_exists && not mli_exists then 
+            begin 
+              prerr_endline (filedir //x ^ " not exists"); 
+              []
+            end
+          else 
+            (ml_exists, ml) @> (mli_exists , mli) @> []            
+        | _ 
+          ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
+      end
+and read_lines (cwd : string) (file : string) : string list = 
+  file 
+  |> Ext_io.rev_lines_of_file 
+  |> List.fold_left (fun acc f ->
+      let filedir  =   Filename.dirname file in
+      let extras = process_line  cwd filedir f in 
+      extras  @ acc       
+    ) []
+
+
 let _ = 
   let _loc = Location.none in
   let argv = Sys.argv in
   let files = 
     if Array.length argv = 2 && Filename.check_suffix  argv.(1) "mllib" then 
-      Line_process.read_lines (Sys.getcwd ())argv.(1)
+      read_lines (Sys.getcwd ())argv.(1)
     else 
       Array.to_list
         (Array.sub Sys.argv 1 (Array.length Sys.argv - 1)) 
   in 
-
   let ast_table =
     Ast_extract.build
       Format.err_formatter files
       (fun _ppf sourcefile ->
-         let content = Line_process.load_file sourcefile in 
+         let content = Ext_io.load_file sourcefile in 
          Parse.implementation (Lexing.from_string content), content
       )
       (fun _ppf sourcefile ->
-         let content = Line_process.load_file sourcefile in
+         let content = Ext_io.load_file sourcefile in
          Parse.interface (Lexing.from_string content), content         
       ) in
   let tasks = Ast_extract.sort fst  fst ast_table in

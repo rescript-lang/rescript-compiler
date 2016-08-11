@@ -16,6 +16,7 @@ ext_bytes
 ext_map
 ext_hashtbl
 ext_sys
+ext_io
 string_set
 string_map
 hash_set

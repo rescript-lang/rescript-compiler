@@ -24,7 +24,7 @@
     "postinstall": "./scripts/postinstall.sh"
   },
   "name": "bs-platform",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",
@@ -32,8 +32,10 @@
   },
   "bin": {
     "bsc": "./bin/bsc",
+    "bsppx": "./bin/bsppx",
     "ocaml": "./bin/ocaml",
-    "ocamlc": "./bin/ocamlc.opt",
+    "ocamlc": "./bin/ocamlc",
+    "ocamlc.opt": "./bin/ocamlc.opt",
     "ocamldep": "./bin/ocamldep.opt",
     "ocamllex": "./bin/ocamllex.opt",
     "ocamlobjinfo": "./bin/ocamlobjinfo",

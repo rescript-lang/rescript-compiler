@@ -198,3 +198,98 @@ let build ppf files parse_implementation parse_interface  =
         end
     ) String_map.empty files
 
+
+
+let handle_main_file ppf parse_implementation parse_interface main_file =
+  let dirname = Filename.dirname main_file in
+  let files =
+    Sys.readdir dirname
+    |> Ext_array.to_list_f
+      (fun source_file ->
+         if Ext_string.ends_with source_file ".ml" ||
+            Ext_string.ends_with source_file ".mli" then
+           Some (Filename.concat dirname source_file)
+         else None
+      ) in
+  let ast_table =
+    build ppf files
+      parse_implementation
+      parse_interface in 
+
+  let visited = Hashtbl.create 31 in
+  let result = Queue.create () in  
+  let next module_name =
+    match String_map.find module_name ast_table with
+    | exception _ -> String_set.empty
+    | {ast_info = Ml (_, lazy impl, _)} ->
+      read_parse_and_extract Ml_kind impl
+    | {ast_info = Mli (_, lazy intf,_)} ->
+      read_parse_and_extract Mli_kind intf
+    | {ast_info = Ml_mli(_,lazy impl, _, _, lazy intf, _)}
+      -> 
+      String_set.union
+        (read_parse_and_extract Ml_kind impl)
+        (read_parse_and_extract Mli_kind intf)
+  in
+  let rec visit visiting path current =
+    if String_set.mem current visiting  then
+      Bs_exception.error (Bs_cyclic_depends (current::path))
+    else
+    if not (Hashtbl.mem visited current)
+    && String_map.mem current ast_table then
+      begin
+        String_set.iter
+          (visit
+             (String_set.add current visiting)
+             (current::path))
+          (next current) ;
+        Queue.push current result;
+        Hashtbl.add visited current ();
+      end in
+  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+  ast_table, result   
+
+
+let build_queue ppf queue
+    (ast_table : _ t String_map.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue |> Queue.iter (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file 
+          opref ast 
+      | {ast_info = Mli (source_file,ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file 
+          opref ast 
+      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
+
+
+let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue |> Queue.iter (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,lazy ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file 
+          opref ast 
+      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file 
+              opref ast 
+      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )

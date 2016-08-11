@@ -20,7 +20,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 	@echo "Regenrating lambda_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
 
-./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
+./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/depends/depends.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 # Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
@@ -40,30 +40,41 @@ release:snapshot
 	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
 
 ## order matters
-_build/ocamlpack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/syntax/pack.cmxa _build/syntax/ocaml_pack_main.cmx
+_build/ocamlpack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/depends/depends.cmxa  _build/ocamlpack_main.cmx
 	$(NATIVE) -I +compiler-libs ocamlcommon.cmxa unix.cmxa $^ -o $@
 
 snapshot: ./bin/ocamlpack snapshotcmj
 	$(MAKE) snapshotml
 
-snapshotml:./bin/ocamlpack ./bin/compiler.mllib
+snapshotml:./bin/ocamlpack ./bin/compiler.mllib ./bin/bs_ppx.mllib
 	@echo "Snapshot ml"
 	$< bin/compiler.mllib > bin/compiler.ml
+	$< bin/bs_ppx.mllib   > bin/bs_ppx.ml
 snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
 
+bootocamlpack: ./bin/ocamlpack
+	@echo "Bootstrap ocamlpack"
+	./bin/ocamlpack bin/ocamlpack.mllib > ./bin/ocamlpack.ml
+	$(NATIVE) -w -40 -I +compiler-libs  unix.cmxa ocamlcommon.cmxa -I bin bin/ocamlpack.mli bin/ocamlpack.ml -o bin/ocamlpack
+	@echo "Using the bootstrapped ocamlpack to genreate new ocamlpack.ml: `date`" 	
+	./bin/ocamlpack bin/ocamlpack.mllib > ./bin/ocamlpack.ml
+	@echo "Bootstrap seems finished, please check diffs in ocamlpack"
+	git diff bin/ocamlpack.ml
 
 releasebuild:
 	@echo "Make release compiler"
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 
+	@echo "Make release ppx"
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bs_ppx.mli bin/bs_ppx.ml -o bin/bsppx
 stdlib:
 	cd stdlib && ./build.sh
 
 world:
 	@echo "Making compiler"		
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
+	$(MAKE) releasebuild
 	@echo "Making compiler finished"
 
 	@echo "Making stdlib cmis"
@@ -91,23 +102,22 @@ world-test:
 
 travis-world-test:./bin/ocamlpack
 	@echo "Generating the compiler"
-	rm -f bin/compiler.ml 	
-	./bin/ocamlpack ./bin/compiler.mllib > bin/compiler.ml
+	rm -f bin/compiler.ml bin/bs_ppx.ml
+	$(MAKE) snapshotml	
 	@echo "Generating the compiler finished"	
 	$(MAKE) world-test
 
 # no depend on ./bin/ocamlpack ./bin/bsc
 # since in npm mode, they are generated from a single file
 install:
-	cp  ./bin/bsc ../bin/
-	cp ./runtime/*.cmt* ../lib/ocaml/
-	cp ./runtime/*.cmj* ../lib/ocaml/
-	cp ./runtime/js.cmi ./runtime/js_array.cmi ./runtime/js_string.cmi ./runtime/js_re.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
-	cp ./stdlib/*.cm* ../lib/ocaml/
-	cp ./others/*.cm* ../lib/ocaml/
-TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
+	cp  ./bin/bsc ./bin/bsppx  ../bin/
+	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm*   ./others/*.cm* ../lib/ocaml/
+	cp ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_array.mli ./runtime/js_array.ml ./runtime/js_array.cmi  ./runtime/js_string.ml ./runtime/js_string.mli ./runtime/js_string.cmi ./runtime/js_re.ml ./runtime/js_re.mli ./runtime/js_re.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
 
 
+
+
+# TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
 # big-world:bin/big_compiler.ml bin/big_compiler.mli
 # 	@echo "Making compiler"		
 # 	ocamlopt.opt -g -inline 1000 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
@@ -125,7 +135,7 @@ TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
 
 
 .PHONY: stdlib
-.PHONY: test  quicktest release snapshot snapshotcmj
+.PHONY: test  quicktest release snapshot snapshotcmj releasebuild
 
 
 

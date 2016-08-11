@@ -3,6 +3,7 @@
 <ext>:include
 <syntax>:include
 <common>:include
+<depends>:include
 true: warn(-40)
 true: debug
 true: -traverse

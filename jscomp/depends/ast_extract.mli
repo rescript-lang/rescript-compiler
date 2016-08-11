@@ -33,7 +33,7 @@ type module_name = private string
   
 module String_set = Depend.StringSet
 
-val read_parse_and_extract : 'a kind -> 'a -> String_set.t
+
 
 type ('a,'b) ast_info =
   | Ml of
@@ -82,3 +82,26 @@ val build :
   (Format.formatter -> string -> 'b) ->
   (Format.formatter -> string -> 'c) ->
   ('b, 'c) t String_map.t
+
+val handle_main_file :
+  Format.formatter ->
+  (Format.formatter -> string -> Parsetree.structure lazy_t) ->
+  (Format.formatter -> string -> Parsetree.signature lazy_t) ->
+  string ->
+  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t *
+  string Queue.t  
+
+
+val build_queue :
+  Format.formatter ->
+  String_map.key Queue.t ->
+  (Parsetree.structure, Parsetree.signature) t String_map.t ->
+  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
+  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
+
+val build_lazy_queue :
+  Format.formatter ->
+  String_map.key Queue.t ->
+  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
+  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
+  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  

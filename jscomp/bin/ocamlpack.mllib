@@ -6,11 +6,12 @@
 ../ext/ext_filename
 ../ext/ext_format
 ../ext/ext_sys
-../syntax/depend
-../syntax/ast_extract
+../ext/ext_io
+
 ../common/bs_exception
 ../common/js_config
 
-../syntax/line_process
-# ../syntax/ocaml_extract
-../syntax/ocaml_pack_main
+include ../depends/depends.mllib
+
+
+../ocamlpack_main

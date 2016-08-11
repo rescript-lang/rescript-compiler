@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/10-14:15 *)
+(** Bundled by ocamlpack 08/11-09:51 *)
 module Bs_exception : sig 
 #1 "bs_exception.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -532,7 +532,8 @@ module Ext_pervasives : sig
   *)
 
 external reraise: exn -> 'a = "%reraise"
-val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
@@ -584,7 +585,7 @@ end = struct
 
 external reraise: exn -> 'a = "%reraise"
 
-let finally v f  action = 
+let finally v action f   = 
   match f v with
   | exception e -> 
       action v ;
@@ -592,18 +593,16 @@ let finally v f  action =
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
-  let chan = open_out filename in
-  finally chan f close_out
+  finally (open_out filename) close_out f 
 
 let with_file_as_pp filename f = 
-  let chan = open_out filename in
-  finally chan 
+  finally (open_out filename) close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
       Format.pp_print_flush fmt ();
       v
-    ) close_out
+    ) 
 
 
 let  is_pos_pow n = 
@@ -2600,52 +2599,151 @@ let build ppf files parse_implementation parse_interface  =
 
 
 end
-module Line_process : sig 
-#1 "line_process.mli"
+module Ext_io : sig 
+#1 "ext_io.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val load_file : string -> string
 
-(** Given a filename return a list of modules *)
-val read_lines : string -> string -> string list 
-val load_file : string -> string 
+val rev_lines_of_file : string -> string list
 
 end = struct
-#1 "line_process.ml"
-
-(* let lexer = Genlex.make_lexer [] (\* poor man *\) *)
-
-(* let rec to_list acc stream =  *)
-(*   match Stream.next stream with  *)
-(*   | exception _ -> List.rev acc  *)
-(*   | v -> to_list (v::acc) stream  *)
- 
-
-let rev_lines_of_file file = 
-  let chan = open_in file in
-  let rec loop acc = 
-    match input_line chan with
-    | line -> loop (line :: acc)
-    | exception End_of_file -> close_in chan ; acc in
-  loop []
-
-
-let rec filter_map (f: 'a -> 'b option) xs = 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-      begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
-      end
+#1 "ext_io.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 (** on 32 bit , there are 16M limitation *)
 let load_file f =
-  let ic = open_in f in
-  let n = in_channel_length ic in
-  let s = Bytes.create n in
-  really_input ic s 0 n;
-  close_in ic;
-  Bytes.unsafe_to_string s
+  Ext_pervasives.finally (open_in f) close_in begin fun ic ->   
+    let n = in_channel_length ic in
+    let s = Bytes.create n in
+    really_input ic s 0 n;
+    Bytes.unsafe_to_string s
+  end
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in file) close_in begin fun chan -> 
+    let rec loop acc = 
+      match input_line chan with
+      | line -> loop (line :: acc)
+      | exception End_of_file -> close_in chan ; acc in
+    loop []
+  end
+
+end
+module Ocamlpack_main : sig 
+#1 "ocamlpack_main.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val read_lines : string -> string  -> string list 
+(* example 
+   {[ 
+     Line_process.read_lines "." "./tools/tools.mllib" 
+   ]} 
+
+   FIXME: we can only concat (dir/file) not (dir/dir)
+   {[
+     Filename.concat "/bb/x/" "/bb/x/";;
+   ]}
+*)
+  
+
+end = struct
+#1 "ocamlpack_main.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
 
 let (@>) (b, v) acc = 
   if b then 
@@ -2667,7 +2765,6 @@ let rec process_line cwd filedir  line =
       let segments = 
         Ext_string.split_by ~keep_empty:false (fun x -> x = ' ' || x = '\t' ) line 
       in
-
       begin 
         match segments with 
         | ["include" ;  path ]
@@ -2685,83 +2782,17 @@ let rec process_line cwd filedir  line =
             end
           else 
             (ml_exists, ml) @> (mli_exists , mli) @> []            
-
         | _ 
           ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
       end
-
-(* example 
-   {[ 
-     Line_process.read_lines "." "./tools/tools.mllib" 
-   ]} 
-
-   FIXME: we can only concat (dir/file) not (dir/dir)
-   {[
-     Filename.concat "/bb/x/" "/bb/x/";;
-   ]}
-*)
-and read_lines cwd file = 
-
+and read_lines (cwd : string) (file : string) : string list = 
   file 
-  |> rev_lines_of_file 
+  |> Ext_io.rev_lines_of_file 
   |> List.fold_left (fun acc f ->
       let filedir  =   Filename.dirname file in
       let extras = process_line  cwd filedir f in 
       extras  @ acc       
     ) []
-
-end
-module Ocaml_pack_main : sig 
-#1 "ocaml_pack_main.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-end = struct
-#1 "ocaml_pack_main.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 let _ = 
@@ -2769,21 +2800,20 @@ let _ =
   let argv = Sys.argv in
   let files = 
     if Array.length argv = 2 && Filename.check_suffix  argv.(1) "mllib" then 
-      Line_process.read_lines (Sys.getcwd ())argv.(1)
+      read_lines (Sys.getcwd ())argv.(1)
     else 
       Array.to_list
         (Array.sub Sys.argv 1 (Array.length Sys.argv - 1)) 
   in 
-
   let ast_table =
     Ast_extract.build
       Format.err_formatter files
       (fun _ppf sourcefile ->
-         let content = Line_process.load_file sourcefile in 
+         let content = Ext_io.load_file sourcefile in 
          Parse.implementation (Lexing.from_string content), content
       )
       (fun _ppf sourcefile ->
-         let content = Line_process.load_file sourcefile in
+         let content = Ext_io.load_file sourcefile in
          Parse.interface (Lexing.from_string content), content         
       ) in
   let tasks = Ast_extract.sort fst  fst ast_table in

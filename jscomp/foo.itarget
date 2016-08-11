@@ -2,5 +2,6 @@ common/common.cmxa
 ext/ext.cmxa
 syntax/syntax.cmxa
 core.cmxa
-syntax/pack.cmxa
-syntax/ocaml_pack_main.cmx
+depends/depends.cmxa
+bs_ppx_main.cmx
+ocamlpack_main.cmx

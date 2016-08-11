@@ -24,94 +24,9 @@
 
 
 
-let build_queue ppf queue (ast_table : _ Ast_extract.t String_map.t) =
-  queue |> Queue.iter (fun modname -> 
-      match String_map.find modname ast_table  with
-      | {ast_info = Ml(source_file,ast, opref)}
-        -> 
-        Js_implementation.after_parsing_impl ppf source_file 
-          opref ast 
-      | {ast_info = Mli (source_file,ast,opref) ; }  
-        ->
-        Js_implementation.after_parsing_sig ppf source_file 
-              opref ast 
-      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
-        -> 
-        Js_implementation.after_parsing_sig ppf source_file1 opref1 intf ;
-        Js_implementation.after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
-    )
-
-let build_lazy_queue ppf queue (ast_table : _ Ast_extract.t String_map.t) =
-  queue |> Queue.iter (fun modname -> 
-      match String_map.find modname ast_table  with
-      | {ast_info = Ml(source_file,lazy ast, opref)}
-        -> 
-        Js_implementation.after_parsing_impl ppf source_file 
-          opref ast 
-      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
-        ->
-        Js_implementation.after_parsing_sig ppf source_file 
-              opref ast 
-      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
-        -> 
-        Js_implementation.after_parsing_sig ppf source_file1 opref1 intf ;
-        Js_implementation.after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
-    )
-
-
-
 module String_set = Depend.StringSet
 
-
-let handle_main_file ppf main_file =
-  let dirname = Filename.dirname main_file in
-  let files =
-    Sys.readdir dirname
-    |> Ext_array.to_list_f
-      (fun source_file ->
-         if Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli" then
-           Some (Filename.concat dirname source_file)
-         else None
-      ) in
-  let ast_table =
-    Ast_extract.build ppf files
-      Ocaml_parse.lazy_parse_implementation
-      Ocaml_parse.lazy_parse_interface in 
-
-  let visited = Hashtbl.create 31 in
-  let result = Queue.create () in  
-  let next module_name =
-    match String_map.find module_name ast_table with
-    | exception _ -> String_set.empty
-    | {ast_info = Ml (_, lazy impl, _)} ->
-      Ast_extract.read_parse_and_extract Ml_kind impl
-    | {ast_info = Mli (_, lazy intf,_)} ->
-      Ast_extract.read_parse_and_extract Mli_kind intf
-    | {ast_info = Ml_mli(_,lazy impl, _, _, lazy intf, _)}
-      -> 
-      String_set.union
-        (Ast_extract.read_parse_and_extract Ml_kind impl)
-        (Ast_extract.read_parse_and_extract Mli_kind intf)
-  in
-  let rec visit visiting path current =
-    if String_set.mem current visiting  then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
-    else
-    if not (Hashtbl.mem visited current)
-    && String_map.mem current ast_table then
-      begin
-        String_set.iter
-          (visit
-             (String_set.add current visiting)
-             (current::path))
-          (next current) ;
-        Queue.push current result;
-        Hashtbl.add visited current ();
-      end in
-  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+let process_result ppf  main_file ast_table result = 
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter
       "Order: @[%a@]@."
@@ -119,11 +34,15 @@ let handle_main_file ppf main_file =
          ~pp_sep:Format.pp_print_space
          Format.pp_print_string)
       result ;
-  build_lazy_queue ppf result ast_table;
+  Ast_extract.build_lazy_queue ppf result ast_table
+    Js_implementation.after_parsing_impl
+    Js_implementation.after_parsing_sig
+  ;
   if not (!Clflags.compile_only) then
     Sys.command
       ("node " ^ Filename.chop_extension main_file ^ ".js")
   else 0
+
 
 
 let batch_compile ppf files main_file =
@@ -135,11 +54,20 @@ let batch_compile ppf files main_file =
         Ast_extract.build ppf files
           Ocaml_parse.parse_implementation
           Ocaml_parse.parse_interface in
-      build_queue ppf (Ast_extract.sort (fun x -> x ) (fun x -> x )ast_table) ast_table
+      Ast_extract.build_queue ppf
+        (Ast_extract.sort (fun x -> x ) (fun x -> x )ast_table)
+        ast_table
+        Js_implementation.after_parsing_impl
+        Js_implementation.after_parsing_sig        
     end        
   ;
   if String.length main_file <> 0 then
-    handle_main_file ppf main_file
+    let ast_table, result =
+      Ast_extract.handle_main_file ppf
+        Ocaml_parse.lazy_parse_implementation
+        Ocaml_parse.lazy_parse_interface         
+        main_file in
+    process_result ppf main_file ast_table result     
   else 0
 
 

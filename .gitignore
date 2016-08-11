@@ -36,6 +36,7 @@ _build
 
 bsc
 bscc
+bsppx
 jscomp/tools/ocamlpack*
 
 .idea
@@ -56,6 +57,7 @@ bin/*
 
 # for npm publish
 !bin/bsc
+!bin/bsppx
 !bin/ocaml
 !bin/ocamldep
 !bin/ocamldep.opt

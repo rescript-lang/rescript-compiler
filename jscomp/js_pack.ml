@@ -44,7 +44,7 @@ let from_cmj files output_file =
     Ext_pp.string f "\""
   in  
   let v = open_out_bin output_file in
-  Ext_pervasives.finally v (fun v ->   
+  Ext_pervasives.finally v close_out (fun v ->   
       let f = Ext_pp.from_channel v in  
       let aux file = 
         let in_chan = open_in_bin file in
@@ -73,7 +73,7 @@ let from_cmj files output_file =
       Ext_pp.newline f ;
       Ext_pp.string f "let cmj_data_sets = String_map.of_list "    ;
       Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
-    close_out      
+
 
 let () = 
   from_cmj (get_files "stdlib" @ get_files "runtime") "js_cmj_datasets.ml";;  
