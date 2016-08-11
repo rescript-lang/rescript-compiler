@@ -32,8 +32,10 @@
   },
   "bin": {
     "bsc": "./bin/bsc",
+    "bsppx": "./bin/bsppx",
     "ocaml": "./bin/ocaml",
-    "ocamlc": "./bin/ocamlc.opt",
+    "ocamlc": "./bin/ocamlc",
+    "ocamlc.opt": "./bin/ocamlc.opt",
     "ocamldep": "./bin/ocamldep.opt",
     "ocamllex": "./bin/ocamllex.opt",
     "ocamlobjinfo": "./bin/ocamlobjinfo",
