@@ -15,4 +15,4 @@ include ../syntax/syntax.mllib
 ../common/js_config
 ../common/literals
 
-../syntax/ppx_driver
+../bs_ppx_main

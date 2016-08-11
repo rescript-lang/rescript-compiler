@@ -14,7 +14,7 @@ var $$String                = require("../../lib/js/string");
 var Format                  = require("../../lib/js/format");
 var List                    = require("../../lib/js/list");
 
-function $$finally(v, f, action) {
+function $$finally(v, action, f) {
   var exit = 0;
   var e;
   try {
@@ -33,18 +33,16 @@ function $$finally(v, f, action) {
 }
 
 function with_file_as_chan(filename, f) {
-  var chan = Pervasives.open_out(filename);
-  return $$finally(chan, f, Pervasives.close_out);
+  return $$finally(Pervasives.open_out(filename), Pervasives.close_out, f);
 }
 
 function with_file_as_pp(filename, f) {
-  var chan = Pervasives.open_out(filename);
-  return $$finally(chan, function (chan) {
+  return $$finally(Pervasives.open_out(filename), Pervasives.close_out, function (chan) {
               var fmt = Format.formatter_of_out_channel(chan);
               var v = Curry._1(f, fmt);
               Format.pp_print_flush(fmt, /* () */0);
               return v;
-            }, Pervasives.close_out);
+            });
 }
 
 function is_pos_pow(n) {
@@ -195,7 +193,7 @@ function dump(r) {
                   Caml_builtin_exceptions.assert_failure,
                   [
                     "ext_pervasives.ml",
-                    120,
+                    118,
                     15
                   ]
                 ];
@@ -206,7 +204,7 @@ function dump(r) {
                 Caml_builtin_exceptions.assert_failure,
                 [
                   "ext_pervasives.ml",
-                  120,
+                  118,
                   15
                 ]
               ];

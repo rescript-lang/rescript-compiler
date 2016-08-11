@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/11-09:12 *)
+(** Bundled by ocamlpack 08/11-09:55 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1853,7 +1853,8 @@ module Ext_pervasives : sig
   *)
 
 external reraise: exn -> 'a = "%reraise"
-val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
@@ -1905,7 +1906,7 @@ end = struct
 
 external reraise: exn -> 'a = "%reraise"
 
-let finally v f  action = 
+let finally v action f   = 
   match f v with
   | exception e -> 
       action v ;
@@ -1913,18 +1914,16 @@ let finally v f  action =
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
-  let chan = open_out filename in
-  finally chan f close_out
+  finally (open_out filename) close_out f 
 
 let with_file_as_pp filename f = 
-  let chan = open_out filename in
-  finally chan 
+  finally (open_out filename) close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
       Format.pp_print_flush fmt ();
       v
-    ) close_out
+    ) 
 
 
 let  is_pos_pow n = 
@@ -8970,6 +8969,83 @@ let undefined = create_js "undefined"
 let nil = create_js "null"
 
 end
+module Ext_io : sig 
+#1 "ext_io.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val load_file : string -> string
+
+val rev_lines_of_file : string -> string list
+
+end = struct
+#1 "ext_io.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  Ext_pervasives.finally (open_in f) close_in begin fun ic ->   
+    let n = in_channel_length ic in
+    let s = Bytes.create n in
+    really_input ic s 0 n;
+    Bytes.unsafe_to_string s
+  end
+
+
+let rev_lines_of_file file = 
+  Ext_pervasives.finally (open_in file) close_in begin fun chan -> 
+    let rec loop acc = 
+      match input_line chan with
+      | line -> loop (line :: acc)
+      | exception End_of_file -> close_in chan ; acc in
+    loop []
+  end
+
+end
 module Ext_map : sig 
 #1 "ext_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9400,7 +9476,7 @@ let group t i action =
   else 
     let old = t.indent_level in
     t.indent_level <- t.indent_level + i;
-    Ext_pervasives.finally () action (fun _ -> t.indent_level <- old)
+    Ext_pervasives.finally () (fun _ -> t.indent_level <- old) action 
 
 let vgroup = group
 
@@ -33382,116 +33458,5 @@ let builtin_modules =
    "caml_marshal", true;
    "caml_string", true
  ]
-
-end
-module Line_process : sig 
-#1 "line_process.mli"
-
-
-(** Given a filename return a list of modules *)
-val read_lines : string -> string -> string list 
-val load_file : string -> string 
-
-end = struct
-#1 "line_process.ml"
-
-(* let lexer = Genlex.make_lexer [] (\* poor man *\) *)
-
-(* let rec to_list acc stream =  *)
-(*   match Stream.next stream with  *)
-(*   | exception _ -> List.rev acc  *)
-(*   | v -> to_list (v::acc) stream  *)
- 
-
-let rev_lines_of_file file = 
-  let chan = open_in file in
-  let rec loop acc = 
-    match input_line chan with
-    | line -> loop (line :: acc)
-    | exception End_of_file -> close_in chan ; acc in
-  loop []
-
-
-let rec filter_map (f: 'a -> 'b option) xs = 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-      begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
-      end
-
-
-(** on 32 bit , there are 16M limitation *)
-let load_file f =
-  let ic = open_in f in
-  let n = in_channel_length ic in
-  let s = Bytes.create n in
-  really_input ic s 0 n;
-  close_in ic;
-  Bytes.unsafe_to_string s
-
-let (@>) (b, v) acc = 
-  if b then 
-    v :: acc 
-  else
-      acc 
-
-
-let (//) = Filename.concat
-
-let rec process_line cwd filedir  line = 
-  let line = Ext_string.trim line in 
-  let len = String.length line in 
-  if len = 0 then []
-  else 
-    match line.[0] with 
-    | '#' -> []
-    | _ -> 
-      let segments = 
-        Ext_string.split_by ~keep_empty:false (fun x -> x = ' ' || x = '\t' ) line 
-      in
-
-      begin 
-        match segments with 
-        | ["include" ;  path ]
-          ->  
-          (* prerr_endline path;  *)
-          read_lines cwd  (filedir// path)
-        | [ x ]  -> 
-          let ml = filedir // x ^ ".ml" in 
-          let mli = filedir // x ^ ".mli" in 
-          let ml_exists, mli_exists = Sys.file_exists ml , Sys.file_exists mli in 
-          if not ml_exists && not mli_exists then 
-            begin 
-              prerr_endline (filedir //x ^ " not exists"); 
-              []
-            end
-          else 
-            (ml_exists, ml) @> (mli_exists , mli) @> []            
-
-        | _ 
-          ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
-      end
-
-(* example 
-   {[ 
-     Line_process.read_lines "." "./tools/tools.mllib" 
-   ]} 
-
-   FIXME: we can only concat (dir/file) not (dir/dir)
-   {[
-     Filename.concat "/bb/x/" "/bb/x/";;
-   ]}
-*)
-and read_lines cwd file = 
-
-  file 
-  |> rev_lines_of_file 
-  |> List.fold_left (fun acc f ->
-      let filedir  =   Filename.dirname file in
-      let extras = process_line  cwd filedir f in 
-      extras  @ acc       
-    ) []
 
 end

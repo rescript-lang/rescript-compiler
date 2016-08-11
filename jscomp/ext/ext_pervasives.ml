@@ -29,7 +29,7 @@
 
 external reraise: exn -> 'a = "%reraise"
 
-let finally v f  action = 
+let finally v action f   = 
   match f v with
   | exception e -> 
       action v ;
@@ -37,18 +37,16 @@ let finally v f  action =
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
-  let chan = open_out filename in
-  finally chan f close_out
+  finally (open_out filename) close_out f 
 
 let with_file_as_pp filename f = 
-  let chan = open_out filename in
-  finally chan 
+  finally (open_out filename) close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
       Format.pp_print_flush fmt ();
       v
-    ) close_out
+    ) 
 
 
 let  is_pos_pow n = 

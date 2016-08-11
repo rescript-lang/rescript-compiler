@@ -3,5 +3,5 @@ ext/ext.cmxa
 syntax/syntax.cmxa
 core.cmxa
 depends/depends.cmxa
-depends/ocaml_pack_main.cmx
-syntax/ppx_driver.cmx
+bs_ppx_main.cmx
+ocamlpack_main.cmx

@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/11-09:12 *)
+(** Bundled by ocamlpack 08/11-09:55 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1853,7 +1853,8 @@ module Ext_pervasives : sig
   *)
 
 external reraise: exn -> 'a = "%reraise"
-val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
@@ -1905,7 +1906,7 @@ end = struct
 
 external reraise: exn -> 'a = "%reraise"
 
-let finally v f  action = 
+let finally v action f   = 
   match f v with
   | exception e -> 
       action v ;
@@ -1913,18 +1914,16 @@ let finally v f  action =
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
-  let chan = open_out filename in
-  finally chan f close_out
+  finally (open_out filename) close_out f 
 
 let with_file_as_pp filename f = 
-  let chan = open_out filename in
-  finally chan 
+  finally (open_out filename) close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
       Format.pp_print_flush fmt ();
       v
-    ) close_out
+    ) 
 
 
 let  is_pos_pow n = 
@@ -6531,9 +6530,9 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
 
 end
 module 
-Ppx_driver
+Bs_ppx_main
 = struct
-#1 "ppx_driver.ml"
+#1 "bs_ppx_main.ml"
 
 
 
