@@ -7,11 +7,10 @@
 ../ext/ext_format
 ../ext/ext_sys
 
-../depends/depend
-../depends/ast_extract
 ../common/bs_exception
 ../common/js_config
 
+../depends/depend
+../depends/ast_extract
 ../depends/line_process
-# ../syntax/ocaml_extract
 ../depends/ocaml_pack_main

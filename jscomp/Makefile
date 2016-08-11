@@ -54,6 +54,14 @@ snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
 
+bootocamlpack: ./bin/ocamlpack
+	@echo "Bootstrap ocamlpack"
+	./bin/ocamlpack bin/ocamlpack.mllib > ./bin/ocamlpack.ml
+	$(NATIVE) -w -40 -I +compiler-libs  unix.cmxa ocamlcommon.cmxa -I bin bin/ocamlpack.mli bin/ocamlpack.ml -o bin/ocamlpack
+	@echo "Using the bootstrapped ocamlpack to genreate new ocamlpack.ml: `date`" 	
+	./bin/ocamlpack bin/ocamlpack.mllib > ./bin/ocamlpack.ml
+	@echo "Bootstrap seems finished, please check diffs in ocamlpack"
+	git diff bin/ocamlpack.ml
 
 releasebuild:
 	@echo "Make release compiler"
