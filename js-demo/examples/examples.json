@@ -32,5 +32,13 @@
     "Use standard library" : {
       "file" : "use_stdlib.ml",
       "eval" : true
+    },
+    "JS objects" : {
+      "file" : "js_object.ml",
+      "eval" : true
+    },
+    "Left pad" : {
+      "file" : "left_pad.ml",
+      "eval" : true
     }
 }
