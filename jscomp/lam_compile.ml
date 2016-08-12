@@ -307,7 +307,7 @@ and compile_recursive_let
           match x with  
           | Lam.Lvar lid
             -> S.exp 
-                 (Js_array.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
+                 (Js_arr.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
           | _ -> assert false
          ) ls)
     ), []

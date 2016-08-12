@@ -50,7 +50,7 @@ lam_group
 j
 js_ast_util
 
-js_array
+js_arr
 js_program_loader
 js_output
 js_dump
