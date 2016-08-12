@@ -334,6 +334,10 @@ js_obj_test.cmj : mt.cmi
 js_obj_test.cmx : mt.cmx
 js_val.cmj :
 js_val.cmx :
+jsoo_485.cmj :
+jsoo_485.cmx :
+jsoo_485_test.cmj :
+jsoo_485_test.cmx :
 largest_int_flow.cmj :
 largest_int_flow.cmx :
 lazy_test.cmj : mt.cmi ../stdlib/lazy.cmi
@@ -1086,6 +1090,10 @@ js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
 js_val.cmo :
 js_val.cmj :
+jsoo_485.cmo :
+jsoo_485.cmj :
+jsoo_485_test.cmo :
+jsoo_485_test.cmj :
 largest_int_flow.cmo :
 largest_int_flow.cmj :
 lazy_test.cmo : mt.cmi ../stdlib/lazy.cmi
