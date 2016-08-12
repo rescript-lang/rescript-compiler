@@ -57,15 +57,16 @@ let field field_info e i =
     -> E.index ~comment:s e i
 
 
-let set_field field_info e i e0 = 
-  let v = 
+
+let set_field field_info e i e0 =
+  let comment = 
     match field_info with 
     | Lambda.Fld_set_na 
-      -> 
-      E.index e i 
-    | Fld_record_set s -> 
-      E.index ~comment:s e i in 
-  E.assign v  e0
+      -> None
+    | Fld_record_set s -> Some (s)
+  in (* see GPR#631*)
+  E.index_addr ?comment e i  ~no:e0 ~yes:(fun v -> E.assign v e0)
+
 
 
 

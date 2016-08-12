@@ -314,6 +314,16 @@ let index ?comment (e0 : t)  e1 : t =
     List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
   | _ -> { expression_desc = Access (e0, int ?comment e1); comment = None} 
 
+
+let index_addr ?comment ~yes ~no (e0 : t)  e1 : t = 
+  match e0.expression_desc with
+  | Array (l,_mutable_flag)  when no_side_effect e0 -> 
+    no
+  | Caml_block (l,_mutable_flag, _, _)  when no_side_effect e0 -> 
+    no
+  | _ ->
+    yes ({ expression_desc = Access (e0, int ?comment e1); comment = None} : t) 
+
 let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 

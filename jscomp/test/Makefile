@@ -59,7 +59,7 @@ OTHERS := a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope
 	optional_ffi_test poly_variant_test \
 	bs_rest_test infer_type_test fs_test module_as_function\
 	test_case_set test_mutliple string_bound_get_test inline_string_test\
-	ppx_this_obj_test unsafe_obj_external gpr_627_test	
+	ppx_this_obj_test unsafe_obj_external gpr_627_test jsoo_485_test	
 
 
 SOURCE_LIST := js_dyn $(OTHERS) 

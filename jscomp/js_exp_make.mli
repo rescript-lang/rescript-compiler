@@ -145,6 +145,9 @@ val js_global_dot : ?comment:string -> string -> string -> t
 
 val index : ?comment:string -> t -> Int32.t -> t
 
+(** if the expression is a temporay block which has no side effect,
+    write to it does not really make sense, optimize it away *)
+val index_addr : ?comment:string -> yes:(t -> t) -> no:t -> t -> Js_op.jsint -> t
 
 val assign :  binary_op
 
