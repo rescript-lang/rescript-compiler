@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/11-11:32 *)
+(** Bundled by ocamlpack 08/11-22:12 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2923,6 +2923,7 @@ let runtime_set =
     array ;
     format ;
     string ;
+    bytes;
     float ;
     hash ;
     oo ;

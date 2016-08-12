@@ -53,12 +53,17 @@ let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
 ;;
  
+(* To add a directory to the load path *)
+
+let dir_directory d =
+  Config.load_path := d :: !Config.load_path
+
 
 let () = 
-  Sys.interactive := false;
-  Topdirs.dir_directory "/cmis";
-  Toploop.initialize_toplevel_env ();
-  Toploop.input_name := "//toplevel//";
+  Sys.interactive := false; (* TODO: remove *)
+  dir_directory "/cmis";
+  (* Toploop.initialize_toplevel_env (); *)
+  (* Toploop.input_name := "//toplevel//"; *)
   Sys.interactive := true
 
 
