@@ -269,6 +269,7 @@ let runtime_set =
     array ;
     format ;
     string ;
+    bytes;
     float ;
     hash ;
     oo ;
