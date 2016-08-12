@@ -236,14 +236,14 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       -> 
       begin match args with
         | [obj; v ] -> 
-          Js_array.ref_array obj v
+          Js_arr.ref_array obj v
         | _ -> assert false 
       end
     | Js_set_index 
       -> 
       begin match args with 
       | [obj; v ; value] -> 
-        Js_array.set_array obj v value
+        Js_arr.set_array obj v value
       | _ -> assert false
       end
     

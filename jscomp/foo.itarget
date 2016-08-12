@@ -5,3 +5,4 @@ core.cmxa
 depends/depends.cmxa
 bs_ppx_main.cmx
 ocamlpack_main.cmx
+jsoo_main.cmo
