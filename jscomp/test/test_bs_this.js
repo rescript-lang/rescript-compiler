@@ -46,7 +46,7 @@ function f(x) {
             });
 }
 
-function u() {
+function u(x) {
   return x;
 }
 

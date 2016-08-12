@@ -34,7 +34,7 @@ let v3 =
   let x = 3. in
   object (self)
     method hi x y =
-      let u = [%bs.obj{ x = 3. }] in      
+      let u = [%bs.obj{ x  }] in      
       self##say u##x +. y +.x                            
     method say  = fun x ->  x *. self## x ()
     method x () = x

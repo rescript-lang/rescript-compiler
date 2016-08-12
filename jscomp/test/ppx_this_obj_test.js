@@ -58,7 +58,7 @@ var v3 = {
   hi: function (x, y) {
     var self = this ;
     var u = {
-      x: 3
+      x: x
     };
     return self.say(u.x) + y + x;
   },
@@ -72,10 +72,10 @@ var v3 = {
 };
 
 var v4 = {
-  hi: function (_, y) {
+  hi: function (x, y) {
     return x + y;
   },
-  say: function () {
+  say: function (x) {
     return x;
   },
   x: function () {
