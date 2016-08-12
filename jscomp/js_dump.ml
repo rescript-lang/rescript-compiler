@@ -261,7 +261,8 @@ let ipp_ident cxt f id un_used =
     ident cxt f (Ext_ident.make_unused ())
   else 
     ident cxt f id  
-let rec formal_parameter_list cxt (f : P.t) l env =
+let rec formal_parameter_list cxt (f : P.t) method_ l env =
+  let offset = if method_ then 1 else 0 in   
   let rec aux i cxt l = 
     match l with
     | []     -> cxt
@@ -275,9 +276,9 @@ let rec formal_parameter_list cxt (f : P.t) l env =
   | [] -> cxt 
   | [i] -> 
     (** necessary, since some js libraries like [mocha]...*)
-    if Js_fun_env.get_unused env 0 then cxt else ident cxt f i 
+    if Js_fun_env.get_unused env offset then cxt else ident cxt f i 
   | _ -> 
-    aux 0 cxt l  
+    aux offset cxt l  
 
 
 (* IdentMap *)
@@ -371,7 +372,7 @@ let rec pp_function method_
       | Some x -> ignore (ident inner_cxt f x));
       if method_ then begin
         let cxt = P.paren_group f 1 (fun _ -> 
-            formal_parameter_list inner_cxt  f (List.tl l) env )
+            formal_parameter_list inner_cxt  f method_ (List.tl l) env )
         in
         P.space f ;
         ignore @@ P.brace_vgroup f 1 (fun _ ->
@@ -399,7 +400,7 @@ let rec pp_function method_
       end
       else begin  
         let cxt = P.paren_group f 1 (fun _ -> 
-            formal_parameter_list inner_cxt  f l env )
+            formal_parameter_list inner_cxt  f method_ l env )
         in
         P.space f ;
         ignore @@ P.brace_vgroup f 1 (fun _ -> statement_list false cxt f b );

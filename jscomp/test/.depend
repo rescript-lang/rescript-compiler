@@ -262,6 +262,8 @@ gpr_441.cmj :
 gpr_441.cmx :
 gpr_459_test.cmj : mt.cmi
 gpr_459_test.cmx : mt.cmx
+gpr_627_test.cmj : mt.cmi
+gpr_627_test.cmx : mt.cmx
 guide_for_ext.cmj :
 guide_for_ext.cmx :
 hamming_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
@@ -1012,6 +1014,8 @@ gpr_441.cmo :
 gpr_441.cmj :
 gpr_459_test.cmo : mt.cmi
 gpr_459_test.cmj : mt.cmj
+gpr_627_test.cmo : mt.cmi
+gpr_627_test.cmj : mt.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
 hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
