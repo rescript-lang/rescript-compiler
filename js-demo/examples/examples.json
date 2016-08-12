@@ -9,6 +9,28 @@
     "Quick Sort":
     {"file" : "quick_sort.ml",
      "eval" : true
+    },
+    "Tail Call" :
+    {
+      "file" : "tailcall.ml",
+      "eval" : true
+    },
+    "Functional Programming" :
+    {
+      "file" : "fp.ml",
+      "eval" : true
+    },
+    "Curry optimization" : 
+    {
+      "file" : "curry.ml",
+      "eval" : true
+    },
+    "For loop" : {
+      "file" : "for_loop.ml",
+      "eval" : true
+    },
+    "Use standard library" : {
+      "file" : "use_stdlib.ml",
+      "eval" : true
     }
-    
 }

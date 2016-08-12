@@ -98,7 +98,7 @@ function redirect_err() {
 
 myCode1Mirror.setSize(null,codeMirrorDefaultHeight);
 outputMirror.setSize(null,50);
-outputMirror.setValue(PROMPT + '"h,e,y,o,o,c,a,m,l"');
+outputMirror.setValue(PROMPT + 'Hello BuckleScript!');
 errorMirror.setSize(null,50);
 errorMirror.setValue(ERR_OUTPUT);
 
