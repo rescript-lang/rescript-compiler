@@ -823,7 +823,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
         return /* () */0;
       };
       while(right[0] !== len) {
-        var match = s.charCodeAt(right[0]);
+        var match = Caml_string.get(s, right[0]);
         if (match !== 10) {
           if (match !== 32) {
             right[0] = right[0] + 1 | 0;

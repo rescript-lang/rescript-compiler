@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sys", "./pervasives", "./block", "./curry", "./printf", "./buffer", "./string", "./random"],
-  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Block, Curry, Printf, Buffer, $$String, Random){
+define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sys", "./pervasives", "./block", "./curry", "./printf", "./buffer", "./string", "./caml_string", "./random"],
+  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Block, Curry, Printf, Buffer, $$String, Caml_string, Random){
     'use strict';
     function generic_basename(is_dir_sep, current_dir_name, name) {
       if (name === "") {
@@ -94,7 +94,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
     var current_dir_name = ".";
     
     function is_dir_sep(s, i) {
-      return +(s[i] === "/");
+      return +(Caml_string.get(s, i) === /* "/" */47);
     }
     
     function is_relative(n) {
@@ -102,7 +102,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
         return /* true */1;
       }
       else {
-        return +(n.charCodeAt(0) !== /* "/" */47);
+        return +(Caml_string.get(n, 0) !== /* "/" */47);
       }
     }
     
@@ -145,11 +145,11 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
       var b = Buffer.create(l + 20 | 0);
       Buffer.add_char(b, /* "'" */39);
       for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
-        if (s[i] === "'") {
+        if (Caml_string.get(s, i) === /* "'" */39) {
           Buffer.add_string(b, quotequote);
         }
         else {
-          Buffer.add_char(b, s.charCodeAt(i));
+          Buffer.add_char(b, Caml_string.get(s, i));
         }
       }
       Buffer.add_char(b, /* "'" */39);
@@ -212,7 +212,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_sy
                 "Filename.chop_extension"
               ];
         }
-        else if (name[i] === ".") {
+        else if (Caml_string.get(name, i) === /* "." */46) {
           return $$String.sub(name, 0, i);
         }
         else {

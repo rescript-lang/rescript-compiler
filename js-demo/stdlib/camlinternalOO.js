@@ -17,7 +17,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./obj", "./caml_e
     function public_method_label(s) {
       var accu = 0;
       for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
-        accu = Caml_int32.imul(223, accu) + s.charCodeAt(i) | 0;
+        accu = Caml_int32.imul(223, accu) + Caml_string.get(s, i) | 0;
       }
       accu = accu & 2147483647;
       if (accu > 1073741823) {

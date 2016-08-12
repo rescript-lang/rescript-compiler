@@ -8,8 +8,6 @@ define(["exports", "./caml_exceptions"],
     
     var big_endian = /* false */0;
     
-    var word_size = 64;
-    
     var unix = /* true */1;
     
     var win32 = /* false */0;
@@ -37,6 +35,8 @@ define(["exports", "./caml_exceptions"],
     var executable_name = "cmd";
     
     var os_type = "Unix";
+    
+    var word_size = 32;
     
     var sigabrt = -1;
     

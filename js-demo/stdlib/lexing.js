@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./caml_lexer", "./sys", "./curry", "./caml_string"],
-  function(exports, Bytes, Caml_builtin_exceptions, Pervasives, Caml_lexer, Sys, Curry, Caml_string){
+define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./caml_lexer", "./sys", "./curry", "./caml_bytes", "./caml_string"],
+  function(exports, Bytes, Caml_builtin_exceptions, Pervasives, Caml_lexer, Sys, Curry, Caml_bytes, Caml_string){
     'use strict';
     function engine(tbl, state, buf) {
       var result = Caml_lexer.caml_lex_engine(tbl, state, buf);
@@ -144,12 +144,12 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./ca
     }
     
     function sub_lexeme_char(lexbuf, i) {
-      return lexbuf[/* lex_buffer */1][i];
+      return Caml_bytes.get(lexbuf[/* lex_buffer */1], i);
     }
     
     function sub_lexeme_char_opt(lexbuf, i) {
       if (i >= 0) {
-        return /* Some */[lexbuf[/* lex_buffer */1][i]];
+        return /* Some */[Caml_bytes.get(lexbuf[/* lex_buffer */1], i)];
       }
       else {
         return /* None */0;
@@ -157,7 +157,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./ca
     }
     
     function lexeme_char(lexbuf, i) {
-      return lexbuf[/* lex_buffer */1][lexbuf[/* lex_start_pos */4] + i | 0];
+      return Caml_bytes.get(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4] + i | 0);
     }
     
     function lexeme_start(lexbuf) {

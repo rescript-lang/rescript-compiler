@@ -197,13 +197,13 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./sy
         if (i >= lim) {
           throw Caml_builtin_exceptions.not_found;
         }
-        else if (s.charCodeAt(i) === opening) {
+        else if (Caml_string.get(s, i) === opening) {
           _i = i + 1 | 0;
           _k = k$1 + 1 | 0;
           continue ;
           
         }
-        else if (s.charCodeAt(i) === closing) {
+        else if (Caml_string.get(s, i) === closing) {
           if (k$1) {
             _i = i + 1 | 0;
             _k = k$1 - 1 | 0;
@@ -231,7 +231,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./sy
           return lim;
         }
         else {
-          var match = s.charCodeAt(i);
+          var match = Caml_string.get(s, i);
           var exit = 0;
           if (match >= 91) {
             if (match >= 97) {
@@ -278,7 +278,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./sy
         throw Caml_builtin_exceptions.not_found;
       }
       else {
-        var c = s.charCodeAt(start);
+        var c = Caml_string.get(s, start);
         var exit = 0;
         if (c !== 40) {
           if (c !== 123) {
@@ -315,7 +315,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./pervasives", "./sy
         var i = _i;
         var previous = _previous;
         if (i < lim) {
-          var current = s.charCodeAt(i);
+          var current = Caml_string.get(s, i);
           if (current !== 36) {
             if (previous === /* "\\" */92) {
               add_char(b, /* "\\" */92);

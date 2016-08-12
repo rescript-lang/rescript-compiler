@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./caml_float", "./pervasives", "./caml_exceptions", "./caml_format", "./caml_int32", "./block", "./char", "./sys", "./curry", "./camlinternalFormatBasics", "./buffer", "./string", "./caml_string"],
-  function(exports, Bytes, Caml_builtin_exceptions, Caml_obj, Caml_io, Caml_float, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Char, Sys, Curry, CamlinternalFormatBasics, Buffer, $$String, Caml_string){
+define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml_io", "./caml_float", "./pervasives", "./caml_exceptions", "./caml_format", "./caml_int32", "./block", "./char", "./sys", "./curry", "./caml_bytes", "./camlinternalFormatBasics", "./buffer", "./string", "./caml_string"],
+  function(exports, Bytes, Caml_builtin_exceptions, Caml_obj, Caml_io, Caml_float, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Char, Sys, Curry, Caml_bytes, CamlinternalFormatBasics, Buffer, $$String, Caml_string){
     'use strict';
     function create_char_set() {
       return Bytes.make(32, /* "\000" */0);
@@ -9,7 +9,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
     function add_in_char_set(char_set, c) {
       var str_ind = (c >>> 3);
       var mask = (1 << (c & 7));
-      char_set[str_ind] = Pervasives.char_of_int(char_set[str_ind] | mask);
+      char_set[str_ind] = Pervasives.char_of_int(Caml_bytes.get(char_set, str_ind) | mask);
       return /* () */0;
     }
     
@@ -18,7 +18,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
     function rev_char_set(char_set) {
       var char_set$prime = Bytes.make(32, /* "\000" */0);
       for(var i = 0; i <= 31; ++i){
-        char_set$prime[i] = Pervasives.char_of_int(char_set.charCodeAt(i) ^ 255);
+        char_set$prime[i] = Pervasives.char_of_int(Caml_string.get(char_set, i) ^ 255);
       }
       return Caml_string.bytes_to_string(char_set$prime);
     }
@@ -26,7 +26,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
     function is_in_char_set(char_set, c) {
       var str_ind = (c >>> 3);
       var mask = (1 << (c & 7));
-      return +((char_set.charCodeAt(str_ind) & mask) !== 0);
+      return +((Caml_string.get(char_set, str_ind) & mask) !== 0);
     }
     
     function pad_of_pad_opt(pad_opt) {
@@ -566,7 +566,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
     
     function bprint_string_literal(buf, str) {
       for(var i = 0 ,i_finish = str.length - 1 | 0; i <= i_finish; ++i){
-        bprint_char_literal(buf, str.charCodeAt(i));
+        bprint_char_literal(buf, Caml_string.get(str, i));
       }
       return /* () */0;
     }
@@ -2828,12 +2828,12 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
               $$String.blit(str, 0, res, width$1 - len | 0, len);
               break;
           case 2 : 
-              if (len > 0 && (str[0] === "+" || str[0] === "-" || str[0] === " ")) {
-                res[0] = str.charCodeAt(0);
+              if (len > 0 && (Caml_string.get(str, 0) === /* "+" */43 || Caml_string.get(str, 0) === /* "-" */45 || Caml_string.get(str, 0) === /* " " */32)) {
+                res[0] = Caml_string.get(str, 0);
                 $$String.blit(str, 1, res, (width$1 - len | 0) + 1 | 0, len - 1 | 0);
               }
-              else if (len > 1 && str[0] === "0" && (str[1] === "x" || str[1] === "X")) {
-                res[1] = str.charCodeAt(1);
+              else if (len > 1 && Caml_string.get(str, 0) === /* "0" */48 && (Caml_string.get(str, 1) === /* "x" */120 || Caml_string.get(str, 1) === /* "X" */88)) {
+                res[1] = Caml_string.get(str, 1);
                 $$String.blit(str, 2, res, (width$1 - len | 0) + 2 | 0, len - 2 | 0);
               }
               else {
@@ -2849,7 +2849,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
     function fix_int_precision(prec, str) {
       var prec$1 = Pervasives.abs(prec);
       var len = str.length;
-      var c = str.charCodeAt(0);
+      var c = Caml_string.get(str, 0);
       var exit = 0;
       if (c >= 58) {
         if (c >= 71) {
@@ -2879,9 +2879,9 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
             case 4 : 
                 return str;
             case 5 : 
-                if ((prec$1 + 2 | 0) > len && len > 1 && (str[1] === "x" || str[1] === "X")) {
+                if ((prec$1 + 2 | 0) > len && len > 1 && (Caml_string.get(str, 1) === /* "x" */120 || Caml_string.get(str, 1) === /* "X" */88)) {
                   var res = Bytes.make(prec$1 + 2 | 0, /* "0" */48);
-                  res[1] = str.charCodeAt(1);
+                  res[1] = Caml_string.get(str, 1);
                   $$String.blit(str, 2, res, (prec$1 - len | 0) + 4 | 0, len - 2 | 0);
                   return Caml_string.bytes_to_string(res);
                 }
@@ -3154,7 +3154,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
               return /* false */0;
             }
             else {
-              var match = str.charCodeAt(i);
+              var match = Caml_string.get(str, i);
               var switcher = match - 46 | 0;
               if (switcher > 23 || switcher < 0) {
                 if (switcher !== 55) {
@@ -4087,7 +4087,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
               return i;
             }
             else {
-              var match = str.charCodeAt(i);
+              var match = Caml_string.get(str, i);
               if (match !== 9) {
                 if (match !== 32) {
                   return i;
@@ -4113,7 +4113,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
               return j;
             }
             else {
-              var match = str.charCodeAt(j);
+              var match = Caml_string.get(str, j);
               if (match > 122 || match < 97) {
                 return j;
               }
@@ -4132,7 +4132,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
               return j;
             }
             else {
-              var match = str.charCodeAt(j);
+              var match = Caml_string.get(str, j);
               if (match >= 48) {
                 if (match >= 58) {
                   return j;
@@ -4378,7 +4378,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
             return add_literal(lit_start, str_ind, /* End_of_format */0);
           }
           else {
-            var match = str.charCodeAt(str_ind);
+            var match = Caml_string.get(str, str_ind);
             if (match !== 37) {
               if (match !== 64) {
                 _str_ind = str_ind + 1 | 0;
@@ -4404,7 +4404,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
         if (str_ind === end_ind$1) {
           invalid_format_message(end_ind$1, "unexpected end of format");
         }
-        var match = str.charCodeAt(str_ind);
+        var match = Caml_string.get(str, str_ind);
         if (match !== 95) {
           return parse_flags(pct_ind$1, str_ind, end_ind$1, /* false */0);
         }
@@ -4440,7 +4440,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                             ])
                         ]),
                       "invalid format %S: at character number %d, duplicate flag %C"
-                    ]), str, str_ind, str.charCodeAt(str_ind));
+                    ]), str, str_ind, Caml_string.get(str, str_ind));
           }
           flag[0] = /* true */1;
           return /* () */0;
@@ -4451,7 +4451,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           if (str_ind$1 === end_ind) {
             invalid_format_message(end_ind, "unexpected end of format");
           }
-          var match = str.charCodeAt(str_ind$1);
+          var match = Caml_string.get(str, str_ind$1);
           var exit = 0;
           var switcher = match - 32 | 0;
           if (switcher > 16 || switcher < 0) {
@@ -4516,7 +4516,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
               ) : (
                 minus$1 !== 0 ? /* Left */0 : /* Right */1
               );
-            var match$1 = str.charCodeAt(str_ind$2);
+            var match$1 = Caml_string.get(str, str_ind$2);
             var exit$1 = 0;
             if (match$1 >= 48) {
               if (match$1 >= 58) {
@@ -4562,7 +4562,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
         if (str_ind === end_ind) {
           invalid_format_message(end_ind, "unexpected end of format");
         }
-        var symb = str.charCodeAt(str_ind);
+        var symb = Caml_string.get(str, str_ind);
         if (symb !== 46) {
           return parse_conversion(pct_ind, str_ind + 1 | 0, end_ind, plus, sharp, space, ign, pad, /* No_precision */0, pad, symb);
         }
@@ -4583,7 +4583,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
             var match = parse_positive(str_ind, end_ind$1, 0);
             return parse_after_precision(pct_ind$1, match[0], end_ind$1, minus, plus$1, sharp$1, space$1, ign$1, pad$1, /* Lit_precision */[match[1]]);
           };
-          var symb$1 = str.charCodeAt(str_ind$1);
+          var symb$1 = Caml_string.get(str, str_ind$1);
           var exit = 0;
           var exit$1 = 0;
           if (symb$1 >= 48) {
@@ -4637,7 +4637,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           invalid_format_message(end_ind, "unexpected end of format");
         }
         var parse_conv = function (padprec) {
-          return parse_conversion(pct_ind, str_ind + 1 | 0, end_ind, plus, sharp, space, ign, pad, prec, padprec, str.charCodeAt(str_ind));
+          return parse_conversion(pct_ind, str_ind + 1 | 0, end_ind, plus, sharp, space, ign, pad, prec, padprec, Caml_string.get(str, str_ind));
         };
         if (typeof pad === "number") {
           var exit = 0;
@@ -5162,7 +5162,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
               }
               break;
           case 8 : 
-              if (str_ind === end_ind || !is_int_base(str.charCodeAt(str_ind))) {
+              if (str_ind === end_ind || !is_int_base(Caml_string.get(str, str_ind))) {
                 var match$20 = parse_literal(str_ind, str_ind, end_ind);
                 var fmt_rest$10 = match$20[0];
                 var counter = counter_of_char(symb);
@@ -5275,7 +5275,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                         plus_used = /* true */1;
                         sharp_used = /* true */1;
                         space_used = /* true */1;
-                        var iconv$1 = compute_int_conv(pct_ind, str_ind + 1 | 0, plus, sharp, space, str.charCodeAt(str_ind));
+                        var iconv$1 = compute_int_conv(pct_ind, str_ind + 1 | 0, plus, sharp, space, Caml_string.get(str, str_ind));
                         var beg_ind$2 = str_ind + 1 | 0;
                         var match$25 = parse_literal(beg_ind$2, beg_ind$2, end_ind);
                         var fmt_rest$13 = match$25[0];
@@ -5309,7 +5309,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                         plus_used = /* true */1;
                         sharp_used = /* true */1;
                         space_used = /* true */1;
-                        var iconv$2 = compute_int_conv(pct_ind, str_ind + 1 | 0, plus, sharp, space, str.charCodeAt(str_ind));
+                        var iconv$2 = compute_int_conv(pct_ind, str_ind + 1 | 0, plus, sharp, space, Caml_string.get(str, str_ind));
                         var beg_ind$3 = str_ind + 1 | 0;
                         var match$27 = parse_literal(beg_ind$3, beg_ind$3, end_ind);
                         var fmt_rest$14 = match$27[0];
@@ -5347,7 +5347,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                 plus_used = /* true */1;
                 sharp_used = /* true */1;
                 space_used = /* true */1;
-                var iconv$3 = compute_int_conv(pct_ind, str_ind + 1 | 0, plus, sharp, space, str.charCodeAt(str_ind));
+                var iconv$3 = compute_int_conv(pct_ind, str_ind + 1 | 0, plus, sharp, space, Caml_string.get(str, str_ind));
                 var beg_ind$4 = str_ind + 1 | 0;
                 var match$29 = parse_literal(beg_ind$4, beg_ind$4, end_ind);
                 var fmt_rest$15 = match$29[0];
@@ -5473,7 +5473,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                     ])];
         }
         else {
-          var c = str.charCodeAt(str_ind);
+          var c = Caml_string.get(str, str_ind);
           var exit = 0;
           if (c >= 65) {
             if (c >= 94) {
@@ -5535,7 +5535,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                                 match$2[0]
                               ])];
                 case 5 : 
-                    if ((str_ind + 1 | 0) < end_ind && str[str_ind + 1 | 0] === "%") {
+                    if ((str_ind + 1 | 0) < end_ind && Caml_string.get(str, str_ind + 1 | 0) === /* "%" */37) {
                       var beg_ind$3 = str_ind + 2 | 0;
                       var match$3 = parse_literal(beg_ind$3, beg_ind$3, end_ind);
                       return /* Fmt_EBB */[/* Formatting_lit */Block.__(17, [
@@ -5574,11 +5574,11 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                     var end_ind$1 = end_ind;
                     var match$7;
                     try {
-                      if (str_ind$1 === end_ind$1 || str.charCodeAt(str_ind$1) !== /* "<" */60) {
+                      if (str_ind$1 === end_ind$1 || Caml_string.get(str, str_ind$1) !== /* "<" */60) {
                         throw Caml_builtin_exceptions.not_found;
                       }
                       var str_ind_1 = parse_spaces(str_ind$1 + 1 | 0, end_ind$1);
-                      var match$8 = str.charCodeAt(str_ind_1);
+                      var match$8 = Caml_string.get(str, str_ind_1);
                       var exit$1 = 0;
                       if (match$8 >= 48) {
                         if (match$8 >= 58) {
@@ -5598,7 +5598,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                         var match$9 = parse_integer(str_ind_1, end_ind$1);
                         var width = match$9[1];
                         var str_ind_3 = parse_spaces(match$9[0], end_ind$1);
-                        var match$10 = str.charCodeAt(str_ind_3);
+                        var match$10 = Caml_string.get(str, str_ind_3);
                         var switcher$1 = match$10 - 45 | 0;
                         if (switcher$1 > 12 || switcher$1 < 0) {
                           if (switcher$1 !== 17) {
@@ -5622,7 +5622,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                         else {
                           var match$11 = parse_integer(str_ind_3, end_ind$1);
                           var str_ind_5 = parse_spaces(match$11[0], end_ind$1);
-                          if (str.charCodeAt(str_ind_5) !== /* ">" */62) {
+                          if (Caml_string.get(str, str_ind_5) !== /* ">" */62) {
                             throw Caml_builtin_exceptions.not_found;
                           }
                           var s$1 = $$String.sub(str, str_ind$1 - 2 | 0, (str_ind_5 - str_ind$1 | 0) + 3 | 0);
@@ -5675,7 +5675,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                     var match$13;
                     try {
                       var str_ind_1$1 = parse_spaces(str_ind$2, end_ind$2);
-                      var match$14 = str.charCodeAt(str_ind_1$1);
+                      var match$14 = Caml_string.get(str, str_ind_1$1);
                       var exit$2 = 0;
                       if (match$14 >= 48) {
                         if (match$14 >= 58) {
@@ -5694,7 +5694,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                       if (exit$2 === 1) {
                         var match$15 = parse_integer(str_ind_1$1, end_ind$2);
                         var str_ind_3$1 = parse_spaces(match$15[0], end_ind$2);
-                        if (str.charCodeAt(str_ind_3$1) !== /* ">" */62) {
+                        if (Caml_string.get(str, str_ind_3$1) !== /* ">" */62) {
                           throw Caml_builtin_exceptions.not_found;
                         }
                         var s$2 = $$String.sub(str, str_ind$2 - 2 | 0, (str_ind_3$1 - str_ind$2 | 0) + 3 | 0);
@@ -5834,7 +5834,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           if (str_ind === end_ind) {
             throw Caml_builtin_exceptions.not_found;
           }
-          var match = str.charCodeAt(str_ind);
+          var match = Caml_string.get(str, str_ind);
           if (match !== 60) {
             throw Caml_builtin_exceptions.not_found;
           }
@@ -5930,7 +5930,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           if (str_ind === end_ind) {
             invalid_format_message(end_ind, "unexpected end of format");
           }
-          var c = str.charCodeAt(str_ind);
+          var c = Caml_string.get(str, str_ind);
           return parse_char_set_after_char(str_ind + 1 | 0, end_ind, c);
         };
         var parse_char_set_content = function (_str_ind, end_ind) {
@@ -5939,7 +5939,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
             if (str_ind === end_ind) {
               invalid_format_message(end_ind, "unexpected end of format");
             }
-            var c = str.charCodeAt(str_ind);
+            var c = Caml_string.get(str, str_ind);
             if (c !== 45) {
               if (c !== 93) {
                 return parse_char_set_after_char(str_ind + 1 | 0, end_ind, c);
@@ -5963,7 +5963,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
             if (str_ind === end_ind) {
               invalid_format_message(end_ind, "unexpected end of format");
             }
-            var c$prime = str.charCodeAt(str_ind);
+            var c$prime = Caml_string.get(str, str_ind);
             var exit = 0;
             var exit$1 = 0;
             if (c$prime >= 46) {
@@ -5988,7 +5988,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                 if (str_ind$1 === end_ind$1) {
                   invalid_format_message(end_ind$1, "unexpected end of format");
                 }
-                var c$prime$1 = str.charCodeAt(str_ind$1);
+                var c$prime$1 = Caml_string.get(str, str_ind$1);
                 if (c$prime$1 !== 37) {
                   if (c$prime$1 !== 93) {
                     add_range(c$1, c$prime$1);
@@ -6004,7 +6004,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                   if ((str_ind$1 + 1 | 0) === end_ind$1) {
                     invalid_format_message(end_ind$1, "unexpected end of format");
                   }
-                  var c$prime$2 = str.charCodeAt(str_ind$1 + 1 | 0);
+                  var c$prime$2 = Caml_string.get(str, str_ind$1 + 1 | 0);
                   var exit$2 = 0;
                   if (c$prime$2 !== 37) {
                     if (c$prime$2 !== 64) {
@@ -6056,7 +6056,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
         if (str_ind === end_ind) {
           invalid_format_message(end_ind, "unexpected end of format");
         }
-        var match = str.charCodeAt(str_ind);
+        var match = Caml_string.get(str, str_ind);
         var match$1 = match !== 94 ? /* tuple */[
             str_ind,
             /* false */0
@@ -6077,7 +6077,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           if (str_ind === end_ind) {
             invalid_format_message(end_ind, "unexpected end of format");
           }
-          if (str[str_ind] === " ") {
+          if (Caml_string.get(str, str_ind) === /* " " */32) {
             _str_ind = str_ind + 1 | 0;
             continue ;
             
@@ -6094,7 +6094,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           if (str_ind === end_ind) {
             invalid_format_message(end_ind, "unexpected end of format");
           }
-          var c = str.charCodeAt(str_ind);
+          var c = Caml_string.get(str, str_ind);
           if (c > 57 || c < 48) {
             return /* tuple */[
                     str_ind,
@@ -6144,7 +6144,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
         if (str_ind === end_ind) {
           invalid_format_message(end_ind, "unexpected end of format");
         }
-        var match = str.charCodeAt(str_ind);
+        var match = Caml_string.get(str, str_ind);
         if (match >= 48) {
           if (match >= 58) {
             throw [
@@ -6174,7 +6174,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           if ((str_ind + 1 | 0) === end_ind) {
             invalid_format_message(end_ind, "unexpected end of format");
           }
-          var c = str.charCodeAt(str_ind + 1 | 0);
+          var c = Caml_string.get(str, str_ind + 1 | 0);
           if (c > 57 || c < 48) {
             return expected_character(str_ind + 1 | 0, "digit", c);
           }
@@ -6198,7 +6198,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
           }
           else {
             return /* Fmt_EBB */[/* Char_literal */Block.__(12, [
-                        str.charCodeAt(lit_start),
+                        Caml_string.get(str, lit_start),
                         fmt
                       ])];
           }
@@ -6236,7 +6236,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                       'invalid format %S: unclosed sub-format, expected "%%%c" at character number %d'
                     ]), str, c, end_ind);
           }
-          var match = str.charCodeAt(str_ind);
+          var match = Caml_string.get(str, str_ind);
           if (match !== 37) {
             _str_ind = str_ind + 1 | 0;
             continue ;
@@ -6246,11 +6246,11 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
             if ((str_ind + 1 | 0) === end_ind) {
               invalid_format_message(end_ind, "unexpected end of format");
             }
-            if (str.charCodeAt(str_ind + 1 | 0) === c) {
+            if (Caml_string.get(str, str_ind + 1 | 0) === c) {
               return str_ind;
             }
             else {
-              var match$1 = str.charCodeAt(str_ind + 1 | 0);
+              var match$1 = Caml_string.get(str, str_ind + 1 | 0);
               var exit = 0;
               if (match$1 >= 95) {
                 if (match$1 >= 123) {
@@ -6279,7 +6279,7 @@ define(["exports", "./bytes", "./caml_builtin_exceptions", "./caml_obj", "./caml
                   if ((str_ind + 2 | 0) === end_ind) {
                     invalid_format_message(end_ind, "unexpected end of format");
                   }
-                  var match$2 = str.charCodeAt(str_ind + 2 | 0);
+                  var match$2 = Caml_string.get(str, str_ind + 2 | 0);
                   if (match$2 !== 40) {
                     if (match$2 !== 123) {
                       _str_ind = str_ind + 3 | 0;

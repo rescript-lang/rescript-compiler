@@ -26,7 +26,7 @@ function queryGist() {
     );
     return qd['gist'];
 }
-function loadGist () {
+function loadGist (gist) {
     if(gist){
         contentFromResponse(gist)
     }

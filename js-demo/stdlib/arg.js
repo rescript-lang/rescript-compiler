@@ -296,7 +296,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
       current$1[0] = current$1[0] + 1 | 0;
       while(current$1[0] < l) {
         var s = argv[current$1[0]];
-        if (s.length >= 1 && s[0] === "-") {
+        if (s.length >= 1 && Caml_string.get(s, 0) === /* "-" */45) {
           var action;
           try {
             action = assoc3(s, speclist[0]);
@@ -668,7 +668,7 @@ define(["exports", "./caml_obj", "./caml_builtin_exceptions", "./bytes", "./caml
           if (n >= len) {
             return len;
           }
-          else if (s[n] === " ") {
+          else if (Caml_string.get(s, n) === /* " " */32) {
             _n = n + 1 | 0;
             continue ;
             

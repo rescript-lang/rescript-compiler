@@ -1,14 +1,7 @@
 'use strict';
-define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", "./pervasives", "./nativeint", "./int32", "./digest", "./curry", "./int64", "./caml_array", "./array"],
-  function(exports, Caml_int64, Caml_builtin_exceptions, Caml_sys, Pervasives, Nativeint, Int32, Digest, Curry, Int64, Caml_array, $$Array){
+define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", "./pervasives", "./nativeint", "./int32", "./digest", "./curry", "./int64", "./caml_array", "./array", "./caml_string"],
+  function(exports, Caml_int64, Caml_builtin_exceptions, Caml_sys, Pervasives, Nativeint, Int32, Digest, Curry, Int64, Caml_array, $$Array, Caml_string){
     'use strict';
-    function new_state() {
-      return /* record */[
-              /* st */Caml_array.caml_make_vect(55, 0),
-              /* idx */0
-            ];
-    }
-    
     function assign(st1, st2) {
       $$Array.blit(st2[/* st */0], 0, st1[/* st */0], 0, 55);
       st1[/* idx */1] = st2[/* idx */1];
@@ -20,7 +13,7 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
         return Digest.string(accu + x);
       };
       var extract = function (d) {
-        return ((d.charCodeAt(0) + (d.charCodeAt(1) << 8) | 0) + (d.charCodeAt(2) << 16) | 0) + (d.charCodeAt(3) << 24) | 0;
+        return ((Caml_string.get(d, 0) + (Caml_string.get(d, 1) << 8) | 0) + (Caml_string.get(d, 2) << 16) | 0) + (Caml_string.get(d, 3) << 24) | 0;
       };
       var seed$1 = seed.length ? seed : /* int array */[0];
       var l = seed$1.length;
@@ -39,7 +32,10 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
     }
     
     function make(seed) {
-      var result = new_state(/* () */0);
+      var result = /* record */[
+        /* st */Caml_array.caml_make_vect(55, 0),
+        /* idx */0
+      ];
       full_init(result, seed);
       return result;
     }
@@ -49,7 +45,10 @@ define(["exports", "./caml_int64", "./caml_builtin_exceptions", "./caml_sys", ".
     }
     
     function copy(s) {
-      var result = new_state(/* () */0);
+      var result = /* record */[
+        /* st */Caml_array.caml_make_vect(55, 0),
+        /* idx */0
+      ];
       assign(result, s);
       return result;
     }

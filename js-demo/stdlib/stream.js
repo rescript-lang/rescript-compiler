@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_exceptions", "./pervasives", "./block", "./curry", "./list"],
-  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_exceptions, Pervasives, Block, Curry, List){
+define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_exceptions", "./pervasives", "./block", "./curry", "./caml_bytes", "./list", "./caml_string"],
+  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_exceptions, Pervasives, Block, Curry, Caml_bytes, List, Caml_string){
     'use strict';
     var Failure = Caml_exceptions.create("Stream.Failure");
     
@@ -358,7 +358,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                   var c = count[0];
                   if (c < s.length) {
                     count[0] = count[0] + 1 | 0;
-                    return /* Some */[s.charCodeAt(c)];
+                    return /* Some */[Caml_string.get(s, c)];
                   }
                   else {
                     return /* None */0;
@@ -372,7 +372,7 @@ define(["exports", "./caml_builtin_exceptions", "./camlinternalLazy", "./caml_ex
                   var c = count[0];
                   if (c < s.length) {
                     count[0] = count[0] + 1 | 0;
-                    return /* Some */[s[c]];
+                    return /* Some */[Caml_bytes.get(s, c)];
                   }
                   else {
                     return /* None */0;

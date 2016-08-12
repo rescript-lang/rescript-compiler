@@ -1,6 +1,6 @@
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./caml_exceptions", "./caml_format", "./caml_int32", "./block", "./curry", "./printf", "./camlinternalFormatBasics", "./buffer", "./string", "./caml_string", "./list", "./camlinternalFormat"],
-  function(exports, Caml_builtin_exceptions, Bytes, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Curry, Printf, CamlinternalFormatBasics, Buffer, $$String, Caml_string, List, CamlinternalFormat){
+define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./caml_exceptions", "./caml_format", "./caml_int32", "./block", "./curry", "./printf", "./caml_bytes", "./camlinternalFormatBasics", "./buffer", "./string", "./caml_string", "./list", "./camlinternalFormat"],
+  function(exports, Caml_builtin_exceptions, Bytes, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Curry, Printf, Caml_bytes, CamlinternalFormatBasics, Buffer, $$String, Caml_string, List, CamlinternalFormat){
     'use strict';
     function next_char(ib) {
       try {
@@ -120,7 +120,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           throw Caml_builtin_exceptions.end_of_file;
         }
         else {
-          var c = s.charCodeAt(i[0]);
+          var c = Caml_string.get(s, i[0]);
           i[0] = i[0] + 1 | 0;
           return c;
         }
@@ -153,7 +153,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       var eof = [/* false */0];
       var next = function () {
         if (i[0] < lim[0]) {
-          var c = buf[i[0]];
+          var c = Caml_bytes.get(buf, i[0]);
           i[0] = i[0] + 1 | 0;
           return c;
         }
@@ -164,7 +164,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
           lim[0] = Pervasives.input(ic, buf, 0, len);
           if (lim[0]) {
             i[0] = 1;
-            return buf[0];
+            return Caml_bytes.get(buf, 0);
           }
           else {
             eof[0] = /* true */1;
@@ -364,7 +364,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
     }
     
     function token_char(ib) {
-      return token(ib).charCodeAt(0);
+      return Caml_string.get(token(ib), 0);
     }
     
     function token_bool(ib) {
@@ -458,7 +458,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
             ];
       }
       var l = tok.length;
-      if (l === 0 || tok.charCodeAt(0) !== /* "+" */43) {
+      if (l === 0 || Caml_string.get(tok, 0) !== /* "+" */43) {
         return tok;
       }
       else {
@@ -1402,7 +1402,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       }
       else {
         var str = CamlinternalFormat.string_of_formatting_lit(fmting);
-        var stp = str.charCodeAt(1);
+        var stp = Caml_string.get(str, 1);
         var sub_str = $$String.sub(str, 2, str.length - 2 | 0);
         return /* tuple */[
                 stp,
@@ -2095,7 +2095,7 @@ define(["exports", "./caml_builtin_exceptions", "./bytes", "./pervasives", "./ca
       var b = Buffer.create(l + 2 | 0);
       Buffer.add_char(b, /* "\"" */34);
       for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
-        var c = s.charCodeAt(i);
+        var c = Caml_string.get(s, i);
         if (c === /* "\"" */34) {
           Buffer.add_char(b, /* "\\" */92);
         }

@@ -66,7 +66,7 @@ define(["exports", "./caml_builtin_exceptions", "./pervasives", "./char", "./cam
     function to_hex(d) {
       var result = new Array(32);
       for(var i = 0; i <= 15; ++i){
-        var x = d.charCodeAt(i);
+        var x = Caml_string.get(d, i);
         result[(i << 1)] = char_hex((x >>> 4));
         result[(i << 1) + 1 | 0] = char_hex(x & 15);
       }
@@ -114,7 +114,7 @@ define(["exports", "./caml_builtin_exceptions", "./pervasives", "./char", "./cam
         }
       };
       var $$byte = function (i) {
-        return (digit(s.charCodeAt(i)) << 4) + digit(s.charCodeAt(i + 1 | 0)) | 0;
+        return (digit(Caml_string.get(s, i)) << 4) + digit(Caml_string.get(s, i + 1 | 0)) | 0;
       };
       var result = new Array(16);
       for(var i = 0; i <= 15; ++i){
