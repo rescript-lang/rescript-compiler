@@ -489,16 +489,3 @@ let exit retcode =
 
 let _ = register_named_value "Pervasives.do_at_exit" do_at_exit
 
-
-(** TEMPORARY CHANGES FOR PLAYGROUND, SHOULD BE REMOVED LATER *)
-
-(** internal types for FFI, these types are not used by normal users *)
-type (-'obj, +'a) js_meth_callback 
-type (-'arg, + 'result) js_meth
-type (-'arg, + 'result) js_fn (** Js uncurried function *)
-
-
-(** Types for JS objects *)
-type +'a js_t (** Js object type *)
-
-type js_re

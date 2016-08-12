@@ -1091,14 +1091,3 @@ val unsafe_really_input : in_channel -> bytes -> int -> int -> unit
 
 val do_at_exit : unit -> unit
 
-(** TEMPORARY CHANGES FOR PLAYGROUND, SHOULD BE REMOVED LATER *)
-
-type (-'obj, +'a) js_meth_callback 
-type (-'arg, + 'result) js_meth
-type (-'arg, + 'result) js_fn (** Js uncurried function *)
-
-
-(** Types for JS objects *)
-type +'a js_t (** Js object type *)
-
-type js_re (* Js re type*)

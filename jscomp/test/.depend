@@ -334,6 +334,8 @@ js_obj_test.cmj : mt.cmi
 js_obj_test.cmx : mt.cmx
 js_val.cmj :
 js_val.cmx :
+jsoo_400_test.cmj : ../stdlib/string.cmi mt.cmi
+jsoo_400_test.cmx : ../stdlib/string.cmx mt.cmx
 jsoo_485.cmj :
 jsoo_485.cmx :
 jsoo_485_test.cmj :
@@ -1090,6 +1092,8 @@ js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
 js_val.cmo :
 js_val.cmj :
+jsoo_400_test.cmo : ../stdlib/string.cmi mt.cmi
+jsoo_400_test.cmj : ../stdlib/string.cmj mt.cmj
 jsoo_485.cmo :
 jsoo_485.cmj :
 jsoo_485_test.cmo :

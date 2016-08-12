@@ -28,15 +28,8 @@ module Lid : sig
   type t = Longident.t 
   val val_unit : t 
   val type_unit : t 
-  val pervasives_js_obj : t 
-
   val js_fn : t 
-  val pervasives_fn : t 
-
   val js_meth : t 
-  val pervasives_meth : t 
-
-  val pervasives_meth_callback : t
   val js_meth_callback : t 
   val js_obj : t 
 
@@ -44,12 +37,7 @@ module Lid : sig
   val js_null : t 
   val js_undefined : t
   val js_null_undefined : t 
-
-  val pervasives_js_undefined : t
-    
-  val pervasives_re_id : t 
   val js_re_id : t 
-
   val js_unsafe : t 
 end
 

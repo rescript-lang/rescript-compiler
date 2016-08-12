@@ -37,23 +37,14 @@ type uncurry_type_gen =
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
     
-let uncurry_type_id () = 
-  if Js_config.is_browser () then 
-     Ast_literal.Lid.pervasives_fn
-  else 
-    Ast_literal.Lid.js_fn
+let uncurry_type_id = 
+  Ast_literal.Lid.js_fn
 
-let method_id () = 
-  if Js_config.is_browser () then 
-     Ast_literal.Lid.pervasives_meth
-  else 
-    Ast_literal.Lid.js_meth
+let method_id  = 
+  Ast_literal.Lid.js_meth
 
-let method_call_back_id () = 
-  if Js_config.is_browser () then 
-    Ast_literal.Lid.pervasives_meth_callback
-  else 
-    Ast_literal.Lid.js_meth_callback
+let method_call_back_id  = 
+  Ast_literal.Lid.js_meth_callback
 
 let arity_lit = "Arity_"
 
@@ -72,14 +63,14 @@ let generic_lift txt loc args result  =
   Typ.constr ~loc {txt ; loc} xs
 
 let lift_curry_type  loc   = 
-  generic_lift  ( uncurry_type_id ()) loc
+  generic_lift   uncurry_type_id loc
 
 let lift_method_type loc  = 
-  generic_lift  (method_id ()) loc
+  generic_lift  method_id loc
 
 let lift_js_method_callback loc
   = 
-  generic_lift (method_call_back_id ()) loc 
+  generic_lift method_call_back_id loc 
 (** Note that currently there is no way to consume [Js.meth_callback]
     so it is fine to encode it with a freedom, 
     but we need make it better for error message.
@@ -99,24 +90,12 @@ let arrow = Typ.arrow
 
 
 let js_property loc obj name =
-  if Js_config.is_browser () then
-    let downgrade ~loc () = 
-      let var = Typ.var ~loc "a" in 
-      Ast_comb.arrow_no_label ~loc
-        (Ast_comb.to_js_type loc var) var
-    in
-    Ast_external.local_extern_cont loc  
-      ~pval_prim:[Literals.js_unsafe_downgrade] 
-      ~pval_type:(downgrade ~loc ())
-      ~local_fun_name:"cast" 
-      (fun down -> Exp.send ~loc (Exp.apply ~loc down ["", obj]) name  )
-  else 
-    Parsetree.Pexp_send
-      ((Exp.apply ~loc
-          (Exp.ident ~loc
-             {loc;
-              txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
-          ["",obj]), name)
+  Parsetree.Pexp_send
+    ((Exp.apply ~loc
+        (Exp.ident ~loc
+           {loc;
+            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+        ["",obj]), name)
 
 (* TODO: 
    have a final checking for property arities 
@@ -144,7 +123,7 @@ let generic_apply  kind loc
      0, cb loc obj, []
   | _ -> 
     len,  cb loc obj, args in
-  if not (Js_config.is_browser ()) && arity < 10 then 
+  if arity < 10 then 
     let txt = 
       match kind with 
       | `Fn | `PropertyFn ->  
@@ -267,7 +246,7 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | _ -> len 
       end
     | `Method_callback -> len  in 
-  if arity < 10 &&  not (Js_config.is_browser ()) then 
+  if arity < 10  then 
     let txt = 
       match kind with 
       | `Fn -> 
@@ -301,17 +280,9 @@ let to_method_callback  =
 
 let handle_debugger loc payload = 
   if Ast_payload.as_empty_structure payload then
-    if Js_config.is_browser () then 
-      let predef_unit_type = Ast_literal.type_unit ~loc () in
-      let pval_prim = [Literals.js_debugger] in
-      Ast_external.create_local_external loc 
-        ~pval_prim
-        ~pval_type:(arrow "" predef_unit_type predef_unit_type)
-        [("",  Ast_literal.val_unit ~loc ())]
-    else 
-      Parsetree.Pexp_apply
-        (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
-         ["", Ast_literal.val_unit ~loc ()])
+    Parsetree.Pexp_apply
+      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
+       ["", Ast_literal.val_unit ~loc ()])
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 
@@ -322,16 +293,8 @@ let handle_raw loc payload =
         "bs.raw can only be applied to a string "
 
     | Some exp -> 
-      let pval_prim = [Literals.js_pure_expr] in
       let pexp_desc = 
-        if Js_config.is_browser () then 
-          Ast_external.create_local_external loc 
-            ~pval_prim
-            ~pval_type:(arrow "" 
-                          (Ast_literal.type_string ~loc ()) 
-                          (Ast_literal.type_any ~loc ()) )
-            ["",exp] 
-        else Parsetree.Pexp_apply (
+        Parsetree.Pexp_apply (
             Exp.ident {loc; 
                        txt = 
                          Ldot (Ast_literal.Lid.js_unsafe, 
@@ -350,16 +313,7 @@ let handle_raw_structure loc payload =
     | Some exp 
       -> 
       let pexp_desc = 
-        if Js_config.is_browser () then 
-          let pval_prim = [Literals.js_pure_stmt] in 
-          Ast_external.create_local_external loc 
-            ~pval_prim
-            ~pval_type:(arrow ""
-                          (Ast_literal.type_string ~loc ())
-                          (Ast_literal.type_any ~loc ()))
-            ["",exp]
-        else 
-          Parsetree.Pexp_apply(
+        Parsetree.Pexp_apply(
             Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
             ["",exp]) in 
       Ast_helper.Str.eval 
