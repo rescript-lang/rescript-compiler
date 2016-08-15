@@ -1,8 +1,8 @@
 {
-    "Default" :
+    "Default Example" :
     { "file" : "default.ml",
       "eval" : true
-    }, 
+    },
     "Event Handler" :
     { "file" :  "event_handler.ml",
       "eval" : false},
@@ -20,24 +20,24 @@
       "file" : "fp.ml",
       "eval" : true
     },
-    "Curry optimization" : 
+    "Curry Optimization" :
     {
       "file" : "curry.ml",
       "eval" : true
     },
-    "For loop" : {
+    "For Loop" : {
       "file" : "for_loop.ml",
       "eval" : true
     },
-    "Use standard library" : {
+    "Use Standard Library" : {
       "file" : "use_stdlib.ml",
       "eval" : true
     },
-    "JS objects" : {
+    "JS Objects" : {
       "file" : "js_object.ml",
       "eval" : true
     },
-    "Left pad" : {
+    "Left Pad" : {
       "file" : "left_pad.ml",
       "eval" : true
     }
