@@ -44,7 +44,7 @@ var PROMPT = "> " ;
 var log_output = PROMPT;
 var ERR_OUTPUT = "Warnings: "
 var err_output = ERR_OUTPUT;
- 
+
 function reset_log_output (){ log_output  = PROMPT;}
 function reset_error_output(){ err_output = ERR_OUTPUT;}
 function get_log_output(){
@@ -55,7 +55,7 @@ function get_log_output(){
 function get_error_output(){
   var old = err_output;
   reset_error_output();
-  return old;  
+  return old;
 }
 var compile_code ;
 var evalButton = document.getElementById('option-eval');
@@ -65,9 +65,10 @@ function shouldEval(){
   return evalButton.checked;
 }
 function onEvalButtonChange(){
-  console.log('change');
   if(!shouldEval()){
     outputMirror.setValue(PROMPT);
+  } else {
+    onEditChanges();
   }
 }
 evalButton.addEventListener('change', onEvalButtonChange);
@@ -92,7 +93,7 @@ var exports = window;
 
 function redirect() { log_output = log_output + Array.prototype.slice.apply(arguments).join(' ') + "\n"};
 
-function redirect_err() { 
+function redirect_err() {
     err_output = err_output + Array.prototype.slice.apply(arguments).join(' ') + "\n"
 };
 
@@ -167,7 +168,7 @@ function clickHandler(e) {
 
 
 
-function onEditChanges(cm, change) {  
+function onEditChanges(cm, change) {
   if(typeof compile_code === 'undefined'){
     console.log('init....');
     compile_code = ocaml.compile;
@@ -177,7 +178,7 @@ function onEditChanges(cm, change) {
   errorMirror.setValue(get_error_output());
   console.error = original_err;
   console.log(raw);
-  var rsp = JSON.parse(raw); // can we save this from parsing?  
+  var rsp = JSON.parse(raw); // can we save this from parsing?
   if (rsp.js_code !== undefined) {
     jsCode1Mirror.setValue(rsp.js_code);
     // eval
@@ -188,7 +189,7 @@ function onEditChanges(cm, change) {
     jsCode1Mirror.setValue(rsp.js_error_msg);
 
   }
-  
+
 }
 myCode1Mirror.on("changes", onEditChanges);
 
@@ -205,7 +206,7 @@ function changeEvalButton(bool) {
 //creates a gist from OCaml code
 $('#share').click(function (e) {
   var state = $(this).button('loading');
-  var request = 
+  var request =
   {
     "description": "BuckleScript Gist",
     "public": true,
@@ -239,7 +240,7 @@ var copy = new Clipboard('#copyButton');
 copy.on('success', function(e) {
   e.clearSelection();
   $('#copyGlyph').attr('class', 'glyphicon glyphicon-ok');
-}); 
+});
 
 //reset clipboard icon when modal is closed
 $('#shareModal').on('hidden.bs.modal', function (e) {
