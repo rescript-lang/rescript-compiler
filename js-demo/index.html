@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/addon/edit/closebrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.12/clipboard.min.js"></script>
     <link rel="stylesheet" type="text/css" href="theme.css">
-  <script src="https://code.jquery.com/jquery-2.2.4.min.js" 
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"
     integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
    crossorigin="anonymous"></script>
    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -23,36 +23,36 @@
 
 <nav class="navbar navbar-inverse navbar-static-top" style="margin-bottom: 0px">
   <div class="container-fluid">
-    <div class="navbar-brand" style="color: white">BuckleScript</div>
+    <div class="collapse navbar-collapse navbar-header"> <!-- Hides brand on small width -->
+      <div class="navbar-brand" style="color: white">BuckleScript</div>
+    </div>
 
     <div>
       <ul class="nav navbar-nav">
         <li><a href="https://github.com/bloomberg/bucklescript" target="_blank">Fork me on GitHub</a></li>
-        <div class="navbar-brand examples">  Examples:</div>
+
         <li class="dropdown">
-          <a href="#" id = "examplesLabel" class="dropdown-toggle" data-toggle="dropdown">Default<span class="caret"></span></a>
+          <a href="#" id = "examplesLabel" class="dropdown-toggle" data-toggle="dropdown">Default Example<span class="caret"></span></a>
           <ul id="examplesDropdown" class="dropdown-menu">
           </ul>
         </li>
         <li><button class="btn navbar-btn navbar-button" data-loading-text="Getting link..."type="button" id="share">Share</button></li>
       </ul>
 
-        <div class="checkbox navbar-btn navbar-right">
-          <label class="navbar-link repl-toolbar" >
-              <input type="checkbox" id="option-non-export">
-              Remove unused code
-          </label>
-          <label class="navbar-link repl-toolbar">
-              <input type="checkbox" id="option-eval" checked>
-              Eval
-          </label>
-        </div>
-
+      <div class="checkbox navbar-btn navbar-right">
+        <label class="navbar-link repl-toolbar" >
+          <input type="checkbox" id="option-non-export">
+          Remove unused code
+        </label>
+        <label class="navbar-link repl-toolbar">
+          <input type="checkbox" id="option-eval" checked>
+          Eval
+        </label>
+      </div>
 
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-
 
 <div id="shareModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -92,7 +92,7 @@
 
     <div class = "right-border" style="width: 50%;float:left">
         <textarea id="ocamlcode#1">
-Js.log "Hello BuckleScript!"             
+Js.log "Hello BuckleScript!"
         </textarea>
     </div>
     <div style="width: 50%; float:right">
