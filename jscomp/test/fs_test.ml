@@ -29,17 +29,17 @@ external on :
 open Bs_node 
 let () =
   let current_file : string =
-    match Js.Undefined.to_opt [%bs.node __filename] with
+    match Js.Undefined.to_option [%bs.node __filename] with
     | Some x -> x
     | None -> "<Not Node JS>"  in
   let current_dir_name : string =
-    match Js.Undefined.to_opt [%bs.node __dirname] with
+    match Js.Undefined.to_option [%bs.node __dirname] with
     | Some x -> x
     | None -> "<Not Node Js>"  in
   let _content = readFileSync current_file `utf8 in
   let _file_list = Fs.readdirSync current_dir_name in
   let pathobj =   Path.parse current_dir_name in
-  match Js.Undefined.to_opt [%bs.node module_] with
+  match Js.Undefined.to_option [%bs.node module_] with
   | Some module_ ->   
     Js.log (module_##id, module_##paths) ;   
     eq __LOC__ (pathobj##name, "test" )

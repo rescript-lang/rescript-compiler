@@ -1,7 +1,7 @@
 
 
 let () =
-  match Js.Undefined.to_opt  [%bs.node require] with
+  match Js.Undefined.to_option  [%bs.node require] with
   | None ->   ()
   | Some u ->               
     Js.log @@ u#@resolve "./test_require.js";

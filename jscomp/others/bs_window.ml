@@ -22,30 +22,5 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-type 'a t = 'a Js.Undefined.t array
-
-let caml_weak_create n =
-  Caml_array.new_uninitialized n 
-
-let caml_weak_set xs i v = 
-  match v with 
-  | Some x -> xs.(i) <- Js.Undefined.return x 
-  | None -> ()
-
-let caml_weak_get  xs i = 
-  Js.Undefined.to_option xs.(i) 
-
-let caml_weak_get_copy  xs i = 
-  match Js.Undefined.to_option xs.(i) with 
-  | None -> None 
-  | Some x -> Some (Obj.magic (Obj.dup (Obj.repr x) ))
-
-let caml_weak_check xs i = 
-  not @@ Js.Undefined.test xs.(i)
-
-let caml_weak_blit = Caml_array.caml_array_blit
+module Dom = Bs_window_dom
+module Dom_html = Bs_window_dom_html  

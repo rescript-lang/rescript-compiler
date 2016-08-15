@@ -1,13 +1,32 @@
 bs_node.cmi : bs_node_process.cmj bs_node_path.cmj bs_node_fs.cmj
+bs_window_dom.cmi :
+bs_window_dom_html.cmi : bs_window_file.cmi bs_window_dom.cmi
+bs_window_file.cmi : bs_window_dom.cmi
 bs_node_fs.cmj :
 bs_node_fs.cmx :
 bs_node_path.cmj :
 bs_node_path.cmx :
 bs_node_process.cmj :
 bs_node_process.cmx :
+bs_window.cmj : bs_window_dom_html.cmi bs_window_dom.cmi
+bs_window.cmx : bs_window_dom_html.cmx bs_window_dom.cmx
+bs_window_dom.cmj : bs_window_dom.cmi
+bs_window_dom.cmx : bs_window_dom.cmi
+bs_window_dom_html.cmj : bs_window_dom_html.cmi
+bs_window_dom_html.cmx : bs_window_dom_html.cmi
+bs_window_file.cmj : bs_window_file.cmi
+bs_window_file.cmx : bs_window_file.cmi
 bs_node_fs.cmo :
 bs_node_fs.cmj :
 bs_node_path.cmo :
 bs_node_path.cmj :
 bs_node_process.cmo :
 bs_node_process.cmj :
+bs_window.cmo : bs_window_dom_html.cmi bs_window_dom.cmi
+bs_window.cmj : bs_window_dom_html.cmj bs_window_dom.cmj
+bs_window_dom.cmo : bs_window_dom.cmi
+bs_window_dom.cmj : bs_window_dom.cmi
+bs_window_dom_html.cmo : bs_window_dom_html.cmi
+bs_window_dom_html.cmj : bs_window_dom_html.cmi
+bs_window_file.cmo : bs_window_file.cmi
+bs_window_file.cmj : bs_window_file.cmi

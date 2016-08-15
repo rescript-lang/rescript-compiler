@@ -59,13 +59,16 @@ external unsafe_lt : 'a -> 'a -> boolean = "js_unsafe_lt"
 external unsafe_le : 'a -> 'a -> boolean = "js_unsafe_le"
 external unsafe_gt : 'a -> 'a -> boolean = "js_unsafe_gt"
 external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
+external unsafe_coerce : _ t -> _ t = "%identity"
 
-
+type any
+external unsafe_inject : 'a -> any = "%identity"
+  
 (* Note [to_opt null] will be [null : 'a opt opt]*)
 
 module Null = struct 
   type + 'a t = 'a null
-  external to_opt : 'a t -> 'a option = "js_from_nullable"
+  external to_option : 'a t -> 'a option = "js_from_nullable"
   external return : 'a -> 'a t  = "%identity"
   external test : 'a t -> bool = "js_is_nil"
   external empty : 'a t = "null" [@@bs.val]
@@ -73,7 +76,7 @@ end
 
 module Undefined = struct 
   type + 'a t = 'a undefined 
-  external to_opt : 'a t -> 'a option = "js_from_def"
+  external to_option : 'a t -> 'a option = "js_from_def"
   external return : 'a -> 'a t = "%identity"
   external test : 'a t -> bool =  "js_is_undef"
   external empty : 'a t = "undefined" [@@bs.val]
@@ -81,7 +84,7 @@ end
 
 module Null_undefined = struct
   type + 'a t = 'a null_undefined
-  external to_opt : 'a t -> 'a option = "js_from_nullable_def"
+  external to_option : 'a t -> 'a option = "js_from_nullable_def"
   external return : 'a -> 'a t = "%identity"
   external test : 'a t -> bool =  "js_is_nil_undef"
   external empty : 'a t = "undefined" [@@bs.val]
