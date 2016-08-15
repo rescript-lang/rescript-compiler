@@ -1,3 +1,4 @@
+../ext/literals
 ../ext/ext_pervasives
 ../ext/ext_bytes
 ../ext/ext_string
