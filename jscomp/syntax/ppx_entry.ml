@@ -310,7 +310,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                    (Ast_payload.raw_string_payload loc "module"))                
                 (Typ.constr ~loc
                    { txt = Ldot (Lident "Bs_node", "node_module") ;
-                     loc} [] )              
+                     loc} [] )
+            | Some {txt = Lident "__require"}
+              ->
+              Exp.constraint_ ~loc
+                (Ast_util.handle_raw loc
+                   (Ast_payload.raw_string_payload loc "require"))                
+                (Typ.constr ~loc
+                   { txt = Ldot (Lident "Bs_node", "node_require") ;
+                     loc} [] )
             | Some _ | None -> Location.raise_errorf ~loc "Ilegal payload"              
           end             
 

@@ -43,3 +43,10 @@ type node_module = <
        children : node_module array ;
        paths : string array;       
 > Js.t
+
+type node_require = <
+  main : node_module Js.undefined;
+
+  resolve : string -> string [@bs]
+  (* @raise exception   *)
+> Js.t 
