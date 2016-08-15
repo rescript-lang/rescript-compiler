@@ -15,6 +15,7 @@ infer_type_test.cmi : ../runtime/js.cmj
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 js_dyn.cmi :
+literals.cmi :
 map_test.cmi :
 mt.cmi :
 mt_global.cmi : mt.cmi
@@ -184,12 +185,12 @@ ext_array.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmj : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
-ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmj \
-    ext_pervasives.cmi
-ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
-    ../stdlib/lazy.cmx ../stdlib/filename.cmx ext_sys.cmx ext_string.cmx \
-    ext_pervasives.cmx
+ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi literals.cmi \
+    ../stdlib/list.cmi ../stdlib/lazy.cmi ../stdlib/filename.cmi \
+    ext_string.cmj ext_pervasives.cmi
+ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx literals.cmx \
+    ../stdlib/list.cmx ../stdlib/lazy.cmx ../stdlib/filename.cmx \
+    ext_string.cmx ext_pervasives.cmx
 ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_log.cmj : ../stdlib/format.cmi
@@ -362,6 +363,8 @@ list_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/array.cmx
+literals.cmj : ../stdlib/string.cmi literals.cmi
+literals.cmx : ../stdlib/string.cmx literals.cmi
 local_class_type.cmj : ../runtime/js.cmj
 local_class_type.cmx : ../runtime/js.cmx
 local_exception_test.cmj :
@@ -392,8 +395,8 @@ module_missing_conversion.cmx : ../stdlib/string.cmx \
     ../stdlib/moreLabels.cmx ../stdlib/hashtbl.cmx ../stdlib/array.cmx
 module_parameter_test.cmj : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
-mt.cmj : ../stdlib/list.cmi mt.cmi
-mt.cmx : ../stdlib/list.cmx mt.cmi
+mt.cmj : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
+mt.cmx : ../stdlib/list.cmx ../others/bs_node.cmi ../stdlib/array.cmx mt.cmi
 mt_global.cmj : mt.cmi mt_global.cmi
 mt_global.cmx : mt.cmx mt_global.cmi
 mutual_non_recursive_type.cmj :
@@ -690,6 +693,8 @@ test_react_case.cmj :
 test_react_case.cmx :
 test_regex.cmj :
 test_regex.cmx :
+test_require.cmj : ../runtime/js.cmj
+test_require.cmx : ../runtime/js.cmx
 test_runtime_encoding.cmj : ../stdlib/array.cmi
 test_runtime_encoding.cmx : ../stdlib/array.cmx
 test_scope.cmj :
@@ -942,12 +947,12 @@ ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
-ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmo \
-    ext_pervasives.cmi
-ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/list.cmj \
-    ../stdlib/lazy.cmj ../stdlib/filename.cmj ext_sys.cmj ext_string.cmj \
-    ext_pervasives.cmj
+ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi literals.cmi \
+    ../stdlib/list.cmi ../stdlib/lazy.cmi ../stdlib/filename.cmi \
+    ext_string.cmo ext_pervasives.cmi
+ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj literals.cmj \
+    ../stdlib/list.cmj ../stdlib/lazy.cmj ../stdlib/filename.cmj \
+    ext_string.cmj ext_pervasives.cmj
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_log.cmo : ../stdlib/format.cmi
@@ -1120,6 +1125,8 @@ list_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj
+literals.cmo : ../stdlib/string.cmi literals.cmi
+literals.cmj : ../stdlib/string.cmj literals.cmi
 local_class_type.cmo : ../runtime/js.cmo
 local_class_type.cmj : ../runtime/js.cmj
 local_exception_test.cmo :
@@ -1150,8 +1157,8 @@ module_missing_conversion.cmj : ../stdlib/string.cmj \
     ../stdlib/moreLabels.cmj ../stdlib/hashtbl.cmj ../stdlib/array.cmj
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
-mt.cmo : ../stdlib/list.cmi mt.cmi
-mt.cmj : ../stdlib/list.cmj mt.cmi
+mt.cmo : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
+mt.cmj : ../stdlib/list.cmj ../others/bs_node.cmi ../stdlib/array.cmj mt.cmi
 mt_global.cmo : mt.cmi mt_global.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
 mutual_non_recursive_type.cmo :
@@ -1448,6 +1455,8 @@ test_react_case.cmo :
 test_react_case.cmj :
 test_regex.cmo :
 test_regex.cmj :
+test_require.cmo : ../runtime/js.cmo
+test_require.cmj : ../runtime/js.cmj
 test_runtime_encoding.cmo : ../stdlib/array.cmi
 test_runtime_encoding.cmj : ../stdlib/array.cmj
 test_scope.cmo :

@@ -25,5 +25,6 @@
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string         
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                                                        
 val error : error -> 'a 

@@ -10,11 +10,11 @@ var Block                   = require("../../lib/js/block");
 var Ext_string              = require("./ext_string");
 var Curry                   = require("../../lib/js/curry");
 var Ext_pervasives          = require("./ext_pervasives");
-var Ext_sys                 = require("./ext_sys");
 var $$String                = require("../../lib/js/string");
 var Format                  = require("../../lib/js/format");
 var Caml_string             = require("../../lib/js/caml_string");
 var List                    = require("../../lib/js/list");
+var Literals                = require("./literals");
 
 var node_sep = "/";
 
@@ -201,20 +201,16 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
   }
 }
 
-var node_modules = "node_modules";
-
-var package_json = "package.json";
-
 function node_relative_path(file1, dep_file) {
   var file2 = dep_file[1];
-  var v = Ext_string.find(/* None */0, node_modules, file2);
+  var v = Ext_string.find(/* None */0, Literals.node_modules, file2);
   var len = file2.length;
   if (v >= 0) {
     var skip = function (_i) {
       while(true) {
         var i = _i;
         if (i >= len) {
-          return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 161, characters 38-45', /* Format */[
+          return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 158, characters 38-45', /* Format */[
                           /* String_literal */Block.__(11, [
                               "invalid path: ",
                               /* String */Block.__(2, [
@@ -238,89 +234,18 @@ function node_relative_path(file1, dep_file) {
         }
       };
     };
-    return Ext_string.tail_from(file2, skip(v + 12 | 0));
+    return Ext_string.tail_from(file2, skip(v + Literals.node_modules_length | 0));
   }
   else {
     return relative_path(absolute_path(dep_file), absolute_path(file1)) + (node_sep + try_chop_extension(Curry._1(Filename.basename, file2)));
   }
 }
 
-function resolve_bs_package(cwd, name) {
-  var sub_path = Filename.concat(Filename.concat(name, "lib"), "ocaml");
-  var origin = cwd;
-  var _cwd = cwd;
-  var name$1 = name;
-  while(true) {
-    var cwd$1 = _cwd;
-    var destdir = Filename.concat(Filename.concat(cwd$1, node_modules), sub_path);
-    if (Ext_sys.is_directory_no_exn(destdir)) {
-      return destdir;
-    }
-    else {
-      var cwd$prime = Curry._1(Filename.dirname, cwd$1);
-      if (cwd$prime.length < cwd$1.length) {
-        _cwd = cwd$prime;
-        continue ;
-        
-      }
-      else {
-        try {
-          var destdir$1 = Filename.concat(Filename.concat(Filename.concat(Caml_sys.caml_sys_getenv("npm_config_prefix"), "lib"), node_modules), sub_path);
-          if (Ext_sys.is_directory_no_exn(destdir$1)) {
-            return destdir$1;
-          }
-          else {
-            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 211, characters 19-26', /* Format */[
-                            /* Char_literal */Block.__(12, [
-                                /* " " */32,
-                                /* String */Block.__(2, [
-                                    /* No_padding */0,
-                                    /* String_literal */Block.__(11, [
-                                        " not found in ",
-                                        /* String */Block.__(2, [
-                                            /* No_padding */0,
-                                            /* End_of_format */0
-                                          ])
-                                      ])
-                                  ])
-                              ]),
-                            " %s not found in %s"
-                          ]), name$1, origin);
-          }
-        }
-        catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
-            return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 216, characters 17-24', /* Format */[
-                            /* Char_literal */Block.__(12, [
-                                /* " " */32,
-                                /* String */Block.__(2, [
-                                    /* No_padding */0,
-                                    /* String_literal */Block.__(11, [
-                                        " not found in ",
-                                        /* String */Block.__(2, [
-                                            /* No_padding */0,
-                                            /* End_of_format */0
-                                          ])
-                                      ])
-                                  ])
-                              ]),
-                            " %s not found in %s"
-                          ]), name$1, origin);
-          }
-          else {
-            throw exn;
-          }
-        }
-      }
-    }
-  };
-}
-
 function find_package_json_dir(cwd) {
   var _cwd = cwd;
   while(true) {
     var cwd$1 = _cwd;
-    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd$1, package_json))) {
+    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd$1, Literals.package_json))) {
       return cwd$1;
     }
     else {
@@ -331,7 +256,7 @@ function find_package_json_dir(cwd) {
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 230, characters 15-22', /* Format */[
+        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 195, characters 15-22', /* Format */[
                         /* String_literal */Block.__(11, [
                             "package.json not found from ",
                             /* String */Block.__(2, [
@@ -385,8 +310,6 @@ function chop_extension_if_any(fname) {
 
 var $slash$slash = Filename.concat;
 
-var node_modules_length = 12;
-
 exports.node_sep               = node_sep;
 exports.node_parent            = node_parent;
 exports.node_current           = node_current;
@@ -398,11 +321,7 @@ exports.absolute_path          = absolute_path;
 exports.chop_extension         = chop_extension;
 exports.try_chop_extension     = try_chop_extension;
 exports.relative_path          = relative_path;
-exports.node_modules           = node_modules;
-exports.node_modules_length    = node_modules_length;
-exports.package_json           = package_json;
 exports.node_relative_path     = node_relative_path;
-exports.resolve_bs_package     = resolve_bs_package;
 exports.find_package_json_dir  = find_package_json_dir;
 exports.package_dir            = package_dir;
 exports.replace_backward_slash = replace_backward_slash;

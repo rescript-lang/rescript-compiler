@@ -55,7 +55,7 @@ val node_relative_path : t -> [`File of string] -> string
 val chop_extension : ?loc:string -> string -> string
 
 
-val resolve_bs_package : cwd:string -> string -> string
+
 
 
 

@@ -110,10 +110,9 @@ let _ =
   begin 
     let local_time = Unix.(localtime (gettimeofday ())) in 
     output_string stdout 
-      (Printf.sprintf {|(** Bundled by ocamlpack %02d/%02d-%02d:%02d *)|}
+      (Printf.sprintf {|(** Bundled by bspack %02d/%02d-%02d:%02d *)|}
          (local_time.tm_mon + 1) local_time.tm_mday 
-         local_time.tm_hour local_time.tm_min 
-                         );
+         local_time.tm_hour local_time.tm_min);
     output_string stdout "\n";
     tasks |> Queue.iter (fun module_ ->
       let t = (match (String_map.find  module_ ast_table).ast_info with

@@ -36,17 +36,17 @@ release:snapshot
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
 
-./bin/ocamlpack: ./bin/ocamlpack.mli ./bin/ocamlpack.ml 
+./bin/bspack: ./bin/bspack.mli ./bin/bspack.ml 
 	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
 
 ## order matters
-_build/ocamlpack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/depends/depends.cmxa  _build/ocamlpack_main.cmx
+_build/bspack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/depends/depends.cmxa  _build/bspack_main.cmx
 	$(NATIVE) -I +compiler-libs ocamlcommon.cmxa unix.cmxa $^ -o $@
 
-snapshot: ./bin/ocamlpack snapshotcmj
+snapshot: ./bin/bspack snapshotcmj
 	$(MAKE) snapshotml
 
-snapshotml:./bin/ocamlpack ./bin/compiler.mllib ./bin/bs_ppx.mllib
+snapshotml:./bin/bspack ./bin/compiler.mllib ./bin/bs_ppx.mllib
 	@echo "Snapshot ml"
 	$< bin/compiler.mllib > bin/compiler.ml
 	$< bin/bs_ppx.mllib   > bin/bs_ppx.ml
@@ -54,14 +54,14 @@ snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
 
-bootocamlpack: ./bin/ocamlpack
-	@echo "Bootstrap ocamlpack"
-	./bin/ocamlpack bin/ocamlpack.mllib > ./bin/ocamlpack.ml
-	$(NATIVE) -w -40 -I +compiler-libs  unix.cmxa ocamlcommon.cmxa -I bin bin/ocamlpack.mli bin/ocamlpack.ml -o bin/ocamlpack
-	@echo "Using the bootstrapped ocamlpack to genreate new ocamlpack.ml: `date`" 	
-	./bin/ocamlpack bin/ocamlpack.mllib > ./bin/ocamlpack.ml
-	@echo "Bootstrap seems finished, please check diffs in ocamlpack"
-	git diff bin/ocamlpack.ml
+bootbspack: ./bin/bspack
+	@echo "Bootstrap bspack"
+	./bin/bspack bin/bspack.mllib > ./bin/bspack.ml
+	$(NATIVE) -w -40 -I +compiler-libs  unix.cmxa ocamlcommon.cmxa -I bin bin/bspack.mli bin/bspack.ml -o bin/bspack
+	@echo "Using the bootstrapped bspack to genreate new bspack.ml: `date`" 	
+	./bin/bspack bin/bspack.mllib > ./bin/bspack.ml
+	@echo "Bootstrap seems finished, please check diffs in bspack"
+	git diff bin/bspack.ml
 
 releasebuild:
 	@echo "Make release compiler"
@@ -100,17 +100,17 @@ world-test:
 	cd test && $(MAKE) all
 	@echo "Making test finsihed"
 
-travis-world-test:./bin/ocamlpack
+travis-world-test:./bin/bspack
 	@echo "Generating the compiler"
 	rm -f bin/compiler.ml bin/bs_ppx.ml
 	$(MAKE) snapshotml	
 	@echo "Generating the compiler finished"	
 	$(MAKE) world-test
 
-# no depend on ./bin/ocamlpack ./bin/bsc
+# no depend on ./bin/bspack ./bin/bsc
 # since in npm mode, they are generated from a single file
 install:
-	cp  ./bin/bsc ./bin/bsppx  ../bin/
+	cp  ./bin/bsc ./bin/bsppx  ./bin/bspack ../bin/
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm*   ./others/*.cm* ../lib/ocaml/
 	cp ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_array.mli ./runtime/js_array.ml ./runtime/js_array.cmi  ./runtime/js_string.ml ./runtime/js_string.mli ./runtime/js_string.cmi ./runtime/js_re.ml ./runtime/js_re.mli ./runtime/js_re.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
 

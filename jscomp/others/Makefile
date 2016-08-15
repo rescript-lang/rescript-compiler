@@ -2,7 +2,7 @@ include ../Makefile.shared
 
 COMPILER=../bin/bsc
 
-SOURCE_LIST= bs_node bs_node_path bs_node_fs
+SOURCE_LIST= bs_node bs_node_path bs_node_fs bs_node_process
 
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 

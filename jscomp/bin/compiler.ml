@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/12-16:52 *)
+(** Bundled by ocamlpack 08/15-11:28 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -797,6 +797,12 @@ val bs_deriving : string
 val bs_deriving_dot : string
 val bs_type : string
 
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string  
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -869,6 +875,15 @@ let js_fn_runmethod = "js_fn_runmethod"
 let bs_deriving = "bs.deriving"
 let bs_deriving_dot = "bs.deriving."
 let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+
+
+
 
 end
 module Ast_attributes : sig 
@@ -1842,7 +1857,7 @@ val to_js_type :
 
 
 (** TODO: make it work for browser too *)
-val to_js_undefined_type :
+val to_undefined_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type  
 
 val to_js_re_type : Location.t -> Parsetree.core_type
@@ -1928,7 +1943,7 @@ let to_js_type loc  x  =
 let to_js_re_type loc  =
   Typ.constr ~loc { txt = re_id ; loc} []
     
-let to_js_undefined_type loc x =
+let to_undefined_type loc x =
   Typ.constr ~loc
     {txt = Ast_literal.Lid.js_undefined ; loc}
     [x]  
@@ -3238,65 +3253,6 @@ let dump v = dump (Obj.repr v)
 
 
 end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val is_directory_no_exn : string -> bool
-
-end = struct
-#1 "ext_sys.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3356,7 +3312,7 @@ val node_relative_path : t -> [`File of string] -> string
 val chop_extension : ?loc:string -> string -> string
 
 
-val resolve_bs_package : cwd:string -> string -> string
+
 
 
 
@@ -3509,9 +3465,6 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
 
 
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
 
 
 
@@ -3526,7 +3479,7 @@ let package_json = "package.json"
  *)
 let node_relative_path (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
-  let v = Ext_string.find  file2 ~sub:node_modules in 
+  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
   if v >= 0 then 
     let rec skip  i =       
@@ -3547,7 +3500,7 @@ let node_relative_path (file1 : t)
         *)
     in 
     Ext_string.tail_from file2
-      (skip (v + node_modules_length)) 
+      (skip (v + Literals.node_modules_length)) 
   else 
     relative_path 
        (absolute_path dep_file)
@@ -3557,43 +3510,11 @@ let node_relative_path (file1 : t)
 
 
 
-(** [resolve cwd module_name], 
-    [cwd] is current working directory, absolute path
-    Trying to find paths to load [module_name]
-    it is sepcialized for option [-bs-package-include] which requires
-    [npm_package_name/lib/ocaml]
-*)
-let  resolve_bs_package ~cwd name = 
-  let sub_path = name // "lib" // "ocaml" in
-  let rec aux origin cwd name = 
-    let destdir =  cwd // node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then destdir
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux origin   cwd' name
-      else 
-        try 
-          let destdir = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // node_modules // sub_path in
-          if Ext_sys.is_directory_no_exn destdir
-          then destdir
-          else
-            Ext_pervasives.failwithf
-              ~loc:__LOC__ " %s not found in %s" name origin 
-
-        with 
-          Not_found -> 
-          Ext_pervasives.failwithf
-            ~loc:__LOC__ " %s not found in %s" name origin 
-  in
-  aux cwd cwd name
 
 
 let find_package_json_dir cwd  = 
   let rec aux cwd  = 
-    if Sys.file_exists (cwd // package_json) then cwd
+    if Sys.file_exists (cwd // Literals.package_json) then cwd
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
@@ -4804,7 +4725,7 @@ let handle_attributes
                                    Ldot (Lident "*predef*", "option") },
                                 [ty])}
                  ->                
-                 (s, [], Ast_comb.to_js_undefined_type loc ty) :: acc
+                 (s, [], Ast_comb.to_undefined_type loc ty) :: acc
                | _ -> assert false                 
              end                 
            | (_, _), Ast_core_type.Empty -> acc                
@@ -4857,7 +4778,8 @@ module Bs_exception : sig
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string         
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                                                        
 val error : error -> 'a 
 
 end = struct
@@ -4890,7 +4812,8 @@ end = struct
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string         
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                            
 exception Error of error
 
 let error err = raise (Error err)
@@ -4906,7 +4829,11 @@ let report_error ppf = function
       str
   | Bs_duplicated_module (a,b)
     ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b    
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
+  | Bs_package_not_found package
+    ->
+    Format.fprintf ppf "Pacage %s not found or %s/lib/ocaml does not exist"
+      package package
 
 let () =
   Location.register_error_of_exn
@@ -9994,6 +9921,65 @@ let protect2 r1 r2 v1 v2 body =
     r1 := old1;
     r2 := old2;
     raise x
+
+end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val is_directory_no_exn : string -> bool
+
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
 
 end
 module Hash_set : sig 
@@ -32033,23 +32019,35 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             ({txt = "bs.node"; loc},
              payload)
           ->
+          let strip s =
+            let len = String.length s in            
+            if s.[len - 1] = '_' then
+              String.sub s 0 (len - 1)
+            else s in                  
           begin match Ast_payload.as_ident payload with
-            | Some {txt = Lident ("__filename" | "__dirname" as name); loc}
+            | Some {txt = Lident
+                        ("__filename"
+                        | "__dirname"
+                        | "module_"
+                        | "require" as name); loc}
               ->
-
-              Exp.constraint_ ~loc
-                (Ast_util.handle_raw loc
-                   (Ast_payload.raw_string_payload loc
-                      name ))                
-                (Ast_literal.type_string ~loc ())
-            | Some {txt = Lident "__module"}
-              ->
-              Exp.constraint_ ~loc
-                (Ast_util.handle_raw loc
-                   (Ast_payload.raw_string_payload loc "module"))                
-                (Typ.constr ~loc
-                   { txt = Ldot (Lident "Bs_node", "node_module") ;
-                     loc} [] )              
+              let exp =
+                Ast_util.handle_raw loc
+                  (Ast_payload.raw_string_payload loc
+                     (strip name) ) in
+              let typ =
+                Ast_comb.to_undefined_type loc @@                 
+                if name = "module_" then
+                  Typ.constr ~loc
+                    { txt = Ldot (Lident "Bs_node", "node_module") ;
+                      loc} []   
+                else if name = "require" then
+                  (Typ.constr ~loc
+                     { txt = Ldot (Lident "Bs_node", "node_require") ;
+                       loc} [] )  
+                else
+                  Ast_literal.type_string ~loc () in                  
+              Exp.constraint_ ~loc exp typ                
             | Some _ | None -> Location.raise_errorf ~loc "Ilegal payload"              
           end             
 
@@ -33246,16 +33244,43 @@ let set_main_entry name =
 
 
 
+let (//) = Filename.concat
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
+*)
+let  resolve_bs_package ~cwd name = 
+  let sub_path = name // "lib" // "ocaml" in
+  let rec aux origin cwd name = 
+    let destdir =  cwd // Literals.node_modules // sub_path in 
+    if Ext_sys.is_directory_no_exn destdir then destdir
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux origin   cwd' name
+      else 
+        try 
+          let destdir = 
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // Literals.node_modules // sub_path in
+          if Ext_sys.is_directory_no_exn destdir
+          then destdir
+          else
+            Bs_exception.error (Bs_package_not_found name)
+        with 
+          Not_found ->
+          Bs_exception.error (Bs_package_not_found name)          
+  in
+  aux cwd cwd name
 
-
-let add_include_path s = 
+let add_package s = 
   let path = 
-    Ext_filename.resolve_bs_package
+    resolve_bs_package
       ~cwd:(Lazy.force Ext_filename.cwd) s   in 
-  if Ext_sys.is_directory_no_exn path then 
-    Clflags.include_dirs := path :: ! Clflags.include_dirs
-  else 
-    Ext_pervasives.failwithf ~loc:__LOC__ "%s is not a directory" s 
+  Clflags.include_dirs := path :: ! Clflags.include_dirs
+
 
 let set_noassert () = 
   Js_config.set_no_any_assert ();
@@ -33277,7 +33302,7 @@ let buckle_script_flags =
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs' and 'goog:lib/gjs'")
   ::
   ("-bs-package-include", 
-   Arg.String add_include_path, 
+   Arg.String add_package, 
    " set package names, for example bs-platform "  )
   :: 
   ("-bs-no-builtin-ppx-ml", 

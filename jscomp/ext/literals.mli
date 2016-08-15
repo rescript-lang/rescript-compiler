@@ -27,44 +27,51 @@
 
 
 
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
 
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
+val param : string
+val partial_arg : string
+val prim : string
 
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
 
-let create = "create" (* {!Caml_exceptions.create}*)
+val create : string 
 
-let app = "_"
-let app_array = "app" (* arguments are an array*)
+val app : string
+val app_array : string
 
-let runtime = "runtime" (* runtime directory *)
+val runtime : string
+val stdlib : string
+val imul : string
 
-let stdlib = "stdlib"
+val setter_suffix : string
+val setter_suffix_len : int
 
-let imul = "imul" (* signed int32 mul *)
 
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
 
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
 
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
 
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string  

@@ -10,9 +10,11 @@ include ../syntax/syntax.mllib
 ../ext/ext_filename
 ../ext/ext_sys
 ../ext/ext_ref
+../ext/literals
+
 ../common/bs_loc
 ../common/lam_methname
 ../common/js_config
-../common/literals
+
 
 ../bs_ppx_main

@@ -1,7 +1,7 @@
 'use strict';
 
-var Fs    = require("fs");
 var Mt    = require("./mt");
+var Fs    = require("fs");
 var Block = require("../../lib/js/block");
 var Path  = require("path");
 
@@ -28,9 +28,13 @@ function eq(loc, param) {
   return /* () */0;
 }
 
-var current_file = (__filename);
+var match = (__filename);
 
-var current_dir_name = (__dirname);
+var current_file = match !== undefined ? match : "<Not Node JS>";
+
+var match$1 = (__dirname);
+
+var current_dir_name = match$1 !== undefined ? match$1 : "<Not Node Js>";
 
 Fs.readFileSync(current_file, "utf8");
 
@@ -38,21 +42,22 @@ Fs.readdirSync(current_dir_name);
 
 var pathobj = Path.parse(current_dir_name);
 
-var module_ = (module);
+var match$2 = (module);
 
-console.log(/* tuple */[
-      module_.id,
-      module_.paths
-    ]);
-
-eq('File "fs_test.ml", line 38, characters 5-12', /* tuple */[
-      pathobj.name,
-      "test"
-    ]);
+if (match$2 !== undefined) {
+  console.log(/* tuple */[
+        match$2.id,
+        match$2.paths
+      ]);
+  eq('File "fs_test.ml", line 45, characters 7-14', /* tuple */[
+        pathobj.name,
+        "test"
+      ]);
+}
 
 Mt.from_pair_suites("fs_test.ml", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
-/* current_file Not a pure module */
+/* match Not a pure module */
