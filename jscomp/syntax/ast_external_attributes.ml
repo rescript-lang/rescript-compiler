@@ -446,7 +446,7 @@ let handle_attributes
                                    Ldot (Lident "*predef*", "option") },
                                 [ty])}
                  ->                
-                 (s, [], Ast_comb.to_js_undefined_type loc ty) :: acc
+                 (s, [], Ast_comb.to_undefined_type loc ty) :: acc
                | _ -> assert false                 
              end                 
            | (_, _), Ast_core_type.Empty -> acc                

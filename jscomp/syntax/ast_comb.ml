@@ -77,7 +77,7 @@ let to_js_type loc  x  =
 let to_js_re_type loc  =
   Typ.constr ~loc { txt = re_id ; loc} []
     
-let to_js_undefined_type loc x =
+let to_undefined_type loc x =
   Typ.constr ~loc
     {txt = Ast_literal.Lid.js_undefined ; loc}
     [x]  

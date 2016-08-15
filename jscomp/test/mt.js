@@ -1,18 +1,27 @@
 'use strict';
 
+var Assert                  = require("assert");
+var Path                    = require("path");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Curry                   = require("../../lib/js/curry");
-var Assert                  = require("assert");
+var Process                 = require("process");
+var $$Array                 = require("../../lib/js/array");
 var List                    = require("../../lib/js/list");
 
 function from_suites(name, suite) {
-  describe(name, function () {
-        return List.iter(function (param) {
-                    it(param[0], param[1]);
-                    return /* () */0;
-                  }, suite);
-      });
-  return /* () */0;
+  var match = $$Array.to_list(Process.argv);
+  if (match && Path.basename(match[0]) === "mocha") {
+    describe(name, function () {
+          return List.iter(function (param) {
+                      it(param[0], param[1]);
+                      return /* () */0;
+                    }, suite);
+        });
+    return /* () */0;
+  }
+  else {
+    return /* () */0;
+  }
 }
 
 function close_enough(x, y) {
@@ -20,43 +29,49 @@ function close_enough(x, y) {
 }
 
 function from_pair_suites(name, suites) {
-  describe(name, function () {
-        return List.iter(function (param) {
-                    var code = param[1];
-                    it(param[0], function () {
-                          var match = Curry._1(code, /* () */0);
-                          switch (match.tag | 0) {
-                            case 0 : 
-                                Assert.deepEqual(match[0], match[1]);
-                                return /* () */0;
-                            case 1 : 
-                                Assert.notDeepEqual(match[0], match[1]);
-                                return /* () */0;
-                            case 2 : 
-                                if (close_enough(match[0], match[1])) {
-                                  return 0;
-                                }
-                                else {
-                                  throw [
-                                        Caml_builtin_exceptions.assert_failure,
-                                        [
-                                          "mt.ml",
-                                          56,
-                                          16
-                                        ]
-                                      ];
-                                }
-                                break;
-                            case 3 : 
-                                Assert.throws(match[0]);
-                                return /* () */0;
-                            
-                          }
-                        });
-                    return /* () */0;
-                  }, suites);
-      });
-  return /* () */0;
+  var match = $$Array.to_list(Process.argv);
+  if (match && Path.basename(match[0]) === "mocha") {
+    describe(name, function () {
+          return List.iter(function (param) {
+                      var code = param[1];
+                      it(param[0], function () {
+                            var match = Curry._1(code, /* () */0);
+                            switch (match.tag | 0) {
+                              case 0 : 
+                                  Assert.deepEqual(match[0], match[1]);
+                                  return /* () */0;
+                              case 1 : 
+                                  Assert.notDeepEqual(match[0], match[1]);
+                                  return /* () */0;
+                              case 2 : 
+                                  if (close_enough(match[0], match[1])) {
+                                    return 0;
+                                  }
+                                  else {
+                                    throw [
+                                          Caml_builtin_exceptions.assert_failure,
+                                          [
+                                            "mt.ml",
+                                            64,
+                                            20
+                                          ]
+                                        ];
+                                  }
+                                  break;
+                              case 3 : 
+                                  Assert.throws(match[0]);
+                                  return /* () */0;
+                              
+                            }
+                          });
+                      return /* () */0;
+                    }, suites);
+        });
+    return /* () */0;
+  }
+  else {
+    return /* () */0;
+  }
 }
 
 exports.from_suites      = from_suites;

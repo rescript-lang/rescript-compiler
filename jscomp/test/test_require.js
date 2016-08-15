@@ -1,17 +1,16 @@
-// GENERATED CODE BY BUCKLESCRIPT VERSION 0.9.3 , PLEASE EDIT WITH CARE
 'use strict';
 
 
-var u = (require);
+var match = (require);
 
-console.log(u.resolve("./test_require.js"));
-
-if ((require).main === (module)) {
-  console.log("is main");
+if (match !== undefined) {
+  console.log(match.resolve("./test_require.js"));
+  if (match.main === (module) && match.main !== undefined) {
+    console.log("is main");
+  }
+  else {
+    console.log("not main");
+  }
 }
-else {
-  console.log("not main");
-}
 
-exports.u = u;
-/* u Not a pure module */
+/* match Not a pure module */

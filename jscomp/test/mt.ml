@@ -27,9 +27,14 @@ let assert_equal = eq
 let assert_notequal = neq
 (* assert -- raises an AssertionError which mocha handls better
 *)
-let from_suites name (suite :  (string * ('a -> unit)) list) = 
-  describe name (fun _ -> 
-    List.iter (fun (name, code) -> it name code) suite)
+let from_suites name (suite :  (string * ('a -> unit)) list) =
+  match Array.to_list Bs_node.Process.process##argv with
+  | cmd :: _ ->
+    if Bs_node.Path.basename cmd  = "mocha" then  
+      describe name (fun _ -> 
+          List.iter (fun (name, code) -> it name code) suite)
+    else ()
+  | _ -> ()         
 
 type eq = 
   | Eq :  'a *'a  ->  eq
@@ -43,21 +48,27 @@ type  pair_suites = (string * (unit ->  eq)) list
 let close_enough x y = 
   abs_float (x -. y) < (* epsilon_float *) 0.0000001
 
-let from_pair_suites name (suites :  pair_suites) = 
-  describe name (fun _ -> 
-      suites |> 
-      List.iter (fun (name, code) -> 
-          it name (fun _ -> 
-              match code () with 
-              | Eq(a,b) -> assert_equal a b 
-              | Neq(a,b) -> assert_notequal a b 
-              | Approx(a,b) 
-                -> 
-                assert (close_enough a b)
-              | ThrowAny fn -> throws fn 
-            )
+let from_pair_suites name (suites :  pair_suites) =
+  match Array.to_list Bs_node.Process.process##argv with
+  | cmd :: _ ->
+    if Bs_node.Path.basename cmd  = "mocha" then
+      describe name (fun _ -> 
+          suites |> 
+          List.iter (fun (name, code) -> 
+              it name (fun _ -> 
+                  match code () with 
+                  | Eq(a,b) -> assert_equal a b 
+                  | Neq(a,b) -> assert_notequal a b 
+                  | Approx(a,b) 
+                    -> 
+                    assert (close_enough a b)
+                  | ThrowAny fn -> throws fn 
+                )
+            ) 
         ) 
-    ) 
+    else ()
+  | _ -> ()         
+  
 (*
 Note that [require] is a file local value, 
 we need type [require]

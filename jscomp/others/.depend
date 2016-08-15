@@ -1,9 +1,13 @@
-bs_node.cmi : bs_node_path.cmj bs_node_fs.cmj
+bs_node.cmi : bs_node_process.cmj bs_node_path.cmj bs_node_fs.cmj
 bs_node_fs.cmj :
 bs_node_fs.cmx :
 bs_node_path.cmj :
 bs_node_path.cmx :
+bs_node_process.cmj :
+bs_node_process.cmx :
 bs_node_fs.cmo :
 bs_node_fs.cmj :
 bs_node_path.cmo :
 bs_node_path.cmj :
+bs_node_process.cmo :
+bs_node_process.cmj :

@@ -22,33 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for node bindings *)
-
-module Path = Bs_node_path
-
-module Fs = Bs_node_fs
-
-module Process = Bs_node_process
+type t =
+  < argv : string array;
+    arch : string ;
+    abort : unit -> unit [@bs.meth];
+    chdir : string -> unit [@bs.meth];
+    (** @raise *)
+    cwd : unit -> string [@bs.meth];
+    disconnect : unit -> unit [@bs.meth];    
+  >   Js.t
   
-type node_exports 
-type node_module = <
-       id : string ;
-       exports : node_exports ;
-       parrent : node_module Js.null_undefined;
-       (* in REPL V4 it is [undefined]
-          in CLI it can be [null]
-       *)              
-       
-       filename : string ;       
-
-       loaded : Js.boolean;
-       children : node_module array ;
-       paths : string array;       
-> Js.t
-
-type node_require = <
-  main : node_module Js.undefined;
-
-  resolve : string -> string [@bs]
-  (* @raise exception   *)
-> Js.t 
+external process : t = "" [@@bs.module]

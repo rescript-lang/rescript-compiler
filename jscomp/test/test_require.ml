@@ -1,13 +1,11 @@
 
 
-let u = [%bs.node __require]
-
 let () =
-  Js.log @@ u#@resolve "./test_require.js"
-let () = 
-  if [%bs.node __require]##main ==
-     Js.Undefined.return
-       [%bs.node __module] then
-    Js.log "is main"
-  else
-    Js.log "not main"
+  match Js.Undefined.to_opt  [%bs.node require] with
+  | None ->   ()
+  | Some u ->               
+    Js.log @@ u#@resolve "./test_require.js";
+    if u##main == [%bs.node module_] && u##main != Js.Undefined.empty then
+      Js.log "is main"
+    else
+      Js.log "not main"

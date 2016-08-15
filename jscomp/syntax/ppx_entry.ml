@@ -294,31 +294,35 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             ({txt = "bs.node"; loc},
              payload)
           ->
+          let strip s =
+            let len = String.length s in            
+            if s.[len - 1] = '_' then
+              String.sub s 0 (len - 1)
+            else s in                  
           begin match Ast_payload.as_ident payload with
-            | Some {txt = Lident ("__filename" | "__dirname" as name); loc}
+            | Some {txt = Lident
+                        ("__filename"
+                        | "__dirname"
+                        | "module_"
+                        | "require" as name); loc}
               ->
-
-              Exp.constraint_ ~loc
-                (Ast_util.handle_raw loc
-                   (Ast_payload.raw_string_payload loc
-                      name ))                
-                (Ast_literal.type_string ~loc ())
-            | Some {txt = Lident "__module"}
-              ->
-              Exp.constraint_ ~loc
-                (Ast_util.handle_raw loc
-                   (Ast_payload.raw_string_payload loc "module"))                
-                (Typ.constr ~loc
-                   { txt = Ldot (Lident "Bs_node", "node_module") ;
-                     loc} [] )
-            | Some {txt = Lident "__require"}
-              ->
-              Exp.constraint_ ~loc
-                (Ast_util.handle_raw loc
-                   (Ast_payload.raw_string_payload loc "require"))                
-                (Typ.constr ~loc
-                   { txt = Ldot (Lident "Bs_node", "node_require") ;
-                     loc} [] )
+              let exp =
+                Ast_util.handle_raw loc
+                  (Ast_payload.raw_string_payload loc
+                     (strip name) ) in
+              let typ =
+                Ast_comb.to_undefined_type loc @@                 
+                if name = "module_" then
+                  Typ.constr ~loc
+                    { txt = Ldot (Lident "Bs_node", "node_module") ;
+                      loc} []   
+                else if name = "require" then
+                  (Typ.constr ~loc
+                     { txt = Ldot (Lident "Bs_node", "node_require") ;
+                       loc} [] )  
+                else
+                  Ast_literal.type_string ~loc () in                  
+              Exp.constraint_ ~loc exp typ                
             | Some _ | None -> Location.raise_errorf ~loc "Ilegal payload"              
           end             
 
