@@ -28,8 +28,8 @@ let assert_notequal = neq
 
 let is_mocha () =
   match Array.to_list Bs_node.Process.process##argv with
-  | cmd :: _ ->
-    let exec = Bs_node.Path.basename cmd in     
+  | _node :: mocha ::  _ ->
+    let exec = Bs_node.Path.basename mocha in     
     exec = "mocha" || exec = "_mocha"
   | _ -> false
 (* assert -- raises an AssertionError which mocha handls better

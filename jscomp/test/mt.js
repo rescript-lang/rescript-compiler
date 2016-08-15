@@ -1,22 +1,28 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Process                 = require("process");
 var Assert                  = require("assert");
 var Curry                   = require("../../lib/js/curry");
-var Path                    = require("path");
 var $$Array                 = require("../../lib/js/array");
+var Path                    = require("path");
 var List                    = require("../../lib/js/list");
+var Process                 = require("process");
 
 function is_mocha() {
   var match = $$Array.to_list(Process.argv);
   if (match) {
-    var exec = Path.basename(match[0]);
-    if (exec === "mocha") {
-      return /* true */1;
+    var match$1 = match[1];
+    if (match$1) {
+      var exec = Path.basename(match$1[0]);
+      if (exec === "mocha") {
+        return /* true */1;
+      }
+      else {
+        return +(exec === "_mocha");
+      }
     }
     else {
-      return +(exec === "_mocha");
+      return /* false */0;
     }
   }
   else {
@@ -92,4 +98,4 @@ function from_pair_suites(name, suites) {
 
 exports.from_suites      = from_suites;
 exports.from_pair_suites = from_pair_suites;
-/* process Not a pure module */
+/* assert Not a pure module */

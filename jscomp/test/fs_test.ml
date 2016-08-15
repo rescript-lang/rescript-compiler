@@ -48,4 +48,6 @@ let () =
 
   
 let () =
+  (* Js.log ("ARGV", Bs_node.Process.process##argv);   *)
   Mt.from_pair_suites __FILE__ !suites
+
