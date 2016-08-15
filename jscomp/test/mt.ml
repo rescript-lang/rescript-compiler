@@ -31,7 +31,7 @@ let is_mocha () =
   | cmd :: _ ->
     let exec = Bs_node.Path.basename cmd in     
     exec = "mocha" || exec = "_mocha"
-  
+  | _ -> false
 (* assert -- raises an AssertionError which mocha handls better
 *)
 let from_suites name (suite :  (string * ('a -> unit)) list) =

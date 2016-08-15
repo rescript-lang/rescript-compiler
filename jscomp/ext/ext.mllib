@@ -21,3 +21,4 @@ string_set
 string_map
 hash_set
 ident_set
+literals

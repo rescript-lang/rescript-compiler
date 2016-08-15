@@ -15,6 +15,7 @@ infer_type_test.cmi : ../runtime/js.cmj
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 js_dyn.cmi :
+literals.cmi :
 map_test.cmi :
 mt.cmi :
 mt_global.cmi : mt.cmi
@@ -184,12 +185,12 @@ ext_array.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmj : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
-ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmj \
-    ext_pervasives.cmi
-ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
-    ../stdlib/lazy.cmx ../stdlib/filename.cmx ext_sys.cmx ext_string.cmx \
-    ext_pervasives.cmx
+ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi literals.cmi \
+    ../stdlib/list.cmi ../stdlib/lazy.cmi ../stdlib/filename.cmi \
+    ext_string.cmj ext_pervasives.cmi
+ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx literals.cmx \
+    ../stdlib/list.cmx ../stdlib/lazy.cmx ../stdlib/filename.cmx \
+    ext_string.cmx ext_pervasives.cmx
 ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_log.cmj : ../stdlib/format.cmi
@@ -362,6 +363,8 @@ list_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/array.cmx
+literals.cmj : ../stdlib/string.cmi literals.cmi
+literals.cmx : ../stdlib/string.cmx literals.cmi
 local_class_type.cmj : ../runtime/js.cmj
 local_class_type.cmx : ../runtime/js.cmx
 local_exception_test.cmj :
@@ -944,12 +947,12 @@ ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
-ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmo \
-    ext_pervasives.cmi
-ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/list.cmj \
-    ../stdlib/lazy.cmj ../stdlib/filename.cmj ext_sys.cmj ext_string.cmj \
-    ext_pervasives.cmj
+ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi literals.cmi \
+    ../stdlib/list.cmi ../stdlib/lazy.cmi ../stdlib/filename.cmi \
+    ext_string.cmo ext_pervasives.cmi
+ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj literals.cmj \
+    ../stdlib/list.cmj ../stdlib/lazy.cmj ../stdlib/filename.cmj \
+    ext_string.cmj ext_pervasives.cmj
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_log.cmo : ../stdlib/format.cmi
@@ -1122,6 +1125,8 @@ list_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj
+literals.cmo : ../stdlib/string.cmi literals.cmi
+literals.cmj : ../stdlib/string.cmj literals.cmi
 local_class_type.cmo : ../runtime/js.cmo
 local_class_type.cmj : ../runtime/js.cmj
 local_exception_test.cmo :

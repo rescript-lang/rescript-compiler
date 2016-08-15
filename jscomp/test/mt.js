@@ -20,14 +20,7 @@ function is_mocha() {
     }
   }
   else {
-    throw [
-          Caml_builtin_exceptions.match_failure,
-          [
-            "mt.ml",
-            30,
-            2
-          ]
-        ];
+    return /* false */0;
   }
 }
 
