@@ -1,16 +1,39 @@
 'use strict';
 
-var Assert                  = require("assert");
-var Path                    = require("path");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Curry                   = require("../../lib/js/curry");
 var Process                 = require("process");
+var Assert                  = require("assert");
+var Curry                   = require("../../lib/js/curry");
+var Path                    = require("path");
 var $$Array                 = require("../../lib/js/array");
 var List                    = require("../../lib/js/list");
 
+function is_mocha() {
+  var match = $$Array.to_list(Process.argv);
+  if (match) {
+    var exec = Path.basename(match[0]);
+    if (exec === "mocha") {
+      return /* true */1;
+    }
+    else {
+      return +(exec === "_mocha");
+    }
+  }
+  else {
+    throw [
+          Caml_builtin_exceptions.match_failure,
+          [
+            "mt.ml",
+            30,
+            2
+          ]
+        ];
+  }
+}
+
 function from_suites(name, suite) {
   var match = $$Array.to_list(Process.argv);
-  if (match && Path.basename(match[0]) === "mocha") {
+  if (match && is_mocha(/* () */0)) {
     describe(name, function () {
           return List.iter(function (param) {
                       it(param[0], param[1]);
@@ -30,7 +53,7 @@ function close_enough(x, y) {
 
 function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
-  if (match && Path.basename(match[0]) === "mocha") {
+  if (match && is_mocha(/* () */0)) {
     describe(name, function () {
           return List.iter(function (param) {
                       var code = param[1];
@@ -52,7 +75,7 @@ function from_pair_suites(name, suites) {
                                           Caml_builtin_exceptions.assert_failure,
                                           [
                                             "mt.ml",
-                                            64,
+                                            71,
                                             20
                                           ]
                                         ];
@@ -76,4 +99,4 @@ function from_pair_suites(name, suites) {
 
 exports.from_suites      = from_suites;
 exports.from_pair_suites = from_pair_suites;
-/* assert Not a pure module */
+/* process Not a pure module */

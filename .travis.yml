@@ -4,5 +4,6 @@ env:
 node_js:
   - "4.0"
 
-script: npm run coveralls
+# Not a very reliable service..  
+# script: npm run coveralls
 

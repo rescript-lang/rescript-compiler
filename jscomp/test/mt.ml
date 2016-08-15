@@ -25,15 +25,22 @@ external throws : (unit -> unit) -> unit = "throws" [@@bs.val] [@@bs.module "ass
 
 let assert_equal = eq 
 let assert_notequal = neq
+
+let is_mocha () =
+  match Array.to_list Bs_node.Process.process##argv with
+  | cmd :: _ ->
+    let exec = Bs_node.Path.basename cmd in     
+    exec = "mocha" || exec = "_mocha"
+  
 (* assert -- raises an AssertionError which mocha handls better
 *)
 let from_suites name (suite :  (string * ('a -> unit)) list) =
   match Array.to_list Bs_node.Process.process##argv with
   | cmd :: _ ->
-    if Bs_node.Path.basename cmd  = "mocha" then  
+    if is_mocha () then
       describe name (fun _ -> 
           List.iter (fun (name, code) -> it name code) suite)
-    else ()
+
   | _ -> ()         
 
 type eq = 
@@ -51,7 +58,7 @@ let close_enough x y =
 let from_pair_suites name (suites :  pair_suites) =
   match Array.to_list Bs_node.Process.process##argv with
   | cmd :: _ ->
-    if Bs_node.Path.basename cmd  = "mocha" then
+    if is_mocha () then
       describe name (fun _ -> 
           suites |> 
           List.iter (fun (name, code) -> 
@@ -66,7 +73,6 @@ let from_pair_suites name (suites :  pair_suites) =
                 )
             ) 
         ) 
-    else ()
   | _ -> ()         
   
 (*
