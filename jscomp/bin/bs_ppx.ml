@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/15-11:16 *)
+(** Bundled by ocamlpack 08/15-11:28 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -881,7 +881,9 @@ let bs_type = "bs.type"
 let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
 let package_json = "package.json"
-  
+
+
+
 
 end
 module Ast_attributes : sig 
@@ -6422,9 +6424,6 @@ let  () =
     prerr_endline (Printexc.to_string exn);
     exit 2
 
-(* local variables: *)
-(* compile-command: "../_build/ocamlpack bs_ppx.mllib > ../bin/bs_ppx.ml && ocamlopt.opt -w -40 -I +compiler-libs ocamlcommon.cmxa -I ../bin  ../bin/bs_ppx.mli ../bin/bs_ppx.ml -o ../bin/bs_ppx.native" *)
-(* end: *)
 
 end
 module Ext_sys : sig 

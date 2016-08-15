@@ -1,6 +1,7 @@
 ../ext/literals
 ../ext/ext_pervasives
 ../ext/ext_bytes
+../ext/ext_array
 ../ext/ext_string
 ../ext/string_map
 ../ext/string_set
@@ -15,4 +16,4 @@
 include ../depends/depends.mllib
 
 
-../ocamlpack_main
+../bspack_main

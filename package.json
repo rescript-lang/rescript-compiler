@@ -33,6 +33,7 @@
   "bin": {
     "bsc": "./bin/bsc",
     "bsppx": "./bin/bsppx",
+    "bspack": "./bin/bspack",
     "ocaml": "./bin/ocaml",
     "ocamlc": "./bin/ocamlc",
     "ocamlc.opt": "./bin/ocamlc.opt",

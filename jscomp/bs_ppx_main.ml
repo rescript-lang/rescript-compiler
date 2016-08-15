@@ -42,6 +42,3 @@ let  () =
     prerr_endline (Printexc.to_string exn);
     exit 2
 
-(* local variables: *)
-(* compile-command: "../_build/ocamlpack bs_ppx.mllib > ../bin/bs_ppx.ml && ocamlopt.opt -w -40 -I +compiler-libs ocamlcommon.cmxa -I ../bin  ../bin/bs_ppx.mli ../bin/bs_ppx.ml -o ../bin/bs_ppx.native" *)
-(* end: *)

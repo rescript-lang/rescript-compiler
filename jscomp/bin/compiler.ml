@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/15-11:16 *)
+(** Bundled by ocamlpack 08/15-11:28 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -881,7 +881,9 @@ let bs_type = "bs.type"
 let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
 let package_json = "package.json"
-  
+
+
+
 
 end
 module Ast_attributes : sig 

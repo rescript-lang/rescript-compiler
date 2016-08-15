@@ -4,5 +4,5 @@ syntax/syntax.cmxa
 core.cmxa
 depends/depends.cmxa
 bs_ppx_main.cmx
-ocamlpack_main.cmx
+bspack_main.cmx
 jsoo_main.cmo

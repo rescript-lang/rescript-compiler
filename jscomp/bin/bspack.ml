@@ -1,4 +1,4 @@
-(** Bundled by ocamlpack 08/11-09:51 *)
+(** Bundled by bspack 08/15-11:30 *)
 module Bs_exception : sig 
 #1 "bs_exception.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -28,7 +28,8 @@ module Bs_exception : sig
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string         
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                                                        
 val error : error -> 'a 
 
 end = struct
@@ -61,7 +62,8 @@ end = struct
 type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string         
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                            
 exception Error of error
 
 let error err = raise (Error err)
@@ -77,7 +79,11 @@ let report_error ppf = function
       str
   | Bs_duplicated_module (a,b)
     ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b    
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
+  | Bs_package_not_found package
+    ->
+    Format.fprintf ppf "Pacage %s not found or %s/lib/ocaml does not exist"
+      package package
 
 let () =
   Location.register_error_of_exn
@@ -493,6 +499,155 @@ and add_class_field bv pcf =
 
 and add_class_declaration bv decl =
   add_class_expr bv decl.pci_expr
+
+end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+
+val reverse_in_place : 'a array -> unit
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_f : ('a -> 'b option) -> 'a array -> 'b list 
+
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let reverse_in_place a =
+  let aux a i len =
+    if len=0 then ()
+    else
+      for k = 0 to (len-1)/2 do
+        let t = Array.unsafe_get a (i+k) in
+        Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+        Array.unsafe_set a (i+len-1-k) t;
+      done
+  in
+  aux a 0 (Array.length a)
+
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map (f : _ -> _ option) a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+let to_list_f f a =
+  let rec tolist i res =
+    if i < 0 then res else
+      let v = Array.unsafe_get a i in
+      tolist (i - 1)
+        (match f v with
+         | Some v -> v :: res
+         | None -> res) in
+  tolist (Array.length a - 1) []
 
 end
 module Ext_pervasives : sig 
@@ -1108,8 +1263,8 @@ let starts_with_and_number s ~offset beg =
         -1 
 
 end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
+module Literals : sig 
+#1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1134,10 +1289,62 @@ module Ext_sys : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val is_directory_no_exn : string -> bool
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string  
 
 end = struct
-#1 "ext_sys.ml"
+#1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1163,8 +1370,60 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+
+
+
 
 end
 module Ext_filename : sig 
@@ -1226,7 +1485,7 @@ val node_relative_path : t -> [`File of string] -> string
 val chop_extension : ?loc:string -> string -> string
 
 
-val resolve_bs_package : cwd:string -> string -> string
+
 
 
 
@@ -1379,9 +1638,6 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
 
 
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
 
 
 
@@ -1396,7 +1652,7 @@ let package_json = "package.json"
  *)
 let node_relative_path (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
-  let v = Ext_string.find  file2 ~sub:node_modules in 
+  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
   if v >= 0 then 
     let rec skip  i =       
@@ -1417,7 +1673,7 @@ let node_relative_path (file1 : t)
         *)
     in 
     Ext_string.tail_from file2
-      (skip (v + node_modules_length)) 
+      (skip (v + Literals.node_modules_length)) 
   else 
     relative_path 
        (absolute_path dep_file)
@@ -1427,43 +1683,11 @@ let node_relative_path (file1 : t)
 
 
 
-(** [resolve cwd module_name], 
-    [cwd] is current working directory, absolute path
-    Trying to find paths to load [module_name]
-    it is sepcialized for option [-bs-package-include] which requires
-    [npm_package_name/lib/ocaml]
-*)
-let  resolve_bs_package ~cwd name = 
-  let sub_path = name // "lib" // "ocaml" in
-  let rec aux origin cwd name = 
-    let destdir =  cwd // node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then destdir
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux origin   cwd' name
-      else 
-        try 
-          let destdir = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // node_modules // sub_path in
-          if Ext_sys.is_directory_no_exn destdir
-          then destdir
-          else
-            Ext_pervasives.failwithf
-              ~loc:__LOC__ " %s not found in %s" name origin 
-
-        with 
-          Not_found -> 
-          Ext_pervasives.failwithf
-            ~loc:__LOC__ " %s not found in %s" name origin 
-  in
-  aux cwd cwd name
 
 
 let find_package_json_dir cwd  = 
   let rec aux cwd  = 
-    if Sys.file_exists (cwd // package_json) then cwd
+    if Sys.file_exists (cwd // Literals.package_json) then cwd
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
@@ -2166,7 +2390,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.9.1"
+let version = "0.9.3"
 
 
 let runtime_set = 
@@ -2187,6 +2411,7 @@ let runtime_set =
     array ;
     format ;
     string ;
+    bytes;
     float ;
     hash ;
     oo ;
@@ -2345,7 +2570,7 @@ type module_name = private string
   
 module String_set = Depend.StringSet
 
-val read_parse_and_extract : 'a kind -> 'a -> String_set.t
+
 
 type ('a,'b) ast_info =
   | Ml of
@@ -2394,6 +2619,29 @@ val build :
   (Format.formatter -> string -> 'b) ->
   (Format.formatter -> string -> 'c) ->
   ('b, 'c) t String_map.t
+
+val handle_main_file :
+  Format.formatter ->
+  (Format.formatter -> string -> Parsetree.structure lazy_t) ->
+  (Format.formatter -> string -> Parsetree.signature lazy_t) ->
+  string ->
+  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t *
+  string Queue.t  
+
+
+val build_queue :
+  Format.formatter ->
+  String_map.key Queue.t ->
+  (Parsetree.structure, Parsetree.signature) t String_map.t ->
+  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
+  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
+
+val build_lazy_queue :
+  Format.formatter ->
+  String_map.key Queue.t ->
+  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
+  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
+  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
 
 end = struct
 #1 "ast_extract.ml"
@@ -2598,6 +2846,101 @@ let build ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
+
+let handle_main_file ppf parse_implementation parse_interface main_file =
+  let dirname = Filename.dirname main_file in
+  let files =
+    Sys.readdir dirname
+    |> Ext_array.to_list_f
+      (fun source_file ->
+         if Ext_string.ends_with source_file ".ml" ||
+            Ext_string.ends_with source_file ".mli" then
+           Some (Filename.concat dirname source_file)
+         else None
+      ) in
+  let ast_table =
+    build ppf files
+      parse_implementation
+      parse_interface in 
+
+  let visited = Hashtbl.create 31 in
+  let result = Queue.create () in  
+  let next module_name =
+    match String_map.find module_name ast_table with
+    | exception _ -> String_set.empty
+    | {ast_info = Ml (_, lazy impl, _)} ->
+      read_parse_and_extract Ml_kind impl
+    | {ast_info = Mli (_, lazy intf,_)} ->
+      read_parse_and_extract Mli_kind intf
+    | {ast_info = Ml_mli(_,lazy impl, _, _, lazy intf, _)}
+      -> 
+      String_set.union
+        (read_parse_and_extract Ml_kind impl)
+        (read_parse_and_extract Mli_kind intf)
+  in
+  let rec visit visiting path current =
+    if String_set.mem current visiting  then
+      Bs_exception.error (Bs_cyclic_depends (current::path))
+    else
+    if not (Hashtbl.mem visited current)
+    && String_map.mem current ast_table then
+      begin
+        String_set.iter
+          (visit
+             (String_set.add current visiting)
+             (current::path))
+          (next current) ;
+        Queue.push current result;
+        Hashtbl.add visited current ();
+      end in
+  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+  ast_table, result   
+
+
+let build_queue ppf queue
+    (ast_table : _ t String_map.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue |> Queue.iter (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file 
+          opref ast 
+      | {ast_info = Mli (source_file,ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file 
+          opref ast 
+      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
+
+
+let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue |> Queue.iter (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,lazy ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file 
+          opref ast 
+      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file 
+              opref ast 
+      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
+
 end
 module Ext_io : sig 
 #1 "ext_io.mli"
@@ -2676,8 +3019,8 @@ let rev_lines_of_file file =
   end
 
 end
-module Ocamlpack_main : sig 
-#1 "ocamlpack_main.mli"
+module Bspack_main : sig 
+#1 "bspack_main.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2717,7 +3060,7 @@ val read_lines : string -> string  -> string list
   
 
 end = struct
-#1 "ocamlpack_main.ml"
+#1 "bspack_main.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2830,10 +3173,9 @@ let _ =
   begin 
     let local_time = Unix.(localtime (gettimeofday ())) in 
     output_string stdout 
-      (Printf.sprintf {|(** Bundled by ocamlpack %02d/%02d-%02d:%02d *)|}
+      (Printf.sprintf {|(** Bundled by bspack %02d/%02d-%02d:%02d *)|}
          (local_time.tm_mon + 1) local_time.tm_mday 
-         local_time.tm_hour local_time.tm_min 
-                         );
+         local_time.tm_hour local_time.tm_min);
     output_string stdout "\n";
     tasks |> Queue.iter (fun module_ ->
       let t = (match (String_map.find  module_ ast_table).ast_info with
@@ -2889,5 +3231,64 @@ let _ =
 (* local variables: *)
 (* compile-command: "ocamlbuild -no-hygiene -cflags -annot -use-ocamlfind -pkg compiler-libs.common ocaml_pack_main.byte " *)
 (* end: *)
+
+end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val is_directory_no_exn : string -> bool
+
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
 
 end
