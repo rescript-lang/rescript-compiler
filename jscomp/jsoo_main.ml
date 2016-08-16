@@ -42,7 +42,7 @@ let () =
   Js_config.set_browser ();
   Clflags.unsafe_string := false
 
-let implementation no_export ppf  str  =
+let implementation impl no_export ppf  str  =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
@@ -52,7 +52,7 @@ let implementation no_export ppf  str  =
   let finalenv = ref Env.empty in
   let types_signature = ref [] in
   try 
-  Parse.implementation (Lexing.from_string str )
+  impl (Lexing.from_string str )
   |> !Ppx_entry.rewrite_implementation
   |> (fun x -> 
       let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env x in
@@ -101,8 +101,8 @@ let string_of_fmt (f : Format.formatter -> 'a -> unit) v =
     Format.pp_print_flush fmt () in
   Buffer.contents buf 
 
-let compile  : string -> string = string_of_fmt (implementation false)
-let shake_compile : string -> string = string_of_fmt (implementation true)
+let compile  impl : string -> string = string_of_fmt (implementation  impl false)
+let shake_compile impl : string -> string = string_of_fmt (implementation impl true)
 
 
 (** *)
@@ -142,22 +142,22 @@ let () =
 
 
 
-let _ =
-  export "ocaml"
+let make_compiler name impl =
+  export name
     (Js.Unsafe.(obj
                   [|"compile",
                     inject @@ 
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         Js.string (compile (Js.to_string code)));
+                         Js.string (compile impl (Js.to_string code)));
                     "shake_compile",
                     inject @@ 
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         Js.string (shake_compile (Js.to_string code)));
-                    "version", Js.Unsafe.inject (Js.string (Js_config.version))
+                         Js.string (shake_compile impl (Js.to_string code)));
+                    "version", Js.Unsafe.inject (Js.string (Js_config.version));
                   |]))
-
+let () = make_compiler "ocaml" Parse.implementation
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -use-ocamlfind -pkg compiler-libs -no-hygiene driver.cmo" *)
