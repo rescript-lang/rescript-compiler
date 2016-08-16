@@ -31,6 +31,10 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 
 release:snapshot 
 	$(MAKE) releasebuild
+	ocamlbuild -lflags -no-check-prims -use-ocamlfind -I bin -no-hygiene -pkgs compiler-libs.common -no-links bin/reason.byte
+	js_of_ocaml -I +compiler-libs   --toplevel +weak.js +toplevel.js  ./polyfill.js _build/bin/reason.byte -I ./runtime/ --file js.cmi:/cmis/js.cmi --file js_unsafe.cmi:/cmis/js_unsafe.cmi --file js_re.cmi:/cmis/js_re.cmi   -o bin/compiler.js
+
+
 # Note: this target also built bin/bsc which is used in release mode
 
 # TODO: should be done after we do the build
