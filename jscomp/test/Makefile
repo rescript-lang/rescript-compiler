@@ -60,7 +60,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	bs_rest_test infer_type_test fs_test module_as_function\
 	test_case_set test_mutliple string_bound_get_test inline_string_test\
 	ppx_this_obj_test unsafe_obj_external gpr_627_test jsoo_485_test jsoo_400_test	\
-	test_require more_uncurry earger_curry_test poly_type
+	test_require more_uncurry earger_curry_test poly_type bench
 
 
 

@@ -75,6 +75,8 @@ basic_module_test.cmx : ../stdlib/set.cmx pr6726.cmx offset.cmx \
     mt_global.cmx mt.cmx basic_module_test.cmi
 bdd.cmj : ../stdlib/array.cmi
 bdd.cmx : ../stdlib/array.cmx
+bench.cmj : ../stdlib/array.cmi
+bench.cmx : ../stdlib/array.cmx
 bigarray_test.cmj : ../stdlib/int32.cmi ../stdlib/complex.cmi \
     ../stdlib/bigarray.cmi
 bigarray_test.cmx : ../stdlib/int32.cmx ../stdlib/complex.cmx \
@@ -163,8 +165,8 @@ digest_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx mt.cmx \
     ext_array.cmx ../stdlib/digest.cmx ../stdlib/array.cmx
 div_by_zero_test.cmj : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
 div_by_zero_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx
-earger_curry_test.cmj :
-earger_curry_test.cmx :
+earger_curry_test.cmj : ../stdlib/array.cmi
+earger_curry_test.cmx : ../stdlib/array.cmx
 empty_obj.cmj :
 empty_obj.cmx :
 epsilon_test.cmj : mt.cmi
@@ -843,6 +845,8 @@ basic_module_test.cmj : ../stdlib/set.cmj pr6726.cmj offset.cmj \
     mt_global.cmj mt.cmj basic_module_test.cmi
 bdd.cmo : ../stdlib/array.cmi
 bdd.cmj : ../stdlib/array.cmj
+bench.cmo : ../stdlib/array.cmi
+bench.cmj : ../stdlib/array.cmj
 bigarray_test.cmo : ../stdlib/int32.cmi ../stdlib/complex.cmi \
     ../stdlib/bigarray.cmi
 bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
@@ -931,8 +935,8 @@ digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
 div_by_zero_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
 div_by_zero_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
-earger_curry_test.cmo :
-earger_curry_test.cmj :
+earger_curry_test.cmo : ../stdlib/array.cmi
+earger_curry_test.cmj : ../stdlib/array.cmj
 empty_obj.cmo :
 empty_obj.cmj :
 epsilon_test.cmo : mt.cmi

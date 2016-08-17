@@ -4,7 +4,6 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Pervasives              = require("../../lib/js/pervasives");
 var Curry                   = require("../../lib/js/curry");
 var Caml_array              = require("../../lib/js/caml_array");
-var $$Array                 = require("../../lib/js/array");
 
 function map(f, a) {
   var f$1 = Curry.__1(f);
@@ -56,22 +55,8 @@ function fold_left(f, x, a) {
   return r;
 }
 
-function f() {
-  var arr = $$Array.init(10000000, function (i) {
-        return i;
-      });
-  var b = $$Array.map(function (i) {
-        return i + i - 1;
-      }, arr);
-  var v = $$Array.fold_left(function (prim, prim$1) {
-        return prim + prim$1;
-      }, 0, b);
-  console.log(Pervasives.string_of_float(v));
-  return /* () */0;
-}
-
 function f2() {
-  var arr = init(30000000, function (i) {
+  var arr = init(3000000, function (i) {
         return i;
       });
   var b = map(function (i) {
@@ -89,6 +74,5 @@ f2(/* () */0);
 exports.map       = map;
 exports.init      = init;
 exports.fold_left = fold_left;
-exports.f         = f;
 exports.f2        = f2;
 /*  Not a pure module */

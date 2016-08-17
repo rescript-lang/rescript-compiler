@@ -1,8 +1,3 @@
-
-
-let f g = fun [@bs] x -> g x 
-
-
 let map f a =
   let l = Array.length a in
   if l = 0 then [||] else begin
@@ -40,41 +35,17 @@ let fold_left f x a =
 let fold_left f x a  = fold_left (fun [@bs] x y -> f x y ) x a
 
 
-external timeStart : string -> unit = "console.time" [@@bs.val]
-
-external timeEnd : string -> unit =
-  "console.timeEnd" [@@bs.val]
-
-
-let f   =
-  let open Array  in      
-  fun () -> 
-    let arr = init 10000000 (fun i -> float_of_int i) in
-    let b = map (fun i -> i +. i -. 1. ) arr  in
-    let v = fold_left (+.) 0. b in
-    print_endline (string_of_float v)
-
 let f2   =
   fun () -> 
-    let arr = init 30_000_000 (fun i -> float_of_int i) in
+    let arr = init 3_000_000 (fun i -> float_of_int i) in
     let b = map (fun i -> i +. i -. 1. ) arr  in
     let v = fold_left (+.) 0. b in
     print_endline (string_of_float v)
 
-(* let time label f = *)
-(*   timeStart label ; *)
-(*   f (); *)
-(*   timeEnd label *)
+;; f2 ()
 
-(* ;; *)
-(* begin *)
-(*   time "curried" f ; *)
-(*   time "uncurried" f2; *)
-(* end *)
 
-let () =
-  begin
-    f2 ();
-  end
 
-(* ocamlbuild *)
+(* local variables: *)
+(* compile-command: "ocamlc bench.ml -o bench.byte  && js_of_ocaml --opt 3 bench.byte -o bench.1.js " *)
+(* end: *)

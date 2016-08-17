@@ -320,6 +320,19 @@ let rec pp_function method_
           match b.J.expression_desc with 
           | Var (Id i) -> Ident.same a i 
           | _ -> false) l ls ->
+    let optimize  len p cxt f v =
+      if p then
+        begin           
+          P.string f Js_config.curry;
+          P.string f L.dot;
+          P.string f "__";
+          P.string f (Printf.sprintf "%d" len);
+          P.paren_group f 1 (fun _ -> arguments cxt f [function_])            
+        end              
+      else
+        vident cxt f v
+    in
+    let len = List.length l in (* length *)           
     begin match name with 
       | Some i -> 
         P.string f L.var; 
@@ -328,35 +341,15 @@ let rec pp_function method_
         P.space f ;
         P.string f L.eq;
         P.space f ;
-        if arity = NA then
-          let len = List.length l in (* length *)           
-          begin           
-            P.string f Js_config.curry;
-            P.string f L.dot;
-            P.string f "__";
-            P.string f (Printf.sprintf "%d" len);
-            P.paren_group f 1 (fun _ -> arguments cxt f [function_])            
-          end              
-        else
-          vident cxt f v          
+
+        optimize len (arity = NA && len <= 8) cxt f v 
       | None ->
         if return then 
           begin 
             P.string f L.return ;
             P.space f;
           end;
-        if arity = NA then
-          let len = List.length l in (* length *)           
-          begin           
-            P.string f Js_config.curry;
-            P.string f L.dot;
-            P.string f "__";
-            P.string f (Printf.sprintf "%d" len);
-            P.paren_group f 1 (fun _ -> arguments cxt f [function_])            
-          end              
-
-        else           
-          vident cxt f v 
+        optimize len (arity = NA && len <=8) cxt f v 
     end
   | _, _  -> 
 
