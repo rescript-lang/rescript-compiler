@@ -78,6 +78,11 @@ let _1 o a0 =
 let js1 label cacheid a0 =
   _1 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0
 
+let __1 o =
+  let arity = function_length o in
+  if arity = 1 then o
+  else fun a0 -> _1 o a0
+
 
 let curry_2 o a0 a1 arity =
   match arity with
@@ -98,6 +103,11 @@ let _2 o a0 a1 =
     
 let js2 label cacheid a0 a1 =
   _2 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1
+
+let __2 o =
+  let arity = function_length o in
+  if arity = 2 then o
+  else fun a0 a1 -> _2 o a0 a1
 
 
 let curry_3 o a0 a1 a2 arity =
@@ -120,6 +130,11 @@ let _3 o a0 a1 a2 =
 let js3 label cacheid a0 a1 a2 =
   _3 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2
 
+let __3 o =
+  let arity = function_length o in
+  if arity = 3 then o
+  else fun a0 a1 a2 -> _3 o a0 a1 a2
+
 
 let curry_4 o a0 a1 a2 a3 arity =
   match arity with
@@ -140,6 +155,11 @@ let _4 o a0 a1 a2 a3 =
     
 let js4 label cacheid a0 a1 a2 a3 =
   _4 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3
+
+let __4 o =
+  let arity = function_length o in
+  if arity = 4 then o
+  else fun a0 a1 a2 a3 -> _4 o a0 a1 a2 a3
 
 
 let curry_5 o a0 a1 a2 a3 a4 arity =
@@ -162,6 +182,11 @@ let _5 o a0 a1 a2 a3 a4 =
 let js5 label cacheid a0 a1 a2 a3 a4 =
   _5 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4
 
+let __5 o =
+  let arity = function_length o in
+  if arity = 5 then o
+  else fun a0 a1 a2 a3 a4 -> _5 o a0 a1 a2 a3 a4
+
 
 let curry_6 o a0 a1 a2 a3 a4 a5 arity =
   match arity with
@@ -182,6 +207,11 @@ let _6 o a0 a1 a2 a3 a4 a5 =
     
 let js6 label cacheid a0 a1 a2 a3 a4 a5 =
   _6 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5
+
+let __6 o =
+  let arity = function_length o in
+  if arity = 6 then o
+  else fun a0 a1 a2 a3 a4 a5 -> _6 o a0 a1 a2 a3 a4 a5
 
 
 let curry_7 o a0 a1 a2 a3 a4 a5 a6 arity =
@@ -204,6 +234,11 @@ let _7 o a0 a1 a2 a3 a4 a5 a6 =
 let js7 label cacheid a0 a1 a2 a3 a4 a5 a6 =
   _7 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5 a6
 
+let __7 o =
+  let arity = function_length o in
+  if arity = 7 then o
+  else fun a0 a1 a2 a3 a4 a5 a6 -> _7 o a0 a1 a2 a3 a4 a5 a6
+
 
 let curry_8 o a0 a1 a2 a3 a4 a5 a6 a7 arity =
   match arity with
@@ -224,4 +259,9 @@ let _8 o a0 a1 a2 a3 a4 a5 a6 a7 =
     
 let js8 label cacheid a0 a1 a2 a3 a4 a5 a6 a7 =
   _8 (Obj.magic Caml_oo.caml_get_public_method a0 label cacheid) a0 a1 a2 a3 a4 a5 a6 a7
+
+let __8 o =
+  let arity = function_length o in
+  if arity = 8 then o
+  else fun a0 a1 a2 a3 a4 a5 a6 a7 -> _8 o a0 a1 a2 a3 a4 a5 a6 a7
 

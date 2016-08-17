@@ -163,6 +163,8 @@ digest_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx mt.cmx \
     ext_array.cmx ../stdlib/digest.cmx ../stdlib/array.cmx
 div_by_zero_test.cmj : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
 div_by_zero_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx
+earger_curry_test.cmj :
+earger_curry_test.cmx :
 empty_obj.cmj :
 empty_obj.cmx :
 epsilon_test.cmj : mt.cmi
@@ -439,6 +441,8 @@ offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
 optional_ffi_test.cmj : mt.cmi
 optional_ffi_test.cmx : mt.cmx
+poly_type.cmj : ../runtime/js.cmj
+poly_type.cmx : ../runtime/js.cmx
 poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
 poly_variant_test.cmx : ../runtime/js.cmx poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
@@ -927,6 +931,8 @@ digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
 div_by_zero_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
 div_by_zero_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
+earger_curry_test.cmo :
+earger_curry_test.cmj :
 empty_obj.cmo :
 empty_obj.cmj :
 epsilon_test.cmo : mt.cmi
@@ -1203,6 +1209,8 @@ offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 optional_ffi_test.cmo : mt.cmi
 optional_ffi_test.cmj : mt.cmj
+poly_type.cmo : ../runtime/js.cmo
+poly_type.cmj : ../runtime/js.cmj
 poly_variant_test.cmo : ../runtime/js.cmo poly_variant_test.cmi
 poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmo : polymorphism_test.cmi

@@ -22,9 +22,7 @@ var v = /* int array */[
     1,
     2,
     3
-  ].map(function (param, param$1) {
-      return Curry._2(f, param, param$1);
-    });
+  ].map(Curry.__2(f));
 
 var vv = /* int array */[
     1,

@@ -307,9 +307,9 @@ let rec pp_function method_
   | [ {statement_desc =
          Return {return_value = 
                    {expression_desc = 
-                      Call({expression_desc = Var v ; _}, 
+                      Call(({expression_desc = Var v ; _} as function_), 
                            ls , 
-                           {arity = ( Full (* | NA  *) (* see #234*)); 
+                           {arity = ( Full | NA as arity(* see #234*)); 
                             (* TODO: need a case to justify it*)
                             call_info = 
                               (Call_builtin_runtime | Call_ml )})}}}],
@@ -328,14 +328,35 @@ let rec pp_function method_
         P.space f ;
         P.string f L.eq;
         P.space f ;
-        vident cxt f v
+        if arity = NA then
+          let len = List.length l in (* length *)           
+          begin           
+            P.string f Js_config.curry;
+            P.string f L.dot;
+            P.string f "__";
+            P.string f (Printf.sprintf "%d" len);
+            P.paren_group f 1 (fun _ -> arguments cxt f [function_])            
+          end              
+        else
+          vident cxt f v          
       | None ->
         if return then 
           begin 
             P.string f L.return ;
             P.space f;
           end;
-        vident cxt f v 
+        if arity = NA then
+          let len = List.length l in (* length *)           
+          begin           
+            P.string f Js_config.curry;
+            P.string f L.dot;
+            P.string f "__";
+            P.string f (Printf.sprintf "%d" len);
+            P.paren_group f 1 (fun _ -> arguments cxt f [function_])            
+          end              
+
+        else           
+          vident cxt f v 
     end
   | _, _  -> 
 

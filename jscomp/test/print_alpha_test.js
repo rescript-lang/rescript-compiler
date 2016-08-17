@@ -6,9 +6,7 @@ var Curry = require("../../lib/js/curry");
 
 function f(h, _) {
   console.log(3);
-  return function (x, y) {
-    return Curry._2(h, x, y);
-  };
+  return Curry.__2(h);
 }
 
 Mt.from_pair_suites("print_alpha_test.ml", /* :: */[
