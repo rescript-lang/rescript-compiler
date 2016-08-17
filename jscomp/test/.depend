@@ -395,6 +395,8 @@ module_missing_conversion.cmx : ../stdlib/string.cmx \
     ../stdlib/moreLabels.cmx ../stdlib/hashtbl.cmx ../stdlib/array.cmx
 module_parameter_test.cmj : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
+more_uncurry.cmj :
+more_uncurry.cmx :
 mt.cmj : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
 mt.cmx : ../stdlib/list.cmx ../others/bs_node.cmi ../stdlib/array.cmx mt.cmi
 mt_global.cmj : mt.cmi mt_global.cmi
@@ -1157,6 +1159,8 @@ module_missing_conversion.cmj : ../stdlib/string.cmj \
     ../stdlib/moreLabels.cmj ../stdlib/hashtbl.cmj ../stdlib/array.cmj
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
+more_uncurry.cmo :
+more_uncurry.cmj :
 mt.cmo : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
 mt.cmj : ../stdlib/list.cmj ../others/bs_node.cmi ../stdlib/array.cmj mt.cmi
 mt_global.cmo : mt.cmi mt_global.cmi
