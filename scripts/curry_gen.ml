@@ -121,6 +121,11 @@ let _%d o %s =
     
 let js%d label cacheid %s =
   _%d (Obj.magic Caml_oo.caml_get_public_method %s label cacheid) %s
+
+let __%d o =
+  let arity = function_length o in
+  if arity = %d then o
+  else fun %s -> _%d o %s
 |}
     args_number
     args_string
@@ -145,7 +150,12 @@ let js%d label cacheid %s =
     (List.hd args)    
     args_string    
 
-
+    args_number
+    args_number
+    args_string
+    args_number
+    args_string
+    
 let () =
   print_endline
   @@ Printf.sprintf
