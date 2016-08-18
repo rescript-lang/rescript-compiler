@@ -69,87 +69,120 @@ let reset () =
 
 
 
+let process_getter_setter ~no ~get ~set
+    loc name
+    (attrs : Ast_attributes.t)
+    (ty : Parsetree.core_type) acc  =
+  match Ast_attributes.process_method_attributes_rev attrs with 
+  | {get = None; set = None}, _  ->  no ty :: acc 
+  | st , pctf_attributes
+    -> 
+    let get_acc = 
+      match st.set with 
+      | Some `No_get -> acc 
+      | None 
+      | Some `Get -> 
+        let lift txt = 
+          Typ.constr ~loc {txt ; loc} [ty] in
+        let (null,undefined) =                
+          match st with 
+          | {get = Some (null, undefined) } -> (null, undefined)
+          | {get = None} -> (false, false ) in 
+        let ty = 
+          match (null,undefined) with 
+          | false, false -> ty
+          | true, false -> lift Ast_literal.Lid.js_null
+          | false, true -> lift Ast_literal.Lid.js_undefined
+          | true , true -> lift Ast_literal.Lid.js_null_undefined in
+        get ty name pctf_attributes
+        :: acc  
+    in 
+    if st.set = None then get_acc 
+    else
+      set ty (name ^ Literals.setter_suffix) pctf_attributes         
+      :: get_acc 
 
-let handle_class_type_field  acc =
-  (fun self ({pctf_loc = loc } as ctf : Parsetree.class_type_field) -> 
-     match ctf.Parsetree.pctf_desc with 
-     | Pctf_method 
-         (name, private_flag, virtual_flag, ty) 
-       -> 
-       begin match Ast_attributes.process_method_attributes_rev ctf.pctf_attributes with 
-         | {get = None; set = None}, _  -> 
-           let ty = 
-             match ty.ptyp_desc with 
-             | Ptyp_arrow (label, args, body) 
-               ->
-               Ast_util.to_method_type
-                 ty.ptyp_loc  self label args body
 
-             | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
-                                 ptyp_loc})
-               ->
-               {ty with ptyp_desc = 
-                          Ptyp_poly(strs,             
-                                    Ast_util.to_method_type
-                                      ptyp_loc  self label args body  )}
-             | _ -> 
-               self.typ self ty
-           in 
-           {ctf with 
-            pctf_desc = 
-              Pctf_method (name , private_flag, virtual_flag, ty)}
-           :: acc 
 
-         | st , pctf_attributes
-           -> 
-           let get_acc = 
-             match st.set with 
-             | Some `No_get -> acc 
-             | None 
-             | Some `Get -> 
-               let lift txt = 
-                 Typ.constr ~loc {txt ; loc} [ty] in
-               let (null,undefined) =                
-                 match st with 
-                 | {get = Some (null, undefined) } -> (null, undefined)
-                 | {get = None} -> (false, false ) in 
-               let ty = 
-                 match (null,undefined) with 
-                 | false, false -> ty
-                 | true, false -> lift Ast_literal.Lid.js_null
-                 | false, true -> lift Ast_literal.Lid.js_undefined
-                 | true , true -> lift Ast_literal.Lid.js_null_undefined in 
-               {ctf with 
-                pctf_desc =  
-                  Pctf_method (name , 
-                               private_flag, 
-                               virtual_flag, 
-                               self.typ self ty
-                              );
-                pctf_attributes}
-               :: acc  
-           in 
-           if st.set = None then get_acc 
-           else 
-             {ctf with 
-              pctf_desc =
-                Pctf_method (name ^ Literals.setter_suffix, 
-                             private_flag,
-                             virtual_flag,
-                             Ast_util.to_method_type
-                               loc self "" ty
-                               (Ast_literal.type_unit ~loc ())
-                            );
-              pctf_attributes}
-             :: get_acc 
-       end
-     | Pctf_inherit _ 
-     | Pctf_val _ 
-     | Pctf_constraint _
-     | Pctf_attribute _ 
-     | Pctf_extension _  -> 
-       Ast_mapper.default_mapper.class_type_field self ctf :: acc 
-  )
+let handle_class_type_field self ({pctf_loc = loc } as ctf : Parsetree.class_type_field) acc =
+  match ctf.pctf_desc with 
+  | Pctf_method 
+      (name, private_flag, virtual_flag, ty) 
+    -> 
+    begin match Ast_attributes.process_method_attributes_rev ctf.pctf_attributes with 
+      | {get = None; set = None}, _  -> 
+        let ty = 
+          match ty.ptyp_desc with 
+          | Ptyp_arrow (label, args, body) 
+            ->
+            Ast_util.to_method_type
+              ty.ptyp_loc  self label args body
+
+          | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
+                              ptyp_loc})
+            ->
+            {ty with ptyp_desc = 
+                       Ptyp_poly(strs,             
+                                 Ast_util.to_method_type
+                                   ptyp_loc  self label args body  )}
+          | _ -> 
+            self.typ self ty
+        in 
+        {ctf with 
+         pctf_desc = 
+           Pctf_method (name , private_flag, virtual_flag, ty)}
+        :: acc 
+
+      | st , pctf_attributes
+        -> 
+        let get_acc = 
+          match st.set with 
+          | Some `No_get -> acc 
+          | None 
+          | Some `Get -> 
+            let lift txt = 
+              Typ.constr ~loc {txt ; loc} [ty] in
+            let (null,undefined) =                
+              match st with 
+              | {get = Some (null, undefined) } -> (null, undefined)
+              | {get = None} -> (false, false ) in 
+            let ty = 
+              match (null,undefined) with 
+              | false, false -> ty
+              | true, false -> lift Ast_literal.Lid.js_null
+              | false, true -> lift Ast_literal.Lid.js_undefined
+              | true , true -> lift Ast_literal.Lid.js_null_undefined in 
+            {ctf with 
+             pctf_desc =  
+               Pctf_method (name , 
+                            private_flag, 
+                            virtual_flag, 
+                            self.typ self ty
+                           );
+             pctf_attributes}
+            :: acc  
+        in 
+        if st.set = None then get_acc 
+        else 
+          {ctf with 
+           pctf_desc =
+             Pctf_method (name ^ Literals.setter_suffix, 
+                          private_flag,
+                          virtual_flag,
+                          Ast_util.to_method_type
+                            loc self "" ty
+                            (Ast_literal.type_unit ~loc ())
+                         );
+           pctf_attributes}
+          :: get_acc 
+    end
+  | Pctf_inherit _ 
+  | Pctf_val _ 
+  | Pctf_constraint _
+  | Pctf_attribute _ 
+  | Pctf_extension _  -> 
+    Ast_mapper.default_mapper.class_type_field self ctf :: acc 
+
 (*
   Attributes are very hard to attribute
   (since ptyp_attributes could happen in so many places), 
@@ -194,7 +227,7 @@ let handle_typ
           match Ast_attributes.process_attributes_rev ptyp_attrs with 
           | `Nothing,  _ -> 
             label, ptyp_attrs , check_auto_uncurry  core_type
-          |  `Uncurry, _  -> 
+          |  `Uncurry, ptyp_attrs  -> 
             label , ptyp_attrs, 
             check_auto_uncurry
               { core_type with 
@@ -411,7 +444,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
              | Some e ->
                Location.raise_errorf
                  ~loc:e.pexp_loc "`with` construct is not supported in bs.obj ")
-          else (* could be supported using `Object.assign`? *)
+          else
+            (* could be supported using `Object.assign`? 
+               type 
+               {[
+                 external update : 'a Js.t -> 'b Js.t -> 'a Js.t = ""
+                 constraint 'b :> 'a
+               ]}
+            *)
             Ast_mapper.default_mapper.expr  self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->
           begin match Ast_attributes.process_bs e.pexp_attributes with
@@ -443,9 +483,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                {ctd with
                 pcty_desc = Pcty_signature {
                     pcsig_self ;
-                    pcsig_fields = List.fold_right (fun  f  acc ->
-                        handle_class_type_field  acc self f 
-                      )  pcsig_fields []
+                    pcsig_fields = List.fold_right (handle_class_type_field self)  pcsig_fields []
                   };
                 pcty_attributes                    
                }                    
