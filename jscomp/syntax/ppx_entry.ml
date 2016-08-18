@@ -104,13 +104,14 @@ let process_getter_setter ~no ~get ~set
 
 
 
-let handle_class_type_field self ({pctf_loc = loc } as ctf : Parsetree.class_type_field) acc =
+let handle_class_type_field self
+    ({pctf_loc = loc } as ctf : Parsetree.class_type_field)
+    acc =
   match ctf.pctf_desc with 
   | Pctf_method 
       (name, private_flag, virtual_flag, ty) 
-    -> 
-    begin match Ast_attributes.process_method_attributes_rev ctf.pctf_attributes with 
-      | {get = None; set = None}, _  -> 
+    ->
+    let no (ty : Parsetree.core_type) =
         let ty = 
           match ty.ptyp_desc with 
           | Ptyp_arrow (label, args, body) 
@@ -131,51 +132,29 @@ let handle_class_type_field self ({pctf_loc = loc } as ctf : Parsetree.class_typ
         {ctf with 
          pctf_desc = 
            Pctf_method (name , private_flag, virtual_flag, ty)}
-        :: acc 
+    in
+    let get ty name pctf_attributes =
+      {ctf with 
+       pctf_desc =  
+         Pctf_method (name , 
+                      private_flag, 
+                      virtual_flag, 
+                      self.typ self ty
+                     );
+       pctf_attributes} in
+    let set ty name pctf_attributes =
+      {ctf with 
+       pctf_desc =
+         Pctf_method (name, 
+                      private_flag,
+                      virtual_flag,
+                      Ast_util.to_method_type
+                        loc self "" ty
+                        (Ast_literal.type_unit ~loc ())
+                     );
+       pctf_attributes} in
+    process_getter_setter ~no ~get ~set loc name ctf.pctf_attributes ty acc     
 
-      | st , pctf_attributes
-        -> 
-        let get_acc = 
-          match st.set with 
-          | Some `No_get -> acc 
-          | None 
-          | Some `Get -> 
-            let lift txt = 
-              Typ.constr ~loc {txt ; loc} [ty] in
-            let (null,undefined) =                
-              match st with 
-              | {get = Some (null, undefined) } -> (null, undefined)
-              | {get = None} -> (false, false ) in 
-            let ty = 
-              match (null,undefined) with 
-              | false, false -> ty
-              | true, false -> lift Ast_literal.Lid.js_null
-              | false, true -> lift Ast_literal.Lid.js_undefined
-              | true , true -> lift Ast_literal.Lid.js_null_undefined in 
-            {ctf with 
-             pctf_desc =  
-               Pctf_method (name , 
-                            private_flag, 
-                            virtual_flag, 
-                            self.typ self ty
-                           );
-             pctf_attributes}
-            :: acc  
-        in 
-        if st.set = None then get_acc 
-        else 
-          {ctf with 
-           pctf_desc =
-             Pctf_method (name ^ Literals.setter_suffix, 
-                          private_flag,
-                          virtual_flag,
-                          Ast_util.to_method_type
-                            loc self "" ty
-                            (Ast_literal.type_unit ~loc ())
-                         );
-           pctf_attributes}
-          :: get_acc 
-    end
   | Pctf_inherit _ 
   | Pctf_val _ 
   | Pctf_constraint _
