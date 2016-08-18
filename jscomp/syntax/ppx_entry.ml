@@ -60,17 +60,11 @@ open Ast_helper
 
 
 let record_as_js_object = ref false (* otherwise has an attribute *)
-
-
-let obj_type_as_js_obj_type = ref false
-
-
 let no_export = ref false 
 
 
 let reset () = 
   record_as_js_object := false ;
-  obj_type_as_js_obj_type := false ;
   no_export  :=  false
 
 
@@ -170,7 +164,7 @@ let handle_typ
   match ty with
   | {ptyp_desc = Ptyp_extension({txt = "bs.obj"}, PTyp ty)}
     -> 
-    Ext_ref.non_exn_protect obj_type_as_js_obj_type true 
+    Ext_ref.non_exn_protect record_as_js_object true 
       (fun _ -> self.typ self ty )
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow (label, args, body);
@@ -227,7 +221,7 @@ let handle_typ
       { ty
         with ptyp_desc = Ptyp_object(methods, closed_flag);
               } in 
-    if !obj_type_as_js_obj_type then 
+    if !record_as_js_object then 
       Ast_comb.to_js_type loc inner_type          
     else inner_type
   | _ -> super.typ self ty
@@ -295,11 +289,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             begin match payload with 
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
-              Ext_ref.non_exn_protect2 
-                record_as_js_object
-                obj_type_as_js_obj_type
-                true
-                true
+              Ext_ref.non_exn_protect record_as_js_object true
                 (fun () -> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
@@ -410,14 +400,18 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         pexp_attributes }
               end
           end
-        | Pexp_record (label_exprs, None)  -> 
-          (* TODO better error message when [with] detected in [%bs.obj] *)
+        | Pexp_record (label_exprs, opt_exp)  -> 
           if !record_as_js_object then
-            { e with
-              pexp_desc =  
-                Ast_util.record_as_js_object loc self label_exprs;
-            }
-          else 
+            (match opt_exp with
+             | None ->              
+               { e with
+                 pexp_desc =  
+                   Ast_util.record_as_js_object loc self label_exprs;
+               }
+             | Some e ->
+               Location.raise_errorf
+                 ~loc:e.pexp_loc "`with` construct is not supported in bs.obj ")
+          else (* could be supported using `Object.assign`? *)
             Ast_mapper.default_mapper.expr  self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->
           begin match Ast_attributes.process_bs e.pexp_attributes with

@@ -19,3 +19,9 @@ module type  X = sig
   (*   end [@bs]   syntax error  *)
       
 end
+
+
+(* let u x = *)
+(*   [%bs.obj{ *)
+(*             x with y = 3              *)
+(*           }] *)
