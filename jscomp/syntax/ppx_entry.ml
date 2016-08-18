@@ -202,33 +202,46 @@ let handle_typ
 
     let check_auto_uncurry core_type = self.typ self core_type in 
     let methods  =
-      List.map (fun (label, ptyp_attrs, core_type ) -> 
-          match Ast_attributes.process_attributes_rev ptyp_attrs with 
-          | `Nothing,  _ -> 
-            label, ptyp_attrs , check_auto_uncurry  core_type
-          |  `Uncurry, ptyp_attrs  -> 
-            label , ptyp_attrs, 
-            check_auto_uncurry
-              { core_type with 
-                ptyp_attributes = 
-                  Ast_attributes.bs :: core_type.ptyp_attributes}
-          | `Method, ptyp_attrs 
-            ->  
-            label , ptyp_attrs, 
-            check_auto_uncurry
-              { core_type with 
-                ptyp_attributes = 
-                  Ast_attributes.bs_method :: core_type.ptyp_attributes}
-          | `Meth_callback, ptyp_attrs 
-            ->  
-            label , ptyp_attrs, 
-            check_auto_uncurry
-              { core_type with 
-                ptyp_attributes = 
-                  Ast_attributes.bs_this :: core_type.ptyp_attributes}
-        ) methods
-
-    in          
+      methods
+      |> List.map (fun (label, ptyp_attrs, core_type )   ->
+          (match Ast_attributes.process_attributes_rev ptyp_attrs with 
+           | `Nothing,  _ -> 
+             label, ptyp_attrs , check_auto_uncurry  core_type
+           |  `Uncurry, ptyp_attrs  -> 
+             label , ptyp_attrs, 
+             check_auto_uncurry
+               { core_type with 
+                 ptyp_attributes = 
+                   Ast_attributes.bs :: core_type.ptyp_attributes}
+           | `Method, ptyp_attrs 
+             ->  
+             label , ptyp_attrs, 
+             check_auto_uncurry
+               { core_type with 
+                 ptyp_attributes = 
+                   Ast_attributes.bs_method :: core_type.ptyp_attributes}
+           | `Meth_callback, ptyp_attrs 
+             ->  
+             label , ptyp_attrs, 
+             check_auto_uncurry
+               { core_type with 
+                 ptyp_attributes = 
+                   Ast_attributes.bs_this :: core_type.ptyp_attributes})
+        )
+    in
+    let methods =
+      List.fold_right (fun (label, ptyp_attrs, core_type) acc ->
+          let get ty name attrs =
+            name , attrs, ty in
+          let set ty name attrs =
+            name, attrs,
+            Ast_util.to_method_type loc self "" ty
+              (Ast_literal.type_unit ~loc ()) in
+          let no ty =
+            label, ptyp_attrs, ty in
+          process_getter_setter ~no ~get ~set
+            loc label ptyp_attrs core_type acc
+        ) methods [] in      
     let inner_type =
       { ty
         with ptyp_desc = Ptyp_object(methods, closed_flag);
