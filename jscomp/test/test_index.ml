@@ -23,17 +23,18 @@ let ff (x : int case  Js.t)
 
 
 type 'a return = int -> 'a [@bs]
+
 let h (x : 
-         [%bs.obj:< cse : (int -> 'a return  ); .. >  [@bs] ]) = 
+         [%bs.obj:< cse : int -> 'a return [@bs] ; .. >   ]) = 
    (x#@cse 3) 2 [@bs]
 
 
 
 type x_obj =  
   [%bs.obj: < 
-    cse : int ->  int ; 
-    cse_st : int -> int -> unit ;
-  >  [@bs] ]
+    cse : int ->  int [@bs] ; 
+    cse_st : int -> int -> unit [@bs];
+  >   ]
 
 let f_ext 
     (x : x_obj)
@@ -44,8 +45,8 @@ let f_ext
 
 type 'a h_obj = 
   [%bs.obj: < 
-    cse : int ->  'a return 
-  > [@bs] ]
+    cse : int ->  'a return [@bs]
+  >  ]
 
 let h_ext  (x : 'a h_obj) = 
    (x #@cse 3) 2 [@bs]

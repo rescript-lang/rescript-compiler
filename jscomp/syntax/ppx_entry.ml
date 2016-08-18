@@ -63,7 +63,7 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 
 
 let obj_type_as_js_obj_type = ref false
-let uncurry_type = ref false 
+
 
 let no_export = ref false 
 
@@ -71,7 +71,6 @@ let no_export = ref false
 let reset () = 
   record_as_js_object := false ;
   obj_type_as_js_obj_type := false ;
-  uncurry_type := false ;
   no_export  :=  false
 
 
@@ -188,78 +187,46 @@ let handle_typ
       | `Method, ptyp_attributes ->
         Ast_util.to_method_type loc self label args body
       | `Nothing , _ -> 
-        if !uncurry_type then 
-          Ast_util.to_uncurry_type loc  self  label args body
-        else 
           Ast_mapper.default_mapper.typ self ty
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
-    ptyp_attributes ;
     ptyp_loc = loc 
     } -> 
 
     let check_auto_uncurry core_type = self.typ self core_type in 
-    let methods, ptyp_attributes  =
-      begin match Ext_list.exclude_with_fact
-                    (function 
-                      | {Location.txt = "bs"; _}, _ -> true
-                      | _ -> false)
-                    ptyp_attributes with 
-      | None, _  ->
-        List.map (fun (label, ptyp_attrs, core_type ) -> 
-            match Ast_attributes.process_attributes_rev ptyp_attrs with 
-            | `Nothing,  _ -> 
-              label, ptyp_attrs , check_auto_uncurry  core_type
-            |  `Uncurry, _  -> 
-              label , ptyp_attrs, 
-              check_auto_uncurry
-                { core_type with 
-                  ptyp_attributes = 
-                    Ast_attributes.bs :: core_type.ptyp_attributes}
-            | `Method, ptyp_attrs 
-              ->  
-              label , ptyp_attrs, 
-              check_auto_uncurry
-                { core_type with 
-                  ptyp_attributes = 
-                    Ast_attributes.bs_method :: core_type.ptyp_attributes}
-            | `Meth_callback, ptyp_attrs 
-              ->  
-              label , ptyp_attrs, 
-              check_auto_uncurry
-                { core_type with 
-                  ptyp_attributes = 
-                    Ast_attributes.bs_this :: core_type.ptyp_attributes}
-          ) methods , ptyp_attributes
-      |  Some _ ,  ptyp_attributes -> 
-        Ext_ref.non_exn_protect uncurry_type true begin fun _ -> 
-          List.map (fun (label, ptyp_attrs, core_type ) -> 
-              match Ast_attributes.process_attributes_rev ptyp_attrs with 
-              | `Nothing,  _ -> label, ptyp_attrs , self.typ self core_type
-              |  `Uncurry, ptyp_attrs -> 
-                label , ptyp_attrs, self.typ self 
-                  { core_type with 
-                    ptyp_attributes = 
-                      Ast_attributes.bs :: core_type.ptyp_attributes}
-              |  `Method, ptyp_attrs -> 
-                label , ptyp_attrs, self.typ self 
-                  { core_type with 
-                    ptyp_attributes = 
-                      Ast_attributes.bs_method :: core_type.ptyp_attributes}
-              |  `Meth_callback, ptyp_attrs -> 
-                label , ptyp_attrs, self.typ self 
-                  { core_type with 
-                    ptyp_attributes = 
-                      Ast_attributes.bs_this :: core_type.ptyp_attributes}
-            ) methods 
-        end, ptyp_attributes 
-      end
+    let methods  =
+      List.map (fun (label, ptyp_attrs, core_type ) -> 
+          match Ast_attributes.process_attributes_rev ptyp_attrs with 
+          | `Nothing,  _ -> 
+            label, ptyp_attrs , check_auto_uncurry  core_type
+          |  `Uncurry, _  -> 
+            label , ptyp_attrs, 
+            check_auto_uncurry
+              { core_type with 
+                ptyp_attributes = 
+                  Ast_attributes.bs :: core_type.ptyp_attributes}
+          | `Method, ptyp_attrs 
+            ->  
+            label , ptyp_attrs, 
+            check_auto_uncurry
+              { core_type with 
+                ptyp_attributes = 
+                  Ast_attributes.bs_method :: core_type.ptyp_attributes}
+          | `Meth_callback, ptyp_attrs 
+            ->  
+            label , ptyp_attrs, 
+            check_auto_uncurry
+              { core_type with 
+                ptyp_attributes = 
+                  Ast_attributes.bs_this :: core_type.ptyp_attributes}
+        ) methods
+
     in          
     let inner_type =
       { ty
         with ptyp_desc = Ptyp_object(methods, closed_flag);
-             ptyp_attributes } in 
+              } in 
     if !obj_type_as_js_obj_type then 
       Ast_comb.to_js_type loc inner_type          
     else inner_type
