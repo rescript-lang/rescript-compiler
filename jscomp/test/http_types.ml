@@ -1,4 +1,3 @@
-[@@@bs.config{bs_class_type  }]
   (** 
      [%bs (req Js.t * resp Js.t => unit ) => server Js.t 
      ]
@@ -20,17 +19,17 @@ class type _resp =
     method statusCode : int [@@bs.set]
     method setHeader : string -> string -> unit
     method end_ : string -> unit 
-  end
+  end[@bs]
 type resp = _resp Js.t 
 class type _server = 
   object 
     method listen : int ->  string -> (unit -> unit [@bs]) -> unit
-  end
+  end[@bs]
 type server = _server Js.t 
 class type _http = 
   object 
     method createServer : (req  -> resp  -> unit [@bs]) ->  server
-  end
+  end[@bs]
 type http = _http Js.t
 
 

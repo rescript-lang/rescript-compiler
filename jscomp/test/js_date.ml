@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type }]
+
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date *)
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters *)
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split *)
@@ -98,7 +98,7 @@ class type date =
     method toISOString : unit -> string
     method toJSON__ : unit -> string 
     method toJSON__1 : 'a -> string
-  end
+  end[@bs]
 
 type t = date Js.t 
 

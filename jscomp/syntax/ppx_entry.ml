@@ -64,16 +64,14 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 
 let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
-let obj_type_auto_uncurry =  ref false
+
 let no_export = ref false 
-let bs_class_type = ref false 
+
 
 let reset () = 
   record_as_js_object := false ;
   obj_type_as_js_obj_type := false ;
   uncurry_type := false ;
-  obj_type_auto_uncurry := false ;
-  bs_class_type := false;
   no_export  :=  false
 
 
@@ -201,11 +199,7 @@ let handle_typ
     ptyp_loc = loc 
     } -> 
 
-    let check_auto_uncurry core_type = 
-      if  !obj_type_auto_uncurry then
-        Ext_ref.non_exn_protect uncurry_type true 
-          (fun _ -> self.typ self core_type  )          
-      else self.typ self core_type in 
+    let check_auto_uncurry core_type = self.typ self core_type in 
     let methods, ptyp_attributes  =
       begin match Ext_list.exclude_with_fact
                     (function 
@@ -475,29 +469,39 @@ let rec unsafe_mapper : Ast_mapper.mapper =
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
     class_type = 
-      (fun self ({pcty_attributes} as ctd) -> 
+      (fun self ({pcty_attributes; pcty_loc} as ctd) -> 
          match Ast_attributes.process_bs pcty_attributes with 
          | `Nothing,  _ -> 
            Ast_mapper.default_mapper.class_type
              self ctd 
-         | `Has, pcty_attributes -> 
-           Ext_ref.non_exn_protect bs_class_type true begin fun _ -> 
-             Ast_mapper.default_mapper.class_type
-               self {ctd with pcty_attributes}
-           end
+         | `Has, pcty_attributes ->
+           begin match ctd.pcty_desc with
+             | Pcty_signature ({pcsig_self; pcsig_fields })
+               ->
+               let pcsig_self = self.typ self pcsig_self in 
+               {ctd with
+                pcty_desc = Pcty_signature {
+                    pcsig_self ;
+                    pcsig_fields = List.fold_right (fun  f  acc ->
+                        handle_class_type_field  acc self f 
+                      )  pcsig_fields []
+                  };
+                pcty_attributes                    
+               }                    
+
+             | Pcty_constr _
+             | Pcty_extension _ 
+             | Pcty_arrow _ ->
+               Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`"
+               (* {[class x : int -> object 
+                    end [@bs]
+                  ]}
+                  Actually this is not going to happpen as below is an invalid syntax
+                  {[class type x = int -> object
+                    end[@bs]]}
+               *)
+           end             
       );
-    class_signature = begin fun self ({pcsig_self; pcsig_fields } as csg) -> 
-      if !bs_class_type then 
-        let pcsig_self = self.typ self pcsig_self in 
-        {
-          pcsig_self ;
-          pcsig_fields = List.fold_right (fun  f  acc ->
-              handle_class_type_field  acc self f 
-            )  pcsig_fields []
-        }
-      else 
-        Ast_mapper.default_mapper.class_signature self csg 
-    end;
     signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
       | Psig_type [{ptype_attributes} as tdcl] -> 
@@ -607,18 +611,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
 (** global configurations below *)
 let common_actions_table : 
   (string *  (Parsetree.expression option -> unit)) list = 
-  [ "obj_type_auto_uncurry", 
-    (fun e -> 
-       obj_type_auto_uncurry := 
-         (match e with Some e -> Ast_payload.assert_bool_lit e
-         | None -> true)
-    ); 
-    "bs_class_type", 
-    (fun e -> 
-       bs_class_type := 
-         (match e with Some e -> Ast_payload.assert_bool_lit e 
-         | None -> true)
-    )
+  [ 
   ]
 
 

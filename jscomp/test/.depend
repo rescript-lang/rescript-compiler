@@ -405,6 +405,8 @@ mt.cmj : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
 mt.cmx : ../stdlib/list.cmx ../others/bs_node.cmi ../stdlib/array.cmx mt.cmi
 mt_global.cmj : mt.cmi mt_global.cmi
 mt_global.cmx : mt.cmx mt_global.cmi
+mutable_obj_test.cmj : ../runtime/js.cmj
+mutable_obj_test.cmx : ../runtime/js.cmx
 mutual_non_recursive_type.cmj :
 mutual_non_recursive_type.cmx :
 nested_include.cmj :
@@ -1175,6 +1177,8 @@ mt.cmo : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
 mt.cmj : ../stdlib/list.cmj ../others/bs_node.cmi ../stdlib/array.cmj mt.cmi
 mt_global.cmo : mt.cmi mt_global.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
+mutable_obj_test.cmo : ../runtime/js.cmo
+mutable_obj_test.cmj : ../runtime/js.cmj
 mutual_non_recursive_type.cmo :
 mutual_non_recursive_type.cmj :
 nested_include.cmo :
