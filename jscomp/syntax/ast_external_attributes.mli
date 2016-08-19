@@ -74,7 +74,7 @@ type t  =
   | Bs of arg_kind list  * arg_type *   ffi
   | Normal 
 
-type prim =  Primitive.description
+
 
 
 
