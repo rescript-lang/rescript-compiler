@@ -1,27 +1,23 @@
-[@@@bs.config{
-  obj_type_auto_uncurry ;
-  bs_class_type 
-  (* no_export = true; *)
-}]
+
 
 
 
 class type v = object 
   method hey : int -> int -> int 
-end 
+end [@bs]
 
 class type v2 = object
   method hey : int ->  int -> int 
-end 
+end [@bs]
 
 type vv = 
   [%bs.obj: < 
-    hey : int -> int -> int 
-  >  [@bs] ]
+    hey : int -> int -> int [@bs]
+  >   ]
 
 type vv2 = 
   [%bs.obj: < 
-    hey : int ->  int -> int 
+    hey : int ->  int -> int [@bs]
   > ] 
 
 

@@ -1,30 +1,29 @@
-[@@@bs.config{bs_class_type }]
 
 class type titlex = 
   object 
     method title : string [@@bs.set] [@@bs.get {null ; undefined}]
-  end
+  end[@bs]
 
 class type widget = 
   object 
       method on : string ->  (event -> unit [@bs]) -> unit 
-  end
+  end[@bs]
 and  event = 
   object 
     method source : widget
     method target : widget
-  end
+  end[@bs]
 
 
 class type title = 
   object 
     method title : string [@@bs.set]
-  end
+  end[@bs]
 
 class type text = 
   object
     method text : string [@@bs.set]
-  end
+  end[@bs]
 
 class type measure =
     object
@@ -32,22 +31,22 @@ class type measure =
       method minWidth : int [@@bs.set]
       method maxHeight : int  [@@bs.set]
       method maxWidth : int [@@bs.set]
-    end
+    end[@bs]
 
 class type layout = 
     object 
       method orientation : string [@@bs.set]
-    end
+    end[@bs]
 
 class type applicationContext = 
   object 
     method exit : int -> unit 
-  end
+  end[@bs]
 class type contentable = 
   object
     method content : #widget Js.t [@@bs.set]
     method contentWidth : int  [@@bs.set]
-  end
+  end[@bs]
 
 class type hostedWindow =
   object
@@ -58,13 +57,13 @@ class type hostedWindow =
     method hide : unit -> unit 
     method focus : unit -> unit 
     method appContext : applicationContext [@@bs.set]
-  end
+  end[@bs]
 
 class type hostedContent =
   object 
     inherit widget
     inherit contentable
-  end
+  end[@bs]
 
 
 class type stackPanel = 
@@ -75,7 +74,7 @@ class type stackPanel =
 
     method addChild : #widget Js.t -> unit 
 
-  end
+  end[@bs]
 
 class type grid  = 
   object
@@ -86,7 +85,7 @@ class type grid  =
       [%bs.obj: <label : <text : string; .. >   ; ..> ]   array [@@bs.set]
     method dataSource :
       [%bs.obj: <label : <text : string; .. >   ; ..>  ]  array array [@@bs.set]
-  end
+  end[@bs]
 
 
 class type button = 
@@ -94,14 +93,14 @@ class type button =
     inherit widget
     inherit text
     inherit measure
-  end
+  end[@bs]
 
 class type textArea = 
   object
     inherit widget
     inherit measure
     inherit text 
-  end
+  end[@bs]
 
 
 external set_interval : (unit -> unit [@bs]) -> float -> unit  =  "setInterval"

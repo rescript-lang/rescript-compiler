@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type }]
+
 type t
 
 external catch : t -> 'a -> 'b = "catch" [@@bs.send]

@@ -1,14 +1,14 @@
-[@@@bs.config{bs_class_type }]
+
 class type _v = object 
   method height : int [@@bs.set]
   method width  : int [@@bs.set]
 
-end
+end[@bs]
 type v = _v Js.t 
 class type ['a] _g = object 
   method method1 : int -> unit 
   method method2 : int -> int -> 'a
-end
+end[@bs]
 type 'a g = 'a _g Js.t
 
 let  f x = 

@@ -1,14 +1,14 @@
-[@@@bs.config{bs_class_type  }]
+
 class type ['k,'v] arrayLike = 
   object 
     method case : 'k -> 'v Js.Null.t 
     method caseSet : 'k * 'v -> unit 
     method case_unsafe : 'k -> 'v 
     method length : int 
-  end
+  end[@bs]
 
 class type floatArray = [int, float] arrayLike
-
+(** here we can see [@bs] is really attached to `object end` instead of `class type` *)
 class type intArray = [int, int] arrayLike
 
 

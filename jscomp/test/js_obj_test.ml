@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type  }]
+
 
 
 type  x = < say : int -> int >

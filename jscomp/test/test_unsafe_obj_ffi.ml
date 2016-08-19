@@ -1,4 +1,4 @@
-[@@@bs.config{bs_class_type }]
+
 
 open Js_unsafe
 
@@ -9,7 +9,7 @@ let g x : unit  =
   let () = Js_unsafe.js_fn_run1 !x # method1 3 in
   Js_unsafe.js_fn_run2 !x # method2 3 3
 
-class type _metric = object  method height : int [@@bs.set] method width : int [@@bs.set] end 
+class type _metric = object  method height : int [@@bs.set] method width : int [@@bs.set] end[@bs] 
 let h x : unit  = 
   x##height #= 3 ; 
   x##width #= 3 
