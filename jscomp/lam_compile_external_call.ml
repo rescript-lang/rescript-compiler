@@ -251,7 +251,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
 let translate cxt 
     ({prim_name ;  prim_native_name} 
-     : Ast_external_attributes.prim) args  = 
+     : Primitive.description) args  = 
   if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
     begin 
       match Ast_external_attributes.unsafe_from_string prim_native_name with 
