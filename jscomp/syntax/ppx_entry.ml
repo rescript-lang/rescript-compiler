@@ -199,41 +199,45 @@ let handle_typ
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
     ptyp_loc = loc 
     } -> 
-
+    let (+>) attr (typ : Parsetree.core_type) =
+      {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let methods =
       List.fold_right (fun (label, ptyp_attrs, core_type) acc ->
-          let (label,ptyp_attrs, core_type) =
-            (match Ast_attributes.process_attributes_rev ptyp_attrs with 
-             | `Nothing,  _ -> 
-               label, ptyp_attrs , self.typ self  core_type
-             |  `Uncurry, ptyp_attrs  -> 
-               label , ptyp_attrs, 
-               self.typ self 
-                 { core_type with 
-                   ptyp_attributes = 
-                     Ast_attributes.bs :: core_type.ptyp_attributes}
-             | `Method, ptyp_attrs 
-               ->  
-               label , ptyp_attrs, 
-               self.typ self 
-                 { core_type with 
-                   ptyp_attributes = 
-                     Ast_attributes.bs_method :: core_type.ptyp_attributes}
-             | `Meth_callback, ptyp_attrs 
-               ->  
-               label , ptyp_attrs, 
-               self.typ self
-                 { core_type with 
-                   ptyp_attributes = 
-                     Ast_attributes.bs_this :: core_type.ptyp_attributes}) in            
           let get ty name attrs =
-            name , attrs, ty in
+            let attrs, core_type =
+              match Ast_attributes.process_attributes_rev attrs with
+              | `Nothing, attrs -> attrs, core_type
+              | `Uncurry, attrs ->
+                attrs, Ast_attributes.bs +> ty
+              | `Method, _
+                -> Location.raise_errorf "bs.get/set conflicts with bs.meth"
+              | `Meth_callback, attrs ->
+                attrs, Ast_attributes.bs_this +> ty 
+            in 
+            name , attrs, self.typ self core_type in
           let set ty name attrs =
-            name, attrs,
-            Ast_util.to_method_type loc self "" ty
-              (Ast_literal.type_unit ~loc ()) in
+            let attrs, core_type =
+              match Ast_attributes.process_attributes_rev attrs with
+              | `Nothing, attrs -> attrs, core_type
+              | `Uncurry, attrs ->
+                attrs, Ast_attributes.bs +> ty 
+              | `Method, _
+                -> Location.raise_errorf "bs.get/set conflicts with bs.meth"
+              | `Meth_callback, attrs ->
+                attrs, Ast_attributes.bs_this +> ty
+            in               
+            name, attrs, Ast_util.to_method_type loc self "" core_type (Ast_literal.type_unit ~loc ()) in
           let no ty =
-            label, ptyp_attrs, ty in
+            let attrs, core_type =
+              match Ast_attributes.process_attributes_rev ptyp_attrs with
+              | `Nothing, attrs -> attrs, ty
+              | `Uncurry, attrs ->
+                attrs, Ast_attributes.bs +> ty 
+              | `Method, attrs -> 
+                attrs, Ast_attributes.bs_method +> ty 
+              | `Meth_callback, attrs ->
+                attrs, Ast_attributes.bs_this +> ty  in            
+            label, ptyp_attrs, self.typ self core_type in
           process_getter_setter ~no ~get ~set
             loc label ptyp_attrs core_type acc
         ) methods [] in      

@@ -2,7 +2,12 @@
 
 
 function f(x) {
-  return x.height = 3;
+  return x.dec = function (x) {
+          return {
+                  x: x,
+                  y: x
+                };
+        };
 }
 
 exports.f = f;
