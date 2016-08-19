@@ -72,6 +72,51 @@ type ffi =
 
 type prim =  Primitive.description
 
+let valid_js_char =
+  let a = Array.init 256 (fun i ->
+    let c = Char.chr i in
+    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c = '_' || c = '$'
+  ) in
+  (fun c -> Array.unsafe_get a (Char.code c))
+
+let valid_first_js_char = 
+  let a = Array.init 256 (fun i ->
+    let c = Char.chr i in
+    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$'
+  ) in
+  (fun c -> Array.unsafe_get a (Char.code c))
+
+(** Approximation could be improved *)
+let valid_ident (s : string) =
+  let len = String.length s in
+  valid_js_char s.[0] && valid_first_js_char s.[0] &&
+  (let module E = struct exception E end in
+   try
+     for i = 1 to len - 1 do
+       if not (valid_js_char (String.unsafe_get s i)) then
+         raise E.E         
+     done ;
+     true     
+   with E.E -> false )  
+  
+let valid_global_name ?loc txt =
+  let error () =
+    Location.raise_errorf ?loc "Not a valid  name %s"  txt  in
+  if txt = "" then
+    error ()
+  else
+    let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
+    List.iter
+      (fun s ->
+         if not (valid_ident s) then error ()
+      ) v      
+
+let valid_method_name ?loc txt =         
+  let error () =
+    Location.raise_errorf ?loc "Not a valid  name %s"  txt  in
+  if not (valid_ident txt) then error ()
+
+
 let check_external_module_name ?loc x = 
   match x with 
   | {bundle = ""; _ } | {bind_name = Some ""} -> 
@@ -85,13 +130,12 @@ let check_external_module_name_opt ?loc x =
 
 let check_ffi ?loc ffi = 
   match ffi with 
-  | Js_global {txt = ""} 
-  | Js_send {name = ""}
-  | Js_set  ""
-  | Js_get ""
-    -> Location.raise_errorf ?loc "empty name encountered"
-  | Js_global _ | Js_send _ | Js_set _ | Js_get _  
-  | Obj_create _
+  | Js_global {txt} -> valid_global_name ?loc  txt 
+  | Js_send {name } 
+  | Js_set  name
+  | Js_get name
+    ->  valid_method_name ?loc name
+  | Obj_create _ -> ()
   | Js_get_index | Js_set_index 
     -> ()
 
@@ -101,10 +145,8 @@ let check_ffi ?loc ffi =
   | Js_new {external_module_name ; txt = name}
   | Js_call {external_module_name ; txt = {name ; _}}
     -> 
-    check_external_module_name_opt ?loc external_module_name ; 
-    if name = "" then
-      Location.raise_errorf ?loc "empty name in externals"
-
+    check_external_module_name_opt ?loc external_module_name ;
+    valid_global_name ?loc name     
 
 
 (** 

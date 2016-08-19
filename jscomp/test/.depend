@@ -269,6 +269,8 @@ gpr_459_test.cmj : mt.cmi
 gpr_459_test.cmx : mt.cmx
 gpr_627_test.cmj : mt.cmi
 gpr_627_test.cmx : mt.cmx
+gpr_658.cmj : ../runtime/js.cmj
+gpr_658.cmx : ../runtime/js.cmx
 guide_for_ext.cmj :
 guide_for_ext.cmx :
 hamming_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
@@ -1041,6 +1043,8 @@ gpr_459_test.cmo : mt.cmi
 gpr_459_test.cmj : mt.cmj
 gpr_627_test.cmo : mt.cmi
 gpr_627_test.cmj : mt.cmj
+gpr_658.cmo : ../runtime/js.cmo
+gpr_658.cmj : ../runtime/js.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
 hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
