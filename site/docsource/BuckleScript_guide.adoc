@@ -1,0 +1,253 @@
+# https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
+Hongbo Zhang <bobzhang1988@gmail.com>
+:toc: left
+:source-highlighter: pygments
+:page-layout: docs
+// Refs
+:uri-ad-org-issues: https://github.com/bloomberg/bucklescript/issues
+:OCaml: https://ocaml.org/
+:Reason: https://github.com/facebook/Reason
+:BuckleScript: https://github.com/bloomberg/bucklescript
+:BuckleScript-playground: http://bloomberg.github.io/bucklescript/js-demo/
+:closure: https://developers.google.com/closure/compiler/
+:transpile-list: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
+:name-mangling: https://en.wikipedia.org/wiki/Name_mangling
+:npm: https://www.npmjs.com
+
+[NOTE]
+.This document is under active development and discussion!
+====
+If you find errors or omissions in this document, please don't
+hesitate to {uri-ad-org-issues}[submit an issue] with a fix.
+====
+
+
+BuckleScript is a backend for the {OCaml}[OCaml] compiler which emits
+JavaScript. It works with both vanilla OCaml and {Reason}[Reason], the
+whole compiler is compiled into JS (and ASM) so that you can play it
+in the {BuckleScript-playground}[browser].
+
+## Why BuckleScript
+
+### The benefit of JavaScript platform
+
+JavaScript is not just *the* browser language, it's also the *only*
+existing cross platform language. It is truly everywhere: users don't
+need to install binaries or use package managers to access software,
+just a link will work.
+
+Another important factor is that the JavaScript VM is quite fast and
+keeps getting faster.  The JavaScript platform is therefore
+increasingly capable of supporting large applications.
+
+### Problems of JavaScript langauge and how BuckleScript solves it
+
+BuckleScript is mainly designed to solve the problems of *large scale JavaScript programming*:
+
+.  Lack of type-safety:
+   {OCaml}[OCaml] offers an industrial-strength
+   state-of-the-art type system and provides type inference (i.e. No
+   verbose type annotation required), which proves
+   http://programmers.stackexchange.com/questions/215482/what-are-the-safety-benefits-of-a-type-system[invaluable]
+   in managing large projects.
+
+.  Dead code: A large amount of web-development relies on inclusion of
+   code dependencies by copying or referencing CDNs (the very thing
+   that makes JavaScript highly accessible), but this also introduces
+   a lot of https://en.wikipedia.org/wiki/Dead_code[dead code]. This
+   impacts performance adversely when the JavaScript VM has to
+   interpret code that will never be invoked. BuckleScript provides
+   powerful dead-code elimination at all levels:
+
+      - Function and module level elimination is facilitated by the
+      sophistication of the type-system of OCaml and
+      purity analysis.
+      - At the global level BuckleScript generates code ready for
+      dead-code elimination done by bundling tools such as the 
+      {closure}[Google closure-compiler].
+
+.  Lack of offline optimizations: JavaScript is a dynamic language, it
+   takes a performance-hit for the VM to optimize code at runtime.
+   While some JS engines circumvent the problem to some extent by
+   http://v8project.blogspot.com/2015/07/code-caching.html[caching],
+   this is not available to all environments, and lack of a strong
+   type system also limits the level of optimizations possible. Again,
+   BuckleScript, using features of the OCaml type-system and compiler
+   implementation is able to provide many optimizations during offline
+   compilation, allowing the runtime code to be extremely fast.
+
+. Run your programs on all platforms, but run your system *faster*
+  under specific platforms. Javascript is everywhere but it does not
+  mean we have to run all apps in JS, under several platforms, for
+  example, server side or iOS/Android native apps, when programs are
+  written in OCaml, it can also be compiled to native code for *best
+  performance*. 
+
+While a strong type-system helps in countering these problems, at the
+same time we hope to avoid some of the problems faced in using other
+offline {transpile-list}[transpilation systems]:
+
+* Slow compilation: OCaml bytecode compilation is known to be fast
+  (one or two orders of magnitude faster than other similar langauges:
+http://www.scala-lang.org/[Scala] or
+  https://www.haskell.org/[Haskell]), 
+  BuckleScript shares the same property and compiles even faster
+  since it saves the link time. See the speeds at work in the
+  {BuckleScript-playground}[playground], the native backend is one
+  order faster than the JS backend.
+
+* Un-readable JS Code and hard to integrate with existing JS
+  libraries: When compiling to JavaScript, many systems
+  generate code, that while syntactically and semantically correct is 
+  not human-readable and very difficult to debug and profile.
+  Our BuckleScript implementation and the multi-pass compilation  strategy of OCaml,
+  allows us to avoid {name-mangling}[name-mangling], 
+  and produce JavaScript code that is human-readable and easier to debug and
+  maintain. More importantly, this makes intergration with existing JS
+  libraries much easier.
+
+* Loss of code-structure: Many systems generate JavaScript code that is essentially a
+  https://en.wikipedia.org/wiki/Big_ball_of_mud[big ball of mud]. We try
+  to keep the original structure of the code by mapping one OCaml module
+  to one JS module.
+
+
+## Get Started
+
+### Installation
+
+#### Install from NPM releases
+
+The standard npm package management tool can be used to install
+BuckleScript. If you don't already have npm installed, follow the
+directions listed
+https://docs.npmjs.com/getting-started/installing-node[here]. Once npm
+is installed, run the following command:
+
+[source,sh]
+------------------------------ 
+npm install --save bs-platform
+------------------------------
+
+#### Install from source with `npm` package manager
+
+.Prerequisites:
+
+  . Standard C toolchain
+  . `npm` (should be installed with Node)
+
+.Instructions:
+[source,sh]
+-----
+git clone https://github.com/bloomberg/bucklescript
+cd bucklescript
+npm install
+-----
+
+#### Install with minimal dependencies
+
+.Prerequisites:
+
+  . Standard C toolchain
+
+
+BuckleScript has very few dependencies and building from source can
+easily be done.
+
+
+.Build OCaml compiler
+
+
+[source,sh]
+-------------------------------------------------------- 
+git clone --recursive https://github.com/bloomberg/bucklescript
+cd ocaml
+./configure -prefix `pwd` # put your preferred directory
+make world.opt
+make install
+--------------------------------------------------------
+
+The patched compiler is installed locally into your `$(pwd)/bin` 
+directory. To start using it temporarily, check if `ocamlc.opt` and
+`ocamlopt.opt` exist in `$(pwd)/bin`, and temporarily add the location
+to your `$(PATH)` (e.g.  `PATH=$(pwd)/bin:$PATH`).
+
+.Building BuckleScript
+
+
+The following directions assume you already have the correct version of
+`ocamlopt.opt` in your `$PATH`, having followed the process described in
+the previous section.
+
+[source,sh]
+----------- 
+export BS_RELEASE_BUILD=1
+make world
+-----------
+
+'''''
+
+At the end, you should have a binary called `bsc` under `jscomp/bin`
+directory, which you can add to your `$PATH`. 
+You could also set an environment variable 
+pointing to the stdlib, e.g. `BSC_LIB=/path/to/jscomp/stdlib` for ease
+of use.
+
+
+### OCaml ecosystem: OPAM
+
+When working with OCaml we also recommend using https://opam.ocaml.org[opam]
+package manager to install OCaml tools, available
+https://opam.ocaml.org/doc/Install.html[here]. You will benefit from the
+existing OCaml ecosystem.
+
+Once you have `opam` installed, ask `opam` to switch to using our
+version of the compiler:
+
+[source,sh]
+--------------------------- 
+opam update
+opam switch 4.02.3
+eval `opam config env`
+---------------------------
+
+
+### First example in BuckleScript
+
+
+include::./Installation.adoc[Installation]
+
+
+include::./README.adoc[Home]
+* Playground
+include::./Playground.adoc[OCaml & Reason Playgrounds]
+include::./Create-a-simple-example-with-NPM.adoc[Create a simple example
+with NPM]
+include::./NPM-Support.adoc[NPM Support]
+
+## BuckleScript Basics
+include::./FAQ.adoc[FAQ]
+
+include::./Compiler-options.adoc[Compiler options]
+include::./How-to-adapt-your-build-system.adoc[How to adapt your build
+system]
+include::./Semantic-differences-from-other-backends.adoc[Semantic
+differences from other backends]
+include::./JavaScript-target-versions.adoc[JavaScript target versions]
+* BuckleScript Overview
+include::./Compiler-overview.adoc[Compiler overview]
+* BuckleScript FFI
+include::./JS-call-OCaml.adoc[JS calling OCaml]
+include::./OCaml-call-JS.adoc[OCaml calling JS]
+include::./Runtime-representation.adoc[Runtime representation]
+include::./Experimental-support-of-typescript.adoc[Experimental support of
+typescript]
+include::./Unsupported-IO-primitives.adoc[Unsupported IO primitives]
+* Contributions
+include::./Dev-mode-How-to.adoc[Dev mode How to]
+include::./Help-move-runtime-functions-from-OCaml-to-Javascript.adoc[Help
+move runtime functions from OCaml to Javascript]
+* Roadmap
+include::./Roadmap.adoc[Roadmap]
+* Comparisons
+include::./Differences-from-js_of_ocaml.adoc[Differences from js_of_ocaml]

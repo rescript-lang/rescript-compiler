@@ -1,1 +1,0 @@
-`bsc` has the ability to also emits `.d.ts` for better interaction with typescript. This is still experimental.

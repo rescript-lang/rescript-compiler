@@ -1,0 +1,39 @@
+[[build-the-compiler]]
+Build the compiler
+^^^^^^^^^^^^^^^^^^
+
+The development of BuckleScript compiler relies on 2 tools which are
+readily available in `opam` and work with our patched OCaml compiler:
+
+*
+http://caml.inria.fr/pub/docs/manual-ocaml-400/manual032.html[ocamlbuild]:
+Default build tool for OCaml project
+* https://github.com/ocaml/camlp4[camlp4]: Tool used to generate OCaml
+code for processing large AST. (j.ml file).
+
+After having installed the above dependencies from opam you can run the
+following:
+
+[source,sh]
+---------- 
+cd jscomp/
+./build.sh
+----------
+
+[[build-the-runtime]]
+Build the runtime
+^^^^^^^^^^^^^^^^^
+
+[source,sh]
+---------------------- 
+cd ./runtime; make all
+----------------------
+
+[[build-the-stdlib]]
+Build the stdlib
+^^^^^^^^^^^^^^^^
+
+[source,sh]
+--------------------- 
+cd ./stdlib; make all
+---------------------

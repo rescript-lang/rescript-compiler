@@ -1,0 +1,80 @@
+## BuckleScript Basics
+
+include::./FAQ.adoc[FAQ]
+* link:./Compiler-options.adoc[Compiler options]
+* link:./How-to-adapt-your-build-system.adoc[How to adapt your build
+system]
+* link:./Semantic-differences-from-other-backends.adoc[Semantic
+differences from other backends]
+
+
+
+[[why-bucklescript]]
+Why https://github.com/bloomberg/bucklescript[BuckleScript]?
+------------------------------------------------------------
+
+BuckleScript is mainly designed to solve the problems of large scale
+JavaScript programming:
+
+1.  *Lack of type-safety:* [OCaml]((https://ocaml.org/) offers an
+industrial-strength state-of-the-art type system and provides type
+inference (i.e. No verbose type annotation required), which proves
+http://programmers.stackexchange.com/questions/215482/what-are-the-safety-benefits-of-a-type-system[invaluable]
+in managing large projects.
+2.  *Dead code:* A large amount of web-development relies on inclusion
+of code dependencies by copying or referencing CDNs (the very thing that
+makes JavaScript highly accessible), but this also introduces a lot of
+https://en.wikipedia.org/wiki/Dead_code[dead code]. This impacts
+performance adversely when the JavaScript VM has to interpret code that
+will never be invoked. BuckleScript provides powerful dead-code
+elimination at all levels. Function and module level elimination is
+facilitated by the sophistication of the type-system of OCaml, and at
+the global level BuckleScript generates code ready for dead-code
+elimination done by bundling tools such as the
+https://developers.google.com/closure/compiler/[Google
+closure-compiler].
+3.  *Lack of offline optimizations:* JavaScript is a dynamic language,
+it takes a performance-hit for the VM to optimize code at runtime. While
+some JS engines circumvent the problem to some extent by
+http://v8project.blogspot.com/2015/07/code-caching.html[caching], this
+is not available to all environments, and lack of a strong type system
+also limits the level of optimizations possible. Again, BuckleScript,
+using features of the OCaml type-system and compiler implementation is
+able to provide many optimizations during offline compilation, allowing
+the runtime code to be extremely fast.
+
+While a strong type-system helps in countering these problems, at the
+same time we hope to avoid some of the problems faced in using other
+offline
+https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js[transpilation]
+systems:
+
+1.  *Slow compilation:* +
+ OCaml bytecode compilation is known to be fast (one or two orders of
+magnitude faster +
+ than other similar langauges: http://www.scala-lang.org/[Scala] +
+ or https://www.haskell.org/[Haskell]), BuckleScript shares the same +
+ property. See the speeds at work in the
+http://bloomberg.github.io/bucklescript/js-demo/[playground].
+2.  *Un-readable JS Code:* +
+ In compiling to JavaScript, many systems generate code, that while
+syntactically and semantically correct is +
+ not human-readable and very difficult to debug. Our BuckleScript
+implementation and the multi-pass compilation +
+ strategy of OCaml, allows us to avoid
+https://en.wikipedia.org/wiki/Name_mangling[name-mangling], and produce
+JavaScript code that is human-readable and easier to debug and maintain.
+3.  *Loss of code-structure:* +
+ Many systems generate JavaScript code that is essentially a
+https://en.wikipedia.org/wiki/Big_ball_of_mud[big ball of mud]. We try
+to keep the original structure of the code by mapping one OCaml module
+to one JS module.
+
+[[resources-for-learning-ocaml]]
+Resources for Learning OCaml
+----------------------------
+
+The offical https://ocaml.org/[ocaml] website has a comprehensive list
+of tutorials about the OCaml language, targeted at both developers new
+to functional programming and type-systems, and developers already
+familiar with these concepts.
