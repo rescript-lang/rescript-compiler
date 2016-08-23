@@ -154,6 +154,25 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | _ -> 
           E.call ~info:{arity=Full; call_info = Call_na} fn args
       end
+    | Js_module_as_class module_name ->
+      let fn =
+        match handle_external (Some module_name) with
+        | Some (id,name) ->
+          E.external_var_dot id name None           
+        | None -> assert false in           
+      let args = 
+        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args
+        (* TODO: fix in rest calling convention *)          
+      in
+      begin 
+        (match cxt.st with 
+         | Declare (_, id) | Assign id  ->
+           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
+           Ext_ident.make_js_object id 
+         | EffectCall | NeedValue -> ())
+        ;
+        E.new_ fn args
+      end            
 
     | Js_new { external_module_name = module_name; 
                txt = fn;
@@ -180,14 +199,15 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
          TODO: we should propagate this property 
          as much as we can(in alias table)
       *)
-      (
-        match cxt.st with 
-        | Declare (_, id) | Assign id  ->
-          (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
-          Ext_ident.make_js_object id 
-        | EffectCall | NeedValue -> ()
-      );
-      E.new_ fn args
+      begin 
+        (match cxt.st with 
+         | Declare (_, id) | Assign id  ->
+           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
+           Ext_ident.make_js_object id 
+         | EffectCall | NeedValue -> ())
+        ;
+        E.new_ fn args
+      end            
 
 
 
