@@ -1,0 +1,13 @@
+
+## Integration with Reason
+
+You can play with Reason using the playground
+https:////bloomberg.github.io/bucklescript/reason-demo[Facebook Reason]
+
+[NOTE]
+.The playgrounds are only for demos and might not be the latest
+=======
+You should always use the command line as your production tool.
+=======
+
+There is a stand alone example https://github.com/bloomberg/bucklescript-addons/blob/master/examples/reason-demo/package.json[here].

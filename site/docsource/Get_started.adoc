@@ -1,0 +1,123 @@
+## Get Started
+
+### First example
+
+* Create a directory called `hello` and create `package.json`
+  as below:
++
+[source,js]
+.package.json
+----
+{
+    "dependencies": {
+        "bs-platform": "0.9.3" // <1>
+    },
+    "scripts" : {
+        "build" : "bsc -c  main_entry.ml"
+    }
+}
+----
+<1> Version should be updated accordingly
+* Create `main_entry.ml` as below:
++
+[source,ocaml]
+.main_entry.ml
+----
+let () =
+  print_endline "hello world"
+----
+
+
+* Build the app
++
+[source,sh]
+----
+npm run build
+----
+
+Now you should see a file called `main_entry.js` generated as below:
+[source,js]
+.main_entry.js
+----
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.9.3 , PLEASE EDIT WITH CARE
+'use strict';
+
+
+console.log("hello world");
+
+/*  Not a pure module */ <1>
+----
+<1> The compiler analyze this module is impure due to the side effect
+
+TIP: The working code is available https://github.com/bloomberg/bucklescript-addons/tree/master/examples/hello[here]:
+
+
+### An example with multiple modules
+
+Now we want to create two modules, one file called `fib.ml` which
+exports `fib` function, the other module called `main_entry.ml` which
+will call `fib`.
+
+* Create a directory `fib` and created a file `package.json`
++
+[source,js]
+.package.json
+----------
+{
+    "dependencies": {
+        "bs-platform": "0.9.4"
+    },
+    "scripts" : {
+        "build" : "bsc -c -bs-main main_entry.ml" // <1>
+    }
+}
+----------
+<1> here `-bs-main` option tells the compiler compile `main_entry` module and
+its dependency accordingly
+* Create file `fib.ml` and file `main_entry.ml`
++
+[source,ocaml]
+.fib.ml
+------
+let  fib n  =
+  let rec aux n a b =
+    if n = 0 then a
+    else
+      aux (n - 1) b (a+b)
+  in aux n 1 1
+------
++
+[source,ocaml]
+.main_entry.ml
+------
+let () =
+  for i = 0 to 10 do
+    Js.log (Fib.fib i) <1>
+  done
+------
+<1> `Js` module is a built-in module shipped with BuckleScript
+* Build the app
++
+[source,sh]
+-------
+npm install
+npm run build
+node main_entry.js
+-------
+
+If everything goes well, you should see the output as below:
+
+[source,sh]
+-------
+1
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+-------

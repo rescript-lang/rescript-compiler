@@ -1,0 +1,48 @@
+
+## How to adapt your build system
+
+The BuckleScript compilation model is the same as the OCaml compiler.
+
+If `b.ml` depends on `a.ml`, you have to compile `a.ml` *and* `a.mli`
+first.
+
+[NOTE]
+======
+The technical reason is that BuckleScript will generate intermediate
+files with the extension `.cmj` which are later used for cross module
+inlining, arity inference and other information.
+======
+
+Here is a simple Makefile to get started:
+
+[source,make]
+-------------
+OCAMLC=bsc # <1>
+
+OCAMLDEP=ocamldep # <2>
+
+SOURCE_LIST := src_a src_b
+
+SOURCE_MLI  = $(addsuffix .mli, $(SOURCE_LIST))
+
+SOURCE_ML   = $(addsuffix .ml, $(SOURCE_LIST))
+
+TARGETS := $(addsuffix .cmj, $(SOURCE_LIST))
+
+INCLUDES=
+
+all: $(TARGETS)
+
+%.cmi: %.mli
+        $(OCAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+
+%.ml: %.cmj:
+        $(OCAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+
+-include .depend
+
+depend:
+        $(OCAMLDEP) $(INCLUDES) $(SOURCE_ML) $(SOURCE_MLI) | sed -e 's/\.cmx/.cmj/g' > .depend
+-------------
+<1> bsc is the BuckleScript compiler
+<2> ocamldep executable is part of the OCaml compiler installation
