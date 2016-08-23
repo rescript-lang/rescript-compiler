@@ -1,0 +1,103 @@
+## Installation
+
+### Install from NPM registries
+
+The standard `npm` package management tool can be used to install
+BuckleScript. If you don't already have `npm` installed, follow the
+directions listed
+https://docs.npmjs.com/getting-started/installing-node[here]. Once `npm`
+is installed, run the following command:
+
+[source,sh]
+------------------------------
+npm install --save bs-platform
+------------------------------
+
+or install it globally
+
+[source,shh]
+------------
+npm install -g bs-platform
+------------
+
+### Install from source with npm package manager
+
+.Prerequisites:
+
+  . Standard C toolchain
+  . `npm` (should be installed with Node)
+
+.Instructions:
+[source,sh]
+-----
+git clone https://github.com/bloomberg/bucklescript
+cd bucklescript
+npm install
+-----
+
+### Install with minimal dependencies
+
+.Prerequisites:
+
+  . Standard C toolchain
+
+
+BuckleScript has very few dependencies and building from source can
+easily be done.
+
+
+.Build OCaml compiler
+
+
+[source,sh]
+--------------------------------------------------------
+git clone --recursive https://github.com/bloomberg/bucklescript
+cd ocaml
+./configure -prefix `pwd` # put your preferred directory
+make world.opt
+make install
+--------------------------------------------------------
+
+The patched compiler is installed locally into your `$(pwd)/bin`
+directory. To start using it temporarily, check if `ocamlc.opt` and
+`ocamlopt.opt` exist in `$(pwd)/bin`, and temporarily add the location
+to your `$(PATH)` (e.g.  `PATH=$(pwd)/bin:$PATH`).
+
+.Building BuckleScript
+
+
+The following directions assume you already have the correct version of
+`ocamlopt.opt` in your `$PATH`, having followed the process described in
+the previous section.
+
+[source,sh]
+-----------
+export BS_RELEASE_BUILD=1
+make world
+-----------
+
+'''''
+
+At the end, you should have a binary called `bsc` under `jscomp/bin`
+directory, which you can add to your `$PATH`.
+You could also set an environment variable
+pointing to the stdlib, e.g. `BSC_LIB=/path/to/jscomp/stdlib` for ease
+of use.
+
+
+### Introduction to OCaml ecosystem: OPAM
+
+When working with OCaml we also recommend using https://opam.ocaml.org[opam]
+package manager to install OCaml tools, available
+https://opam.ocaml.org/doc/Install.html[here]. You will benefit from the
+existing OCaml ecosystem.
+
+Once you have `opam` installed, ask `opam` to switch to using our
+version of the compiler:
+
+[source,sh]
+---------------------------
+opam update
+opam switch 4.02.3
+eval `opam config env`
+---------------------------

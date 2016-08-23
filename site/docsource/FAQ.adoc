@@ -1,0 +1,40 @@
+== Frequently Asked Questions
+
+[qanda]
+
+The compiler does not build?::
+  In production mode, the compiler is a single file in
+`jscomp/bin/compiler.ml`. If it is not compiling, make sure you have the
+right OCaml compiler version. Currently the OCaml compiler is a
+submodule of BuckleScript. Make sure the exact commit hash matches (we
+only update the compiler occasionally).
+
+Which version of JavaScript syntax does BuckleScript target?::
+BuckleScript targets **ES5**.
+
+What polyfills does BuckleScript need?::
+
+- _Math.imul_:
+  This polyfill is needed for `int32` multiplication.
+  BuckleScript provides this by default(when feature detection returns false), no action is
+  required from the user.
+- _TypedArray_:
+  The TypedArray polyfill is not provided by BuckleScript and it's the
+  responsibility of the user to bundle the desired polyfill implementation
+  with the BuckleScript generated code.
+
+  The following functions from OCaml stdlib
+  require the TypedArray polyfill:
+
+    * Int64.float_of_bits
+    * Int64.bits_of_float
+    * Int32.float_of_bits
+    * Int32.bits_of_float
++
+[WARNING]
+=====
+
+For the current BuckleScript version, if the user does not bundle the
+TypedArray polyfill, the JavaScript engine does not support it and user used
+functions mentioned above, the code will fail at runtime.
+=====
