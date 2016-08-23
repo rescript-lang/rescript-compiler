@@ -31,8 +31,10 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 
 release:snapshot 
 	$(MAKE) releasebuild
-	ocamlbuild -lflags -no-check-prims -use-ocamlfind -I bin -no-hygiene -pkgs compiler-libs.common -no-links bin/reason.byte
-	js_of_ocaml -I +compiler-libs   --toplevel +weak.js +toplevel.js  ./polyfill.js _build/bin/reason.byte -I ./runtime/ --file js.cmi:/cmis/js.cmi --file js_unsafe.cmi:/cmis/js_unsafe.cmi --file js_re.cmi:/cmis/js_re.cmi   -o bin/compiler.js
+	# ocamlbuild -no-ocamlfind -lflags -no-check-prims -use-ocamlfind -I bin -no-hygiene -pkgs compiler-libs.common -no-links bin/reason.byte
+	# js_of_ocaml -I +compiler-libs   --toplevel +weak.js +toplevel.js  ./polyfill.js _build/bin/reason.byte -I ./runtime/ --file js.cmi:/cmis/js.cmi --file js_unsafe.cmi:/cmis/js_unsafe.cmi --file js_re.cmi:/cmis/js_re.cmi   -o bin/compiler.js
+
+#TODO: seems dependency on jsoo and reason should not block our release
 
 
 # Note: this target also built bin/bsc which is used in release mode
@@ -67,12 +69,14 @@ bootbspack: ./bin/bspack
 	@echo "Bootstrap seems finished, please check diffs in bspack"
 	git diff bin/bspack.ml
 
-releasebuild:
+releasebuild:./bin/bspack
 	@echo "Make release compiler"
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 
 	@echo "Make release ppx"
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bs_ppx.mli bin/bs_ppx.ml -o bin/bsppx
+
+
 stdlib:
 	cd stdlib && ./build.sh
 
