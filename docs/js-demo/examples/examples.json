@@ -1,0 +1,44 @@
+{
+    "Default Example" :
+    { "file" : "default.ml",
+      "eval" : true
+    },
+    "Event Handler" :
+    { "file" :  "event_handler.ml",
+      "eval" : false},
+    "Quick Sort":
+    {"file" : "quick_sort.ml",
+     "eval" : true
+    },
+    "Tail Call" :
+    {
+      "file" : "tailcall.ml",
+      "eval" : true
+    },
+    "Functional Programming" :
+    {
+      "file" : "fp.ml",
+      "eval" : true
+    },
+    "Curry Optimization" :
+    {
+      "file" : "curry.ml",
+      "eval" : true
+    },
+    "For Loop" : {
+      "file" : "for_loop.ml",
+      "eval" : true
+    },
+    "Use Standard Library" : {
+      "file" : "use_stdlib.ml",
+      "eval" : true
+    },
+    "JS Objects" : {
+      "file" : "js_object.ml",
+      "eval" : true
+    },
+    "Left Pad" : {
+      "file" : "left_pad.ml",
+      "eval" : true
+    }
+}

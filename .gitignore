@@ -40,7 +40,7 @@ bsppx
 jscomp/tools/ocamlpack*
 
 .idea
-exports.js
+
 node_modules
 oxml
 test.json
