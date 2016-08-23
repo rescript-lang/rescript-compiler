@@ -315,13 +315,17 @@ let handle_attributes
         Obj_create labels(* Need fetch label here, for better error message *)
       | {set_index = true} 
         ->
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
         begin match arg_types with 
         | [_obj; _v ; _value] 
           -> 
           Js_set_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
         end
-      | {get_index = true} -> 
+      | {get_index = true} ->
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
         begin match arg_types with 
         | [_obj; _v ] -> 
           Js_get_index

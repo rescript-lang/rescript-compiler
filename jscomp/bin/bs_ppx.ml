@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/19-15:31 *)
+(** Bundled by bspack 08/22-17:28 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4255,7 +4255,7 @@ type t  =
   | Bs of arg_kind list  * arg_type *   ffi
   | Normal 
 
-type prim =  Primitive.description
+
 
 
 
@@ -4349,7 +4349,7 @@ type ffi =
   | Js_get_index
   | Js_set_index
 
-type prim =  Primitive.description
+
 
 let valid_js_char =
   let a = Array.init 256 (fun i ->
@@ -4368,7 +4368,7 @@ let valid_first_js_char =
 (** Approximation could be improved *)
 let valid_ident (s : string) =
   let len = String.length s in
-  valid_js_char s.[0] && valid_first_js_char s.[0] &&
+  len > 0 && valid_js_char s.[0] && valid_first_js_char s.[0] &&
   (let module E = struct exception E end in
    try
      for i = 1 to len - 1 do
@@ -4379,21 +4379,18 @@ let valid_ident (s : string) =
    with E.E -> false )  
   
 let valid_global_name ?loc txt =
-  let error () =
-    Location.raise_errorf ?loc "Not a valid  name %s"  txt  in
-  if txt = "" then
-    error ()
-  else
+  if not (valid_ident txt) then
     let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
     List.iter
       (fun s ->
-         if not (valid_ident s) then error ()
+         if not (valid_ident s) then
+           Location.raise_errorf ?loc "Not a valid  name %s"  txt
       ) v      
 
 let valid_method_name ?loc txt =         
-  let error () =
-    Location.raise_errorf ?loc "Not a valid  name %s"  txt  in
-  if not (valid_ident txt) then error ()
+  if not (valid_ident txt) then
+    Location.raise_errorf ?loc "Not a valid  name %s"  txt
+
 
 
 let check_external_module_name ?loc x = 
@@ -4597,13 +4594,17 @@ let handle_attributes
         Obj_create labels(* Need fetch label here, for better error message *)
       | {set_index = true} 
         ->
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
         begin match arg_types with 
         | [_obj; _v ; _value] 
           -> 
           Js_set_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
         end
-      | {get_index = true} -> 
+      | {get_index = true} ->
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
         begin match arg_types with 
         | [_obj; _v ] -> 
           Js_get_index
