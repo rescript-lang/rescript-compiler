@@ -51,12 +51,20 @@ things like this:
 
 [source,bash]
 -----------------------------------------------------------
-bsc -bs-package-name your_package -bs-package-output goog:lib/goog xx.ml
+bsc -bs-package-name your_package -bs-package-output goog:lib/goog -c xx.ml
 -----------------------------------------------------------
 
 
 NOTE: User can supply multiple `-bs-package-output` at the same time.
 
+For example:
+
+[source,bash]
+------------
+bsc -bs-package-name name -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -c x.ml
+------------
+
+It will generate `x.js` in `lib/js` as commonjs module, `lib/goog` as google module and `lib/amdjs` as amdjs module at the same time.
 
 You would then need a bundler for the different module systems:
 `webpack` supports `commonjs` and `amdjs` while
