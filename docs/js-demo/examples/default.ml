@@ -1,0 +1,3 @@
+
+Js.log "Hello BuckleScript!"
+
