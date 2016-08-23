@@ -61,7 +61,8 @@ type ffi =
   | Obj_create of arg_label list
   | Js_global of js_val 
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of external_module_name      
+  | Js_module_as_fn of external_module_name
+  | Js_module_as_class of external_module_name             
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_val
@@ -137,7 +138,8 @@ let check_ffi ?loc ffi =
     -> ()
 
   | Js_module_as_var external_module_name
-  | Js_module_as_fn external_module_name       
+  | Js_module_as_fn external_module_name
+  | Js_module_as_class external_module_name             
     -> check_external_module_name external_module_name
   | Js_new {external_module_name ; txt = name}
   | Js_call {external_module_name ; txt = {name ; _}}
@@ -300,7 +302,19 @@ let handle_attributes
     let result_type = aux result_type_ty in 
     let ffi = 
       match st with 
-      | {mk_obj = true} -> 
+      | {mk_obj = true;
+
+         val_name = None; 
+         external_module_name = None ;
+         module_as_val = None;
+         val_send = None;
+         splice = false;
+         new_name = None;
+         call_name = None;
+         set_name = None ;
+         get_name = None ;
+         get_index = false ;         
+        } -> 
         let labels = List.map (function
           | {arg_type = Unit ; arg_label = (Empty as l)}
             -> l 
@@ -313,7 +327,24 @@ let handle_attributes
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
         Obj_create labels(* Need fetch label here, for better error message *)
-      | {set_index = true} 
+      | {mk_obj = true; _}
+        ->
+        Location.raise_errorf ~loc "conflict attributes found"                
+      | {set_index = true;
+
+         val_name = None; 
+         external_module_name = None ;
+         module_as_val = None;
+         val_send = None;
+         splice = false;
+         get_index = false;
+         new_name = None;
+         call_name = None;
+         set_name = None ;
+         get_name = None ;
+         mk_obj = false ; 
+
+        } 
         ->
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
@@ -323,7 +354,23 @@ let handle_attributes
           Js_set_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
         end
-      | {get_index = true} ->
+      | {set_index = true; _}
+        ->
+        Location.raise_errorf ~loc "conflict attributes found"        
+        
+      | {get_index = true;
+
+         val_name = None; 
+         external_module_name = None ;
+         module_as_val = None;
+         val_send = None;
+         splice = false;
+         new_name = None;
+         call_name = None;
+         set_name = None ;
+         get_name = None ;
+         mk_obj = false ; 
+        } ->
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
         begin match arg_types with 
@@ -331,11 +378,39 @@ let handle_attributes
           Js_get_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
         end
-      | {module_as_val = Some v } ->
-        begin match arg_types_ty with         
-          | [] -> Js_module_as_var v
-          | _ -> Js_module_as_fn v                    
-        end              
+      | {get_index = true; _}
+        -> Location.raise_errorf ~loc "conflict attributes found"        
+      | {module_as_val = Some v ;
+
+         get_index = false;
+         val_name ;
+         new_name ;
+         (*TODO: a better way to avoid breaking existing code,
+           we need tell the difference from 
+           {[
+             1. [@@bs.val "x"]
+             2. external x : .. "x" [@@bs.val ]
+             3. external x : .. ""  [@@bs.val]
+           ]}
+         *)         
+         external_module_name = None ;
+         val_send = None;
+         splice = false;
+         call_name = None;
+         set_name = None ;
+         get_name = None ;
+         mk_obj = false ;          
+        } ->
+        begin match arg_types_ty, new_name, val_name  with         
+          | [], None,  _ -> Js_module_as_var v
+          | _, None, _ -> Js_module_as_fn v
+          | _, Some _, Some _ ->
+            Location.raise_errorf ~loc "conflict attributes found"
+          | _, Some n, None
+            -> Js_module_as_class v                
+        end
+      | {module_as_val = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found" 
       | {call_name = Some name ;
          splice; 
          external_module_name;
