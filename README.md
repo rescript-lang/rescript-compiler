@@ -49,12 +49,12 @@ from the git repository places them in `./bin`.
 
 ## Manually Building BuckleScript
 
-See [Developing BuckleScript](./docs/Developing-bucklescript.md) for detailed instructions on manually building BuckleScript.
+See [Developing BuckleScript](./site/docsource/Developing-bucklescript.md) for detailed instructions on manually building BuckleScript.
 
 ## Detailed Documentation
 
 See http://bloomberg.github.io/bucklescript for detailed documentation on BuckleScript. If you'd
-like to contribute content [see here](https://github.com/bloomberg/bucklescript/blob/master/docs)
+like to contribute content [see here](https://github.com/bloomberg/bucklescript/blob/master/site/docsource)
 for the documentation source.
 
 ## How BuckleScript Works
