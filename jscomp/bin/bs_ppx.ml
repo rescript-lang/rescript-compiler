@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/23-11:54 *)
+(** Bundled by bspack 08/24-11:29 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4440,36 +4440,51 @@ let check_ffi ?loc ffi =
    TODO: we should emit an warning if we bind 
    two external files to the same module name
 *)
+type bundle_source =
+  [`Nm_payload of string
+  |`Nm_external of string
+  | `Nm_val of string      
+  ]  
 
+let string_of_bundle_source (x : bundle_source) =
+  match x with
+  | `Nm_payload x
+  | `Nm_external x
+  | `Nm_val x -> x   
+type name_source =
+  [ bundle_source  
+  | `Nm_na
+
+  ]
 type st = 
-  { val_name : string option;
+  { val_name : name_source;
     external_module_name : external_module_name option;
     module_as_val : external_module_name option;
-    val_send : string option;
+    val_send : name_source;
     splice : bool ; (* mutable *)
     set_index : bool; (* mutable *)
     get_index : bool;
-    new_name : string option ;
-    call_name : string option;
-    set_name : string option ;
-    get_name : string option ;
+    new_name : name_source ;
+    call_name : name_source ;
+    set_name : name_source ;
+    get_name : name_source ;
     mk_obj : bool ;
 
   }
 
 let init_st = 
   {
-    val_name = None; 
+    val_name = `Nm_na; 
     external_module_name = None ;
     module_as_val = None;
-    val_send = None;
+    val_send = `Nm_na;
     splice = false;
     set_index = false;
     get_index = false;
-    new_name = None;
-    call_name = None;
-    set_name = None ;
-    get_name = None ;
+    new_name = `Nm_na;
+    call_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
     mk_obj = false ; 
 
   }
@@ -4503,13 +4518,13 @@ let handle_attributes
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string) =
   let prim_name_or_pval_prim =
-    if String.length prim_name = 0 then  pval_prim
-    else  prim_name  (* need check name *)
+    if String.length prim_name = 0 then  `Nm_val pval_prim
+    else  `Nm_external prim_name  (* need check name *)
   in    
   let name_from_payload_or_prim payload = 
     match Ast_payload.is_single_string payload with 
-    | Some _ as val_name ->  val_name
-    | None -> Some prim_name_or_pval_prim
+    | Some  val_name ->  `Nm_payload val_name
+    | None ->  prim_name_or_pval_prim
     in 
     let result_type_ty, arg_types_ty =
       Ast_core_type.list_of_arrow type_annotation in
@@ -4548,7 +4563,9 @@ let handle_attributes
                     { st with
                       module_as_val = 
                         Some
-                          { bundle = prim_name_or_pval_prim ;
+                          { bundle =
+                              string_of_bundle_source
+                                (prim_name_or_pval_prim :> bundle_source) ;
                             bind_name = Some pval_prim}
                     }
                   | _  -> Location.raise_errorf ~loc "Illegal attributes"
@@ -4584,15 +4601,15 @@ let handle_attributes
       match st with 
       | {mk_obj = true;
 
-         val_name = None; 
+         val_name = `Nm_na; 
          external_module_name = None ;
          module_as_val = None;
-         val_send = None;
+         val_send = `Nm_na;
          splice = false;
-         new_name = None;
-         call_name = None;
-         set_name = None ;
-         get_name = None ;
+         new_name = `Nm_na;
+         call_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
          get_index = false ;         
         } -> 
         let labels = List.map (function
@@ -4612,16 +4629,16 @@ let handle_attributes
         Location.raise_errorf ~loc "conflict attributes found"                
       | {set_index = true;
 
-         val_name = None; 
+         val_name = `Nm_na; 
          external_module_name = None ;
          module_as_val = None;
-         val_send = None;
+         val_send = `Nm_na;
          splice = false;
          get_index = false;
-         new_name = None;
-         call_name = None;
-         set_name = None ;
-         get_name = None ;
+         new_name = `Nm_na;
+         call_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
          mk_obj = false ; 
 
         } 
@@ -4640,15 +4657,15 @@ let handle_attributes
         
       | {get_index = true;
 
-         val_name = None; 
+         val_name = `Nm_na; 
          external_module_name = None ;
          module_as_val = None;
-         val_send = None;
+         val_send = `Nm_na;
          splice = false;
-         new_name = None;
-         call_name = None;
-         set_name = None ;
-         get_name = None ;
+         new_name = `Nm_na;
+         call_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
          mk_obj = false ; 
         } ->
         if String.length prim_name <> 0 then 
@@ -4674,89 +4691,94 @@ let handle_attributes
            ]}
          *)         
          external_module_name = None ;
-         val_send = None;
+         val_send = `Nm_na;
          splice = false;
-         call_name = None;
-         set_name = None ;
-         get_name = None ;
+         call_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
          mk_obj = false ;          
         } ->
         begin match arg_types_ty, new_name, val_name  with         
-          | [], None,  _ -> Js_module_as_var v
-          | _, None, _ -> Js_module_as_fn v
-          | _, Some _, Some _ ->
+          | [], `Nm_na,  _ -> Js_module_as_var v
+          | _, `Nm_na, _ -> Js_module_as_fn v
+          | _, #bundle_source, #bundle_source ->
             Location.raise_errorf ~loc "conflict attributes found"
-          | _, Some n, None
-            -> Js_module_as_class v                
+          | _, (`Nm_val _ | `Nm_external _) , `Nm_na
+            -> Js_module_as_class v
+          | _, `Nm_payload _ , `Nm_na
+            ->
+            Location.raise_errorf ~loc
+              "conflict attributes found: (bs.new should not carry payload here)"
+                 
         end
       | {module_as_val = Some _}
         -> Location.raise_errorf ~loc "conflict attributes found" 
-      | {call_name = Some name ;
+      | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
          splice; 
          external_module_name;
 
-         val_name = None ;
+         val_name = `Nm_na ;
          module_as_val = None;
-         val_send = None ;
+         val_send = `Nm_na ;
          set_index = false;
          get_index = false;
-         new_name = None;
-         set_name = None ;
-         get_name = None 
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na 
         } -> 
         Js_call {txt = {splice; name}; external_module_name}
-      | {call_name = Some _ } 
+      | {call_name = #bundle_source } 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
-      | {val_name = Some name;
+      | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
          external_module_name;
 
-         call_name = None ;
+         call_name = `Nm_na ;
          module_as_val = None;
-         val_send = None ;
+         val_send = `Nm_na ;
          set_index = false;
          get_index = false;
-         new_name = None;
-         set_name = None ;
-         get_name = None 
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na 
 
         } 
         -> 
         Js_global {txt = name; external_module_name}
-      | {val_name = Some _ }
+      | {val_name = #bundle_source }
         -> Location.raise_errorf ~loc "conflict attributes found"
       | {splice ;
          external_module_name = (Some _ as external_module_name);
 
-         val_name = None ;         
-         call_name = None ;
+         val_name = `Nm_na ;         
+         call_name = `Nm_na ;
          module_as_val = None;
-         val_send = None ;
+         val_send = `Nm_na ;
          set_index = false;
          get_index = false;
-         new_name = None;
-         set_name = None ;
-         get_name = None ;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
 
         }
         ->
-        let name = prim_name_or_pval_prim in
+        let name = string_of_bundle_source prim_name_or_pval_prim in
         begin match arg_types with
           | [] -> Js_global {txt = name; external_module_name}
           | _ -> Js_call {txt = {splice; name}; external_module_name}                     
         end        
 
-      | {val_send = Some name; 
+      | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
 
-         val_name = None  ;
-         call_name = None ;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
          module_as_val = None;
          set_index = false;
          get_index = false;
-         new_name = None;
-         set_name = None ;
-         get_name = None ;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
          external_module_name = None ;
         } -> 
         begin match arg_types with 
@@ -4765,35 +4787,35 @@ let handle_attributes
         | _ ->
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
         end
-      | {val_send = Some _} 
+      | {val_send = #bundle_source} 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
-      | {new_name = Some name;
+      | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
          external_module_name;
 
-         val_name = None  ;
-         call_name = None ;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
          module_as_val = None;
          set_index = false;
          get_index = false;
-         val_send = None ;
-         set_name = None ;
-         get_name = None 
+         val_send = `Nm_na ;
+         set_name = `Nm_na ;
+         get_name = `Nm_na 
         } 
         -> Js_new {txt =name; external_module_name}
-      | {new_name = Some _}
+      | {new_name = #bundle_source }
         -> Location.raise_errorf ~loc "conflict attributes found"
 
-      | {set_name = Some name;
+      | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
 
-         val_name = None  ;
-         call_name = None ;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
          module_as_val = None;
          set_index = false;
          get_index = false;
-         val_send = None ;
-         new_name = None ;
-         get_name = None ;
+         val_send = `Nm_na ;
+         new_name = `Nm_na ;
+         get_name = `Nm_na ;
          external_module_name = None
         } 
         -> 
@@ -4802,19 +4824,19 @@ let handle_attributes
           Js_set name 
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
         end
-      | {set_name = Some _}
+      | {set_name = #bundle_source}
         -> Location.raise_errorf ~loc "conflict attributes found"
 
-      | {get_name = Some name;
+      | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
 
-         val_name = None  ;
-         call_name = None ;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
          module_as_val = None;
          set_index = false;
          get_index = false;
-         val_send = None ;
-         new_name = None ;
-         set_name = None ;
+         val_send = `Nm_na ;
+         new_name = `Nm_na ;
+         set_name = `Nm_na ;
          external_module_name = None
         }
         ->
@@ -4823,7 +4845,7 @@ let handle_attributes
         | _ ->
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
         end
-      | {get_name = Some _}
+      | {get_name = #bundle_source}
         -> Location.raise_errorf ~loc "conflict attributes found"
       | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
     check_ffi ~loc ffi;
