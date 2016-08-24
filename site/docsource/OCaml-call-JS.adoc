@@ -5,7 +5,7 @@ extensions to the OCaml language. These BuckleScript extensions
 facilitate the integration of native JavaScript code and
 improve the generated code.
 
-Like TypeScript, when building type-safe bindings from JS to OCaml, 
+Like TypeScript, when building type-safe bindings from JS to OCaml,
 users have to write type declarations.
 In OCaml, unlike TypeScript, users do not need to create a separate
 `.d.ts` file,
@@ -44,7 +44,7 @@ type dom
 external dom : dom = "document" [@@bs.val]
 ---------------
 
-`bs.val` attribute is used to bind to a JavaScript value, 
+`bs.val` attribute is used to bind to a JavaScript value,
 it can be a function or plain value.
 
 
@@ -122,10 +122,10 @@ external add : int -> int -> int = "" [@@bs.module "x"]
 
 [source,ocaml]
 --------------
-type http 
+type http
 external http : http = "http" [@@bs.module] // <1>
 --------------
-<1> `external-declaration` is the module name 
+<1> `external-declaration` is the module name
 
 [NOTE]
 ======
@@ -138,19 +138,21 @@ external http : http = "" [@@bs.module]
 ======
 
 
-#### `bs.send`
+#### Binding to method: bs.send
 
-This attribute helps the user send a message to a JS object
+`bs.send` helps the user send a message to a JS object
 
 [source,ocaml]
 ---------
 type id
 (** Abstract type for id object *)
-external get_by_id : dom -> string -> id = "getElementById" [@@bs.send]
+external get_by_id : dom -> string -> id =
+  "getElementById" [@@bs.send]
 ---------
 
 The object is always the first argument and actual arguments follow.
 
+Input:
 [source,ocaml]
 --------
 getElementById dom "xx"
@@ -162,9 +164,34 @@ Output:
 dom.getElementById("xx")
 --------
 
-#### Getter/Setter `bs.get`, `bs.set`
-This attribute helps get and set the property of a JavaScript object.
+[NOTE]
+======
+*  if `external-declaration` is the same as value-name, it can be left empty, for example,
++
+[source,ocaml]
+--------------
+external getElementById : dom -> string -> id = ""
+[@@bs.send]
+--------------
+======
 
+#### Binding to dynamic key access/set: bs.set_index, bs.get_index
+
+This attribute allows dynamic access to a JavaScript property
+
+[source,ocaml]
+--------
+
+type t
+external create : int -> t = "Int32Array" [@@bs.new]
+external get : t -> int -> int = "" [@@bs.get_index]
+external set : t -> int -> int -> unit = "" [@@bs.set_index]
+--------
+
+
+#### Binding to Getter/Setter: bs.get, bs.set
+
+This attribute helps get and set the property of a JavaScript object.
 [source,ocaml]
 --------
 type textarea
@@ -172,22 +199,10 @@ external set_name : textarea -> string -> unit = "name" [@@bs.set]
 external get_name : textarea -> string = "name" [@@bs.get]
 --------
 
-#### `bs.set_index` `bs.get_index`
-
-This attribute allows dynamic access to a JavaScript property
-
-[source,ocaml]
---------
-module Int32Array = struct
-   type t
-   external create : int -> t = "Int32Array" [@@bs.new]
-   external get : t -> int -> int = "" [@@bs.get_index]
-   external set : t -> int -> int -> unit = "" [@@bs.set_index]
-end
---------
 
 
-### FFI to high-order JS functions
+
+### Binding to callbacks (high-order function)
 
 
 High order functions are functions where the callback can be another
@@ -287,7 +302,8 @@ To produce a function of type `'a0 -> .. 'aN -> 'b0 [@bs]`, as follows:
 
 [source,ocaml]
 ------------------------
-let f : 'a0 -> 'a1 -> .. 'b0 [@bs] = fun [@bs] a0 a1 .. aN -> b0
+let f : 'a0 -> 'a1 -> .. 'b0 [@bs] =
+  fun [@bs] a0 a1 .. aN -> b0
 let b : 'b0 = f a0 a1 a2 .. aN [@bs]
 ------------------------
 
@@ -309,23 +325,20 @@ Another more complex example:
 [source,ocaml]
 -----------------------------------------------------
 type 'a return = int -> 'a [@bs]
-type 'a u0 = int -> string -> 'a return  [@bs]
-
-(* [u0] has arity of 2, return a function
-   with arity 1 *)
-type 'a u1 = int -> string -> int -> 'a [@bs]
-
-(* [u1] has arity of 3 *)
-type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs]
-(* [u2] has arity of 2, reutrn a function
-   with arity 1
-*)
+type 'a u0 = int -> string -> 'a return  [@bs] // <1>
+type 'a u1 = int -> string -> int -> 'a [@bs] // <2>
+type 'a u2 = int -> string -> (int -> 'a [@bs]) [@bs] // <3>
 -----------------------------------------------------
+<1>  `u0` has arity of 2, return a function
+   with arity 1
+<2>  `u1` has arity of 3
+<3>  `u2` has arity of 2, reutrn a function  with arity 1
+
 
 
 #### Uncurried calling convention as an optimization
 
-##### Background:
+.Background:
 As we discussed before, we can compile any OCaml function as arity 1
 to
 support OCaml's curried calling convention.
@@ -422,7 +435,7 @@ not need the `[@bs]` annotation.
 =====
 
 
-#### Bindings to callbacks which relies on `this`
+#### Bindings to `this` based callbacks: bs.this
 
 Many JS libraries have callbacks which rely on `this` (the source), for
 example:
@@ -443,30 +456,32 @@ Instead, we introduced a special attribute
 [source,ocaml]
 -----------------------
 type x
-external onload : x -> (x -> int -> unit [@bs.this]) -> unit = "onload" [@@bs.set]
+external set_onload : x -> (x -> int -> unit [@bs.this]) -> unit = "onload" [@@bs.set]
 external resp : x -> int = "response" [@@bs.get]
-onload x begin fun [@bs.this] o v ->
+set_onload x begin fun [@bs.this] o v ->
   Js.log(resp o + v )
 end
 -----------------------
 
-The generated code would be as below:
-
+Output:
 [source,js]
 ------------------------------
 x.onload = function(v){
-  var o = this ;
+  var o = this ; // <1>
   console.log(o.response + v);
 }
 ------------------------------
+<1> The first argument is automatically bound to `this`
 
-`bs.obj` is the same as `bs`: except that its first parameter is
+`bs.this` is the same as `bs` : except that its first parameter is
 reserved for `this` and for arity of 0, there is no need for a redundant `unit` type:
 
 [source,ocaml]
 -----------------
-let f : 'obj -> unit [@bs.this] = fun [@bs.this] obj -> ....
-let f1 : 'obj -> 'a0 -> 'b [@bs.this] = fun [@bs.this] obj a -> ...
+let f : 'obj -> 'b' [@bs.this] =
+  fun [@bs.this] obj -> ....
+let f1 : 'obj -> 'a0 -> 'b [@bs.this] =
+  fun [@bs.this] obj a -> ...
 -----------------
 
 [NOTE]
@@ -480,9 +495,9 @@ User can also type `x` as a JS class too (see later)
 =====
 
 
-### FFI to JS plain objects
+### Binding to JS plain objects
 
-#### Js object convention
+.Convention:
 
 All JS objects of type `'a` are lifted to type `'a Js.t` to avoid
 conflict with OCaml's native object system (we support both OCaml's
@@ -492,7 +507,7 @@ native object system and FFI to JS's objects).
 while `#` is used in OCaml's object method dispatch.
 
 
-#### Create simple JS object literal and its typing
+#### Bindings to create simple JS object literal
 
 
 BuckleScript introduces `bs.obj` extension, for example:
@@ -523,7 +538,7 @@ into the type level, so you can write
 val u : [%bs.obj: < x : < y < z : int > > > ]
 ---------------------------------------------
 
-Users can also write expressione and types together as below:
+Users can also write expression and types together as below:
 
 [source,ocaml]
 ------------------
@@ -534,17 +549,19 @@ Even better, users can also write Objects in a collection:
 
 [source,ocaml]
 --------------------------------------------------------------------
-var xs = [%bs.obj [| { x = 3 } ; {x = 3 } |] : < x : int  > array  ]
-var ys = [%bs.obj [| { x = 3} : { x = 4 } |] ]
+let xs = [%bs.obj [| { x = 3 } ; {x = 3 } |] : < x : int  > array  ]
+let ys = [%bs.obj [| { x = 3} : { x = 4 } |] ]
 --------------------------------------------------------------------
 
-which will be compiled as below:
+Output:
 
 [source,js]
 ---------------------------------
 var xs = [ { x : 3 } , { x : 3 }]
 var ys = [ { x : 3 },  {x : 4 } ]
 ---------------------------------
+
+#### A more flexible way to create JS object
 
 `bs.obj` can also be used as an attribute in external declarations, like
 as below:
@@ -555,8 +572,8 @@ external make_config : hi:int -> lo:int -> unit -> t = "" [@@bs.obj]
 let v = make_config ~hi:2 ~lo:3
 --------------------------------------------------------------------
 
-will be compiled as
 
+Output:
 [source,js]
 -----------------------
   let v = { hi:2, lo:3}
@@ -566,10 +583,13 @@ You can use optional as well
 
 [source,ocaml]
 ---------------------------------------------------------------------
-external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj]
+external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj] // <1>
 let u = make_config ~hi:3 ()
-let v = make_config ~hi:3 ~lo:2 ()
+let v = make_config ~lo:2 ~hi:3  ()
 ---------------------------------------------------------------------
+<1> In OCaml, the order of label does not matter, and the evaluation order
+    of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
+    are full-filled (including optional arguments), it is common to have a `unit` type before the result
 
 Output:
 [source,js]
@@ -579,35 +599,66 @@ let v = {hi : 3 , lo: 2}
 ------------------------
 
 
-#### Field access
+
+#### JS property getter/setter and method application
 
 
 As we said:  `##` is used in both object method dispatch and field access.
 
 [source,ocaml]
 -------------------------------------------------------------
-f##field (* field access should not come with any argument *)
-f##method args0 args1 args2 (* method with arities of 3 *)
+f##property // <1>
+f##property#= v
+f##js_method args0 args1 args2 <2>
 -------------------------------------------------------------
+<1> property get should not come with any argument, this will be guaranteed by the type checker
+<2> Here `method` is of arity 3
 
-JS's *method is not a function* is a classic example shown below:
+[NOTE]
+=====
+All JS method application is uncurried, JS's *method is not a function*, this invariant can
+be guaranteed by OCaml's type checker, a classic example shown below:
 
 [source,js]
--------------------------------------------------------------------------------------------------
+-----------
 console.log('fine')
 var log = console.log;
-log('fine') // May cause exception, implementation dependent, `console.log` may depend on `this`
--------------------------------------------------------------------------------------------------
+log('fine') // <1>
+-----------
+<1> May cause exception, implementation dependent, `console.log` may depend on `this`
+=====
 
-So to make it clearly type safe, `field` accesses should not come with
-any argument.
-
+In BuckleScript
 [source,ocaml]
---------------------------------------------------
-let fn = f##field in
-let a = fn a b
+--------------
+let fn = f0##f in
+let a = fn 1 2
 (* f##field a b would think `field` as a method *)
---------------------------------------------------
+--------------
+
+is different from
+[source,ocaml]
+--------------
+let b = f1##f 1 2
+--------------
+
+The compiler will infer as below:
+[source,ocaml]
+--------------
+val f0 : < f : int -> int -> int  > Js.t
+val f1 : < f : int -> int -> int [@bs.meth] > Js.t
+--------------
+
+If we type `console` properly in OCaml, user could only write
+[source,ocaml]
+--------------
+console##log "fine"
+let u = console##log
+let () = u "fine" // <1>
+--------------
+<1> OCaml compiler will complain
+
+
 
 [NOTE]
 =====
@@ -617,20 +668,21 @@ function instead, so it is still sound and type safe.
 =====
 
 
-TODO: Currently `bs.obj` only supports plain JS object literals with no
-support fpr JS methods, `class type` (discussed later) supports JS style
-methods.
 
 Another example:
 
 [source,ocaml]
 -----------------------------------------------------------------------
+let u = [%bs.obj {
+  x = { y = { z = 3 }};
+  fn = fun [@bs] u v -> u + v // <1>
+  } ]
 
-let u = [%bs.obj {x = { y = { z = 3 }}; fn = fun [@bs] u v -> u + v } ]
 let h = u##x##y##z
 let a = h##fn
-let b = a 1 2
+let b = a 1 2 [@bs]
 -----------------------------------------------------------------------
+<1> `fn` property is not method, it does not rely on `this`
 
 Output:
 [source,js]
@@ -650,7 +702,7 @@ below:
 let b x y h = h#@fn x y
 -----------------------
 
-Will be compiled as
+Output:
 
 [source,js]
 -------------------
@@ -664,13 +716,54 @@ And the compiler will infer the type of `b` as
 [source,ocaml]
 ------------------------------------------------------------------
 
-val b : 'a -> 'b -> [%bs.obj: < fn :  'a -> 'b -> 'c [@bs] ] -> 'c
+val b : 'a -> 'b ->  < fn :  'a -> 'b -> 'c [@bs] > Js.t -> 'c
 ------------------------------------------------------------------
 
-As we said before, currently `[%bs.obj]` is only used for object
-literals with no `this` semantics.
 
+#### Create JS objects with `this` semantics
 
+[source,ocaml]
+--------------
+let v2  =
+  let x = 3. in
+  object (self)
+    method hi x  y = self##say x +. y
+    method say x =  x *. self## x ()
+    method x () = x
+  end [@bs]
+--------------
+
+Output:
+[source,js]
+-----------
+var v2 = {
+  hi: function (x, y) {
+    var self = this ;
+    return self.say(x) + y;
+  },
+  say: function (x) {
+    var self = this ;
+    return x * self.x();
+  },
+  x: function () {
+    return 3;
+  }
+};
+-----------
+
+Compiler will infer
+[source,ocaml]
+--------------
+val v2 : object
+  method hi : float -> float -> float
+  method say : float -> float
+  method x : unit -> float
+end [@bs]
+--------------
+
+#### Two ways to define JS object types
+
+// TODO
 #### FFI to JS classes
 
 
