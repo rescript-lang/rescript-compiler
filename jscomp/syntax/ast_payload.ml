@@ -60,6 +60,11 @@ let as_string_exp (x : t ) =
       _}] -> Some e
   | _  -> None
 
+let as_core_type loc x =
+  match  x with
+  | Parsetree.PTyp x -> x
+  | _ -> Location.raise_errorf ~loc "except a core type"
+           
 let as_ident (x : t ) =
   match x with
   | PStr [

@@ -37,10 +37,11 @@ type js_call = {
   splice : bool ;
   name : string;
 }
-
+type pipe = bool 
 type js_send = { 
   splice : bool ; 
-  name : string 
+  name : string ;
+  pipe : pipe   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_val = string external_module 

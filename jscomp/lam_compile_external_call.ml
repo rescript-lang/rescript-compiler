@@ -229,7 +229,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
           E.var (Ext_ident.create_js name)
       end
-    | Js_send {splice  = js_splice ; name } -> 
+    | Js_send {splice  = js_splice ; name ; pipe = false} -> 
       begin match args  with
         | self :: args -> 
           let [@warning"-8"] ( self_type::arg_types )
@@ -239,6 +239,19 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | _ -> 
           assert false 
       end
+    | Js_send { name ; pipe = true ; splice = js_splice}
+      -> (* splice should not happen *)
+      let self, args =
+        match List.rev args with
+        | self :: args -> self, List.rev args
+        | _ -> assert false in
+      let self_type, arg_types =
+        match List.rev arg_types with
+        | self_type ::  arg_types -> self_type, List.rev arg_types
+        | _ -> assert false in                                      
+      let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
+      E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
+
     | Js_get name -> 
       begin match args with 
       | [obj] ->
