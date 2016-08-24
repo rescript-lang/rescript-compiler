@@ -5,26 +5,24 @@ extensions to the OCaml language. These BuckleScript extensions
 facilitate the integration of native JavaScript code and
 improve the generated code.
 
-Like TypeScript, when building type-safe bindings from JS to OCaml, the
-user has to write type declarations.
-In OCaml, unlike TypeScript, user does not need to create a separate
+Like TypeScript, when building type-safe bindings from JS to OCaml, 
+users have to write type declarations.
+In OCaml, unlike TypeScript, users do not need to create a separate
 `.d.ts` file,
-since the type declaration also written in OCaml.
+since the type declarations is an integral part of OCaml.
 
 The FFI is divided into several components:
 
-- Binding to JS first-order functions
-- Binding to JS high-order functions
-- Binding to JS object literals
-- Binding to JS classes
-- Extensions to the language for debugger, regex and embedding raw JS
+- Binding to simple functions and values
+- Binding to high-order functions
+- Binding to object literals
+- Binding to classes
+- Extensions to the language for debugger, regex and embedding arbitrary JS
 code
 
 ### FFI to simple JS functions and supported attributes
 
-This part is similar to
-http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html[traditional
-FFI],
+This part is similar to http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html[traditional FFI],
 with syntax as described below:
 
 [source,ocaml]
@@ -36,29 +34,44 @@ external-declaration :=  string-literal
 Users need to declare types for foreign functions (JS functions here)
 and provide customized `attributes`.
 
-####  `bs.val`
+####  Binding to global value: bs.val
 
 [source,ocaml]
 ---------------
 external imul : int -> int -> int = "Math.imul" [@@bs.val]
+type dom
+(* Abstract type for the DOM *)
+external dom : dom = "document" [@@bs.val]
 ---------------
+
+`bs.val` attribute is used to bind to a JavaScript value, 
+it can be a function or plain value.
+
 
 
 [NOTE]
 =====
-If you want to make a single FFI for both C functions and
+* If `external-declaration` is the same as `value-name`, user can leave `external-declaration` empty,
+for example:
++
+[source,ocaml]
+-------------
+external document : dom = "" [@@bs.val]
+-------------
+
+* If you want to make a single FFI for both C functions and
 JavaScript functions, you can
 give the JavaScript foreign function a different name:
-
++
 [source,ocaml]
 ---------------
 external imul : int -> int -> int = "c_imul" [@@bs.val "Math.imul"]
 ---------------
 =====
 
-#### `bs.new`
+#### Binding to JavaScript constructor 
 
-This attribute is used to create a JavaScript object.
+`bs.new` is used to create a JavaScript object.
 
 [source,ocaml]
 ----------
@@ -71,22 +84,58 @@ Output:
 var date = new Date();
 ----------
 
-#### `bs.val`
 
-This attribute is used to bind to a JavaScript value
 
+#### Binding to a value from a module: bs.module
+
+Input:
 [source,ocaml]
-----------
-type dom
-(* Abstract type for the DOM *)
-external dom : dom = "document" [@@bs.val]
-let dom = dom
-----------
+--------
+external add : int -> int -> int = "add" [@@bs.module "x"]
+external add2 : int -> int -> int = "add2"[@@bs.module "y", "U"] // <1>
+let f = add 3 4
+let g = add2 3 4
+--------
+<1> "U" will hint the compiler to generate a better name for the module, see output
+
 Output:
 [source,js]
-----------
-var dom = document
-----------
+-----------
+var U = require("y");
+var X = require("x");
+var f = X.add(3, 4);
+var g = U.add2(3, 4);
+-----------
+
+[NOTE]
+======
+* if `external-declaration` is the same as value-name, it can be left empty, for example,
++
+[source,ocaml]
+--------------
+external add : int -> int -> int = "" [@@bs.module "x"]
+--------------
+
+======
+
+#### Binding the whole module as a value or function
+
+[source,ocaml]
+--------------
+type http 
+external http : http = "http" [@@bs.module] // <1>
+--------------
+<1> `external-declaration` is the module name 
+
+[NOTE]
+======
+*  if `external-declaration` is the same as value-name, it can be left empty, for example,
++
+[source,ocaml]
+--------------
+external http : http = "" [@@bs.module]
+--------------
+======
 
 
 #### `bs.send`
@@ -136,40 +185,6 @@ module Int32Array = struct
    external set : t -> int -> int -> unit = "" [@@bs.set_index]
 end
 --------
-
-#### `bs.module`
-
-Qualify the JavaScript value by a module name
-
-Input:
-[source,ocaml]
---------
-external add : int -> int -> int = "add"
-  [@@bs.val] [@@bs.module "x"]
-let f = add 3 4
---------
-
-Output:
-[source,js]
------------
-var X = require("x")
-var f = X.add(3,4)
------------
-
-Input:
-[source,ocaml]
---------
-external add : int -> int -> int = "add"
-[@@bs.val] [@@bs.module "x" "U"]
-let f = add 3 4
---------
-
-Output:
-[source,js]
------------
-var U = require("x")
-var f = U.add(3,4)
------------
 
 
 ### FFI to high-order JS functions
