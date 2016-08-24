@@ -69,7 +69,7 @@ external imul : int -> int -> int = "c_imul" [@@bs.val "Math.imul"]
 ---------------
 =====
 
-#### Binding to JavaScript constructor 
+#### Binding to JavaScript constructor: bs.new
 
 `bs.new` is used to create a JavaScript object.
 
