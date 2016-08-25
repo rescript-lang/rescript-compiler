@@ -77,3 +77,14 @@ Trigger the generation of TypeScript `.d.ts` files.
 typescript. This is still experimental.
 
 For more options, please see the documentation of `bsc -help`.
+
+
+### -bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli
+
+If users don't use any bs specific annotaions, user can explicitly turn it off.
+Another use case is that users can use `-ppx` explicitly as below:
+
+[source,ocaml]
+--------------
+bsc -c -ppx bsppx -bs-no-builtin-ppx-ml c.ml
+--------------
