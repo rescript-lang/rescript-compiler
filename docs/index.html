@@ -544,21 +544,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_bindings_to_code_this_code_based_callbacks_bs_this">Bindings to <code>this</code> based callbacks: bs.this</a></li>
 </ul>
 </li>
-<li><a href="#_binding_to_js_plain_objects">Binding to JS plain objects</a>
+<li><a href="#_binding_to_js_objects">Binding to JS objects</a>
 <ul class="sectlevel3">
-<li><a href="#_typing_javascript_objects">Typing JavaScript objects</a></li>
 <li><a href="#_simple_object_type">Simple object type</a></li>
-<li><a href="#_complex_object_type">Complex object type</a>
+<li><a href="#_complex_object_type">Complex object type</a></li>
+<li><a href="#_how_to_consume_js_property_and_methods">How to consume JS property and methods</a>
 <ul class="sectlevel4">
 <li><a href="#_getter_setter_annotation_to_js_properties">getter/setter annotation to JS properties</a></li>
 </ul>
 </li>
-<li><a href="#_bindings_to_create_simple_js_object_literal">Bindings to create simple JS object literal</a></li>
-<li><a href="#_a_more_flexible_way_to_create_js_object">A more flexible way to create JS object</a></li>
-<li><a href="#_js_property_getter_setter_and_method_application">JS property getter/setter and method application</a></li>
+<li><a href="#_create_js_objects_using_bs_obj">Create JS objects using bs.obj</a></li>
+<li><a href="#_create_js_objects_using_external">Create JS objects using external</a></li>
 <li><a href="#_create_js_objects_with_code_this_code_semantics">Create JS objects with <code>this</code> semantics</a>
 <ul class="sectlevel4">
-<li><a href="#_consume_js_class_api">Consume JS class API</a></li>
 <li><a href="#_method_chaining">Method chaining</a></li>
 </ul>
 </li>
@@ -573,8 +571,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_debugger_support">Debugger support</a></li>
 <li><a href="#_regex_support">Regex support</a></li>
 <li><a href="#_examples_2">Examples</a>
-<ul class="sectlevel3">
-<li><a href="#a-simple-example-binding-to-mocha-unit-test-library">A simple example: binding to mocha unit test library</a></li>
+<ul class="sectlevel4">
+<li><a href="#_a_simple_example_binding_to_mocha_unit_test_library">A simple example: binding to mocha unit test library</a></li>
 </ul>
 </li>
 </ul>
@@ -1884,20 +1882,17 @@ User can also type <code>x</code> as a JS class too (see later)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_binding_to_js_plain_objects"><a class="anchor" href="#_binding_to_js_plain_objects"></a>Binding to JS plain objects</h3>
+<h3 id="_binding_to_js_objects"><a class="anchor" href="#_binding_to_js_objects"></a>Binding to JS objects</h3>
 <div class="paragraph">
 <div class="title">Convention:</div>
 <p>All JS objects of type <code>'a</code> are lifted to type <code>'a Js.t</code> to avoid
 conflict with OCaml&#8217;s native object system (we support both OCaml&#8217;s
-native object system and FFI to JS&#8217;s objects).</p>
+native object system and FFI to JS&#8217;s objects), <code>##</code> is used in JS&#8217;s
+object method dispatch and field access, while <code>#</code> is used in OCaml&#8217;s
+object method dispatch.</p>
 </div>
 <div class="paragraph">
-<p><code>##</code> is used in JS&#8217;s object method dispatch and field access,
-while <code>#</code> is used in OCaml&#8217;s object method dispatch.</p>
-</div>
-<div class="sect3">
-<h4 id="_typing_javascript_objects"><a class="anchor" href="#_typing_javascript_objects"></a>Typing JavaScript objects</h4>
-<div class="paragraph">
+<div class="title">Typing JavaScript objects:</div>
 <p>OCaml supports object oriented style natively and provides structural type system.
 OCaml&#8217;s object system has different runtime semantics from JS object, but they
 share the same type system, all JS objects of type <code>'a</code> is typed as <code>'a Js.t</code></p>
@@ -1907,17 +1902,17 @@ share the same type system, all JS objects of type <code>'a</code> is typed as <
 <code>class type</code> style, they are mostly the same except that the latter is more feature rich
 (support inheritance) but more verbose.</p>
 </div>
-</div>
 <div class="sect3">
 <h4 id="_simple_object_type"><a class="anchor" href="#_simple_object_type"></a>Simple object type</h4>
 <div class="paragraph">
-<p>Suppose we have a JS file which exports two properties: <code>height</code> and <code>width</code>:</p>
+<p>Suppose we have a JS file <code>demo.js</code>
+which exports two properties: <code>height</code> and <code>width</code>:</p>
 </div>
 <div class="listingblock">
 <div class="title">demo.js</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">exports</span><span class="tok-p">.</span><span class="tok-nx">height</span> <span class="tok-o">=</span> <span class="tok-mi">3</span>
-<span class="tok-nx">exports</span><span class="tok-p">.</span><span class="tok-nx">width</span> <span class="tok-o">=</span> <span class="tok-mi">3</span></code></pre>
+<span class="tok-nx">exports</span><span class="tok-p">.</span><span class="tok-nx">width</span>  <span class="tok-o">=</span> <span class="tok-mi">3</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2036,178 +2031,9 @@ are treated as properties.</p>
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">wdith</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">draw</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_getter_setter_annotation_to_js_properties"><a class="anchor" href="#_getter_setter_annotation_to_js_properties"></a>getter/setter annotation to JS properties</h5>
-<div class="paragraph">
-<p>Since OCaml&#8217;s object system does not have getters/setters, we introduced two
-attributes <code>bs.get</code> and <code>bs.set</code> to help inform BuckleScript to compile
-them as property getters/setters.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">y</span>  <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
- <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-o">{</span><span class="tok-n">no_get</span><span class="tok-o">}]</span> <b class="conum">(1)</b>
-<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">type</span> <span class="tok-n">y0</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
- <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(2)</b>
-<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">type</span> <span class="tok-n">y1</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">}]</span> <b class="conum">(3)</b>
-<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">type</span> <span class="tok-n">y2</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(4)</b>
-<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">type</span> <span class="tok-n">y3</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span> <span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(5)</b>
-<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<ol>
-<li>
-<p>height is setter only</p>
-</li>
-<li>
-<p>getter return [int Js.null]</p>
-</li>
-<li>
-<p>getter return [int Js.undefined]</p>
-</li>
-<li>
-<p>getter return [int Js.null_undefined]</p>
-</li>
-<li>
-<p>getter only, return [int Js.null_undefined]</p>
-</li>
-</ol>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-Getter/Setter also applies to class type label
-</td>
-</tr>
-</table>
-</div>
-</div>
 </div>
 <div class="sect3">
-<h4 id="_bindings_to_create_simple_js_object_literal"><a class="anchor" href="#_bindings_to_create_simple_js_object_literal"></a>Bindings to create simple JS object literal</h4>
-<div class="paragraph">
-<p>BuckleScript introduces <code>bs.obj</code> extension, for example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-mi">3</span><span class="tok-o">}}}</span> <span class="tok-o">]</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">u</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-nx">y</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-nx">z</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">}}}}</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The compiler would infer <code>u</code> as type</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span>  <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span>  <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To make it more symmetric, we also apply the extension <code>bs.obj</code>
-into the type level, so you can write</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">]</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Users can also write expression and types together as below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">(</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}}}</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">]</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Even better, users can also write Objects in a collection:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">xs</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">[|</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">;</span> <span class="tok-o">{</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">|]</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">&gt;</span> <span class="tok-kt">array</span>  <span class="tok-o">]</span>
-<span class="tok-k">let</span> <span class="tok-n">ys</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">[|</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span><span class="tok-o">}</span> <span class="tok-o">:</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">4</span> <span class="tok-o">}</span> <span class="tok-o">|]</span> <span class="tok-o">]</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">xs</span> <span class="tok-o">=</span> <span class="tok-p">[</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">}</span> <span class="tok-p">,</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">}]</span>
-<span class="tok-kd">var</span> <span class="tok-nx">ys</span> <span class="tok-o">=</span> <span class="tok-p">[</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">},</span>  <span class="tok-p">{</span><span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">4</span> <span class="tok-p">}</span> <span class="tok-p">]</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_a_more_flexible_way_to_create_js_object"><a class="anchor" href="#_a_more_flexible_way_to_create_js_object"></a>A more flexible way to create JS object</h4>
-<div class="paragraph">
-<p><code>bs.obj</code> can also be used as an attribute in external declarations, like
-as below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">make_config</span> <span class="tok-o">:</span> <span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span>
-<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">2</span> <span class="tok-o">~</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-mi">3</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="js">  <span class="tok-kd">let</span> <span class="tok-nx">v</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">hi</span><span class="tok-o">:</span><span class="tok-mi">2</span><span class="tok-p">,</span> <span class="tok-nx">lo</span><span class="tok-o">:</span><span class="tok-mi">3</span><span class="tok-p">}</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can use optional as well</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">make_config</span> <span class="tok-o">:</span> <span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-o">?</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span> <b class="conum">(1)</b>
-<span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">3</span> <span class="tok-bp">()</span>
-<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-mi">2</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">3</span>  <span class="tok-bp">()</span></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<ol>
-<li>
-<p>In OCaml, the order of label does not matter, and the evaluation order
-of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
-are full-filled (including optional arguments), it is common to have a <code>unit</code> type before the result</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>Output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">let</span> <span class="tok-nx">u</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-nx">hi</span> <span class="tok-o">:</span> <span class="tok-mi">3</span><span class="tok-p">}</span>
-<span class="tok-kd">let</span> <span class="tok-nx">v</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-nx">hi</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">,</span> <span class="tok-nx">lo</span><span class="tok-o">:</span> <span class="tok-mi">2</span><span class="tok-p">}</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_js_property_getter_setter_and_method_application"><a class="anchor" href="#_js_property_getter_setter_and_method_application"></a>JS property getter/setter and method application</h4>
+<h4 id="_how_to_consume_js_property_and_methods"><a class="anchor" href="#_how_to_consume_js_property_and_methods"></a>How to consume JS property and methods</h4>
 <div class="paragraph">
 <p>As we said:  <code>##</code> is used in both object method dispatch and field access.</p>
 </div>
@@ -2221,7 +2047,7 @@ are full-filled (including optional arguments), it is common to have a <code>uni
 <div class="colist arabic">
 <ol>
 <li>
-<p>property get should not come with any argument, this will be guaranteed by the type checker</p>
+<p>property get should not come with any argument as we discussed above, which will be checked by the compiler</p>
 </li>
 <li>
 <p>Here <code>method</code> is of arity 3</p>
@@ -2317,16 +2143,191 @@ function instead, so it is still sound and type safe.</p>
 </tr>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_getter_setter_annotation_to_js_properties"><a class="anchor" href="#_getter_setter_annotation_to_js_properties"></a>getter/setter annotation to JS properties</h5>
 <div class="paragraph">
-<p>Another example:</p>
+<p>Since OCaml&#8217;s object system does not have getters/setters, we introduced two
+attributes <code>bs.get</code> and <code>bs.set</code> to help inform BuckleScript to compile
+them as property getters/setters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">y</span>  <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+ <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-o">{</span><span class="tok-n">no_get</span><span class="tok-o">}]</span> <b class="conum">(1)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y0</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+ <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(2)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y1</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">}]</span> <b class="conum">(3)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y2</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(4)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y3</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span> <span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(5)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>height</code> is setter only</p>
+</li>
+<li>
+<p>getter return <code>int Js.null</code></p>
+</li>
+<li>
+<p>getter return <code>int Js.undefined</code></p>
+</li>
+<li>
+<p>getter return <code>int Js.null_undefined</code></p>
+</li>
+<li>
+<p>getter only, return <code>int Js.null_undefined</code></p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Getter/Setter also applies to class type label
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_create_js_objects_using_bs_obj"><a class="anchor" href="#_create_js_objects_using_bs_obj"></a>Create JS objects using bs.obj</h4>
+<div class="paragraph">
+<p>Not only can we create bindings to JS objects, but also we can
+create JS objects in a type safe way in OCaml side:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-mi">3</span><span class="tok-o">}}}</span> <span class="tok-o">]</span> <b class="conum">(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>bs.obj</code> extension is used to mark <code>{}</code> as JS objects</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">u</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-nx">y</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-nx">z</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">}}}}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The compiler would infer <code>u</code> as type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span>  <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span>  <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To make it more symmetric,  extension <code>bs.obj</code> can also be applied
+into the type level, so you can write</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">u</span> <span class="tok-o">:</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Users can also write expression and types together as below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">(</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}}}</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">z</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">&gt;</span> <span class="tok-o">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Objects in a collection also works:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">xs</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">[|</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">;</span> <span class="tok-o">{</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">|]</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">&gt;</span> <span class="tok-kt">array</span>  <span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">ys</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">[|</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span><span class="tok-o">}</span> <span class="tok-o">:</span> <span class="tok-o">{</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">4</span> <span class="tok-o">}</span> <span class="tok-o">|]</span> <span class="tok-o">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">xs</span> <span class="tok-o">=</span> <span class="tok-p">[</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">}</span> <span class="tok-p">,</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">}]</span>
+<span class="tok-kd">var</span> <span class="tok-nx">ys</span> <span class="tok-o">=</span> <span class="tok-p">[</span> <span class="tok-p">{</span> <span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">},</span>  <span class="tok-p">{</span><span class="tok-nx">x</span> <span class="tok-o">:</span> <span class="tok-mi">4</span> <span class="tok-p">}</span> <span class="tok-p">]</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_create_js_objects_using_external"><a class="anchor" href="#_create_js_objects_using_external"></a>Create JS objects using external</h4>
+<div class="paragraph">
+<p><code>bs.obj</code> can also be used as an attribute in external declarations, as below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">make_config</span> <span class="tok-o">:</span> <span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">2</span> <span class="tok-o">~</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-mi">3</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">v</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-nx">hi</span><span class="tok-o">:</span><span class="tok-mi">2</span><span class="tok-p">,</span> <span class="tok-nx">lo</span><span class="tok-o">:</span><span class="tok-mi">3</span><span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Option argument is also supported:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">make_config</span> <span class="tok-o">:</span> <span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-o">?</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">3</span> <span class="tok-bp">()</span>
+<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">make_config</span> <span class="tok-o">~</span><span class="tok-n">lo</span><span class="tok-o">:</span><span class="tok-mi">2</span> <span class="tok-o">~</span><span class="tok-n">hi</span><span class="tok-o">:</span><span class="tok-mi">3</span>  <span class="tok-bp">()</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>In OCaml, the order of label does not matter, and the evaluation order
+of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
+are full-filled (including optional arguments), it is common to have a <code>unit</code> type before the result</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">u</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-nx">hi</span> <span class="tok-o">:</span> <span class="tok-mi">3</span><span class="tok-p">}</span>
+<span class="tok-kd">var</span> <span class="tok-nx">v</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-nx">hi</span> <span class="tok-o">:</span> <span class="tok-mi">3</span> <span class="tok-p">,</span> <span class="tok-nx">lo</span><span class="tok-o">:</span> <span class="tok-mi">2</span><span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, we can write JS style code in OCaml too (in a type safe way):</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-o">[%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span> <span class="tok-o">{</span>
-  <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}};</span>
+  <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">{</span> <span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-mi">3</span> <span class="tok-o">}</span> <span class="tok-o">};</span>
   <span class="tok-n">fn</span> <span class="tok-o">=</span> <span class="tok-k">fun</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-n">u</span> <span class="tok-n">v</span> <span class="tok-o">-&gt;</span> <span class="tok-n">u</span> <span class="tok-o">+</span> <span class="tok-n">v</span> <b class="conum">(1)</b>
   <span class="tok-o">}</span> <span class="tok-o">]</span>
-
 <span class="tok-k">let</span> <span class="tok-n">h</span> <span class="tok-o">=</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">x</span><span class="tok-o">##</span><span class="tok-n">y</span><span class="tok-o">##</span><span class="tok-n">z</span>
 <span class="tok-k">let</span> <span class="tok-n">a</span> <span class="tok-o">=</span> <span class="tok-n">h</span><span class="tok-o">##</span><span class="tok-n">fn</span>
 <span class="tok-k">let</span> <span class="tok-n">b</span> <span class="tok-o">=</span> <span class="tok-n">a</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
@@ -2335,7 +2336,8 @@ function instead, so it is still sound and type safe.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p><code>fn</code> property is not method, it does not rely on <code>this</code></p>
+<p><code>fn</code> property is not method, it does not rely on <code>this</code>,
+we will show how to create JS method in OCaml later.</p>
 </li>
 </ol>
 </div>
@@ -2350,17 +2352,21 @@ function instead, so it is still sound and type safe.</p>
 <span class="tok-kd">var</span> <span class="tok-nx">b</span> <span class="tok-o">=</span> <span class="tok-nx">a</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
 <div class="paragraph">
-<p>When the field is an uncurried function, there is a short-hand syntax as
-below:</p>
+<p>When the field is an uncurried function, a short-hand syntax <code>#@</code>
+is available:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">b</span> <span class="tok-n">x</span> <span class="tok-n">y</span> <span class="tok-n">h</span> <span class="tok-o">=</span> <span class="tok-n">h</span><span class="tok-o">#@</span><span class="tok-n">fn</span> <span class="tok-n">x</span> <span class="tok-n">y</span></code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Output:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2370,26 +2376,44 @@ below:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>And the compiler will infer the type of <code>b</code> as</p>
+<p>The compiler will infer the type of <code>b</code> as</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">b</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span>  <span class="tok-o">&lt;</span> <span class="tok-n">fn</span> <span class="tok-o">:</span>  <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span></code></pre>
 </div>
 </div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_create_js_objects_with_code_this_code_semantics"><a class="anchor" href="#_create_js_objects_with_code_this_code_semantics"></a>Create JS objects with <code>this</code> semantics</h4>
+<div class="paragraph">
+<p>The objects created above can not use <code>this</code> in the method, this is supported in
+BuckleScript too.</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v2</span>  <span class="tok-o">=</span>
   <span class="tok-k">let</span> <span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">3</span><span class="tok-o">.</span> <span class="tok-k">in</span>
-  <span class="tok-k">object</span> <span class="tok-o">(</span><span class="tok-n">self</span><span class="tok-o">)</span>
+  <span class="tok-k">object</span> <span class="tok-o">(</span><span class="tok-n">self</span><span class="tok-o">)</span> <b class="conum">(1)</b>
     <span class="tok-k">method</span> <span class="tok-n">hi</span> <span class="tok-n">x</span>  <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">self</span><span class="tok-o">##</span><span class="tok-n">say</span> <span class="tok-n">x</span> <span class="tok-o">+.</span> <span class="tok-n">y</span>
     <span class="tok-k">method</span> <span class="tok-n">say</span> <span class="tok-n">x</span> <span class="tok-o">=</span>  <span class="tok-n">x</span> <span class="tok-o">*.</span> <span class="tok-n">self</span><span class="tok-o">##</span> <span class="tok-n">x</span> <span class="tok-bp">()</span>
     <span class="tok-k">method</span> <span class="tok-n">x</span> <span class="tok-bp">()</span> <span class="tok-o">=</span> <span class="tok-n">x</span>
-  <span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
+  <span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(2)</b></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>self</code> is bound to <code>this</code> in generated JS code</p>
+</li>
+<li>
+<p><code>[@bs]</code> marks <code>object .. end</code> as a JS object</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
 <p>Output:</p>
@@ -2412,7 +2436,7 @@ below:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Compiler will infer</p>
+<p>Compiler  infer the type of <code>v2</code> as below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2423,10 +2447,8 @@ below:</p>
 <span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_consume_js_class_api"><a class="anchor" href="#_consume_js_class_api"></a>Consume JS class API</h5>
 <div class="paragraph">
-<p>For example,</p>
+<p>Below is another example to consume JS object :</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2453,20 +2475,6 @@ below:</p>
   <span class="tok-nx">u</span><span class="tok-p">.</span><span class="tok-nx">height</span> <span class="tok-o">=</span> <span class="tok-mi">30</span><span class="tok-p">;</span>
   <span class="tok-k">return</span> <span class="tok-nx">u</span><span class="tok-p">.</span><span class="tok-nx">draw</span><span class="tok-p">()</span>
 <span class="tok-p">}</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note the type system would guarantee that the user can not write such
-code:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">u</span><span class="tok-o">##</span><span class="tok-n">draw</span>
-<span class="tok-c">(* use v later -- this is not allowed, type system will complain *)</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This is more type safe than JavaScript&#8217;s <strong>method is not function</strong>.</p>
 </div>
 </div>
 <div class="sect4">
@@ -2519,9 +2527,9 @@ refer to external OCaml symbols in raw JS code.</p>
 <h4 id="_embedding_raw_js_code_as_statements"><a class="anchor" href="#_embedding_raw_js_code_as_statements"></a>Embedding raw JS code as statements</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-o">[%%</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">raw</span><span class="tok-o">{|</span>
-<span class="tok-n">console</span><span class="tok-o">.</span><span class="tok-n">log</span> <span class="tok-o">(</span><span class="tok-s2">&quot;hey&quot;</span><span class="tok-o">);</span>
-<span class="tok-o">|}]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">[</span><span class="tok-o">%%</span><span class="tok-nx">bs</span><span class="tok-p">.</span><span class="tok-nx">raw</span><span class="tok-p">{</span><span class="tok-o">|</span>
+  <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span> <span class="tok-p">(</span><span class="tok-s2">&quot;hey&quot;</span><span class="tok-p">);</span>
+<span class="tok-o">|</span><span class="tok-p">}]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2642,16 +2650,16 @@ bindings for it.
 more examples, please visit
 <a href="https://github.com/bloomberg/bucklescript-addons" class="bare">https://github.com/bloomberg/bucklescript-addons</a></p>
 </div>
-<div class="sect3">
-<h4 id="a-simple-example-binding-to-mocha-unit-test-library"><a class="anchor" href="#a-simple-example-binding-to-mocha-unit-test-library"></a>A simple example: binding to mocha unit test library</h4>
+<div class="sect4">
+<h5 id="_a_simple_example_binding_to_mocha_unit_test_library"><a class="anchor" href="#_a_simple_example_binding_to_mocha_unit_test_library"></a>A simple example: binding to mocha unit test library</h5>
 <div class="paragraph">
 <p>This is an example showing how too provide bindings to the
 <a href="https://mochajs.org/">mochajs</a> unit test framework.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">describe</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;describe&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
-<span class="tok-k">external</span> <span class="tok-n">it</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;it&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span> <span class="tok-s2">&quot;it&quot;</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">describe</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+<span class="tok-k">external</span> <span class="tok-n">it</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2661,7 +2669,7 @@ more examples, please visit
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">eq</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;deepEqual&quot;</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">call</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span> <span class="tok-s2">&quot;assert&quot;</span><span class="tok-o">]`</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">eq</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;deepEqual&quot;</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;assert&quot;</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">

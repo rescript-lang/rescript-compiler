@@ -495,18 +495,17 @@ User can also type `x` as a JS class too (see later)
 =====
 
 
-### Binding to JS plain objects
+### Binding to JS objects
 
 .Convention:
 
 All JS objects of type `'a` are lifted to type `'a Js.t` to avoid
 conflict with OCaml's native object system (we support both OCaml's
-native object system and FFI to JS's objects).
+native object system and FFI to JS's objects), `\##` is used in JS's
+object method dispatch and field access, while `#` is used in OCaml's
+object method dispatch.
 
-`\##` is used in JS's object method dispatch and field access,
-while `#` is used in OCaml's object method dispatch.
-
-#### Typing JavaScript objects
+.Typing JavaScript objects:
 
 OCaml supports object oriented style natively and provides structural type system.
 OCaml's object system has different runtime semantics from JS object, but they
@@ -518,13 +517,14 @@ OCaml provide two kinds of syntaxes to mode structural typing: `< p1 : t1 >` sty
 
 #### Simple object type
 
-Suppose we have a JS file which exports two properties: `height` and `width`:
+Suppose we have a JS file `demo.js`
+which exports two properties: `height` and `width`:
 
 [source,js]
 .demo.js
 -----------
 exports.height = 3
-exports.width = 3
+exports.width  = 3
 -----------
 
 There are different ways to writing binding to module `demo`,
@@ -607,133 +607,8 @@ So the type `rect` is the same as below:
 type rect = < height : int ; wdith : int ; draw : unit -> unit [@bs.meth] > Js.t
 --------------
 
-#####  getter/setter annotation to JS properties
 
-Since OCaml's object system does not have getters/setters, we introduced two
-attributes `bs.get` and `bs.set` to help inform BuckleScript to compile
-them as property getters/setters.
-
-[source,ocaml]
---------------------------------------------------------------
-type y  = <
- height : int [@@bs.set {no_get}] // <1>
-> Js.t
-type y0 = <
- height : int [@@bs.set] [@@bs.get {null}] // <2>
-> Js.t
-type y1 = <
-  height : int [@@bs.set] [@@bs.get {undefined}] // <3>
-> Js.t
-type y2 = <
-  height : int [@@bs.set] [@@bs.get {undefined; null}] // <4>
-> Js.t
-type y3 = <
-  height : int  [@@bs.get {undefined ; null}] // <5>
-> Js.t
-
---------------------------------------------------------------
-<1>  height is setter only
-<2>  getter return [int Js.null]
-<3>  getter return [int Js.undefined]
-<4>  getter return [int Js.null_undefined]
-<5>  getter only, return [int Js.null_undefined]
-
-NOTE: Getter/Setter also applies to class type label
-
-#### Bindings to create simple JS object literal
-
-
-BuckleScript introduces `bs.obj` extension, for example:
-
-[source,ocaml]
------------------------------------------
-let u = [%bs.obj { x = { y = { z = 3}}} ]
------------------------------------------
-
-Output:
-[source,js]
---------------------------------
-var u = { x : { y : { z : 3 }}}}
---------------------------------
-
-The compiler would infer `u` as type
-
-[source,ocaml]
---------------------
-val u : < x :  < y : < z : int > Js.t >  Js.t > Js.t
---------------------
-
-To make it more symmetric, we also apply the extension `bs.obj`
-into the type level, so you can write
-
-[source,ocaml]
----------------------------------------------
-val u : [%bs.obj: < x : < y < z : int > > > ]
----------------------------------------------
-
-Users can also write expression and types together as below:
-
-[source,ocaml]
-------------------
-let u = [%bs.obj ( { x = { y = { z = 3 }}} : < x : < y : < z : int > > > ]
-------------------
-
-Even better, users can also write Objects in a collection:
-
-[source,ocaml]
---------------------------------------------------------------------
-let xs = [%bs.obj [| { x = 3 } ; {x = 3 } |] : < x : int  > array  ]
-let ys = [%bs.obj [| { x = 3} : { x = 4 } |] ]
---------------------------------------------------------------------
-
-Output:
-
-[source,js]
----------------------------------
-var xs = [ { x : 3 } , { x : 3 }]
-var ys = [ { x : 3 },  {x : 4 } ]
----------------------------------
-
-#### A more flexible way to create JS object
-
-`bs.obj` can also be used as an attribute in external declarations, like
-as below:
-
-[source,ocaml]
---------------------------------------------------------------------
-external make_config : hi:int -> lo:int -> unit -> t = "" [@@bs.obj]
-let v = make_config ~hi:2 ~lo:3
---------------------------------------------------------------------
-
-
-Output:
-[source,js]
------------------------
-  let v = { hi:2, lo:3}
------------------------
-
-You can use optional as well
-
-[source,ocaml]
----------------------------------------------------------------------
-external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj] // <1>
-let u = make_config ~hi:3 ()
-let v = make_config ~lo:2 ~hi:3  ()
----------------------------------------------------------------------
-<1> In OCaml, the order of label does not matter, and the evaluation order
-    of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
-    are full-filled (including optional arguments), it is common to have a `unit` type before the result
-
-Output:
-[source,js]
-------------------------
-let u = {hi : 3}
-let v = {hi : 3 , lo: 2}
-------------------------
-
-
-
-#### JS property getter/setter and method application
+#### How to consume JS property and methods
 
 
 As we said:  `##` is used in both object method dispatch and field access.
@@ -744,7 +619,7 @@ f##property // <1>
 f##property#= v
 f##js_method args0 args1 args2 <2>
 -------------------------------------------------------------
-<1> property get should not come with any argument, this will be guaranteed by the type checker
+<1> property get should not come with any argument as we discussed above, which will be checked by the compiler
 <2> Here `method` is of arity 3
 
 [NOTE]
@@ -802,20 +677,143 @@ function instead, so it is still sound and type safe.
 
 
 
-Another example:
+
+
+#####  getter/setter annotation to JS properties
+
+Since OCaml's object system does not have getters/setters, we introduced two
+attributes `bs.get` and `bs.set` to help inform BuckleScript to compile
+them as property getters/setters.
 
 [source,ocaml]
------------------------------------------------------------------------
+--------------------------------------------------------------
+type y  = <
+ height : int [@@bs.set {no_get}] // <1>
+> Js.t
+type y0 = <
+ height : int [@@bs.set] [@@bs.get {null}] // <2>
+> Js.t
+type y1 = <
+  height : int [@@bs.set] [@@bs.get {undefined}] // <3>
+> Js.t
+type y2 = <
+  height : int [@@bs.set] [@@bs.get {undefined; null}] // <4>
+> Js.t
+type y3 = <
+  height : int  [@@bs.get {undefined ; null}] // <5>
+> Js.t
+
+--------------------------------------------------------------
+<1>  `height` is setter only
+<2>  getter return `int Js.null`
+<3>  getter return `int Js.undefined`
+<4>  getter return `int Js.null_undefined`
+<5>  getter only, return `int Js.null_undefined`
+
+NOTE: Getter/Setter also applies to class type label
+
+#### Create JS objects using bs.obj
+
+Not only can we create bindings to JS objects, but also we can
+create JS objects in a type safe way in OCaml side:
+
+
+[source,ocaml]
+--------------
+let u = [%bs.obj { x = { y = { z = 3}}} ] // <1>
+--------------
+<1> `bs.obj` extension is used to mark `{}` as JS objects
+
+Output:
+[source,js]
+--------------------------------
+var u = { x : { y : { z : 3 }}}}
+--------------------------------
+
+The compiler would infer `u` as type
+
+[source,ocaml]
+--------------------
+val u : < x :  < y : < z : int > Js.t >  Js.t > Js.t
+--------------------
+
+To make it more symmetric,  extension `bs.obj` can also be applied
+into the type level, so you can write
+
+[source,ocaml]
+--------------
+val u : [%bs.obj: < x : < y < z : int > > > ]
+--------------
+
+Users can also write expression and types together as below:
+
+[source,ocaml]
+------------------
+let u = [%bs.obj ( { x = { y = { z = 3 }}} : < x : < y : < z : int > > > ]
+------------------
+
+Objects in a collection also works:
+
+[source,ocaml]
+-------------
+let xs = [%bs.obj [| { x = 3 } ; {x = 3 } |] : < x : int  > array  ]
+let ys = [%bs.obj [| { x = 3} : { x = 4 } |] ]
+-------------
+
+Output:
+[source,js]
+---------------------------------
+var xs = [ { x : 3 } , { x : 3 }]
+var ys = [ { x : 3 },  {x : 4 } ]
+---------------------------------
+
+#### Create JS objects using external
+
+`bs.obj` can also be used as an attribute in external declarations, as below:
+[source,ocaml]
+--------------
+external make_config : hi:int -> lo:int -> unit -> t = "" [@@bs.obj]
+let v = make_config ~hi:2 ~lo:3
+--------------
+
+Output:
+[source,js]
+-----------------------
+var v = { hi:2, lo:3}
+-----------------------
+
+Option argument is also supported:
+[source,ocaml]
+---------------------------------------------------------------------
+external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj] // <1>
+let u = make_config ~hi:3 ()
+let v = make_config ~lo:2 ~hi:3  ()
+---------------------------------------------------------------------
+<1> In OCaml, the order of label does not matter, and the evaluation order
+    of arguments is undefined. Since the order does not matter, to make sure the compiler realize all the arguments
+    are full-filled (including optional arguments), it is common to have a `unit` type before the result
+
+Output:
+[source,js]
+------------------------
+var u = {hi : 3}
+var v = {hi : 3 , lo: 2}
+------------------------
+
+
+Now, we can write JS style code in OCaml too (in a type safe way):
+[source,ocaml]
+--------------
 let u = [%bs.obj {
-  x = { y = { z = 3 }};
+  x = { y = { z = 3 } };
   fn = fun [@bs] u v -> u + v // <1>
   } ]
-
 let h = u##x##y##z
 let a = h##fn
 let b = a 1 2 [@bs]
------------------------------------------------------------------------
-<1> `fn` property is not method, it does not rely on `this`
+--------------
+<1> `fn` property is not method, it does not rely on `this`,
+we will show how to create JS method in OCaml later.
 
 Output:
 [source,js]
@@ -827,44 +825,44 @@ var a = h.fn
 var b = a(1,2)
 -----------------------------------------------------------------
 
-When the field is an uncurried function, there is a short-hand syntax as
-below:
-
+[NOTE]
+=====
+When the field is an uncurried function, a short-hand syntax `#@`
+is available:
 [source,ocaml]
 -----------------------
 let b x y h = h#@fn x y
 -----------------------
-
-Output:
-
 [source,js]
 -------------------
 function b (x,y,h){
   return h.fn(x,y)
 }
 -------------------
-
-And the compiler will infer the type of `b` as
+The compiler will infer the type of `b` as
 
 [source,ocaml]
-------------------------------------------------------------------
-
+--------------
 val b : 'a -> 'b ->  < fn :  'a -> 'b -> 'c [@bs] > Js.t -> 'c
-------------------------------------------------------------------
+--------------
+=====
 
 
 #### Create JS objects with `this` semantics
-
+The objects created above can not use `this` in the method, this is supported in
+BuckleScript too.
 [source,ocaml]
 --------------
 let v2  =
   let x = 3. in
-  object (self)
+  object (self) // <1>
     method hi x  y = self##say x +. y
     method say x =  x *. self## x ()
     method x () = x
-  end [@bs]
+  end [@bs] // <2>
 --------------
+<1> `self` is bound to `this` in generated JS code
+<2> `[@bs]` marks `object .. end` as a JS object
 
 Output:
 [source,js]
@@ -884,7 +882,7 @@ var v2 = {
 };
 -----------
 
-Compiler will infer
+Compiler  infer the type of `v2` as below:
 [source,ocaml]
 --------------
 val v2 : object
@@ -896,13 +894,10 @@ end [@bs]
 
 
 
-##### Consume JS class API
-
-
-For example,
+Below is another example to consume JS object :
 
 [source,ocaml]
------------------------------------------
+--------------
 let f (u : rect) =
   (* the type annotation is un-necessary,
      but it gives better error message
@@ -912,11 +907,11 @@ let f (u : rect) =
    u##width #= 30;
    u##height #= 30;
    u##draw ()
------------------------------------------
+--------------
 
 Output:
 [source,js]
-------------------------
+-----------
 function f(u){
   console.log(u.height);
   console.log(u.width);
@@ -924,20 +919,7 @@ function f(u){
   u.height = 30;
   return u.draw()
 }
-------------------------
-
-Note the type system would guarantee that the user can not write such
-code:
-
-[source,ocaml]
--------------------------------------------------------------------
-
-let v = u##draw
-(* use v later -- this is not allowed, type system will complain *)
--------------------------------------------------------------------
-
-This is more type safe than JavaScript's **method is not function**.
-
+-----------
 
 ##### Method chaining
 
@@ -954,20 +936,20 @@ f
 
 
 [WARNING]
-====
+=========
 This is not encouraged. The user should minimize and
 localize use cases
 of embedding raw Javascript code, however, sometimes it's necessary to
 get the job done.
-====
+=========
 
 #### Embedding raw JS code as an expression
 
 [source,ocaml]
----------------------------------------------------------------------------------------
+--------------
 let keys : t -> string array [@bs] = [%bs.raw "Object.keys" ]
 let unsafe_lt : 'a -> 'a -> Js.boolean [@bs] = [%bs.raw{|function(x,y){return x < y}|}]
----------------------------------------------------------------------------------------
+--------------
 
 We highly recommend writing type annotations for such unsafe code. It is unsafe
 to
@@ -975,10 +957,10 @@ refer to external OCaml symbols in raw JS code.
 
 #### Embedding raw JS code as statements
 
-[source,ocaml]
+[source,js]
 --------------------
 [%%bs.raw{|
-console.log ("hey");
+  console.log ("hey");
 |}]
 --------------------
 
@@ -1069,9 +1051,9 @@ Below is a simple example for https://mochajs.org/[mocha] library. For
 more examples, please visit
 https://github.com/bloomberg/bucklescript-addons
 
-[[a-simple-example-binding-to-mocha-unit-test-library]]
-A simple example: binding to mocha unit test library
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+##### A simple example: binding to mocha unit test library
+
 
 This is an example showing how too provide bindings to the
 https://mochajs.org/[mochajs] unit test framework.
@@ -1079,8 +1061,8 @@ https://mochajs.org/[mochajs] unit test framework.
 
 [source,ocaml]
 ----------
-external describe : string -> (unit -> unit [@bs]) -> unit = "describe" [@@bs.val]
-external it : string -> (unit -> unit [@bs]) -> unit = "it" [@@bs.val "it"]
+external describe : string -> (unit -> unit [@bs]) -> unit = "" [@@bs.val]
+external it : string -> (unit -> unit [@bs]) -> unit = "" [@@bs.val]
 ----------
 
 Since, `mochajs` is a test framework, we also need some assertion
@@ -1089,7 +1071,7 @@ Since, `mochajs` is a test framework, we also need some assertion
 
 [source,ocaml]
 ----------
-external eq : 'a -> 'a -> unit = "deepEqual"  [@@bs.call] [@@bs.val "assert"]`
+external eq : 'a -> 'a -> unit = "deepEqual"  [@@bs.module "assert"]
 ----------
 
 On top of this we can write normal OCaml functions, for example:
