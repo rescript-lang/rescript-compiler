@@ -36,7 +36,8 @@ type action =
 val is_single_string : t -> string option
 val is_single_int : t -> int option 
 
-val as_string_exp : t -> Parsetree.expression option 
+val as_string_exp : t -> Parsetree.expression option
+val as_core_type : Location.t -> t -> Parsetree.core_type    
 val as_empty_structure :  t -> bool 
 val as_ident : t -> lid option
 val raw_string_payload : Location.t -> string -> t 

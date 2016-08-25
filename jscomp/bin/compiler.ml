@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/24-11:29 *)
+(** Bundled by bspack 08/25-10:52 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -115,7 +115,8 @@ type action =
 val is_single_string : t -> string option
 val is_single_int : t -> int option 
 
-val as_string_exp : t -> Parsetree.expression option 
+val as_string_exp : t -> Parsetree.expression option
+val as_core_type : Location.t -> t -> Parsetree.core_type    
 val as_empty_structure :  t -> bool 
 val as_ident : t -> lid option
 val raw_string_payload : Location.t -> string -> t 
@@ -203,6 +204,11 @@ let as_string_exp (x : t ) =
       _}] -> Some e
   | _  -> None
 
+let as_core_type loc x =
+  match  x with
+  | Parsetree.PTyp x -> x
+  | _ -> Location.raise_errorf ~loc "except a core type"
+           
 let as_ident (x : t ) =
   match x with
   | PStr [
@@ -1393,7 +1399,7 @@ val init : int -> (int -> 'a) -> 'a list
 val take : int -> 'a list -> 'a list * 'a list
 val try_take : int -> 'a list -> 'a list * int * 'a list 
 
-val exclude_tail : 'a list -> 'a list
+val exclude_tail : 'a list -> 'a * 'a list
 
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 
@@ -1456,6 +1462,8 @@ val ref_empty : 'a t -> bool
 val ref_push : 'a -> 'a t -> unit
 
 val ref_pop : 'a t -> 'a
+
+val rev_except_last : 'a list -> 'a list * 'a
 
 end = struct
 #1 "ext_list.ml"
@@ -1645,11 +1653,11 @@ let try_take n l =
     l,  arr_length, []
   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
 
-let exclude_tail (x : 'a list) : 'a list = 
+let exclude_tail (x : 'a list) = 
   let rec aux acc x = 
     match x with 
     | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ _ ] ->  List.rev acc
+    | [ x ] ->  x, List.rev acc
     | y0::ys -> aux (y0::acc) ys in
   aux [] x
 
@@ -1793,6 +1801,14 @@ let ref_pop refs =
   | x::rest -> 
     refs := rest ; 
     x     
+
+let rev_except_last xs =
+  let rec aux acc xs =
+    match xs with
+    | [ ] -> invalid_arg "Ext_list.rev_except_last"
+    | [ x ] -> acc ,x
+    | x :: xs -> aux (x::acc) xs in
+  aux [] xs   
 
 end
 module Ast_comb : sig 
@@ -4218,10 +4234,11 @@ type js_call = {
   splice : bool ;
   name : string;
 }
-
+type pipe = bool 
 type js_send = { 
   splice : bool ; 
-  name : string 
+  name : string ;
+  pipe : pipe   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_val = string external_module 
@@ -4260,7 +4277,9 @@ type t  =
 
 
 
-
+(**
+   return value is of [pval_type, pval_prim]
+*)    
 val handle_attributes_as_string : 
   Bs_loc.t ->
   string  ->
@@ -4268,6 +4287,7 @@ val handle_attributes_as_string :
   Ast_attributes.t -> 
   string   ->
   Ast_core_type.t * string list
+
 
 val bs_external : string 
 val to_string : t -> string 
@@ -4313,7 +4333,7 @@ type 'a external_module = {
   external_module_name : external_module_name option;
 }
 
-
+type pipe = bool 
 type js_call = { 
   splice : bool ;
   name : string;
@@ -4321,7 +4341,8 @@ type js_call = {
 
 type js_send = { 
   splice : bool ; 
-  name : string 
+  name : string ;
+  pipe : bool   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_val = string external_module 
@@ -4345,6 +4366,8 @@ type ffi =
   | Js_module_as_class of external_module_name             
   | Js_call of js_call external_module
   | Js_send of js_send
+    (* Note how we encode it will have a semantic difference 
+    *)
   | Js_new of js_val
   | Js_set of string
   | Js_get of string
@@ -4460,7 +4483,8 @@ type st =
   { val_name : name_source;
     external_module_name : external_module_name option;
     module_as_val : external_module_name option;
-    val_send : name_source;
+    val_send : name_source ;
+    val_send_pipe : [`Nm_na | `Type of Ast_core_type.t ];    
     splice : bool ; (* mutable *)
     set_index : bool; (* mutable *)
     get_index : bool;
@@ -4478,6 +4502,7 @@ let init_st =
     external_module_name = None ;
     module_as_val = None;
     val_send = `Nm_na;
+    val_send_pipe = `Nm_na;    
     splice = false;
     set_index = false;
     get_index = false;
@@ -4516,7 +4541,8 @@ let handle_attributes
     (loc : Bs_loc.t)
     (pval_prim : string ) 
     (type_annotation : Parsetree.core_type)
-    (prim_attributes : Ast_attributes.t) (prim_name : string) =
+    (prim_attributes : Ast_attributes.t) (prim_name : string)
+  : Ast_core_type.t * string * t =
   let prim_name_or_pval_prim =
     if String.length prim_name = 0 then  `Nm_val pval_prim
     else  `Nm_external prim_name  (* need check name *)
@@ -4573,6 +4599,9 @@ let handle_attributes
               | "bs.splice" -> {st with splice = true}
               | "bs.send" -> 
                 { st with val_send = name_from_payload_or_prim payload}
+              | "bs.send.pipe"
+                ->
+                { st with val_send_pipe = `Type (Ast_payload.as_core_type loc payload)}                
               | "bs.set" -> 
                 {st with set_name = name_from_payload_or_prim payload}
               | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
@@ -4591,12 +4620,15 @@ let handle_attributes
       if Ast_core_type.is_array ty then Array
       else if Ast_core_type.is_unit ty then Unit
       else (Ast_core_type.string_type ty :> arg_type) in
+    let translate_arg_type =
+      (fun (label, ty) -> 
+         { arg_label = Ast_core_type.label_name label ;
+           arg_type =  aux ty 
+         }) in      
     let arg_types = 
-      List.map (fun (label, ty) -> 
-          { arg_label = Ast_core_type.label_name label ;
-            arg_type =  aux ty 
-          }) arg_types_ty in
-    let result_type = aux result_type_ty in 
+      List.map translate_arg_type arg_types_ty in
+    let result_type = aux result_type_ty in
+    let object_type = ref None in     
     let ffi = 
       match st with 
       | {mk_obj = true;
@@ -4605,12 +4637,13 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
+         val_send_pipe = `Nm_na;    
          splice = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
-         get_index = false ;         
+         get_index = false ;
         } -> 
         let labels = List.map (function
           | {arg_type = Unit ; arg_label = (Empty as l)}
@@ -4633,6 +4666,7 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
+         val_send_pipe = `Nm_na;    
          splice = false;
          get_index = false;
          new_name = `Nm_na;
@@ -4661,6 +4695,8 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
+         val_send_pipe = `Nm_na;    
+         
          splice = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
@@ -4692,6 +4728,8 @@ let handle_attributes
          *)         
          external_module_name = None ;
          val_send = `Nm_na;
+         val_send_pipe = `Nm_na;    
+         
          splice = false;
          call_name = `Nm_na;
          set_name = `Nm_na ;
@@ -4720,6 +4758,8 @@ let handle_attributes
          val_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
+         val_send_pipe = `Nm_na;    
+         
          set_index = false;
          get_index = false;
          new_name = `Nm_na;
@@ -4736,6 +4776,7 @@ let handle_attributes
          call_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
+         val_send_pipe = `Nm_na;    
          set_index = false;
          get_index = false;
          new_name = `Nm_na;
@@ -4754,6 +4795,7 @@ let handle_attributes
          call_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
+         val_send_pipe = `Nm_na;             
          set_index = false;
          get_index = false;
          new_name = `Nm_na;
@@ -4770,7 +4812,7 @@ let handle_attributes
 
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
-
+         val_send_pipe = `Nm_na;
          val_name = `Nm_na  ;
          call_name = `Nm_na ;
          module_as_val = None;
@@ -4783,11 +4825,36 @@ let handle_attributes
         } -> 
         begin match arg_types with 
         | _self :: _args -> 
-          Js_send {splice ; name}
+          Js_send {splice ; name; pipe = false}
         | _ ->
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
         end
       | {val_send = #bundle_source} 
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {val_send_pipe = `Type typ; 
+         splice = (false as splice);
+         val_send = `Nm_na;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
+         module_as_val = None;
+         set_index = false;
+         get_index = false;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
+         external_module_name = None ;
+        } -> 
+        begin match arg_types with 
+          | _self :: _args ->
+            object_type := Some typ ;            
+            Js_send {splice  ;
+                   name = string_of_bundle_source prim_name_or_pval_prim;
+                   pipe = true}
+        | _ ->
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+        end
+      | {val_send_pipe = `Type _ } 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
       | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
@@ -4799,6 +4866,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
+         val_send_pipe = `Nm_na;             
          set_name = `Nm_na ;
          get_name = `Nm_na 
         } 
@@ -4814,6 +4882,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
+         val_send_pipe = `Nm_na;             
          new_name = `Nm_na ;
          get_name = `Nm_na ;
          external_module_name = None
@@ -4835,6 +4904,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
+         val_send_pipe = `Nm_na;             
          new_name = `Nm_na ;
          set_name = `Nm_na ;
          external_module_name = None
@@ -4871,12 +4941,28 @@ let handle_attributes
              end                 
            | (_, _), Ast_core_type.Empty -> acc                
            ) arg_types_ty arg_labels [])  in
-       Ast_core_type.replace_result type_annotation result 
-     | _, _ -> type_annotation) ,
+       Ast_core_type.replace_result type_annotation result
+     | Js_send {pipe = true }, _ ->
+       begin match !object_type with       
+         | Some obj ->
+           Ast_core_type.replace_result type_annotation
+             (Ast_helper.Typ.arrow ~loc "" obj result_type_ty)
+         | None -> assert false
+       end           
+     | _, _ -> type_annotation
+    ) ,
+
+    (* TODO: document *)    
     (match ffi , prim_name with
-    | Obj_create _ , _ -> prim_name
-    | _ , "" -> pval_prim
-    | _, _ -> prim_name), Bs(arg_types, result_type,  ffi)
+     | Obj_create _ , _ -> prim_name
+     | _ , "" -> pval_prim
+     | _, _ -> prim_name),
+    (match !object_type with
+    |None ->      
+      Bs(arg_types, result_type,  ffi)
+    | Some obj ->
+      Bs(arg_types @ [translate_arg_type ("", obj) ], result_type,  ffi)
+    )
 
 
 let handle_attributes_as_string 
@@ -25955,7 +26041,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
           E.var (Ext_ident.create_js name)
       end
-    | Js_send {splice  = js_splice ; name } -> 
+    | Js_send {splice  = js_splice ; name ; pipe = false} -> 
       begin match args  with
         | self :: args -> 
           let [@warning"-8"] ( self_type::arg_types )
@@ -25965,6 +26051,13 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | _ -> 
           assert false 
       end
+    | Js_send { name ; pipe = true ; splice = js_splice}
+      -> (* splice should not happen *)
+      let self, args = Ext_list.exclude_tail args in
+      let self_type, arg_types = Ext_list.exclude_tail arg_types in
+      let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
+      E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
+
     | Js_get name -> 
       begin match args with 
       | [obj] ->

@@ -155,6 +155,8 @@ demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
 demo_page.cmj :
 demo_page.cmx :
+demo_pipe.cmj : ../runtime/js.cmj
+demo_pipe.cmx : ../runtime/js.cmx
 derive_dyntype.cmj : js_dyn.cmi
 derive_dyntype.cmx : js_dyn.cmx
 derive_type_test.cmj :
@@ -449,6 +451,8 @@ offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
 optional_ffi_test.cmj : mt.cmi
 optional_ffi_test.cmx : mt.cmx
+pipe_send_readline.cmj : ../runtime/js.cmj
+pipe_send_readline.cmx : ../runtime/js.cmx
 poly_type.cmj : ../runtime/js.cmj
 poly_type.cmx : ../runtime/js.cmx
 poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
@@ -931,6 +935,8 @@ demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmo :
 demo_page.cmj :
+demo_pipe.cmo : ../runtime/js.cmo
+demo_pipe.cmj : ../runtime/js.cmj
 derive_dyntype.cmo : js_dyn.cmi
 derive_dyntype.cmj : js_dyn.cmj
 derive_type_test.cmo :
@@ -1225,6 +1231,8 @@ offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 optional_ffi_test.cmo : mt.cmi
 optional_ffi_test.cmj : mt.cmj
+pipe_send_readline.cmo : ../runtime/js.cmo
+pipe_send_readline.cmj : ../runtime/js.cmj
 poly_type.cmo : ../runtime/js.cmo
 poly_type.cmj : ../runtime/js.cmj
 poly_variant_test.cmo : ../runtime/js.cmo poly_variant_test.cmi

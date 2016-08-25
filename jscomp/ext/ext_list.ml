@@ -184,11 +184,11 @@ let try_take n l =
     l,  arr_length, []
   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
 
-let exclude_tail (x : 'a list) : 'a list = 
+let exclude_tail (x : 'a list) = 
   let rec aux acc x = 
     match x with 
     | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ _ ] ->  List.rev acc
+    | [ x ] ->  x, List.rev acc
     | y0::ys -> aux (y0::acc) ys in
   aux [] x
 
@@ -332,3 +332,11 @@ let ref_pop refs =
   | x::rest -> 
     refs := rest ; 
     x     
+
+let rev_except_last xs =
+  let rec aux acc xs =
+    match xs with
+    | [ ] -> invalid_arg "Ext_list.rev_except_last"
+    | [ x ] -> acc ,x
+    | x :: xs -> aux (x::acc) xs in
+  aux [] xs   
