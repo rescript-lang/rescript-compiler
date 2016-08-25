@@ -6,6 +6,11 @@
     "Event Handler" :
     { "file" :  "event_handler.ml",
       "eval" : false},
+    "Event Handler Chaining" :
+    {
+      "file" : "event_handler2.ml",
+      "eval" : false
+    },
     "Quick Sort":
     {"file" : "quick_sort.ml",
      "eval" : true

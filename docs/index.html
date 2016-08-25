@@ -488,7 +488,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1><a href="https://github.com/bloomberg/bucklescript">BuckleScript</a> User Manual</h1>
 <div class="details">
 <span id="author" class="author">Hongbo Zhang</span><br>
-<span id="email" class="email"><a href="mailto:bobzhang1988@gmail.com">bobzhang1988@gmail.com</a></span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -584,6 +583,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#__bs_package_name">-bs-package-name</a></li>
 <li><a href="#__bs_packge_output">-bs-packge-output</a></li>
 <li><a href="#__bs_gen_tds">-bs-gen-tds</a></li>
+<li><a href="#__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli">-bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli</a></li>
 </ul>
 </li>
 <li><a href="#_how_to_adapt_your_build_system">How to adapt your build system</a></li>
@@ -2675,6 +2675,18 @@ typescript. This is still experimental.</p>
 </div>
 <div class="paragraph">
 <p>For more options, please see the documentation of <code>bsc -help</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli"><a class="anchor" href="#__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli"></a>-bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli</h3>
+<div class="paragraph">
+<p>If users don&#8217;t use any bs specific annotaions, user can explicitly turn it off.
+Another use case is that users can use <code>-ppx</code> explicitly as below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-n">bsc</span> <span class="tok-o">-</span><span class="tok-n">c</span> <span class="tok-o">-</span><span class="tok-n">ppx</span> <span class="tok-n">bsppx</span> <span class="tok-o">-</span><span class="tok-n">bs</span><span class="tok-o">-</span><span class="tok-n">no</span><span class="tok-o">-</span><span class="tok-n">builtin</span><span class="tok-o">-</span><span class="tok-n">ppx</span><span class="tok-o">-</span><span class="tok-n">ml</span> <span class="tok-n">c</span><span class="tok-o">.</span><span class="tok-n">ml</span></code></pre>
+</div>
 </div>
 </div>
 </div>

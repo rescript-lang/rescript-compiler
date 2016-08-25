@@ -1,5 +1,5 @@
 # https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
-Hongbo Zhang <bobzhang1988@gmail.com>
+Hongbo Zhang 
 :toc: left
 :toclevels: 4
 :source-highlighter: pygments
