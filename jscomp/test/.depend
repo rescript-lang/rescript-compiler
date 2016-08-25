@@ -155,6 +155,8 @@ demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
 demo_page.cmj :
 demo_page.cmx :
+demo_pipe.cmj : ../runtime/js.cmj
+demo_pipe.cmx : ../runtime/js.cmx
 derive_dyntype.cmj : js_dyn.cmi
 derive_dyntype.cmx : js_dyn.cmx
 derive_type_test.cmj :
@@ -933,6 +935,8 @@ demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmo :
 demo_page.cmj :
+demo_pipe.cmo : ../runtime/js.cmo
+demo_pipe.cmj : ../runtime/js.cmj
 derive_dyntype.cmo : js_dyn.cmi
 derive_dyntype.cmj : js_dyn.cmj
 derive_type_test.cmo :

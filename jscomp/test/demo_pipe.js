@@ -1,7 +1,7 @@
 'use strict';
 
 
-function u(rl) {
+function register(rl) {
   return rl.on("line", function (x) {
                 console.log(x);
                 return /* () */0;
@@ -11,15 +11,5 @@ function u(rl) {
             });
 }
 
-function xx(h) {
-  return h.send("x").hi;
-}
-
-function yy(h) {
-  return h.send("x");
-}
-
-exports.u  = u;
-exports.xx = xx;
-exports.yy = yy;
+exports.register = register;
 /* No side effect */

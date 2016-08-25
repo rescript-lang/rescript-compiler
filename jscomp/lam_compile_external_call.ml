@@ -241,14 +241,8 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       end
     | Js_send { name ; pipe = true ; splice = js_splice}
       -> (* splice should not happen *)
-      let self, args =
-        match List.rev args with
-        | self :: args -> self, List.rev args
-        | _ -> assert false in
-      let self_type, arg_types =
-        match List.rev arg_types with
-        | self_type ::  arg_types -> self_type, List.rev arg_types
-        | _ -> assert false in                                      
+      let self, args = Ext_list.exclude_tail args in
+      let self_type, arg_types = Ext_list.exclude_tail arg_types in
       let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
       E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 

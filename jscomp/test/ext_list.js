@@ -496,17 +496,21 @@ function exclude_tail(x) {
     var acc = _acc;
     if (x$1) {
       var ys = x$1[1];
+      var x$2 = x$1[0];
       if (ys) {
         _x = ys;
         _acc = /* :: */[
-          x$1[0],
+          x$2,
           acc
         ];
         continue ;
         
       }
       else {
-        return List.rev(acc);
+        return /* tuple */[
+                x$2,
+                List.rev(acc)
+              ];
       }
     }
     else {
@@ -845,6 +849,40 @@ function ref_pop(refs) {
   }
 }
 
+function rev_except_last(xs) {
+  var _acc = /* [] */0;
+  var _xs = xs;
+  while(true) {
+    var xs$1 = _xs;
+    var acc = _acc;
+    if (xs$1) {
+      var xs$2 = xs$1[1];
+      var x = xs$1[0];
+      if (xs$2) {
+        _xs = xs$2;
+        _acc = /* :: */[
+          x,
+          acc
+        ];
+        continue ;
+        
+      }
+      else {
+        return /* tuple */[
+                acc,
+                x
+              ];
+      }
+    }
+    else {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Ext_list.rev_except_last"
+          ];
+    }
+  };
+}
+
 exports.filter_map         = filter_map;
 exports.excludes           = excludes;
 exports.exclude_with_fact  = exclude_with_fact;
@@ -883,4 +921,5 @@ exports.ref_top            = ref_top;
 exports.ref_empty          = ref_empty;
 exports.ref_push           = ref_push;
 exports.ref_pop            = ref_pop;
+exports.rev_except_last    = rev_except_last;
 /* No side effect */

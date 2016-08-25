@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/24-16:25 *)
+(** Bundled by bspack 08/25-10:52 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1399,7 +1399,7 @@ val init : int -> (int -> 'a) -> 'a list
 val take : int -> 'a list -> 'a list * 'a list
 val try_take : int -> 'a list -> 'a list * int * 'a list 
 
-val exclude_tail : 'a list -> 'a list
+val exclude_tail : 'a list -> 'a * 'a list
 
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 
@@ -1462,6 +1462,8 @@ val ref_empty : 'a t -> bool
 val ref_push : 'a -> 'a t -> unit
 
 val ref_pop : 'a t -> 'a
+
+val rev_except_last : 'a list -> 'a list * 'a
 
 end = struct
 #1 "ext_list.ml"
@@ -1651,11 +1653,11 @@ let try_take n l =
     l,  arr_length, []
   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
 
-let exclude_tail (x : 'a list) : 'a list = 
+let exclude_tail (x : 'a list) = 
   let rec aux acc x = 
     match x with 
     | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ _ ] ->  List.rev acc
+    | [ x ] ->  x, List.rev acc
     | y0::ys -> aux (y0::acc) ys in
   aux [] x
 
@@ -1799,6 +1801,14 @@ let ref_pop refs =
   | x::rest -> 
     refs := rest ; 
     x     
+
+let rev_except_last xs =
+  let rec aux acc xs =
+    match xs with
+    | [ ] -> invalid_arg "Ext_list.rev_except_last"
+    | [ x ] -> acc ,x
+    | x :: xs -> aux (x::acc) xs in
+  aux [] xs   
 
 end
 module Ast_comb : sig 
@@ -4267,7 +4277,9 @@ type t  =
 
 
 
-
+(**
+   return value is of [pval_type, pval_prim]
+*)    
 val handle_attributes_as_string : 
   Bs_loc.t ->
   string  ->
@@ -4275,6 +4287,7 @@ val handle_attributes_as_string :
   Ast_attributes.t -> 
   string   ->
   Ast_core_type.t * string list
+
 
 val bs_external : string 
 val to_string : t -> string 

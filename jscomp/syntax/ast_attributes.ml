@@ -117,16 +117,6 @@ let process_external attrs =
       else false
     ) attrs
 
-let process_bs_type attrs = 
-  List.fold_right (fun (attr : attr) (st, acc) -> 
-      match attr  with 
-      | {txt = "bs.type" }, PTyp typ
-        -> 
-        Some typ, acc
-      | _  -> 
-        st, attr::acc 
-    )  attrs (None, [])
-
 
 type derive_attr = {
   explict_nonrec : bool;
@@ -217,11 +207,8 @@ let bs_this : attr
 let bs_method : attr 
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
-let mk_bs_type ?(loc=Location.none) ty : attr = 
-  { txt = Literals.bs_type; loc }, PTyp ty
 
 let bs_obj pval_type : t
   = 
-  [{txt = "bs.obj" ; loc = Location.none}, Ast_payload.empty ;
-   mk_bs_type pval_type
+  [{txt = "bs.obj" ; loc = Location.none}, Ast_payload.empty 
   ]

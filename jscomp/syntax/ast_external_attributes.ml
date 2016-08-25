@@ -184,7 +184,7 @@ type st =
     external_module_name : external_module_name option;
     module_as_val : external_module_name option;
     val_send : name_source ;
-    val_send_pipe : [`Nm_na | `Type of Ast_core_type.t ];    
+    val_send_pipe : Ast_core_type.t option;    
     splice : bool ; (* mutable *)
     set_index : bool; (* mutable *)
     get_index : bool;
@@ -202,7 +202,7 @@ let init_st =
     external_module_name = None ;
     module_as_val = None;
     val_send = `Nm_na;
-    val_send_pipe = `Nm_na;    
+    val_send_pipe = None;    
     splice = false;
     set_index = false;
     get_index = false;
@@ -301,7 +301,7 @@ let handle_attributes
                 { st with val_send = name_from_payload_or_prim payload}
               | "bs.send.pipe"
                 ->
-                { st with val_send_pipe = `Type (Ast_payload.as_core_type loc payload)}                
+                { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}                
               | "bs.set" -> 
                 {st with set_name = name_from_payload_or_prim payload}
               | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
@@ -328,7 +328,7 @@ let handle_attributes
     let arg_types = 
       List.map translate_arg_type arg_types_ty in
     let result_type = aux result_type_ty in
-    let object_type = ref None in     
+
     let ffi = 
       match st with 
       | {mk_obj = true;
@@ -337,7 +337,7 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          splice = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
@@ -366,7 +366,7 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          splice = false;
          get_index = false;
          new_name = `Nm_na;
@@ -395,7 +395,7 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          
          splice = false;
          new_name = `Nm_na;
@@ -428,7 +428,7 @@ let handle_attributes
          *)         
          external_module_name = None ;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          
          splice = false;
          call_name = `Nm_na;
@@ -458,7 +458,7 @@ let handle_attributes
          val_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          
          set_index = false;
          get_index = false;
@@ -476,7 +476,7 @@ let handle_attributes
          call_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          set_index = false;
          get_index = false;
          new_name = `Nm_na;
@@ -495,7 +495,7 @@ let handle_attributes
          call_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          set_index = false;
          get_index = false;
          new_name = `Nm_na;
@@ -512,7 +512,7 @@ let handle_attributes
 
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
-         val_send_pipe = `Nm_na;
+         val_send_pipe = None;
          val_name = `Nm_na  ;
          call_name = `Nm_na ;
          module_as_val = None;
@@ -532,7 +532,7 @@ let handle_attributes
       | {val_send = #bundle_source} 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
-      | {val_send_pipe = `Type typ; 
+      | {val_send_pipe = Some typ; 
          splice = (false as splice);
          val_send = `Nm_na;
          val_name = `Nm_na  ;
@@ -547,14 +547,13 @@ let handle_attributes
         } -> 
         begin match arg_types with 
           | _self :: _args ->
-            object_type := Some typ ;            
             Js_send {splice  ;
                    name = string_of_bundle_source prim_name_or_pval_prim;
                    pipe = true}
         | _ ->
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
         end
-      | {val_send_pipe = `Type _ } 
+      | {val_send_pipe = Some _ } 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
       | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
@@ -566,7 +565,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          set_name = `Nm_na ;
          get_name = `Nm_na 
         } 
@@ -582,7 +581,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          new_name = `Nm_na ;
          get_name = `Nm_na ;
          external_module_name = None
@@ -604,7 +603,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          new_name = `Nm_na ;
          set_name = `Nm_na ;
          external_module_name = None
@@ -643,11 +642,11 @@ let handle_attributes
            ) arg_types_ty arg_labels [])  in
        Ast_core_type.replace_result type_annotation result
      | Js_send {pipe = true }, _ ->
-       begin match !object_type with       
-         | Some obj ->
+       begin match st with       
+         | {val_send_pipe = Some obj } ->
            Ast_core_type.replace_result type_annotation
              (Ast_helper.Typ.arrow ~loc "" obj result_type_ty)
-         | None -> assert false
+         | {val_send_pipe = None ; } -> assert false
        end           
      | _, _ -> type_annotation
     ) ,
@@ -657,11 +656,10 @@ let handle_attributes
      | Obj_create _ , _ -> prim_name
      | _ , "" -> pval_prim
      | _, _ -> prim_name),
-    (match !object_type with
-    |None ->      
-      Bs(arg_types, result_type,  ffi)
-    | Some obj ->
+    (match st with
+    | {val_send_pipe = Some obj} ->      
       Bs(arg_types @ [translate_arg_type ("", obj) ], result_type,  ffi)
+    | {val_send_pipe = None } ->       Bs(arg_types, result_type,  ffi)        
     )
 
 

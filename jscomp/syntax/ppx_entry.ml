@@ -516,10 +516,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
            } as prim) 
         when Ast_attributes.process_external pval_attributes
         -> 
-        let pval_type = self.typ self pval_type in 
-        let pval_attributes =
-          (Ast_attributes.mk_bs_type ~loc:pval_loc pval_type)
-          :: pval_attributes in
+        let pval_type = self.typ self pval_type in
+        let pval_attributes = self.attributes self pval_attributes in         
         let pval_type, pval_prim = 
           match pval_prim with 
           | [ v ] -> 
@@ -571,7 +569,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               pval_loc} as prim) 
           when Ast_attributes.process_external pval_attributes
           -> 
-          let pval_type = self.typ self pval_type in 
+          let pval_type = self.typ self pval_type in
+          let pval_attributes = self.attributes self pval_attributes in         
           let pval_type, pval_prim = 
             match pval_prim with 
             | [ v] -> 

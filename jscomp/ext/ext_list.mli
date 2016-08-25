@@ -46,7 +46,7 @@ val init : int -> (int -> 'a) -> 'a list
 val take : int -> 'a list -> 'a list * 'a list
 val try_take : int -> 'a list -> 'a list * int * 'a list 
 
-val exclude_tail : 'a list -> 'a list
+val exclude_tail : 'a list -> 'a * 'a list
 
 val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
 
@@ -109,3 +109,5 @@ val ref_empty : 'a t -> bool
 val ref_push : 'a -> 'a t -> unit
 
 val ref_pop : 'a t -> 'a
+
+val rev_except_last : 'a list -> 'a list * 'a

@@ -80,7 +80,9 @@ type t  =
 
 
 
-
+(**
+   return value is of [pval_type, pval_prim]
+*)    
 val handle_attributes_as_string : 
   Bs_loc.t ->
   string  ->
@@ -88,6 +90,7 @@ val handle_attributes_as_string :
   Ast_attributes.t -> 
   string   ->
   Ast_core_type.t * string list
+
 
 val bs_external : string 
 val to_string : t -> string 
