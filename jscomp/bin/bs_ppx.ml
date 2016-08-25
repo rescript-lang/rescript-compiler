@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/25-10:52 *)
+(** Bundled by bspack 08/25-14:43 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -729,169 +729,6 @@ let starts_with_and_number s ~offset beg =
         -1 
 
 end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string  
-
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
-
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-
-
-
-
-end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -935,7 +772,7 @@ val process_bs :
   t -> [ `Nothing | `Has] * t 
 
 val process_external : t -> bool 
-val process_bs_type : t -> Parsetree.core_type option * t 
+
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
@@ -958,7 +795,7 @@ val bs : attr
 val bs_this : attr
 val bs_method : attr
 
-val mk_bs_type : ?loc:Location.t -> Parsetree.core_type -> attr
+
 
 end = struct
 #1 "ast_attributes.ml"
@@ -1081,16 +918,6 @@ let process_external attrs =
       else false
     ) attrs
 
-let process_bs_type attrs = 
-  List.fold_right (fun (attr : attr) (st, acc) -> 
-      match attr  with 
-      | {txt = "bs.type" }, PTyp typ
-        -> 
-        Some typ, acc
-      | _  -> 
-        st, attr::acc 
-    )  attrs (None, [])
-
 
 type derive_attr = {
   explict_nonrec : bool;
@@ -1181,13 +1008,10 @@ let bs_this : attr
 let bs_method : attr 
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
-let mk_bs_type ?(loc=Location.none) ty : attr = 
-  { txt = Literals.bs_type; loc }, PTyp ty
 
 let bs_obj pval_type : t
   = 
-  [{txt = "bs.obj" ; loc = Location.none}, Ast_payload.empty ;
-   mk_bs_type pval_type
+  [{txt = "bs.obj" ; loc = Location.none}, Ast_payload.empty 
   ]
 
 end
@@ -3269,6 +3093,169 @@ let dump v = dump (Obj.repr v)
 
 
 end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string  
+
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+
+
+
+
+end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4050,7 +4037,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.9.5"
+let version = "0.9.6"
 
 
 let runtime_set = 
@@ -4484,7 +4471,7 @@ type st =
     external_module_name : external_module_name option;
     module_as_val : external_module_name option;
     val_send : name_source ;
-    val_send_pipe : [`Nm_na | `Type of Ast_core_type.t ];    
+    val_send_pipe : Ast_core_type.t option;    
     splice : bool ; (* mutable *)
     set_index : bool; (* mutable *)
     get_index : bool;
@@ -4502,7 +4489,7 @@ let init_st =
     external_module_name = None ;
     module_as_val = None;
     val_send = `Nm_na;
-    val_send_pipe = `Nm_na;    
+    val_send_pipe = None;    
     splice = false;
     set_index = false;
     get_index = false;
@@ -4601,7 +4588,7 @@ let handle_attributes
                 { st with val_send = name_from_payload_or_prim payload}
               | "bs.send.pipe"
                 ->
-                { st with val_send_pipe = `Type (Ast_payload.as_core_type loc payload)}                
+                { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}                
               | "bs.set" -> 
                 {st with set_name = name_from_payload_or_prim payload}
               | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
@@ -4628,7 +4615,7 @@ let handle_attributes
     let arg_types = 
       List.map translate_arg_type arg_types_ty in
     let result_type = aux result_type_ty in
-    let object_type = ref None in     
+
     let ffi = 
       match st with 
       | {mk_obj = true;
@@ -4637,7 +4624,7 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          splice = false;
          new_name = `Nm_na;
          call_name = `Nm_na;
@@ -4666,7 +4653,7 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          splice = false;
          get_index = false;
          new_name = `Nm_na;
@@ -4695,7 +4682,7 @@ let handle_attributes
          external_module_name = None ;
          module_as_val = None;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          
          splice = false;
          new_name = `Nm_na;
@@ -4728,7 +4715,7 @@ let handle_attributes
          *)         
          external_module_name = None ;
          val_send = `Nm_na;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          
          splice = false;
          call_name = `Nm_na;
@@ -4758,7 +4745,7 @@ let handle_attributes
          val_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          
          set_index = false;
          get_index = false;
@@ -4776,7 +4763,7 @@ let handle_attributes
          call_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;    
+         val_send_pipe = None;    
          set_index = false;
          get_index = false;
          new_name = `Nm_na;
@@ -4795,7 +4782,7 @@ let handle_attributes
          call_name = `Nm_na ;
          module_as_val = None;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          set_index = false;
          get_index = false;
          new_name = `Nm_na;
@@ -4812,7 +4799,7 @@ let handle_attributes
 
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
          splice;
-         val_send_pipe = `Nm_na;
+         val_send_pipe = None;
          val_name = `Nm_na  ;
          call_name = `Nm_na ;
          module_as_val = None;
@@ -4832,7 +4819,7 @@ let handle_attributes
       | {val_send = #bundle_source} 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
-      | {val_send_pipe = `Type typ; 
+      | {val_send_pipe = Some typ; 
          splice = (false as splice);
          val_send = `Nm_na;
          val_name = `Nm_na  ;
@@ -4847,14 +4834,13 @@ let handle_attributes
         } -> 
         begin match arg_types with 
           | _self :: _args ->
-            object_type := Some typ ;            
             Js_send {splice  ;
                    name = string_of_bundle_source prim_name_or_pval_prim;
                    pipe = true}
         | _ ->
           Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
         end
-      | {val_send_pipe = `Type _ } 
+      | {val_send_pipe = Some _ } 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
       | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
@@ -4866,7 +4852,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          set_name = `Nm_na ;
          get_name = `Nm_na 
         } 
@@ -4882,7 +4868,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          new_name = `Nm_na ;
          get_name = `Nm_na ;
          external_module_name = None
@@ -4904,7 +4890,7 @@ let handle_attributes
          set_index = false;
          get_index = false;
          val_send = `Nm_na ;
-         val_send_pipe = `Nm_na;             
+         val_send_pipe = None;             
          new_name = `Nm_na ;
          set_name = `Nm_na ;
          external_module_name = None
@@ -4943,11 +4929,11 @@ let handle_attributes
            ) arg_types_ty arg_labels [])  in
        Ast_core_type.replace_result type_annotation result
      | Js_send {pipe = true }, _ ->
-       begin match !object_type with       
-         | Some obj ->
+       begin match st with       
+         | {val_send_pipe = Some obj } ->
            Ast_core_type.replace_result type_annotation
              (Ast_helper.Typ.arrow ~loc "" obj result_type_ty)
-         | None -> assert false
+         | {val_send_pipe = None ; } -> assert false
        end           
      | _, _ -> type_annotation
     ) ,
@@ -4957,11 +4943,10 @@ let handle_attributes
      | Obj_create _ , _ -> prim_name
      | _ , "" -> pval_prim
      | _, _ -> prim_name),
-    (match !object_type with
-    |None ->      
-      Bs(arg_types, result_type,  ffi)
-    | Some obj ->
+    (match st with
+    | {val_send_pipe = Some obj} ->      
       Bs(arg_types @ [translate_arg_type ("", obj) ], result_type,  ffi)
+    | {val_send_pipe = None } ->       Bs(arg_types, result_type,  ffi)        
     )
 
 
@@ -6438,10 +6423,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
            } as prim) 
         when Ast_attributes.process_external pval_attributes
         -> 
-        let pval_type = self.typ self pval_type in 
-        let pval_attributes =
-          (Ast_attributes.mk_bs_type ~loc:pval_loc pval_type)
-          :: pval_attributes in
+        let pval_type = self.typ self pval_type in
+        let pval_attributes = self.attributes self pval_attributes in         
         let pval_type, pval_prim = 
           match pval_prim with 
           | [ v ] -> 
@@ -6493,7 +6476,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               pval_loc} as prim) 
           when Ast_attributes.process_external pval_attributes
           -> 
-          let pval_type = self.typ self pval_type in 
+          let pval_type = self.typ self pval_type in
+          let pval_attributes = self.attributes self pval_attributes in         
           let pval_type, pval_prim = 
             match pval_prim with 
             | [ v] -> 
