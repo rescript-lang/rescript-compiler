@@ -506,6 +506,139 @@ native object system and FFI to JS's objects).
 `\##` is used in JS's object method dispatch and field access,
 while `#` is used in OCaml's object method dispatch.
 
+#### Typing JavaScript objects
+
+OCaml supports object oriented style natively and provides structural type system.
+OCaml's object system has different runtime semantics from JS object, but they
+share the same type system, all JS objects of type `'a` is typed as `'a Js.t`
+
+OCaml provide two kinds of syntaxes to mode structural typing: `< p1 : t1 >` style and
+`class type` style, they are mostly the same except that the latter is more feature rich
+(support inheritance) but more verbose.
+
+#### Simple object type
+
+Suppose we have a JS file which exports two properties: `height` and `width`:
+
+[source,js]
+.demo.js
+-----------
+exports.height = 3
+exports.width = 3
+-----------
+
+There are different ways to writing binding to module `demo`,
+here we use OCaml objects to model module `demo`
+[source,ocaml]
+-------------
+external demo : < height : int ; width : int > Js.t = "" [@@bs.module]
+-------------
+
+There are too kinds of types on the method name:
+
+  * normal type
++
+[source,ocaml]
+-------------
+< label : int >
+< label : int -> int >
+< label : int -> int [@bs]>
+< label : int -> int [@bs.this]>
+-------------
+
+  * method
++
+[source,ocaml]
+--------------
+< label : int -> int [@bs.meth] >
+--------------
+
+The difference is that for `method`, the type system will force users to full-fil
+its arguments all at the same time, since its semantics depends on `this` in JavaScript.
+
+For example:
+[source,ocaml]
+--------------
+let test f =
+  f##hi 1 // <1>
+let test2 f   =
+  let u = f##hi in
+  u 1
+let test3 f =
+  let u = f##hi in
+  u 1 [@bs]
+--------------
+<1> `##` is JS object property/method dispatch
+
+The compiler would infer types differently
+[source,ocaml]
+--------------
+val test : < hi : int -> 'a [@bs.meth]; .. > -> 'a // <1>
+val test2 : < hi : int -> 'a ; .. > -> 'a
+val test3 : < hi : int -> 'a [@bs]; .. >
+--------------
+<1> `..` is a row variable, which means the object can contain more methods
+
+
+#### Complex object type
+
+Below is an example:
+
+[source,ocaml]
+--------------------------------
+class type _rect = object
+  method height : int
+  method width : int
+  method draw : unit -> unit
+end [@bs] // <1>
+type rect = _rect Js.t
+--------------------------------
+<1> `class type` annotated with `[@bs]` is treated as a JS class type,
+it needs to be lifted to `Js.t` too
+
+For JS classes, methods with arrow types are treated as real methods
+(automatically annotated with `[@bs.meth]`)
+while methods with non-arrow types
+are treated as properties.
+
+So the type `rect` is the same as below:
+[source,ocaml]
+--------------
+type rect = < height : int ; wdith : int ; draw : unit -> unit [@bs.meth] > Js.t
+--------------
+
+#####  getter/setter annotation to JS properties
+
+Since OCaml's object system does not have getters/setters, we introduced two
+attributes `bs.get` and `bs.set` to help inform BuckleScript to compile
+them as property getters/setters.
+
+[source,ocaml]
+--------------------------------------------------------------
+type y  = <
+ height : int [@@bs.set {no_get}] // <1>
+> Js.t
+type y0 = <
+ height : int [@@bs.set] [@@bs.get {null}] // <2>
+> Js.t
+type y1 = <
+  height : int [@@bs.set] [@@bs.get {undefined}] // <3>
+> Js.t
+type y2 = <
+  height : int [@@bs.set] [@@bs.get {undefined; null}] // <4>
+> Js.t
+type y3 = <
+  height : int  [@@bs.get {undefined ; null}] // <5>
+> Js.t
+
+--------------------------------------------------------------
+<1>  height is setter only
+<2>  getter return [int Js.null]
+<3>  getter return [int Js.undefined]
+<4>  getter return [int Js.null_undefined]
+<5>  getter only, return [int Js.null_undefined]
+
+NOTE: Getter/Setter also applies to class type label
 
 #### Bindings to create simple JS object literal
 
@@ -761,70 +894,6 @@ val v2 : object
 end [@bs]
 --------------
 
-#### Two ways to define JS object types
-
-// TODO
-#### FFI to JS classes
-
-
-
-##### Class type declarations
-
-Below is an example:
-
-[source,ocaml]
---------------------------------
-class type _rect = object
-  method height : int [@@bs.set]
-  method width : int [@@bs.set]
-  method draw : unit -> unit
-end [@bs]
-type rect = _rect Js.t
---------------------------------
-
-In this example, `class type` annotated with `[@bs]` is treated as a JS
-class type.
-For JS classes, methods with arrow types are treated as real methods
-while methods with non-arrow types
-are treated as properties. Since OCaml's object system does not have
-getters/setters, we introduced two
-attributes `bs.get` and `bs.set` to help inform BuckleScript to compile
-them as property getters/setters.
-
-
-##### Annotation to JS properties
-
-There are various getter/setter decorations as below:
-
-[source,ocaml]
---------------------------------------------------------------
-
-class type _y = object
-  method height : int [@@bs.set {no_get}]
-  (* [height] is setter only *)
-end [@bs]
-type y = _y Js.t
-class type _y0 = object
-  method height : int [@@bs.set] [@@bs.get {null}]
-  (* getter reutrn [int Js.null]*)
-end [@bs]
-type y0 = _y0 Js.t
-class type _y1 = object
-  method height : int [@@bs.set] [@@bs.get {undefined}]
-  (* getter return [int Js.undefined]*)
-end [@bs]
-type y1 = _y1 Js.t
-class type _y2 = object
-  method height : int [@@bs.set] [@@bs.get {undefined; null}]
-  (* getter return [int Js.null_undefined] *)
-end [@bs]
-type y2 = _y2 Js.t
-class type _y3 = object
-  method height : int  [@@bs.get {undefined ; null}]
-  (* getter only, return [int Js.null_undefined] *)
-end [@bs]
-type y3 = _y3 Js.t
---------------------------------------------------------------
 
 
 ##### Consume JS class API
