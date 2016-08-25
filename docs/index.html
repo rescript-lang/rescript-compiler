@@ -546,15 +546,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_binding_to_js_plain_objects">Binding to JS plain objects</a>
 <ul class="sectlevel3">
+<li><a href="#_typing_javascript_objects">Typing JavaScript objects</a></li>
+<li><a href="#_simple_object_type">Simple object type</a></li>
+<li><a href="#_complex_object_type">Complex object type</a>
+<ul class="sectlevel4">
+<li><a href="#_getter_setter_annotation_to_js_properties">getter/setter annotation to JS properties</a></li>
+</ul>
+</li>
 <li><a href="#_bindings_to_create_simple_js_object_literal">Bindings to create simple JS object literal</a></li>
 <li><a href="#_a_more_flexible_way_to_create_js_object">A more flexible way to create JS object</a></li>
 <li><a href="#_js_property_getter_setter_and_method_application">JS property getter/setter and method application</a></li>
-<li><a href="#_create_js_objects_with_code_this_code_semantics">Create JS objects with <code>this</code> semantics</a></li>
-<li><a href="#_two_ways_to_define_js_object_types">Two ways to define JS object types</a></li>
-<li><a href="#_ffi_to_js_classes">FFI to JS classes</a>
+<li><a href="#_create_js_objects_with_code_this_code_semantics">Create JS objects with <code>this</code> semantics</a>
 <ul class="sectlevel4">
-<li><a href="#_class_type_declarations">Class type declarations</a></li>
-<li><a href="#_annotation_to_js_properties">Annotation to JS properties</a></li>
 <li><a href="#_consume_js_class_api">Consume JS class API</a></li>
 <li><a href="#_method_chaining">Method chaining</a></li>
 </ul>
@@ -1893,6 +1896,206 @@ native object system and FFI to JS&#8217;s objects).</p>
 while <code>#</code> is used in OCaml&#8217;s object method dispatch.</p>
 </div>
 <div class="sect3">
+<h4 id="_typing_javascript_objects"><a class="anchor" href="#_typing_javascript_objects"></a>Typing JavaScript objects</h4>
+<div class="paragraph">
+<p>OCaml supports object oriented style natively and provides structural type system.
+OCaml&#8217;s object system has different runtime semantics from JS object, but they
+share the same type system, all JS objects of type <code>'a</code> is typed as <code>'a Js.t</code></p>
+</div>
+<div class="paragraph">
+<p>OCaml provide two kinds of syntaxes to mode structural typing: <code>&lt; p1 : t1 &gt;</code> style and
+<code>class type</code> style, they are mostly the same except that the latter is more feature rich
+(support inheritance) but more verbose.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_simple_object_type"><a class="anchor" href="#_simple_object_type"></a>Simple object type</h4>
+<div class="paragraph">
+<p>Suppose we have a JS file which exports two properties: <code>height</code> and <code>width</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">demo.js</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">exports</span><span class="tok-p">.</span><span class="tok-nx">height</span> <span class="tok-o">=</span> <span class="tok-mi">3</span>
+<span class="tok-nx">exports</span><span class="tok-p">.</span><span class="tok-nx">width</span> <span class="tok-o">=</span> <span class="tok-mi">3</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are different ways to writing binding to module <code>demo</code>,
+here we use OCaml objects to model module <code>demo</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">demo</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">width</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span><span class="tok-o">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are too kinds of types on the method name:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>normal type</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-o">&lt;</span> <span class="tok-n">label</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span>
+<span class="tok-o">&lt;</span> <span class="tok-n">label</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">&gt;</span>
+<span class="tok-o">&lt;</span> <span class="tok-n">label</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]&gt;</span>
+<span class="tok-o">&lt;</span> <span class="tok-n">label</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">this</span><span class="tok-o">]&gt;</span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>method</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-o">&lt;</span> <span class="tok-n">label</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span></code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The difference is that for <code>method</code>, the type system will force users to full-fil
+its arguments all at the same time, since its semantics depends on <code>this</code> in JavaScript.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-n">f</span> <span class="tok-o">=</span>
+  <span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">hi</span> <span class="tok-mi">1</span> <b class="conum">(1)</b>
+<span class="tok-k">let</span> <span class="tok-n">test2</span> <span class="tok-n">f</span>   <span class="tok-o">=</span>
+  <span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">hi</span> <span class="tok-k">in</span>
+  <span class="tok-n">u</span> <span class="tok-mi">1</span>
+<span class="tok-k">let</span> <span class="tok-n">test3</span> <span class="tok-n">f</span> <span class="tok-o">=</span>
+  <span class="tok-k">let</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">hi</span> <span class="tok-k">in</span>
+  <span class="tok-n">u</span> <span class="tok-mi">1</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>##</code> is JS object property/method dispatch</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The compiler would infer types differently</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">test</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">hi</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">];</span> <span class="tok-o">..</span> <span class="tok-o">&gt;</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <b class="conum">(1)</b>
+<span class="tok-k">val</span> <span class="tok-n">test2</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">hi</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">;</span> <span class="tok-o">..</span> <span class="tok-o">&gt;</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span>
+<span class="tok-k">val</span> <span class="tok-n">test3</span> <span class="tok-o">:</span> <span class="tok-o">&lt;</span> <span class="tok-n">hi</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">];</span> <span class="tok-o">..</span> <span class="tok-o">&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>..</code> is a row variable, which means the object can contain more methods</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_complex_object_type"><a class="anchor" href="#_complex_object_type"></a>Complex object type</h4>
+<div class="paragraph">
+<p>Below is an example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
+  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>
+  <span class="tok-k">method</span> <span class="tok-n">width</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>
+  <span class="tok-k">method</span> <span class="tok-n">draw</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span>
+<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-k">type</span> <span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">rect</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>class type</code> annotated with <code>[@bs]</code> is treated as a JS class type,
+it needs to be lifted to <code>Js.t</code> too</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For JS classes, methods with arrow types are treated as real methods
+(automatically annotated with <code>[@bs.meth]</code>)
+while methods with non-arrow types
+are treated as properties.</p>
+</div>
+<div class="paragraph">
+<p>So the type <code>rect</code> is the same as below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">wdith</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span> <span class="tok-n">draw</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">meth</span><span class="tok-o">]</span> <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_getter_setter_annotation_to_js_properties"><a class="anchor" href="#_getter_setter_annotation_to_js_properties"></a>getter/setter annotation to JS properties</h5>
+<div class="paragraph">
+<p>Since OCaml&#8217;s object system does not have getters/setters, we introduced two
+attributes <code>bs.get</code> and <code>bs.set</code> to help inform BuckleScript to compile
+them as property getters/setters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">y</span>  <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+ <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-o">{</span><span class="tok-n">no_get</span><span class="tok-o">}]</span> <b class="conum">(1)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y0</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+ <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(2)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y1</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">}]</span> <b class="conum">(3)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y2</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(4)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
+<span class="tok-k">type</span> <span class="tok-n">y3</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span> <span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(5)</b>
+<span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>height is setter only</p>
+</li>
+<li>
+<p>getter return [int Js.null]</p>
+</li>
+<li>
+<p>getter return [int Js.undefined]</p>
+</li>
+<li>
+<p>getter return [int Js.null_undefined]</p>
+</li>
+<li>
+<p>getter only, return [int Js.null_undefined]</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Getter/Setter also applies to class type label
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_bindings_to_create_simple_js_object_literal"><a class="anchor" href="#_bindings_to_create_simple_js_object_literal"></a>Bindings to create simple JS object literal</h4>
 <div class="paragraph">
 <p>BuckleScript introduces <code>bs.obj</code> extension, for example:</p>
@@ -2218,74 +2421,6 @@ below:</p>
   <span class="tok-k">method</span> <span class="tok-n">say</span> <span class="tok-o">:</span> <span class="tok-kt">float</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span>
   <span class="tok-k">method</span> <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">float</span>
 <span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_two_ways_to_define_js_object_types"><a class="anchor" href="#_two_ways_to_define_js_object_types"></a>Two ways to define JS object types</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_ffi_to_js_classes"><a class="anchor" href="#_ffi_to_js_classes"></a>FFI to JS classes</h4>
-<div class="sect4">
-<h5 id="_class_type_declarations"><a class="anchor" href="#_class_type_declarations"></a>Class type declarations</h5>
-<div class="paragraph">
-<p>Below is an example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span>
-  <span class="tok-k">method</span> <span class="tok-n">width</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span>
-  <span class="tok-k">method</span> <span class="tok-n">draw</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span>
-<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span>
-<span class="tok-k">type</span> <span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">rect</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this example, <code>class type</code> annotated with <code>[@bs]</code> is treated as a JS
-class type.
-For JS classes, methods with arrow types are treated as real methods
-while methods with non-arrow types
-are treated as properties. Since OCaml&#8217;s object system does not have
-getters/setters, we introduced two
-attributes <code>bs.get</code> and <code>bs.set</code> to help inform BuckleScript to compile
-them as property getters/setters.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_annotation_to_js_properties"><a class="anchor" href="#_annotation_to_js_properties"></a>Annotation to JS properties</h5>
-<div class="paragraph">
-<p>There are various getter/setter decorations as below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-o">{</span><span class="tok-n">no_get</span><span class="tok-o">}]</span>
-  <span class="tok-c">(* [height] is setter only *)</span>
-<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span>
-<span class="tok-k">type</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">y</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">y0</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">null</span><span class="tok-o">}]</span>
-  <span class="tok-c">(* getter reutrn [int Js.null]*)</span>
-<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span>
-<span class="tok-k">type</span> <span class="tok-n">y0</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">y0</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">y1</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">}]</span>
-  <span class="tok-c">(* getter return [int Js.undefined]*)</span>
-<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span>
-<span class="tok-k">type</span> <span class="tok-n">y1</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">y1</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">y2</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span>
-  <span class="tok-c">(* getter return [int Js.null_undefined] *)</span>
-<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span>
-<span class="tok-k">type</span> <span class="tok-n">y2</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">y2</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
-<span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">y3</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span> <span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span>
-  <span class="tok-c">(* getter only, return [int Js.null_undefined] *)</span>
-<span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span>
-<span class="tok-k">type</span> <span class="tok-n">y3</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">y3</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
-</div>
 </div>
 </div>
 <div class="sect4">
