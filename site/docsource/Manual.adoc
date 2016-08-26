@@ -1,0 +1,64 @@
+# https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
+Hongbo Zhang 
+:toc: left
+:toclevels: 4
+:source-highlighter: pygments
+:page-layout: docs
+// Refs
+:uri-ad-org-issues: https://github.com/bloomberg/bucklescript/issues
+:OCaml: https://ocaml.org/
+:Reason: https://github.com/facebook/Reason
+:BuckleScript: https://github.com/bloomberg/bucklescript
+:BuckleScript-playground: http://bloomberg.github.io/bucklescript/js-demo/
+:closure: https://developers.google.com/closure/compiler/
+:transpile-list: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
+:name-mangling: https://en.wikipedia.org/wiki/Name_mangling
+:npm: https://www.npmjs.com
+:sectanchors:
+:sectlinks:
+
+
+BuckleScript is a backend for the {OCaml}[OCaml] compiler which emits
+JavaScript. It works with both vanilla OCaml and {Reason}[Reason], the
+whole compiler is compiled into JS (and ASM) so that you can play it
+in the {BuckleScript-playground}[browser].
+
+[NOTE]
+.This document is under active development and discussion!
+====
+If you find errors or omissions in this document, please don't
+hesitate to {uri-ad-org-issues}[submit an issue] with a fix.
+====
+
+
+
+include::./Why_BuckleScript.adoc[]
+
+include::./Installation.adoc[]
+
+include::./Get_started.adoc[]
+
+include::./NPM-Support.adoc[]
+
+include::./JS-call-OCaml.adoc[]
+
+include::./OCaml-call-JS.adoc[]
+
+include::./Compiler-options.adoc[]
+
+include::./How-to-adapt-your-build-system.adoc[]
+
+
+include::./Semantic-differences-from-other-backends.adoc[]
+
+include::./Compiler-overview.adoc[]
+
+include::./Runtime-representation.adoc[]
+
+include::./FAQ.adoc[]
+
+include::./Integration_with_reason.adoc[]
+
+include::./Dev-mode-How-to.adoc[]
+
+include::./Differences-from-js_of_ocaml.adoc[]
