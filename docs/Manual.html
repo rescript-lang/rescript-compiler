@@ -502,7 +502,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_install_from_npm_registries">Install from NPM registries</a></li>
 <li><a href="#_install_from_source_with_npm_package_manager">Install from source with npm package manager</a></li>
-<li><a href="#_install_with_minimal_dependencies">Install with minimal dependencies</a></li>
+<li><a href="#_install_with_em_minimal_em_dependencies">Install with <em>minimal</em> dependencies</a></li>
 <li><a href="#_introduction_to_ocaml_ecosystem_opam">Introduction to OCaml ecosystem: OPAM</a></li>
 </ul>
 </li>
@@ -783,6 +783,17 @@ to one JS module.</p>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_install_from_npm_registries"><a class="anchor" href="#_install_from_npm_registries"></a>Install from NPM registries</h3>
+<div class="ulist">
+<div class="title">Prerequisites</div>
+<ul>
+<li>
+<p>Standard C toolchain</p>
+</li>
+<li>
+<p><code>npm</code> (should be installed with Node)</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
 <p>The standard <code>npm</code> package management tool can be used to install
 BuckleScript. If you don&#8217;t already have <code>npm</code> installed, follow the
@@ -827,7 +838,7 @@ npm install</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_install_with_minimal_dependencies"><a class="anchor" href="#_install_with_minimal_dependencies"></a>Install with minimal dependencies</h3>
+<h3 id="_install_with_em_minimal_em_dependencies"><a class="anchor" href="#_install_with_em_minimal_em_dependencies"></a>Install with <em>minimal</em> dependencies</h3>
 <div class="olist arabic">
 <div class="title">Prerequisites:</div>
 <ol class="arabic">
@@ -844,7 +855,7 @@ easily be done.</p>
 <div class="title">Build OCaml compiler</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">git clone --recursive https://github.com/bloomberg/bucklescript
-<span class="tok-nb">cd </span>ocaml
+<span class="tok-nb">cd </span>bucklescript/ocaml
 ./configure -prefix <span class="tok-sb">`</span><span class="tok-nb">pwd</span><span class="tok-sb">`</span> <span class="tok-c"># put your preferred directory</span>
 make world.opt
 make install</code></pre>

@@ -1,3 +1,3 @@
 
-Js.log "Hello BuckleScript!"
+print_endline "Hello BuckleScript!"
 
