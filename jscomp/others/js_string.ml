@@ -61,17 +61,17 @@ external lastIndexOf_from :  t -> int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 
 external localeCompare :  t -> float = "" [@@bs.send.pipe: t]
 
-external replace : Bs.Re.t ->  t ->  t = "" [@@bs.send.pipe: t]
+external replace : Js_re.t ->  t ->  t = "" [@@bs.send.pipe: t]
 external replace_string :  t ->  t ->  t = "replace" [@@bs.send.pipe: t]
 
-external search : Bs.Re.t -> int = "" [@@bs.send.pipe: t]
+external search : Js_re.t -> int = "" [@@bs.send.pipe: t]
 external slice : int -> int ->  t = "" [@@bs.send.pipe: t]
 external slice_end : int ->  t = "slice" [@@bs.send.pipe: t]
 
 external split :  t -> t array  = "" [@@bs.send.pipe: t]
 external split_limited :  t -> int -> t array = "split" [@@bs.send.pipe: t]
-external split_by_reg : Bs.Re.t  ->  t array = "split" [@@bs.send.pipe: t]
-external split_regExpLimited : Bs.Re.t -> int ->  t array = "" [@@bs.send.pipe: t]
+external split_by_reg : Js_re.t  ->  t array = "split" [@@bs.send.pipe: t]
+external split_regExpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
 
 external substring : int -> int ->  t = "" [@@bs.send.pipe: t]
 external substring_toEnd : int ->  t = "substring" [@@bs.send.pipe: t]

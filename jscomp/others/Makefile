@@ -2,11 +2,11 @@ include ../Makefile.shared
 
 COMPILER=../bin/bsc
 
-MAP_FILES= bs_node bs 
+MAP_FILES= bs_node 
 
 SOURCE_LIST=  bs_node_path bs_node_fs bs_node_process bs_dict bs_node_module js_array js_string js_re
 
-$(addsuffix .cmj, $(SOURCE_LIST)): bs_node.cmj bs.cmj # TODO
+$(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 

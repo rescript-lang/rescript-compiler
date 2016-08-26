@@ -83,12 +83,12 @@ bigarray_test.cmx : ../stdlib/int32.cmx ../stdlib/complex.cmx \
     ../stdlib/bigarray.cmx
 boolean_test.cmj : test_bool_equal.cmj mt.cmi
 boolean_test.cmx : test_bool_equal.cmx mt.cmx
-bs_array_test.cmj : ../runtime/js.cmj ../others/bs.cmj
-bs_array_test.cmx : ../runtime/js.cmx ../others/bs.cmx
+bs_array_test.cmj : ../runtime/js.cmj
+bs_array_test.cmx : ../runtime/js.cmx
 bs_rest_test.cmj :
 bs_rest_test.cmx :
-bs_string_test.cmj : ../runtime/js.cmj ../others/bs.cmj
-bs_string_test.cmx : ../runtime/js.cmx ../others/bs.cmx
+bs_string_test.cmj : ../runtime/js.cmj
+bs_string_test.cmx : ../runtime/js.cmx
 buffer_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi \
     ../stdlib/buffer.cmi
 buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
@@ -867,12 +867,12 @@ bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
 boolean_test.cmo : test_bool_equal.cmo mt.cmi
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
-bs_array_test.cmo : ../runtime/js.cmo ../others/bs.cmo
-bs_array_test.cmj : ../runtime/js.cmj ../others/bs.cmj
+bs_array_test.cmo : ../runtime/js.cmo
+bs_array_test.cmj : ../runtime/js.cmj
 bs_rest_test.cmo :
 bs_rest_test.cmj :
-bs_string_test.cmo : ../runtime/js.cmo ../others/bs.cmo
-bs_string_test.cmj : ../runtime/js.cmj ../others/bs.cmj
+bs_string_test.cmo : ../runtime/js.cmo
+bs_string_test.cmj : ../runtime/js.cmj
 buffer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi \
     ../stdlib/buffer.cmi
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
