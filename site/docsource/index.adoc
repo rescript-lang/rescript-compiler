@@ -1,64 +1,61 @@
-# https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
-Hongbo Zhang 
-:toc: left
-:toclevels: 4
-:source-highlighter: pygments
-:page-layout: docs
-// Refs
-:uri-ad-org-issues: https://github.com/bloomberg/bucklescript/issues
-:OCaml: https://ocaml.org/
-:Reason: https://github.com/facebook/Reason
-:BuckleScript: https://github.com/bloomberg/bucklescript
-:BuckleScript-playground: http://bloomberg.github.io/bucklescript/js-demo/
-:closure: https://developers.google.com/closure/compiler/
-:transpile-list: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
-:name-mangling: https://en.wikipedia.org/wiki/Name_mangling
-:npm: https://www.npmjs.com
-:sectanchors:
-:sectlinks:
+++++
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Welcome to BuckleScript</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">BuckleScript: write JS Faster, Safer, Smaller</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/bloomberg/bucklescript" class="btn">View on GitHub</a>
+      <a href="./Manual.html" class="btn">Manual</a>
+      <a href="./js-demo/index.html" class="btn">Try it </a>
+    </section>
+
+    <section class="main-content">
+++++
+
+BuckleScript is a backend for http://ocaml.org/[OCaml] which emits readable, modular and highly performant JavaScript.
+
+#### Developer experience
+
+BuckleScript probably has the _fastest_ JavaScript compiler.The compiler is compiled to both native code and JavaScript,
+users can try the compiler in the https://bloomberg.github.io/bucklescript/js-demo[browser] and imagine how fast it would be for native backend.
+
+#### Integration with existing JavaScript libraries
+
+To our knowledge, BuckleScript is the _only_ compiler which compiles an _existing typed language_ to readable JavaScript. It has the same
+characteristics of typescript: one OCaml module compiled into one JavaScript module (AMDJS, CommonJS, or Google module) without name mangling.
+
+#### It's OCaml !
+- 30 years distilled research in PL and amazing effort of compiler engineering
+- Native backends: AMD64, IA32, PowerPC, ARM, SPARC
+- Language based OS: Mirage Unikernel
+
+#### Installation
+
+[source,sh]
+-----------
+npm install -g bs-platform
+-----------
+
+#### Enjoy!
+++++
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/bloomberg/bucklescript">BuckleScript</a> is open-sourced by <a href="https://github.com/bloomberg">Bloomberg L.P </a>.</span>
+
+      </footer>
+
+    </section>
 
 
-BuckleScript is a backend for the {OCaml}[OCaml] compiler which emits
-JavaScript. It works with both vanilla OCaml and {Reason}[Reason], the
-whole compiler is compiled into JS (and ASM) so that you can play it
-in the {BuckleScript-playground}[browser].
-
-[NOTE]
-.This document is under active development and discussion!
-====
-If you find errors or omissions in this document, please don't
-hesitate to {uri-ad-org-issues}[submit an issue] with a fix.
-====
-
-
-
-include::./Why_BuckleScript.adoc[]
-
-include::./Installation.adoc[]
-
-include::./Get_started.adoc[]
-
-include::./NPM-Support.adoc[]
-
-include::./JS-call-OCaml.adoc[]
-
-include::./OCaml-call-JS.adoc[]
-
-include::./Compiler-options.adoc[]
-
-include::./How-to-adapt-your-build-system.adoc[]
-
-
-include::./Semantic-differences-from-other-backends.adoc[]
-
-include::./Compiler-overview.adoc[]
-
-include::./Runtime-representation.adoc[]
-
-include::./FAQ.adoc[]
-
-include::./Integration_with_reason.adoc[]
-
-include::./Dev-mode-How-to.adoc[]
-
-include::./Differences-from-js_of_ocaml.adoc[]
+  </body>
+</html>
+++++
