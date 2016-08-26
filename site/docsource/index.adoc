@@ -12,7 +12,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">BuckleScript: write JS Faster, Safer, Smaller</h1>
+      <h1 class="project-name">BuckleScript: write JS faster, safer and smaller</h1>
       <h2 class="project-tagline"></h2>
       <a href="https://github.com/bloomberg/bucklescript" class="btn">View on GitHub</a>
       <a href="./Manual.html" class="btn">Manual</a>
@@ -31,7 +31,7 @@ users can try the compiler in the https://bloomberg.github.io/bucklescript/js-de
 
 #### Integration with existing JavaScript libraries
 
-To our knowledge, BuckleScript is the _only_ compiler which compiles an _existing typed language_ to readable JavaScript. It has the same
+BuckleScript is one of the very few compilers which compiles an _existing typed language_ to readable JavaScript. It has the same
 characteristics of typescript: one OCaml module compiled into one JavaScript module (AMDJS, CommonJS, or Google module) without name mangling.
 
 #### It's OCaml !
