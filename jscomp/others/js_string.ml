@@ -51,7 +51,7 @@ external charAt : int ->  t = "" [@@bs.send.pipe: t]
 
 external charCodeAt : int -> float  = "" [@@bs.send.pipe: t]
 (** type it as [float] due to that it may return NAN  *)
-external concat :  t ->  t = "" [@@bs.send.pipe: t]
+external concat :  t -> t = "" [@@bs.send.pipe: t]
 
 external indexOf :  t -> int = "" [@@bs.send.pipe: t]
 external indexOf_from :  t -> int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -70,8 +70,9 @@ external slice_end : int ->  t = "slice" [@@bs.send.pipe: t]
 
 external split :  t -> t array  = "" [@@bs.send.pipe: t]
 external split_limited :  t -> int -> t array = "split" [@@bs.send.pipe: t]
-external split_regExp : Bs.Re.t  ->  t array = "split" [@@bs.send.pipe: t]
+external split_by_reg : Bs.Re.t  ->  t array = "split" [@@bs.send.pipe: t]
 external split_regExpLimited : Bs.Re.t -> int ->  t array = "" [@@bs.send.pipe: t]
+
 external substring : int -> int ->  t = "" [@@bs.send.pipe: t]
 external substring_toEnd : int ->  t = "substring" [@@bs.send.pipe: t]
 external toLowerCase :  t = "" [@@bs.send.pipe: t]
