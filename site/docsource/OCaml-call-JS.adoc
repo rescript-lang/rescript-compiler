@@ -1031,7 +1031,7 @@ We introduced `bs.re` for Javascript regex expression:
 let f  = [%bs.re "/b/g"]
 ------------------------
 
-The compiler will infer `f` has type `Js_re.t` and generate code as
+The compiler will infer `f` has type `Js.Re.t` and generate code as
 below
 
 ------------
@@ -1039,7 +1039,7 @@ var f = /b/g
 ------------
 
 
-NOTE:  `Js_re.t` is an abstract type, we are working on providing
+NOTE:  `Js.Re.t` is an abstract type, we are working on providing
 bindings for it.
 
 
@@ -1052,7 +1052,7 @@ more examples, please visit
 https://github.com/bloomberg/bucklescript-addons
 
 
-##### A simple example: binding to mocha unit test library
+#### A simple example: binding to mocha unit test library
 
 
 This is an example showing how too provide bindings to the

@@ -46,3 +46,37 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = string
+
+external charAt : int ->  t = "" [@@bs.send.pipe: t]
+
+external charCodeAt : int -> float  = "" [@@bs.send.pipe: t]
+(** type it as [float] due to that it may return NAN  *)
+external concat :  t -> t = "" [@@bs.send.pipe: t]
+
+external indexOf :  t -> int = "" [@@bs.send.pipe: t]
+external indexOf_from :  t -> int -> int = "indexOf" [@@bs.send.pipe: t]
+
+external lastIndexOf :  t -> int = "" [@@bs.send.pipe: t]
+external lastIndexOf_from :  t -> int -> int = "lastIndexOf" [@@bs.send.pipe: t]
+
+external localeCompare :  t -> float = "" [@@bs.send.pipe: t]
+
+external replace : Js_re.t ->  t ->  t = "" [@@bs.send.pipe: t]
+external replace_string :  t ->  t ->  t = "replace" [@@bs.send.pipe: t]
+
+external search : Js_re.t -> int = "" [@@bs.send.pipe: t]
+external slice : int -> int ->  t = "" [@@bs.send.pipe: t]
+external slice_end : int ->  t = "slice" [@@bs.send.pipe: t]
+
+external split :  t -> t array  = "" [@@bs.send.pipe: t]
+external split_limited :  t -> int -> t array = "split" [@@bs.send.pipe: t]
+external split_by_reg : Js_re.t  ->  t array = "split" [@@bs.send.pipe: t]
+external split_regExpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
+
+external substring : int -> int ->  t = "" [@@bs.send.pipe: t]
+external substring_toEnd : int ->  t = "substring" [@@bs.send.pipe: t]
+external toLowerCase :  t = "" [@@bs.send.pipe: t]
+external toLocaleLowerCase :  t = "" [@@bs.send.pipe: t]
+external toUpperCase :  t = "" [@@bs.send.pipe: t]
+external toLocaleUpperCase :  t = "" [@@bs.send.pipe: t]
+external trim :  t = "" [@@bs.send.pipe: t]

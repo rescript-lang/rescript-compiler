@@ -2,6 +2,12 @@
 
 ### Install from NPM registries
 
+
+.Prerequisites
+* Standard C toolchain
+* `npm` (should be installed with Node)
+
+
 The standard `npm` package management tool can be used to install
 BuckleScript. If you don't already have `npm` installed, follow the
 directions listed
@@ -35,7 +41,7 @@ cd bucklescript
 npm install
 -----
 
-### Install with minimal dependencies
+### Install with _minimal_ dependencies
 
 .Prerequisites:
 
@@ -52,7 +58,7 @@ easily be done.
 [source,sh]
 --------------------------------------------------------
 git clone --recursive https://github.com/bloomberg/bucklescript
-cd ocaml
+cd bucklescript/ocaml
 ./configure -prefix `pwd` # put your preferred directory
 make world.opt
 make install

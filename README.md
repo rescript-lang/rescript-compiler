@@ -18,25 +18,10 @@ If you need help or have a question, comment, or suggestion, please feel free to
 issue](https://github.com/bloomberg/bucklescript/issues).
 
 ## Installing BuckleScript
-
-#### Prerequisites
-
-* Standard C toolchain
-* `npm` (should be installed with Node)
-
-#### Installing the Release Package
-
 ```
 npm install bs-platform
 ```
-
-#### Installing from Source
-
-```
-git clone https://github.com/bloomberg/bucklescript
-cd bucklescript
-npm install
-```
+For more advanced settings, please visit [Installation](./site/docsource/Installation.adoc)
 
 The BuckleScript installation includes the following:
 
@@ -47,13 +32,10 @@ The BuckleScript installation includes the following:
 Installing BuckleScript from the npm package places binaries in `./node_modules/.bin`. Installing
 from the git repository places them in `./bin`.
 
-## Manually Building BuckleScript
 
-See [Developing BuckleScript](./site/docsource/Developing-bucklescript.md) for detailed instructions on manually building BuckleScript.
+## Documentation
 
-## Detailed Documentation
-
-See http://bloomberg.github.io/bucklescript for detailed documentation on BuckleScript. If you'd
+See http://bloomberg.github.io/bucklescript/Manual.html for detailed documentation on BuckleScript. If you'd
 like to contribute content [see here](https://github.com/bloomberg/bucklescript/blob/master/site/docsource)
 for the documentation source.
 
@@ -193,10 +175,6 @@ function test() {
 test();
 ```
 
-## Release Status
-
-BuckleScript has not reached a stable release. However, it is already quite usable and we
-encourage you to try it out and let us know what you think.
 
 ## Licensing
 

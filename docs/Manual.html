@@ -502,7 +502,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_install_from_npm_registries">Install from NPM registries</a></li>
 <li><a href="#_install_from_source_with_npm_package_manager">Install from source with npm package manager</a></li>
-<li><a href="#_install_with_minimal_dependencies">Install with minimal dependencies</a></li>
+<li><a href="#_install_with_em_minimal_em_dependencies">Install with <em>minimal</em> dependencies</a></li>
 <li><a href="#_introduction_to_ocaml_ecosystem_opam">Introduction to OCaml ecosystem: OPAM</a></li>
 </ul>
 </li>
@@ -571,7 +571,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_debugger_support">Debugger support</a></li>
 <li><a href="#_regex_support">Regex support</a></li>
 <li><a href="#_examples_2">Examples</a>
-<ul class="sectlevel4">
+<ul class="sectlevel3">
 <li><a href="#_a_simple_example_binding_to_mocha_unit_test_library">A simple example: binding to mocha unit test library</a></li>
 </ul>
 </li>
@@ -669,7 +669,7 @@ hesitate to <a href="https://github.com/bloomberg/bucklescript/issues">submit an
 <div class="sect2">
 <h3 id="_benefits_of_javascript_platform"><a class="anchor" href="#_benefits_of_javascript_platform"></a>Benefits of JavaScript platform</h3>
 <div class="paragraph">
-<p>JavaScript is not just <strong>the</strong> browser language, it&#8217;s also the <strong>only</strong>
+<p>JavaScript is not just <em>the</em> browser language, it&#8217;s also the <em>only</em>
 existing cross platform language. It is truly everywhere: users don&#8217;t
 need to install binaries or use package managers to access software,
 just a link will work.</p>
@@ -683,32 +683,34 @@ increasingly capable of supporting large applications.</p>
 <div class="sect2">
 <h3 id="_problems_of_javascript_how_bucklescript_solves_it"><a class="anchor" href="#_problems_of_javascript_how_bucklescript_solves_it"></a>Problems of JavaScript &amp;&amp; how BuckleScript solves it</h3>
 <div class="paragraph">
-<p>BuckleScript is mainly designed to solve the problems of <strong>large scale JavaScript programming</strong>:</p>
+<p>BuckleScript is mainly designed to solve the problems of <em>large scale</em> JavaScript programming:</p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Lack of type-safety:
-<a href="https://ocaml.org/">OCaml</a> offers an industrial-strength
-state-of-the-art type system and provides type inference (i.e. No
-verbose type annotation required), which proves
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Type-safety</dt>
+<dd>
+<p>OCaml offers an industrial-strength
+state-of-the-art type system and provides very strong type inference (i.e. No
+verbose type annotation required compared with typescript), which proves
 <a href="http://programmers.stackexchange.com/questions/215482/what-are-the-safety-benefits-of-a-type-system">invaluable</a>
-in managing large projects.</p>
-</li>
-<li>
-<p>Dead code: A large amount of web-development relies on inclusion of
-code dependencies by copying or referencing CDNs (the very thing
-that makes JavaScript highly accessible), but this also introduces
-a lot of <a href="https://en.wikipedia.org/wiki/Dead_code">dead code</a>. This
-impacts performance adversely when the JavaScript VM has to
-interpret code that will never be invoked. BuckleScript provides
-powerful dead-code elimination at all levels:</p>
+in managing large projects. OCaml&#8217;s type system is not just for tooling,
+it is a <em>sound</em> type system which means it is guaranteed that there will
+be no runtime type errors after type checking.</p>
+</dd>
+<dt class="hdlist1">High quality dead code elimination</dt>
+<dd>
+<p>A large amount of web-development relies on inclusion of
+  code dependencies by copying or referencing CDNs (the very thing
+  that makes JavaScript highly accessible), but this also introduces
+  a lot of <a href="https://en.wikipedia.org/wiki/Dead_code">dead code</a>. This
+  impacts performance adversely when the JavaScript VM has to
+  interpret code that will never be invoked. BuckleScript provides
+  powerful dead-code elimination at all levels:</p>
 <div class="ulist">
 <ul>
 <li>
 <p>Function and module level elimination is facilitated by the
-sophistication of the type-system of OCaml and
-purity analysis.</p>
+sophistication of the type-system of OCaml and <em>purity analysis</em>.</p>
 </li>
 <li>
 <p>At the global level BuckleScript generates code ready for
@@ -717,9 +719,10 @@ dead-code elimination done by bundling tools such as the
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p>Lack of offline optimizations: JavaScript is a dynamic language, it
+</dd>
+<dt class="hdlist1">Offline optimizations</dt>
+<dd>
+<p>JavaScript is a dynamic language, it
 takes a performance-hit for the VM to optimize code at runtime.
 While some JS engines circumvent the problem to some extent by
 <a href="http://v8project.blogspot.com/2015/07/code-caching.html">caching</a>,
@@ -728,26 +731,28 @@ type system also limits the level of optimizations possible. Again,
 BuckleScript, using features of the OCaml type-system and compiler
 implementation is able to provide many optimizations during offline
 compilation, allowing the runtime code to be extremely fast.</p>
-</li>
-<li>
-<p>Run your programs on all platforms, but run your system <strong>faster</strong>
+</dd>
+<dt class="hdlist1">JS platform and Native platform</dt>
+<dd>
+<p>Run your programs on all platforms, but run your system <em>faster</em>
 under specific platforms. Javascript is everywhere but it does not
 mean we have to run all apps in JS, under several platforms, for
 example, server side or iOS/Android native apps, when programs are
-written in OCaml, it can also be compiled to native code for <strong>best
-performance</strong>.</p>
-</li>
-</ol>
+written in OCaml, it can also be compiled to native code for <em>better
+and reliable performance</em>.</p>
+</dd>
+</dl>
 </div>
 <div class="paragraph">
 <p>While a strong type-system helps in countering these problems, at the
 same time we hope to avoid some of the problems faced in using other
 offline <a href="https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js">transpilation systems</a>:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Slow compilation: OCaml byte-code compilation is known to be fast
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Slow compilation</dt>
+<dd>
+<p>OCaml byte-code compilation is known to be fast
   (one or two orders of magnitude faster than other similar languages:
 <a href="http://www.scala-lang.org/">Scala</a> or
   <a href="https://www.haskell.org/">Haskell</a>),
@@ -755,25 +760,34 @@ offline <a href="https://github.com/jashkenas/coffeescript/wiki/list-of-language
   since it saves the link time. See the speeds at work in the
   <a href="http://bloomberg.github.io/bucklescript/js-demo/">playground</a>, the native backend is one
   order faster than the JS backend.</p>
-</li>
-<li>
-<p>Un-readable JS Code and hard to integrate with existing JS
-libraries: When compiling to JavaScript, many systems
-generate code, that while syntactically and semantically correct is
-not human-readable and very difficult to debug and profile.
-Our BuckleScript implementation and the multi-pass compilation  strategy of OCaml,
-allows us to avoid <a href="https://en.wikipedia.org/wiki/Name_mangling">name-mangling</a>,
-and produce JavaScript code that is human-readable and easier to debug and
-maintain. More importantly, this makes integration with existing JS
-libraries much easier.</p>
-</li>
-<li>
-<p>Loss of code-structure: Many systems generate JavaScript code that is essentially a
-<a href="https://en.wikipedia.org/wiki/Big_ball_of_mud">big ball of mud</a>. We try
-to keep the original structure of the code by mapping one OCaml module
-to one JS module.</p>
-</li>
-</ul>
+</dd>
+<dt class="hdlist1">Un-readable JS Code and hard to integrate with existing JS  libraries</dt>
+<dd>
+<p>When compiling to JavaScript, many systems
+  generate code, that while syntactically and semantically correct is
+  not human-readable and very difficult to debug and profile.
+  Our BuckleScript implementation and the multi-pass compilation  strategy of OCaml,
+  allows us to avoid <a href="https://en.wikipedia.org/wiki/Name_mangling">name-mangling</a>,
+  and produce JavaScript code that is human-readable and easier to debug and
+  maintain. More importantly, this makes integration with existing JS
+  libraries <em>much easier</em>.</p>
+</dd>
+<dt class="hdlist1">Large JS output even for a simple program</dt>
+<dd>
+<p>In BuckleScript, a <code>Hello world</code> program generates <em>20 bytes</em> JS code
+instead of <em>50K bytes</em>. This is due to that BuckleScript has an excellent
+integration with JS libs that unlike most JS compilers,
+all BuckleScript&#8217;s runtime is written in OCaml itself so that these
+runtime libraries are only needed when user actually call it.</p>
+</dd>
+<dt class="hdlist1">Loss of code-structure</dt>
+<dd>
+<p>Many systems generate JavaScript code that is essentially a
+ <a href="https://en.wikipedia.org/wiki/Big_ball_of_mud">big ball of mud</a>. We try
+ to keep the original structure of the code by mapping one OCaml module
+ to one JS module.</p>
+</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -783,6 +797,17 @@ to one JS module.</p>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_install_from_npm_registries"><a class="anchor" href="#_install_from_npm_registries"></a>Install from NPM registries</h3>
+<div class="ulist">
+<div class="title">Prerequisites</div>
+<ul>
+<li>
+<p>Standard C toolchain</p>
+</li>
+<li>
+<p><code>npm</code> (should be installed with Node)</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
 <p>The standard <code>npm</code> package management tool can be used to install
 BuckleScript. If you don&#8217;t already have <code>npm</code> installed, follow the
@@ -827,7 +852,7 @@ npm install</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_install_with_minimal_dependencies"><a class="anchor" href="#_install_with_minimal_dependencies"></a>Install with minimal dependencies</h3>
+<h3 id="_install_with_em_minimal_em_dependencies"><a class="anchor" href="#_install_with_em_minimal_em_dependencies"></a>Install with <em>minimal</em> dependencies</h3>
 <div class="olist arabic">
 <div class="title">Prerequisites:</div>
 <ol class="arabic">
@@ -844,7 +869,7 @@ easily be done.</p>
 <div class="title">Build OCaml compiler</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">git clone --recursive https://github.com/bloomberg/bucklescript
-<span class="tok-nb">cd </span>ocaml
+<span class="tok-nb">cd </span>bucklescript/ocaml
 ./configure -prefix <span class="tok-sb">`</span><span class="tok-nb">pwd</span><span class="tok-sb">`</span> <span class="tok-c"># put your preferred directory</span>
 make world.opt
 make install</code></pre>
@@ -2621,7 +2646,7 @@ that the order is correct.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The compiler will infer <code>f</code> has type <code>Js_re.t</code> and generate code as
+<p>The compiler will infer <code>f</code> has type <code>Js.Re.t</code> and generate code as
 below</p>
 </div>
 <div class="listingblock">
@@ -2636,7 +2661,7 @@ below</p>
 <div class="title">Note</div>
 </td>
 <td class="content">
-<code>Js_re.t</code> is an abstract type, we are working on providing
+<code>Js.Re.t</code> is an abstract type, we are working on providing
 bindings for it.
 </td>
 </tr>
@@ -2650,8 +2675,8 @@ bindings for it.
 more examples, please visit
 <a href="https://github.com/bloomberg/bucklescript-addons" class="bare">https://github.com/bloomberg/bucklescript-addons</a></p>
 </div>
-<div class="sect4">
-<h5 id="_a_simple_example_binding_to_mocha_unit_test_library"><a class="anchor" href="#_a_simple_example_binding_to_mocha_unit_test_library"></a>A simple example: binding to mocha unit test library</h5>
+<div class="sect3">
+<h4 id="_a_simple_example_binding_to_mocha_unit_test_library"><a class="anchor" href="#_a_simple_example_binding_to_mocha_unit_test_library"></a>A simple example: binding to mocha unit test library</h4>
 <div class="paragraph">
 <p>This is an example showing how too provide bindings to the
 <a href="https://mochajs.org/">mochajs</a> unit test framework.</p>

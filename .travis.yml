@@ -2,8 +2,11 @@ language: node_js
 env:
   - BS_TRAVIS_CI=1
 node_js:
-  - 6
   - 4
+
+#
+# - 6
+# This delays notification
 
 # Not a very reliable service..  
 # script: npm run coveralls

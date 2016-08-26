@@ -2,15 +2,15 @@ include ../Makefile.shared
 
 COMPILER=../bin/bsc
 
-MAP_FILES= bs_node bs 
+MAP_FILES= bs_node 
 
-SOURCE_LIST=  bs_node_path bs_node_fs bs_node_process bs_dict bs_node_module
+SOURCE_LIST=  bs_node_path bs_node_fs bs_node_process bs_dict bs_node_module js_array js_string js_re
 
-$(addsuffix .cmj, $(MAP_FILES)): bs_node.cmj bs.cmj
+$(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 
-BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name $(npm_package_name)
+BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform
 
 ifdef BS_RELEASE_BUILD
 BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs

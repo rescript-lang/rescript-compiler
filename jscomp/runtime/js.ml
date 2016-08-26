@@ -89,6 +89,12 @@ end
 
 
 
+module Dict = Bs_dict
+module Node = Bs_node  
+module Array = Js_array
+module String = Js_string
+module Re = Js_re
+
 
 
 

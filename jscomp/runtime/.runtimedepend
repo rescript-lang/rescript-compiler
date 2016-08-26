@@ -22,10 +22,7 @@ caml_string.cmi :
 caml_sys.cmi :
 caml_utils.cmi :
 caml_weak.cmi :
-js_array.cmi :
 js_primitive.cmi : js.cmj
-js_re.cmi :
-js_string.cmi :
 block.cmj : block.cmi
 block.cmx : block.cmi
 bs_string.cmj :
@@ -88,8 +85,6 @@ curry.cmj : caml_oo.cmi caml_array.cmi
 curry.cmx : caml_oo.cmx caml_array.cmx
 js.cmj :
 js.cmx :
-js_array.cmj : js_array.cmi
-js_array.cmx : js_array.cmi
 js_float.cmj :
 js_float.cmx :
 js_int.cmj :
@@ -102,10 +97,6 @@ js_obj.cmj : js.cmj
 js_obj.cmx : js.cmx
 js_primitive.cmj : js.cmj js_primitive.cmi
 js_primitive.cmx : js.cmx js_primitive.cmi
-js_re.cmj : js_re.cmi
-js_re.cmx : js_re.cmi
-js_string.cmj : js_string.cmi
-js_string.cmx : js_string.cmi
 js_unsafe.cmj : js.cmj
 js_unsafe.cmx : js.cmx
 typed_array.cmj :
@@ -172,8 +163,6 @@ curry.cmo : caml_oo.cmi caml_array.cmi
 curry.cmj : caml_oo.cmj caml_array.cmj
 js.cmo :
 js.cmj :
-js_array.cmo : js_array.cmi
-js_array.cmj : js_array.cmi
 js_float.cmo :
 js_float.cmj :
 js_int.cmo :
@@ -186,10 +175,6 @@ js_obj.cmo : js.cmo
 js_obj.cmj : js.cmj
 js_primitive.cmo : js.cmo js_primitive.cmi
 js_primitive.cmj : js.cmj js_primitive.cmi
-js_re.cmo : js_re.cmi
-js_re.cmj : js_re.cmi
-js_string.cmo : js_string.cmi
-js_string.cmj : js_string.cmi
 js_unsafe.cmo : js.cmo
 js_unsafe.cmj : js.cmj
 typed_array.cmo :
