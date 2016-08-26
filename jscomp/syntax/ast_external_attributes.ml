@@ -545,14 +545,11 @@ let handle_attributes
          get_name = `Nm_na ;
          external_module_name = None ;
         } -> 
-        begin match arg_types with 
-          | _self :: _args ->
-            Js_send {splice  ;
-                   name = string_of_bundle_source prim_name_or_pval_prim;
-                   pipe = true}
-        | _ ->
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
-        end
+        (** can be one argument *)
+        Js_send {splice  ;
+                 name = string_of_bundle_source prim_name_or_pval_prim;
+                 pipe = true}
+
       | {val_send_pipe = Some _ } 
         -> Location.raise_errorf ~loc "conflict attributes found"
 

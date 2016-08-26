@@ -6,8 +6,16 @@ bs_node_process.cmj :
 bs_node_process.cmx :
 bs_dict.cmj :
 bs_dict.cmx :
-bs_node_module.cmj : bs_node.cmi bs_dict.cmj
-bs_node_module.cmx : bs_node.cmi bs_dict.cmx
+bs_node_module.cmj : bs_node.cmj bs_dict.cmj
+bs_node_module.cmx : bs_node.cmx bs_dict.cmx
+js_array.cmj :
+js_array.cmx :
+js_string.cmj : bs.cmj js_string.cmi
+js_string.cmx : bs.cmx js_string.cmi
+js_re.cmj : js_re.cmi
+js_re.cmx : js_re.cmi
+js_string.cmi :
+js_re.cmi :
 bs_node_path.cmo :
 bs_node_path.cmj :
 bs_node_fs.cmo :
@@ -16,5 +24,11 @@ bs_node_process.cmo :
 bs_node_process.cmj :
 bs_dict.cmo :
 bs_dict.cmj :
-bs_node_module.cmo : bs_node.cmi bs_dict.cmo
-bs_node_module.cmj : bs_node.cmi bs_dict.cmj
+bs_node_module.cmo : bs_node.cmo bs_dict.cmo
+bs_node_module.cmj : bs_node.cmj bs_dict.cmj
+js_array.cmo :
+js_array.cmj :
+js_string.cmo : bs.cmo js_string.cmi
+js_string.cmj : bs.cmj js_string.cmi
+js_re.cmo : js_re.cmi
+js_re.cmj : js_re.cmi

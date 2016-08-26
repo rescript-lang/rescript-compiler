@@ -1052,7 +1052,7 @@ more examples, please visit
 https://github.com/bloomberg/bucklescript-addons
 
 
-##### A simple example: binding to mocha unit test library
+#### A simple example: binding to mocha unit test library
 
 
 This is an example showing how too provide bindings to the

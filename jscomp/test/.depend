@@ -83,6 +83,8 @@ bigarray_test.cmx : ../stdlib/int32.cmx ../stdlib/complex.cmx \
     ../stdlib/bigarray.cmx
 boolean_test.cmj : test_bool_equal.cmj mt.cmi
 boolean_test.cmx : test_bool_equal.cmx mt.cmx
+bs_array_test.cmj : ../runtime/js.cmj ../others/bs.cmj
+bs_array_test.cmx : ../runtime/js.cmx ../others/bs.cmx
 bs_rest_test.cmj :
 bs_rest_test.cmx :
 buffer_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi \
@@ -223,8 +225,8 @@ fail_comp.cmj :
 fail_comp.cmx :
 ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
 ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
-ffi_array_test.cmj : mt.cmi ../runtime/js_array.cmi
-ffi_array_test.cmx : mt.cmx ../runtime/js_array.cmx
+ffi_array_test.cmj : mt.cmi ../others/js_array.cmj
+ffi_array_test.cmx : mt.cmx ../others/js_array.cmx
 ffi_js.cmj : ../stdlib/obj.cmi
 ffi_js.cmx : ../stdlib/obj.cmx
 ffi_test.cmj : ../runtime/js.cmj
@@ -251,8 +253,8 @@ format_regression.cmj :
 format_regression.cmx :
 format_test.cmj : mt.cmi ../stdlib/format.cmi
 format_test.cmx : mt.cmx ../stdlib/format.cmx
-fs_test.cmj : mt.cmi ../runtime/js.cmj ../others/bs_node.cmi
-fs_test.cmx : mt.cmx ../runtime/js.cmx ../others/bs_node.cmi
+fs_test.cmj : mt.cmi ../runtime/js.cmj ../others/bs_node.cmj
+fs_test.cmx : mt.cmx ../runtime/js.cmx ../others/bs_node.cmx
 genlex_test.cmj : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/genlex.cmi
 genlex_test.cmx : ../stdlib/stream.cmx mt.cmx ../stdlib/list.cmx \
@@ -407,8 +409,8 @@ module_parameter_test.cmj : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
 more_uncurry.cmj :
 more_uncurry.cmx :
-mt.cmj : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
-mt.cmx : ../stdlib/list.cmx ../others/bs_node.cmi ../stdlib/array.cmx mt.cmi
+mt.cmj : ../stdlib/list.cmi ../others/bs_node.cmj ../stdlib/array.cmi mt.cmi
+mt.cmx : ../stdlib/list.cmx ../others/bs_node.cmx ../stdlib/array.cmx mt.cmi
 mt_global.cmj : mt.cmi mt_global.cmi
 mt_global.cmx : mt.cmx mt_global.cmi
 mutable_obj_test.cmj : ../runtime/js.cmj
@@ -863,6 +865,8 @@ bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
 boolean_test.cmo : test_bool_equal.cmo mt.cmi
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
+bs_array_test.cmo : ../runtime/js.cmo ../others/bs.cmo
+bs_array_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_rest_test.cmo :
 bs_rest_test.cmj :
 buffer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi \
@@ -1003,8 +1007,8 @@ fail_comp.cmo :
 fail_comp.cmj :
 ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
 ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
-ffi_array_test.cmo : mt.cmi ../runtime/js_array.cmi
-ffi_array_test.cmj : mt.cmj ../runtime/js_array.cmj
+ffi_array_test.cmo : mt.cmi ../others/js_array.cmo
+ffi_array_test.cmj : mt.cmj ../others/js_array.cmj
 ffi_js.cmo : ../stdlib/obj.cmi
 ffi_js.cmj : ../stdlib/obj.cmj
 ffi_test.cmo : ../runtime/js.cmo
@@ -1031,8 +1035,8 @@ format_regression.cmo :
 format_regression.cmj :
 format_test.cmo : mt.cmi ../stdlib/format.cmi
 format_test.cmj : mt.cmj ../stdlib/format.cmj
-fs_test.cmo : mt.cmi ../runtime/js.cmo ../others/bs_node.cmi
-fs_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs_node.cmi
+fs_test.cmo : mt.cmi ../runtime/js.cmo ../others/bs_node.cmo
+fs_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs_node.cmj
 genlex_test.cmo : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/genlex.cmi
 genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
@@ -1187,8 +1191,8 @@ module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 more_uncurry.cmo :
 more_uncurry.cmj :
-mt.cmo : ../stdlib/list.cmi ../others/bs_node.cmi ../stdlib/array.cmi mt.cmi
-mt.cmj : ../stdlib/list.cmj ../others/bs_node.cmi ../stdlib/array.cmj mt.cmi
+mt.cmo : ../stdlib/list.cmi ../others/bs_node.cmo ../stdlib/array.cmi mt.cmi
+mt.cmj : ../stdlib/list.cmj ../others/bs_node.cmj ../stdlib/array.cmj mt.cmi
 mt_global.cmo : mt.cmi mt_global.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
 mutable_obj_test.cmo : ../runtime/js.cmo
