@@ -523,15 +523,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_js_calling_ocaml">JS Calling OCaml</a></li>
 <li><a href="#_ocaml_calling_js">OCaml calling JS</a>
 <ul class="sectlevel2">
-<li><a href="#_ffi_to_simple_js_functions_and_supported_attributes">FFI to simple JS functions and supported attributes</a>
+<li><a href="#_binding_to_simple_js_functions_values">Binding to simple JS functions values</a>
 <ul class="sectlevel3">
 <li><a href="#_binding_to_global_value_bs_val">Binding to global value: bs.val</a></li>
 <li><a href="#_binding_to_javascript_constructor_bs_new">Binding to JavaScript constructor: bs.new</a></li>
 <li><a href="#_binding_to_a_value_from_a_module_bs_module">Binding to a value from a module: bs.module</a></li>
 <li><a href="#_binding_the_whole_module_as_a_value_or_function">Binding the whole module as a value or function</a></li>
-<li><a href="#_binding_to_method_bs_send">Binding to method: bs.send</a></li>
+<li><a href="#_binding_to_method_bs_send_bs_send_pipe">Binding to method: bs.send, bs.send.pipe</a></li>
 <li><a href="#_binding_to_dynamic_key_access_set_bs_set_index_bs_get_index">Binding to dynamic key access/set: bs.set_index, bs.get_index</a></li>
 <li><a href="#_binding_to_getter_setter_bs_get_bs_set">Binding to Getter/Setter: bs.get, bs.set</a></li>
+</ul>
+</li>
+<li><a href="#_special_types_on_external_declarations_bs_string_bs_int">Special types on external declarations: bs.string, bs.int</a>
+<ul class="sectlevel3">
+<li><a href="#_using_polymorphic_variant_to_model_enums_and_string_types">Using polymorphic variant to model enums and string types</a></li>
+<li><a href="#_using_polymorphic_variant_to_model_event_listener">Using polymorphic variant to model event listener</a></li>
 </ul>
 </li>
 <li><a href="#_binding_to_callbacks_high_order_function">Binding to callbacks (high-order function)</a>
@@ -1287,7 +1293,7 @@ code</p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="_ffi_to_simple_js_functions_and_supported_attributes"><a class="anchor" href="#_ffi_to_simple_js_functions_and_supported_attributes"></a>FFI to simple JS functions and supported attributes</h3>
+<h3 id="_binding_to_simple_js_functions_values"><a class="anchor" href="#_binding_to_simple_js_functions_values"></a>Binding to simple JS functions values</h3>
 <div class="paragraph">
 <p>This part is similar to <a href="http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html">traditional FFI</a>,
 with syntax as described below:</p>
@@ -1299,7 +1305,8 @@ with syntax as described below:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Users need to declare types for foreign functions (JS functions here)
+<p>Users need to declare types for foreign functions
+(JS functions for BuckleScript or C functions for native compiler)
 and provide customized <code>attributes</code>.</p>
 </div>
 <div class="sect3">
@@ -1340,7 +1347,8 @@ JavaScript functions, you can
 give the JavaScript foreign function a different name:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">imul</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;c_imul&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span> <span class="tok-s2">&quot;Math.imul&quot;</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">imul</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">=</span>
+  <span class="tok-s2">&quot;c_imul&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span> <span class="tok-s2">&quot;Math.imul&quot;</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 </li>
@@ -1466,14 +1474,13 @@ give the JavaScript foreign function a different name:</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_binding_to_method_bs_send"><a class="anchor" href="#_binding_to_method_bs_send"></a>Binding to method: bs.send</h4>
+<h4 id="_binding_to_method_bs_send_bs_send_pipe"><a class="anchor" href="#_binding_to_method_bs_send_bs_send_pipe"></a>Binding to method: bs.send, bs.send.pipe</h4>
 <div class="paragraph">
 <p><code>bs.send</code> helps the user send a message to a JS object</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">id</span>
-<span class="tok-c">(** Abstract type for id object *)</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">id</span> <span class="tok-c">(** Abstract type for id object *)</span>
 <span class="tok-k">external</span> <span class="tok-n">get_by_id</span> <span class="tok-o">:</span> <span class="tok-n">dom</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-n">id</span> <span class="tok-o">=</span>
   <span class="tok-s2">&quot;getElementById&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">]</span></code></pre>
 </div>
@@ -1497,6 +1504,29 @@ give the JavaScript foreign function a different name:</p>
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">dom</span><span class="tok-p">.</span><span class="tok-nx">getElementById</span><span class="tok-p">(</span><span class="tok-s2">&quot;xx&quot;</span><span class="tok-p">)</span></code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p><code>bs.pipe.send</code> is similar to <code>bs.send</code> except that the first argument, i.e, the object,
+is put in the position of last argument to help user write in a <em>chaining style</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">map</span> <span class="tok-o">:</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-kt">array</span> <span class="tok-o">=</span>
+  <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-kt">array</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+<span class="tok-k">external</span> <span class="tok-n">forEach</span><span class="tok-o">:</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-kt">array</span> <span class="tok-o">=</span>
+  <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-kt">array</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">test</span> <span class="tok-n">arr</span> <span class="tok-o">=</span>
+    <span class="tok-n">arr</span>
+    <span class="tok-o">|&gt;</span> <span class="tok-n">map</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-n">x</span> <span class="tok-o">-&gt;</span> <span class="tok-n">x</span> <span class="tok-o">+</span> <span class="tok-mi">1</span><span class="tok-o">)</span>
+    <span class="tok-o">|&gt;</span> <span class="tok-n">forEach</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <span class="tok-n">x</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">x</span><span class="tok-o">)</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>For the <code>[@bs]</code> attribute in the callback, see <a href="#_binding_to_callbacks_high_order_function">Binding to callbacks (high-order function)</a></p>
+</li>
+</ol>
+</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1510,8 +1540,8 @@ give the JavaScript foreign function a different name:</p>
 <p>if <code>external-declaration</code> is the same as value-name, it can be left empty, for example,</p>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">getElementById</span> <span class="tok-o">:</span> <span class="tok-n">dom</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-n">id</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">getElementById</span> <span class="tok-o">:</span> <span class="tok-n">dom</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-n">id</span> <span class="tok-o">=</span>
+  <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 </li>
@@ -1551,6 +1581,146 @@ give the JavaScript foreign function a different name:</p>
 </div>
 </div>
 <div class="sect2">
+<h3 id="_special_types_on_external_declarations_bs_string_bs_int"><a class="anchor" href="#_special_types_on_external_declarations_bs_string_bs_int"></a>Special types on external declarations: bs.string, bs.int</h3>
+<div class="sect3">
+<h4 id="_using_polymorphic_variant_to_model_enums_and_string_types"><a class="anchor" href="#_using_polymorphic_variant_to_model_enums_and_string_types"></a>Using polymorphic variant to model enums and string types</h4>
+<div class="paragraph">
+<p>There are several patterns heavily used in existing JavaScript codebase, for example,
+string type is used a lot. BuckleScript FFI allows to model string type in a safe
+way by using annotated polymorphic variant.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">readFileSync</span> <span class="tok-o">:</span>
+  <span class="tok-n">name</span><span class="tok-o">:</span><span class="tok-kt">string</span> <span class="tok-o">-&gt;</span>
+  <span class="tok-o">([</span> <span class="tok-o">`</span><span class="tok-n">utf8</span>
+   <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-n">my_name</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;ascii&quot;</span><span class="tok-o">]</span> <b class="conum">(1)</b>
+   <span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-kt">string</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span>
+  <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+  <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;fs&quot;</span><span class="tok-o">]</span>
+
+<span class="tok-k">let</span> <span class="tok-o">_</span> <span class="tok-o">=</span>
+  <span class="tok-n">readFileSync</span> <span class="tok-o">~</span><span class="tok-n">name</span><span class="tok-o">:</span><span class="tok-s2">&quot;xx.txt&quot;</span> <span class="tok-o">`</span><span class="tok-n">my_name</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Here we intentionally made an example to show how to  customize a name</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Ouptut:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">Fs</span> <span class="tok-o">=</span> <span class="tok-nx">require</span><span class="tok-p">(</span><span class="tok-s2">&quot;fs&quot;</span><span class="tok-p">);</span>
+<span class="tok-nx">Fs</span><span class="tok-p">.</span><span class="tok-nx">readFileSync</span><span class="tok-p">(</span><span class="tok-s2">&quot;xx.txt&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;ascii&quot;</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Polymoprhic variants can also be used to model <em>enums</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">test_int_type</span> <span class="tok-o">:</span>
+  <span class="tok-o">([</span> <span class="tok-o">`</span><span class="tok-n">on_closed</span> <b class="conum">(1)</b>
+   <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-n">on_open</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-mi">3</span><span class="tok-o">]</span>  <b class="conum">(2)</b>
+   <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-n">in_bin</span> <b class="conum">(3)</b>
+   <span class="tok-o">]</span>
+   <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-kt">int</span><span class="tok-o">])</span>  <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span>  <span class="tok-o">=</span>
+  <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><em>`on_closed</em> will be encoded as 0</p>
+</li>
+<li>
+<p><em>`on_open</em> will be 3 due to the attribute <code>bs.as</code></p>
+</li>
+<li>
+<p><em>`in_bin</em> will be 4</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_using_polymorphic_variant_to_model_event_listener"><a class="anchor" href="#_using_polymorphic_variant_to_model_event_listener"></a>Using polymorphic variant to model event listener</h4>
+<div class="paragraph">
+<p>BuckleScript model this in a type-safe way by using annotated polymorphic variants</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">readline</span>
+<span class="tok-k">external</span> <span class="tok-n">on</span> <span class="tok-o">:</span>
+    <span class="tok-o">(</span>
+    <span class="tok-o">[</span> <span class="tok-o">`</span><span class="tok-n">close</span> <span class="tok-k">of</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span>
+    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-n">line</span> <span class="tok-k">of</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span>
+    <span class="tok-o">]</span> <b class="conum">(1)</b>
+    <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-kt">string</span><span class="tok-o">])</span>
+    <span class="tok-o">-&gt;</span> <span class="tok-n">readline</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span> <span class="tok-n">readline</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">register</span> <span class="tok-n">rl</span> <span class="tok-o">=</span>
+  <span class="tok-n">rl</span>
+  <span class="tok-o">|&gt;</span> <span class="tok-n">on</span> <span class="tok-o">(`</span><span class="tok-n">close</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">event</span> <span class="tok-o">-&gt;</span> <span class="tok-bp">()</span> <span class="tok-o">))</span>
+  <span class="tok-o">|&gt;</span> <span class="tok-n">on</span> <span class="tok-o">(`</span><span class="tok-n">line</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">line</span> <span class="tok-o">-&gt;</span> <span class="tok-n">print_endline</span> <span class="tok-n">line</span><span class="tok-o">))</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>This is a very powerful typing: each event can have its <em>different types</em></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">function</span> <span class="tok-nx">register</span><span class="tok-p">(</span><span class="tok-nx">rl</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-k">return</span> <span class="tok-nx">rl</span><span class="tok-p">.</span><span class="tok-nx">on</span><span class="tok-p">(</span><span class="tok-s2">&quot;close&quot;</span><span class="tok-p">,</span> <span class="tok-kd">function</span> <span class="tok-p">()</span> <span class="tok-p">{</span>
+                <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+              <span class="tok-p">})</span>
+           <span class="tok-p">.</span><span class="tok-nx">on</span><span class="tok-p">(</span><span class="tok-s2">&quot;line&quot;</span><span class="tok-p">,</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">line</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+              <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">line</span><span class="tok-p">);</span>
+              <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+            <span class="tok-p">});</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>These annotations will only have effect in <code>external</code> declarations.</p>
+</li>
+<li>
+<p>The runtime encoding of using polymorphic variant is internal to the compiler.</p>
+</li>
+<li>
+<p>With these annotations mentioned above, BuckleScript will automatically
+ transform the internal encoding to the designated encoding for FFI.
+ BuckleScript will try to do such conversion at compile time if it can, otherwise, it
+will do such conversion in the runtime, but it should be always correct.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_binding_to_callbacks_high_order_function"><a class="anchor" href="#_binding_to_callbacks_high_order_function"></a>Binding to callbacks (high-order function)</h3>
 <div class="paragraph">
 <p>High order functions are functions where the callback can be another
@@ -1574,7 +1744,7 @@ JS has a map function as below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">map</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span><span class="tok-o">)</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span> <span class="tok-kt">array</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;map&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">map</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span><span class="tok-o">)</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">c</span> <span class="tok-kt">array</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">

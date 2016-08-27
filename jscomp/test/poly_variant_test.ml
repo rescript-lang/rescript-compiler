@@ -77,7 +77,6 @@ external on2 :
 external readFileSync :
   string -> ([`utf8 | `ascii] [@bs.string]) ->
   string = ""
-  [@@bs.val]
   [@@bs.module "fs"]
 
 let read name = 

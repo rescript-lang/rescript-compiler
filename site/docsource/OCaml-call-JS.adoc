@@ -20,7 +20,7 @@ The FFI is divided into several components:
 - Extensions to the language for debugger, regex and embedding arbitrary JS
 code
 
-### FFI to simple JS functions and supported attributes
+### Binding to simple JS functions values
 
 This part is similar to http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html[traditional FFI],
 with syntax as described below:
@@ -31,7 +31,8 @@ external value-name :  typexpr =  external-declaration  attributes
 external-declaration :=  string-literal
 ----------------------------------------------------------
 
-Users need to declare types for foreign functions (JS functions here)
+Users need to declare types for foreign functions
+(JS functions for BuckleScript or C functions for native compiler)
 and provide customized `attributes`.
 
 ####  Binding to global value: bs.val
@@ -65,7 +66,8 @@ give the JavaScript foreign function a different name:
 +
 [source,ocaml]
 ---------------
-external imul : int -> int -> int = "c_imul" [@@bs.val "Math.imul"]
+external imul : int -> int -> int =
+  "c_imul" [@@bs.val "Math.imul"]
 ---------------
 =====
 
@@ -138,14 +140,13 @@ external http : http = "" [@@bs.module]
 ======
 
 
-#### Binding to method: bs.send
+#### Binding to method: bs.send, bs.send.pipe
 
 `bs.send` helps the user send a message to a JS object
 
 [source,ocaml]
 ---------
-type id
-(** Abstract type for id object *)
+type id (** Abstract type for id object *)
 external get_by_id : dom -> string -> id =
   "getElementById" [@@bs.send]
 ---------
@@ -164,14 +165,30 @@ Output:
 dom.getElementById("xx")
 --------
 
+`bs.pipe.send` is similar to `bs.send` except that the first argument, i.e, the object,
+is put in the position of last argument to help user write in a _chaining style_:
+
+[source,ocaml]
+--------------
+external map : ('a -> 'b [@bs]) -> 'b array =
+  "" [@@bs.send.pipe: 'a array] // <1>
+external forEach: ('a -> unit [@bs]) -> 'a array =
+  "" [@@bs.send.pipe: 'a array]
+let test arr =
+    arr
+    |> map (fun [@bs] x -> x + 1)
+    |> forEach (fun [@bs] x -> Js.log x)
+--------------
+<1> For the `[@bs]` attribute in the callback, see <<Binding to callbacks (high-order function)>>
+
 [NOTE]
 ======
 *  if `external-declaration` is the same as value-name, it can be left empty, for example,
 +
 [source,ocaml]
 --------------
-external getElementById : dom -> string -> id = ""
-[@@bs.send]
+external getElementById : dom -> string -> id =
+  "" [@@bs.send]
 --------------
 ======
 
@@ -181,7 +198,6 @@ This attribute allows dynamic access to a JavaScript property
 
 [source,ocaml]
 --------
-
 type t
 external create : int -> t = "Int32Array" [@@bs.new]
 external get : t -> int -> int = "" [@@bs.get_index]
@@ -192,6 +208,7 @@ external set : t -> int -> int -> unit = "" [@@bs.set_index]
 #### Binding to Getter/Setter: bs.get, bs.set
 
 This attribute helps get and set the property of a JavaScript object.
+
 [source,ocaml]
 --------
 type textarea
@@ -200,7 +217,95 @@ external get_name : textarea -> string = "name" [@@bs.get]
 --------
 
 
+### Special types on external declarations: bs.string, bs.int
 
+#### Using polymorphic variant to model enums and string types
+There are several patterns heavily used in existing JavaScript codebase, for example,
+string type is used a lot. BuckleScript FFI allows to model string type in a safe
+way by using annotated polymorphic variant.
+
+[source,ocaml]
+--------------
+external readFileSync :
+  name:string ->
+  ([ `utf8
+   | `my_name [@bs.as "ascii"] // <1>
+   ] [@bs.string]) ->
+  string = ""
+  [@@bs.module "fs"]
+
+let _ =
+  readFileSync ~name:"xx.txt" `my_name
+--------------
+<1> Here we intentionally made an example to show how to  customize a name
+
+Ouptut:
+[source,js]
+-----------
+var Fs = require("fs");
+Fs.readFileSync("xx.txt", "ascii");
+-----------
+
+Polymoprhic variants can also be used to model _enums_.
+
+[source,ocaml]
+-------------
+external test_int_type :
+  ([ `on_closed // <1>
+   | `on_open [@bs.as 3]  // <2>
+   | `in_bin // <3>
+   ]
+   [@bs.int])  -> int  =
+  "" [@@bs.val]
+-------------
+<1> _`on_closed_ will be encoded as 0
+<2> _`on_open_ will be 3 due to the attribute `bs.as`
+<3> _`in_bin_ will be 4
+
+#### Using polymorphic variant to model event listener
+
+BuckleScript model this in a type-safe way by using annotated polymorphic variants
+
+[source,ocaml]
+--------------
+type readline
+external on :
+    (
+    [ `close of unit -> unit
+    | `line of string -> unit
+    ] // <1>
+    [@bs.string])
+    -> readline = "" [@@bs.send.pipe: readline]
+let register rl =
+  rl
+  |> on (`close (fun event -> () ))
+  |> on (`line (fun line -> print_endline line))
+--------------
+<1> This is a very powerful typing: each event can have its _different types_
+
+Output:
+[source,js]
+----------
+function register(rl) {
+  return rl.on("close", function () {
+                return /* () */0;
+              })
+           .on("line", function (line) {
+              console.log(line);
+              return /* () */0;
+            });
+}
+----------
+
+[WARNING]
+=========
+- These annotations will only have effect in `external` declarations.
+- The runtime encoding of using polymorphic variant is internal to the compiler.
+- With these annotations mentioned above, BuckleScript will automatically
+  transform the internal encoding to the designated encoding for FFI.
+  BuckleScript will try to do such conversion at compile time if it can, otherwise, it
+ will do such conversion in the runtime, but it should be always correct.
+=========
 
 ### Binding to callbacks (high-order function)
 
@@ -225,7 +330,7 @@ A naive external type declaration would be as below:
 
 [source,ocaml]
 --------------------------------------------------------------------------------------
-external map : 'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array = "map" [@@bs.val]
+external map : 'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array = "" [@@bs.val]
 --------------------------------------------------------------------------------------
 
 Unfortunately, this is not completely correct. The issue is by
@@ -967,9 +1072,10 @@ refer to external OCaml symbols in raw JS code.
 Other examples:
 
 [source,ocaml]
------------------------------------------
+-------------
 let x  : string = [%bs.raw{|"\x01\x02"|}]
------------------------------------------
+-------------
+
 
 It will be compiled into:
 

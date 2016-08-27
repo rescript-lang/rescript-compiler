@@ -3,6 +3,15 @@
     { "file" : "default.ml",
       "eval" : true
     },
+    "Quick Sort":
+    {"file" : "quick_sort.ml",
+     "eval" : true
+    },
+    "String type" :
+    {
+      "file" : "string_type.ml",
+      "eval" : false
+    },
     "Event Handler" :
     { "file" :  "event_handler.ml",
       "eval" : false},
@@ -10,10 +19,6 @@
     {
       "file" : "event_handler2.ml",
       "eval" : false
-    },
-    "Quick Sort":
-    {"file" : "quick_sort.ml",
-     "eval" : true
     },
     "Tail Call" :
     {
