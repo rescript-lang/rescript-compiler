@@ -67,6 +67,9 @@ let batch_compile ppf files main_file =
         Ocaml_parse.lazy_parse_implementation
         Ocaml_parse.lazy_parse_interface         
         main_file in
+    if Queue.is_empty result then 
+      Bs_exception.error (Bs_main_not_exist main_file)
+    ;
     process_result ppf main_file ast_table result     
   else 0
 

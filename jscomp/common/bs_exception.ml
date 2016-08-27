@@ -28,6 +28,8 @@ type error =
   | Bs_cyclic_depends of string  list
   | Bs_duplicated_module of string * string
   | Bs_package_not_found of string                            
+  | Bs_main_not_exist of string 
+
 exception Error of error
 
 let error err = raise (Error err)
@@ -44,6 +46,10 @@ let report_error ppf = function
   | Bs_duplicated_module (a,b)
     ->
     Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
+  | Bs_main_not_exist main
+    ->
+    Format.fprintf ppf "File %s not found " main
+
   | Bs_package_not_found package
     ->
     Format.fprintf ppf "Pacage %s not found or %s/lib/ocaml does not exist"
