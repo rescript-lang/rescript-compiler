@@ -600,11 +600,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_physical_in_equality">Physical (in)equality</a></li>
 <li><a href="#_string_char_range">String char range</a></li>
 <li><a href="#_weak_map">Weak map</a></li>
-<li><a href="#_integers">Integers</a>
-<ul class="sectlevel3">
-<li><a href="#__code_int_code"><code>int</code></a></li>
-</ul>
-</li>
+<li><a href="#_integers">Integers</a></li>
 <li><a href="#_printf_printf">Printf.printf</a></li>
 <li><a href="#_hashtbl_hash_algorithm">Hashtbl hash algorithm</a></li>
 <li><a href="#_marshall">Marshall</a></li>
@@ -3141,17 +3137,11 @@ replaced by a strict pointer.</p>
 <div class="sect2">
 <h3 id="_integers"><a class="anchor" href="#_integers"></a>Integers</h3>
 <div class="paragraph">
-<p>OCaml has <code>int</code>, <code>int32</code>, <code>nativeint</code> and <code>int64</code> types. Both <code>int32</code>
-and <code>int64</code> have the exact same semantic.</p>
-</div>
-<div class="sect3">
-<h4 id="__code_int_code"><a class="anchor" href="#__code_int_code"></a><code>int</code></h4>
-<div class="paragraph">
-<p><code>int</code> in BuckleScript is the same as <code>int32</code> where it&#8217;s platform
-dependent.
-<mark>#</mark># <code>nativeint</code>
-Treated as JavaScript float, except for division. For example,
-<code>Nativeint.div a b</code> will be translated into <code>a /b | 0</code>.</p>
+<p>OCaml has <code>int</code>, <code>int32</code>, <code>nativeint</code> and <code>int64</code> types.
+- Both <code>int32</code> and <code>int64</code> in BuckleScript have the exact same semantics as OCaml.
+- <code>int</code> in BuckleScript is the same as <code>int32</code> while in OCaml it&#8217;s platform dependent.
+- <code>nativeint</code> is treated as JavaScript float, except for division.
+  For example, <code>Nativeint.div a b</code> will be translated into <code>a /b | 0</code>.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -3160,14 +3150,15 @@ Treated as JavaScript float, except for division. For example,
 <div class="title">Warning</div>
 </td>
 <td class="content">
-<code>Nativeint.shift_right_logical x 0</code> is different from
+<div class="paragraph">
+<p><code>Nativeint.shift_right_logical x 0</code> is different from
 <code>Int32.shift_right_local x 0</code>. The former is literally translated into
 <code>x &gt;&gt;&gt; 0</code> (translated into an unsigned int), while the latter is
-<code>x | 0</code>.
+<code>x | 0</code>.</p>
+</div>
 </td>
 </tr>
 </table>
-</div>
 </div>
 </div>
 <div class="sect2">
