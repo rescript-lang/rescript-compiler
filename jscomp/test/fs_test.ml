@@ -26,7 +26,7 @@ external on :
       [@bs.string]  
   ) -> unit = "" [@@bs.send]
 
-open Bs_node 
+open Node 
 let () =
   let current_file : string =
     match Js.Undefined.to_opt [%bs.node __filename] with
@@ -48,6 +48,6 @@ let () =
 
   
 let () =
-  (* Js.log ("ARGV", Bs_node.Process.process##argv);   *)
+  (* Js.log ("ARGV", Node.Process.process##argv);   *)
   Mt.from_pair_suites __FILE__ !suites
 

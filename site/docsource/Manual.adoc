@@ -44,6 +44,8 @@ include::./JS-call-OCaml.adoc[]
 
 include::./OCaml-call-JS.adoc[]
 
+include::./js-lib.adoc[]
+
 include::./Compiler-options.adoc[]
 
 include::./How-to-adapt-your-build-system.adoc[]

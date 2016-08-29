@@ -47,7 +47,6 @@ type + 'a null_undefined
 type boolean 
 
 
-
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
@@ -63,43 +62,20 @@ external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
 
 (* Note [to_opt null] will be [null : 'a opt opt]*)
 
-module Null = struct 
-  type + 'a t = 'a null
-  external to_opt : 'a t -> 'a option = "js_from_nullable"
-  external return : 'a -> 'a t  = "%identity"
-  external test : 'a t -> bool = "js_is_nil"
-  external empty : 'a t = "null" [@@bs.val]
-end
+module Null = Js_null
 
-module Undefined = struct 
-  type + 'a t = 'a undefined 
-  external to_opt : 'a t -> 'a option = "js_from_def"
-  external return : 'a -> 'a t = "%identity"
-  external test : 'a t -> bool =  "js_is_undef"
-  external empty : 'a t = "undefined" [@@bs.val]
-end
-
-module Null_undefined = struct
-  type + 'a t = 'a null_undefined
-  external to_opt : 'a t -> 'a option = "js_from_nullable_def"
-  external return : 'a -> 'a t = "%identity"
-  external test : 'a t -> bool =  "js_is_nil_undef"
-  external empty : 'a t = "undefined" [@@bs.val]
-end
+module Undefined = Js_undefined
+module Null_undefined = Js_null_undefined
 
 
-
-module Dict = Bs_dict
-module Node = Bs_node  
+module Dict = Js_dict
 module Array = Js_array
 module String = Js_string
 module Re = Js_re
+module Types = Js_types
 
-
-
-
-
-
-
-
+external null : 'a null = "" 
+[@@bs.val] (* Sync up with {!Null.empty}*)
+external undefined : 'a undefined = ""
+[@@bs.val] (* Sync up with {!Undefined.empty}*)
 

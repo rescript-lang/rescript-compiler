@@ -1,0 +1,6 @@
+
+== Js module
+
+Js module is shipped with BuckleScript, both the namespace `Js` and `Node` are preserved.
+
+//TODO more docs

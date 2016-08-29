@@ -12,10 +12,6 @@ A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integrati
 You can try BuckleScript directly [in your browser](http://bloomberg.github.io/bucklescript/js-demo/). Write OCaml in the left panel and
 watch as it instantly compiles to JavaScript shown in the right panel.
 
-## Getting Help and Providing Feedback
-
-If you need help or have a question, comment, or suggestion, please feel free to [open an
-issue](https://github.com/bloomberg/bucklescript/issues).
 
 ## Installing BuckleScript
 ```
@@ -175,6 +171,10 @@ function test() {
 test();
 ```
 
+## Getting Help and Providing Feedback
+
+If you need help or have a question, comment, or suggestion, please feel free to [open an
+issue](https://github.com/bloomberg/bucklescript/issues).
 
 ## Licensing
 

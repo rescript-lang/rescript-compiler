@@ -61,8 +61,8 @@ external lastIndexOf_from :  t -> int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 
 external localeCompare :  t -> float = "" [@@bs.send.pipe: t]
 
-external replace : Js_re.t ->  t ->  t = "" [@@bs.send.pipe: t]
-external replace_string :  t ->  t ->  t = "replace" [@@bs.send.pipe: t]
+external replaceByReg : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
+external replace :  t ->  t ->  t = "" [@@bs.send.pipe: t]
 
 external search : Js_re.t -> int = "" [@@bs.send.pipe: t]
 external slice : int -> int ->  t = "" [@@bs.send.pipe: t]

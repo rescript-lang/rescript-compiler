@@ -27,15 +27,15 @@ let assert_equal = eq
 let assert_notequal = neq
 
 let is_mocha () =
-  match Array.to_list Bs_node.Process.process##argv with
+  match Array.to_list Node.Process.process##argv with
   | _node :: mocha ::  _ ->
-    let exec = Bs_node.Path.basename mocha in     
+    let exec = Node.Path.basename mocha in     
     exec = "mocha" || exec = "_mocha"
   | _ -> false
 (* assert -- raises an AssertionError which mocha handls better
 *)
 let from_suites name (suite :  (string * ('a -> unit)) list) =
-  match Array.to_list Bs_node.Process.process##argv with
+  match Array.to_list Node.Process.process##argv with
   | cmd :: _ ->
     if is_mocha () then
       describe name (fun _ -> 
@@ -56,7 +56,7 @@ let close_enough x y =
   abs_float (x -. y) < (* epsilon_float *) 0.0000001
 
 let from_pair_suites name (suites :  pair_suites) =
-  match Array.to_list Bs_node.Process.process##argv with
+  match Array.to_list Node.Process.process##argv with
   | cmd :: _ ->
     if is_mocha () then
       describe name (fun _ -> 

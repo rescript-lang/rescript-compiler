@@ -26,6 +26,6 @@
 val none : 'a option
 val some : 'a -> 'a option
 val is_none : 'a option -> Js.boolean
-val to_def : 'a option -> 'a Js.Undefined.t
+val to_def : 'a option -> 'a Js_undefined.t
 val cons : 'a -> 'a list -> 'a list
 val is_list_empty : 'a list -> Js.boolean

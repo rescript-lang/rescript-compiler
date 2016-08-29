@@ -22,8 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-external readlinkSync : string -> string
-  = "" [@@bs.module "fs"]
 
-external readdirSync : string -> string array
-  = "" [@@bs.module "fs"]    
+type t = Node.buffer 
+
+external isBuffer : 'a -> Js.boolean = "Buffer.isBuffer" 
+[@@bs.val]
+
+external fromString : string -> t = "Buffer.from"
+[@@bs.val]

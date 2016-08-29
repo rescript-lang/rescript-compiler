@@ -27,25 +27,25 @@
 
 
 
-type 'a t = 'a Js.Undefined.t array
+type 'a t = 'a Js_undefined.t array
 
 let caml_weak_create n =
   Caml_array.new_uninitialized n 
 
 let caml_weak_set xs i v = 
   match v with 
-  | Some x -> xs.(i) <- Js.Undefined.return x 
+  | Some x -> xs.(i) <- Js_undefined.return x 
   | None -> ()
 
 let caml_weak_get  xs i = 
-  Js.Undefined.to_opt xs.(i) 
+  Js_undefined.to_opt xs.(i) 
 
 let caml_weak_get_copy  xs i = 
-  match Js.Undefined.to_opt xs.(i) with 
+  match Js_undefined.to_opt xs.(i) with 
   | None -> None 
   | Some x -> Some (Obj.magic (Obj.dup (Obj.repr x) ))
 
 let caml_weak_check xs i = 
-  not @@ Js.Undefined.test xs.(i)
+  not @@ Js_undefined.test xs.(i)
 
 let caml_weak_blit = Caml_array.caml_array_blit
