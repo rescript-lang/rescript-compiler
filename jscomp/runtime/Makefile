@@ -24,7 +24,7 @@ $(addsuffix .cmi, $(OTHERS)): js.cmi js_unsafe.cmj js_unsafe.cmi
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 
-BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name $(npm_package_name)
+BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform
 
 ifdef BS_RELEASE_BUILD
 BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs
