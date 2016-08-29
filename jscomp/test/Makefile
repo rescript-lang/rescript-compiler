@@ -72,7 +72,7 @@ $(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi js_dyn.cmi
 $(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj js_dyn.cmj
 
 COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
-COMPFLAGS+=  -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name  $(npm_package_name) 
+COMPFLAGS+=  -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform
 
 
 $(TESTS): $(CAMLC)
