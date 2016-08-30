@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/25-14:43 *)
+(** Bundled by bspack 08/30-11:56 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4037,7 +4037,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.9.6"
+let version = "0.9.7"
 
 
 let runtime_set = 
@@ -4832,14 +4832,11 @@ let handle_attributes
          get_name = `Nm_na ;
          external_module_name = None ;
         } -> 
-        begin match arg_types with 
-          | _self :: _args ->
-            Js_send {splice  ;
-                   name = string_of_bundle_source prim_name_or_pval_prim;
-                   pipe = true}
-        | _ ->
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
-        end
+        (** can be one argument *)
+        Js_send {splice  ;
+                 name = string_of_bundle_source prim_name_or_pval_prim;
+                 pipe = true}
+
       | {val_send_pipe = Some _ } 
         -> Location.raise_errorf ~loc "conflict attributes found"
 
@@ -6200,11 +6197,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Ast_comb.to_undefined_type loc @@                 
                 if name = "module_" then
                   Typ.constr ~loc
-                    { txt = Ldot (Lident "Bs_node", "node_module") ;
+                    { txt = Ldot (Lident "Node", "node_module") ;
                       loc} []   
                 else if name = "require" then
                   (Typ.constr ~loc
-                     { txt = Ldot (Lident "Bs_node", "node_require") ;
+                     { txt = Ldot (Lident "Node", "node_require") ;
                        loc} [] )  
                 else
                   Ast_literal.type_string ~loc () in                  
