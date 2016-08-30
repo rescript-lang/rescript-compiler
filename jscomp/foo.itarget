@@ -6,3 +6,5 @@ depends/depends.cmxa
 bs_ppx_main.cmx
 bspack_main.cmx
 jsoo_main.cmo
+js_generate_require.cmo
+js_pack.cmo

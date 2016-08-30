@@ -2,15 +2,30 @@
 define(["exports"],
   function(exports){
     'use strict';
-    var Null = /* module */[];
+    var Null = 0;
     
-    var Undefined = /* module */[];
+    var Undefined = 0;
     
-    var Null_undefined = /* module */[];
+    var Null_undefined = 0;
+    
+    var Types = 0;
+    
+    var Dict = 0;
+    
+    var $$Array = 0;
+    
+    var $$String = 0;
+    
+    var Re = 0;
     
     exports.Null           = Null;
     exports.Undefined      = Undefined;
     exports.Null_undefined = Null_undefined;
+    exports.Types          = Types;
+    exports.Dict           = Dict;
+    exports.$$Array        = $$Array;
+    exports.$$String       = $$String;
+    exports.Re             = Re;
     
   })
 /* No side effect */

@@ -23,12 +23,6 @@ Note that `Null`, `Undefined` and `Null_undefined` have similar interfaces, for 
 include::../../jscomp/runtime/js_null.ml[tags=interface_all]
 -------------
 
-The interface for `Js.Types` is as below
-[source,ocaml]
-.Js.Types module
--------------
-include::../../jscomp/others/js_types.mli[tags=interface_all]
--------------
 
 [source,ocaml]
 .Js Utility functions

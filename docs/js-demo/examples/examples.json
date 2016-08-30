@@ -39,8 +39,12 @@
       "file" : "for_loop.ml",
       "eval" : true
     },
-    "Use Standard Library" : {
+    "Use OCaml Standard Library" : {
       "file" : "use_stdlib.ml",
+      "eval" : true
+    },
+    "Use JS standard Library(WIP)" : {
+      "file" : "use_js_stdlib.ml",
       "eval" : true
     },
     "JS Objects" : {
