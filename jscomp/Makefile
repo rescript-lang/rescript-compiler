@@ -120,7 +120,8 @@ travis-world-test:./bin/bspack
 install:
 	cp  ./bin/bsc ./bin/bsppx  ./bin/bspack ../bin/
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* ../lib/ocaml/
-	cp ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ../lib/ocaml/	
+	cp ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \
+	./runtime/js_undefined.ml ./runtime/js_undefined.cmi ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi  ../lib/ocaml/	
 
 
 
