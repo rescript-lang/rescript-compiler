@@ -28,9 +28,9 @@ var suites_001 = /* :: */[
     /* tuple */[
       "number_gadt_test",
       function () {
-        return /* Neq */Block.__(1, [
+        return /* Eq */Block.__(0, [
                   Js_types.test(3, /* Number */3),
-                  null
+                  /* true */1
                 ]);
       }
     ],
@@ -38,9 +38,9 @@ var suites_001 = /* :: */[
       /* tuple */[
         "boolean_gadt_test",
         function () {
-          return /* Neq */Block.__(1, [
+          return /* Eq */Block.__(0, [
                     Js_types.test(true, /* Boolean */2),
-                    null
+                    /* true */1
                   ]);
         }
       ],
@@ -49,7 +49,7 @@ var suites_001 = /* :: */[
           "undefined_gadt_test",
           function () {
             return /* Eq */Block.__(0, [
-                      +(Js_types.test(undefined, /* Undefined */0) !== null),
+                      Js_types.test(undefined, /* Undefined */0),
                       /* true */1
                     ]);
           }
@@ -58,9 +58,9 @@ var suites_001 = /* :: */[
           /* tuple */[
             "string_gadt_test",
             function () {
-              return /* Neq */Block.__(1, [
+              return /* Eq */Block.__(0, [
                         Js_types.test("3", /* String */4),
-                        null
+                        /* true */1
                       ]);
             }
           ],
@@ -70,7 +70,7 @@ var suites_001 = /* :: */[
               function () {
                 return /* Eq */Block.__(0, [
                           Js_types.test(3, /* String */4),
-                          null
+                          /* false */0
                         ]);
               }
             ],
@@ -78,11 +78,11 @@ var suites_001 = /* :: */[
               /* tuple */[
                 "function_gadt_test",
                 function () {
-                  return /* Neq */Block.__(1, [
+                  return /* Eq */Block.__(0, [
                             Js_types.test(function (x) {
                                   return x;
                                 }, /* Function */5),
-                            null
+                            /* true */1
                           ]);
                 }
               ],
@@ -90,11 +90,11 @@ var suites_001 = /* :: */[
                 /* tuple */[
                   "object_gadt_test",
                   function () {
-                    return /* Neq */Block.__(1, [
+                    return /* Eq */Block.__(0, [
                               Js_types.test({
                                     x: 3
                                   }, /* Object */6),
-                              null
+                              /* true */1
                             ]);
                   }
                 ],

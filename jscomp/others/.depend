@@ -14,9 +14,10 @@ js_re.cmj : js_re.cmi
 js_re.cmx : js_re.cmi
 node_buffer.cmj : node.cmj
 node_buffer.cmx : node.cmx
-js_types.cmj :
-js_types.cmx :
+js_types.cmj : js_types.cmi
+js_types.cmx : js_types.cmi
 js_re.cmi :
+js_types.cmi :
 node_path.cmo :
 node_path.cmj :
 node_fs.cmo : node.cmo js_string.cmo
@@ -33,5 +34,5 @@ js_re.cmo : js_re.cmi
 js_re.cmj : js_re.cmi
 node_buffer.cmo : node.cmo
 node_buffer.cmj : node.cmj
-js_types.cmo :
-js_types.cmj :
+js_types.cmo : js_types.cmi
+js_types.cmj : js_types.cmi

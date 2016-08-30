@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,22 +17,23 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(*tag::interface_all[]*)
 type symbol
 (**Js symbol type only available in ES6 *)
 
-type obj_val 
+type obj_val
 type undefined_val
 (** This type has only one value [undefined] *)
 type null_val
 (** This type has only one value [null] *)
 type function_val
 
-type _ t = 
+type _ t =
   | Undefined :  undefined_val t
   | Null : null_val t
   | Boolean : Js.boolean t
@@ -42,49 +43,18 @@ type _ t =
   | Object : obj_val t
   | Symbol : symbol t
 
-
-let reify_type (type a) (x : 'a) :  (a t * a ) =  
-  if Js.typeof x = "undefined" then 
-    (Obj.magic Undefined, Obj.magic x) else
-  if Js.typeof x = "null" then 
-    (Obj.magic Null, Obj.magic x) else 
-  if Js.typeof x = "number" then 
-    (Obj.magic Number, Obj.magic x ) else 
-  if Js.typeof x = "string" then 
-    (Obj.magic String, Obj.magic x) else 
-  if Js.typeof x = "boolean" then 
-    (Obj.magic Boolean, Obj.magic x) else 
-  if Js.typeof x = "function" then 
-    (Obj.magic Function, Obj.magic x) else 
-  if Js.typeof x = "object" then 
-    (Obj.magic Object, Obj.magic x) 
-  else 
-    (Obj.magic Symbol, Obj.magic x) 
-  (* TODO: may change according to engines ?*)
-let test (type a) (x : 'a) (v : a t) : bool =
-  match v with 
-  | Number 
-    -> 
-     Js.typeof x = "number" 
-  | Boolean 
-    -> 
-     Js.typeof x = "boolean" 
-  | Undefined 
-    -> 
-    Js.typeof x = "undefined" 
-  | Null 
-    -> 
-    Js.typeof x = "Js.null"
-  | String
-    -> 
-    Js.typeof x = "string" 
-  | Function
-    -> 
-    Js.typeof x = "function" 
-  | Object
-    -> 
-    Js.typeof x = "object"
-  | Symbol
-    -> 
-     Js.typeof x = "symbol" 
-
+val reify_type : 'a -> 'b t * 'b
+(** given any value it returns its type and the same value.
+    Note that  since ['b t] is GADT, the type system will reify its type automatically,
+    for example
+    {[
+    match reify_type "3" with
+    | String, v -> v  ^ " this type safe control flow analysis will infer v as string"
+    | _ -> assert false
+    ]}
+ *)
+val test : 'a -> 'b t -> bool
+(** {[
+  test "x" String = true
+  ]}*)
+(*end::interface_all[]*)

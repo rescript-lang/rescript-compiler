@@ -2907,6 +2907,120 @@ more examples, please visit
 <div class="paragraph">
 <p>Js module is shipped with BuckleScript, both the namespace <code>Js</code> and <code>Node</code> are preserved.</p>
 </div>
+<div class="listingblock">
+<div class="title">Js Public types</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-o">+</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>
+<span class="tok-c">(** Js object type *)</span>
+<span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">null</span>
+<span class="tok-c">(** nullable, value of this type can be either [null] or [&#39;a]</span>
+<span class="tok-c">    this type is the same as {!Js.Null.t}  *)</span>
+<span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">undefined</span>
+<span class="tok-c">(** value of this type can be either [undefined] or [&#39;a]</span>
+<span class="tok-c">    this type is the same as {!Js.Undefined.t}  *)</span>
+<span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">null_undefined</span>
+<span class="tok-c">(** value of this type can be [undefined], [null] or [&#39;a]</span>
+<span class="tok-c">    this type is the same as {!Js.Null_undefined.t}*)</span>
+<span class="tok-k">type</span> <span class="tok-n">boolean</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Js Nested modules</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-c">(** {3 nested modules}*)</span>
+<span class="tok-k">module</span> <span class="tok-nc">Null</span> <span class="tok-o">=</span> <span class="tok-nc">Js_null</span>
+<span class="tok-k">module</span> <span class="tok-nc">Undefined</span> <span class="tok-o">=</span> <span class="tok-nc">Js_undefined</span>
+<span class="tok-k">module</span> <span class="tok-nc">Null_undefined</span> <span class="tok-o">=</span> <span class="tok-nc">Js_null_undefined</span>
+<span class="tok-k">module</span> <span class="tok-nc">Types</span> <span class="tok-o">=</span> <span class="tok-nc">Js_types</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that <code>Null</code>, <code>Undefined</code> and <code>Null_undefined</code> have similar interfaces, for example:</p>
+</div>
+<div class="listingblock">
+<div class="title">Js.Null module</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-o">+</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">null</span>
+<span class="tok-k">external</span> <span class="tok-n">to_opt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">option</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_from_nullable&quot;</span>
+<span class="tok-k">external</span> <span class="tok-n">return</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>  <span class="tok-o">=</span> <span class="tok-s2">&quot;%identity&quot;</span>
+<span class="tok-k">external</span> <span class="tok-n">test</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_is_nil&quot;</span>
+<span class="tok-k">external</span> <span class="tok-n">empty</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;null&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The interface for <code>Js.Types</code> is as below</p>
+</div>
+<div class="listingblock">
+<div class="title">Js.Types module</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">symbol</span>
+<span class="tok-c">(**Js symbol type only available in ES6 *)</span>
+
+<span class="tok-k">type</span> <span class="tok-n">obj_val</span>
+<span class="tok-k">type</span> <span class="tok-n">undefined_val</span>
+<span class="tok-c">(** This type has only one value [undefined] *)</span>
+<span class="tok-k">type</span> <span class="tok-n">null_val</span>
+<span class="tok-c">(** This type has only one value [null] *)</span>
+<span class="tok-k">type</span> <span class="tok-n">function_val</span>
+
+<span class="tok-k">type</span> <span class="tok-o">_</span> <span class="tok-n">t</span> <span class="tok-o">=</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Undefined</span> <span class="tok-o">:</span>  <span class="tok-n">undefined_val</span> <span class="tok-n">t</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Null</span> <span class="tok-o">:</span> <span class="tok-n">null_val</span> <span class="tok-n">t</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Boolean</span> <span class="tok-o">:</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">boolean</span> <span class="tok-n">t</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Number</span> <span class="tok-o">:</span> <span class="tok-kt">float</span> <span class="tok-n">t</span>
+  <span class="tok-o">|</span> <span class="tok-nc">String</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-n">t</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Function</span> <span class="tok-o">:</span> <span class="tok-n">function_val</span> <span class="tok-n">t</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Object</span> <span class="tok-o">:</span> <span class="tok-n">obj_val</span> <span class="tok-n">t</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Symbol</span> <span class="tok-o">:</span> <span class="tok-n">symbol</span> <span class="tok-n">t</span>
+
+<span class="tok-k">val</span> <span class="tok-n">reify_type</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-n">t</span> <span class="tok-o">*</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span>
+<span class="tok-c">(** given any value it returns its type and the same value.</span>
+<span class="tok-c">    Note that  since [&#39;b t] is GADT, the type system will reify its type automatically,</span>
+<span class="tok-c">    for example</span>
+<span class="tok-c">    {[</span>
+<span class="tok-c">    match reify_type &quot;3&quot; with</span>
+<span class="tok-c">    | String, v -&gt; v  ^ &quot; this type safe control flow analysis will infer v as string&quot;</span>
+<span class="tok-c">    | _ -&gt; assert false</span>
+<span class="tok-c">    ]}</span>
+<span class="tok-c"> *)</span>
+<span class="tok-k">val</span> <span class="tok-n">test</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">b</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span>
+<span class="tok-c">(** {[</span>
+<span class="tok-c">  test &quot;x&quot; String = true</span>
+<span class="tok-c">  ]}*)</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Js Utility functions</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">to_bool</span> <span class="tok-o">:</span> <span class="tok-n">boolean</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_boolean_to_bool&quot;</span>
+<span class="tok-c">(** convert Js boolean to OCaml bool *)</span>
+<span class="tok-k">external</span> <span class="tok-n">typeof</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_typeof&quot;</span>
+<span class="tok-c">(** [typeof x] will be compiled as [typeof x] in JS *)</span>
+<span class="tok-k">external</span> <span class="tok-n">log</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_dump&quot;</span>
+<span class="tok-c">(** A convenience function to log *)</span>
+
+<span class="tok-c">(** {4 operators }*)</span>
+<span class="tok-k">external</span> <span class="tok-n">unsafe_lt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_unsafe_lt&quot;</span>
+<span class="tok-c">(**  [unsafe_lt a b] will be compiled as [a &lt; b] *)</span>
+<span class="tok-k">external</span> <span class="tok-n">unsafe_le</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_unsafe_le&quot;</span>
+<span class="tok-c">(**  [unsafe_le a b] will be compiled as [a &lt;= b] *)</span>
+<span class="tok-k">external</span> <span class="tok-n">unsafe_gt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_unsafe_gt&quot;</span>
+<span class="tok-c">(**  [unsafe_gt a b] will be compiled as [a &gt; b] *)</span>
+<span class="tok-k">external</span> <span class="tok-n">unsafe_ge</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;js_unsafe_ge&quot;</span>
+<span class="tok-c">(**  [unsafe_ge a b] will be compiled as [a &gt;= b] *)</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Js Predefined JS values</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-bp">true</span><span class="tok-o">_</span> <span class="tok-o">:</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;true&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+<span class="tok-k">external</span> <span class="tok-bp">false</span><span class="tok-o">_</span> <span class="tok-o">:</span> <span class="tok-n">boolean</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;false&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+<span class="tok-k">external</span> <span class="tok-n">null</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">null</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span> <span class="tok-c">(* The same as {!Js.Null.empty} will be compiled as [null]*)</span>
+<span class="tok-k">external</span> <span class="tok-n">undefined</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">undefined</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span> <span class="tok-c">(* The same as  {!Js.Undefined.empty} will be compiled as [undefined]*)</span></code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
