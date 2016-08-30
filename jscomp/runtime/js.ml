@@ -60,7 +60,6 @@ type boolean
 module Null = Js_null
 module Undefined = Js_undefined
 module Null_undefined = Js_null_undefined
-module Types = Js_types
 (* end::nested_built_in_modules[] *)
 
 
@@ -98,3 +97,4 @@ module Dict = Js_dict
 module Array = Js_array
 module String = Js_string
 module Re = Js_re
+module Types = Js_types

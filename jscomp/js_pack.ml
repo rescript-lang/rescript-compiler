@@ -76,5 +76,5 @@ let from_cmj files output_file =
 
 
 let () = 
-  from_cmj (get_files "stdlib" @ get_files "runtime") "js_cmj_datasets.ml";;  
+  from_cmj (get_files "stdlib" @ get_files "runtime" @ get_files "others") "js_cmj_datasets.ml";;  
 

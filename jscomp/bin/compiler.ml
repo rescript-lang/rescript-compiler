@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/30-11:56 *)
+(** Bundled by bspack 08/30-16:36 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3739,7 +3739,7 @@ val get_no_any_assert : unit -> bool
 
 (** Internal use *)
 val runtime_set : String_set.t
-val stdlib_set : String_set.t
+(* val stdlib_set : String_set.t *)
 (** only used in {!Js_generate_require} *)
 
 val block : string
@@ -3957,58 +3957,7 @@ let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
-let stdlib_set = String_set.of_list [
-    "arg";
-    "gc";
-    "printexc";
-    "array";
-    "genlex";
-    "printf";
-    "arrayLabels";
-    "hashtbl";
-    "queue";
-    "buffer"; 
-    "int32";
-    "random";
-    "bytes"; 
-    "int64";
-    "scanf";
-    "bytesLabels";
-    "lazy";
-    "set";
-    "callback";
-    "lexing";
-    "sort";
-    "camlinternalFormat";
-    "list";
-    "stack";
-    "camlinternalFormatBasics";
-    "listLabels";
-    "stdLabels";
-    "camlinternalLazy";
-    "map";
-    (* "std_exit"; *)
-    (* https://developer.mozilla.org/de/docs/Web/Events/beforeunload *)
-    "camlinternalMod";
-    "marshal";
-    "stream";
-    "camlinternalOO";
-    "moreLabels";
-    "string";
-    "char";
-    "nativeint";
-    "stringLabels";
-    "complex";
-    "obj";
-    "sys";
-    "digest";
-    "oo";
-    "weak";
-    "filename";
-    "parsing";
-    "format";
-    "pervasives"
-]
+
 
 
 let builtin_exceptions = "Caml_builtin_exceptions"
@@ -8506,6 +8455,17 @@ let cmj_data_sets = String_map.of_list [
   ("js_undefined.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("js_unsafe.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("typed_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000{\000\000\000\022\000\000\000S\000\000\000J\176\208\208\208@-Float32_array\160@@@A-Float64_array\160@@@B+Int32_array\160@@@C@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("js_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("js_dict.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("js_re.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("js_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("js_types.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\133\000\000\000$\000\000\000v\000\000\000p\176\208@*reify_type\160\176A\160\160A\144\160\176\001\004\000!x@@@@@\208@$test\160\176@\160\160B\144\160\176\001\004\003!x@\160\176\001\004\004!v@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("node.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\168\000\000\0001\000\000\000\157\000\000\000\148\176\208\208\208@&Buffer\160@\144\145\161@A@A\"Fs\160@\144\145\004\005\208@&Module\160@\144\145\004\n@AB$Path\160@\144\145\004\014\208@'Process\160@\144\145\004\019\208@$test\160\176A\160\160A\144\160\176\001\003\255!x@@@@@@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("node_buffer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("node_fs.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000M\000\000\000\016\000\000\0006\000\000\0001\176\208@%Watch\160@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("node_module.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("node_path.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("node_process.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   
 ]
 end

@@ -119,7 +119,7 @@ val get_no_any_assert : unit -> bool
 
 (** Internal use *)
 val runtime_set : String_set.t
-val stdlib_set : String_set.t
+(* val stdlib_set : String_set.t *)
 (** only used in {!Js_generate_require} *)
 
 val block : string

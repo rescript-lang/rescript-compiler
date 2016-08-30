@@ -1,6 +1,10 @@
 
-
-
+(*
+let int_or_number x = 
+  match Js.Types.reify_type x with 
+  | Js.Types.String,  x -> Js.log x 
+  | Js.Types.Number, x -> Js.log x 
+*)
 
 let suites = Mt.[
     "int_type", (fun _ -> Eq(Js.typeof 3, "number") );

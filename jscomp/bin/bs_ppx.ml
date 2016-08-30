@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/30-11:56 *)
+(** Bundled by bspack 08/30-16:36 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3739,7 +3739,7 @@ val get_no_any_assert : unit -> bool
 
 (** Internal use *)
 val runtime_set : String_set.t
-val stdlib_set : String_set.t
+(* val stdlib_set : String_set.t *)
 (** only used in {!Js_generate_require} *)
 
 val block : string
@@ -3957,58 +3957,7 @@ let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
-let stdlib_set = String_set.of_list [
-    "arg";
-    "gc";
-    "printexc";
-    "array";
-    "genlex";
-    "printf";
-    "arrayLabels";
-    "hashtbl";
-    "queue";
-    "buffer"; 
-    "int32";
-    "random";
-    "bytes"; 
-    "int64";
-    "scanf";
-    "bytesLabels";
-    "lazy";
-    "set";
-    "callback";
-    "lexing";
-    "sort";
-    "camlinternalFormat";
-    "list";
-    "stack";
-    "camlinternalFormatBasics";
-    "listLabels";
-    "stdLabels";
-    "camlinternalLazy";
-    "map";
-    (* "std_exit"; *)
-    (* https://developer.mozilla.org/de/docs/Web/Events/beforeunload *)
-    "camlinternalMod";
-    "marshal";
-    "stream";
-    "camlinternalOO";
-    "moreLabels";
-    "string";
-    "char";
-    "nativeint";
-    "stringLabels";
-    "complex";
-    "obj";
-    "sys";
-    "digest";
-    "oo";
-    "weak";
-    "filename";
-    "parsing";
-    "format";
-    "pervasives"
-]
+
 
 
 let builtin_exceptions = "Caml_builtin_exceptions"
