@@ -330,14 +330,45 @@ let ocaml_obj_as_js_object
     (self_pat : Parsetree.pattern)
     (clfs : Parsetree.class_field list) =
   let self_type_lit = "self_type"   in 
-  (** Attention: we should avoid type variable conflict for each method   *)
-  (* Since the method name is unique, there would be no conflict *)
-  (* Note mapper is only for API compatible *)  
-  let self_type loc = Typ.var ~loc self_type_lit in 
-  let generate_callback_method_pair loc
-      (mapper : Ast_mapper.mapper) method_name arity
+
+  (** Attention: we should avoid type variable conflict for each method  
+      Since the method name is unique, there would be no conflict 
+      OCaml does not allow duplicate instance variable and duplicate methods, 
+      but it does allow duplicates between instance variable and method name, 
+      we should enforce such rules 
+      {[
+        object 
+          val x = 3
+          method x = 3 
+        end [@bs]
+      ]} should not compile with a meaningful error message
+  *)
+
+  let generate_val_method_pair 
+      loc (mapper : Ast_mapper.mapper)
+      val_name  is_mutable = 
+
+    let result = Typ.var ~loc val_name in 
+    result , 
+    ((val_name , [], result ) ::
+     (if is_mutable then 
+        [val_name ^ Literals.setter_suffix,[],
+         to_method_type loc mapper "" result (Ast_literal.type_unit ~loc ()) ]
+      else 
+        []) )
+  in 
+      
+  let generate_callback_method_pair
+      loc
+      (mapper : Ast_mapper.mapper)
+      method_name arity
     : (Ast_core_type.t * Ast_core_type.t)  =
     let result = Typ.var ~loc method_name in   
+    (* Note mapper is only for API compatible 
+     * TODO: we should check label name to avoid conflict 
+    *)  
+    let self_type loc = Typ.var ~loc self_type_lit in 
+
     let self_type = self_type loc in  
     if arity = 0 then
       to_method_type loc mapper "" (Ast_literal.type_unit ~loc ()) result ,
@@ -356,13 +387,13 @@ let ocaml_obj_as_js_object
              (Typ.arrow ~loc "" x method_rest))
         | _ -> assert false
       end in          
-  let (labels,  label_types, method_types, exprs) =
+  let ((labels,  label_types,  exprs, label_attr_types)) =
     List.fold_right
       (fun (x  : Parsetree.class_field)
         (labels,
          label_types,
-         method_types,
-         exprs) ->
+
+         exprs, label_attr_types) ->
         match x.pcf_desc with
         | Pcf_method (
             label,
@@ -379,12 +410,13 @@ let ocaml_obj_as_js_object
                  generate_callback_method_pair x.pcf_loc mapper label.txt arity in 
                (label::labels,
                 label_type::label_types,
-                method_type :: method_types,
                 {f with
                  pexp_desc =
                    let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
                    to_method_callback loc mapper self_pat f
-                } :: exprs)
+                } :: exprs,
+                (label.Asttypes.txt, [], method_type) :: label_attr_types
+               )
              | Pexp_poly( _, Some _)
                ->
                Location.raise_errorf ~loc:x.pcf_loc
@@ -398,6 +430,23 @@ let ocaml_obj_as_js_object
                Location.raise_errorf ~loc:x.pcf_loc
                  "Unsupported syntax in js object"               
            end
+         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
+           let  label_type, label_attr  = 
+             generate_val_method_pair x.pcf_loc mapper label.txt  
+               (mutable_flag = Mutable )
+           in
+           (label::labels,
+            label_type :: label_types, 
+            (mapper.expr mapper val_exp :: exprs), 
+            label_attr @ label_attr_types)
+
+         | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
+           Location.raise_errorf
+             ~loc:x.pcf_loc "override flag not support currently"
+         | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
+           Location.raise_errorf
+             ~loc:x.pcf_loc "virtual flag not support currently"
+
          | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
            Location.raise_errorf ~loc:x.pcf_loc
              "override flag not supported"
@@ -412,19 +461,15 @@ let ocaml_obj_as_js_object
            Location.raise_errorf ~loc:x.pcf_loc
              "Private method not supported yet"
          | Pcf_inherit _ 
-         | Pcf_val _ 
          | Pcf_initializer _
          | Pcf_attribute _
          | Pcf_extension _
          | Pcf_constraint _ ->
            Location.raise_errorf
              ~loc:x.pcf_loc "Only method support currently"
-      ) clfs  ([], [], [],  []) in
+      ) clfs  ([], [], [],   []) in
   let result_type =
-    Typ.alias ~loc (Ast_core_type.make_obj  ~loc
-      (List.map2 (fun label method_type ->
-           label.Asttypes.txt , [], method_type           
-         ) labels method_types)) self_type_lit  in      
+    Typ.alias ~loc (Ast_core_type.make_obj ~loc label_attr_types) self_type_lit  in      
   let pval_type =
     List.fold_right2
       (fun label label_type acc ->
