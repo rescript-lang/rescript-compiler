@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,39 +17,15 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for node bindings *)
-
-module Path = Bs_node_path
-
-module Fs = Bs_node_fs
-
-module Process = Bs_node_process
-
-module Module =  Bs_node_module
-type node_exports 
-type node_module = <
-       id : string ;
-       exports : node_exports ;
-       parrent : node_module Js.null_undefined;
-       (* in REPL V4 it is [undefined]
-          in CLI it can be [null]
-       *)              
-       
-       filename : string ;       
-
-       loaded : Js.boolean;
-       children : node_module array ;
-       paths : string array;       
-> Js.t
-
-type node_require = <
-  main : node_module Js.undefined;
-
-  resolve : string -> string [@bs]
-  (* @raise exception   *)
-> Js.t 
+(*tag::interface_all[]*)
+type + 'a t = 'a Js.null
+external to_opt : 'a t -> 'a option = "js_from_nullable"
+external return : 'a -> 'a t  = "%identity"
+external test : 'a t -> bool = "js_is_nil"
+external empty : 'a t = "null" [@@bs.val]
+(*end::interface_all[]*)

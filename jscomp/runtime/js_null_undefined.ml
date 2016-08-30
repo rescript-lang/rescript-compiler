@@ -22,31 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-let none = None
-
-let some x = Some x 
-
-let is_none x : Js.boolean = 
-  match x with 
-  | None -> Js.true_ 
-  | _ -> Js.false_ 
-
-let to_def x : _ Js_undefined.t = 
-  match  x with 
-  | None -> Js_undefined.empty
-  | Some x -> Js_undefined.return x 
-
-(* In the next version of std, we already provide 
-   [List.cons]
-*)
-let cons x y = x :: y 
-
-let is_list_empty x : Js.boolean =  
-  match x with 
-  | [] -> Js.true_
-  | _ -> Js.false_ 
-
-
+type + 'a t = 'a Js.null_undefined
+external to_opt : 'a t -> 'a option = "js_from_nullable_def"
+external return : 'a -> 'a t = "%identity"
+external test : 'a t -> bool =  "js_is_nil_undef"
+external empty : 'a t = "undefined" [@@bs.val]

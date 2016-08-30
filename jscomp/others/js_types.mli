@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,11 +17,44 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-external module_ :
-  < __cache : Bs_node.node_module Bs_dict.t  > Js.t
-    = "module" [@@bs.val]
+(*tag::interface_all[]*)
+type symbol
+(**Js symbol type only available in ES6 *)
+
+type obj_val
+type undefined_val
+(** This type has only one value [undefined] *)
+type null_val
+(** This type has only one value [null] *)
+type function_val
+
+type _ t =
+  | Undefined :  undefined_val t
+  | Null : null_val t
+  | Boolean : Js.boolean t
+  | Number : float t
+  | String : string t
+  | Function : function_val t
+  | Object : obj_val t
+  | Symbol : symbol t
+
+val reify_type : 'a -> 'b t * 'b
+(** given any value it returns its type and the same value.
+    Note that  since ['b t] is GADT, the type system will reify its type automatically,
+    for example
+    {[
+    match reify_type "3" with
+    | String, v -> v  ^ " this type safe control flow analysis will infer v as string"
+    | _ -> assert false
+    ]}
+ *)
+val test : 'a -> 'b t -> bool
+(** {[
+  test "x" String = true
+  ]}*)
+(*end::interface_all[]*)

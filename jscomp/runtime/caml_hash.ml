@@ -136,7 +136,7 @@ let caml_hash count _limit seed obj =
         () 
       else 
         let size = Js_obj.size_of_any obj in 
-        match Js.Undefined.to_opt size with
+        match Js_undefined.to_opt size with
         | None -> ()
         | Some size -> 
           let obj_tag = Obj.tag obj in

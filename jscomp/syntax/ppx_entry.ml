@@ -293,11 +293,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Ast_comb.to_undefined_type loc @@                 
                 if name = "module_" then
                   Typ.constr ~loc
-                    { txt = Ldot (Lident "Bs_node", "node_module") ;
+                    { txt = Ldot (Lident "Node", "node_module") ;
                       loc} []   
                 else if name = "require" then
                   (Typ.constr ~loc
-                     { txt = Ldot (Lident "Bs_node", "node_require") ;
+                     { txt = Ldot (Lident "Node", "node_require") ;
                        loc} [] )  
                 else
                   Ast_literal.type_string ~loc () in                  

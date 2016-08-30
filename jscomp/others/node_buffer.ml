@@ -23,30 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type t = Node.buffer 
 
+external isBuffer : 'a -> Js.boolean = "Buffer.isBuffer" 
+[@@bs.val]
 
-let none = None
-
-let some x = Some x 
-
-let is_none x : Js.boolean = 
-  match x with 
-  | None -> Js.true_ 
-  | _ -> Js.false_ 
-
-let to_def x : _ Js_undefined.t = 
-  match  x with 
-  | None -> Js_undefined.empty
-  | Some x -> Js_undefined.return x 
-
-(* In the next version of std, we already provide 
-   [List.cons]
-*)
-let cons x y = x :: y 
-
-let is_list_empty x : Js.boolean =  
-  match x with 
-  | [] -> Js.true_
-  | _ -> Js.false_ 
-
-
+external fromString : string -> t = "Buffer.from"
+[@@bs.val]

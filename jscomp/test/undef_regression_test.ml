@@ -1,7 +1,6 @@
 
 
 
-
 let f obj = 
   if Js.typeof obj = "function" then 
     ()

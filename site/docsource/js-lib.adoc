@@ -1,0 +1,45 @@
+
+== Js module
+
+Js module is shipped with BuckleScript, both the namespace `Js` and `Node` are preserved.
+
+
+[source,ocaml]
+.Js Public types
+-------------
+include::../../jscomp/runtime/js.ml[tags=public_js_types]
+-------------
+
+[source,ocaml]
+.Js Nested modules
+-------------
+include::../../jscomp/runtime/js.ml[tags=nested_built_in_modules]
+-------------
+
+Note that `Null`, `Undefined` and `Null_undefined` have similar interfaces, for example:
+[source,ocaml]
+.Js.Null module
+-------------
+include::../../jscomp/runtime/js_null.ml[tags=interface_all]
+-------------
+
+The interface for `Js.Types` is as below
+[source,ocaml]
+.Js.Types module
+-------------
+include::../../jscomp/others/js_types.mli[tags=interface_all]
+-------------
+
+[source,ocaml]
+.Js Utility functions
+-------------
+include::../../jscomp/runtime/js.ml[tags=utility_functions]
+-------------
+
+
+
+[source,ocaml]
+.Js Predefined JS values
+-------------
+include::../../jscomp/runtime/js.ml[tags=predefined_js_values]
+-------------
