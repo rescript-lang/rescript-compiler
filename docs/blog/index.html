@@ -426,19 +426,56 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
-<hr>
 <div class="paragraph">
 <p>BuckleScript is an optimizing compiler which compiles <a href="http://ocaml.org/">OCaml</a>
-into JavaScript module by module without name mangling.</p>
+into JavaScript module by module <em>without name mangling</em>. The generated code is <em>highly readable</em> and <em>super small</em>,
+see <a href="http://bloomberg.github.io/bucklescript/js-demo/">Hello world</a> example
+and <a href="http://bloomberg.github.io/bucklescript/js-demo/#Use_JS_standard_Library_WIP">examples of calling JS libraries</a>.
+BuckleScript is strongly inspired by TypeScript and BabelJS, readability and easy integration with existing JS libraries are essential.</p>
 </div>
 <div class="paragraph">
-<p>The generated code is highly readable and very small, see <a href="http://bloomberg.github.io/bucklescript/js-demo/">Hello world</a> example
-and <a href="http://bloomberg.github.io/bucklescript/js-demo/#Use_JS_standard_Library(WIP)">examples of calling JS libraries</a></p>
+<p>However, there are a few things we believe we do it much better:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">More type safety and more performant code generated</dt>
+<dd>
+<p>BuckleScript does not invent a new language, it is OCaml. OCaml offers an industrial-strength
+state-of-the-art type system and provides very strong type inference (i.e. No
+verbose type annotation required compared with typescript), which proves
+<a href="http://queue.acm.org/detail.cfm?id=2038036">invaluable</a> in managing large projects.<br>
+OCaml&#8217;s type system is not just for tooling, it is a <em>sound</em> type system which means it is guaranteed that there will
+be no runtime type errors after type checking. Based on it, BuckleScript provide many optimizations during offline
+compilation, see a simple benchmark <a href="https://github.com/bloomberg/bucklescript#bucklescript-ocaml-stdlib">here</a></p>
+</dd>
+<dt class="hdlist1">All the benefits of OCaml stay and a feature rich FFI</dt>
+<dd>
+<p>You program can be compiled into  <em>native code</em>, <em>JS</em> and even <em>unikernel</em>. The BuckleScript compiler will become even faster
+thanks to <a href="https://blogs.janestreet.com/flambda/">more and more optimizations</a> in the upstream compiler.<br>
+Thanks to OCaml&#8217;s native support of Object structural type system, BuckleScript&#8217;s FFI can model JS object natively.
+Some powerful type system features like polymorphic variants and GADTs are also invaluable to model existing JS libraries.<br>
+Unlike most language FFI, the design goal of <a href="http://bloomberg.github.io/bucklescript/Manual.html#_ocaml_calling_js">BuckleScript FFI</a> is to avoid writing any unsafe JS stubs code while remain the
+native efficiency. We try to avoid any allocation for the FFI.</p>
+</dd>
+<dt class="hdlist1">Compilation speed is the key to developer experience</dt>
+<dd>
+<p>Our internal benchmark shows that BuckleScript is at least 10x faster than TypeScript,
+there is no magic here: the BuckleScript compiler is written in OCaml which is
+compiled to blazing fast native code.<br>
+However, it does not prevent the reach of BuckleScript compiler,
+it is also compiled to a JS file (gzipped: 700KB for pure OCaml + 300KB for support of <a href="https://github.com/facebook/reason/">Reason</a>).<br>
+<a href="http://bloomberg.github.io/bucklescript/js-demo/">The whole playground</a> is powered by the compiler compiled into JS, you can see it is still quite fast.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>BuckleScript reaches 1.0 now, it covers the whole OCaml language (except some features highly coupled with runtime, like Gc module, etc)
+if you are interested in BuckleScript, please refer to the <a href="http://bloomberg.github.io/bucklescript/Manual.html">manual</a></p>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-08-31 09:40:55 EDT
+Last updated 2016-08-31 10:27:57 EDT
 </div>
 </div>
 </body>
