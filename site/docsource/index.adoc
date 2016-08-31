@@ -17,6 +17,7 @@
       <a href="https://github.com/bloomberg/bucklescript" class="btn">View on GitHub</a>
       <a href="./Manual.html" class="btn">Manual</a>
       <a href="./js-demo/index.html" class="btn">Try it </a>
+      <a href="./blog/index.html" class="btn"> Blogs</a>
     </section>
 
     <section class="main-content">
