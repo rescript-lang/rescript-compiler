@@ -30,7 +30,8 @@ All the benefits of OCaml  with a feature rich and efficient FFI::
   Your program can be compiled into  _native code_, _JS_ and even a https://mirage.io/[unikernel]. The BuckleScript compiler is expected to become even faster and produce even faster code owing to https://blogs.janestreet.com/flambda/[more] and https://github.com/ocaml/ocaml/pull/606[more] optimizations in the upstream OCaml compiler. +
   Thanks to OCaml's native support of the Object structural type system, BuckleScript's FFI(foreign function interface) can model JS objects natively.
   Some powerful type system features like http://caml.inria.fr/pub/docs/manual-ocaml-400/manual006.html#toc36[polymorphic variants] and http://caml.inria.fr/pub/docs/manual-ocaml-400/manual021.html#toc85[GADTs] are also invaluable in modeling existing JS libraries. +
-  Unlike most language FFIs, the design goal of http://bloomberg.github.io/bucklescript/Manual.html#\_ocaml\_calling\_js[BuckleScript FFI] is to avoid writing any unsafe JS "stub" code with a performance cost. In particular, we try to _avoid any unnecessary memory allocations_ in the FFI.
+  Unlike most language FFIs, the design goal of http://bloomberg.github.io/bucklescript/Manual.html#\_ocaml\_calling\_js[BuckleScript FFI] is to avoid writing any unsafe JS "stub" code with a performance cost.
+  In particular, we try to avoid any unnecessary memory allocations in the FFI.
 
 Compilation speed is key to a good developer experience::
 
