@@ -1,57 +1,57 @@
 {
-    "Default Example" :
+    "Default_Example" :
     { "file" : "default.ml",
       "eval" : true
     },
-    "Quick Sort":
+    "Quick_Sort":
     {"file" : "quick_sort.ml",
      "eval" : true
     },
-    "String type" :
+    "String_type" :
     {
       "file" : "string_type.ml",
       "eval" : false
     },
-    "Event Handler" :
+    "Event_Handler" :
     { "file" :  "event_handler.ml",
       "eval" : false},
-    "Event Handler Chaining" :
+    "Event_Handler_Chaining" :
     {
       "file" : "event_handler2.ml",
       "eval" : false
     },
-    "Tail Call" :
+    "Tail_Call" :
     {
       "file" : "tailcall.ml",
       "eval" : true
     },
-    "Functional Programming" :
+    "Functional_Programming" :
     {
       "file" : "fp.ml",
       "eval" : true
     },
-    "Curry Optimization" :
+    "Curry_Optimization" :
     {
       "file" : "curry.ml",
       "eval" : true
     },
-    "For Loop" : {
+    "For_Loop" : {
       "file" : "for_loop.ml",
       "eval" : true
     },
-    "Use OCaml Standard Library" : {
+    "Use_OCaml_Standard_Library" : {
       "file" : "use_stdlib.ml",
       "eval" : true
     },
-    "Use JS standard Library(WIP)" : {
+    "Use_JS_standard_Library_WIP" : {
       "file" : "use_js_stdlib.ml",
       "eval" : true
     },
-    "JS Objects" : {
+    "JS_Objects" : {
       "file" : "js_object.ml",
       "eval" : true
     },
-    "Left Pad" : {
+    "Left_Pad" : {
       "file" : "left_pad.ml",
       "eval" : true
     }
