@@ -10,39 +10,38 @@ BuckleScript is an optimizing compiler which compiles http://ocaml.org/[OCaml]
 into JavaScript module by module _without name mangling_. The generated code is _highly readable_ and _super small_,
 see http://bloomberg.github.io/bucklescript/js-demo/[Hello world] example
 and http://bloomberg.github.io/bucklescript/js-demo/#Use_JS_standard_Library_WIP[examples of calling JS libraries].
-BuckleScript is strongly inspired by TypeScript and BabelJS, readability and easy integration with existing JS libraries are essential.
+BuckleScript is strongly inspired by TypeScript, BabelJS - we consider _readability_ and _easy integration with existing JS libraries_ to be essential.
 
-However, there are a few things we believe we do it much better:
+There are a few things we believe BuckleScript does  better compared with TypeScript:
 
-More type safety and more performant code generated::
 
-  BuckleScript does not invent a new language, it is OCaml. OCaml offers an industrial-strength
-  state-of-the-art type system and provides very strong type inference (i.e. No
-  verbose type annotation required compared with typescript), which proves
+More type safe and more efficient code generated::
+
+  BuckleScript is not a new language, it is OCaml. OCaml offers an industrial-strength
+  state-of-the-art type system and provides very strong type inference (i.e. unlike TypeScript, no
+  verbose type annotation is required), which proves
   http://queue.acm.org/detail.cfm?id=2038036[invaluable] in managing large projects. +
-  OCaml's type system is not just for tooling, it is a _sound_ type system which means it is guaranteed that there will
-  be no runtime type errors after type checking. Based on it, BuckleScript provide many optimizations during offline
-  compilation, see a simple benchmark https://github.com/bloomberg/bucklescript#bucklescript-ocaml-stdlib[here]
+  OCaml's type system is not just for tooling; it is a _sound_ type system which means it is guaranteed there will
+  be no runtime type errors after type checking. Based on this guarantee, BuckleScript provides many optimizations during offline
+  compilation. You can view a simple benchmark https://github.com/bloomberg/bucklescript#bucklescript-ocaml-stdlib[here]!
 
-All the benefits of OCaml stay and a feature rich FFI::
+All the benefits of OCaml  with a feature rich and efficient FFI::
 
-  You program can be compiled into  _native code_, _JS_ and even _unikernel_. The BuckleScript compiler will become even faster
-  thanks to https://blogs.janestreet.com/flambda/[more and more optimizations] in the upstream compiler. +
-  Thanks to OCaml's native support of Object structural type system, BuckleScript's FFI can model JS object natively.
-  Some powerful type system features like polymorphic variants and GADTs are also invaluable to model existing JS libraries. +
-  Unlike most language FFI, the design goal of http://bloomberg.github.io/bucklescript/Manual.html#_ocaml_calling_js[BuckleScript FFI] is to avoid writing any unsafe JS stubs code while remain the
-  native efficiency. We try to avoid any allocation for the FFI.
+  Your program can be compiled into  _native code_, _JS_ and even a https://mirage.io/[unikernel]. The BuckleScript compiler is expected to become even faster and produce even faster code owing to https://blogs.janestreet.com/flambda/[more] and https://github.com/ocaml/ocaml/pull/606[more] optimizations in the upstream OCaml compiler. +
+  Thanks to OCaml's native support of the Object structural type system, BuckleScript's FFI(foreign function interface) can model JS objects natively.
+  Some powerful type system features like http://caml.inria.fr/pub/docs/manual-ocaml-400/manual006.html#toc36[polymorphic variants] and http://caml.inria.fr/pub/docs/manual-ocaml-400/manual021.html#toc85[GADTs] are also invaluable in modeling existing JS libraries. +
+  Unlike most language FFIs, the design goal of http://bloomberg.github.io/bucklescript/Manual.html#\_ocaml\_calling\_js[BuckleScript FFI] is to avoid writing any unsafe JS "stub" code with a performance cost. In particular, we try to _avoid any unnecessary memory allocations_ in the FFI.
 
-Compilation speed is the key to developer experience::
+Compilation speed is key to a good developer experience::
 
-  Our internal benchmark shows that BuckleScript is at least 10x faster than TypeScript,
-  there is no magic here: the BuckleScript compiler is written in OCaml which is
+  Our internal benchmarks shows that BuckleScript compiles at least 10x faster than TypeScript.
+  There is no magic here, the BuckleScript compiler is written in OCaml which is
   compiled to blazing fast native code. +
-  However, it does not prevent the reach of BuckleScript compiler,
-  it is also compiled to a JS file (gzipped: 700KB for pure OCaml + 300KB for support of https://github.com/facebook/reason/[Reason]). +
-  http://bloomberg.github.io/bucklescript/js-demo/[The whole playground] is powered by the compiler compiled into JS, you can see it is still quite fast.
+  However, it does not limit the availability of BuckleScript compiler:
+  it is also compiled to a JS file (gzipped: 700KB for pure OCaml + 300KB for https://github.com/facebook/reason/[Reason] support). +
+  http://bloomberg.github.io/bucklescript/js-demo/[The playground] is powered by the compiler compiled to JS, which demonstrates a nearly real-time compilation speed, imagine how fast the native compiler would be.
 
 
 
-BuckleScript reaches 1.0 now, it covers the whole OCaml language (except some features highly coupled with runtime, like Gc module, etc)
-if you are interested in BuckleScript, please refer to the http://bloomberg.github.io/bucklescript/Manual.html[manual]
+We are pleased to announce a stable 1.0 release of BuckleScript, which covers the whole OCaml language (except some features highly coupled with runtime, like the Gc and Unix modules etc.).
+To learn more about BuckleScript, please refer to http://bloomberg.github.io/bucklescript/Manual.html[the user manual] and we welcome https://github.com/bloomberg/bucklescript[your feedback].
