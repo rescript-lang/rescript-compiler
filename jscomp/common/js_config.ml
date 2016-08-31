@@ -197,7 +197,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "0.9.7"
+let version = "1.0.0"
 
 
 let runtime_set = 
