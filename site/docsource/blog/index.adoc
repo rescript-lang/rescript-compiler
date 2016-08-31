@@ -6,7 +6,7 @@ September 1, 2016 by Hongbo Zhang
 :page-layout: article
 
 
-BuckleScript is an optimizing compiler which compiles http://ocaml.org/[OCaml]
+https://github.com/bloomberg/bucklescript[BuckleScript] is an optimizing compiler which compiles http://ocaml.org/[OCaml]
 into JavaScript module by module _without name mangling_. The generated code is _highly readable_ and _super small_,
 see http://bloomberg.github.io/bucklescript/js-demo/[Hello world] example
 and http://bloomberg.github.io/bucklescript/js-demo/#Use_JS_standard_Library_WIP[examples of calling JS libraries].
