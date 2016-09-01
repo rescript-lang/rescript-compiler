@@ -156,7 +156,7 @@ The object is always the first argument and actual arguments follow.
 Input:
 [source,ocaml]
 --------
-getElementById dom "xx"
+get_by_id dom "xx"
 --------
 
 Output:
