@@ -307,6 +307,55 @@ function register(rl) {
  will do such conversion in the runtime, but it should be always correct.
 =========
 
+#### Phantom Arguments and ad-hoc polyrmophism
+
+`bs.ignore` allows arguments to be erased after passing to JS functional call, the side effect will
+still be recorded.
+
+For example,
+[source,ocaml]
+-------------
+external add : (int [@bs.ignore]) -> int -> int = ""
+[@@bs.val]
+let v = add 0 1 2 // <1>
+-------------
+<1> the first argument will be erased
+
+Output:
+[source,javascript]
+-----------
+var v = add (1,2)
+-----------
+
+This is very useful to combine GADT:
+
+[source,ocaml]
+-------------
+type _ kind =
+  | Float : float kind
+  | String : string kind
+external add : ('a kind [@bs.ignore]) -> 'a -> 'a -> 'a = "" [@@bs.val]
+
+let () =
+  Js.log (add Float 3.0 2.0);
+  Js.log (add String "x" "y");
+-------------
+
+User can also have a payload for the GADT:
+[source,ocaml]
+-------------
+let string_of_kind (type t) (kind : t kind) =
+  match kind with
+  | Float -> "float"
+  | String -> "string"
+
+external add_dyn : ('a kind [@bs.ignore]) -> string ->  'a -> 'a -> 'a = ""
+[@@bs.val]
+
+let add2 k x y =
+  add_dyn k (string_of_kind k) x y
+-------------
+
 ### Binding to callbacks (high-order function)
 
 
