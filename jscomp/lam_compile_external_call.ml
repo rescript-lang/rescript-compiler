@@ -46,9 +46,26 @@ let handle_external
 
 type typ = Ast_core_type.t
 
-let ocaml_to_js last
-    (js_splice : bool)
-    ({ Ast_external_attributes.arg_label;  arg_type = ty })
+let ocaml_to_js_no_splice ({ Ast_external_attributes.arg_label;  arg_type = ty })
+    (arg : J.expression) 
+  : E.t list =
+  match ty with
+  | Unit ->  [] (* ignore unit *)
+  | Ignore -> []
+  | NullString dispatches -> 
+    [Js_of_lam_variant.eval arg dispatches]
+  | NonNullString dispatches -> 
+    Js_of_lam_variant.eval_as_event arg dispatches
+  | Int dispatches -> 
+    [Js_of_lam_variant.eval_as_int arg dispatches]
+  | Nothing  | Array -> 
+    begin match arg_label with 
+      | Optional label -> [Js_of_lam_option.get_default_undefined arg]
+      | Label _ | Empty ->  [arg]  
+    end
+
+let ocaml_to_js ~js_splice:(js_splice : bool) 
+    last ({ Ast_external_attributes.arg_label;  arg_type = ty } as arg_ty)
     (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
@@ -67,22 +84,10 @@ let ocaml_to_js last
       end
     | _ -> assert  false
   else 
-    match ty with
-    | Unit ->  [] (* ignore unit *)
-    | Ignore -> []
-    | NullString dispatches -> 
-      [Js_of_lam_variant.eval arg dispatches]
-    | NonNullString dispatches -> 
-      Js_of_lam_variant.eval_as_event arg dispatches
-    | Int dispatches -> 
-      [Js_of_lam_variant.eval_as_int arg dispatches]
-    | Nothing  | Array -> 
-      begin match arg_label with 
-      | Optional label -> [Js_of_lam_option.get_default_undefined arg]
-      | Label _ | Empty ->  [arg]  
-      end
+    ocaml_to_js_no_splice arg_ty arg 
 
-          
+let assemble_args arg_types args = 
+  Ext_list.flat_map2 ocaml_to_js_no_splice arg_types args          
 
 
 let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
@@ -126,7 +131,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | None ->  E.js_var fn
       in
       let args = 
-        Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args  in 
+        Ext_list.flat_map2_last (ocaml_to_js ~js_splice) arg_types args  in 
       begin match (result_type : Ast_core_type.arg_type) with 
       | Unit -> 
         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
@@ -145,10 +150,8 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | Some (id,name) ->
           E.external_var_dot id name None           
         | None -> assert false in           
-      let args = 
-        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args
+      let args = assemble_args arg_types args in 
         (* TODO: fix in rest calling convention *)          
-      in 
       begin match (result_type : Ast_core_type.arg_type) with 
         | Unit -> 
           E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
@@ -161,10 +164,8 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | Some (id,name) ->
           E.external_var_dot id name None           
         | None -> assert false in           
-      let args = 
-        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args
+      let args = assemble_args arg_types args in 
         (* TODO: fix in rest calling convention *)          
-      in
       begin 
         (match cxt.st with 
          | Declare (_, id) | Assign id  ->
@@ -179,8 +180,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
                txt = fn;
              } -> 
 
-      let args = 
-        Ext_list.flat_map2_last (ocaml_to_js false) arg_types args  in 
+      let args = assemble_args arg_types args in
       let fn =  
         match handle_external module_name with 
         | Some (id,name) ->  
@@ -235,16 +235,17 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | self :: args -> 
           let [@warning"-8"] ( self_type::arg_types )
             = arg_types in
-          let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
+          let args = Ext_list.flat_map2_last (ocaml_to_js ~js_splice) arg_types args in
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
         | _ -> 
           assert false 
       end
     | Js_send { name ; pipe = true ; splice = js_splice}
       -> (* splice should not happen *)
+      assert (js_splice = false) ; 
       let self, args = Ext_list.exclude_tail args in
       let self_type, arg_types = Ext_list.exclude_tail arg_types in
-      let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
+      let args = assemble_args arg_types args in
       E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 
     | Js_get name -> 

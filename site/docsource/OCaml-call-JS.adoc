@@ -217,7 +217,7 @@ external get_name : textarea -> string = "name" [@@bs.get]
 --------
 
 
-### Special types on external declarations: bs.string, bs.int
+### Special types on external declarations: bs.string, bs.int, bs.ignore
 
 #### Using polymorphic variant to model enums and string types
 There are several patterns heavily used in existing JavaScript codebase, for example,

@@ -9,9 +9,11 @@ type _ kind =
   | Float : float kind 
   | String : string kind
 external add : ('a kind [@bs.ignore]) -> 'a -> 'a -> 'a = "" [@@bs.val]
+
 let () = 
   Js.log (add Float 3.0 2.0);
-  Js.log (add String "x" "y")
+  Js.log (add String "x" "y");
+
 
 
 [%%bs.raw{|
