@@ -199,37 +199,6 @@ let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
 let version = "1.0.0"
 
-
-let runtime_set = 
-  [
-    module_;
-    js_primitive;
-    block;
-    int32;
-    gc ;
-    backtrace; 
-    builtin_exceptions ;
-    exceptions ; 
-    io ;
-    sys ;
-    lexer ;
-    parser ;
-    obj_runtime ;
-    array ;
-    format ;
-    string ;
-    bytes;
-    float ;
-    hash ;
-    oo ;
-    curry ;
-    (* bigarray ; *)
-    (* unix ; *)
-    int64 ;
-    md5 ;
-    weak ] |> 
-  List.fold_left (fun acc x -> String_set.add (String.uncapitalize x) acc ) String_set.empty
-
 let current_file = ref ""
 let debug_file = ref ""
 

@@ -85,6 +85,8 @@ boolean_test.cmj : test_bool_equal.cmj mt.cmi
 boolean_test.cmx : test_bool_equal.cmx mt.cmx
 bs_array_test.cmj : ../runtime/js.cmj
 bs_array_test.cmx : ../runtime/js.cmx
+bs_ignore_test.cmj : ../runtime/js.cmj
+bs_ignore_test.cmx : ../runtime/js.cmx
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
 bs_node_string_buffer_test.cmx : ../others/node.cmx ../runtime/js.cmx
 bs_rest_test.cmj :
@@ -873,6 +875,8 @@ boolean_test.cmo : test_bool_equal.cmo mt.cmi
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
 bs_array_test.cmo : ../runtime/js.cmo
 bs_array_test.cmj : ../runtime/js.cmj
+bs_ignore_test.cmo : ../runtime/js.cmo
+bs_ignore_test.cmj : ../runtime/js.cmj
 bs_node_string_buffer_test.cmo : ../others/node.cmo ../runtime/js.cmo
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
 bs_rest_test.cmo :

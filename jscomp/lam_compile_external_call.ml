@@ -69,6 +69,7 @@ let ocaml_to_js last
   else 
     match ty with
     | Unit ->  [] (* ignore unit *)
+    | Ignore -> []
     | NullString dispatches -> 
       [Js_of_lam_variant.eval arg dispatches]
     | NonNullString dispatches -> 
