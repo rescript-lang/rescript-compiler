@@ -167,6 +167,14 @@ let rec map_last f l1 =
 
 let flat_map2_last f lx ly = List.concat @@ map2_last f lx ly
 
+let rec fold_right2_last f l1 l2 accu  = 
+  match (l1, l2) with
+  | ([], []) -> accu
+  | [last1], [last2] -> f true  last1 last2 accu
+  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
+  | (_, _) -> invalid_arg "List.fold_right2"
+
+
 let init n f = 
   Array.to_list (Array.init n f)
 

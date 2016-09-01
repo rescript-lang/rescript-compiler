@@ -26,10 +26,10 @@ function eq(loc, x, y) {
 
 var v = [0];
 
-var h = {
-  hi: 2,
-  lo: 0
-};
+var h = (v[0] = v[0] + 1 | 0, {
+    hi: 2,
+    lo: 0
+  });
 
 eq('File "bs_ignore_effect.ml", line 16, characters 5-12', v[0], 1);
 

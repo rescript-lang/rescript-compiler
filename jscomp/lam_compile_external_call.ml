@@ -64,30 +64,123 @@ let ocaml_to_js_no_splice ({ Ast_external_attributes.arg_label;  arg_type = ty }
       | Label _ | Empty ->  [arg]  
     end
 
+
+let ocaml_to_js_eff ({ Ast_external_attributes.arg_label;  arg_type = ty })
+    (arg : J.expression) 
+  : E.t list * E.t list  =
+  match ty with
+  | Unit ->  
+    [], 
+    (if Js_analyzer.no_side_effect_expression arg then 
+       []
+     else 
+       [arg]) (* leave up later to decide *)
+  | Ignore -> 
+    [], 
+    (if Js_analyzer.no_side_effect_expression arg then 
+       []
+     else 
+       [arg])
+  | NullString dispatches -> 
+    [Js_of_lam_variant.eval arg dispatches],[]
+  | NonNullString dispatches -> 
+    Js_of_lam_variant.eval_as_event arg dispatches,[]
+  | Int dispatches -> 
+    [Js_of_lam_variant.eval_as_int arg dispatches],[]
+  | Nothing  | Array -> 
+    begin match arg_label with 
+      | Optional label -> [Js_of_lam_option.get_default_undefined arg]
+      | Label _ | Empty ->  [arg]  
+    end, []
+
+
+let assemble_args arg_types args : E.t list * E.t option  = 
+  let args, eff = 
+    List.fold_right2 
+    (fun arg_type arg (accs, effs) -> 
+       match ocaml_to_js_eff arg_type arg with
+       | acc, eff  -> 
+         acc @ accs , eff @ effs 
+    ) arg_types args ([],[]) in
+  args, begin match eff with 
+    | [] -> None
+    | x::xs -> Some (List.fold_left (fun x y -> E.seq x y) x xs )
+  end
+
+let add_eff eff e =
+  match eff with
+  | None -> e 
+  | Some v -> E.seq v e 
+
+(* Note: can potentially be inconsistent, sometimes 
+   {[
+     { x : 3 , y : undefined}
+   ]}
+   and 
+   {[
+     {x : 3 }
+   ]}
+   But the default to be undefined  seems reasonable 
+*)
+let assemble_args_obj labels args = 
+  let map, eff  = 
+    List.fold_right2
+      (fun label ( arg : J.expression) (accs, eff ) -> 
+         match (label : Ast_core_type.arg_label) with 
+         | Empty ->  
+           accs , 
+           if Js_analyzer.no_side_effect_expression arg then eff 
+           else arg :: eff 
+         | Label label -> 
+           ( Js_op.Key label, arg) :: accs, eff  
+         | Optional label -> 
+           begin match arg.expression_desc with 
+             | Number _ -> (*Invariant: None encoding*)
+               accs, eff 
+             | _ ->  
+               ( Js_op.Key label, Js_of_lam_option.get_default_undefined arg) :: accs,
+               eff
+           end
+      ) labels args ([], []) in
+  match eff with
+  | [] -> 
+    E.obj map 
+  | x::xs -> E.seq (List.fold_left (fun x y -> E.seq x y) x xs) (E.obj map)
+
+
 let ocaml_to_js ~js_splice:(js_splice : bool) 
     last ({ Ast_external_attributes.arg_label;  arg_type = ty } as arg_ty)
     (arg : J.expression) 
-  : E.t list = 
-  if last && js_splice 
-  then
+  = 
+  if last && js_splice then
     match ty with 
     | Array -> 
       begin match arg with 
         | {expression_desc = Array (ls,_mutable_flag) } -> 
-          ls (* Invariant : Array encoding *)
+          (* Invariant : Array encoding *)
+          ls, [] 
         | _ -> 
           assert false  
           (* TODO: fix splice, 
              we need a static guarantee that it is static array construct
-             otherwise, we should provide a good error message here
+             otherwise, we should provide a good error message here, 
+             no compiler failure here 
           *)
       end
     | _ -> assert  false
   else 
-    ocaml_to_js_no_splice arg_ty arg 
+    ocaml_to_js_eff arg_ty arg 
 
-let assemble_args arg_types args = 
-  Ext_list.flat_map2 ocaml_to_js_no_splice arg_types args          
+let assemble_args_splice js_splice arg_types args : E.t list * E.t option = 
+  let args, eff = 
+    Ext_list.fold_right2_last (fun last arg_ty arg (accs, effs)  -> 
+      let (acc,eff) = ocaml_to_js ~js_splice last arg_ty arg  in acc @ accs, eff @ effs
+      ) arg_types args ([], []) in
+  args,
+  begin  match eff with
+    | [] -> None 
+    | x::xs ->  Some (List.fold_left (fun x y -> E.seq x y) x xs)
+  end
 
 
 let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
@@ -95,31 +188,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     arg_types result_type
     (args : J.expression list) = 
     match ffi with 
-    | Obj_create labels -> 
-      E.obj @@ Ext_list.filter_map2 
-          (fun label ( arg : J.expression) -> 
-            match (label : Ast_core_type.arg_label) with 
-            | Empty ->  None 
-            | Label label -> 
-              Some ( Js_op.Key label, arg)
-            | Optional label -> 
-              begin match arg.expression_desc with 
-                | Number _ -> (*Invariant: None encoding*)
-                  None
-                | _ ->  
-                  (* FIXME: can potentially be inconsistent, sometimes 
-                     {[
-                       { x : 3 , y : undefined}
-                     ]}
-                     and 
-                     {[
-                       {x : 3 }
-                     ]}
-                  *)
-                  Some ( Js_op.Key label, 
-                         Js_of_lam_option.get_default_undefined arg)
-              end
-          ) labels args 
+    | Obj_create labels -> assemble_args_obj labels args 
     | Js_call{ external_module_name = module_name; 
                txt = { name = fn; splice = js_splice ; 
 
@@ -130,8 +199,8 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
           E.dot (E.var id) fn
         | None ->  E.js_var fn
       in
-      let args = 
-        Ext_list.flat_map2_last (ocaml_to_js ~js_splice) arg_types args  in 
+      let args, eff  = assemble_args_splice js_splice arg_types args in 
+      add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 
       | Unit -> 
         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
@@ -150,8 +219,9 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | Some (id,name) ->
           E.external_var_dot id name None           
         | None -> assert false in           
-      let args = assemble_args arg_types args in 
+      let args, eff = assemble_args arg_types args in 
         (* TODO: fix in rest calling convention *)          
+      add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 
         | Unit -> 
           E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
@@ -164,8 +234,9 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | Some (id,name) ->
           E.external_var_dot id name None           
         | None -> assert false in           
-      let args = assemble_args arg_types args in 
-        (* TODO: fix in rest calling convention *)          
+      let args,eff = assemble_args arg_types args in 
+        (* TODO: fix in rest calling convention *)   
+      add_eff eff        
       begin 
         (match cxt.st with 
          | Declare (_, id) | Assign id  ->
@@ -179,8 +250,15 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     | Js_new { external_module_name = module_name; 
                txt = fn;
              } -> 
-
-      let args = assemble_args arg_types args in
+      (* This has some side effect, it will 
+         mark its identifier (If it has) as an object,
+         ATTENTION: 
+         order also matters here, since we mark its jsobject property, 
+         it  will affect the code gen later
+         TODO: we should propagate this property 
+         as much as we can(in alias table)
+      *)
+      let args, eff = assemble_args arg_types args in
       let fn =  
         match handle_external module_name with 
         | Some (id,name) ->  
@@ -192,14 +270,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
           E.js_var fn
 
       in
-      (* This has some side effect, it will 
-         mark its identifier (If it has) as an object,
-         ATTENTION: 
-         order also matters here, since we mark its jsobject property, 
-         it  will affect the code gen later
-         TODO: we should propagate this property 
-         as much as we can(in alias table)
-      *)
+      add_eff eff 
       begin 
         (match cxt.st with 
          | Declare (_, id) | Assign id  ->
@@ -235,7 +306,8 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | self :: args -> 
           let [@warning"-8"] ( self_type::arg_types )
             = arg_types in
-          let args = Ext_list.flat_map2_last (ocaml_to_js ~js_splice) arg_types args in
+          let args, eff = assemble_args_splice js_splice arg_types args in
+          add_eff eff @@ 
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
         | _ -> 
           assert false 
@@ -245,7 +317,8 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       assert (js_splice = false) ; 
       let self, args = Ext_list.exclude_tail args in
       let self_type, arg_types = Ext_list.exclude_tail arg_types in
-      let args = assemble_args arg_types args in
+      let args, eff = assemble_args arg_types args in
+      add_eff eff @@
       E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 
     | Js_get name -> 
