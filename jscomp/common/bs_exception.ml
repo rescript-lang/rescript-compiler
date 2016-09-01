@@ -52,7 +52,7 @@ let report_error ppf = function
 
   | Bs_package_not_found package
     ->
-    Format.fprintf ppf "Pacage %s not found or %s/lib/ocaml does not exist"
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
       package package
 
 let () =
