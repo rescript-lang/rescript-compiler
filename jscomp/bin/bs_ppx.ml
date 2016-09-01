@@ -1,4 +1,4 @@
-(** Bundled by bspack 08/31-14:19 *)
+(** Bundled by bspack 09/01-13:34 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -778,7 +778,7 @@ type derive_attr = {
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
 val process_bs_string_int : 
-  t -> [`Nothing | `String | `Int] 
+  t -> [`Nothing | `String | `Int | `Ignore] 
 
 val process_bs_string_as :
   t -> string option 
@@ -956,8 +956,11 @@ let process_bs_string_int attrs =
         -> `String
       | "bs.int", (`Nothing | `Int)
         ->  `Int
+      | "bs.ignore", (`Nothing | `Ignore)
+        -> `Ignore
       | "bs.int", _
       | "bs.string", _
+      | "bs.ignore", _
         -> 
         Location.raise_errorf ~loc "conflict attributes "
       | _ , _ -> st 
@@ -1235,7 +1238,9 @@ val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
 
 val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
 
-val flat_map2_last : (bool -> 'a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+(** for the last element the first element will be passed [true] *)
+
+val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
 
 val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 
@@ -1458,7 +1463,13 @@ let rec map_last f l1 =
   | a1::l1 -> let r = f false  a1 in r :: map_last f l1
 
 
-let flat_map2_last f lx ly = List.concat @@ map2_last f lx ly
+let rec fold_right2_last f l1 l2 accu  = 
+  match (l1, l2) with
+  | ([], []) -> accu
+  | [last1], [last2] -> f true  last1 last2 accu
+  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
+  | (_, _) -> invalid_arg "List.fold_right2"
+
 
 let init n f = 
   Array.to_list (Array.init n f)
@@ -1835,7 +1846,7 @@ type arg_type =
   | Array 
   | Unit
   | Nothing
-
+  | Ignore
 
 (** for 
        [x:t] -> "x"
@@ -1844,7 +1855,7 @@ type arg_type =
 val label_name : string -> arg_label
 
 
-val string_type : t -> arg_type
+val get_arg_type : t -> arg_type
 
 
 (** return a function type *)
@@ -1895,7 +1906,7 @@ type arg_type =
   | Array 
   | Unit
   | Nothing
-
+  | Ignore
 
 open Ast_helper
 (** TODO check the polymorphic *)
@@ -1939,7 +1950,7 @@ let label_name l : arg_label =
   then Optional (String.sub l 1 (String.length l - 1))
   else Label l
 
-let string_type (ty : t) : arg_type = 
+let get_arg_type (ty : t) : arg_type = 
   match ty with 
   | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
     match Ast_attributes.process_bs_string_int ptyp_attributes with 
@@ -1974,6 +1985,7 @@ let string_type (ty : t) : arg_type =
         end
       | _ -> Location.raise_errorf ~loc "Not a valid string type"
       end
+    | `Ignore -> Ignore
     | `Int  -> 
       begin match ptyp_desc with 
       | Ptyp_variant ( row_fields, Closed, None)
@@ -3545,77 +3557,6 @@ let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
 
 end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.S with type elt = string
-
-end = struct
-#1 "string_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.Make(String)
-
-end
 module Js_config : sig 
 #1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3734,13 +3675,6 @@ val no_any_assert : bool ref
 val set_no_any_assert : unit -> unit
 val get_no_any_assert : unit -> bool 
 
-
-
-
-(** Internal use *)
-val runtime_set : String_set.t
-(* val stdlib_set : String_set.t *)
-(** only used in {!Js_generate_require} *)
 
 val block : string
 val int32 : string
@@ -3987,37 +3921,6 @@ let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
 let version = "1.0.0"
-
-
-let runtime_set = 
-  [
-    module_;
-    js_primitive;
-    block;
-    int32;
-    gc ;
-    backtrace; 
-    builtin_exceptions ;
-    exceptions ; 
-    io ;
-    sys ;
-    lexer ;
-    parser ;
-    obj_runtime ;
-    array ;
-    format ;
-    string ;
-    bytes;
-    float ;
-    hash ;
-    oo ;
-    curry ;
-    (* bigarray ; *)
-    (* unix ; *)
-    int64 ;
-    md5 ;
-    weak ] |> 
-  List.fold_left (fun acc x -> String_set.add (String.uncapitalize x) acc ) String_set.empty
 
 let current_file = ref ""
 let debug_file = ref ""
@@ -4555,7 +4458,7 @@ let handle_attributes
     let aux ty : arg_type = 
       if Ast_core_type.is_array ty then Array
       else if Ast_core_type.is_unit ty then Unit
-      else (Ast_core_type.string_type ty :> arg_type) in
+      else (Ast_core_type.get_arg_type ty :> arg_type) in
     let translate_arg_type =
       (fun (label, ty) -> 
          { arg_label = Ast_core_type.label_name label ;
@@ -4588,6 +4491,11 @@ let handle_attributes
             Label (Lam_methname.translate ~loc name)            
           | {arg_label = Optional name} 
             -> Optional (Lam_methname.translate ~loc name)
+          (* TODO: more error checking here
+             {[
+               hi:_ kind -> lo:x
+             ]}
+          *)
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
           arg_types in
         if String.length prim_name <> 0 then 
@@ -6623,5 +6531,76 @@ end = struct
 
 let is_directory_no_exn f = 
   try Sys.is_directory f with _ -> false 
+
+end
+module String_set : sig 
+#1 "string_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Set.S with type elt = string
+
+end = struct
+#1 "string_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Set.Make(String)
 
 end

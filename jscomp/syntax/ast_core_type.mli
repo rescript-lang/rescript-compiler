@@ -41,7 +41,7 @@ type arg_type =
   | Array 
   | Unit
   | Nothing
-
+  | Ignore
 
 (** for 
        [x:t] -> "x"
@@ -50,7 +50,7 @@ type arg_type =
 val label_name : string -> arg_label
 
 
-val string_type : t -> arg_type
+val get_arg_type : t -> arg_type
 
 
 (** return a function type *)

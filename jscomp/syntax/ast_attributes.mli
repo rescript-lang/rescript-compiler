@@ -45,7 +45,7 @@ type derive_attr = {
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
 val process_bs_string_int : 
-  t -> [`Nothing | `String | `Int] 
+  t -> [`Nothing | `String | `Int | `Ignore] 
 
 val process_bs_string_as :
   t -> string option 

@@ -319,7 +319,7 @@ let handle_attributes
     let aux ty : arg_type = 
       if Ast_core_type.is_array ty then Array
       else if Ast_core_type.is_unit ty then Unit
-      else (Ast_core_type.string_type ty :> arg_type) in
+      else (Ast_core_type.get_arg_type ty :> arg_type) in
     let translate_arg_type =
       (fun (label, ty) -> 
          { arg_label = Ast_core_type.label_name label ;
@@ -352,6 +352,11 @@ let handle_attributes
             Label (Lam_methname.translate ~loc name)            
           | {arg_label = Optional name} 
             -> Optional (Lam_methname.translate ~loc name)
+          (* TODO: more error checking here
+             {[
+               hi:_ kind -> lo:x
+             ]}
+          *)
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
           arg_types in
         if String.length prim_name <> 0 then 

@@ -534,10 +534,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_binding_to_getter_setter_bs_get_bs_set">Binding to Getter/Setter: bs.get, bs.set</a></li>
 </ul>
 </li>
-<li><a href="#_special_types_on_external_declarations_bs_string_bs_int">Special types on external declarations: bs.string, bs.int</a>
+<li><a href="#_special_types_on_external_declarations_bs_string_bs_int_bs_ignore">Special types on external declarations: bs.string, bs.int, bs.ignore</a>
 <ul class="sectlevel3">
 <li><a href="#_using_polymorphic_variant_to_model_enums_and_string_types">Using polymorphic variant to model enums and string types</a></li>
 <li><a href="#_using_polymorphic_variant_to_model_event_listener">Using polymorphic variant to model event listener</a></li>
+<li><a href="#_phantom_arguments_and_ad_hoc_polyrmophism">Phantom Arguments and ad-hoc polyrmophism</a></li>
 </ul>
 </li>
 <li><a href="#_binding_to_callbacks_high_order_function">Binding to callbacks (high-order function)</a>
@@ -1578,7 +1579,7 @@ is put in the position of last argument to help user write in a <em>chaining sty
 </div>
 </div>
 <div class="sect2">
-<h3 id="_special_types_on_external_declarations_bs_string_bs_int"><a class="anchor" href="#_special_types_on_external_declarations_bs_string_bs_int"></a>Special types on external declarations: bs.string, bs.int</h3>
+<h3 id="_special_types_on_external_declarations_bs_string_bs_int_bs_ignore"><a class="anchor" href="#_special_types_on_external_declarations_bs_string_bs_int_bs_ignore"></a>Special types on external declarations: bs.string, bs.int, bs.ignore</h3>
 <div class="sect3">
 <h4 id="_using_polymorphic_variant_to_model_enums_and_string_types"><a class="anchor" href="#_using_polymorphic_variant_to_model_enums_and_string_types"></a>Using polymorphic variant to model enums and string types</h4>
 <div class="paragraph">
@@ -1714,6 +1715,70 @@ will do such conversion in the runtime, but it should be always correct.</p>
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_phantom_arguments_and_ad_hoc_polyrmophism"><a class="anchor" href="#_phantom_arguments_and_ad_hoc_polyrmophism"></a>Phantom Arguments and ad-hoc polyrmophism</h4>
+<div class="paragraph">
+<p><code>bs.ignore</code> allows arguments to be erased after passing to JS functional call, the side effect will
+still be recorded.</p>
+</div>
+<div class="paragraph">
+<p>For example,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">add</span> <span class="tok-o">:</span> <span class="tok-o">(</span><span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">ignore</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">int</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">add</span> <span class="tok-mi">0</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span> <b class="conum">(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>the first argument will be erased</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="javascript"><span class="tok-kd">var</span> <span class="tok-nx">v</span> <span class="tok-o">=</span> <span class="tok-nx">add</span> <span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is very useful to combine GADT:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-o">_</span> <span class="tok-n">kind</span> <span class="tok-o">=</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Float</span> <span class="tok-o">:</span> <span class="tok-kt">float</span> <span class="tok-n">kind</span>
+  <span class="tok-o">|</span> <span class="tok-nc">String</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-n">kind</span>
+<span class="tok-k">external</span> <span class="tok-n">add</span> <span class="tok-o">:</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">kind</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">ignore</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+
+<span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
+  <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">(</span><span class="tok-n">add</span> <span class="tok-nc">Float</span> <span class="tok-mi">3</span><span class="tok-o">.</span><span class="tok-mi">0</span> <span class="tok-mi">2</span><span class="tok-o">.</span><span class="tok-mi">0</span><span class="tok-o">);</span>
+  <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-o">(</span><span class="tok-n">add</span> <span class="tok-nc">String</span> <span class="tok-s2">&quot;x&quot;</span> <span class="tok-s2">&quot;y&quot;</span><span class="tok-o">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>User can also have a payload for the GADT:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-n">string_of_kind</span> <span class="tok-o">(</span><span class="tok-k">type</span> <span class="tok-n">t</span><span class="tok-o">)</span> <span class="tok-o">(</span><span class="tok-n">kind</span> <span class="tok-o">:</span> <span class="tok-n">t</span> <span class="tok-n">kind</span><span class="tok-o">)</span> <span class="tok-o">=</span>
+  <span class="tok-k">match</span> <span class="tok-n">kind</span> <span class="tok-k">with</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Float</span> <span class="tok-o">-&gt;</span> <span class="tok-s2">&quot;float&quot;</span>
+  <span class="tok-o">|</span> <span class="tok-nc">String</span> <span class="tok-o">-&gt;</span> <span class="tok-s2">&quot;string&quot;</span>
+
+<span class="tok-k">external</span> <span class="tok-n">add_dyn</span> <span class="tok-o">:</span> <span class="tok-o">(</span><span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">kind</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">ignore</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">-&gt;</span>  <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+
+<span class="tok-k">let</span> <span class="tok-n">add2</span> <span class="tok-n">k</span> <span class="tok-n">x</span> <span class="tok-n">y</span> <span class="tok-o">=</span>
+  <span class="tok-n">add_dyn</span> <span class="tok-n">k</span> <span class="tok-o">(</span><span class="tok-n">string_of_kind</span> <span class="tok-n">k</span><span class="tok-o">)</span> <span class="tok-n">x</span> <span class="tok-n">y</span></code></pre>
+</div>
 </div>
 </div>
 </div>

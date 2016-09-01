@@ -58,7 +58,9 @@ val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
 
 val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
 
-val flat_map2_last : (bool -> 'a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+(** for the last element the first element will be passed [true] *)
+
+val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
 
 val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 

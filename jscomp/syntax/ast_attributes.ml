@@ -155,8 +155,11 @@ let process_bs_string_int attrs =
         -> `String
       | "bs.int", (`Nothing | `Int)
         ->  `Int
+      | "bs.ignore", (`Nothing | `Ignore)
+        -> `Ignore
       | "bs.int", _
       | "bs.string", _
+      | "bs.ignore", _
         -> 
         Location.raise_errorf ~loc "conflict attributes "
       | _ , _ -> st 

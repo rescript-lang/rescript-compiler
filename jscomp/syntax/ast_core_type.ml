@@ -35,7 +35,7 @@ type arg_type =
   | Array 
   | Unit
   | Nothing
-
+  | Ignore
 
 open Ast_helper
 (** TODO check the polymorphic *)
@@ -79,7 +79,7 @@ let label_name l : arg_label =
   then Optional (String.sub l 1 (String.length l - 1))
   else Label l
 
-let string_type (ty : t) : arg_type = 
+let get_arg_type (ty : t) : arg_type = 
   match ty with 
   | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
     match Ast_attributes.process_bs_string_int ptyp_attributes with 
@@ -114,6 +114,7 @@ let string_type (ty : t) : arg_type =
         end
       | _ -> Location.raise_errorf ~loc "Not a valid string type"
       end
+    | `Ignore -> Ignore
     | `Int  -> 
       begin match ptyp_desc with 
       | Ptyp_variant ( row_fields, Closed, None)

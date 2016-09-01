@@ -62,7 +62,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	ppx_this_obj_test unsafe_obj_external gpr_627_test jsoo_485_test jsoo_400_test	\
 	test_require more_uncurry earger_curry_test poly_type bench mutable_obj_test\
 	gpr_658 module_as_class_ffi pipe_send_readline demo_pipe bs_array_test bs_string_test\
-	watch_test bs_node_string_buffer_test 
+	watch_test bs_node_string_buffer_test \
+	bs_ignore_test bs_ignore_effect
 
 
 
