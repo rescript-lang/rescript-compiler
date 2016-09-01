@@ -165,8 +165,6 @@ let rec map_last f l1 =
   | a1::l1 -> let r = f false  a1 in r :: map_last f l1
 
 
-let flat_map2_last f lx ly = List.concat @@ map2_last f lx ly
-
 let rec fold_right2_last f l1 l2 accu  = 
   match (l1, l2) with
   | ([], []) -> accu

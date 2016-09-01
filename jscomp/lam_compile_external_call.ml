@@ -46,24 +46,6 @@ let handle_external
 
 type typ = Ast_core_type.t
 
-let ocaml_to_js_no_splice ({ Ast_external_attributes.arg_label;  arg_type = ty })
-    (arg : J.expression) 
-  : E.t list =
-  match ty with
-  | Unit ->  [] (* ignore unit *)
-  | Ignore -> []
-  | NullString dispatches -> 
-    [Js_of_lam_variant.eval arg dispatches]
-  | NonNullString dispatches -> 
-    Js_of_lam_variant.eval_as_event arg dispatches
-  | Int dispatches -> 
-    [Js_of_lam_variant.eval_as_int arg dispatches]
-  | Nothing  | Array -> 
-    begin match arg_label with 
-      | Optional label -> [Js_of_lam_option.get_default_undefined arg]
-      | Label _ | Empty ->  [arg]  
-    end
-
 
 let ocaml_to_js_eff ({ Ast_external_attributes.arg_label;  arg_type = ty })
     (arg : J.expression) 
@@ -148,6 +130,13 @@ let assemble_args_obj labels args =
   | x::xs -> E.seq (List.fold_left (fun x y -> E.seq x y) x xs) (E.obj map)
 
 
+(* TODO: fix splice, 
+   we need a static guarantee that it is static array construct
+   otherwise, we should provide a good error message here, 
+   no compiler failure here 
+   Invariant : Array encoding
+*)
+
 let ocaml_to_js ~js_splice:(js_splice : bool) 
     last ({ Ast_external_attributes.arg_label;  arg_type = ty } as arg_ty)
     (arg : J.expression) 
@@ -157,15 +146,9 @@ let ocaml_to_js ~js_splice:(js_splice : bool)
     | Array -> 
       begin match arg with 
         | {expression_desc = Array (ls,_mutable_flag) } -> 
-          (* Invariant : Array encoding *)
           ls, [] 
         | _ -> 
           assert false  
-          (* TODO: fix splice, 
-             we need a static guarantee that it is static array construct
-             otherwise, we should provide a good error message here, 
-             no compiler failure here 
-          *)
       end
     | _ -> assert  false
   else 

@@ -444,10 +444,6 @@ function map_last(f, l1) {
   }
 }
 
-function flat_map2_last(f, lx, ly) {
-  return List.concat(map2_last(f, lx, ly));
-}
-
 function fold_right2_last(f, l1, l2, accu) {
   if (l1) {
     var l1$1 = l1[1];
@@ -942,7 +938,6 @@ exports.flat_map2          = flat_map2;
 exports.flat_map           = flat_map;
 exports.map2_last          = map2_last;
 exports.map_last           = map_last;
-exports.flat_map2_last     = flat_map2_last;
 exports.fold_right2_last   = fold_right2_last;
 exports.init               = init;
 exports.take               = take;

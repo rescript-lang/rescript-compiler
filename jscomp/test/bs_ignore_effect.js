@@ -24,6 +24,13 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
+
+function add(x,y){
+  return x + y
+}
+
+;
+
 var v = [0];
 
 var h = (v[0] = v[0] + 1 | 0, {
@@ -31,7 +38,11 @@ var h = (v[0] = v[0] + 1 | 0, {
     lo: 0
   });
 
-eq('File "bs_ignore_effect.ml", line 16, characters 5-12', v[0], 1);
+var z = (v[0] = v[0] + 1 | 0, add(3.0, 2.0));
+
+eq('File "bs_ignore_effect.ml", line 26, characters 5-12', v[0], 2);
+
+eq('File "bs_ignore_effect.ml", line 27, characters 5-12', z, 5.0);
 
 Mt.from_pair_suites("bs_ignore_effect.ml", suites[0]);
 
@@ -40,4 +51,5 @@ exports.test_id = test_id;
 exports.eq      = eq;
 exports.v       = v;
 exports.h       = h;
-/* h Not a pure module */
+exports.z       = z;
+/*  Not a pure module */
