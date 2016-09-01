@@ -1,5 +1,5 @@
 
-# Announcing BuckleScript 1.0
+# Bloomberg announcing BuckleScript 1.0
 September 1, 2016 by Hongbo Zhang
 
 
