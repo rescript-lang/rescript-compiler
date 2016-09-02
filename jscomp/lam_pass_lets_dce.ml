@@ -176,7 +176,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
                  (Const_base (
                      Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
                      | Const_nativeint _ )
-                 | Lambda.Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
+                 | Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
                        args = [Lprim {primitive = Pgetglobal _;  _}]}
             ) 
