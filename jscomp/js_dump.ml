@@ -1049,8 +1049,13 @@ and
     if l > 2 then P.paren_vgroup f 1 action else action ()
 
   | Object lst ->
-    P.brace_vgroup f 1 @@ fun _ -> 
-      property_name_and_value_list cxt f lst
+    begin
+      match lst with 
+      | [] -> P.string f "{ }" ; cxt 
+      | _ -> 
+        P.brace_vgroup f 1 @@ fun _ -> 
+        property_name_and_value_list cxt f lst
+    end
 
 and property_name cxt f (s : J.property_name) : unit =
   match s with

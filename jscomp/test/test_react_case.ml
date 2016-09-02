@@ -18,3 +18,8 @@ external mk_obj_spec :
         ?display_name:string ->
           render:(unit -> react_dom_component) -> unit -> 
             obj_spec = "" [@@bs.obj ]
+
+
+external empty_obj : unit -> _ = ""[@@bs.obj]
+
+let v = empty_obj

@@ -35,9 +35,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var comparable = {
-  
-};
+var comparable = { };
 
 Caml_obj.caml_update_dummy(comparable, [
       0,

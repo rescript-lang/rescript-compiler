@@ -97,9 +97,7 @@ var restricted_point$prime$1 = restricted_point;
 
 var Point = /* module */[/* restricted_point' */restricted_point$prime$1];
 
-var abstract_point = {
-  
-};
+var abstract_point = { };
 
 Caml_obj.caml_update_dummy(abstract_point, [
       0,
