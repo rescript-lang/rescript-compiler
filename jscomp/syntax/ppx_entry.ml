@@ -395,7 +395,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                is parsed as {[ (i @@ x##length) := 3]}
             *)
             | {pexp_desc = 
-                 Pexp_ident {txt = Lident  "#="}
+                 Pexp_ident {txt = Lident  ("#=" )}
               } -> 
               begin match args with 
               | ["", 

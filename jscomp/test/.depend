@@ -427,6 +427,8 @@ mutual_non_recursive_type.cmj :
 mutual_non_recursive_type.cmx :
 nested_include.cmj :
 nested_include.cmx :
+nested_module_alias.cmj : ../stdlib/list.cmi
+nested_module_alias.cmx : ../stdlib/list.cmx
 nested_obj_literal.cmj :
 nested_obj_literal.cmx :
 nested_obj_test.cmj :
@@ -473,8 +475,8 @@ polyvar_test.cmj : ../runtime/js.cmj
 polyvar_test.cmx : ../runtime/js.cmx
 ppx_apply_test.cmj : mt.cmi
 ppx_apply_test.cmx : mt.cmx
-ppx_this_obj_field.cmj : ../runtime/js.cmj
-ppx_this_obj_field.cmx : ../runtime/js.cmx
+ppx_this_obj_field.cmj : mt.cmi ../runtime/js.cmj
+ppx_this_obj_field.cmx : mt.cmx ../runtime/js.cmx
 ppx_this_obj_test.cmj : mt.cmi
 ppx_this_obj_test.cmx : mt.cmx
 pq_test.cmj :
@@ -543,6 +545,8 @@ simple_lexer_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/lexing.cmx
 simplify_lambda_632o.cmj :
 simplify_lambda_632o.cmx :
+single_module_alias.cmj : ../stdlib/list.cmi
+single_module_alias.cmx : ../stdlib/list.cmx
 small_inline_test.cmj :
 small_inline_test.cmx :
 sprintf_reg_test.cmj : ../stdlib/printf.cmi mt_global.cmi mt.cmi
@@ -1221,6 +1225,8 @@ mutual_non_recursive_type.cmo :
 mutual_non_recursive_type.cmj :
 nested_include.cmo :
 nested_include.cmj :
+nested_module_alias.cmo : ../stdlib/list.cmi
+nested_module_alias.cmj : ../stdlib/list.cmj
 nested_obj_literal.cmo :
 nested_obj_literal.cmj :
 nested_obj_test.cmo :
@@ -1267,8 +1273,8 @@ polyvar_test.cmo : ../runtime/js.cmo
 polyvar_test.cmj : ../runtime/js.cmj
 ppx_apply_test.cmo : mt.cmi
 ppx_apply_test.cmj : mt.cmj
-ppx_this_obj_field.cmo : ../runtime/js.cmo
-ppx_this_obj_field.cmj : ../runtime/js.cmj
+ppx_this_obj_field.cmo : mt.cmi ../runtime/js.cmo
+ppx_this_obj_field.cmj : mt.cmj ../runtime/js.cmj
 ppx_this_obj_test.cmo : mt.cmi
 ppx_this_obj_test.cmj : mt.cmj
 pq_test.cmo :
@@ -1337,6 +1343,8 @@ simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
 simplify_lambda_632o.cmo :
 simplify_lambda_632o.cmj :
+single_module_alias.cmo : ../stdlib/list.cmi
+single_module_alias.cmj : ../stdlib/list.cmj
 small_inline_test.cmo :
 small_inline_test.cmj :
 sprintf_reg_test.cmo : ../stdlib/printf.cmi mt_global.cmi mt.cmi
