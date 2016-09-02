@@ -1,5 +1,5 @@
 # https://github.com/bloomberg/bucklescript[BuckleScript] User Manual
-Hongbo Zhang 
+Hongbo Zhang
 :toc: left
 :toclevels: 4
 :source-highlighter: pygments
@@ -24,10 +24,12 @@ whole compiler is compiled into JS (and ASM) so that you can play it
 in the {BuckleScript-playground}[browser].
 
 [NOTE]
-.This document is under active development and discussion!
+.Document under http://bloomberg.github.io/bucklescript/Manual.html[_bloomberg.github.io_] matches with https://github.com/bloomberg/bucklescript[master branch].
 ====
+
+They are also  distributed as a single HTML(`docs/Manual.html`) together with your <<Installation>> (with the exact version).
 If you find errors or omissions in this document, please don't
-hesitate to {uri-ad-org-issues}[submit an issue] with a fix.
+hesitate to submit an issue, sources are https://github.com/bloomberg/bucklescript/tree/master/site/docsource[here].
 ====
 
 
