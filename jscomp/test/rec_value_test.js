@@ -6,26 +6,18 @@ var CamlinternalLazy        = require("../../lib/js/camlinternalLazy");
 var Block                   = require("../../lib/js/block");
 var List                    = require("../../lib/js/list");
 
-var x = {
-  
-};
+var x = { };
 
 Caml_obj.caml_update_dummy(x, /* :: */[
       1,
       x
     ]);
 
-var a = {
-  
-};
+var a = { };
 
-var b = {
-  
-};
+var b = { };
 
-var c = {
-  
-};
+var c = { };
 
 Caml_obj.caml_update_dummy(a, /* :: */[
       2,
@@ -42,9 +34,7 @@ Caml_obj.caml_update_dummy(c, /* :: */[
       a
     ]);
 
-var xx = {
-  
-};
+var xx = { };
 
 Caml_obj.caml_update_dummy(xx, /* :: */[
       1,
@@ -75,9 +65,7 @@ var v = [function () {
         ];
   }];
 
-var h = {
-  
-};
+var h = { };
 
 Caml_obj.caml_update_dummy(h, Block.__(250, [fib]));
 
@@ -104,13 +92,9 @@ function fib(n) {
   }
 }
 
-var ys = {
-  
-};
+var ys = { };
 
-var xs = {
-  
-};
+var xs = { };
 
 Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
@@ -142,9 +126,7 @@ function zs() {
             ]);
 }
 
-var xs$1 = {
-  
-};
+var xs$1 = { };
 
 Caml_obj.caml_update_dummy(xs$1, /* tuple */[
       /* :: */[
@@ -243,9 +225,7 @@ var fake_y = /* :: */[
   ]
 ];
 
-var fake_z = {
-  
-};
+var fake_z = { };
 
 Caml_obj.caml_update_dummy(fake_z, /* :: */[
       1,
@@ -260,9 +240,7 @@ var fake_y2 = /* :: */[
   ]
 ];
 
-var fake_z2 = {
-  
-};
+var fake_z2 = { };
 
 Caml_obj.caml_update_dummy(fake_z2, /* :: */[
       1,

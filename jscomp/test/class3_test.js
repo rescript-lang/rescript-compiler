@@ -305,9 +305,7 @@ eq('File "class3_test.ml", line 81, characters 12-19', v, /* int array */[
       3
     ]);
 
-var abstract_point = {
-  
-};
+var abstract_point = { };
 
 Caml_obj.caml_update_dummy(abstract_point, [
       0,
@@ -365,9 +363,7 @@ var v$1 = Curry.js1(-792262820, 9, h);
 
 eq('File "class3_test.ml", line 107, characters 12-19', v$1, 32);
 
-var abstract_point2 = {
-  
-};
+var abstract_point2 = { };
 
 Caml_obj.caml_update_dummy(abstract_point2, [
       0,
