@@ -1,3 +1,4 @@
+CCSexp.cmi :
 CCSexpM.cmi : ../stdlib/format.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi
 a_recursive_type.cmi :
 abstract_type.cmi :
@@ -34,14 +35,18 @@ test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmj
 testing.cmi :
 ui_defs.cmi :
 unsafe_this.cmi : ../runtime/js.cmj
+CCSexp.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi \
+    ../stdlib/hashtbl.cmi CCSexp.cmi
+CCSexp.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx \
+    ../stdlib/hashtbl.cmx CCSexp.cmi
 CCSexpM.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
     ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi CCSexpM.cmi
 CCSexpM.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/printexc.cmx ../stdlib/list.cmx ../stdlib/format.cmx \
     ../stdlib/char.cmx ../stdlib/bytes.cmx ../stdlib/buffer.cmx CCSexpM.cmi
-CCSexpM_test.cmj : ../runtime/js.cmj CCSexpM.cmi
-CCSexpM_test.cmx : ../runtime/js.cmx CCSexpM.cmx
+CCSexpM_test.cmj : mt.cmi ../runtime/js.cmj ../stdlib/format.cmi CCSexpM.cmi
+CCSexpM_test.cmx : mt.cmx ../runtime/js.cmx ../stdlib/format.cmx CCSexpM.cmx
 a.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -840,14 +845,18 @@ unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
 unsafe_this.cmx : ../runtime/js.cmx unsafe_this.cmi
 watch_test.cmj : ../others/node.cmj ../runtime/js.cmj
 watch_test.cmx : ../others/node.cmx ../runtime/js.cmx
+CCSexp.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi \
+    ../stdlib/hashtbl.cmi CCSexp.cmi
+CCSexp.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj \
+    ../stdlib/hashtbl.cmj CCSexp.cmi
 CCSexpM.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
     ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi CCSexpM.cmi
 CCSexpM.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/printexc.cmj ../stdlib/list.cmj ../stdlib/format.cmj \
     ../stdlib/char.cmj ../stdlib/bytes.cmj ../stdlib/buffer.cmj CCSexpM.cmi
-CCSexpM_test.cmo : ../runtime/js.cmo CCSexpM.cmi
-CCSexpM_test.cmj : ../runtime/js.cmj CCSexpM.cmj
+CCSexpM_test.cmo : mt.cmi ../runtime/js.cmo ../stdlib/format.cmi CCSexpM.cmi
+CCSexpM_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/format.cmj CCSexpM.cmj
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
