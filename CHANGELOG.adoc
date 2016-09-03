@@ -1,0 +1,19 @@
+# CHANGELOG
+:issues: https://github.com/bloomberg/bucklescript/issues
+
+
+== 1.1 (dev)
+
+* FFI
+- support fields and mutable fields in JS object creation
+	and private method {issues}/694[#694]
+- Introduce phantom arguments (`bs.ignore`) for ad-hoc
+	polymorphism {issues}/686[#686]
+* Bug fixes
+
+* Tools (bspack)
+
+
+== 1.0
+
+Initial release
