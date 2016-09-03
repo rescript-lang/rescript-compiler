@@ -2,22 +2,37 @@
 
 ### First example
 
-* Create a directory called `hello` and create `package.json`
-  as below:
+* Create a directory called `hello`
+* Init the project as a NPM package and fill-in the details
+----
+npm init
+----
+* Add bucklescript as a dev dependency
+-----
+npm install --save-dev bs-platform
+-----
+* In the package.json, remove the `test` script and add a `build` script. You're file should look like:
 +
 [source,js]
 .package.json
 ----
 {
-    "dependencies": {
-        "bs-platform": "0.9.3" // <1>
+  {
+    "name": "hello",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "build": "bsc -c main_entry.ml"
     },
-    "scripts" : {
-        "build" : "bsc -c  main_entry.ml"
+    "author": "your name",
+    "license": "ISC",
+    "devDependencies": {
+      "bs-platform": "^1.0.0"
     }
+  }
 }
 ----
-<1> Version should be updated accordingly
 * Create `main_entry.ml` as below:
 +
 [source,ocaml]
@@ -58,20 +73,37 @@ Now we want to create two modules, one file called `fib.ml` which
 exports `fib` function, the other module called `main_entry.ml` which
 will call `fib`.
 
-* Create a directory `fib` and created a file `package.json`
+* Create a directory `fib`
+* Init the project as a NPM package and fill-in the details
+----
+npm init
+----
+* Add bucklescript as a dev dependency
+-----
+npm install --save-dev bs-platform
+-----
+* In the package.json, remove the `test` script and add a `build` script. You're file should look like:
 +
 [source,js]
 .package.json
-----------
+-----------
 {
-    "dependencies": {
-        "bs-platform": "0.9.4"
+  {
+    "name": "fib",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "build": "bsc -c -bs-main main_entry.ml" // <1>
     },
-    "scripts" : {
-        "build" : "bsc -c -bs-main main_entry.ml" // <1>
+    "author": "your name",
+    "license": "ISC",
+    "devDependencies": {
+      "bs-platform": "^1.0.0"
     }
+  }
 }
-----------
+-----------
 <1> here `-bs-main` option tells the compiler compile `main_entry` module and
 its dependency accordingly
 * Create file `fib.ml` and file `main_entry.ml`
@@ -100,7 +132,6 @@ let () =
 +
 [source,sh]
 -------
-npm install
 npm run build
 node main_entry.js
 -------

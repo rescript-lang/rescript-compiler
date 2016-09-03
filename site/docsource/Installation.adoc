@@ -16,7 +16,7 @@ is installed, run the following command:
 
 [source,sh]
 ------------------------------
-npm install --save bs-platform
+npm install --save-dev bs-platform
 ------------------------------
 
 or install it globally
