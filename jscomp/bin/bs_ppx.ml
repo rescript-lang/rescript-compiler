@@ -1,4 +1,4 @@
-(** Bundled by bspack 09/01-15:36 *)
+(** Bundled by bspack 09/04-18:36 *)
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3920,7 +3920,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.0.0"
+let version = "1.0.1"
 
 let current_file = ref ""
 let debug_file = ref ""
@@ -6280,9 +6280,18 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             (* we can not use [:=] for precedece cases 
                like {[i @@ x##length := 3 ]} 
                is parsed as {[ (i @@ x##length) := 3]}
+               since we allow user to create Js objects in OCaml, it can be of
+               ref type
+               {[
+                 let u = object (self)
+                   val x = ref 3 
+                   method setX x = self##x := 32
+                   method getX () = !self##x
+                 end
+               ]}
             *)
             | {pexp_desc = 
-                 Pexp_ident {txt = Lident  "#="}
+                 Pexp_ident {txt = Lident  ("#=" )}
               } -> 
               begin match args with 
               | ["", 
@@ -6294,10 +6303,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                                 )}; 
                  "", arg
                 ] -> 
-                 { e with
-                   pexp_desc =
-                     Ast_util.method_apply loc self obj 
-                       (name ^ Literals.setter_suffix) ["", arg ]  }
+                 Exp.constraint_ ~loc
+                   { e with
+                     pexp_desc =
+                       Ast_util.method_apply loc self obj 
+                         (name ^ Literals.setter_suffix) ["", arg ]  }
+                   (Ast_literal.type_unit ~loc ())
               | _ -> Ast_mapper.default_mapper.expr self e 
               end
             | _ -> 

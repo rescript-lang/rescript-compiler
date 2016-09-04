@@ -2,7 +2,7 @@
 :issues: https://github.com/bloomberg/bucklescript/issues
 
 
-== 1.1 (dev)
+== 1.01 (dev)
 
 * FFI
 - support fields and mutable fields in JS object creation
