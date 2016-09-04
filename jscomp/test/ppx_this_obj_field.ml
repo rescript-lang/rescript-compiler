@@ -56,6 +56,22 @@ let u =
 
 let test_type = [u ; v]
 
+let z =
+  object (self)
+    val x = ref 3 
+    method setX x = self##x := x
+    method getX () =  ! (self##x)
+  end [@bs]
+
+let zz =
+  object (self)
+    val mutable x =  3 
+    method setX x = self##x #= x
+    method getX () =   (self##x)
+  end [@bs]
+
+let test_type2 = [z;zz]
+
 let () = 
   eq __LOC__ (6, v5##say ());
   let a = v##say () in 
@@ -64,7 +80,11 @@ let () =
   v##incr ();
   let c = v##say () in 
   v##incr ();
-  eq __LOC__ ((3,4,5) , (a,b,c))
+  eq __LOC__ ((3,4,5) , (a,b,c));
+  let aa = z##getX () in
+  let () = z##setX 32 in 
+  let bb = z##getX () in
+  eq __LOC__ ((3, 32), (aa,bb))
 
 let () =
   Mt.from_pair_suites __FILE__ !suites

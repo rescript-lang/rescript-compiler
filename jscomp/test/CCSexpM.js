@@ -410,7 +410,7 @@ function _get(t) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
-            "./CCSexpM.ml",
+            "CCSexpM.ml",
             152,
             4
           ]
@@ -568,7 +568,7 @@ function expr_starting_with(c, k, t) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               [
-                "./CCSexpM.ml",
+                "CCSexpM.ml",
                 183,
                 27
               ]
@@ -1100,7 +1100,7 @@ function MakeDecode(funarg) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
-              "./CCSexpM.ml",
+              "CCSexpM.ml",
               152,
               4
             ]
@@ -1254,7 +1254,7 @@ function MakeDecode(funarg) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 [
-                  "./CCSexpM.ml",
+                  "CCSexpM.ml",
                   183,
                   27
                 ]

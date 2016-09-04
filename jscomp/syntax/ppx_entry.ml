@@ -393,6 +393,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             (* we can not use [:=] for precedece cases 
                like {[i @@ x##length := 3 ]} 
                is parsed as {[ (i @@ x##length) := 3]}
+               since we allow user to create Js objects in OCaml, it can be of
+               ref type
+               {[
+                 let u = object (self)
+                   val x = ref 3 
+                   method setX x = self##x := 32
+                   method getX () = !self##x
+                 end
+               ]}
             *)
             | {pexp_desc = 
                  Pexp_ident {txt = Lident  ("#=" )}
@@ -407,10 +416,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                                 )}; 
                  "", arg
                 ] -> 
-                 { e with
-                   pexp_desc =
-                     Ast_util.method_apply loc self obj 
-                       (name ^ Literals.setter_suffix) ["", arg ]  }
+                 Exp.constraint_ ~loc
+                   { e with
+                     pexp_desc =
+                       Ast_util.method_apply loc self obj 
+                         (name ^ Literals.setter_suffix) ["", arg ]  }
+                   (Ast_literal.type_unit ~loc ())
               | _ -> Ast_mapper.default_mapper.expr self e 
               end
             | _ -> 

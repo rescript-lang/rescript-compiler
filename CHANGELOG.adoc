@@ -9,9 +9,13 @@
 	and private method {issues}/694[#694]
 - Introduce phantom arguments (`bs.ignore`) for ad-hoc
 	polymorphism {issues}/686[#686]
-* Bug fixes
+
+* Bug fixes and enhancment
+
+- Enforce `#=` always return unit {issues}718[#718] for better error messages
 
 * Tools (bspack)
+
 
 
 == 1.0
