@@ -12,6 +12,8 @@
 
 * Bug fixes and enhancment
 
+- Enforce `#=` always return unit {issues}718[#718] for better error messages
+
 * Tools (bspack)
 
 
