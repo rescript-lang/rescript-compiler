@@ -98,7 +98,42 @@ var test_type = /* :: */[
   test_type_001
 ];
 
-eq('File "ppx_this_obj_field.ml", line 60, characters 5-12', /* tuple */[
+var z = {
+  x: [3],
+  setX: function (x) {
+    var self = this ;
+    self.x[0] = x;
+    return /* () */0;
+  },
+  getX: function () {
+    var self = this ;
+    return self.x[0];
+  }
+};
+
+var zz = {
+  x: 3,
+  setX: function (x) {
+    var self = this ;
+    return self.x = x;
+  },
+  getX: function () {
+    var self = this ;
+    return self.x;
+  }
+};
+
+var test_type2_001 = /* :: */[
+  zz,
+  /* [] */0
+];
+
+var test_type2 = /* :: */[
+  z,
+  test_type2_001
+];
+
+eq('File "ppx_this_obj_field.ml", line 76, characters 5-12', /* tuple */[
       6,
       v5.say()
     ]);
@@ -115,7 +150,7 @@ var c = v.say();
 
 v.incr();
 
-eq('File "ppx_this_obj_field.ml", line 67, characters 5-12', /* tuple */[
+eq('File "ppx_this_obj_field.ml", line 83, characters 5-12', /* tuple */[
       /* tuple */[
         3,
         4,
@@ -128,13 +163,33 @@ eq('File "ppx_this_obj_field.ml", line 67, characters 5-12', /* tuple */[
       ]
     ]);
 
+var aa = z.getX();
+
+z.setX(32);
+
+var bb = z.getX();
+
+eq('File "ppx_this_obj_field.ml", line 87, characters 5-12', /* tuple */[
+      /* tuple */[
+        3,
+        32
+      ],
+      /* tuple */[
+        aa,
+        bb
+      ]
+    ]);
+
 Mt.from_pair_suites("ppx_this_obj_field.ml", suites[0]);
 
-exports.suites    = suites;
-exports.test_id   = test_id;
-exports.eq        = eq;
-exports.v5        = v5;
-exports.v         = v;
-exports.u         = u;
-exports.test_type = test_type;
+exports.suites     = suites;
+exports.test_id    = test_id;
+exports.eq         = eq;
+exports.v5         = v5;
+exports.v          = v;
+exports.u          = u;
+exports.test_type  = test_type;
+exports.z          = z;
+exports.zz         = zz;
+exports.test_type2 = test_type2;
 /* v5 Not a pure module */

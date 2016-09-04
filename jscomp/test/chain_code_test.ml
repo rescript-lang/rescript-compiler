@@ -16,9 +16,8 @@ let f3 h x y =
   (h##paint x y)##draw x y
 
 let f4 h x y = 
-  h
-  ##paint#=(x,y)
-  ##draw#= (x,y)
+  h##paint#=(x,y);
+  h##paint##draw#= (x,y)
 
 
 (* let g h =  *)

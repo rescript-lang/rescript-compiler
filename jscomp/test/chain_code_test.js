@@ -37,11 +37,11 @@ function f3(h, x, y) {
 }
 
 function f4(h, x, y) {
-  var tmp = h.paint = /* tuple */[
+  h.paint = /* tuple */[
     x,
     y
   ];
-  return tmp.draw = /* tuple */[
+  return h.paint.draw = /* tuple */[
           x,
           y
         ];
@@ -55,7 +55,7 @@ var h = {
   }
 };
 
-eq('File "chain_code_test.ml", line 29, characters 5-12', 32, h.x.y.z);
+eq('File "chain_code_test.ml", line 28, characters 5-12', 32, h.x.y.z);
 
 Mt.from_pair_suites("chain_code_test.ml", suites[0]);
 
