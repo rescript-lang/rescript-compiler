@@ -1,8 +1,10 @@
-# CHANGELOG
+
+[appendix]
+## CHANGES
 :issues: https://github.com/bloomberg/bucklescript/issues
 
 
-== 1.01 (dev)
+== 1.01
 
 * FFI
 - support fields and mutable fields in JS object creation
@@ -13,9 +15,6 @@
 * Bug fixes and enhancment
 
 - Enforce `#=` always return unit {issues}718[#718] for better error messages
-
-* Tools (bspack)
-
 
 
 == 1.0

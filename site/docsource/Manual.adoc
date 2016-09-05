@@ -52,7 +52,6 @@ include::./Compiler-options.adoc[]
 
 include::./How-to-adapt-your-build-system.adoc[]
 
-
 include::./Semantic-differences-from-other-backends.adoc[]
 
 include::./Compiler-overview.adoc[]
@@ -66,3 +65,5 @@ include::./Integration_with_reason.adoc[]
 include::./Dev-mode-How-to.adoc[]
 
 include::./Differences-from-js_of_ocaml.adoc[]
+
+include::./CHANGELOG.adoc[]
