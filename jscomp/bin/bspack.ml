@@ -2419,27 +2419,7 @@ type module_name = private string
   
 module String_set = Depend.StringSet
 
-
-
-type ('a,'b) ast_info =
-  | Ml of
-      string * (* sourcefile *)
-      'a *
-      string (* opref *)      
-  | Mli of string * (* sourcefile *)
-           'b *
-           string (* opref *)
-  | Ml_mli of
-      string * (* sourcefile *)
-      'a *
-      string  * (* opref1 *)
-      string * (* sourcefile *)      
-      'b *
-      string (* opref2*)
-
 type ('a,'b) t 
-  =
-  { module_name : string ; ast_info : ('a,'b) ast_info }
 
 val sort_files_by_dependencies :
   domain:String_set.t -> String_set.t String_map.t -> string Queue.t
@@ -2482,10 +2462,10 @@ val build_queue :
 val handle_queue :
   Format.formatter ->
   String_map.key Queue.t ->
-  (_ * 'c, _ * 'e) t String_map.t ->
-  (String_map.key -> string -> 'c -> unit) ->
-  (String_map.key -> 'e -> string -> unit) ->
-  (String_map.key -> string -> string -> 'e -> 'c -> unit) -> unit
+  ('c, 'e) t String_map.t ->
+  (string -> string -> 'c -> unit) ->
+  (string -> string -> 'e  -> unit) ->
+  (string -> string -> string -> 'e -> 'c -> unit) -> unit
 
 
 val build_lazy_queue :
@@ -2780,12 +2760,12 @@ let handle_queue ppf queue ast_table decorate_module_only decorate_interface_onl
     (fun base ->
        match (String_map.find  base ast_table).ast_info with
        | exception Not_found -> assert false
-       | Ml (ml_name, (_, ml_content), _)
+       | Ml (ml_name,  ml_content, _)
          ->
          decorate_module_only  base ml_name ml_content
-       | Mli (mli_name , (_, mli_content), _) ->
-         decorate_interface_only base mli_content mli_name
-       | Ml_mli (ml_name, (_, ml_content), _, mli_name,  (_, mli_content), _)
+       | Mli (mli_name , mli_content, _) ->
+         decorate_interface_only base  mli_name mli_content
+       | Ml_mli (ml_name, ml_content, _, mli_name,   mli_content, _)
          ->
          decorate_module  base mli_name ml_name mli_content ml_content
 
@@ -3077,7 +3057,7 @@ let decorate_module_only out_chan base ml_name ml_content =
   output_string out_chan ml_content;
   output_string out_chan "\nend\n"
 
-let decorate_interface_only out_chan  base mli_content mli_name =
+let decorate_interface_only out_chan  base  mli_name mli_content =
   let base = String.capitalize base in
   output_string out_chan "module type \n";
   output_string out_chan base ;
@@ -3149,24 +3129,10 @@ let _ =
              local_time.tm_hour local_time.tm_min))
      ;   
      Ast_extract.handle_queue Format.err_formatter tasks ast_table 
-       (decorate_module_only out_chan)
-       (decorate_interface_only out_chan )
-       (decorate_module out_chan);
-     (* tasks |> Queue.iter *)
-     (*   (fun base -> *)
-     (*        match (String_map.find  base ast_table).ast_info with *)
-     (*        | exception Not_found -> assert false *)
-     (*        | Ml (ml_name, (_, ml_content), _) *)
-     (*          -> *)
-     (*          decorate_module_only out_chan base ml_name ml_content *)
-     (*        | Mli (mli_name , (_, mli_content), _) -> *)
-     (*          decorate_interface_only out_chan base mli_content mli_name *)
-     (*        | Ml_mli (ml_name, (_, ml_content), _, mli_name,  (_, mli_content), _) *)
-     (*          -> *)
-     (*          decorate_module out_chan base mli_name ml_name mli_content ml_content *)
-
-     (*   ); *)
-
+       (fun base ml_name (_, ml_content) -> decorate_module_only out_chan base ml_name ml_content)
+       (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
+       (fun base mli_name ml_name (_, mli_content) (_, ml_content)
+         -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
      (if out_chan != stdout then close_out out_chan)
     )
   with x ->

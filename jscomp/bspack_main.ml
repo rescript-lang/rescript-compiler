@@ -141,7 +141,7 @@ let decorate_module_only out_chan base ml_name ml_content =
   output_string out_chan ml_content;
   output_string out_chan "\nend\n"
 
-let decorate_interface_only out_chan  base mli_content mli_name =
+let decorate_interface_only out_chan  base  mli_name mli_content =
   let base = String.capitalize base in
   output_string out_chan "module type \n";
   output_string out_chan base ;
@@ -213,9 +213,10 @@ let _ =
              local_time.tm_hour local_time.tm_min))
      ;   
      Ast_extract.handle_queue Format.err_formatter tasks ast_table 
-       (decorate_module_only out_chan)
-       (decorate_interface_only out_chan )
-       (decorate_module out_chan);
+       (fun base ml_name (_, ml_content) -> decorate_module_only out_chan base ml_name ml_content)
+       (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
+       (fun base mli_name ml_name (_, mli_content) (_, ml_content)
+         -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
      (if out_chan != stdout then close_out out_chan)
     )
   with x ->

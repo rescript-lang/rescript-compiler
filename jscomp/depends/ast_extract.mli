@@ -76,9 +76,9 @@ val build_queue :
 val handle_queue :
   Format.formatter ->
   String_map.key Queue.t ->
-  (_ * 'c, _ * 'e) t String_map.t ->
+  ('c, 'e) t String_map.t ->
   (string -> string -> 'c -> unit) ->
-  (string -> 'e -> string -> unit) ->
+  (string -> string -> 'e  -> unit) ->
   (string -> string -> string -> 'e -> 'c -> unit) -> unit
 
 

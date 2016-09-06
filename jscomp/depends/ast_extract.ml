@@ -281,12 +281,12 @@ let handle_queue ppf queue ast_table decorate_module_only decorate_interface_onl
     (fun base ->
        match (String_map.find  base ast_table).ast_info with
        | exception Not_found -> assert false
-       | Ml (ml_name, (_, ml_content), _)
+       | Ml (ml_name,  ml_content, _)
          ->
          decorate_module_only  base ml_name ml_content
-       | Mli (mli_name , (_, mli_content), _) ->
-         decorate_interface_only base mli_content mli_name
-       | Ml_mli (ml_name, (_, ml_content), _, mli_name,  (_, mli_content), _)
+       | Mli (mli_name , mli_content, _) ->
+         decorate_interface_only base  mli_name mli_content
+       | Ml_mli (ml_name, ml_content, _, mli_name,   mli_content, _)
          ->
          decorate_module  base mli_name ml_name mli_content ml_content
 
