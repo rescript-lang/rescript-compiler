@@ -356,6 +356,22 @@ let add2 k x y =
   add_dyn k (string_of_kind k) x y
 -------------
 
+### Binding to NodeJS special variables: bs.node
+
+NodeJS has several file local variables: `__dirname`, `__filename`, `module_`, and `require`,
+their semantics are more like macros instead of functions.
+
+BuckleScript provides built-in macro support for these variables:
+
+[source,ocaml]
+-------------
+let dirname : string Js.undefined = [%bs.node __dirname]
+let filename : string Js.undefined = [%bs.node __filename]
+let module_ : Node.node_module Js.undefined = [%bs.node module_]
+let require : Node.node_require Js.undefined = [%bs.node require]
+-------------
+
+
 ### Binding to callbacks (high-order function)
 
 
