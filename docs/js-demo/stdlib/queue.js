@@ -68,9 +68,7 @@ define(["exports", "./caml_obj", "./caml_exceptions", "./curry"],
     function copy(q) {
       if (q[/* length */0]) {
         var tail = q[/* tail */1];
-        var tail$prime = {
-          
-        };
+        var tail$prime = { };
         Caml_obj.caml_update_dummy(tail$prime, /* record */[
               /* content */tail[/* content */0],
               /* next */tail$prime
