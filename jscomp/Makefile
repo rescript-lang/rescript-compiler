@@ -60,6 +60,7 @@ snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
 
+# git diff bin/bspack.ml
 bootbspack: ./bin/bspack
 	@echo "Bootstrap bspack"
 	./bin/bspack bin/bspack.mllib > ./bin/bspack.ml
@@ -67,7 +68,10 @@ bootbspack: ./bin/bspack
 	@echo "Using the bootstrapped bspack to genreate new bspack.ml: `date`" 	
 	./bin/bspack bin/bspack.mllib > ./bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack"
-	git diff bin/bspack.ml
+	@echo "Rebuilding bspack"
+	make -B ./bin/bspack
+	@echo "Rebuilding bspack finsihed"
+
 
 releasebuild:./bin/bspack
 	@echo "Make release compiler"
