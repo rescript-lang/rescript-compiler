@@ -163,26 +163,24 @@ let specs : (string * Arg.spec * string) list =
   [
     "-bs-mllib", (Arg.String set_string), 
     " files collected from mllib";
-
-    "-bs-files", 
-    (Arg.Rest collect_file ), 
-    " Provide batch of files"
-
   ]
 
 
-
+let anonymous filename = 
+  collect_file filename
+ 
+let usage = "Usage: bspack <options> <files>\nOptions are:"
 let _ = 
   let _loc = Location.none in
-  let argv = Sys.argv in
   try 
+    Arg.parse specs anonymous usage;
+    let command_files =  !batch_files in
     let files = 
-      if Array.length argv = 2 && Filename.check_suffix  argv.(1) "mllib" then 
-        read_lines (Sys.getcwd ())argv.(1)
-      else 
-        Array.to_list
-          (Array.sub Sys.argv 1 (Array.length Sys.argv - 1)) 
-    in 
+      (match !mllib with
+       | Some s 
+         -> read_lines (Sys.getcwd ()) s 
+       | None -> []) @ command_files in 
+    
     let ast_table =
       Ast_extract.build
         Format.err_formatter files
