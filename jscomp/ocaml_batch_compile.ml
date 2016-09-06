@@ -51,11 +51,11 @@ let batch_compile ppf files main_file =
   if files <> [] then 
     begin
       let ast_table =
-        Ast_extract.build ppf files
+        Ast_extract.collect_ast_map ppf files
           Ocaml_parse.parse_implementation
           Ocaml_parse.parse_interface in
       Ast_extract.build_queue ppf
-        (Ast_extract.sort (fun x -> x ) (fun x -> x )ast_table)
+        (Ast_extract.sort Ext_pervasives.id  Ext_pervasives.id  ast_table)
         ast_table
         Js_implementation.after_parsing_impl
         Js_implementation.after_parsing_sig        

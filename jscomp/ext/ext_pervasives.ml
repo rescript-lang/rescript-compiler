@@ -148,3 +148,4 @@ let rec dump r =
 
 let dump v = dump (Obj.repr v)
 
+external id : 'a -> 'a = "%identity"
