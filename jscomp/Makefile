@@ -54,8 +54,8 @@ snapshot: ./bin/bspack snapshotcmj
 
 snapshotml:./bin/bspack ./bin/compiler.mllib ./bin/bs_ppx.mllib
 	@echo "Snapshot ml"
-	$< bin/compiler.mllib > bin/compiler.ml
-	$< bin/bs_ppx.mllib   > bin/bs_ppx.ml
+	$< -bs-mllib bin/compiler.mllib -o bin/compiler.ml
+	$< -bs-mllib bin/bs_ppx.mllib   -o bin/bs_ppx.ml
 snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
@@ -63,10 +63,10 @@ snapshotcmj:
 # git diff bin/bspack.ml
 bootbspack: ./bin/bspack
 	@echo "Bootstrap bspack"
-	./bin/bspack bin/bspack.mllib > ./bin/bspack.ml
+	./bin/bspack -bs-mllib bin/bspack.mllib -o ./bin/bspack.ml
 	$(NATIVE) -w -40 -I +compiler-libs  unix.cmxa ocamlcommon.cmxa -I bin bin/bspack.mli bin/bspack.ml -o bin/bspack
 	@echo "Using the bootstrapped bspack to genreate new bspack.ml: `date`" 	
-	./bin/bspack bin/bspack.mllib > ./bin/bspack.ml
+	./bin/bspack -bs-mllib bin/bspack.mllib -o ./bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack"
 	@echo "Rebuilding bspack"
 	make -B ./bin/bspack
