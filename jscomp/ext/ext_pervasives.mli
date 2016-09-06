@@ -52,3 +52,4 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
 val dump : 'a -> string 
 
+external id : 'a -> 'a = "%identity"

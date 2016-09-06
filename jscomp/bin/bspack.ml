@@ -713,6 +713,7 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
 val dump : 'a -> string 
 
+external id : 'a -> 'a = "%identity"
 
 end = struct
 #1 "ext_pervasives.ml"
@@ -866,6 +867,7 @@ let rec dump r =
 
 let dump v = dump (Obj.repr v)
 
+external id : 'a -> 'a = "%identity"
 
 end
 module Ext_bytes : sig 
@@ -2417,40 +2419,10 @@ type module_name = private string
   
 module String_set = Depend.StringSet
 
-
-
-type ('a,'b) ast_info =
-  | Ml of
-      string * (* sourcefile *)
-      'a *
-      string (* opref *)      
-  | Mli of string * (* sourcefile *)
-           'b *
-           string (* opref *)
-  | Ml_mli of
-      string * (* sourcefile *)
-      'a *
-      string  * (* opref1 *)
-      string * (* sourcefile *)      
-      'b *
-      string (* opref2*)
-
-type ('a,'b) t =
-  { module_name : string ; ast_info : ('a,'b) ast_info }
+type ('a,'b) t 
 
 val sort_files_by_dependencies :
   domain:String_set.t -> String_set.t String_map.t -> string Queue.t
-(** 
-   {[ let stack,mapping = prepare ast_table ]}
-
-   {[ 
-     [ast_table] : (string, ast) Hashtbl.t 
-   ]}
-
-   key  is the filename,
-   [stack] is the reverse order 
-   for mapping, the key is the module and value is filename
-*)
 
 
 val sort :
@@ -2460,12 +2432,16 @@ val sort :
 
 
 
-val build :
+(**
+   [build fmt files parse_implementation parse_interface]
+   Given a list of files return an ast table 
+*)
+val collect_ast_map :
   Format.formatter ->
   string list ->
+  (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
-  (Format.formatter -> string -> 'c) ->
-  ('b, 'c) t String_map.t
+  ('a, 'b) t String_map.t
 
 val handle_main_file :
   Format.formatter ->
@@ -2478,14 +2454,23 @@ val handle_main_file :
 
 val build_queue :
   Format.formatter ->
+  string Queue.t ->
+  ('b, 'c) t String_map.t ->
+  (Format.formatter -> string -> string -> 'b -> unit) ->
+  (Format.formatter -> string -> string -> 'c -> unit) -> unit
+  
+val handle_queue :
+  Format.formatter ->
   String_map.key Queue.t ->
-  (Parsetree.structure, Parsetree.signature) t String_map.t ->
-  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
-  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
+  ('c, 'e) t String_map.t ->
+  (string -> string -> 'c -> unit) ->
+  (string -> string -> 'e  -> unit) ->
+  (string -> string -> string -> 'e -> 'c -> unit) -> unit
+
 
 val build_lazy_queue :
   Format.formatter ->
-  String_map.key Queue.t ->
+  string Queue.t ->
   (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
   (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
   (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
@@ -2631,7 +2616,7 @@ let check_suffix  name  =
     raise(Arg.Bad("don't know what to do with " ^ name))
 
 
-let build ppf files parse_implementation parse_interface  =
+let collect_ast_map ppf files parse_implementation parse_interface  =
   List.fold_left
     (fun (acc : _ t String_map.t)
       source_file ->
@@ -2706,7 +2691,7 @@ let handle_main_file ppf parse_implementation parse_interface main_file =
          else None
       ) in
   let ast_table =
-    build ppf files
+    collect_ast_map ppf files
       parse_implementation
       parse_interface in 
 
@@ -2749,7 +2734,9 @@ let build_queue ppf queue
     after_parsing_impl
     after_parsing_sig    
   =
-  queue |> Queue.iter (fun modname -> 
+  queue
+  |> Queue.iter
+    (fun modname -> 
       match String_map.find modname ast_table  with
       | {ast_info = Ml(source_file,ast, opref)}
         -> 
@@ -2765,6 +2752,25 @@ let build_queue ppf queue
         after_parsing_impl ppf source_file2 opref2 impl
       | exception Not_found -> assert false 
     )
+
+
+let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
+  queue 
+  |> Queue.iter
+    (fun base ->
+       match (String_map.find  base ast_table).ast_info with
+       | exception Not_found -> assert false
+       | Ml (ml_name,  ml_content, _)
+         ->
+         decorate_module_only  base ml_name ml_content
+       | Mli (mli_name , mli_content, _) ->
+         decorate_interface_only base  mli_name mli_content
+       | Ml_mli (ml_name, ml_content, _, mli_name,   mli_content, _)
+         ->
+         decorate_module  base mli_name ml_name mli_content ml_content
+
+    )
+
 
 
 let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
@@ -3051,7 +3057,7 @@ let decorate_module_only out_chan base ml_name ml_content =
   output_string out_chan ml_content;
   output_string out_chan "\nend\n"
 
-let decorate_interface_only out_chan  base mli_content mli_name =
+let decorate_interface_only out_chan  base  mli_name mli_content =
   let base = String.capitalize base in
   output_string out_chan "module type \n";
   output_string out_chan base ;
@@ -3100,7 +3106,7 @@ let _ =
         | None -> []) @ command_files in
 
      let ast_table =
-       Ast_extract.build
+       Ast_extract.collect_ast_map
          Format.err_formatter files
          (fun _ppf sourcefile -> implementation sourcefile
          )
@@ -3118,33 +3124,15 @@ let _ =
           (try ignore (Sys.getenv "BS_RELEASE_BUILD") ; true with _ -> false)
       then
         output_string out_chan
-          (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n" (local_time.tm_mon + 1) local_time.tm_mday
+          (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n"
+             (local_time.tm_mon + 1) local_time.tm_mday
              local_time.tm_hour local_time.tm_min))
      ;   
-
-     tasks |> Queue.iter
-       (fun module_ ->
-          let t =
-            match (String_map.find  module_ ast_table).ast_info with
-            | exception Not_found -> failwith (module_ ^ "not found")
-            | Ml (sourcefile, (_, content), _)
-              ->
-              `Ml (module_, content, sourcefile)
-            | Mli (sourcefile , (_, content), _) ->
-              `Mli (module_, content, sourcefile)
-            | Ml_mli (ml_sourcefile, (_, ml_content), _, mli_sourcefile,  (_, mli_content), _)
-              ->
-              `All (module_, ml_content, ml_sourcefile, mli_content, mli_sourcefile) in
-          match t with
-          | `All (base, ml_content,ml_name, mli_content, mli_name) ->
-            decorate_module out_chan base mli_name ml_name mli_content ml_content
-
-          | `Ml (base, ml_content, ml_name) ->
-            decorate_module_only out_chan base ml_name ml_content
-          | `Mli (base, mli_content, mli_name) ->
-            decorate_interface_only out_chan base mli_content mli_name
-       );
-
+     Ast_extract.handle_queue Format.err_formatter tasks ast_table 
+       (fun base ml_name (_, ml_content) -> decorate_module_only out_chan base ml_name ml_content)
+       (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
+       (fun base mli_name ml_name (_, mli_content) (_, ml_content)
+         -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
      (if out_chan != stdout then close_out out_chan)
     )
   with x ->

@@ -2949,6 +2949,7 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 
 val dump : 'a -> string 
 
+external id : 'a -> 'a = "%identity"
 
 end = struct
 #1 "ext_pervasives.ml"
@@ -3102,6 +3103,7 @@ let rec dump r =
 
 let dump v = dump (Obj.repr v)
 
+external id : 'a -> 'a = "%identity"
 
 end
 module Literals : sig 

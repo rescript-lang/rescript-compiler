@@ -137,7 +137,7 @@ let check_suffix  name  =
     raise(Arg.Bad("don't know what to do with " ^ name))
 
 
-let build ppf files parse_implementation parse_interface  =
+let collect_ast_map ppf files parse_implementation parse_interface  =
   List.fold_left
     (fun (acc : _ t String_map.t)
       source_file ->
@@ -212,7 +212,7 @@ let handle_main_file ppf parse_implementation parse_interface main_file =
          else None
       ) in
   let ast_table =
-    build ppf files
+    collect_ast_map ppf files
       parse_implementation
       parse_interface in 
 
@@ -255,7 +255,9 @@ let build_queue ppf queue
     after_parsing_impl
     after_parsing_sig    
   =
-  queue |> Queue.iter (fun modname -> 
+  queue
+  |> Queue.iter
+    (fun modname -> 
       match String_map.find modname ast_table  with
       | {ast_info = Ml(source_file,ast, opref)}
         -> 
@@ -271,6 +273,25 @@ let build_queue ppf queue
         after_parsing_impl ppf source_file2 opref2 impl
       | exception Not_found -> assert false 
     )
+
+
+let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
+  queue 
+  |> Queue.iter
+    (fun base ->
+       match (String_map.find  base ast_table).ast_info with
+       | exception Not_found -> assert false
+       | Ml (ml_name,  ml_content, _)
+         ->
+         decorate_module_only  base ml_name ml_content
+       | Mli (mli_name , mli_content, _) ->
+         decorate_interface_only base  mli_name mli_content
+       | Ml_mli (ml_name, ml_content, _, mli_name,   mli_content, _)
+         ->
+         decorate_module  base mli_name ml_name mli_content ml_content
+
+    )
+
 
 
 let build_lazy_queue ppf queue (ast_table : _ t String_map.t)

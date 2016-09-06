@@ -33,40 +33,10 @@ type module_name = private string
   
 module String_set = Depend.StringSet
 
-
-
-type ('a,'b) ast_info =
-  | Ml of
-      string * (* sourcefile *)
-      'a *
-      string (* opref *)      
-  | Mli of string * (* sourcefile *)
-           'b *
-           string (* opref *)
-  | Ml_mli of
-      string * (* sourcefile *)
-      'a *
-      string  * (* opref1 *)
-      string * (* sourcefile *)      
-      'b *
-      string (* opref2*)
-
-type ('a,'b) t =
-  { module_name : string ; ast_info : ('a,'b) ast_info }
+type ('a,'b) t 
 
 val sort_files_by_dependencies :
   domain:String_set.t -> String_set.t String_map.t -> string Queue.t
-(** 
-   {[ let stack,mapping = prepare ast_table ]}
-
-   {[ 
-     [ast_table] : (string, ast) Hashtbl.t 
-   ]}
-
-   key  is the filename,
-   [stack] is the reverse order 
-   for mapping, the key is the module and value is filename
-*)
 
 
 val sort :
@@ -76,12 +46,16 @@ val sort :
 
 
 
-val build :
+(**
+   [build fmt files parse_implementation parse_interface]
+   Given a list of files return an ast table 
+*)
+val collect_ast_map :
   Format.formatter ->
   string list ->
+  (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
-  (Format.formatter -> string -> 'c) ->
-  ('b, 'c) t String_map.t
+  ('a, 'b) t String_map.t
 
 val handle_main_file :
   Format.formatter ->
@@ -94,14 +68,23 @@ val handle_main_file :
 
 val build_queue :
   Format.formatter ->
+  string Queue.t ->
+  ('b, 'c) t String_map.t ->
+  (Format.formatter -> string -> string -> 'b -> unit) ->
+  (Format.formatter -> string -> string -> 'c -> unit) -> unit
+  
+val handle_queue :
+  Format.formatter ->
   String_map.key Queue.t ->
-  (Parsetree.structure, Parsetree.signature) t String_map.t ->
-  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
-  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
+  ('c, 'e) t String_map.t ->
+  (string -> string -> 'c -> unit) ->
+  (string -> string -> 'e  -> unit) ->
+  (string -> string -> string -> 'e -> 'c -> unit) -> unit
+
 
 val build_lazy_queue :
   Format.formatter ->
-  String_map.key Queue.t ->
+  string Queue.t ->
   (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
   (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
   (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
