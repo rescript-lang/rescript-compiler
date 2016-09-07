@@ -134,7 +134,7 @@ let decorate_module out_chan base mli_name ml_name mli_content ml_content =
 
 let decorate_module_only out_chan base ml_name ml_content =
   let base = String.capitalize base in
-  output_string out_chan "module \n";
+  output_string out_chan "module ";
   output_string out_chan base ;
   output_string out_chan "\n= struct\n";
   emit out_chan  ml_name;

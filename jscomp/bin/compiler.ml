@@ -5720,15 +5720,6 @@ val collect_ast_map :
   ('a, 'b) t String_map.t
 
 
-
-val handle_main_file :
-  Format.formatter ->
-  (Format.formatter -> string -> Parsetree.structure lazy_t) ->
-  (Format.formatter -> string -> Parsetree.signature lazy_t) ->
-  string ->
-  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t *
-  string Queue.t  
-
 val collect_from_main :
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
@@ -5961,56 +5952,6 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                module_name} acc
         end
     ) String_map.empty files
-
-
-
-let handle_main_file ppf
-    parse_implementation
-    parse_interface
-    main_file =
-  let dirname = Filename.dirname main_file in
-  let files =
-    Sys.readdir dirname
-    |> Ext_array.to_list_f
-      (fun source_file ->
-         if Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli" then
-           Some (Filename.concat dirname source_file)
-         else None
-      ) in
-  let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
-  let visited = Hashtbl.create 31 in
-  let result = Queue.create () in  
-  let next module_name =
-    match String_map.find module_name ast_table with
-    | exception _ -> String_set.empty
-    | {ast_info = Ml (_, lazy impl, _)} ->
-      read_parse_and_extract Ml_kind impl
-    | {ast_info = Mli (_, lazy intf,_)} ->
-      read_parse_and_extract Mli_kind intf
-    | {ast_info = Ml_mli(_,lazy impl, _, _, lazy intf, _)}
-      -> 
-      String_set.union
-        (read_parse_and_extract Ml_kind impl)
-        (read_parse_and_extract Mli_kind intf)
-  in
-  let rec visit visiting path current =
-    if String_set.mem current visiting  then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
-    else
-    if not (Hashtbl.mem visited current)
-    && String_map.mem current ast_table then
-      begin
-        String_set.iter
-          (visit
-             (String_set.add current visiting)
-             (current::path))
-          (next current) ;
-        Queue.push current result;
-        Hashtbl.add visited current ();
-      end in
-  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
-  ast_table, result   
 
 
 let collect_from_main (ppf : Format.formatter)
@@ -7146,8 +7087,7 @@ let iinfo b str f  =
 
 
 end
-module 
-Ocaml_stdlib_slots
+module Ocaml_stdlib_slots
 = struct
 #1 "ocaml_stdlib_slots.ml"
 
@@ -10537,8 +10477,7 @@ let merge_disjoint m1 m2 =
     m1 m2
 
 end
-module 
-Ident_util
+module Ident_util
 = struct
 #1 "ident_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11085,8 +11024,7 @@ let get_lexical_scope env =
 let is_empty t = Ident_set.is_empty t.unbounded
 
 end
-module 
-Js_op
+module Js_op
 = struct
 #1 "js_op.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11348,8 +11286,7 @@ type code_info =
 (*   | Const_ *)
 
 end
-module 
-J
+module J
 = struct
 #1 "j.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11752,8 +11689,7 @@ and deps_program =
   }
 
 end
-module 
-Js_fold
+module Js_fold
 = struct
 #1 "js_fold.ml"
 (* BuckleScript compiler
@@ -17557,8 +17493,7 @@ let caml_float_literal_to_js_string v =
 
 
 end
-module 
-Type_int_to_string
+module Type_int_to_string
 = struct
 #1 "type_int_to_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20697,8 +20632,7 @@ let dump name (prog : J.program) =
  
 
 end
-module 
-Js_map
+module Js_map
 = struct
 #1 "js_map.ml"
 (* BuckleScript compiler
@@ -33205,9 +33139,11 @@ let batch_compile ppf files main_file =
   ;
   if String.length main_file <> 0 then
     let ast_table, result =
-      Ast_extract.handle_main_file ppf
+      Ast_extract.collect_from_main ppf
         Ocaml_parse.lazy_parse_implementation
         Ocaml_parse.lazy_parse_interface         
+        Lazy.force
+        Lazy.force
         main_file in
     if Queue.is_empty result then 
       Bs_exception.error (Bs_main_not_exist main_file)

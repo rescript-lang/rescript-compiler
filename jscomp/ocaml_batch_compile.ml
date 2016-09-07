@@ -63,9 +63,11 @@ let batch_compile ppf files main_file =
   ;
   if String.length main_file <> 0 then
     let ast_table, result =
-      Ast_extract.handle_main_file ppf
+      Ast_extract.collect_from_main ppf
         Ocaml_parse.lazy_parse_implementation
         Ocaml_parse.lazy_parse_interface         
+        Lazy.force
+        Lazy.force
         main_file in
     if Queue.is_empty result then 
       Bs_exception.error (Bs_main_not_exist main_file)
