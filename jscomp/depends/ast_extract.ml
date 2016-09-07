@@ -199,37 +199,43 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
-
-let handle_main_file ppf parse_implementation parse_interface main_file =
+let collect_from_main ?(extra_dirs=[]) (ppf : Format.formatter)
+    parse_implementation
+    parse_interface
+    project_impl 
+    project_intf 
+    main_file =
   let dirname = Filename.dirname main_file in
-  let files =
-    Sys.readdir dirname
-    |> Ext_array.to_list_f
-      (fun source_file ->
-         if Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli" then
-           Some (Filename.concat dirname source_file)
-         else None
-      ) in
-  let ast_table =
-    collect_ast_map ppf files
-      parse_implementation
-      parse_interface in 
-
+  (** TODO: same filename module detection  *)
+  let files = 
+    Array.fold_left (fun acc source_file ->
+        if Ext_string.ends_with source_file ".ml" ||
+           Ext_string.ends_with source_file ".mli" then 
+          (Filename.concat dirname source_file) :: acc else acc ) []   (Sys.readdir dirname) in 
+  let files = 
+    List.fold_left (fun acc dirname -> 
+        Array.fold_left (fun acc source_file -> 
+            if Ext_string.ends_with source_file ".ml" ||
+               Ext_string.ends_with source_file ".mli" 
+            then 
+              (Filename.concat dirname source_file) :: acc else acc
+          ) acc (Sys.readdir dirname))
+      files extra_dirs in
+  let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
   let next module_name =
     match String_map.find module_name ast_table with
     | exception _ -> String_set.empty
-    | {ast_info = Ml (_, lazy impl, _)} ->
-      read_parse_and_extract Ml_kind impl
-    | {ast_info = Mli (_, lazy intf,_)} ->
-      read_parse_and_extract Mli_kind intf
-    | {ast_info = Ml_mli(_,lazy impl, _, _, lazy intf, _)}
+    | {ast_info = Ml (_,  impl, _)} ->
+      read_parse_and_extract Ml_kind (project_impl impl)
+    | {ast_info = Mli (_,  intf,_)} ->
+      read_parse_and_extract Mli_kind (project_intf intf)
+    | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
       -> 
       String_set.union
-        (read_parse_and_extract Ml_kind impl)
-        (read_parse_and_extract Mli_kind intf)
+        (read_parse_and_extract Ml_kind (project_impl impl))
+        (read_parse_and_extract Mli_kind (project_intf intf))
   in
   let rec visit visiting path current =
     if String_set.mem current visiting  then
@@ -302,12 +308,10 @@ let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
       match String_map.find modname ast_table  with
       | {ast_info = Ml(source_file,lazy ast, opref)}
         -> 
-        after_parsing_impl ppf source_file 
-          opref ast 
+        after_parsing_impl ppf source_file opref ast 
       | {ast_info = Mli (source_file,lazy ast,opref) ; }  
         ->
-        after_parsing_sig ppf source_file 
-              opref ast 
+        after_parsing_sig ppf source_file opref ast 
       | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
         -> 
         after_parsing_sig ppf source_file1 opref1 intf ;

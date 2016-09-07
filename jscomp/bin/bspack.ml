@@ -508,155 +508,6 @@ and add_class_declaration bv decl =
   add_class_expr bv decl.pci_expr
 
 end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-
-val reverse_in_place : 'a array -> unit
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_f : ('a -> 'b option) -> 'a array -> 'b list 
-
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let reverse_in_place a =
-  let aux a i len =
-    if len=0 then ()
-    else
-      for k = 0 to (len-1)/2 do
-        let t = Array.unsafe_get a (i+k) in
-        Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-        Array.unsafe_set a (i+len-1-k) t;
-      done
-  in
-  aux a 0 (Array.length a)
-
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map (f : _ -> _ option) a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let to_list_f f a =
-  let rec tolist i res =
-    if i < 0 then res else
-      let v = Array.unsafe_get a i in
-      tolist (i - 1)
-        (match f v with
-         | Some v -> v :: res
-         | None -> res) in
-  tolist (Array.length a - 1) []
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2443,14 +2294,15 @@ val collect_ast_map :
   (Format.formatter -> string -> 'b) ->
   ('a, 'b) t String_map.t
 
-val handle_main_file :
-  Format.formatter ->
-  (Format.formatter -> string -> Parsetree.structure lazy_t) ->
-  (Format.formatter -> string -> Parsetree.signature lazy_t) ->
-  string ->
-  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t *
-  string Queue.t  
 
+val collect_from_main :
+  ?extra_dirs:string list -> 
+  Format.formatter ->
+  (Format.formatter -> string -> 'a) ->
+  (Format.formatter -> string -> 'b) ->
+  ('a -> Parsetree.structure) ->
+  ('b -> Parsetree.signature) ->
+  string -> ('a, 'b) t String_map.t * string Queue.t
 
 val build_queue :
   Format.formatter ->
@@ -2462,10 +2314,10 @@ val build_queue :
 val handle_queue :
   Format.formatter ->
   String_map.key Queue.t ->
-  ('c, 'e) t String_map.t ->
-  (string -> string -> 'c -> unit) ->
-  (string -> string -> 'e  -> unit) ->
-  (string -> string -> string -> 'e -> 'c -> unit) -> unit
+  ('a, 'b) t String_map.t ->
+  (string -> string -> 'a -> unit) ->
+  (string -> string -> 'b  -> unit) ->
+  (string -> string -> string -> 'b -> 'a -> unit) -> unit
 
 
 val build_lazy_queue :
@@ -2678,37 +2530,43 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
-
-let handle_main_file ppf parse_implementation parse_interface main_file =
+let collect_from_main ?(extra_dirs=[]) (ppf : Format.formatter)
+    parse_implementation
+    parse_interface
+    project_impl 
+    project_intf 
+    main_file =
   let dirname = Filename.dirname main_file in
-  let files =
-    Sys.readdir dirname
-    |> Ext_array.to_list_f
-      (fun source_file ->
-         if Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli" then
-           Some (Filename.concat dirname source_file)
-         else None
-      ) in
-  let ast_table =
-    collect_ast_map ppf files
-      parse_implementation
-      parse_interface in 
-
+  (** TODO: same filename module detection  *)
+  let files = 
+    Array.fold_left (fun acc source_file ->
+        if Ext_string.ends_with source_file ".ml" ||
+           Ext_string.ends_with source_file ".mli" then 
+          (Filename.concat dirname source_file) :: acc else acc ) []   (Sys.readdir dirname) in 
+  let files = 
+    List.fold_left (fun acc dirname -> 
+        Array.fold_left (fun acc source_file -> 
+            if Ext_string.ends_with source_file ".ml" ||
+               Ext_string.ends_with source_file ".mli" 
+            then 
+              (Filename.concat dirname source_file) :: acc else acc
+          ) acc (Sys.readdir dirname))
+      files extra_dirs in
+  let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
   let next module_name =
     match String_map.find module_name ast_table with
     | exception _ -> String_set.empty
-    | {ast_info = Ml (_, lazy impl, _)} ->
-      read_parse_and_extract Ml_kind impl
-    | {ast_info = Mli (_, lazy intf,_)} ->
-      read_parse_and_extract Mli_kind intf
-    | {ast_info = Ml_mli(_,lazy impl, _, _, lazy intf, _)}
+    | {ast_info = Ml (_,  impl, _)} ->
+      read_parse_and_extract Ml_kind (project_impl impl)
+    | {ast_info = Mli (_,  intf,_)} ->
+      read_parse_and_extract Mli_kind (project_intf intf)
+    | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
       -> 
       String_set.union
-        (read_parse_and_extract Ml_kind impl)
-        (read_parse_and_extract Mli_kind intf)
+        (read_parse_and_extract Ml_kind (project_impl impl))
+        (read_parse_and_extract Mli_kind (project_intf intf))
   in
   let rec visit visiting path current =
     if String_set.mem current visiting  then
@@ -2781,12 +2639,10 @@ let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
       match String_map.find modname ast_table  with
       | {ast_info = Ml(source_file,lazy ast, opref)}
         -> 
-        after_parsing_impl ppf source_file 
-          opref ast 
+        after_parsing_impl ppf source_file opref ast 
       | {ast_info = Mli (source_file,lazy ast,opref) ; }  
         ->
-        after_parsing_sig ppf source_file 
-              opref ast 
+        after_parsing_sig ppf source_file opref ast 
       | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
         -> 
         after_parsing_sig ppf source_file1 opref1 intf ;
@@ -3050,7 +2906,7 @@ let decorate_module out_chan base mli_name ml_name mli_content ml_content =
 
 let decorate_module_only out_chan base ml_name ml_content =
   let base = String.capitalize base in
-  output_string out_chan "module \n";
+  output_string out_chan "module ";
   output_string out_chan base ;
   output_string out_chan "\n= struct\n";
   emit out_chan  ml_name;
@@ -3068,6 +2924,7 @@ let decorate_interface_only out_chan  base  mli_name mli_content =
 
   output_string out_chan "\nend\n"
 
+(** set mllib *)
 let mllib = ref None
 let set_string s = mllib := Some s
 
@@ -3078,7 +2935,13 @@ let collect_file name =
 let output_file = ref None
 let set_output file = output_file := Some file
 let header_option = ref false
+(** set bs-main*)
+let main_file = ref None
+let set_main_file file = main_file := Some file
 
+let includes = ref []
+let add_include dir = includes := dir :: !includes 
+      
 let specs : (string * Arg.spec * string) list =
   [
     "-bs-mllib", (Arg.String set_string),
@@ -3086,7 +2949,11 @@ let specs : (string * Arg.spec * string) list =
     "-o", (Arg.String set_output),
     " Set output file (default to stdout)" ;
     "-with-header", (Arg.Set header_option),
-    " with header of time stamp(can also be set with env variable BS_RELEASE_BUILD)"
+    " with header of time stamp(can also be set with env variable BS_RELEASE_BUILD)" ; 
+    "-bs-main", (Arg.String set_main_file),
+    " set the main entry module";
+    "-I",  (Arg.String add_include),
+    " add dir to search path"
   ]
 
 
@@ -3094,181 +2961,75 @@ let anonymous filename =
   collect_file filename
 
 let usage = "Usage: bspack <options> <files>\nOptions are:"
-let _ =
-  let _loc = Location.none in
+let () =
   try
     (Arg.parse specs anonymous usage;
      let command_files =  !batch_files in
-     let files =
-       (match !mllib with
-        | Some s
-          -> read_lines (Sys.getcwd ()) s
-        | None -> []) @ command_files in
-
-     let ast_table =
-       Ast_extract.collect_ast_map
-         Format.err_formatter files
-         (fun _ppf sourcefile -> implementation sourcefile
-         )
-         (fun _ppf sourcefile -> interface sourcefile) in
-     let tasks = Ast_extract.sort fst  fst ast_table in
-
-
-     let local_time = Unix.(localtime (gettimeofday ())) in
+     let mllib = !mllib in 
      (* emit code now *)
      let out_chan =
-       match !output_file with
-       | None -> stdout
-       | Some file -> open_out file  in
-     (if  !header_option ||
-          (try ignore (Sys.getenv "BS_RELEASE_BUILD") ; true with _ -> false)
-      then
-        output_string out_chan
-          (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n"
-             (local_time.tm_mon + 1) local_time.tm_mday
-             local_time.tm_hour local_time.tm_min))
-     ;   
-     Ast_extract.handle_queue Format.err_formatter tasks ast_table 
-       (fun base ml_name (_, ml_content) -> decorate_module_only out_chan base ml_name ml_content)
-       (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
-       (fun base mli_name ml_name (_, mli_content) (_, ml_content)
-         -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
-     (if out_chan != stdout then close_out out_chan)
+       lazy (match !output_file with
+           | None -> stdout
+           | Some file -> open_out file)  in
+     let emit_header out_chan = 
+       let local_time = Unix.(localtime (gettimeofday ())) in
+       (if  !header_option ||
+            (try ignore (Sys.getenv "BS_RELEASE_BUILD") ; true with _ -> false)
+        then
+          output_string out_chan
+            (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n"
+               (local_time.tm_mon + 1) local_time.tm_mday
+               local_time.tm_hour local_time.tm_min)) in
+     let close_out_chan out_chan = 
+       (if  out_chan != stdout then close_out out_chan) in
+     match !main_file, (mllib, command_files) with
+     | Some _, ((None, _ :: _) | (Some _ , _) )
+       -> failwith "-bs-main conflicts with other flags"
+     | Some main_file , (None, [])
+       ->
+       let ast_table, tasks =
+         Ast_extract.collect_from_main ~extra_dirs:!includes
+           Format.err_formatter
+           (fun _ppf sourcefile -> lazy (implementation sourcefile))
+           (fun _ppf sourcefile -> lazy (interface sourcefile))
+           (fun (lazy (stru, _)) -> stru)
+           (fun (lazy (sigi, _)) -> sigi)
+           main_file
+       in 
+       let out_chan = Lazy.force out_chan in
+       emit_header out_chan ;
+       Ast_extract.handle_queue Format.err_formatter tasks ast_table
+         (fun base ml_name (lazy(_, ml_content)) -> decorate_module_only  out_chan base ml_name ml_content)
+         (fun base mli_name (lazy (_, mli_content))  -> decorate_interface_only out_chan base mli_name mli_content )
+         (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
+           -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
+       close_out_chan out_chan
+     | None, _ -> 
+       let files =
+         (match mllib with
+          | Some s
+            -> read_lines (Sys.getcwd ()) s
+          | None -> []) @ command_files in
+       let ast_table =
+         Ast_extract.collect_ast_map
+           Format.err_formatter files
+           (fun _ppf sourcefile -> implementation sourcefile
+           )
+           (fun _ppf sourcefile -> interface sourcefile) in
+       let tasks = Ast_extract.sort fst  fst ast_table in
+       let out_chan = (Lazy.force out_chan) in
+       emit_header out_chan ;
+       Ast_extract.handle_queue Format.err_formatter tasks ast_table 
+         (fun base ml_name (_, ml_content) -> decorate_module_only  out_chan base ml_name ml_content)
+         (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
+         (fun base mli_name ml_name (_, mli_content) (_, ml_content)
+           -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
+       close_out_chan out_chan
     )
   with x ->
     begin
       Location.report_exception Format.err_formatter x ;
       exit 2
     end
-
-end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val is_directory_no_exn : string -> bool
-
-end = struct
-#1 "ext_sys.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.S with type elt = string
-
-end = struct
-#1 "string_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.Make(String)
 
 end

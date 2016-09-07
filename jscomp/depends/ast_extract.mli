@@ -57,14 +57,15 @@ val collect_ast_map :
   (Format.formatter -> string -> 'b) ->
   ('a, 'b) t String_map.t
 
-val handle_main_file :
-  Format.formatter ->
-  (Format.formatter -> string -> Parsetree.structure lazy_t) ->
-  (Format.formatter -> string -> Parsetree.signature lazy_t) ->
-  string ->
-  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t *
-  string Queue.t  
 
+val collect_from_main :
+  ?extra_dirs:string list -> 
+  Format.formatter ->
+  (Format.formatter -> string -> 'a) ->
+  (Format.formatter -> string -> 'b) ->
+  ('a -> Parsetree.structure) ->
+  ('b -> Parsetree.signature) ->
+  string -> ('a, 'b) t String_map.t * string Queue.t
 
 val build_queue :
   Format.formatter ->
@@ -76,10 +77,10 @@ val build_queue :
 val handle_queue :
   Format.formatter ->
   String_map.key Queue.t ->
-  ('c, 'e) t String_map.t ->
-  (string -> string -> 'c -> unit) ->
-  (string -> string -> 'e  -> unit) ->
-  (string -> string -> string -> 'e -> 'c -> unit) -> unit
+  ('a, 'b) t String_map.t ->
+  (string -> string -> 'a -> unit) ->
+  (string -> string -> 'b  -> unit) ->
+  (string -> string -> string -> 'b -> 'a -> unit) -> unit
 
 
 val build_lazy_queue :
