@@ -66,10 +66,10 @@ snapshotcmj:
 # git diff bin/bspack.ml
 bootbspack: ./bin/bspack
 	@echo "Bootstrap bspack"
-	./bin/bspack -bs-mllib bin/bspack.mllib -o ./bin/bspack.ml
+	./bin/bspack -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
 	$(NATIVE) -w -40 -I +compiler-libs  unix.cmxa ocamlcommon.cmxa -I bin bin/bspack.mli bin/bspack.ml -o bin/bspack
-	@echo "Using the bootstrapped bspack to genreate new bspack.ml: `date`" 	
-	./bin/bspack -bs-mllib bin/bspack.mllib -o ./bin/bspack.ml
+	@echo "Using the bootstrapped bspack to genreate new bspack.ml: `date`"
+	./bin/bspack -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack"
 	@echo "Rebuilding bspack"
 	make -B ./bin/bspack
