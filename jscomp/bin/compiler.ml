@@ -33636,7 +33636,9 @@ let collect_file name =
   batch_files := name :: !batch_files
 
 let set_main_entry name =
-  main_file := name  
+  if Sys.file_exists name then 
+    main_file := name  
+  else raise (Arg.Bad ("file " ^ name ^ " don't exist"))
 
 
 
