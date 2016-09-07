@@ -89,7 +89,7 @@ let map2i f a b =
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
-let to_list_f f a =
+let to_list_map f a =
   let rec tolist i res =
     if i < 0 then res else
       let v = Array.unsafe_get a i in

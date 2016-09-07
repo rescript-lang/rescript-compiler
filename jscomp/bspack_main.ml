@@ -166,6 +166,9 @@ let header_option = ref false
 (** set bs-main*)
 let main_file = ref None
 let set_main_file file = main_file := Some file
+
+let includes = ref []
+let add_include dir = includes := dir :: !includes 
       
 let specs : (string * Arg.spec * string) list =
   [
@@ -176,7 +179,9 @@ let specs : (string * Arg.spec * string) list =
     "-with-header", (Arg.Set header_option),
     " with header of time stamp(can also be set with env variable BS_RELEASE_BUILD)" ; 
     "-bs-main", (Arg.String set_main_file),
-    " set the main entry module"
+    " set the main entry module";
+    "-I",  (Arg.String add_include),
+    " add dir to search path"
   ]
 
 
@@ -211,7 +216,7 @@ let () =
      | Some main_file , (None, [])
        ->
        let ast_table, tasks =
-         Ast_extract.collect_from_main
+         Ast_extract.collect_from_main ~extra_dirs:!includes
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))

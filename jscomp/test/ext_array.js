@@ -138,7 +138,7 @@ function map2i(f, a, b) {
   }
 }
 
-function to_list_f(f, a) {
+function to_list_map(f, a) {
   var _i = a.length - 1 | 0;
   var _res = /* [] */0;
   while(true) {
@@ -167,5 +167,5 @@ exports.filter           = filter;
 exports.filter_map       = filter_map;
 exports.range            = range;
 exports.map2i            = map2i;
-exports.to_list_f        = to_list_f;
+exports.to_list_map      = to_list_map;
 /* No side effect */

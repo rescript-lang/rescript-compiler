@@ -1800,232 +1800,6 @@ let to_undefined_type loc x =
 
 
 end
-module Ast_core_type : sig 
-#1 "ast_core_type.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-
-val list_of_arrow : t -> t * (string * t ) list 
-val replace_result : t -> t -> t
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Array 
-  | Unit
-  | Nothing
-  | Ignore
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-val get_arg_type : t -> arg_type
-
-
-(** return a function type *)
-val from_labels :
-  loc:Location.t -> t list -> string list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
-
-end = struct
-#1 "ast_core_type.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty
-
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Array 
-  | Unit
-  | Nothing
-  | Ignore
-
-open Ast_helper
-(** TODO check the polymorphic *)
-let list_of_arrow (ty : t) = 
-  let rec aux (ty : Parsetree.core_type) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      aux ty acc 
-    | return_type -> ty, List.rev acc
-  in aux ty []
-
-let replace_result ty result = 
-  let rec aux (ty : Parsetree.core_type) = 
-    match ty with 
-    | { ptyp_desc = 
-          Ptyp_arrow (label,t1,t2)
-      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
-    | {ptyp_desc = Ptyp_poly(fs,ty)} 
-      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
-    | _ -> result in 
-  aux ty 
-
-let is_unit (ty : t ) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "unit"}, []) -> true
-  | _ -> false 
-
-let is_array (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false 
-
-let is_optional l =
-  String.length l > 0 && l.[0] = '?'
-
-let label_name l : arg_label =
-  if l = "" then Empty else 
-  if is_optional l 
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Label l
-
-let get_arg_type (ty : t) : arg_type = 
-  match ty with 
-  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
-    match Ast_attributes.process_bs_string_int ptyp_attributes with 
-    | `String  -> 
-      begin match ptyp_desc with 
-      | Ptyp_variant ( row_fields, Closed, None)
-        -> 
-        let case, result = 
-          (List.fold_right (fun tag (nullary, acc) -> 
-               match nullary, tag with 
-               | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
-                 -> 
-                 let name = 
-                   match Ast_attributes.process_bs_string_as attrs with 
-                   | Some name -> name 
-                   | None -> label in
-                 `Null, ((Btype.hash_variant label, name) :: acc )
-               | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
-                 -> 
-                 let name = 
-                   match Ast_attributes.process_bs_string_as attrs with 
-                   | Some name -> name 
-                   | None -> label in
-                 `NonNull, ((Btype.hash_variant label, name) :: acc)
-
-               | _ -> Location.raise_errorf ~loc "Not a valid string type"
-             ) row_fields (`Nothing, [])) in 
-        begin match case with 
-        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
-        | `Null -> NullString result 
-        | `NonNull -> NonNullString result 
-        end
-      | _ -> Location.raise_errorf ~loc "Not a valid string type"
-      end
-    | `Ignore -> Ignore
-    | `Int  -> 
-      begin match ptyp_desc with 
-      | Ptyp_variant ( row_fields, Closed, None)
-        -> 
-        let _, acc = 
-          (List.fold_left 
-             (fun (i,acc) rtag -> 
-                match rtag with 
-                | Parsetree.Rtag (label, attrs, true,  [])
-                  -> 
-                  let name = 
-                    match Ast_attributes.process_bs_int_as attrs with 
-                    | Some name -> name 
-                    | None -> i in
-                  name + 1, ((Btype.hash_variant label , name):: acc )
-                | _ -> Location.raise_errorf ~loc "Not a valid string type"
-             ) (0, []) row_fields) in 
-        Int (List.rev acc)
-          
-      | _ -> Location.raise_errorf ~loc "Not a valid string type"
-      end
-
-    | `Nothing -> Nothing
-      
-
-
-let from_labels ~loc tyvars (labels : string list)
-  : t = 
-  let result_type =
-    Ast_comb.to_js_type loc  
-     (Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed)
-  in 
-  List.fold_right2 
-    (fun label tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
-
-
-let make_obj ~loc xs =
-  Ast_comb.to_js_type loc @@
-  Ast_helper.Typ.object_  ~loc xs   Closed
-
-end
 module Ast_signature : sig 
 #1 "ast_signature.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2618,8 +2392,8 @@ let type_deriving_signature
          tdcl explict_nonrec) actions
 
 end
-module Ast_exp : sig 
-#1 "ast_exp.mli"
+module Ast_core_type : sig 
+#1 "ast_core_type.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2644,10 +2418,48 @@ module Ast_exp : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.expression 
+type t = Parsetree.core_type 
+
+
+val list_of_arrow : t -> t * (string * t ) list 
+val replace_result : t -> t -> t
+
+val is_unit : t -> bool 
+val is_array : t -> bool 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty
+type arg_type = 
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Array 
+  | Unit
+  | Nothing
+  | Ignore
+
+(** for 
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)
+val label_name : string -> arg_label
+
+
+val get_arg_type : t -> arg_type
+
+
+(** return a function type *)
+val from_labels :
+  loc:Location.t -> t list -> string list -> t
+
+val make_obj :
+  loc:Location.t ->
+  (string * Parsetree.attributes * t) list ->
+  t
 
 end = struct
-#1 "ast_exp.ml"
+#1 "ast_core_type.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2672,142 +2484,138 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.expression 
+type t = Parsetree.core_type 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty
 
-end
-module Ast_external : sig 
-#1 "ast_external.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type arg_type = 
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Array 
+  | Unit
+  | Nothing
+  | Ignore
+
+open Ast_helper
+(** TODO check the polymorphic *)
+let list_of_arrow (ty : t) = 
+  let rec aux (ty : Parsetree.core_type) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      aux ty acc 
+    | return_type -> ty, List.rev acc
+  in aux ty []
+
+let replace_result ty result = 
+  let rec aux (ty : Parsetree.core_type) = 
+    match ty with 
+    | { ptyp_desc = 
+          Ptyp_arrow (label,t1,t2)
+      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
+    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
+    | _ -> result in 
+  aux ty 
+
+let is_unit (ty : t ) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "unit"}, []) -> true
+  | _ -> false 
+
+let is_array (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+  | _ -> false 
+
+let is_optional l =
+  String.length l > 0 && l.[0] = '?'
+
+let label_name l : arg_label =
+  if l = "" then Empty else 
+  if is_optional l 
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Label l
+
+let get_arg_type (ty : t) : arg_type = 
+  match ty with 
+  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
+    match Ast_attributes.process_bs_string_int ptyp_attributes with 
+    | `String  -> 
+      begin match ptyp_desc with 
+      | Ptyp_variant ( row_fields, Closed, None)
+        -> 
+        let case, result = 
+          (List.fold_right (fun tag (nullary, acc) -> 
+               match nullary, tag with 
+               | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
+                 -> 
+                 let name = 
+                   match Ast_attributes.process_bs_string_as attrs with 
+                   | Some name -> name 
+                   | None -> label in
+                 `Null, ((Btype.hash_variant label, name) :: acc )
+               | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
+                 -> 
+                 let name = 
+                   match Ast_attributes.process_bs_string_as attrs with 
+                   | Some name -> name 
+                   | None -> label in
+                 `NonNull, ((Btype.hash_variant label, name) :: acc)
+
+               | _ -> Location.raise_errorf ~loc "Not a valid string type"
+             ) row_fields (`Nothing, [])) in 
+        begin match case with 
+        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
+        | `Null -> NullString result 
+        | `NonNull -> NonNullString result 
+        end
+      | _ -> Location.raise_errorf ~loc "Not a valid string type"
+      end
+    | `Ignore -> Ignore
+    | `Int  -> 
+      begin match ptyp_desc with 
+      | Ptyp_variant ( row_fields, Closed, None)
+        -> 
+        let _, acc = 
+          (List.fold_left 
+             (fun (i,acc) rtag -> 
+                match rtag with 
+                | Parsetree.Rtag (label, attrs, true,  [])
+                  -> 
+                  let name = 
+                    match Ast_attributes.process_bs_int_as attrs with 
+                    | Some name -> name 
+                    | None -> i in
+                  name + 1, ((Btype.hash_variant label , name):: acc )
+                | _ -> Location.raise_errorf ~loc "Not a valid string type"
+             ) (0, []) row_fields) in 
+        Int (List.rev acc)
+          
+      | _ -> Location.raise_errorf ~loc "Not a valid string type"
+      end
+
+    | `Nothing -> Nothing
+      
 
 
-val create_local_external : Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (string * Parsetree.expression) list -> Parsetree.expression_desc
+let from_labels ~loc tyvars (labels : string list)
+  : t = 
+  let result_type =
+    Ast_comb.to_js_type loc  
+     (Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed)
+  in 
+  List.fold_right2 
+    (fun label tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
 
-val local_extern_cont : 
-  Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
 
-end = struct
-#1 "ast_external.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let create_local_external loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
-
-let local_extern_cont loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     (cb : Parsetree.expression -> 'a) 
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                 loc};
-         pexp_attributes = [] ;
-         pexp_loc = loc}
-)
+let make_obj ~loc xs =
+  Ast_comb.to_js_type loc @@
+  Ast_helper.Typ.object_  ~loc xs   Closed
 
 end
 module Bs_loc : sig 
@@ -4816,8 +4624,8 @@ let handle_attributes_as_string
 
 
 end
-module Ast_lift : sig 
-#1 "ast_lift.mli"
+module Ast_external : sig 
+#1 "ast_external.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4842,12 +4650,26 @@ module Ast_lift : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val int : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes -> int -> Parsetree.expression
+
+val create_local_external : Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (string * Parsetree.expression) list -> Parsetree.expression_desc
+
+val local_extern_cont : 
+  Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
 
 end = struct
-#1 "ast_lift.ml"
+#1 "ast_external.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4872,8 +4694,69 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let int ?loc ?attrs x = 
-  Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
+let create_local_external loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+let local_extern_cont loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     (cb : Parsetree.expression -> 'a) 
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                 loc};
+         pexp_attributes = [] ;
+         pexp_loc = loc}
+)
 
 end
 module Ast_pat : sig 
@@ -6609,135 +6492,5 @@ let  () =
     prerr_endline (Printexc.to_string exn);
     exit 2
 
-
-end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val is_directory_no_exn : string -> bool
-
-end = struct
-#1 "ext_sys.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.S with type elt = string
-
-end = struct
-#1 "string_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.Make(String)
 
 end
