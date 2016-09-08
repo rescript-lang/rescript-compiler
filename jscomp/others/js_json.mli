@@ -23,18 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type 'a t
-type key = string
-
-external get : 'a t -> key -> 'a Js.undefined = ""
-    [@@bs.get_index]
-
-external set : 'a t -> key -> 'a -> unit = ""
-    [@@bs.set_index]  
-
-external keys : 'a t -> string array = "Object.keys"
-    [@@bs.val]
-
-external empty : unit -> 'a t = "" [@@bs.obj]
+type t
 
 
+type _ kind = 
+  | String : Js_string.t kind
+  | Number : float kind 
+  | Object : t Js_dict.t kind 
+  | Array : t array kind 
+  | Boolean : Js.boolean kind
+  | Null : Js_types.null_val kind
+
+val reify_type : 'a -> 'b kind * 'b
+
+val test : 'a  -> 'b kind -> bool
+
+external parse : string -> t = "JSON.parse" [@@bs.val]

@@ -4,7 +4,7 @@ COMPILER=../bin/bsc
 
 MAP_FILES= node 
 
-SOURCE_LIST=  node_path node_fs node_process dict node_module js_array js_string js_re node_buffer js_types
+SOURCE_LIST=  node_path node_fs node_process dict node_module js_array js_string js_re node_buffer js_types js_json
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
