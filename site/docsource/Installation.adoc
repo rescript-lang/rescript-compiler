@@ -1,5 +1,7 @@
 ## Installation
 
+
+
 ### Install from NPM registries
 
 
@@ -90,6 +92,7 @@ You could also set an environment variable
 pointing to the stdlib, e.g. `BSC_LIB=/path/to/jscomp/stdlib` for ease
 of use.
 
+WARNING: The built compiler is not _relocatable_ out of box, please don't move it around unless you know what you are doing
 
 ### Introduction to OCaml ecosystem: OPAM
 
