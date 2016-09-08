@@ -3718,8 +3718,6 @@ let float = "Caml_float"
 let hash = "Caml_hash"
 let oo = "Caml_oo"
 let curry = "Curry"
-(* let bigarray = "Caml_bigarray" *)
-(* let unix = "Caml_unix" *)
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"
 let weak = "Caml_weak"
@@ -3729,7 +3727,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.0.1"
+let version = "1.0.2"
 
 let current_file = ref ""
 let debug_file = ref ""
