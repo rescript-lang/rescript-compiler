@@ -5,7 +5,6 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="September 1, 2016 by Hongbo Zhang">
 <title>Bloomberg announcing BuckleScript 1.0</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -421,55 +420,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <body class="article">
 <div id="header">
 <h1>Bloomberg announcing BuckleScript 1.0</h1>
-<div class="details">
-<span id="author" class="author">September 1, 2016 by Hongbo Zhang</span><br>
-</div>
 </div>
 <div id="content">
 <div class="paragraph">
-<p><a href="https://github.com/bloomberg/bucklescript">BuckleScript</a> is an optimizing compiler which compiles <a href="http://ocaml.org/">OCaml</a>
-into JavaScript module by module <em>without name mangling</em>. The generated code is <em>highly readable</em> and <em>super small</em>,
-see <a href="http://bloomberg.github.io/bucklescript/js-demo/">Hello world</a> example
-and <a href="http://bloomberg.github.io/bucklescript/js-demo/#Use_JS_standard_Library_WIP">examples of calling JS libraries</a>.
-BuckleScript is strongly inspired by TypeScript, BabelJS - we consider <em>readability</em> and <em>easy integration with existing JS libraries</em> to be essential.</p>
-</div>
-<div class="paragraph">
-<p>There are a few things we believe BuckleScript does  better compared with TypeScript:</p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">More type safe and more efficient code generated</dt>
-<dd>
-<p>BuckleScript is not a new language, it is OCaml. OCaml offers an industrial-strength
-state-of-the-art type system and provides very strong type inference (i.e. unlike TypeScript, no
-verbose type annotation is required), which proves
-<a href="http://queue.acm.org/detail.cfm?id=2038036">invaluable</a> in managing large projects.<br>
-OCaml&#8217;s type system is not just for tooling; it is a <em>sound</em> type system which means it is guaranteed there will
-be no runtime type errors after type checking. Based on this guarantee, BuckleScript provides many optimizations during offline
-compilation. You can view a simple benchmark <a href="https://github.com/bloomberg/bucklescript#bucklescript-ocaml-stdlib">here</a>!</p>
-</dd>
-<dt class="hdlist1">All the benefits of OCaml  with a feature rich and efficient FFI</dt>
-<dd>
-<p>Your program can be compiled into  <em>native code</em>, <em>JS</em> and even a <a href="https://mirage.io/">unikernel</a>. The BuckleScript compiler is expected to become even faster and produce even faster code owing to <a href="https://blogs.janestreet.com/flambda/">more</a> and <a href="https://github.com/ocaml/ocaml/pull/606">more</a> optimizations in the upstream OCaml compiler.<br>
-Thanks to OCaml&#8217;s native support of the Object structural type system, BuckleScript&#8217;s FFI(foreign function interface) can model JS objects natively.
-Some powerful type system features like <a href="http://caml.inria.fr/pub/docs/manual-ocaml-400/manual006.html#toc36">polymorphic variants</a> and <a href="http://caml.inria.fr/pub/docs/manual-ocaml-400/manual021.html#toc85">GADTs</a> are also invaluable in modeling existing JS libraries.<br>
-Unlike most language FFIs, the design goal of <a href="http://bloomberg.github.io/bucklescript/Manual.html#\_ocaml\_calling\_js">BuckleScript FFI</a> is to avoid writing any unsafe JS "stub" code with a performance cost.
-In particular, we try to avoid any unnecessary memory allocations in the FFI.</p>
-</dd>
-<dt class="hdlist1">Compilation speed is key to a good developer experience</dt>
-<dd>
-<p>Our internal benchmarks shows that BuckleScript compiles at least 10x faster than TypeScript.
-There is no magic here, the BuckleScript compiler is written in OCaml which is
-compiled to blazing fast native code.<br>
-However, it does not limit the availability of BuckleScript compiler:
-it is also compiled to a JS file (gzipped: 700KB for pure OCaml + 300KB for <a href="https://github.com/facebook/reason/">Reason</a> support).<br>
-<a href="http://bloomberg.github.io/bucklescript/js-demo/">The playground</a> is powered by the compiler compiled to JS, which demonstrates a nearly real-time compilation speed, imagine how fast the native compiler would be.</p>
-</dd>
-</dl>
-</div>
-<div class="paragraph">
-<p>We are pleased to announce a stable 1.0 release of BuckleScript, which covers the whole OCaml language (except some features highly coupled with runtime, like the Gc and Unix modules etc.).
-To learn more about BuckleScript, please refer to <a href="http://bloomberg.github.io/bucklescript/Manual.html">the user manual</a> and we welcome <a href="https://github.com/bloomberg/bucklescript">your feedback</a>.</p>
+<p>The BuckleScript announcement can be found  on  the <a href="https://www.techatbloomberg.com/blog/bucklescript-1-0-release-arrived/">Tech at Bloomberg blog</a></p>
 </div>
 </div>
 <div id="footer">
