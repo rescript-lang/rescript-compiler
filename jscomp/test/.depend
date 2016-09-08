@@ -74,6 +74,8 @@ arith_parser.cmx : ../stdlib/parsing.cmx ../stdlib/obj.cmx \
     ../stdlib/lexing.cmx arith_syntax.cmx
 arith_syntax.cmj :
 arith_syntax.cmx :
+array_subtle_test.cmj : mt.cmi ../runtime/js.cmj ../stdlib/array.cmi
+array_subtle_test.cmx : mt.cmx ../runtime/js.cmx ../stdlib/array.cmx
 array_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi array_test.cmi
 array_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
@@ -884,6 +886,8 @@ arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj
 arith_syntax.cmo :
 arith_syntax.cmj :
+array_subtle_test.cmo : mt.cmi ../runtime/js.cmo ../stdlib/array.cmi
+array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 array_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi array_test.cmi
 array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
