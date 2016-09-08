@@ -22,19 +22,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type 'a t
-type key = string
-
-external get : 'a t -> key -> 'a Js.undefined = ""
-    [@@bs.get_index]
-
-external set : 'a t -> key -> 'a -> unit = ""
-    [@@bs.set_index]  
-
-external keys : 'a t -> string array = "Object.keys"
-    [@@bs.val]
-
-external empty : unit -> 'a t = "" [@@bs.obj]
+type t
 
 
+type _ kind = 
+  | String : Js_string.t kind
+  | Number : float kind 
+  | Object : t Js_dict.t kind 
+  | Array : t array kind 
+  | Boolean : Js.boolean kind
+  | Null : Js_types.null_val kind
+
+let reify_type (type a) (x : 'a) : (a kind * a ) = 
+  if Js.typeof x = "string" then 
+    (Obj.magic String, Obj.magic x) else
+  if Js.typeof x = "number" then 
+    (Obj.magic Number, Obj.magic x ) else 
+  if Js.typeof x = "boolean" then (* which one is faster, save [Js.typeof] or not *)
+    (Obj.magic Boolean, Obj.magic x) else
+  if (Obj.magic x) == Js.null then  (* providing a universal function *)
+    (Obj.magic Null, Obj.magic x) else 
+  if Js.to_bool @@ Js_array.isArray x  then 
+    (Obj.magic Array, Obj.magic x ) 
+  else 
+    (Obj.magic Object, Obj.magic x )
+
+let test (type a) (x : 'a) (v : a kind) : bool =
+  match v with
+  | Number -> Js.typeof x = "number"
+  | Boolean 
+    -> 
+     Js.typeof x = "boolean" 
+  | String -> Js.typeof x = "string"
+  | Null -> (Obj.magic x) == Js.null 
+  | Array -> Js.to_bool (Js_array.isArray x )
+  | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js.to_bool (Js_array.isArray x ))
+
+
+external parse : string -> t = "JSON.parse" [@@bs.val]
+(* TODO: more docs when parse error happens or stringify non-stringfy value *)

@@ -46,7 +46,9 @@ external everyi : ('a -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.
 external some : ('a  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this]
 external somei : ('a  -> int -> Js.boolean [@bs]) -> Js.boolean = "some" [@@bs.send.pipe: 'a t as 'this]
 
-external forEach : ('a -> 'int -> unit [@bs]) -> unit  = "" [@@bs.send.pipe: 'a t as 'this]
+
+external forEach : ('a -> unit [@bs]) -> unit  = "" [@@bs.send.pipe: 'a t as 'this]
+external forEachi : ('a -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send.pipe: 'a t as 'this]
 
 external map : ('a  ->  'b [@bs]) -> 'b t  = "" [@@bs.send.pipe: 'a t as 'this]
 external mapi : ('a -> int ->  'b [@bs]) -> 'b t = "map" [@@bs.send.pipe: 'a t as 'this]
@@ -58,3 +60,4 @@ external filteri : ('a -> int  -> Js.boolean[@bs]) -> 'this = "filter" [@@bs.sen
 external reducei : ('a -> 'a -> int -> 'a [@bs]) ->  'a -> 'a = "reduce" [@@bs.send.pipe: 'a t as 'this]
 external reduce :  ('a -> 'a  -> 'a [@bs]) ->  'a -> 'a = "reduce" [@@bs.send.pipe: 'a t as 'this]
 
+external isArray : 'a -> Js.boolean = "Array.isArray" [@@bs.val]

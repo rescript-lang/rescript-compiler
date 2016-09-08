@@ -363,6 +363,8 @@ js_date_test.cmj : mt.cmi js_date.cmj
 js_date_test.cmx : mt.cmx js_date.cmx
 js_dyn.cmj : ../stdlib/array.cmi js_dyn.cmi
 js_dyn.cmx : ../stdlib/array.cmx js_dyn.cmi
+js_json_test.cmj : ../runtime/js.cmj
+js_json_test.cmx : ../runtime/js.cmx
 js_obj_test.cmj : mt.cmi
 js_obj_test.cmx : mt.cmx
 js_val.cmj :
@@ -1173,6 +1175,8 @@ js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
 js_dyn.cmo : ../stdlib/array.cmi js_dyn.cmi
 js_dyn.cmj : ../stdlib/array.cmj js_dyn.cmi
+js_json_test.cmo : ../runtime/js.cmo
+js_json_test.cmj : ../runtime/js.cmj
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
 js_val.cmo :

@@ -65,7 +65,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	watch_test bs_node_string_buffer_test \
 	bs_ignore_test bs_ignore_effect \
 	ppx_this_obj_field single_module_alias \
-	CCSexpM CCSexpM_test CCSexp
+	CCSexpM CCSexpM_test CCSexp js_json_test
 
 
 
