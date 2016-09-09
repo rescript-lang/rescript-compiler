@@ -43,14 +43,11 @@ release:snapshot
 # Carefully check the stored data if it is platform independent
 
 ./bin/bspack: ./bin/bspack.mli ./bin/bspack.ml 
-	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
+	$(NATIVE) -w -a -I bin  unix.cmxa  $^ -o $@
 
 ./bin/bsppx: ./bin/bs_ppx.mli ./bin/bs_ppx.ml 
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin -I +compiler-libs ocamlcommon.cmxa   $^ -o $@
 
-## order matters
-_build/bspack: _build/ext/ext.cmxa _build/common/common.cmxa  _build/depends/depends.cmxa  _build/bspack_main.cmx
-	$(NATIVE) -I +compiler-libs ocamlcommon.cmxa unix.cmxa $^ -o $@
 
 snapshot: ./bin/bspack snapshotcmj
 	$(MAKE) snapshotml
@@ -64,12 +61,13 @@ snapshotcmj:
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
 
 # git diff bin/bspack.ml
+# bootbspack requires ../ocaml has parser, lexer processed by ocamlyacc and ocamllex
 bootbspack: ./bin/bspack
 	@echo "Bootstrap bspack"
-	./bin/bspack -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
-	$(NATIVE) -w -40 -I +compiler-libs  unix.cmxa ocamlcommon.cmxa -I bin bin/bspack.mli bin/bspack.ml -o bin/bspack
+	./bin/bspack -bs-log-mllib bin/bspack.mllib -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	$(NATIVE) -w -40  unix.cmxa  -I bin bin/bspack.mli bin/bspack.ml -o bin/bspack
 	@echo "Using the bootstrapped bspack to genreate new bspack.ml: `date`"
-	./bin/bspack -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	./bin/bspack -bs-log-mllib bin/bspack.mllib -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack"
 	@echo "Rebuilding bspack"
 	make -B ./bin/bspack

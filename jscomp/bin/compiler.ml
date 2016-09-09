@@ -9250,6 +9250,8 @@ val load_file : string -> string
 
 val rev_lines_of_file : string -> string list
 
+val write_file : string -> string -> unit
+
 end = struct
 #1 "ext_io.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9294,6 +9296,11 @@ let rev_lines_of_file file =
       | line -> loop (line :: acc)
       | exception End_of_file -> close_in chan ; acc in
     loop []
+  end
+
+let write_file f content = 
+  Ext_pervasives.finally (open_out f) close_out begin fun oc ->   
+    output_string oc content
   end
 
 end

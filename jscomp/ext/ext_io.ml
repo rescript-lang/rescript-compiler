@@ -41,3 +41,8 @@ let rev_lines_of_file file =
       | exception End_of_file -> close_in chan ; acc in
     loop []
   end
+
+let write_file f content = 
+  Ext_pervasives.finally (open_out f) close_out begin fun oc ->   
+    output_string oc content
+  end
