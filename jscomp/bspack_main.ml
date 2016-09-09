@@ -141,16 +141,12 @@ let decorate_module_only out_chan base ml_name ml_content =
   output_string out_chan ml_content;
   output_string out_chan "\nend\n"
 
+(** recursive module is not good for performance, here module type only 
+    has to be pure types otherwise it would not compile any way
+*)
 let decorate_interface_only out_chan  base  mli_name mli_content =
-  let base = String.capitalize base in
-  output_string out_chan "module type \n";
-  output_string out_chan base ;
-  output_string out_chan "\n= sig\n";
-
-  emit out_chan mli_name;
-  output_string out_chan mli_content;
-
-  output_string out_chan "\nend\n"
+  output_string out_chan "(** Interface as module  *)\n";
+  decorate_module_only out_chan base mli_name mli_content
 
 (** set mllib *)
 let mllib = ref None
@@ -214,10 +210,19 @@ let () =
                local_time.tm_hour local_time.tm_min)) in
      let close_out_chan out_chan = 
        (if  out_chan != stdout then close_out out_chan) in
-     match !main_file, (mllib, command_files) with
-     | Some _, ((None, _ :: _) | (Some _ , _) )
-       -> failwith "-bs-main conflicts with other flags"
-     | Some main_file , (None, [])
+     let files =
+       (match mllib with
+        | Some s
+          -> read_lines (Sys.getcwd ()) s
+        | None -> []) @ command_files in
+
+     match !main_file, files with
+     | Some _, _ :: _
+       -> 
+       Ext_pervasives.failwithf ~loc:__LOC__ 
+         "-bs-main conflicts with other flags (%s)"
+         (String.concat ", " files)
+     | Some main_file ,  []
        ->
        let ast_table, tasks =
          Ast_extract.collect_from_main ~extra_dirs:!includes
@@ -237,11 +242,6 @@ let () =
            -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
        close_out_chan out_chan
      | None, _ -> 
-       let files =
-         (match mllib with
-          | Some s
-            -> read_lines (Sys.getcwd ()) s
-          | None -> []) @ command_files in
        let ast_table =
          Ast_extract.collect_ast_map
            Format.err_formatter files
