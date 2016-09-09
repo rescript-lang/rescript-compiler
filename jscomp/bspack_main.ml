@@ -141,16 +141,12 @@ let decorate_module_only out_chan base ml_name ml_content =
   output_string out_chan ml_content;
   output_string out_chan "\nend\n"
 
+(** recursive module is not good for performance, here module type only 
+    has to be pure types otherwise it would not compile any way
+*)
 let decorate_interface_only out_chan  base  mli_name mli_content =
-  let base = String.capitalize base in
-  output_string out_chan "module type \n";
-  output_string out_chan base ;
-  output_string out_chan "\n= sig\n";
-
-  emit out_chan mli_name;
-  output_string out_chan mli_content;
-
-  output_string out_chan "\nend\n"
+  output_string out_chan "(** Interface as module  *)\n";
+  decorate_module_only out_chan base mli_name mli_content
 
 (** set mllib *)
 let mllib = ref None
@@ -165,7 +161,15 @@ let set_output file = output_file := Some file
 let header_option = ref false
 (** set bs-main*)
 let main_file = ref None
-let set_main_file file = main_file := Some file
+
+let set_main_file file = 
+  if Sys.file_exists file then 
+    main_file := Some file
+  else raise (Arg.Bad ("file " ^ file ^ " don't exist"))
+
+let mllib_file = ref None
+let set_mllib_file file =     
+  mllib_file := Some file 
 
 let includes = ref []
 let add_include dir = includes := dir :: !includes 
@@ -174,6 +178,8 @@ let specs : (string * Arg.spec * string) list =
   [
     "-bs-mllib", (Arg.String set_string),
     " Files collected from mllib";
+    "-bs-log-mllib", (Arg.String set_mllib_file),
+    " Log files into mllib(only effective under -bs-main mode)";
     "-o", (Arg.String set_output),
     " Set output file (default to stdout)" ;
     "-with-header", (Arg.Set header_option),
@@ -210,10 +216,19 @@ let () =
                local_time.tm_hour local_time.tm_min)) in
      let close_out_chan out_chan = 
        (if  out_chan != stdout then close_out out_chan) in
-     match !main_file, (mllib, command_files) with
-     | Some _, ((None, _ :: _) | (Some _ , _) )
-       -> failwith "-bs-main conflicts with other flags"
-     | Some main_file , (None, [])
+     let files =
+       (match mllib with
+        | Some s
+          -> read_lines (Sys.getcwd ()) s
+        | None -> []) @ command_files in
+
+     match !main_file, files with
+     | Some _, _ :: _
+       -> 
+       Ext_pervasives.failwithf ~loc:__LOC__ 
+         "-bs-main conflicts with other flags (%s)"
+         (String.concat ", " files)
+     | Some main_file ,  []
        ->
        let ast_table, tasks =
          Ast_extract.collect_from_main ~extra_dirs:!includes
@@ -225,19 +240,35 @@ let () =
            main_file
        in 
        let out_chan = Lazy.force out_chan in
+       let collect_modules  = !mllib_file <> None in
+       let collection_modules = Queue.create () in
        emit_header out_chan ;
        Ast_extract.handle_queue Format.err_formatter tasks ast_table
-         (fun base ml_name (lazy(_, ml_content)) -> decorate_module_only  out_chan base ml_name ml_content)
-         (fun base mli_name (lazy (_, mli_content))  -> decorate_interface_only out_chan base mli_name mli_content )
+         (fun base ml_name (lazy(_, ml_content)) -> 
+            if collect_modules then 
+              Queue.add (Filename.chop_extension ml_name ) collection_modules; 
+            decorate_module_only  out_chan base ml_name ml_content
+         )
+         (fun base mli_name (lazy (_, mli_content))  -> 
+            if collect_modules then 
+              Queue.add (Filename.chop_extension mli_name ) collection_modules; 
+            decorate_interface_only out_chan base mli_name mli_content )
          (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
-           -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
-       close_out_chan out_chan
+           -> 
+             (*TODO: assume mli_name, ml_name are in the same dir,
+               Needs to be addressed 
+             *)
+            if collect_modules then 
+              Queue.add (Filename.chop_extension ml_name ) collection_modules; 
+             decorate_module out_chan base mli_name ml_name mli_content ml_content
+         );
+       close_out_chan out_chan;
+       begin match !mllib_file with 
+       | None -> ()
+       | Some file -> 
+         Ext_io.write_file file (Queue.fold (fun acc a -> acc ^ a ^ "\n") "" collection_modules)
+       end
      | None, _ -> 
-       let files =
-         (match mllib with
-          | Some s
-            -> read_lines (Sys.getcwd ()) s
-          | None -> []) @ command_files in
        let ast_table =
          Ast_extract.collect_ast_map
            Format.err_formatter files
