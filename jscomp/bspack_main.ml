@@ -165,7 +165,11 @@ let set_output file = output_file := Some file
 let header_option = ref false
 (** set bs-main*)
 let main_file = ref None
-let set_main_file file = main_file := Some file
+
+let set_main_file file = 
+  if Sys.file_exists file then 
+    main_file := Some file
+  else raise (Arg.Bad ("file " ^ file ^ " don't exist"))
 
 let includes = ref []
 let add_include dir = includes := dir :: !includes 
