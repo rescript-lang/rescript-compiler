@@ -1,7 +1,7 @@
 'use strict';
 
+var Bs_dyn = require("../../lib/js/bs_dyn");
 var Block  = require("../../lib/js/block");
-var Js_dyn = require("./js_dyn");
 
 var all_branches_of_t_000 = /* constructors : array */[
   "Monday",
@@ -45,22 +45,22 @@ function _t_to_value(value) {
           return /* Variant */Block.__(13, [
                     all_branches_of_t,
                     2,
-                    /* array */[Js_dyn.int_to_value(value[0])]
+                    /* array */[Bs_dyn.int_to_value(value[0])]
                   ]);
       case 1 : 
           return /* Variant */Block.__(13, [
                     all_branches_of_t,
                     3,
                     /* array */[
-                      Js_dyn.int_to_value(value[0]),
-                      Js_dyn.int_to_value(value[1])
+                      Bs_dyn.int_to_value(value[0]),
+                      Bs_dyn.int_to_value(value[1])
                     ]
                   ]);
       case 2 : 
           return /* Variant */Block.__(13, [
                     all_branches_of_t,
                     4,
-                    /* array */[Js_dyn.tuple_2_to_value(Js_dyn.int_to_value, Js_dyn.int_to_value)(value[0])]
+                    /* array */[Bs_dyn.tuple_2_to_value(Bs_dyn.int_to_value, Bs_dyn.int_to_value)(value[0])]
                   ]);
       case 3 : 
           return /* Variant */Block.__(13, [
@@ -85,9 +85,9 @@ function u_to_value(value) {
   return /* Record */Block.__(12, [
             shape,
             /* array */[
-              Js_dyn.int_to_value(value[/* x */0]),
+              Bs_dyn.int_to_value(value[/* x */0]),
               t_to_value(value[/* y */1]),
-              Js_dyn.string_to_value(value[/* z */2])
+              Bs_dyn.string_to_value(value[/* z */2])
             ]
           ]);
 }

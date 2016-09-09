@@ -22,9 +22,9 @@ type nonrec uu =
 
 type t = int [@@bs.deriving{dynval}]
 
-val u : Js_dyn.value
-val h : Js_dyn.value
-val hh : Js_dyn.value 
+val u : Bs_dyn.value
+val h : Bs_dyn.value
+val hh : Bs_dyn.value 
 
 (**
 {[ 

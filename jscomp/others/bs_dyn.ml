@@ -141,3 +141,12 @@ let shape_of_record labels : record_shape =
   labels
 let shape_of_variant constructors arities : variant_shape = 
   {constructors ; arities}
+
+
+(*
+type kind =
+  | Record  
+  | Variant
+  | Tuple
+  | Alias
+*)

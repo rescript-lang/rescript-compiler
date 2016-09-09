@@ -13,17 +13,17 @@ type h =
     [@@bs.deriving {dynval}]
 
 (*
-let all_fields_of_h : Js_dyn.record_shape = 
+let all_fields_of_h : Bs_dyn.record_shape = 
   { labels = [| "x" ; "y"; "z"|]}
 
-let value_of_h : h Js_dyn.to_value = 
+let value_of_h : h Bs_dyn.to_value = 
   fun [@bs] (value : h)
     -> match value with 
     | {x ; y ; z} -> 
-        Js_dyn.value_of_record all_fields_of_h
-          [| Js_dyn.value_of_int x [@bs]; 
-             Js_dyn.value_of_float y [@bs];
-             Js_dyn.value_of_string z [@bs]
+        Bs_dyn.value_of_record all_fields_of_h
+          [| Bs_dyn.value_of_int x [@bs]; 
+             Bs_dyn.value_of_float y [@bs];
+             Bs_dyn.value_of_string z [@bs]
           |]
 *)
 

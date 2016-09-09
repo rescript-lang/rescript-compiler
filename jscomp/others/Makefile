@@ -2,9 +2,9 @@ include ../Makefile.shared
 
 COMPILER=../bin/bsc
 
-MAP_FILES= node 
+MAP_FILES= node bs
 
-SOURCE_LIST=  node_path node_fs node_process dict node_module js_array js_string js_re node_buffer js_types js_json
+SOURCE_LIST=  node_path node_fs node_process dict node_module js_array js_string js_re node_buffer js_types js_json bs_dyn
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 

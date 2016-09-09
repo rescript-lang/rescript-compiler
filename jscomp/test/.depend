@@ -16,7 +16,6 @@ gpr_405_test.cmi :
 infer_type_test.cmi : ../runtime/js.cmj
 inline_edge_cases.cmi :
 inline_map_test.cmi :
-js_dyn.cmi :
 literals.cmi :
 map_test.cmi :
 mt.cmi :
@@ -25,7 +24,7 @@ ocaml_proto_test.cmi :
 poly_variant_test.cmi :
 polymorphism_test.cmi :
 scanf_reference_error_regression_test.cmi :
-simple_derive_test.cmi : js_dyn.cmi
+simple_derive_test.cmi : ../others/bs_dyn.cmi
 simple_derive_use.cmi :
 test_for_map2.cmi :
 test_http_server.cmi :
@@ -75,6 +74,8 @@ arith_parser.cmx : ../stdlib/parsing.cmx ../stdlib/obj.cmx \
     ../stdlib/lexing.cmx arith_syntax.cmx
 arith_syntax.cmj :
 arith_syntax.cmx :
+array_subtle_test.cmj : mt.cmi ../runtime/js.cmj ../stdlib/array.cmi
+array_subtle_test.cmx : mt.cmx ../runtime/js.cmx ../stdlib/array.cmx
 array_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi array_test.cmi
 array_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
@@ -181,8 +182,8 @@ demo_page.cmj :
 demo_page.cmx :
 demo_pipe.cmj : ../runtime/js.cmj
 demo_pipe.cmx : ../runtime/js.cmx
-derive_dyntype.cmj : js_dyn.cmi
-derive_dyntype.cmx : js_dyn.cmx
+derive_dyntype.cmj : ../others/bs_dyn.cmi
+derive_dyntype.cmx : ../others/bs_dyn.cmx
 derive_type_test.cmj :
 derive_type_test.cmx :
 digest_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
@@ -361,8 +362,6 @@ js_date.cmj : ../runtime/js.cmj
 js_date.cmx : ../runtime/js.cmx
 js_date_test.cmj : mt.cmi js_date.cmj
 js_date_test.cmx : mt.cmx js_date.cmx
-js_dyn.cmj : ../stdlib/array.cmi js_dyn.cmi
-js_dyn.cmx : ../stdlib/array.cmx js_dyn.cmi
 js_json_test.cmj : ../runtime/js.cmj
 js_json_test.cmx : ../runtime/js.cmx
 js_obj_test.cmj : mt.cmi
@@ -887,6 +886,8 @@ arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj
 arith_syntax.cmo :
 arith_syntax.cmj :
+array_subtle_test.cmo : mt.cmi ../runtime/js.cmo ../stdlib/array.cmi
+array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 array_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi array_test.cmi
 array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
@@ -993,8 +994,8 @@ demo_page.cmo :
 demo_page.cmj :
 demo_pipe.cmo : ../runtime/js.cmo
 demo_pipe.cmj : ../runtime/js.cmj
-derive_dyntype.cmo : js_dyn.cmi
-derive_dyntype.cmj : js_dyn.cmj
+derive_dyntype.cmo : ../others/bs_dyn.cmi
+derive_dyntype.cmj : ../others/bs_dyn.cmj
 derive_type_test.cmo :
 derive_type_test.cmj :
 digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
@@ -1173,8 +1174,6 @@ js_date.cmo : ../runtime/js.cmo
 js_date.cmj : ../runtime/js.cmj
 js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
-js_dyn.cmo : ../stdlib/array.cmi js_dyn.cmi
-js_dyn.cmj : ../stdlib/array.cmj js_dyn.cmi
 js_json_test.cmo : ../runtime/js.cmo
 js_json_test.cmj : ../runtime/js.cmj
 js_obj_test.cmo : mt.cmi

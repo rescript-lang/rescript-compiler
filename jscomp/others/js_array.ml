@@ -61,3 +61,14 @@ external reducei : ('a -> 'a -> int -> 'a [@bs]) ->  'a -> 'a = "reduce" [@@bs.s
 external reduce :  ('a -> 'a  -> 'a [@bs]) ->  'a -> 'a = "reduce" [@@bs.send.pipe: 'a t as 'this]
 
 external isArray : 'a -> Js.boolean = "Array.isArray" [@@bs.val]
+
+(** https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push *)    
+external push : 'a array  -> 'a -> int = ""
+[@@bs.send]
+
+external pop : 'a array -> 'a Js.undefined = ""
+[@@bs.send]
+   
+external length : 'a array -> int = ""
+[@@bs.get]
+   
