@@ -3,6 +3,11 @@
 ## CHANGES
 :issues: https://github.com/bloomberg/bucklescript/issues
 
+== 1.02 (dev)
+
+* Bug fixes and enhancement
+
+- Fix Bytes.blit when src==dst {issues}743[#743]
 
 == 1.01
 
@@ -12,7 +17,7 @@
 - Introduce phantom arguments (`bs.ignore`) for ad-hoc
 	polymorphism {issues}/686[#686]
 
-* Bug fixes and enhancment
+* Bug fixes and enhancement
 
 - Enforce `#=` always return unit {issues}718[#718] for better error messages
 

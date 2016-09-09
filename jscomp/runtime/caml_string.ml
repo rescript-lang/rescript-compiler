@@ -87,25 +87,45 @@ let caml_blit_string s1 i1 s2 i2 (len : int ) =
         done
       end
 
+(** Same as {!Array.prototype.copyWithin} *)
+let copyWithin s1 i1 i2 len = 
+  if i1 < i2  then (* nop for i1 = i2 *)
+    let range_a =  length s1 - i2 - 1 in
+    let range_b = len - 1 in         
+    let range = if range_a > range_b then range_b else range_a in
+    for j = range downto 0 do
+      unsafe_set s1 (i2 + j) (unsafe_get s1 (i1 + j))
+    done
+  else if i1 > i2 then
+    let range_a = length s1 - i1 - 1 in 
+    let range_b = len - 1 in 
+    let range = if range_a > range_b then range_b else range_a in 
+    for k = 0 to range  do 
+      unsafe_set s1 (i2 + k) (unsafe_get s1 (i1 + k))
+    done
+
 (* TODO: when the compiler could optimize small function calls, 
    use high order functions instead
  *)
 let caml_blit_bytes s1 i1 s2 i2 len = 
   if len > 0 then
-    let off1 = length s1 - i1 in
-    if len <= off1 then 
-      for i = 0 to len - 1 do 
-        unsafe_set s2 (i2 + i) (unsafe_get s1 (i1 + i))
-      done
-    else 
-      begin
-        for i = 0 to off1 - 1 do 
+    if s1 == s2 then
+      copyWithin s1 i1 i2 len 
+    else
+      let off1 = length s1 - i1 in
+      if len <= off1 then 
+        for i = 0 to len - 1 do 
           unsafe_set s2 (i2 + i) (unsafe_get s1 (i1 + i))
-        done;
-        for i = off1 to len - 1 do 
-          unsafe_set s2 (i2 + i) '\000'
         done
-      end
+      else 
+        begin
+          for i = 0 to off1 - 1 do 
+            unsafe_set s2 (i2 + i) (unsafe_get s1 (i1 + i))
+          done;
+          for i = off1 to len - 1 do 
+            unsafe_set s2 (i2 + i) '\000'
+          done
+        end
 
 (** checkout [Bytes.empty] -- to be inlined? *)
 let bytes_of_string  s = 
