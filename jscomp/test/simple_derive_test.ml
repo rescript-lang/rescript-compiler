@@ -30,3 +30,25 @@ let u = [%bs.deriving.dynval: t] 3 [@bs]
 let h = [%bs.deriving.dynval: t list list array] [|[[3]]|] [@bs]
 
 let hh = [%bs.deriving.dynval: tt list list array] [|[[[3,"3"]]]|] [@bs]
+
+let () = Js.log (Bs.Dyn_lib.to_string hh)
+
+type nonrec enum = 
+  | A 
+  | B 
+  | C of t 
+[@@bs.deriving{dynval}]
+
+let () = Js.log (Bs.Dyn_lib.to_string ([%bs.deriving.dynval: enum] (C 3 )  [@bs]))
+
+(**
+imagine:
+{i| ghsogh oghsogh ${ghsogh} gshoghoho ghso ${ghsogh : int}|i}
+==> 
+" ghsogh oghsogh" ^ ghsogh ^ " gshoghoho ghso " ^ ([%bs.deriving.string:int array] ghsogh) 
+
+or 
+[%bs.log{| ghsogh oghsogh ${ghsogh} gshoghoho ghso ${ghsogh : int}|}]
+
+in production mode, we remove `bs.log` and it will remove unused code automatically
+*)

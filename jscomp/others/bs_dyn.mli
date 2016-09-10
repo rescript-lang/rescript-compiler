@@ -34,7 +34,7 @@ type variant_shape = private
     arities : int im_array
   }
 
-type record_shape =  private string im_array
+type record_shape =   string im_array
 
 
 type value = private
