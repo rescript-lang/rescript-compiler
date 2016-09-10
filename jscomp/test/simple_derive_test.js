@@ -1,7 +1,8 @@
 'use strict';
 
-var Bs_dyn = require("../../lib/js/bs_dyn");
-var Block  = require("../../lib/js/block");
+var Bs_dyn     = require("../../lib/js/bs_dyn");
+var Block      = require("../../lib/js/block");
+var Bs_dyn_lib = require("../../lib/js/bs_dyn_lib");
 
 var shape = /* array */[
   "x",
@@ -116,6 +117,54 @@ var hh = Bs_dyn.array_to_value(Bs_dyn.list_to_value(Bs_dyn.list_to_value(tt_to_v
         ],
         /* [] */0
       ]]);
+
+console.log(Bs_dyn_lib.to_string(hh));
+
+var shape_000$1 = /* constructors : array */[
+  "A",
+  "B",
+  "C"
+];
+
+var shape_001$1 = /* arities : int array */[
+  0,
+  0,
+  1
+];
+
+var shape$2 = /* record */[
+  shape_000$1,
+  shape_001$1
+];
+
+function enum_to_value(x) {
+  var param = x;
+  if (typeof param === "number") {
+    if (param !== 0) {
+      return /* Variant */Block.__(13, [
+                shape$2,
+                1,
+                /* array */[]
+              ]);
+    }
+    else {
+      return /* Variant */Block.__(13, [
+                shape$2,
+                0,
+                /* array */[]
+              ]);
+    }
+  }
+  else {
+    return /* Variant */Block.__(13, [
+              shape$2,
+              2,
+              /* array */[Bs_dyn.int_to_value(param[0])]
+            ]);
+  }
+}
+
+console.log(Bs_dyn_lib.to_string(enum_to_value(/* C */[3])));
 
 var t_to_value = Bs_dyn.int_to_value;
 
