@@ -51,6 +51,10 @@
       "file" : "js_object.ml",
       "eval" : true
     },
+    "GADT" : {
+      "file" : "gadt.ml",
+      "eval" : true
+    },
     "Left_Pad" : {
       "file" : "left_pad.ml",
       "eval" : true
