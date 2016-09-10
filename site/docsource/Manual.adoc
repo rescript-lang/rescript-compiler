@@ -14,6 +14,7 @@ Hongbo Zhang
 :transpile-list: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
 :name-mangling: https://en.wikipedia.org/wiki/Name_mangling
 :npm: https://www.npmjs.com
+:issues: https://github.com/bloomberg/bucklescript/issues
 :sectanchors:
 :sectlinks:
 
@@ -50,15 +51,15 @@ include::./js-lib.adoc[]
 
 include::./Compiler-options.adoc[]
 
-include::./How-to-adapt-your-build-system.adoc[]
-
 include::./Semantic-differences-from-other-backends.adoc[]
+
+include::./FAQ.adoc[]
 
 include::./Compiler-overview.adoc[]
 
 include::./Runtime-representation.adoc[]
 
-include::./FAQ.adoc[]
+
 
 include::./Integration_with_reason.adoc[]
 

@@ -596,7 +596,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli">-bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli</a></li>
 </ul>
 </li>
-<li><a href="#_how_to_adapt_your_build_system">How to adapt your build system</a></li>
 <li><a href="#_semantics_difference_from_other_backends">Semantics difference from other backends</a>
 <ul class="sectlevel2">
 <li><a href="#_custom_data_type">Custom data type</a></li>
@@ -611,6 +610,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_unsupported_io_primitives">Unsupported IO primitives</a></li>
 </ul>
 </li>
+<li><a href="#_faq">FAQ</a></li>
 <li><a href="#_high_level_compiler_workflow">High Level compiler workflow</a>
 <ul class="sectlevel2">
 <li><a href="#_design_principles">Design Principles</a></li>
@@ -623,7 +623,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_simple_ocaml_type">Simple OCaml type</a></li>
 </ul>
 </li>
-<li><a href="#_frequently_asked_questions">Frequently Asked Questions</a></li>
 <li><a href="#_integration_with_reason">Integration with Reason</a></li>
 <li><a href="#_how_to_contribute">How to contribute</a>
 <ul class="sectlevel2">
@@ -3207,77 +3206,6 @@ Another use case is that users can use <code>-ppx</code> explicitly as below:</p
 </div>
 </div>
 <div class="sect1">
-<h2 id="_how_to_adapt_your_build_system"><a class="anchor" href="#_how_to_adapt_your_build_system"></a>How to adapt your build system</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The BuckleScript compilation model is the same as the OCaml compiler.</p>
-</div>
-<div class="paragraph">
-<p>If <code>b.ml</code> depends on <code>a.ml</code>, you have to compile <code>a.ml</code> <strong>and</strong> <code>a.mli</code>
-first.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>The technical reason is that BuckleScript will generate intermediate
-files with the extension <code>.cmj</code> which are later used for cross module
-inlining, arity inference and other information.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Here is a simple Makefile to get started:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="make"><span class="tok-nv">OCAMLC</span><span class="tok-o">=</span>bsc <b class="conum">(1)</b>
-
-<span class="tok-nv">OCAMLDEP</span><span class="tok-o">=</span>ocamldep <b class="conum">(2)</b>
-
-<span class="tok-nv">SOURCE_LIST</span> <span class="tok-o">:=</span> src_a src_b
-
-<span class="tok-nv">SOURCE_MLI</span>  <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .mli, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
-
-<span class="tok-nv">SOURCE_ML</span>   <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .ml, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
-
-<span class="tok-nv">TARGETS</span> <span class="tok-o">:=</span> <span class="tok-k">$(</span>addsuffix .cmj, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
-
-<span class="tok-nv">INCLUDES</span><span class="tok-o">=</span>
-
-<span class="tok-nf">all</span><span class="tok-o">:</span> <span class="tok-k">$(</span><span class="tok-nv">TARGETS</span><span class="tok-k">)</span>
-
-<span class="tok-nf">%.cmi</span><span class="tok-o">:</span> %.<span class="tok-n">mli</span>
-        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
-
-<span class="tok-nf">%.ml</span><span class="tok-o">:</span> %.<span class="tok-n">cmj</span>:
-        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
-
-<span class="tok-cp">-include .depend</span>
-
-<span class="tok-nf">depend</span><span class="tok-o">:</span>
-        <span class="tok-k">$(</span>OCAMLDEP<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_ML<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_MLI<span class="tok-k">)</span> <span class="tok-p">|</span> sed -e <span class="tok-s1">&#39;s/\.cmx/.cmj/g&#39;</span> &gt; .depend</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<ol>
-<li>
-<p>bsc is the BuckleScript compiler</p>
-</li>
-<li>
-<p>ocamldep executable is part of the OCaml compiler installation</p>
-</li>
-</ol>
-</div>
-</div>
-</div>
-<div class="sect1">
 <h2 id="_semantics_difference_from_other_backends"><a class="anchor" href="#_semantics_difference_from_other_backends"></a>Semantics difference from other backends</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -3383,6 +3311,143 @@ will be fixed in the near future.</p>
 <p>Because of the JavaScript environment limitation, <code>Pervasives.stdin</code> is
 not supported but both <code>Pervasives.stdout</code> and <code>Pervasives.stderr</code> are.</p>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_faq"><a class="anchor" href="#_faq"></a>FAQ</h2>
+<div class="sectionbody">
+<div class="qlist qanda">
+<ol>
+<li>
+<p><em>How to adapt your build system?</em></p>
+<p>The BuckleScript compilation model is the same as the OCaml compiler.
+If <code>b.ml</code> depends on <code>a.ml</code>, you have to compile <code>a.ml</code> <strong>and</strong> <code>a.mli</code>
+first.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The technical reason is that BuckleScript will generate intermediate
+files with the extension <code>.cmj</code> which are later used for cross module
+inlining, arity inference and other information.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here is a simple Makefile to get started:</p>
+</div>
+<div class="listingblock">
+<div class="title">Makefile</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="make"><span class="tok-nv">OCAMLC</span><span class="tok-o">=</span>bsc <b class="conum">(1)</b>
+<span class="tok-nv">OCAMLDEP</span><span class="tok-o">=</span>ocamldep <b class="conum">(2)</b>
+<span class="tok-nv">SOURCE_LIST</span> <span class="tok-o">:=</span> src_a src_b
+<span class="tok-nv">SOURCE_MLI</span>  <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .mli, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
+<span class="tok-nv">SOURCE_ML</span>   <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .ml, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
+<span class="tok-nv">TARGETS</span> <span class="tok-o">:=</span> <span class="tok-k">$(</span>addsuffix .cmj, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
+<span class="tok-nv">INCLUDES</span><span class="tok-o">=</span>
+<span class="tok-nf">all</span><span class="tok-o">:</span> <span class="tok-k">$(</span><span class="tok-nv">TARGETS</span><span class="tok-k">)</span>
+<span class="tok-nf">%.cmi</span><span class="tok-o">:</span> %.<span class="tok-n">mli</span>
+        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
+<span class="tok-nf">%.ml</span><span class="tok-o">:</span> %.<span class="tok-n">cmj</span>:
+        <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
+<span class="tok-cp">-include .depend</span>
+<span class="tok-nf">depend</span><span class="tok-o">:</span>
+        <span class="tok-k">$(</span>OCAMLDEP<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_ML<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_MLI<span class="tok-k">)</span> <span class="tok-p">|</span> sed -e <span class="tok-s1">&#39;s/\.cmx/.cmj/g&#39;</span> &gt; .depend</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>bsc is the BuckleScript compiler</p>
+</li>
+<li>
+<p>ocamldep executable is part of the OCaml compiler installation</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p><em>How does IO work in browser?</em></p>
+<p>In general, it is very hard to simulate IO in browser, we recommend users to write bindings to NodeJS directly for server side, or use <code>Js.log</code> in client side, see disucssions in <a href="https://github.com/bloomberg/bucklescript/issues/748">#748</a></p>
+</li>
+<li>
+<p><em>The compiler does not build?</em></p>
+<p>  In production mode, the compiler is a single file in
+<code>jscomp/bin/compiler.ml</code>. If it is not compiling, make sure you have the
+right OCaml compiler version. Currently the OCaml compiler is a
+submodule of BuckleScript. Make sure the exact commit hash matches (we
+only update the compiler occasionally).</p>
+</li>
+<li>
+<p><em>Which version of JavaScript syntax does BuckleScript target?</em></p>
+<p>BuckleScript targets <strong>ES5</strong>.</p>
+</li>
+<li>
+<p><em>What polyfills does BuckleScript need?</em></p>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Math.imul</em>:
+This polyfill is needed for <code>int32</code> multiplication.
+BuckleScript provides this by default(when feature detection returns false), no action is
+required from the user.</p>
+</li>
+<li>
+<p><em>TypedArray</em>:
+The TypedArray polyfill is not provided by BuckleScript and it&#8217;s the
+responsibility of the user to bundle the desired polyfill implementation
+with the BuckleScript generated code.</p>
+<div class="literalblock">
+<div class="content">
+<pre>The following functions from OCaml stdlib
+require the TypedArray polyfill:</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Int64.float_of_bits</p>
+</li>
+<li>
+<p>Int64.bits_of_float</p>
+</li>
+<li>
+<p>Int32.float_of_bits</p>
+</li>
+<li>
+<p>Int32.bits_of_float</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>For the current BuckleScript version, if the user does not bundle the
+TypedArray polyfill, the JavaScript engine does not support it and user used
+functions mentioned above, the code will fail at runtime.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
 </div>
 </div>
 </div>
@@ -3825,84 +3890,6 @@ We are working to provide a ppx extension as below:</p>
 <span class="tok-k">val</span> <span class="tok-n">c_of_t</span> <span class="tok-o">:</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">int</span> <span class="tok-o">*</span> <span class="tok-kt">int</span> <span class="tok-o">)</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-nn">Null</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_frequently_asked_questions"><a class="anchor" href="#_frequently_asked_questions"></a>Frequently Asked Questions</h2>
-<div class="sectionbody">
-<div class="qlist qanda">
-<ol>
-<li>
-<p><em>The compiler does not build?</em></p>
-<p>  In production mode, the compiler is a single file in
-<code>jscomp/bin/compiler.ml</code>. If it is not compiling, make sure you have the
-right OCaml compiler version. Currently the OCaml compiler is a
-submodule of BuckleScript. Make sure the exact commit hash matches (we
-only update the compiler occasionally).</p>
-</li>
-<li>
-<p><em>Which version of JavaScript syntax does BuckleScript target?</em></p>
-<p>BuckleScript targets <strong>ES5</strong>.</p>
-</li>
-<li>
-<p><em>What polyfills does BuckleScript need?</em></p>
-<div class="ulist">
-<ul>
-<li>
-<p><em>Math.imul</em>:
-This polyfill is needed for <code>int32</code> multiplication.
-BuckleScript provides this by default(when feature detection returns false), no action is
-required from the user.</p>
-</li>
-<li>
-<p><em>TypedArray</em>:
-The TypedArray polyfill is not provided by BuckleScript and it&#8217;s the
-responsibility of the user to bundle the desired polyfill implementation
-with the BuckleScript generated code.</p>
-<div class="literalblock">
-<div class="content">
-<pre>The following functions from OCaml stdlib
-require the TypedArray polyfill:</pre>
-</div>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Int64.float_of_bits</p>
-</li>
-<li>
-<p>Int64.bits_of_float</p>
-</li>
-<li>
-<p>Int32.float_of_bits</p>
-</li>
-<li>
-<p>Int32.bits_of_float</p>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Warning</div>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>For the current BuckleScript version, if the user does not bundle the
-TypedArray polyfill, the JavaScript engine does not support it and user used
-functions mentioned above, the code will fail at runtime.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</li>
-</ol>
 </div>
 </div>
 </div>

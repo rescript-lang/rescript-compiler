@@ -1,7 +1,7 @@
 
 [appendix]
 ## CHANGES
-:issues: https://github.com/bloomberg/bucklescript/issues
+
 
 == 1.02 (dev)
 
