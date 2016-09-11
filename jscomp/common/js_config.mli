@@ -98,6 +98,8 @@ val set_diagnose : bool -> unit
 (** generate tds option *)
 val default_gen_tds : bool ref
 
+val gen_flow : bool ref
+
 (** options for builtion ppx *)
 val no_builtin_ppx_ml : bool ref 
 val no_builtin_ppx_mli : bool ref 

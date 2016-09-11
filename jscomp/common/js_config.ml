@@ -165,6 +165,8 @@ let get_output_dir module_system filename =
 
 let default_gen_tds = ref false
 
+let gen_flow = ref false
+
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 let no_warn_ffi_type = ref false

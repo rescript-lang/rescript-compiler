@@ -166,6 +166,10 @@ let buckle_script_flags =
    Arg.Set Js_config.default_gen_tds, 
    " set will generate `.d.ts` file for typescript (experimental)")
   :: 
+  ("-bs-gen-flow",
+   Arg.Set Js_config.gen_flow,
+   "gen .js.flow")
+  ::
   ("-bs-diagnose",
    Arg.Set Js_config.diagnose, 
    " More verbose output")

@@ -48,6 +48,7 @@ lam_group
 
 j
 js_ast_util
+flow
 
 js_arr
 js_program_loader

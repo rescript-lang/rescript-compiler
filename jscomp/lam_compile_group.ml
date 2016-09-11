@@ -456,6 +456,10 @@ let lambda_as_module
         Js_dump.dump_deps_program `NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
+        if !Js_config.gen_flow then
+          Ext_pervasives.with_file_as_chan
+            (output_filename ^ ".flow")
+            (fun chan -> output_string chan (Flow.print_signature env sigs));
         Ext_pervasives.with_file_as_chan 
           output_filename output_chan
 
