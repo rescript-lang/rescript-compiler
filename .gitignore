@@ -55,6 +55,7 @@ man/
 lib/ocaml
 bin/*
 ocaml_src
+*.exe
 
 # for npm publish
 !bin/bsc

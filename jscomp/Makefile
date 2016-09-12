@@ -45,6 +45,9 @@ release:snapshot
 ./bin/bspack: ./bin/bspack.mli ./bin/bspack.ml 
 	$(NATIVE) -w -a -I bin  unix.cmxa  $^ -o $@
 
+./bin/bsc.exe: ./bin/whole_compiler.mli ./bin/whole_compiler.ml 
+	$(NATIVE) -w -a -I bin $^ -o $@
+
 ./bin/bsppx: ./bin/bs_ppx.mli ./bin/bs_ppx.ml 
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin -I +compiler-libs ocamlcommon.cmxa   $^ -o $@
 
