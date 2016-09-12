@@ -8,15 +8,15 @@ also adds several flags:
 
 [source,sh]
 --------------------
-bsc -bs-main main.ml
+bsc.exe -bs-main main.ml
 --------------------
 
-`bsc` will build module `Main` and all its dependencies, when it
+`bsc.exe` will build module `Main` and all its dependencies, when it
 finishes, it will run `node main.js`.
 
 [source,sh]
 -----------------------
-bsc -c -bs-main main.ml
+bsc.exe -c -bs-main main.ml
 -----------------------
 
 The same as above, but will not run `node`.
@@ -27,7 +27,7 @@ So that you can do
 
 [source,sh]
 ---------------------------
-bsc -c -bs-files *.ml *.mli
+bsc.exe -c -bs-files *.ml *.mli
 ---------------------------
 
 The compiler will sort the order of input files before starting
@@ -51,7 +51,7 @@ things like this:
 
 [source,bash]
 -----------------------------------------------------------
-bsc -bs-package-name your_package -bs-package-output goog:lib/goog -c xx.ml
+bsc.exe -bs-package-name your_package -bs-package-output goog:lib/goog -c xx.ml
 -----------------------------------------------------------
 
 
@@ -61,7 +61,7 @@ For example:
 
 [source,bash]
 ------------
-bsc -bs-package-name name -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -c x.ml
+bsc.exe -bs-package-name name -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -c x.ml
 ------------
 
 It will generate `x.js` in `lib/js` as commonjs module, `lib/goog` as google module and `lib/amdjs` as amdjs module at the same time.
@@ -73,10 +73,10 @@ You would then need a bundler for the different module systems:
 ### -bs-gen-tds
 
 Trigger the generation of TypeScript `.d.ts` files.
-`bsc` has the ability to also emits `.d.ts` for better interaction with
+`bsc.exe` has the ability to also emits `.d.ts` for better interaction with
 typescript. This is still experimental.
 
-For more options, please see the documentation of `bsc -help`.
+For more options, please see the documentation of `bsc.exe -help`.
 
 ### -bs-no-warn-ffi-type
 
@@ -87,7 +87,7 @@ Turn off warnings on FFI type declarations
 .Example
 [source,sh]
 ----------
-bsc -dparsetree -drawlambda -bs-eval 'Js.log "hello"'
+bsc.exe -dparsetree -drawlambda -bs-eval 'Js.log "hello"'
 ----------
 
 [source,ocaml]
@@ -128,5 +128,5 @@ Another use case is that users can use `-ppx` explicitly as below:
 
 [source,ocaml]
 --------------
-bsc -c -ppx bsppx -bs-no-builtin-ppx-ml c.ml
+bsc.exe -c -ppx bsppx.exe -bs-no-builtin-ppx-ml c.ml
 --------------

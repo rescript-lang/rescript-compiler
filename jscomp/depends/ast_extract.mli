@@ -60,6 +60,7 @@ val collect_ast_map :
 
 val collect_from_main :
   ?extra_dirs:string list -> 
+  ?excludes : string list -> 
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->

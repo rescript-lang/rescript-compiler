@@ -21,7 +21,7 @@
     "cover": "node ./node_modules/istanbul/lib/cli.js cover --report html ./node_modules/.bin/_mocha --   ./jscomp/test/**/*test.js",
     "coverage": "`npm bin`/istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './jscomp/test/*test.js' -R spec",
     "coveralls": "npm run-script coverage && node ./node_modules/.bin/coveralls < coverage/lcov.info",
-    "postinstall": "./scripts/postinstall.sh"
+    "postinstall": "node scripts/config.js"
   },
   "name": "bs-platform",
   "version": "1.0.3",
@@ -29,20 +29,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bloomberg/bucklescript.git"
-  },
-  "bin": {
-    "bsc": "./bin/bsc",
-    "bsppx": "./bin/bsppx",
-    "bspack": "./bin/bspack",
-    "ocaml": "./bin/ocaml",
-    "ocamlc": "./bin/ocamlc",
-    "ocamlc.opt": "./bin/ocamlc.opt",
-    "ocamldep": "./bin/ocamldep.opt",
-    "ocamllex": "./bin/ocamllex.opt",
-    "ocamlobjinfo": "./bin/ocamlobjinfo",
-    "ocamlopt.opt": "./bin/ocamlopt",
-    "ocamlrun": "./bin/ocamlrun",
-    "ocamlyacc": "./bin/ocamlyacc"
   },
   "keywords": [
     "ocaml",

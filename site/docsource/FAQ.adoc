@@ -19,7 +19,7 @@ Here is a simple Makefile to get started:
 .Makefile
 [source,make]
 -------------
-OCAMLC=bsc # <1>
+OCAMLC=bsc.exe # <1>
 OCAMLDEP=ocamldep # <2>
 SOURCE_LIST := src_a src_b
 SOURCE_MLI  = $(addsuffix .mli, $(SOURCE_LIST))
@@ -35,7 +35,7 @@ all: $(TARGETS)
 depend:
         $(OCAMLDEP) $(INCLUDES) $(SOURCE_ML) $(SOURCE_MLI) | sed -e 's/\.cmx/.cmj/g' > .depend
 -------------
-<1> bsc is the BuckleScript compiler
+<1> bsc.exe is the BuckleScript compiler
 <2> ocamldep executable is part of the OCaml compiler installation
 
 

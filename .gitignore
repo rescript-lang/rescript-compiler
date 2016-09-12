@@ -15,7 +15,8 @@ _build
 *.cma
 *.a
 *.cmxa
-*~
+*.obj
+ *~
 *.annot
 *.mj
 *.bak
@@ -34,13 +35,12 @@ _build
 *.lambda
 *.zip
 *.gz
-# special file 
+# special file
 
 bsc
 bscc
 bsppx
-jscomp/tools/ocamlpack*
-
+jscomp/bin/whole_compiler_config.ml
 .idea
 
 node_modules
@@ -57,6 +57,7 @@ man/
 lib/ocaml
 bin/*
 ocaml_src
+*.exe
 
 # for npm publish
 !bin/bsc

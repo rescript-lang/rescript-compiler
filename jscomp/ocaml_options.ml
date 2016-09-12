@@ -10,8 +10,7 @@
 (*                                                                     *)
 (***********************************************************************)
 
-open Clflags 
-open Config 
+open Clflags
 open Compenv
 
 let mk_absname f =

@@ -86,7 +86,7 @@ make world
 
 '''''
 
-At the end, you should have a binary called `bsc` under `jscomp/bin`
+At the end, you should have a binary called `bsc.exe` under `jscomp/bin`
 directory, which you can add to your `$PATH`.
 You could also set an environment variable
 pointing to the stdlib, e.g. `BSC_LIB=/path/to/jscomp/stdlib` for ease
