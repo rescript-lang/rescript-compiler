@@ -3720,6 +3720,8 @@ val tool_name : string
 
 val is_windows : bool 
 
+val better_errors : bool ref
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3948,6 +3950,8 @@ let no_any_assert = ref false
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
+let better_errors = ref false
+    
 let is_windows = 
   match Sys.os_type with 
   | "Win32" 
@@ -33690,7 +33694,11 @@ let set_noassert () =
   Clflags.noassert := true
 
 
-let buckle_script_flags = 
+let buckle_script_flags =
+  ("-bs-better-errors",
+   Arg.Set Js_config.better_errors,
+   " Better error message combined with other tools "
+  )::
   ("-bs-package-name", 
    Arg.String Js_config.set_package_name, 
    " set package name, useful when you want to produce npm packages")
@@ -33762,8 +33770,14 @@ let _ =
     Arg.parse buckle_script_flags anonymous usage;
     exit (Ocaml_batch_compile.batch_compile ppf !batch_files !main_file) 
   with x ->
-    Location.report_exception ppf x;
-    exit 2
+    if not @@ !Js_config.better_errors then
+      begin (* plain error messge reporting*)
+        Location.report_exception ppf x;
+        exit 2
+      end
+    else
+      (** Fancy error message reporting*)
+      exit 2
 
 
 

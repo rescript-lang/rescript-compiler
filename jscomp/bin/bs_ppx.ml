@@ -3528,6 +3528,8 @@ val tool_name : string
 
 val is_windows : bool 
 
+val better_errors : bool ref
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3756,6 +3758,8 @@ let no_any_assert = ref false
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
+let better_errors = ref false
+    
 let is_windows = 
   match Sys.os_type with 
   | "Win32" 
