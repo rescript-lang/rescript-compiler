@@ -134,12 +134,17 @@ function chop_extension($staropt$star, name) {
   }
 }
 
-function try_chop_extension(s) {
+function chop_extension_if_any(fname) {
   try {
-    return Filename.chop_extension(s);
+    return Filename.chop_extension(fname);
   }
   catch (exn){
-    return s;
+    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
+      return fname;
+    }
+    else {
+      throw exn;
+    }
   }
 }
 
@@ -210,7 +215,7 @@ function node_relative_path(file1, dep_file) {
       while(true) {
         var i = _i;
         if (i >= len) {
-          return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 158, characters 38-45', /* Format */[
+          return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 161, characters 38-45', /* Format */[
                           /* String_literal */Block.__(11, [
                               "invalid path: ",
                               /* String */Block.__(2, [
@@ -237,7 +242,7 @@ function node_relative_path(file1, dep_file) {
     return Ext_string.tail_from(file2, skip(v + Literals.node_modules_length | 0));
   }
   else {
-    return relative_path(absolute_path(dep_file), absolute_path(file1)) + (node_sep + try_chop_extension(Curry._1(Filename.basename, file2)));
+    return relative_path(absolute_path(dep_file), absolute_path(file1)) + (node_sep + chop_extension_if_any(Curry._1(Filename.basename, file2)));
   }
 }
 
@@ -256,7 +261,7 @@ function find_package_json_dir(cwd) {
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 195, characters 15-22', /* Format */[
+        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 198, characters 15-22', /* Format */[
                         /* String_literal */Block.__(11, [
                             "package.json not found from ",
                             /* String */Block.__(2, [
@@ -294,20 +299,6 @@ function module_name_of_file(file) {
   return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
 }
 
-function chop_extension_if_any(fname) {
-  try {
-    return Filename.chop_extension(fname);
-  }
-  catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
-      return fname;
-    }
-    else {
-      throw exn;
-    }
-  }
-}
-
 var $slash$slash = Filename.concat;
 
 exports.node_sep               = node_sep;
@@ -319,12 +310,11 @@ exports.combine                = combine;
 exports.path_as_directory      = path_as_directory;
 exports.absolute_path          = absolute_path;
 exports.chop_extension         = chop_extension;
-exports.try_chop_extension     = try_chop_extension;
+exports.chop_extension_if_any  = chop_extension_if_any;
 exports.relative_path          = relative_path;
 exports.node_relative_path     = node_relative_path;
 exports.find_package_json_dir  = find_package_json_dir;
 exports.package_dir            = package_dir;
 exports.replace_backward_slash = replace_backward_slash;
 exports.module_name_of_file    = module_name_of_file;
-exports.chop_extension_if_any  = chop_extension_if_any;
 /* Filename Not a pure module */

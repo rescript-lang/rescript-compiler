@@ -3239,7 +3239,10 @@ let chop_extension ?(loc="") name =
     Ext_pervasives.invalid_argf 
       "Filename.chop_extension ( %s : %s )"  loc name
 
-let try_chop_extension s = try Filename.chop_extension s with _ -> s 
+let chop_extension_if_any fname =
+  try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+
 
 (** example
     {[
@@ -3330,7 +3333,7 @@ let node_relative_path (file1 : t)
        (absolute_path dep_file)
        (absolute_path file1)
      ^ node_sep ^
-    try_chop_extension (Filename.basename file2)
+    chop_extension_if_any (Filename.basename file2)
 
 
 
@@ -3362,8 +3365,6 @@ let module_name_of_file file =
       (Filename.chop_extension @@ Filename.basename file)  
 
 
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
 
 end
 module Js_config : sig 

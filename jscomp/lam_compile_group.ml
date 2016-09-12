@@ -426,8 +426,11 @@ let lambda_as_module
     let lambda_output = compile ~filename output_prefix false env sigs lam in
     let (//) = Filename.concat in 
     let basename =  
-      Ext_filename.chop_extension ~loc:__LOC__ 
-        (Filename.basename filename) ^  Js_config.get_ext() in
+      Ext_filename.chop_extension_if_any
+        (Filename.basename
+           output_prefix (* -o *)
+        (* filename *) (* see #757  *)
+        ) ^  Js_config.get_ext() in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Browser -> ()
