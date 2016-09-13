@@ -199,24 +199,37 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
-let collect_from_main ?(extra_dirs=[]) (ppf : Format.formatter)
+let collect_from_main 
+    ?(extra_dirs=[])
+    ?(excludes=[])
+    (ppf : Format.formatter)
     parse_implementation
     parse_interface
     project_impl 
     project_intf 
     main_file =
+  let not_excluded  = 
+    match excludes with 
+    | [] -> fun _ -> true
+    | _ -> 
+      fun source_file -> not (List.mem source_file excludes)
+  in 
   let dirname = Filename.dirname main_file in
   (** TODO: same filename module detection  *)
   let files = 
     Array.fold_left (fun acc source_file ->
-        if Ext_string.ends_with source_file ".ml" ||
-           Ext_string.ends_with source_file ".mli" then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   (Sys.readdir dirname) in 
+        if (Ext_string.ends_with source_file ".ml" ||
+            Ext_string.ends_with source_file ".mli") 
+           && not_excluded source_file
+        then 
+          (Filename.concat dirname source_file) :: acc else acc ) []   
+      (Sys.readdir dirname) in 
   let files = 
     List.fold_left (fun acc dirname -> 
         Array.fold_left (fun acc source_file -> 
-            if Ext_string.ends_with source_file ".ml" ||
-               Ext_string.ends_with source_file ".mli" 
+            if (Ext_string.ends_with source_file ".ml" ||
+               Ext_string.ends_with source_file ".mli" )
+               && not_excluded source_file
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))

@@ -47,7 +47,12 @@ release:snapshot
 
 ./bin/whole_compiler.ml:./bin/bspack
 	@echo "Generating whole_compiler"
-	$< -bs-mllib bin/whole_compiler.mllib -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ext -I syntax -I depends -I common
+	$< -bs-log-mllib bin/whole_compiler.mllib -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
+
+
+
+# For faster compilation when can cache ast file instead for Linux/MacOS users
+# For windows user, we just ship the binary 
 ./bin/bsc.exe: ./bin/whole_compiler.mli ./bin/whole_compiler.ml 
 	$(NATIVE) -w -a -I bin $^ -o $@
 
@@ -70,10 +75,10 @@ snapshotcmj:
 # bootbspack requires ../ocaml has parser, lexer processed by ocamlyacc and ocamllex
 bootbspack: ./bin/bspack
 	@echo "Bootstrap bspack"
-	./bin/bspack -bs-log-mllib bin/bspack.mllib -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	./bin/bspack -bs-log-mllib bin/bspack.mllib -prelude bin/bspack_config.ml -bs-exclude-I clflags -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
 	$(NATIVE) -w -40  unix.cmxa  -I bin bin/bspack.mli bin/bspack.ml -o bin/bspack
 	@echo "Using the bootstrapped bspack to genreate new bspack.ml: `date`"
-	./bin/bspack -bs-log-mllib bin/bspack.mllib -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	./bin/bspack -bs-log-mllib bin/bspack.mllib -prelude bin/bspack_config.ml -bs-exclude-I clflags -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack"
 	@echo "Rebuilding bspack"
 	make -B ./bin/bspack
