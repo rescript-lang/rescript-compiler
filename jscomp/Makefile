@@ -45,6 +45,9 @@ release:snapshot
 ./bin/bspack: ./bin/bspack.mli ./bin/bspack.ml 
 	$(NATIVE) -w -a -I bin  unix.cmxa  $^ -o $@
 
+./bin/whole_compiler.ml:./bin/bspack
+	@echo "Generating whole_compiler"
+	$< -bs-mllib bin/whole_compiler.mllib -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ext -I syntax -I depends -I common
 ./bin/bsc.exe: ./bin/whole_compiler.mli ./bin/whole_compiler.ml 
 	$(NATIVE) -w -a -I bin $^ -o $@
 
