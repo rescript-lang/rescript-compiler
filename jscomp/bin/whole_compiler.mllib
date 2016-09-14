@@ -2,7 +2,6 @@
 ../ocaml/utils/warnings
 ../ocaml/parsing/location
 common/bs_exception
-../ocaml/utils/config
 ../ocaml/utils/clflags
 ../ocaml/utils/misc
 ../ocaml/driver/compenv

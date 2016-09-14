@@ -20,14 +20,6 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 	@echo "Regenrating lambda_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
 
-./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/depends/depends.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
-	echo "Linking"
-	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
-# Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
-# The motivation is to save compilation time and in the future, more freedom to add new
-# compilation flags (since we don't need bytecode anymore)
-# Another solution to save compilation time is have a flag like '-i' to stop the compiler
-# continuing, in this case the user may occationally want bytecode/nativecode backend
 
 release:snapshot 
 	$(MAKE) releasebuild
@@ -37,7 +29,7 @@ release:snapshot
 #TODO: seems dependency on jsoo and reason should not block our release
 
 
-# Note: this target also built bin/bsc which is used in release mode
+
 
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
@@ -47,18 +39,27 @@ release:snapshot
 
 ./bin/whole_compiler.ml:./bin/bspack
 	@echo "Generating whole_compiler"
-	$< -bs-log-mllib bin/whole_compiler.mllib -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
+	$< -bs-log-mllib bin/whole_compiler.mllib -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 
 
 
 # For faster compilation when can cache ast file instead for Linux/MacOS users
 # For windows user, we just ship the binary 
-./bin/bsc.exe: ./bin/whole_compiler.mli ./bin/whole_compiler.ml 
+./bin/bsc.exe: ./bin/config.mli ./bin/config.ml  ./bin/whole_compiler.mli ./bin/whole_compiler.ml 
 	$(NATIVE) -w -a -I bin $^ -o $@
+./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/depends/depends.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
+	echo "Linking"
+	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 
 ./bin/bsppx: ./bin/bs_ppx.mli ./bin/bs_ppx.ml 
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin -I +compiler-libs ocamlcommon.cmxa   $^ -o $@
 
+releasebuild:./bin/bspack
+	@echo "Make release compiler"
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
+
+	@echo "Make release ppx"
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bs_ppx.mli bin/bs_ppx.ml -o bin/bsppx
 
 snapshot: ./bin/bspack snapshotcmj
 	$(MAKE) snapshotml
@@ -85,12 +86,6 @@ bootbspack: ./bin/bspack
 	@echo "Rebuilding bspack finsihed"
 
 
-releasebuild:./bin/bspack
-	@echo "Make release compiler"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
-
-	@echo "Make release ppx"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bs_ppx.mli bin/bs_ppx.ml -o bin/bsppx
 
 
 stdlib:
@@ -131,8 +126,6 @@ travis-world-test:./bin/bspack
 	@echo "Generating the compiler finished"	
 	$(MAKE) world-test
 
-# no depend on ./bin/bspack ./bin/bsc
-# since in npm mode, they are generated from a single file
 install:
 	cp  ./bin/bsc ./bin/bsppx  ./bin/bspack ../bin/
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* ../lib/ocaml/
@@ -142,19 +135,6 @@ install:
 
 
 
-# TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
-# big-world:bin/big_compiler.ml bin/big_compiler.mli
-# 	@echo "Making compiler"		
-# 	ocamlopt.opt -g -inline 1000 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
-# 	@echo "Making compiler finished"		
-
-# 	@echo "Making runtime"
-# 	cd runtime && OCAMLLIB=$(TMP_OCAMLLIB) $(MAKE) all
-# 	@echo "Making runtime finished"
-
-# 	@echo "Making stdlib"
-# 	cd stdlib && $(MAKE) all
-# 	@echo "Making stdlib finished"
 
 
 

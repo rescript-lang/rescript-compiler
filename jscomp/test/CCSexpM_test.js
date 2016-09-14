@@ -4,7 +4,7 @@ var Mt      = require("./mt");
 var Block   = require("../../lib/js/block");
 var Curry   = require("../../lib/js/curry");
 var Format  = require("../../lib/js/format");
-var CCSexpM = require("./CCSexpM");
+var CCSexpM = require("./cCSexpM");
 
 var suites = [/* [] */0];
 
