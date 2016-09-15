@@ -100,7 +100,7 @@ world:
 	$(MAKE) libs
 windows-world:
 	@echo "Making compiler"
-	$(NATIVE) -w -a -I bin ./bin/config.mli ./bin/config.ml  ./bin/whole_compiler.mli ./bin/whole_compiler.ml -o bin/bsc$(EXE)
+	$(NATIVE) -w -a -I bin  ./bin/whole_compiler_config.ml -open Whole_compiler_config ./bin/whole_compiler.mli ./bin/whole_compiler.ml -o bin/bsc$(EXE)
 	$(MAKE) bin/bspack$(EXE)
 	$(MAKE) bin/bsppx$(EXE)
 	$(MAKE) libs
@@ -117,12 +117,16 @@ travis-world-test:./bin/bspack
 	$(MAKE) snapshotml
 	@echo "Generating the compiler finished"
 	$(MAKE) world-test
+DEST=../lib/ocaml 	
 
 install:
-	cp  ./bin/bsc$(EXE) ./bin/bsppx$(EXE)  ./bin/bspack$(EXE) ../bin/
-	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* ../lib/ocaml/
-	cp ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \
-	./runtime/js_undefined.ml ./runtime/js_undefined.cmi ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi  ../lib/ocaml/
+	@echo "copy exe" 	
+	cp  ./bin/bsc$(EXE) ./bin/bsppx$(EXE)  ./bin/bspack$(EXE) ../bin
+	mkdir -p $(DEST)
+	@echo "copy stdlib" 	
+	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
+	 ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \
+	./runtime/js_undefined.ml ./runtime/js_undefined.cmi ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi  $(DEST)
 
 
 .PHONY: test  quicktest release snapshot snapshotcmj releasebuild libs

@@ -38,7 +38,7 @@ _build
 bsc
 bscc
 bsppx
-jscomp/bin/config.ml
+jscomp/bin/whole_compiler_config.ml
 .idea
 
 node_modules

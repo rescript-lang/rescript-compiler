@@ -33,16 +33,7 @@
   "bin": {
     "bsc": "./bin/bsc",
     "bsppx": "./bin/bsppx",
-    "bspack": "./bin/bspack",
-    "ocaml": "./bin/ocaml",
-    "ocamlc": "./bin/ocamlc",
-    "ocamlc.opt": "./bin/ocamlc.opt",
-    "ocamldep": "./bin/ocamldep.opt",
-    "ocamllex": "./bin/ocamllex.opt",
-    "ocamlobjinfo": "./bin/ocamlobjinfo",
-    "ocamlopt.opt": "./bin/ocamlopt",
-    "ocamlrun": "./bin/ocamlrun",
-    "ocamlyacc": "./bin/ocamlyacc"
+    "bspack": "./bin/bspack"
   },
   "keywords": [
     "ocaml",

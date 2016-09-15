@@ -16,84 +16,100 @@ var fs = require('fs')
 var path = require('path')
 var os = require('os')
 
-if(os.type().indexOf('Windows') < 0 ){
-    child_process.execSync(path.join(__dirname,'postinstall.sh'))
+var jscomp = path.join(__dirname,'..','jscomp')
+var working_dir = process.cwd()
+console.log("Working dir", working_dir)
 
-}else{
-    // Windows
-    // set up environment
-    console.log("Working dir", process.cwd())
-    process.env.BS_RELEASE_BUILD = 1
-    process.env.OCAMLPARAM = '_,bin-annot=1'
-    process.env.OCAMLRUNPARAM = 'b'
-    process.env.WIN32='1'
-    function push_front(p){
-        process.env.PATH= p + path.delimiter + process.env.PATH
+
+// need check which variables exist when we update compiler
+var map = {
+    LIBDIR : "standard_library_default",
+    BYTERUN : "standard_runtime",
+    CCOMPTYPE : "ccomp_type",
+    BYTECC : "bytecomp_c_compiler",
+    BYTECCLIBS : "bytecomp_c_libraries",
+    NATIVECC : "native_c_compiler",
+    NATIVECCLIBS : "native_c_libraries",
+    PACKLD : "native_pack_linker",
+    RANLIBCMD : "ranlib",
+    ARCMD : "ar",
+    CC_PROFILE : "cc_profile",
+
+    MKDLL : "mkdll", // undefined
+    MKEXE : "mkexe", // undefined
+    MKMAINDLL : "mkmaindll", // undefined TODO: upstream to print it too
+
+    ARCH : "architecture",
+    MODEL : "model",
+    SYSTEM : "system",
+    ASM : "asm",
+    ASM_CFI_SUPPORTED : "asm_cfi_supported", // boolean
+    WITH_FRAME_POINTERS : "with_frame_pointers", // boolean
+    EXT_OBJ : "ext_obj",
+    EXT_ASM : "ext_asm",
+    EXT_LIB : "ext_lib",
+    EXT_DLL : "ext_lib",
+    HOST : "host",
+    TARGET : "target",
+    SYSTHREAD_SUPPORT : "systhread_supported" // boolean
+}
+
+
+// return False if it does not exist otherwise the map
+function getConfigOutput(){
+    try{
+        var config_output = child_process.execSync('ocamlc.opt -config', {encoding: 'utf8'})
+        console.log("config_output:\n", config_output);
+        var keyvalues = config_output .split('\n') .filter(function(x){return x}) .map(function(x){
+            var index = x.indexOf(":")
+            var key = x.substr(0,index);
+            var value = x.substr(index+1);
+            return [key.trim(), value.trim()]
+        }
+        )
+        console.log("keyvalues",keyvalues)
+        return keyvalues.reduce(function(acc,curr){
+            acc[curr[0]] = curr[1]
+            return acc
+        },{}) 
+
     }
-
-    var content = fs.readFileSync(path.join(__dirname,  '..', 'jscomp', 'bin', 'config.mlp' ),'utf8')
-    console.log("PATH\n", process.env.PATH);
-    console.log("ocamlc\n", child_process.execSync('which ocamlc.opt', {encoding: 'utf8'}))
-    var config_output = child_process.execSync('ocamlc.opt.exe -config', {encoding: 'utf8'})
-    console.log("config_output:\n", config_output)
-    var output =
-    config_output
-    .split('\n')
-    .filter(function(x){return x})
-    .map(function(x){
-      var index = x.indexOf(":")
-      var key = x.substr(0,index);
-      var value = x.substr(index+1);
-      return [key.trim(), value.trim()]
+    catch(e){
+        console.log(e)
+        return false
     }
-    )
-    console.log("structured output\n", output)
-    var config_map = {}
+}
 
-    for (var k = 0 ; k < output.length ; ++k){
-        config_map[output[k][0]] = output[k][1]
+var is_windows = ! (os.type().indexOf('Windows') < 0)
+process.env.BS_RELEASE_BUILD = 1
+process.env.OCAMLPARAM = '_,bin-annot=1'
+process.env.OCAMLRUNPARAM = 'b'
+var config_map = getConfigOutput()
+console.log('config_map',config_map)
+if(config_map && config_map.version.indexOf('4.02') >= 0 ){
+    //
+    if (is_windows){
+        process.env.WIN32='1'
     }
-
-    // need check which variables exist when we update compiler
-    var map = {
-        LIBDIR : "standard_library_default",
-        BYTERUN : "standard_runtime",
-        CCOMPTYPE : "ccomp_type",
-        BYTECC : "bytecomp_c_compiler",
-        BYTECCLIBS : "bytecomp_c_libraries",
-        NATIVECC : "native_c_compiler",
-        NATIVECCLIBS : "native_c_libraries",
-        PACKLD : "native_pack_linker",
-        RANLIBCMD : "ranlib",
-        ARCMD : "ar",
-        CC_PROFILE : "cc_profile",
-
-        MKDLL : "mkdll", // undefined
-        MKEXE : "mkexe", // undefined
-        MKMAINDLL : "mkmaindll", // undefined TODO: upstream to print it too
-
-        ARCH : "architecture",
-        MODEL : "model",
-        SYSTEM : "system",
-        ASM : "asm",
-        ASM_CFI_SUPPORTED : "asm_cfi_supported", // boolean
-        WITH_FRAME_POINTERS : "with_frame_pointers", // boolean
-        EXT_OBJ : "ext_obj",
-        EXT_ASM : "ext_asm",
-        EXT_LIB : "ext_lib",
-        EXT_DLL : "ext_lib",
-        HOST : "host",
-        TARGET : "target",
-        SYSTHREAD_SUPPORT : "systhread_supported" // boolean
-    }
-    var jscomp = path.join(__dirname,'..','jscomp')
+    var content = fs.readFileSync(path.join(jscomp, 'bin', 'whole_compiler_config.mlp' ),'utf8')
     var generated =  content.replace(/%%(\w+)%%/g,
         function(_whole,p0){
-            return config_map[map[p0]]
+            if(p0 === "LIBDIR"){
+                return path.join(working_dir,'..','lib','ocaml')
+            }
+            else{
+                return config_map[map[p0]]
+            }
         })
-    console.log("config output:\n",generated)
-    fs.writeFileSync(path.join(jscomp,'bin','config.ml'), generated, 'utf8')
+    
+    fs.writeFileSync(path.join(jscomp,'bin','whole_compiler_config.ml'), generated, 'utf8')
+    var working_config = {cwd : jscomp , stdio : [0,1,2]}
+    console.log("Build the compiler and runtime .. ")
+    child_process.execSync("make windows-world", working_config)
+    console.log("Installing")
+    child_process.execSync('make VERBOSE=true install', working_config)
 
-    child_process.execSync('make windows-world && make install', {cwd : jscomp })
-
+}else{
+    // No compiler existed
+    child_process.execSync(path.join(__dirname,'postinstall.sh'))
 }
