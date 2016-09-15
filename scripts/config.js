@@ -54,11 +54,17 @@ var map = {
     SYSTHREAD_SUPPORT : "systhread_supported" // boolean
 }
 
-
+var is_windows = ! (os.type().indexOf('Windows') < 0)
 // return False if it does not exist otherwise the map
 function getConfigOutput(){
     try{
-        var config_output = child_process.execSync('ocamlc.opt.exe -config', {encoding: 'utf8'})
+        var ocamlc_config ;
+        if(is_windows){
+            ocamlc_config = "ocamlc.opt.exe -config"
+        } else {
+            ocamlc_config = "ocamlc.opt -config"
+        }
+        var config_output = child_process.execSync(ocamlc_config, {encoding: 'utf8'})
         console.log("config_output:\n", config_output);
         var keyvalues = config_output .split('\n') .filter(function(x){return x}) .map(function(x){
             var index = x.indexOf(":")
@@ -80,7 +86,7 @@ function getConfigOutput(){
     }
 }
 
-var is_windows = ! (os.type().indexOf('Windows') < 0)
+
 process.env.BS_RELEASE_BUILD = 1
 process.env.OCAMLPARAM = '_,bin-annot=1'
 process.env.OCAMLRUNPARAM = 'b'
@@ -96,7 +102,7 @@ if(config_map && config_map.version.indexOf('4.02') >= 0 ){
         function(_whole,p0){
             if(p0 === "LIBDIR"){
               //Escape
-              var origin_path = path.join(working_dir,'..','lib','ocaml')
+              var origin_path = path.join(working_dir,'lib','ocaml')
               return JSON.stringify(origin_path).slice(1,-1)
             }
             else{
