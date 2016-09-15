@@ -3,11 +3,11 @@
 // To build on windows, we still need figure out constructing config.ml
 // from existing  compiler
 
-// For other OSes, we detect 
-// if there is other compiler installed and the version matches, 
+// For other OSes, we detect
+// if there is other compiler installed and the version matches,
 // we get the config.ml from existing OCaml compiler and build `whole_compiler`
 
-// Otherwise, we build the compiler shipped with Buckle and use the 
+// Otherwise, we build the compiler shipped with Buckle and use the
 // old compiler.ml
 
 var child_process = require('child_process')
@@ -20,10 +20,10 @@ if(os.type().indexOf('Windows') < 0 ){
     child_process.execSync(path.join(__dirname,'postinstall.sh'))
 
 }else{
-    // Windows 
+    // Windows
     // set up environment
-    process.env.BS_RELEASE_BUILD = 1 
-    process.env.OCAMLPARAM = '_,bin-annot=1' 
+    process.env.BS_RELEASE_BUILD = 1
+    process.env.OCAMLPARAM = '_,bin-annot=1'
     process.env.OCAMLRUNPARAM = 'b'
     function push_front(p){
         process.env.PATH= p + path.delimiter + process.env.PATH
@@ -34,7 +34,7 @@ if(os.type().indexOf('Windows') < 0 ){
     var config_output;
     config_output = child_process.execSync('ocamlc.opt -config', {encoding: 'utf8'})
 
-    var output = 
+    var output =
     config_output
     .split('\n')
     .filter(function(x){return x})
@@ -46,10 +46,10 @@ if(os.type().indexOf('Windows') < 0 ){
         config_map[output[k][0]] = output[k][1]
     }
 
-    // need check which variables exist when we update compiler 
+    // need check which variables exist when we update compiler
     var map = {
         LIBDIR : "standard_library_default",
-        BYTERUN : "standard_runtime", 
+        BYTERUN : "standard_runtime",
         CCOMPTYPE : "ccomp_type",
         BYTECC : "bytecomp_c_compiler",
         BYTECCLIBS : "bytecomp_c_libraries",
@@ -63,14 +63,14 @@ if(os.type().indexOf('Windows') < 0 ){
         MKDLL : "mkdll", // undefined
         MKEXE : "mkexe", // undefined
         MKMAINDLL : "mkmaindll", // undefined TODO: upstream to print it too
-        
+
         ARCH : "architecture",
         MODEL : "model",
         SYSTEM : "system",
         ASM : "asm",
         ASM_CFI_SUPPORTED : "asm_cfi_supported", // boolean
         WITH_FRAME_POINTERS : "with_frame_pointers", // boolean
-        EXT_OBJ : "ext_obj", 
+        EXT_OBJ : "ext_obj",
         EXT_ASM : "ext_asm",
         EXT_LIB : "ext_lib",
         EXT_DLL : "ext_lib",
@@ -78,16 +78,13 @@ if(os.type().indexOf('Windows') < 0 ){
         TARGET : "target",
         SYSTHREAD_SUPPORT : "systhread_supported" // boolean
     }
+    var jscomp = path.join(__dirname,'..','jscomp')
 
-    fs.writeFileSync(path.join(__dirname, '..','bin','config.ml'), content.replace(/%%(\w+)%%/g, 
+    fs.writeFileSync(path.join(jscomp,'bin','config.ml'), content.replace(/%%(\w+)%%/g,
         function(_whole,p0){
             return config_map[map[p0]]
         }), 'utf8')
 
-    var jscomp = path.join(__dirname,'..','jscomp')
-
-    child_process.execSync('make bin/bsc.exe', {cwd : jscomp })
-    child_process.execSync('make world && make install', {cwd : jscomp})
+    child_process.execSync('make windows-world && make install', {cwd : jscomp })
 
 }
-
