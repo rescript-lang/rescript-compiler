@@ -22,24 +22,31 @@ if(os.type().indexOf('Windows') < 0 ){
 }else{
     // Windows
     // set up environment
+    console.log("Working dir", process.cwd())
     process.env.BS_RELEASE_BUILD = 1
     process.env.OCAMLPARAM = '_,bin-annot=1'
     process.env.OCAMLRUNPARAM = 'b'
+    process.env.WIN32='1'
     function push_front(p){
         process.env.PATH= p + path.delimiter + process.env.PATH
     }
 
     var content = fs.readFileSync(path.join(__dirname,  '..', 'jscomp', 'bin', 'config.mlp' ),'utf8')
-
-    var config_output;
-    config_output = child_process.execSync('ocamlc.opt -config', {encoding: 'utf8'})
-
+    console.log("PATH\n", process.env.PATH);
+    var config_output = child_process.execSync('ocamlc.opt.exe -config', {encoding: 'utf8'})
+    console.log("config_output:\n", config_output)
     var output =
     config_output
     .split('\n')
     .filter(function(x){return x})
-    .map(function(x){return x.split(":",2).map(function(x){return x.trim()})})
-
+    .map(function(x){
+      var index = x.indexOf(":")
+      var key = x.substr(0,index);
+      var value = x.substr(index+1);
+      return [key.trim(), value.trim()]
+    }
+    )
+    console.log("structured output\n", output)
     var config_map = {}
 
     for (var k = 0 ; k < output.length ; ++k){
@@ -79,11 +86,12 @@ if(os.type().indexOf('Windows') < 0 ){
         SYSTHREAD_SUPPORT : "systhread_supported" // boolean
     }
     var jscomp = path.join(__dirname,'..','jscomp')
-
-    fs.writeFileSync(path.join(jscomp,'bin','config.ml'), content.replace(/%%(\w+)%%/g,
+    var generated =  content.replace(/%%(\w+)%%/g,
         function(_whole,p0){
             return config_map[map[p0]]
-        }), 'utf8')
+        })
+    console.log("config output:\n",generated)
+    fs.writeFileSync(path.join(jscomp,'bin','config.ml'), generated, 'utf8')
 
     child_process.execSync('make windows-world && make install', {cwd : jscomp })
 
