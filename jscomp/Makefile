@@ -1,14 +1,13 @@
-
-NATIVE=ocamlopt.opt
-BYTE=ocamlc.opt
-CAMLP4OF=camlp4of
-
 ifdef WIN32
 	EXE := .exe
 endif
 ifndef EXE
 	EXE := # empty
 endif
+NATIVE=ocamlopt.opt$(EXE)
+BYTE=ocamlc.opt$(EXE)
+CAMLP4OF=camlp4of.opt$(EXE)
+## Beging Rules only make sense in dev mode
 js_map.ml:js_map.mlp j.ml
 	@echo "Regenrating j_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
@@ -24,17 +23,10 @@ lam_map.ml: lambda_map.mlp lambda.mlp
 lam_fold.ml: lambda_fold.mlp lambda.mlp
 	@echo "Regenrating lambda_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
-
+## End Rules
 
 release:snapshot
 	$(MAKE) releasebuild
-	# ocamlbuild -no-ocamlfind -lflags -no-check-prims -use-ocamlfind -I bin -no-hygiene -pkgs compiler-libs.common -no-links bin/reason.byte
-	# js_of_ocaml -I +compiler-libs   --toplevel +weak.js +toplevel.js  ./polyfill.js _build/bin/reason.byte -I ./runtime/ --file js.cmi:/cmis/js.cmi --file js_unsafe.cmi:/cmis/js_unsafe.cmi --file js_re.cmi:/cmis/js_re.cmi   -o bin/compiler.js
-
-#TODO: seems dependency on jsoo and reason should not block our release
-
-
-
 
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
@@ -42,27 +34,20 @@ release:snapshot
 ./bin/bspack$(EXE): ./bin/bspack.mli ./bin/bspack.ml
 	$(NATIVE) -w -a -I bin  unix.cmxa  $^ -o $@
 
-./bin/whole_compiler.ml:./bin/bspack
-	@echo "Generating whole_compiler"
-	$< -bs-log-mllib bin/whole_compiler.mllib -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
-
-
-
 # For faster compilation when can cache ast file instead for Linux/MacOS users
 # For windows user, we just ship the binary
-./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/depends/depends.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
+./bin/bsc$(EXE): _build/ext/ext.cmxa _build/common/common.cmxa _build/depends/depends.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 
 ./bin/bsppx$(EXE): ./bin/bs_ppx.mli ./bin/bs_ppx.ml
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin -I +compiler-libs ocamlcommon.cmxa   $^ -o $@
 
-releasebuild:./bin/bspack
+releasebuild:./bin/bspack$(EXE)
 	@echo "Make release compiler"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
-
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc$(EXE)
 	@echo "Make release ppx"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bs_ppx.mli bin/bs_ppx.ml -o bin/bsppx
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bs_ppx.mli bin/bs_ppx.ml -o bin/bsppx$(EXE)
 
 snapshot: ./bin/bspack snapshotcmj
 	$(MAKE) snapshotml
@@ -71,6 +56,8 @@ snapshotml:./bin/bspack ./bin/compiler.mllib
 	@echo "Snapshot ml"
 	$< -bs-mllib bin/compiler.mllib -o bin/compiler.ml
 	$< -I common -I ext -I syntax -bs-main bs_ppx_main.ml -o bin/bs_ppx.ml
+	$< -bs-log-mllib bin/whole_compiler.mllib -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
+
 snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 -lflags -I,+compiler-libs,ocamlcommon.cmxa js_pack.native --
@@ -114,7 +101,6 @@ world:
 windows-world:
 	@echo "Making compiler"
 	$(NATIVE) -w -a -I bin ./bin/config.mli ./bin/config.ml  ./bin/whole_compiler.mli ./bin/whole_compiler.ml -o bin/bsc$(EXE)
-	$(MAKE) bin/bsc$(EXE)
 	$(MAKE) bin/bspack$(EXE)
 	$(MAKE) bin/bsppx$(EXE)
 	$(MAKE) libs
