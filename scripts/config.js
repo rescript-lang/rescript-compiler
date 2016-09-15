@@ -33,6 +33,7 @@ if(os.type().indexOf('Windows') < 0 ){
 
     var content = fs.readFileSync(path.join(__dirname,  '..', 'jscomp', 'bin', 'config.mlp' ),'utf8')
     console.log("PATH\n", process.env.PATH);
+    console.log("ocamlc\n", child_process.execSync('which ocamlc.opt', {encoding: 'utf8'}))
     var config_output = child_process.execSync('ocamlc.opt.exe -config', {encoding: 'utf8'})
     console.log("config_output:\n", config_output)
     var output =
