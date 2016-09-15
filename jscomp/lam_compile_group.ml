@@ -426,7 +426,7 @@ let lambda_as_module
     let lambda_output = compile ~filename output_prefix false env sigs lam in
     let (//) = Filename.concat in 
     let basename =  
-      Ext_filename.chop_extension_if_any
+      (* #758, output_prefix is already chopped *)
         (Filename.basename
            output_prefix (* -o *)
         (* filename *) (* see #757  *)
