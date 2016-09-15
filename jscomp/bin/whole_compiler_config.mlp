@@ -128,7 +128,7 @@ val target : string
         (* Whether the compiler is a cross-compiler *)
 
 val print_config : out_channel -> unit;;
-  
+
 end = struct
 (***********************************************************************)
 (*                                                                     *)
@@ -159,7 +159,7 @@ let standard_library_default = "%%LIBDIR%%"
 
 let standard_library =
   try
-    Sys.getenv "OCAMLLIB"
+    Sys.getenv "BSLIB"
   with Not_found ->
   try
     Sys.getenv "CAMLLIB"

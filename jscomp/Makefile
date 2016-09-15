@@ -117,13 +117,14 @@ travis-world-test:./bin/bspack
 	$(MAKE) snapshotml
 	@echo "Generating the compiler finished"
 	$(MAKE) world-test
-DEST=../lib/ocaml 	
 
+DEST=../lib/ocaml
+DEST_BIN=../bin
 install:
-	@echo "copy exe" 	
-	cp  ./bin/bsc$(EXE) ./bin/bsppx$(EXE)  ./bin/bspack$(EXE) ../bin
-	mkdir -p $(DEST)
-	@echo "copy stdlib" 	
+	@echo "copy exe"
+	mkdir -p $(DEST_BIN) $(DEST)
+	cp  ./bin/bsc$(EXE) ./bin/bsppx$(EXE)  ./bin/bspack$(EXE) $(DEST_BIN)
+	@echo "copy stdlib"
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \
 	./runtime/js_undefined.ml ./runtime/js_undefined.cmi ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi  $(DEST)

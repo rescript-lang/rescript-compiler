@@ -58,7 +58,7 @@ var map = {
 // return False if it does not exist otherwise the map
 function getConfigOutput(){
     try{
-        var config_output = child_process.execSync('ocamlc.opt -config', {encoding: 'utf8'})
+        var config_output = child_process.execSync('ocamlc.opt.exe -config', {encoding: 'utf8'})
         console.log("config_output:\n", config_output);
         var keyvalues = config_output .split('\n') .filter(function(x){return x}) .map(function(x){
             var index = x.indexOf(":")
@@ -71,7 +71,7 @@ function getConfigOutput(){
         return keyvalues.reduce(function(acc,curr){
             acc[curr[0]] = curr[1]
             return acc
-        },{}) 
+        },{})
 
     }
     catch(e){
@@ -95,13 +95,15 @@ if(config_map && config_map.version.indexOf('4.02') >= 0 ){
     var generated =  content.replace(/%%(\w+)%%/g,
         function(_whole,p0){
             if(p0 === "LIBDIR"){
-                return path.join(working_dir,'..','lib','ocaml')
+              //Escape
+              var origin_path = path.join(working_dir,'..','lib','ocaml')
+              return JSON.stringify(origin_path).slice(1,-1)
             }
             else{
                 return config_map[map[p0]]
             }
         })
-    
+
     fs.writeFileSync(path.join(jscomp,'bin','whole_compiler_config.ml'), generated, 'utf8')
     var working_config = {cwd : jscomp , stdio : [0,1,2]}
     console.log("Build the compiler and runtime .. ")

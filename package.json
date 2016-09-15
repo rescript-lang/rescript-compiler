@@ -30,11 +30,6 @@
     "type": "git",
     "url": "git+https://github.com/bloomberg/bucklescript.git"
   },
-  "bin": {
-    "bsc": "./bin/bsc",
-    "bsppx": "./bin/bsppx",
-    "bspack": "./bin/bspack"
-  },
   "keywords": [
     "ocaml",
     "bucklescript",
