@@ -69,9 +69,11 @@ different due to runtime representation of int/int64/int32 and float.
 ### Marshall
 Marshall module is not supported yet.
 
-### Sys.argv
+### Sys.argv, Sys.max_array_length, Sys.max_string_length
 Command line arguments are always empty,
-will be fixed in the near future.
+might be fixed in the near future.
+`Sys.max_array_length` and `Sys.max_string_length` will be the same as
+`max_int`, but it might be respected.
 
 ### Unsupported IO primitives
 Because of the JavaScript environment limitation, `Pervasives.stdin` is
