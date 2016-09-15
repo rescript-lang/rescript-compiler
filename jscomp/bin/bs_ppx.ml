@@ -4386,7 +4386,7 @@ let handle_attributes
          val_send = `Nm_na;
          val_send_pipe = None;    
          
-         splice = false;
+         (* splice ; *)
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
