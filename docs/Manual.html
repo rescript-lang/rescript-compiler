@@ -606,7 +606,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_printf_printf">Printf.printf</a></li>
 <li><a href="#_hashtbl_hash_algorithm">Hashtbl hash algorithm</a></li>
 <li><a href="#_marshall">Marshall</a></li>
-<li><a href="#_sys_argv">Sys.argv</a></li>
+<li><a href="#_sys_argv_sys_max_array_length_sys_max_string_length">Sys.argv, Sys.max_array_length, Sys.max_string_length</a></li>
 <li><a href="#_unsupported_io_primitives">Unsupported IO primitives</a></li>
 </ul>
 </li>
@@ -3299,10 +3299,12 @@ different due to runtime representation of int/int64/int32 and float.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sys_argv"><a class="anchor" href="#_sys_argv"></a>Sys.argv</h3>
+<h3 id="_sys_argv_sys_max_array_length_sys_max_string_length"><a class="anchor" href="#_sys_argv_sys_max_array_length_sys_max_string_length"></a>Sys.argv, Sys.max_array_length, Sys.max_string_length</h3>
 <div class="paragraph">
 <p>Command line arguments are always empty,
-will be fixed in the near future.</p>
+might be fixed in the near future.
+<code>Sys.max_array_length</code> and <code>Sys.max_string_length</code> will be the same as
+<code>max_int</code>, but it might be respected.</p>
 </div>
 </div>
 <div class="sect2">

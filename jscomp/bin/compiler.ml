@@ -31718,7 +31718,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
        note that casual handling of {!Sys.max_string_length} could result into 
        negative value which could cause wrong behavior of {!Buffer.create}
      *)
-    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "4_294_967_295.") 
+    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "2147483647")  (*2 ^ 31 - 1*)
                            
   | Single(_, ({name="max_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
     (* See [js_knowledge] Max int section, (2. ** 53. -. 1.;;)
