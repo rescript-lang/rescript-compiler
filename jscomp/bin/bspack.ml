@@ -1,3 +1,461 @@
+module Config : sig 
+#1 "config.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* System configuration *)
+
+val version: string
+        (* The current version number of the system *)
+
+val standard_library: string
+        (* The directory containing the standard libraries *)
+val standard_runtime: string
+        (* The full path to the standard bytecode interpreter ocamlrun *)
+val ccomp_type: string
+        (* The "kind" of the C compiler, assembler and linker used: one of
+               "cc" (for Unix-style C compilers)
+               "msvc" (for Microsoft Visual C++ and MASM) *)
+val bytecomp_c_compiler: string
+        (* The C compiler to use for compiling C files
+           with the bytecode compiler *)
+val bytecomp_c_libraries: string
+        (* The C libraries to link with custom runtimes *)
+val native_c_compiler: string
+        (* The C compiler to use for compiling C files
+           with the native-code compiler *)
+val native_c_libraries: string
+        (* The C libraries to link with native-code programs *)
+val native_pack_linker: string
+        (* The linker to use for packaging (ocamlopt -pack) and for partial
+           links (ocamlopt -output-obj). *)
+val mkdll: string
+        (* The linker command line to build dynamic libraries. *)
+val mkexe: string
+        (* The linker command line to build executables. *)
+val mkmaindll: string
+        (* The linker command line to build main programs as dlls. *)
+val ranlib: string
+        (* Command to randomize a library, or "" if not needed *)
+val ar: string
+        (* Name of the ar command, or "" if not needed  (MSVC) *)
+val cc_profile : string
+        (* The command line option to the C compiler to enable profiling. *)
+
+val load_path: string list ref
+        (* Directories in the search path for .cmi and .cmo files *)
+
+val interface_suffix: string ref
+        (* Suffix for interface file names *)
+
+val exec_magic_number: string
+        (* Magic number for bytecode executable files *)
+val cmi_magic_number: string
+        (* Magic number for compiled interface files *)
+val cmo_magic_number: string
+        (* Magic number for object bytecode files *)
+val cma_magic_number: string
+        (* Magic number for archive files *)
+val cmx_magic_number: string
+        (* Magic number for compilation unit descriptions *)
+val cmxa_magic_number: string
+        (* Magic number for libraries of compilation unit descriptions *)
+val ast_intf_magic_number: string
+        (* Magic number for file holding an interface syntax tree *)
+val ast_impl_magic_number: string
+        (* Magic number for file holding an implementation syntax tree *)
+val cmxs_magic_number: string
+        (* Magic number for dynamically-loadable plugins *)
+val cmt_magic_number: string
+        (* Magic number for compiled interface files *)
+
+val max_tag: int
+        (* Biggest tag that can be stored in the header of a regular block. *)
+val lazy_tag : int
+        (* Normally the same as Obj.lazy_tag.  Separate definition because
+           of technical reasons for bootstrapping. *)
+val max_young_wosize: int
+        (* Maximal size of arrays that are directly allocated in the
+           minor heap *)
+val stack_threshold: int
+        (* Size in words of safe area at bottom of VM stack,
+           see byterun/config.h *)
+
+val architecture: string
+        (* Name of processor type for the native-code compiler *)
+val model: string
+        (* Name of processor submodel for the native-code compiler *)
+val system: string
+        (* Name of operating system for the native-code compiler *)
+
+val asm: string
+        (* The assembler (and flags) to use for assembling
+           ocamlopt-generated code. *)
+
+val asm_cfi_supported: bool
+        (* Whether assembler understands CFI directives *)
+val with_frame_pointers : bool
+        (* Whether assembler should maintain frame pointers *)
+
+val ext_obj: string
+        (* Extension for object files, e.g. [.o] under Unix. *)
+val ext_asm: string
+        (* Extension for assembler files, e.g. [.s] under Unix. *)
+val ext_lib: string
+        (* Extension for library files, e.g. [.a] under Unix. *)
+val ext_dll: string
+        (* Extension for dynamically-loaded libraries, e.g. [.so] under Unix.*)
+
+val default_executable_name: string
+        (* Name of executable produced by linking if none is given with -o,
+           e.g. [a.out] under Unix. *)
+
+val systhread_supported : bool
+        (* Whether the system thread library is implemented *)
+
+val host : string
+        (* Whether the compiler is a cross-compiler *)
+
+val target : string
+        (* Whether the compiler is a cross-compiler *)
+
+val print_config : out_channel -> unit;;
+
+end = struct
+#1 "config.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(***********************************************************************)
+(**                                                                   **)
+(**               WARNING WARNING WARNING                             **)
+(**                                                                   **)
+(** When you change this file, you must make the parallel change      **)
+(** in config.mlbuild                                                 **)
+(**                                                                   **)
+(***********************************************************************)
+
+
+(* The main OCaml version string has moved to ../VERSION *)
+let version = Sys.ocaml_version
+
+let standard_library_default = "/usr/local/lib/ocaml/lib/ocaml" (* does not matter *)
+
+let standard_library =
+  try
+    Sys.getenv "OCAMLLIB"
+  with Not_found ->
+  try
+    Sys.getenv "CAMLLIB"
+  with Not_found ->
+    standard_library_default
+
+let standard_runtime = "/usr/local/bin/ocaml/bin/ocamlrun"
+let ccomp_type = "cc"
+let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
+let bytecomp_c_libraries = "-lcurses -lpthread"
+let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
+let native_c_libraries = ""
+let native_pack_linker = "ld -r -arch x86_64  -o "
+let ranlib = "ranlib"
+let ar = "ar"
+let cc_profile = "-pg"
+let mkdll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+let mkexe = "gcc -Wl,-no_compact_unwind"
+let mkmaindll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+
+let exec_magic_number = "Caml1999X011"
+and cmi_magic_number = "Caml1999I017"
+and cmo_magic_number = "Caml1999O010"
+and cma_magic_number = "Caml1999A011"
+and cmx_magic_number = "Caml1999Y014"
+and cmxa_magic_number = "Caml1999Z013"
+and ast_impl_magic_number = "Caml1999M016"
+and ast_intf_magic_number = "Caml1999N015"
+and cmxs_magic_number = "Caml2007D002"
+and cmt_magic_number = "Caml2012T004"
+
+let load_path = ref ([] : string list)
+
+let interface_suffix = ref ".mli"
+
+let max_tag = 245
+(* This is normally the same as in obj.ml, but we have to define it
+   separately because it can differ when we're in the middle of a
+   bootstrapping phase. *)
+let lazy_tag = 246
+
+let max_young_wosize = 256
+let stack_threshold = 256 (* see byterun/config.h *)
+
+let architecture = "amd64"
+let model = "default"
+let system = "macosx"
+
+let asm = "clang -arch x86_64 -c"
+let asm_cfi_supported = true
+let with_frame_pointers = false
+
+let ext_obj = ".o"
+let ext_asm = ".s"
+let ext_lib = ".a"
+let ext_dll = ".so"
+
+let host = "x86_64-apple-darwin15.6.0"
+let target = "x86_64-apple-darwin15.6.0"
+
+let default_executable_name =
+  match Sys.os_type with
+    "Unix" -> "a.out"
+  | "Win32" | "Cygwin" -> "camlprog.exe"
+  | _ -> "camlprog"
+
+let systhread_supported = true;;
+
+let print_config oc = ()
+;;
+
+end
+module Clflags : sig 
+#1 "clflags.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+val objfiles : string list ref
+val ccobjs : string list ref
+val dllibs : string list ref
+val compile_only : bool ref
+val output_name : string option ref
+val include_dirs : string list ref
+val no_std_include : bool ref
+val print_types : bool ref
+val make_archive : bool ref
+val debug : bool ref
+val fast : bool ref
+val link_everything : bool ref
+val custom_runtime : bool ref
+val no_check_prims : bool ref
+val bytecode_compatible_32 : bool ref
+val output_c_object : bool ref
+val output_complete_object : bool ref
+val all_ccopts : string list ref
+val classic : bool ref
+val nopervasives : bool ref
+val open_modules : string list ref
+val preprocessor : string option ref
+val all_ppx : string list ref
+val annotations : bool ref
+val binary_annotations : bool ref
+val use_threads : bool ref
+val use_vmthreads : bool ref
+val noassert : bool ref
+val verbose : bool ref
+val noprompt : bool ref
+val nopromptcont : bool ref
+val init_file : string option ref
+val noinit : bool ref
+val use_prims : string ref
+val use_runtime : string ref
+val principal : bool ref
+val real_paths : bool ref
+val recursive_types : bool ref
+val strict_sequence : bool ref
+val strict_formats : bool ref
+val applicative_functors : bool ref
+val make_runtime : bool ref
+val gprofile : bool ref
+val c_compiler : string option ref
+val no_auto_link : bool ref
+val dllpaths : string list ref
+val make_package : bool ref
+val for_package : string option ref
+val error_size : int ref
+val float_const_prop : bool ref
+val transparent_modules : bool ref
+val dump_source : bool ref
+val dump_parsetree : bool ref
+val dump_typedtree : bool ref
+val dump_rawlambda : bool ref
+val dump_lambda : bool ref
+val dump_clambda : bool ref
+val dump_instr : bool ref
+val keep_asm_file : bool ref
+val optimize_for_speed : bool ref
+val dump_cmm : bool ref
+val dump_selection : bool ref
+val dump_cse : bool ref
+val dump_live : bool ref
+val dump_spill : bool ref
+val dump_split : bool ref
+val dump_interf : bool ref
+val dump_prefer : bool ref
+val dump_regalloc : bool ref
+val dump_reload : bool ref
+val dump_scheduling : bool ref
+val dump_linear : bool ref
+val keep_startup_file : bool ref
+val dump_combine : bool ref
+val native_code : bool ref
+val inline_threshold : int ref
+val dont_write_files : bool ref
+val std_include_flag : string -> string
+val std_include_dir : unit -> string list
+val shared : bool ref
+val dlcode : bool ref
+val runtime_variant : string ref
+val force_slash : bool ref
+val keep_docs : bool ref
+val keep_locs : bool ref
+val unsafe_string : bool ref
+val opaque : bool ref
+
+end = struct
+#1 "clflags.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Command-line parameters *)
+
+let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
+and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
+and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
+
+let compile_only = ref false            (* -c *)
+and output_name = ref (None : string option) (* -o *)
+and include_dirs = ref ([] : string list)(* -I *)
+and no_std_include = ref false          (* -nostdlib *)
+and print_types = ref false             (* -i *)
+and make_archive = ref false            (* -a *)
+and debug = ref false                   (* -g *)
+and fast = ref false                    (* -unsafe *)
+and link_everything = ref false         (* -linkall *)
+and custom_runtime = ref false          (* -custom *)
+and no_check_prims = ref false          (* -no-check-prims *)
+and bytecode_compatible_32 = ref false  (* -compat-32 *)
+and output_c_object = ref false         (* -output-obj *)
+and output_complete_object = ref false  (* -output-complete-obj *)
+and all_ccopts = ref ([] : string list)     (* -ccopt *)
+and classic = ref false                 (* -nolabels *)
+and nopervasives = ref false            (* -nopervasives *)
+and preprocessor = ref(None : string option) (* -pp *)
+and all_ppx = ref ([] : string list)        (* -ppx *)
+let annotations = ref false             (* -annot *)
+let binary_annotations = ref false      (* -annot *)
+and use_threads = ref false             (* -thread *)
+and use_vmthreads = ref false           (* -vmthread *)
+and noassert = ref false                (* -noassert *)
+and verbose = ref false                 (* -verbose *)
+and noprompt = ref false                (* -noprompt *)
+and nopromptcont = ref false            (* -nopromptcont *)
+and init_file = ref (None : string option)   (* -init *)
+and noinit = ref false                  (* -noinit *)
+and open_modules = ref []               (* -open *)
+and use_prims = ref ""                  (* -use-prims ... *)
+and use_runtime = ref ""                (* -use-runtime ... *)
+and principal = ref false               (* -principal *)
+and real_paths = ref true               (* -short-paths *)
+and recursive_types = ref false         (* -rectypes *)
+and strict_sequence = ref false         (* -strict-sequence *)
+and strict_formats = ref false          (* -strict-formats *)
+and applicative_functors = ref true     (* -no-app-funct *)
+and make_runtime = ref false            (* -make-runtime *)
+and gprofile = ref false                (* -p *)
+and c_compiler = ref (None: string option) (* -cc *)
+and no_auto_link = ref false            (* -noautolink *)
+and dllpaths = ref ([] : string list)   (* -dllpath *)
+and make_package = ref false            (* -pack *)
+and for_package = ref (None: string option) (* -for-pack *)
+and error_size = ref 500                (* -error-size *)
+and float_const_prop = ref true         (* -no-float-const-prop *)
+and transparent_modules = ref false     (* -trans-mod *)
+let dump_source = ref false             (* -dsource *)
+let dump_parsetree = ref false          (* -dparsetree *)
+and dump_typedtree = ref false          (* -dtypedtree *)
+and dump_rawlambda = ref false          (* -drawlambda *)
+and dump_lambda = ref false             (* -dlambda *)
+and dump_clambda = ref false            (* -dclambda *)
+and dump_instr = ref false              (* -dinstr *)
+
+let keep_asm_file = ref false           (* -S *)
+let optimize_for_speed = ref true       (* -compact *)
+and opaque = ref false                  (* -opaque *)
+
+and dump_cmm = ref false                (* -dcmm *)
+let dump_selection = ref false          (* -dsel *)
+let dump_cse = ref false                (* -dcse *)
+let dump_live = ref false               (* -dlive *)
+let dump_spill = ref false              (* -dspill *)
+let dump_split = ref false              (* -dsplit *)
+let dump_interf = ref false             (* -dinterf *)
+let dump_prefer = ref false             (* -dprefer *)
+let dump_regalloc = ref false           (* -dalloc *)
+let dump_reload = ref false             (* -dreload *)
+let dump_scheduling = ref false         (* -dscheduling *)
+let dump_linear = ref false             (* -dlinear *)
+let keep_startup_file = ref false       (* -dstartup *)
+let dump_combine = ref false            (* -dcombine *)
+let native_code = ref false             (* set to true under ocamlopt *)
+let inline_threshold = ref 10
+let force_slash = ref false             (* for ocamldep *)
+
+let dont_write_files = ref false        (* set to true under ocamldoc *)
+
+let std_include_flag prefix =
+  if !no_std_include then ""
+  else (prefix ^ (Filename.quote Config.standard_library))
+;;
+
+let std_include_dir () =
+  if !no_std_include then [] else [Config.standard_library]
+;;
+
+let shared = ref false (* -shared *)
+let dlcode = ref true (* not -nodynlink *)
+
+let runtime_variant = ref "";;      (* -runtime-variant *)
+
+let keep_docs = ref false              (* -keep-docs *)
+let keep_locs = ref false              (* -keep-locs *)
+let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+end
+
 module Terminfo : sig 
 #1 "terminfo.mli"
 (***********************************************************************)
@@ -1293,506 +1751,6 @@ let () =
       | _ -> None
     )
 
-
-end
-module Config : sig 
-#1 "config.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* System configuration *)
-
-val version: string
-        (* The current version number of the system *)
-
-val standard_library: string
-        (* The directory containing the standard libraries *)
-val standard_runtime: string
-        (* The full path to the standard bytecode interpreter ocamlrun *)
-val ccomp_type: string
-        (* The "kind" of the C compiler, assembler and linker used: one of
-               "cc" (for Unix-style C compilers)
-               "msvc" (for Microsoft Visual C++ and MASM) *)
-val bytecomp_c_compiler: string
-        (* The C compiler to use for compiling C files
-           with the bytecode compiler *)
-val bytecomp_c_libraries: string
-        (* The C libraries to link with custom runtimes *)
-val native_c_compiler: string
-        (* The C compiler to use for compiling C files
-           with the native-code compiler *)
-val native_c_libraries: string
-        (* The C libraries to link with native-code programs *)
-val native_pack_linker: string
-        (* The linker to use for packaging (ocamlopt -pack) and for partial
-           links (ocamlopt -output-obj). *)
-val mkdll: string
-        (* The linker command line to build dynamic libraries. *)
-val mkexe: string
-        (* The linker command line to build executables. *)
-val mkmaindll: string
-        (* The linker command line to build main programs as dlls. *)
-val ranlib: string
-        (* Command to randomize a library, or "" if not needed *)
-val ar: string
-        (* Name of the ar command, or "" if not needed  (MSVC) *)
-val cc_profile : string
-        (* The command line option to the C compiler to enable profiling. *)
-
-val load_path: string list ref
-        (* Directories in the search path for .cmi and .cmo files *)
-
-val interface_suffix: string ref
-        (* Suffix for interface file names *)
-
-val exec_magic_number: string
-        (* Magic number for bytecode executable files *)
-val cmi_magic_number: string
-        (* Magic number for compiled interface files *)
-val cmo_magic_number: string
-        (* Magic number for object bytecode files *)
-val cma_magic_number: string
-        (* Magic number for archive files *)
-val cmx_magic_number: string
-        (* Magic number for compilation unit descriptions *)
-val cmxa_magic_number: string
-        (* Magic number for libraries of compilation unit descriptions *)
-val ast_intf_magic_number: string
-        (* Magic number for file holding an interface syntax tree *)
-val ast_impl_magic_number: string
-        (* Magic number for file holding an implementation syntax tree *)
-val cmxs_magic_number: string
-        (* Magic number for dynamically-loadable plugins *)
-val cmt_magic_number: string
-        (* Magic number for compiled interface files *)
-
-val max_tag: int
-        (* Biggest tag that can be stored in the header of a regular block. *)
-val lazy_tag : int
-        (* Normally the same as Obj.lazy_tag.  Separate definition because
-           of technical reasons for bootstrapping. *)
-val max_young_wosize: int
-        (* Maximal size of arrays that are directly allocated in the
-           minor heap *)
-val stack_threshold: int
-        (* Size in words of safe area at bottom of VM stack,
-           see byterun/config.h *)
-
-val architecture: string
-        (* Name of processor type for the native-code compiler *)
-val model: string
-        (* Name of processor submodel for the native-code compiler *)
-val system: string
-        (* Name of operating system for the native-code compiler *)
-
-val asm: string
-        (* The assembler (and flags) to use for assembling
-           ocamlopt-generated code. *)
-
-val asm_cfi_supported: bool
-        (* Whether assembler understands CFI directives *)
-val with_frame_pointers : bool
-        (* Whether assembler should maintain frame pointers *)
-
-val ext_obj: string
-        (* Extension for object files, e.g. [.o] under Unix. *)
-val ext_asm: string
-        (* Extension for assembler files, e.g. [.s] under Unix. *)
-val ext_lib: string
-        (* Extension for library files, e.g. [.a] under Unix. *)
-val ext_dll: string
-        (* Extension for dynamically-loaded libraries, e.g. [.so] under Unix.*)
-
-val default_executable_name: string
-        (* Name of executable produced by linking if none is given with -o,
-           e.g. [a.out] under Unix. *)
-
-val systhread_supported : bool
-        (* Whether the system thread library is implemented *)
-
-val host : string
-        (* Whether the compiler is a cross-compiler *)
-
-val target : string
-        (* Whether the compiler is a cross-compiler *)
-
-val print_config : out_channel -> unit;;
-
-end = struct
-#1 "config.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(***********************************************************************)
-(**                                                                   **)
-(**               WARNING WARNING WARNING                             **)
-(**                                                                   **)
-(** When you change this file, you must make the parallel change      **)
-(** in config.mlbuild                                                 **)
-(**                                                                   **)
-(***********************************************************************)
-
-
-(* The main OCaml version string has moved to ../VERSION *)
-let version = Sys.ocaml_version
-
-let standard_library_default = "/Users/hzhang295/git/bucklescript/ocaml/lib/ocaml"
-
-let standard_library =
-  try
-    Sys.getenv "OCAMLLIB"
-  with Not_found ->
-  try
-    Sys.getenv "CAMLLIB"
-  with Not_found ->
-    standard_library_default
-
-let standard_runtime = "/Users/hzhang295/git/bucklescript/ocaml/bin/ocamlrun"
-let ccomp_type = "cc"
-let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
-let bytecomp_c_libraries = "-lcurses -lpthread"
-let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
-let native_c_libraries = ""
-let native_pack_linker = "ld -r -arch x86_64  -o "
-let ranlib = "ranlib"
-let ar = "ar"
-let cc_profile = "-pg"
-let mkdll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
-let mkexe = "gcc -Wl,-no_compact_unwind"
-let mkmaindll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
-
-let exec_magic_number = "Caml1999X011"
-and cmi_magic_number = "Caml1999I017"
-and cmo_magic_number = "Caml1999O010"
-and cma_magic_number = "Caml1999A011"
-and cmx_magic_number = "Caml1999Y014"
-and cmxa_magic_number = "Caml1999Z013"
-and ast_impl_magic_number = "Caml1999M016"
-and ast_intf_magic_number = "Caml1999N015"
-and cmxs_magic_number = "Caml2007D002"
-and cmt_magic_number = "Caml2012T004"
-
-let load_path = ref ([] : string list)
-
-let interface_suffix = ref ".mli"
-
-let max_tag = 245
-(* This is normally the same as in obj.ml, but we have to define it
-   separately because it can differ when we're in the middle of a
-   bootstrapping phase. *)
-let lazy_tag = 246
-
-let max_young_wosize = 256
-let stack_threshold = 256 (* see byterun/config.h *)
-
-let architecture = "amd64"
-let model = "default"
-let system = "macosx"
-
-let asm = "clang -arch x86_64 -c"
-let asm_cfi_supported = true
-let with_frame_pointers = false
-
-let ext_obj = ".o"
-let ext_asm = ".s"
-let ext_lib = ".a"
-let ext_dll = ".so"
-
-let host = "x86_64-apple-darwin15.6.0"
-let target = "x86_64-apple-darwin15.6.0"
-
-let default_executable_name =
-  match Sys.os_type with
-    "Unix" -> "a.out"
-  | "Win32" | "Cygwin" -> "camlprog.exe"
-  | _ -> "camlprog"
-
-let systhread_supported = true;;
-
-let print_config oc =
-  let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
-  let p_bool name valu = Printf.fprintf oc "%s: %B\n" name valu in
-  p "version" version;
-  p "standard_library_default" standard_library_default;
-  p "standard_library" standard_library;
-  p "standard_runtime" standard_runtime;
-  p "ccomp_type" ccomp_type;
-  p "bytecomp_c_compiler" bytecomp_c_compiler;
-  p "bytecomp_c_libraries" bytecomp_c_libraries;
-  p "native_c_compiler" native_c_compiler;
-  p "native_c_libraries" native_c_libraries;
-  p "native_pack_linker" native_pack_linker;
-  p "ranlib" ranlib;
-  p "cc_profile" cc_profile;
-  p "architecture" architecture;
-  p "model" model;
-  p "system" system;
-  p "asm" asm;
-  p_bool "asm_cfi_supported" asm_cfi_supported;
-  p_bool "with_frame_pointers" with_frame_pointers;
-  p "ext_obj" ext_obj;
-  p "ext_asm" ext_asm;
-  p "ext_lib" ext_lib;
-  p "ext_dll" ext_dll;
-  p "os_type" Sys.os_type;
-  p "default_executable_name" default_executable_name;
-  p_bool "systhread_supported" systhread_supported;
-  p "host" host;
-  p "target" target;
-
-  (* print the magic number *)
-  p "exec_magic_number" exec_magic_number;
-  p "cmi_magic_number" cmi_magic_number;
-  p "cmo_magic_number" cmo_magic_number;
-  p "cma_magic_number" cma_magic_number;
-  p "cmx_magic_number" cmx_magic_number;
-  p "cmxa_magic_number" cmxa_magic_number;
-  p "ast_impl_magic_number" ast_impl_magic_number;
-  p "ast_intf_magic_number" ast_intf_magic_number;
-  p "cmxs_magic_number" cmxs_magic_number;
-  p "cmt_magic_number" cmt_magic_number;
-
-  flush oc;
-;;
-
-end
-module Clflags : sig 
-#1 "clflags.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-val objfiles : string list ref
-val ccobjs : string list ref
-val dllibs : string list ref
-val compile_only : bool ref
-val output_name : string option ref
-val include_dirs : string list ref
-val no_std_include : bool ref
-val print_types : bool ref
-val make_archive : bool ref
-val debug : bool ref
-val fast : bool ref
-val link_everything : bool ref
-val custom_runtime : bool ref
-val no_check_prims : bool ref
-val bytecode_compatible_32 : bool ref
-val output_c_object : bool ref
-val output_complete_object : bool ref
-val all_ccopts : string list ref
-val classic : bool ref
-val nopervasives : bool ref
-val open_modules : string list ref
-val preprocessor : string option ref
-val all_ppx : string list ref
-val annotations : bool ref
-val binary_annotations : bool ref
-val use_threads : bool ref
-val use_vmthreads : bool ref
-val noassert : bool ref
-val verbose : bool ref
-val noprompt : bool ref
-val nopromptcont : bool ref
-val init_file : string option ref
-val noinit : bool ref
-val use_prims : string ref
-val use_runtime : string ref
-val principal : bool ref
-val real_paths : bool ref
-val recursive_types : bool ref
-val strict_sequence : bool ref
-val strict_formats : bool ref
-val applicative_functors : bool ref
-val make_runtime : bool ref
-val gprofile : bool ref
-val c_compiler : string option ref
-val no_auto_link : bool ref
-val dllpaths : string list ref
-val make_package : bool ref
-val for_package : string option ref
-val error_size : int ref
-val float_const_prop : bool ref
-val transparent_modules : bool ref
-val dump_source : bool ref
-val dump_parsetree : bool ref
-val dump_typedtree : bool ref
-val dump_rawlambda : bool ref
-val dump_lambda : bool ref
-val dump_clambda : bool ref
-val dump_instr : bool ref
-val keep_asm_file : bool ref
-val optimize_for_speed : bool ref
-val dump_cmm : bool ref
-val dump_selection : bool ref
-val dump_cse : bool ref
-val dump_live : bool ref
-val dump_spill : bool ref
-val dump_split : bool ref
-val dump_interf : bool ref
-val dump_prefer : bool ref
-val dump_regalloc : bool ref
-val dump_reload : bool ref
-val dump_scheduling : bool ref
-val dump_linear : bool ref
-val keep_startup_file : bool ref
-val dump_combine : bool ref
-val native_code : bool ref
-val inline_threshold : int ref
-val dont_write_files : bool ref
-val std_include_flag : string -> string
-val std_include_dir : unit -> string list
-val shared : bool ref
-val dlcode : bool ref
-val runtime_variant : string ref
-val force_slash : bool ref
-val keep_docs : bool ref
-val keep_locs : bool ref
-val unsafe_string : bool ref
-val opaque : bool ref
-
-end = struct
-#1 "clflags.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Command-line parameters *)
-
-let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
-and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
-and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
-
-let compile_only = ref false            (* -c *)
-and output_name = ref (None : string option) (* -o *)
-and include_dirs = ref ([] : string list)(* -I *)
-and no_std_include = ref false          (* -nostdlib *)
-and print_types = ref false             (* -i *)
-and make_archive = ref false            (* -a *)
-and debug = ref false                   (* -g *)
-and fast = ref false                    (* -unsafe *)
-and link_everything = ref false         (* -linkall *)
-and custom_runtime = ref false          (* -custom *)
-and no_check_prims = ref false          (* -no-check-prims *)
-and bytecode_compatible_32 = ref false  (* -compat-32 *)
-and output_c_object = ref false         (* -output-obj *)
-and output_complete_object = ref false  (* -output-complete-obj *)
-and all_ccopts = ref ([] : string list)     (* -ccopt *)
-and classic = ref false                 (* -nolabels *)
-and nopervasives = ref false            (* -nopervasives *)
-and preprocessor = ref(None : string option) (* -pp *)
-and all_ppx = ref ([] : string list)        (* -ppx *)
-let annotations = ref false             (* -annot *)
-let binary_annotations = ref false      (* -annot *)
-and use_threads = ref false             (* -thread *)
-and use_vmthreads = ref false           (* -vmthread *)
-and noassert = ref false                (* -noassert *)
-and verbose = ref false                 (* -verbose *)
-and noprompt = ref false                (* -noprompt *)
-and nopromptcont = ref false            (* -nopromptcont *)
-and init_file = ref (None : string option)   (* -init *)
-and noinit = ref false                  (* -noinit *)
-and open_modules = ref []               (* -open *)
-and use_prims = ref ""                  (* -use-prims ... *)
-and use_runtime = ref ""                (* -use-runtime ... *)
-and principal = ref false               (* -principal *)
-and real_paths = ref true               (* -short-paths *)
-and recursive_types = ref false         (* -rectypes *)
-and strict_sequence = ref false         (* -strict-sequence *)
-and strict_formats = ref false          (* -strict-formats *)
-and applicative_functors = ref true     (* -no-app-funct *)
-and make_runtime = ref false            (* -make-runtime *)
-and gprofile = ref false                (* -p *)
-and c_compiler = ref (None: string option) (* -cc *)
-and no_auto_link = ref false            (* -noautolink *)
-and dllpaths = ref ([] : string list)   (* -dllpath *)
-and make_package = ref false            (* -pack *)
-and for_package = ref (None: string option) (* -for-pack *)
-and error_size = ref 500                (* -error-size *)
-and float_const_prop = ref true         (* -no-float-const-prop *)
-and transparent_modules = ref false     (* -trans-mod *)
-let dump_source = ref false             (* -dsource *)
-let dump_parsetree = ref false          (* -dparsetree *)
-and dump_typedtree = ref false          (* -dtypedtree *)
-and dump_rawlambda = ref false          (* -drawlambda *)
-and dump_lambda = ref false             (* -dlambda *)
-and dump_clambda = ref false            (* -dclambda *)
-and dump_instr = ref false              (* -dinstr *)
-
-let keep_asm_file = ref false           (* -S *)
-let optimize_for_speed = ref true       (* -compact *)
-and opaque = ref false                  (* -opaque *)
-
-and dump_cmm = ref false                (* -dcmm *)
-let dump_selection = ref false          (* -dsel *)
-let dump_cse = ref false                (* -dcse *)
-let dump_live = ref false               (* -dlive *)
-let dump_spill = ref false              (* -dspill *)
-let dump_split = ref false              (* -dsplit *)
-let dump_interf = ref false             (* -dinterf *)
-let dump_prefer = ref false             (* -dprefer *)
-let dump_regalloc = ref false           (* -dalloc *)
-let dump_reload = ref false             (* -dreload *)
-let dump_scheduling = ref false         (* -dscheduling *)
-let dump_linear = ref false             (* -dlinear *)
-let keep_startup_file = ref false       (* -dstartup *)
-let dump_combine = ref false            (* -dcombine *)
-let native_code = ref false             (* set to true under ocamlopt *)
-let inline_threshold = ref 10
-let force_slash = ref false             (* for ocamldep *)
-
-let dont_write_files = ref false        (* set to true under ocamldoc *)
-
-let std_include_flag prefix =
-  if !no_std_include then ""
-  else (prefix ^ (Filename.quote Config.standard_library))
-;;
-
-let std_include_dir () =
-  if !no_std_include then [] else [Config.standard_library]
-;;
-
-let shared = ref false (* -shared *)
-let dlcode = ref true (* not -nodynlink *)
-
-let runtime_variant = ref "";;      (* -runtime-variant *)
-
-let keep_docs = ref false              (* -keep-docs *)
-let keep_locs = ref false              (* -keep-locs *)
-let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
 
 end
 (** Interface as module  *)
@@ -5101,6 +5059,8 @@ val tool_name : string
 
 val is_windows : bool 
 
+val better_errors : bool ref
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5329,6 +5289,8 @@ let no_any_assert = ref false
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
+let better_errors = ref false
+    
 let is_windows = 
   match Sys.os_type with 
   | "Win32" 
@@ -5476,6 +5438,7 @@ val collect_ast_map :
 
 val collect_from_main :
   ?extra_dirs:string list -> 
+  ?excludes : string list -> 
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
@@ -5709,24 +5672,37 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
-let collect_from_main ?(extra_dirs=[]) (ppf : Format.formatter)
+let collect_from_main 
+    ?(extra_dirs=[])
+    ?(excludes=[])
+    (ppf : Format.formatter)
     parse_implementation
     parse_interface
     project_impl 
     project_intf 
     main_file =
+  let not_excluded  = 
+    match excludes with 
+    | [] -> fun _ -> true
+    | _ -> 
+      fun source_file -> not (List.mem source_file excludes)
+  in 
   let dirname = Filename.dirname main_file in
   (** TODO: same filename module detection  *)
   let files = 
     Array.fold_left (fun acc source_file ->
-        if Ext_string.ends_with source_file ".ml" ||
-           Ext_string.ends_with source_file ".mli" then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   (Sys.readdir dirname) in 
+        if (Ext_string.ends_with source_file ".ml" ||
+            Ext_string.ends_with source_file ".mli") 
+           && not_excluded source_file
+        then 
+          (Filename.concat dirname source_file) :: acc else acc ) []   
+      (Sys.readdir dirname) in 
   let files = 
     List.fold_left (fun acc dirname -> 
         Array.fold_left (fun acc source_file -> 
-            if Ext_string.ends_with source_file ".ml" ||
-               Ext_string.ends_with source_file ".mli" 
+            if (Ext_string.ends_with source_file ".ml" ||
+               Ext_string.ends_with source_file ".mli" )
+               && not_excluded source_file
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
@@ -5912,6 +5888,476 @@ let write_file f content =
   Ext_pervasives.finally (open_out f) close_out begin fun oc ->   
     output_string oc content
   end
+
+end
+module Ext_list : sig 
+#1 "ext_list.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [List] module *)
+    
+(** TODO some function are no efficiently implemented. *) 
+
+val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
+
+val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+val exclude_with_fact2 : 
+  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+val same_length : 'a list -> 'b list -> bool
+
+val init : int -> (int -> 'a) -> 'a list
+
+val take : int -> 'a list -> 'a list * 'a list
+val try_take : int -> 'a list -> 'a list * int * 'a list 
+
+val exclude_tail : 'a list -> 'a * 'a list
+
+val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
+
+val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+
+val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
+
+(** for the last element the first element will be passed [true] *)
+
+val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+
+val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
+
+val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
+
+val drop : int -> 'a list -> 'a list 
+
+val for_all_ret : ('a -> bool) -> 'a list -> 'a option
+
+val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
+(** [for_all_opt f l] returns [None] if all return [None],  
+    otherwise returns the first one. 
+ *)
+
+val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+(** same as [List.fold_left]. 
+    Provide an api so that list can be easily swapped by other containers  
+ *)
+
+val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
+
+val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
+val rev_iter : ('a -> unit) -> 'a list -> unit
+
+val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** [f] is applied follow the list order *)
+val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
+
+
+val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+(** [fn] is applied from left to right *)
+val reduce_from_left : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+
+type 'a t = 'a list ref
+
+val create_ref_empty : unit -> 'a t
+
+val ref_top : 'a t -> 'a 
+
+val ref_empty : 'a t -> bool
+
+val ref_push : 'a -> 'a t -> unit
+
+val ref_pop : 'a t -> 'a
+
+val rev_except_last : 'a list -> 'a list * 'a
+
+end = struct
+#1 "ext_list.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let rec filter_map (f: 'a -> 'b option) xs = 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+      begin match f y with 
+      | None -> filter_map f ys
+      | Some z -> z :: filter_map f ys
+      end
+
+let excludes p l =
+  let excluded = ref false in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := true ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  if !excluded then true, v else false,l
+
+let exclude_with_fact p l =
+  let excluded = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := Some x ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded , if !excluded <> None then v else l 
+
+
+(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
+let exclude_with_fact2 p1 p2 l =
+  let excluded1 = ref None in 
+  let excluded2 = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p1 x then 
+      begin 
+        excluded1 := Some x ;
+        aux accu l
+      end
+    else if p2 x then 
+      begin 
+        excluded2 := Some x ; 
+        aux accu l 
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
+
+
+
+let rec same_length xs ys = 
+  match xs, ys with 
+  | [], [] -> true
+  | _::xs, _::ys -> same_length xs ys 
+  | _, _ -> false 
+
+let  filter_mapi (f: int -> 'a -> 'b option) xs = 
+  let rec aux i xs = 
+    match xs with 
+    | [] -> []
+    | y :: ys -> 
+        begin match f i y with 
+        | None -> aux (i + 1) ys
+        | Some z -> z :: aux (i + 1) ys
+        end in
+  aux 0 xs 
+
+let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f u v with 
+      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2 f us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2"
+
+let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
+  let rec aux i xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f i u v with 
+      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: aux (i + 1) us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2i" in
+  aux 0 xs ys
+
+let rec rev_map_append  f l1 l2 =
+  match l1 with
+  | [] -> l2
+  | a :: l -> rev_map_append f l (f a :: l2)
+
+let flat_map2 f lx ly = 
+  let rec aux acc lx ly = 
+    match lx, ly with 
+    | [], [] 
+      -> List.rev acc
+    | x::xs, y::ys 
+      ->  aux (List.rev_append (f x y) acc) xs ys
+    | _, _ -> invalid_arg "Ext_list.flat_map2" in
+  aux [] lx ly
+        
+let flat_map f lx =
+  let rec aux acc lx =
+    match lx with
+    | [] -> List.rev acc
+    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
+  aux [] lx
+
+let rec map2_last f l1 l2 =
+  match (l1, l2) with
+  | ([], []) -> []
+  | [u], [v] -> [f true u v ]
+  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
+  | (_, _) -> invalid_arg "List.map2_last"
+
+let rec map_last f l1 =
+  match l1 with
+  | [] -> []
+  | [u]-> [f true u ]
+  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
+
+
+let rec fold_right2_last f l1 l2 accu  = 
+  match (l1, l2) with
+  | ([], []) -> accu
+  | [last1], [last2] -> f true  last1 last2 accu
+  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
+  | (_, _) -> invalid_arg "List.fold_right2"
+
+
+let init n f = 
+  Array.to_list (Array.init n f)
+
+let take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  < n then invalid_arg "Ext_list.take"
+  else (Array.to_list (Array.sub arr 0 n ), 
+        Array.to_list (Array.sub arr n (arr_length - n)))
+
+let try_take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  <= n then 
+    l,  arr_length, []
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+
+let exclude_tail (x : 'a list) = 
+  let rec aux acc x = 
+    match x with 
+    | [] -> invalid_arg "Ext_list.exclude_tail"
+    | [ x ] ->  x, List.rev acc
+    | y0::ys -> aux (y0::acc) ys in
+  aux [] x
+
+(* For small list, only need partial equality 
+   {[
+   group (=) [1;2;3;4;3]
+   ;;
+   - : int list list = [[3; 3]; [4]; [2]; [1]]
+   # group (=) [];;
+   - : 'a list list = []
+   ]}
+ *)
+let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
+  match lst with 
+  | [] -> []
+  | x::xs -> 
+      aux cmp x (group cmp xs )
+
+and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
+  match xss with 
+  | [] -> [[x]]
+  | y::ys -> 
+      if cmp x (List.hd y) (* cannot be null*) then
+        (x::y) :: ys 
+      else
+        y :: aux cmp x ys                                 
+  
+let stable_group cmp lst =  group cmp lst |> List.rev 
+
+let rec drop n h = 
+  if n < 0 then invalid_arg "Ext_list.drop"
+  else if n = 0 then h 
+  else if h = [] then invalid_arg "Ext_list.drop"
+  else 
+    drop (n - 1) (List.tl h)
+
+let rec for_all_ret  p = function
+  | [] -> None
+  | a::l -> 
+      if p a 
+      then for_all_ret p l
+      else Some a 
+
+let rec for_all_opt  p = function
+  | [] -> None
+  | a::l -> 
+      match p a with
+      | None -> for_all_opt p l
+      | v -> v 
+
+let fold f l init = 
+  List.fold_left (fun acc i -> f  i init) init l 
+
+let rev_map_acc  acc f l = 
+  let rec rmap_f accu = function
+    | [] -> accu
+    | a::l -> rmap_f (f a :: accu) l
+  in
+  rmap_f acc l
+
+let rec rev_iter f xs =
+    match xs with    
+    | [] -> ()
+    | y :: ys -> 
+      rev_iter f ys ;
+      f y      
+      
+let rec for_all2_no_exn p l1 l2 = 
+  match (l1, l2) with
+  | ([], []) -> true
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
+  | (_, _) -> false
+
+
+let rec find_no_exn p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_no_exn p l
+
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt p l
+
+
+let split_map 
+    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
+  let rec aux bs cs xs =
+    match xs with 
+    | [] -> List.rev bs, List.rev cs 
+    | u::us -> 
+      let b,c =  f u in aux (b::bs) (c ::cs) us in 
+
+  aux [] [] xs 
+
+
+(*
+   {[
+     reduce_from_right (-) [1;2;3];;
+     - : int = 2
+               # reduce_from_right (-) [1;2;3; 4];;
+     - : int = -2
+                # reduce_from_right (-) [1];;
+     - : int = 1
+               # reduce_from_right (-) [1;2;3; 4; 5];;
+     - : int = 3
+   ]} 
+*)
+let reduce_from_right fn lst = 
+  begin match List.rev lst with
+    | last :: rest -> 
+      List.fold_left  (fun x y -> fn y x) last rest 
+    | _ -> invalid_arg "Ext_list.reduce" 
+  end
+let reduce_from_left fn lst = 
+  match lst with 
+  | first :: rest ->  List.fold_left fn first rest 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
+
+
+type 'a t = 'a list ref
+
+let create_ref_empty () = ref []
+
+let ref_top x = 
+  match !x with 
+  | y::_ -> y 
+  | _ -> invalid_arg "Ext_list.ref_top"
+
+let ref_empty x = 
+  match !x with [] -> true | _ -> false 
+
+let ref_push x refs = 
+  refs := x :: !refs
+
+let ref_pop refs = 
+  match !refs with 
+  | [] -> invalid_arg "Ext_list.ref_pop"
+  | x::rest -> 
+    refs := rest ; 
+    x     
+
+let rev_except_last xs =
+  let rec aux acc xs =
+    match xs with
+    | [ ] -> invalid_arg "Ext_list.rev_except_last"
+    | [ x ] -> acc ,x
+    | x :: xs -> aux (x::acc) xs in
+  aux [] xs   
 
 end
 module Docstrings : sig 
@@ -22499,12 +22945,23 @@ let set_main_file file =
 let mllib_file = ref None
 let set_mllib_file file =     
   mllib_file := Some file 
+let prelude = ref None 
+let set_prelude f = 
+  if Sys.file_exists f then 
+    prelude := Some f 
+  else raise (Arg.Bad ("file " ^ f ^ " don't exist "))
 
 let includes = ref []
-let add_include dir = includes := dir :: !includes 
-      
+let add_include dir = includes := dir :: !includes
+
+let exclude_modules = ref []                                     
+let add_exclude module_ = 
+  exclude_modules := module_ :: !exclude_modules
+  
 let specs : (string * Arg.spec * string) list =
   [
+    "-prelude", (Arg.String set_prelude),
+    " Set a prelude file, literally copy into the beginning";    
     "-bs-mllib", (Arg.String set_string),
     " Files collected from mllib";
     "-bs-log-mllib", (Arg.String set_mllib_file),
@@ -22513,6 +22970,9 @@ let specs : (string * Arg.spec * string) list =
     " Set output file (default to stdout)" ;
     "-with-header", (Arg.Set header_option),
     " with header of time stamp(can also be set with env variable BS_RELEASE_BUILD)" ; 
+    "-bs-exclude-I", (Arg.String add_exclude),
+    " don't read and pack such modules from -I (in the future, we should detect conflicts in mllib or commandline) "
+    ;
     "-bs-main", (Arg.String set_main_file),
     " set the main entry module";
     "-I",  (Arg.String add_include),
@@ -22542,7 +23002,15 @@ let () =
           output_string out_chan
             (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n"
                (local_time.tm_mon + 1) local_time.tm_mday
-               local_time.tm_hour local_time.tm_min)) in
+               local_time.tm_hour local_time.tm_min));
+       match !prelude with
+       | None -> ()
+       | Some f -> 
+         begin 
+           output_string out_chan (Ext_io.load_file f);
+           output_string out_chan "\n"         
+         end
+     in
      let close_out_chan out_chan = 
        (if  out_chan != stdout then close_out out_chan) in
      let files =
@@ -22559,8 +23027,13 @@ let () =
          (String.concat ", " files)
      | Some main_file ,  []
        ->
+       let excludes =
+         match !exclude_modules with
+         | [] -> []
+         | xs -> 
+           Ext_list.flat_map (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) xs in 
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~extra_dirs:!includes
+         Ast_extract.collect_from_main ~excludes ~extra_dirs:!includes
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))

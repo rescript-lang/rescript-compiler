@@ -1,6 +1,0 @@
-config
-runtimedef
-lexer
-parser
-include ../compiler_internal.mllib
-include ../compiler.mllib

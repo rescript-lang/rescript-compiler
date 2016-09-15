@@ -5576,6 +5576,7 @@ val collect_ast_map :
 
 val collect_from_main :
   ?extra_dirs:string list -> 
+  ?excludes : string list -> 
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
   (Format.formatter -> string -> 'b) ->
@@ -5809,24 +5810,37 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
-let collect_from_main ?(extra_dirs=[]) (ppf : Format.formatter)
+let collect_from_main 
+    ?(extra_dirs=[])
+    ?(excludes=[])
+    (ppf : Format.formatter)
     parse_implementation
     parse_interface
     project_impl 
     project_intf 
     main_file =
+  let not_excluded  = 
+    match excludes with 
+    | [] -> fun _ -> true
+    | _ -> 
+      fun source_file -> not (List.mem source_file excludes)
+  in 
   let dirname = Filename.dirname main_file in
   (** TODO: same filename module detection  *)
   let files = 
     Array.fold_left (fun acc source_file ->
-        if Ext_string.ends_with source_file ".ml" ||
-           Ext_string.ends_with source_file ".mli" then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   (Sys.readdir dirname) in 
+        if (Ext_string.ends_with source_file ".ml" ||
+            Ext_string.ends_with source_file ".mli") 
+           && not_excluded source_file
+        then 
+          (Filename.concat dirname source_file) :: acc else acc ) []   
+      (Sys.readdir dirname) in 
   let files = 
     List.fold_left (fun acc dirname -> 
         Array.fold_left (fun acc source_file -> 
-            if Ext_string.ends_with source_file ".ml" ||
-               Ext_string.ends_with source_file ".mli" 
+            if (Ext_string.ends_with source_file ".ml" ||
+               Ext_string.ends_with source_file ".mli" )
+               && not_excluded source_file
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
@@ -33229,8 +33243,7 @@ end = struct
 (*                                                                     *)
 (***********************************************************************)
 
-open Clflags 
-open Config 
+open Clflags
 open Compenv
 
 let mk_absname f =
@@ -33786,98 +33799,5 @@ let _ =
 
 
 
-
-end
-module Lam_runtime : sig 
-#1 "lam_runtime.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-end = struct
-#1 "lam_runtime.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-(** Pre-defined runtime function name *)
-
-let builtin_modules = 
-  [
-   "caml_array", true;
-   "caml_format", true;
-   "caml_md5", true;
-   "caml_sys", true;
-   "caml_bigarray", true;
-   "caml_hash", true;
-   "caml_obj", true;
-   "caml_c_ffi", true;
-   "caml_int64", true;
-   "caml_polyfill", true;	     
-   "caml_exceptions", true;
-   "caml_unix", true;
-   "caml_io", true;
-   "caml_primitive", true;
-   "caml_utils", true;
-   "caml_file", true;	    
-   "caml_lexer", true;
-   "caml_float", true;
-   "caml_marshal", true;
-   "caml_string", true
- ]
 
 end
