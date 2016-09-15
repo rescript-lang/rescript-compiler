@@ -40,14 +40,14 @@ release:snapshot
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 
-./bin/bsppx$(EXE): ./bin/bs_ppx.mli ./bin/bs_ppx.ml
+./bin/bsppx$(EXE): ./bin/bsppx.mli ./bin/bsppx.ml
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin -I +compiler-libs ocamlcommon.cmxa   $^ -o $@
 
 releasebuild:./bin/bspack$(EXE)
 	@echo "Make release compiler"
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc$(EXE)
 	@echo "Make release ppx"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bs_ppx.mli bin/bs_ppx.ml -o bin/bsppx$(EXE)
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bsppx.mli bin/bsppx.ml -o bin/bsppx$(EXE)
 
 snapshot: ./bin/bspack snapshotcmj
 	$(MAKE) snapshotml
@@ -55,7 +55,7 @@ snapshot: ./bin/bspack snapshotcmj
 snapshotml:./bin/bspack ./bin/compiler.mllib
 	@echo "Snapshot ml"
 	$< -bs-mllib bin/compiler.mllib -o bin/compiler.ml
-	$< -I common -I ext -I syntax -bs-main bs_ppx_main.ml -o bin/bs_ppx.ml
+	$< -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
 	$< -bs-log-mllib bin/whole_compiler.mllib -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 
 snapshotcmj:
@@ -113,7 +113,7 @@ world-test:
 
 travis-world-test:./bin/bspack
 	@echo "Generating the compiler"
-	rm -f bin/compiler.ml bin/bs_ppx.ml
+	rm -f bin/compiler.ml bin/bsppx.ml
 	$(MAKE) snapshotml
 	@echo "Generating the compiler finished"
 	$(MAKE) world-test

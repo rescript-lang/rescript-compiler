@@ -6448,9 +6448,9 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
 
 
 end
-module Bs_ppx_main
+module Bsppx_main
 = struct
-#1 "bs_ppx_main.ml"
+#1 "bsppx_main.ml"
 
 
 
