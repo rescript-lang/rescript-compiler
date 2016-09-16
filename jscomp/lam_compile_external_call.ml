@@ -197,12 +197,12 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       let (id, name) =  handle_external  module_name  in
       E.external_var_dot id name None
 
-    | Js_module_as_fn module_name ->
+    | Js_module_as_fn {external_module_name = module_name; splice} ->
       let fn =
         let (id, name) = handle_external  module_name  in
         E.external_var_dot id name None           
       in           
-      let args, eff = assemble_args arg_types args in 
+      let args, eff = assemble_args_splice splice arg_types args in 
         (* TODO: fix in rest calling convention *)          
       add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 

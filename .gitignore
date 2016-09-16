@@ -1,5 +1,7 @@
 *~
 _build
+*.exe
+*.obj
 *.out
 *.compile
 *.native
