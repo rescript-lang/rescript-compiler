@@ -24,30 +24,33 @@
 
 
 external nan : float = "NaN"
-    [@@bs.val ] 
+[@@bs.val ] 
 
-external to_fixed : float -> int -> string = "toFixed" 
-    [@@bs.send]
+external toFixed : float -> int -> string = "" 
+[@@bs.send]
 
-external is_finite : float -> bool = "isFinite"
-    [@@bs.val ]
+external isFinite : float -> Js.boolean = ""
+[@@bs.val ]
 
-external is_nan : float -> bool = "isNaN"
-    [@@bs.val ] 
+external isNaN : float -> Js.boolean = ""
+[@@bs.val] 
 
 external exp : float -> float = "Math.exp"
-    [@@bs.val ]
+[@@bs.val]
 
 external log : float -> float = "Math.log"
-    [@@bs.val ]
+[@@bs.val]
 
 external to_exponential : float -> prec:int ->  string = "toExponential"
-    [@@bs.send]
+[@@bs.send]
 
-external log2 : float = "Math.LN2" [@@ bs.val ]  
+external log2 : float = "Math.LN2" 
+[@@ bs.val]  
+
 external max : float -> float -> float = "Math.max" 
-    [@@bs.val]
+[@@bs.val]
+
 external random : unit -> float = "Math.random"
-    [@@bs.val ]
+[@@bs.val ]
 external of_any : 'a -> float = "js_anything_to_number"
 

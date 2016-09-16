@@ -2392,6 +2392,96 @@ let type_deriving_signature
          tdcl explict_nonrec) actions
 
 end
+module Bs_warnings : sig 
+#1 "bs_warnings.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+  | Unsafe_poly_variant_type
+
+val prerr_warning : Location.t -> t -> unit 
+
+end = struct
+#1 "bs_warnings.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+
+  | Unsafe_poly_variant_type
+  (* for users write code like this:
+     {[ external f : [`a of int ] -> string = ""]}
+     Here users forget about `[@bs.string]` or `[@bs.int]`
+  *)    
+
+
+
+let print fmt t =
+  match t with
+  | Unsafe_ffi_bool_type
+    ->   
+    Format.fprintf fmt 
+      "You are passing a OCaml bool type into JS, probabaly you want to pass Js.boolean"
+  | Unsafe_poly_variant_type 
+    -> 
+    Format.fprintf fmt 
+      "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+
+let warning_formatter = Format.err_formatter
+
+let prerr_warning loc x =
+  Location.print  warning_formatter loc  ; 
+  Format.fprintf warning_formatter "Warning: %a@." print x 
+
+end
 module Ast_core_type : sig 
 #1 "ast_core_type.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2544,63 +2634,65 @@ let label_name l : arg_label =
 let get_arg_type (ty : t) : arg_type = 
   match ty with 
   | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
-    match Ast_attributes.process_bs_string_int ptyp_attributes with 
-    | `String  -> 
-      begin match ptyp_desc with 
-      | Ptyp_variant ( row_fields, Closed, None)
-        -> 
-        let case, result = 
-          (List.fold_right (fun tag (nullary, acc) -> 
-               match nullary, tag with 
-               | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
-                 -> 
-                 let name = 
-                   match Ast_attributes.process_bs_string_as attrs with 
-                   | Some name -> name 
-                   | None -> label in
-                 `Null, ((Btype.hash_variant label, name) :: acc )
-               | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
-                 -> 
-                 let name = 
-                   match Ast_attributes.process_bs_string_as attrs with 
-                   | Some name -> name 
-                   | None -> label in
-                 `NonNull, ((Btype.hash_variant label, name) :: acc)
+    match 
+      Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
+    | `String,  Ptyp_variant ( row_fields, Closed, None)
+      -> 
+      let case, result = 
+        (List.fold_right (fun tag (nullary, acc) -> 
+             match nullary, tag with 
+             | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
+               -> 
+               let name = 
+                 match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name -> name 
+                 | None -> label in
+               `Null, ((Btype.hash_variant label, name) :: acc )
+             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
+               -> 
+               let name = 
+                 match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name -> name 
+                 | None -> label in
+               `NonNull, ((Btype.hash_variant label, name) :: acc)
 
-               | _ -> Location.raise_errorf ~loc "Not a valid string type"
-             ) row_fields (`Nothing, [])) in 
-        begin match case with 
+             | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) row_fields (`Nothing, [])) in 
+      begin match case with 
         | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
         | `Null -> NullString result 
         | `NonNull -> NonNullString result 
-        end
-      | _ -> Location.raise_errorf ~loc "Not a valid string type"
       end
-    | `Ignore -> Ignore
-    | `Int  -> 
-      begin match ptyp_desc with 
-      | Ptyp_variant ( row_fields, Closed, None)
-        -> 
-        let _, acc = 
-          (List.fold_left 
-             (fun (i,acc) rtag -> 
-                match rtag with 
-                | Parsetree.Rtag (label, attrs, true,  [])
-                  -> 
-                  let name = 
-                    match Ast_attributes.process_bs_int_as attrs with 
-                    | Some name -> name 
-                    | None -> i in
-                  name + 1, ((Btype.hash_variant label , name):: acc )
-                | _ -> Location.raise_errorf ~loc "Not a valid string type"
-             ) (0, []) row_fields) in 
-        Int (List.rev acc)
-          
-      | _ -> Location.raise_errorf ~loc "Not a valid string type"
-      end
+    | `String,  _ -> Location.raise_errorf ~loc "Not a valid string type"
 
-    | `Nothing -> Nothing
-      
+    | `Ignore, _  -> Ignore
+    | `Int , Ptyp_variant ( row_fields, Closed, None) -> 
+      let _, acc = 
+        (List.fold_left 
+           (fun (i,acc) rtag -> 
+              match rtag with 
+              | Parsetree.Rtag (label, attrs, true,  [])
+                -> 
+                let name = 
+                  match Ast_attributes.process_bs_int_as attrs with 
+                  | Some name -> name 
+                  | None -> i in
+                name + 1, ((Btype.hash_variant label , name):: acc )
+              | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) (0, []) row_fields) in 
+      Int (List.rev acc)
+
+    | `Int, _ -> Location.raise_errorf ~loc "Not a valid string type"
+    | `Nothing, ptyp_desc ->
+      begin 
+        (match ptyp_desc with
+         | Ptyp_constr ({txt = Lident "bool"}, [])
+           -> 
+           Bs_warnings.prerr_warning loc Unsafe_ffi_bool_type
+         | _ -> ()         
+        );
+        Nothing
+      end
 
 
 let from_labels ~loc tyvars (labels : string list)
