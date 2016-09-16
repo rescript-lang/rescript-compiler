@@ -50,7 +50,7 @@ type arg_type =
 val label_name : string -> arg_label
 
 
-val get_arg_type : t -> arg_type
+
 
 
 (** return a function type *)

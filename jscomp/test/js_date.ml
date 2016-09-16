@@ -103,7 +103,7 @@ class type date =
 type t = date Js.t 
 
 external current_date_as_string : unit -> string = "" 
-  [@@bs.val "Date"] [@@bs.nullary]
+  [@@bs.val "Date"] (* [@@bs.nullary] *)
 (* Note here [Date(0)] is the same as [Date()], 
    but this is not always true
 *)
@@ -116,7 +116,7 @@ external now : unit -> number = ""
   [@@bs.val "Date.now"]
 
 external current : unit -> t = "Date"
-  [@@bs.new ] [@@bs.nullary]
+  [@@bs.new ] (* [@@bs.nullary] *)
 external of_string : string -> t = "Date"
   [@@bs.new ]
 

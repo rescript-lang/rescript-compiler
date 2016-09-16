@@ -95,7 +95,7 @@ let ui_layout
         computeFunction := fun env ->  hot_function (fun key -> lookup env key) 
       with  e -> ()
     end;
-    let fmt v = to_fixed v 2 in
+    let fmt v = toFixed v 2 in
     set_interval (fun [@bs] () -> 
 
       grid##dataSource #=

@@ -114,7 +114,17 @@ let buckle_script_flags =
   ("-bs-package-include", 
    Arg.String add_package, 
    " set package names, for example bs-platform "  )
-  :: 
+  ::
+  (* ("-bs-no-warn-unused-bs-attribute", *)
+  (*  Arg.Set Js_config.no_warn_unused_bs_attribute,  *)
+  (*  " disable warnings on unused bs. attribute" *)
+  (* ) *)
+  (* :: *)
+  ("-bs-no-warn-ffi-type", 
+   Arg.Set Js_config.no_warn_ffi_type,
+   " disable warnings for ffi type"
+  ) 
+  ::
   ("-bs-no-builtin-ppx-ml", 
    Arg.Set Js_config.no_builtin_ppx_ml,
    "disable built-in ppx for ml files (internal use)")

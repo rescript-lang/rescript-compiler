@@ -14,3 +14,4 @@ ast_external_attributes
 ast_pat
 ast_exp
 bs_ast_iterator
+bs_ast_invariant
