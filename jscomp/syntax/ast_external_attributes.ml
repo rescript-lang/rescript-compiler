@@ -78,6 +78,75 @@ type ffi =
   | Js_set_index
 
 
+let get_arg_type (ty : Ast_core_type.t) : arg_type = 
+  match ty with 
+  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
+    match 
+      Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
+    | `String,  Ptyp_variant ( row_fields, Closed, None)
+      -> 
+      let case, result = 
+        (List.fold_right (fun tag (nullary, acc) -> 
+             match nullary, tag with 
+             | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
+               -> 
+               let name = 
+                 match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name -> name 
+                 | None -> label in
+               `Null, ((Btype.hash_variant label, name) :: acc )
+             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
+               -> 
+               let name = 
+                 match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name -> name 
+                 | None -> label in
+               `NonNull, ((Btype.hash_variant label, name) :: acc)
+
+             | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) row_fields (`Nothing, [])) in 
+      begin match case with 
+        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
+        | `Null -> NullString result 
+        | `NonNull -> NonNullString result 
+      end
+    | `String,  _ -> Location.raise_errorf ~loc "Not a valid string type"
+
+    | `Ignore, _  -> Ignore
+    | `Int , Ptyp_variant ( row_fields, Closed, None) -> 
+      let _, acc = 
+        (List.fold_left 
+           (fun (i,acc) rtag -> 
+              match rtag with 
+              | Parsetree.Rtag (label, attrs, true,  [])
+                -> 
+                let name = 
+                  match Ast_attributes.process_bs_int_as attrs with 
+                  | Some name -> name 
+                  | None -> i in
+                name + 1, ((Btype.hash_variant label , name):: acc )
+              | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) (0, []) row_fields) in 
+      Int (List.rev acc)
+
+    | `Int, _ -> Location.raise_errorf ~loc "Not a valid string type"
+    | `Nothing, ptyp_desc ->
+      begin match ptyp_desc with
+        | Ptyp_constr ({txt = Lident "bool"}, [])
+          -> 
+          Bs_warnings.prerr_warning loc Unsafe_ffi_bool_type;
+          Nothing
+        | Ptyp_constr ({txt = Lident "unit"}, [])
+          -> Unit 
+        | Ptyp_constr ({txt = Lident "array"}, [_])
+          -> Array
+        | Ptyp_variant _ ->
+          Bs_warnings.prerr_warning loc Unsafe_poly_variant_type;
+          Nothing           
+        | _ ->
+          Nothing           
+      end
+
 
 let valid_js_char =
   let a = Array.init 256 (fun i ->
@@ -319,18 +388,14 @@ let handle_attributes
         )
          init_st prim_attributes in 
 
-    let aux ty : arg_type = 
-      if Ast_core_type.is_array ty then Array
-      else if Ast_core_type.is_unit ty then Unit
-      else (Ast_core_type.get_arg_type ty :> arg_type) in
     let translate_arg_type =
       (fun (label, ty) -> 
          { arg_label = Ast_core_type.label_name label ;
-           arg_type =  aux ty 
+           arg_type =  get_arg_type ty 
          }) in      
     let arg_types = 
       List.map translate_arg_type arg_types_ty in
-    let result_type = aux result_type_ty in
+    let result_type = get_arg_type result_type_ty in
 
     let ffi = 
       match st with 

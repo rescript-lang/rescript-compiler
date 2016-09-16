@@ -35,19 +35,18 @@ type t =
 
 
 
-let print fmt t =
+let to_string t =
   match t with
   | Unsafe_ffi_bool_type
     ->   
-    Format.fprintf fmt 
-      "You are passing a OCaml bool type into JS, probabaly you want to pass Js.boolean"
+    "You are passing a OCaml bool type into JS, probabaly you want to pass Js.boolean"
   | Unsafe_poly_variant_type 
     -> 
-    Format.fprintf fmt 
-      "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
 
 let warning_formatter = Format.err_formatter
 
 let prerr_warning loc x =
-  Location.print  warning_formatter loc  ; 
-  Format.fprintf warning_formatter "Warning: %a@." print x 
+  let warning = Warnings.Preprocessor (to_string x) in 
+  if Warnings.is_active warning then 
+  Location.prerr_warning loc warning

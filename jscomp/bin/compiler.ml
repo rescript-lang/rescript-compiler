@@ -1854,7 +1854,7 @@ type arg_type =
 val label_name : string -> arg_label
 
 
-val get_arg_type : t -> arg_type
+
 
 
 (** return a function type *)
@@ -1948,67 +1948,6 @@ let label_name l : arg_label =
   if is_optional l 
   then Optional (String.sub l 1 (String.length l - 1))
   else Label l
-
-let get_arg_type (ty : t) : arg_type = 
-  match ty with 
-  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
-    match Ast_attributes.process_bs_string_int ptyp_attributes with 
-    | `String  -> 
-      begin match ptyp_desc with 
-      | Ptyp_variant ( row_fields, Closed, None)
-        -> 
-        let case, result = 
-          (List.fold_right (fun tag (nullary, acc) -> 
-               match nullary, tag with 
-               | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
-                 -> 
-                 let name = 
-                   match Ast_attributes.process_bs_string_as attrs with 
-                   | Some name -> name 
-                   | None -> label in
-                 `Null, ((Btype.hash_variant label, name) :: acc )
-               | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
-                 -> 
-                 let name = 
-                   match Ast_attributes.process_bs_string_as attrs with 
-                   | Some name -> name 
-                   | None -> label in
-                 `NonNull, ((Btype.hash_variant label, name) :: acc)
-
-               | _ -> Location.raise_errorf ~loc "Not a valid string type"
-             ) row_fields (`Nothing, [])) in 
-        begin match case with 
-        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
-        | `Null -> NullString result 
-        | `NonNull -> NonNullString result 
-        end
-      | _ -> Location.raise_errorf ~loc "Not a valid string type"
-      end
-    | `Ignore -> Ignore
-    | `Int  -> 
-      begin match ptyp_desc with 
-      | Ptyp_variant ( row_fields, Closed, None)
-        -> 
-        let _, acc = 
-          (List.fold_left 
-             (fun (i,acc) rtag -> 
-                match rtag with 
-                | Parsetree.Rtag (label, attrs, true,  [])
-                  -> 
-                  let name = 
-                    match Ast_attributes.process_bs_int_as attrs with 
-                    | Some name -> name 
-                    | None -> i in
-                  name + 1, ((Btype.hash_variant label , name):: acc )
-                | _ -> Location.raise_errorf ~loc "Not a valid string type"
-             ) (0, []) row_fields) in 
-        Int (List.rev acc)
-          
-      | _ -> Location.raise_errorf ~loc "Not a valid string type"
-      end
-
-    | `Nothing -> Nothing
-      
 
 
 let from_labels ~loc tyvars (labels : string list)
@@ -2891,6 +2830,95 @@ let merge (l: t) (r : t) =
     {loc_start ;loc_end; loc_ghost = false}
 
 let none = Location.none
+
+end
+module Bs_warnings : sig 
+#1 "bs_warnings.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+  | Unsafe_poly_variant_type
+
+val prerr_warning : Location.t -> t -> unit 
+
+end = struct
+#1 "bs_warnings.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+
+  | Unsafe_poly_variant_type
+  (* for users write code like this:
+     {[ external f : [`a of int ] -> string = ""]}
+     Here users forget about `[@bs.string]` or `[@bs.int]`
+  *)    
+
+
+
+let to_string t =
+  match t with
+  | Unsafe_ffi_bool_type
+    ->   
+    "You are passing a OCaml bool type into JS, probabaly you want to pass Js.boolean"
+  | Unsafe_poly_variant_type 
+    -> 
+    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+
+let warning_formatter = Format.err_formatter
+
+let prerr_warning loc x =
+  let warning = Warnings.Preprocessor (to_string x) in 
+  if Warnings.is_active warning then 
+  Location.prerr_warning loc warning
 
 end
 module Ext_pervasives : sig 
@@ -4224,6 +4252,75 @@ type ffi =
   | Js_set_index
 
 
+let get_arg_type (ty : Ast_core_type.t) : arg_type = 
+  match ty with 
+  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
+    match 
+      Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
+    | `String,  Ptyp_variant ( row_fields, Closed, None)
+      -> 
+      let case, result = 
+        (List.fold_right (fun tag (nullary, acc) -> 
+             match nullary, tag with 
+             | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
+               -> 
+               let name = 
+                 match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name -> name 
+                 | None -> label in
+               `Null, ((Btype.hash_variant label, name) :: acc )
+             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
+               -> 
+               let name = 
+                 match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name -> name 
+                 | None -> label in
+               `NonNull, ((Btype.hash_variant label, name) :: acc)
+
+             | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) row_fields (`Nothing, [])) in 
+      begin match case with 
+        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
+        | `Null -> NullString result 
+        | `NonNull -> NonNullString result 
+      end
+    | `String,  _ -> Location.raise_errorf ~loc "Not a valid string type"
+
+    | `Ignore, _  -> Ignore
+    | `Int , Ptyp_variant ( row_fields, Closed, None) -> 
+      let _, acc = 
+        (List.fold_left 
+           (fun (i,acc) rtag -> 
+              match rtag with 
+              | Parsetree.Rtag (label, attrs, true,  [])
+                -> 
+                let name = 
+                  match Ast_attributes.process_bs_int_as attrs with 
+                  | Some name -> name 
+                  | None -> i in
+                name + 1, ((Btype.hash_variant label , name):: acc )
+              | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) (0, []) row_fields) in 
+      Int (List.rev acc)
+
+    | `Int, _ -> Location.raise_errorf ~loc "Not a valid string type"
+    | `Nothing, ptyp_desc ->
+      begin match ptyp_desc with
+        | Ptyp_constr ({txt = Lident "bool"}, [])
+          -> 
+          Bs_warnings.prerr_warning loc Unsafe_ffi_bool_type;
+          Nothing
+        | Ptyp_constr ({txt = Lident "unit"}, [])
+          -> Unit 
+        | Ptyp_constr ({txt = Lident "array"}, [_])
+          -> Array
+        | Ptyp_variant _ ->
+          Bs_warnings.prerr_warning loc Unsafe_poly_variant_type;
+          Nothing           
+        | _ ->
+          Nothing           
+      end
+
 
 let valid_js_char =
   let a = Array.init 256 (fun i ->
@@ -4465,18 +4562,14 @@ let handle_attributes
         )
          init_st prim_attributes in 
 
-    let aux ty : arg_type = 
-      if Ast_core_type.is_array ty then Array
-      else if Ast_core_type.is_unit ty then Unit
-      else (Ast_core_type.get_arg_type ty :> arg_type) in
     let translate_arg_type =
       (fun (label, ty) -> 
          { arg_label = Ast_core_type.label_name label ;
-           arg_type =  aux ty 
+           arg_type =  get_arg_type ty 
          }) in      
     let arg_types = 
       List.map translate_arg_type arg_types_ty in
-    let result_type = aux result_type_ty in
+    let result_type = get_arg_type result_type_ty in
 
     let ffi = 
       match st with 
@@ -4926,6 +5019,7 @@ let () =
         -> Some (Location.error_of_printer_file report_error err)
       | _ -> None
     )
+
 
 
 end
