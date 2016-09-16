@@ -57,12 +57,15 @@ type arg_kind =
     arg_type : arg_type;
     arg_label : arg_label
   }
-
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
 type ffi = 
   | Obj_create of arg_label list
   | Js_global of js_val 
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of external_module_name
+  | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name             
   | Js_call of js_call external_module
   | Js_send of js_send
@@ -141,7 +144,7 @@ let check_ffi ?loc ffi =
     -> ()
 
   | Js_module_as_var external_module_name
-  | Js_module_as_fn external_module_name
+  | Js_module_as_fn {external_module_name; _}
   | Js_module_as_class external_module_name             
     -> check_external_module_name external_module_name
   | Js_new {external_module_name ; txt = name}
@@ -418,7 +421,7 @@ let handle_attributes
         end
       | {get_index = true; _}
         -> Location.raise_errorf ~loc "conflict attributes found"        
-      | {module_as_val = Some v ;
+      | {module_as_val = Some external_module_name ;
 
          get_index = false;
          val_name ;
@@ -435,19 +438,19 @@ let handle_attributes
          val_send = `Nm_na;
          val_send_pipe = None;    
          
-         (* splice ; *)
+         splice ;
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
          mk_obj = false ;          
         } ->
         begin match arg_types_ty, new_name, val_name  with         
-          | [], `Nm_na,  _ -> Js_module_as_var v
-          | _, `Nm_na, _ -> Js_module_as_fn v
+          | [], `Nm_na,  _ -> Js_module_as_var external_module_name
+          | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
           | _, #bundle_source, #bundle_source ->
             Location.raise_errorf ~loc "conflict attributes found"
           | _, (`Nm_val _ | `Nm_external _) , `Nm_na
-            -> Js_module_as_class v
+            -> Js_module_as_class external_module_name
           | _, `Nm_payload _ , `Nm_na
             ->
             Location.raise_errorf ~loc

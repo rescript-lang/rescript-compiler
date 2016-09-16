@@ -4095,12 +4095,15 @@ type arg_kind =
     arg_type : arg_type;
     arg_label : arg_label
   }
-
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
 type ffi = 
   | Obj_create of arg_label list
   | Js_global of js_val 
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of external_module_name
+  | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name       
   | Js_call of js_call external_module
   | Js_send of js_send
@@ -4200,12 +4203,15 @@ type arg_kind =
     arg_type : arg_type;
     arg_label : arg_label
   }
-
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
 type ffi = 
   | Obj_create of arg_label list
   | Js_global of js_val 
   | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of external_module_name
+  | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name             
   | Js_call of js_call external_module
   | Js_send of js_send
@@ -4284,7 +4290,7 @@ let check_ffi ?loc ffi =
     -> ()
 
   | Js_module_as_var external_module_name
-  | Js_module_as_fn external_module_name
+  | Js_module_as_fn {external_module_name; _}
   | Js_module_as_class external_module_name             
     -> check_external_module_name external_module_name
   | Js_new {external_module_name ; txt = name}
@@ -4561,7 +4567,7 @@ let handle_attributes
         end
       | {get_index = true; _}
         -> Location.raise_errorf ~loc "conflict attributes found"        
-      | {module_as_val = Some v ;
+      | {module_as_val = Some external_module_name ;
 
          get_index = false;
          val_name ;
@@ -4578,19 +4584,19 @@ let handle_attributes
          val_send = `Nm_na;
          val_send_pipe = None;    
          
-         (* splice ; *)
+         splice ;
          call_name = `Nm_na;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
          mk_obj = false ;          
         } ->
         begin match arg_types_ty, new_name, val_name  with         
-          | [], `Nm_na,  _ -> Js_module_as_var v
-          | _, `Nm_na, _ -> Js_module_as_fn v
+          | [], `Nm_na,  _ -> Js_module_as_var external_module_name
+          | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
           | _, #bundle_source, #bundle_source ->
             Location.raise_errorf ~loc "conflict attributes found"
           | _, (`Nm_val _ | `Nm_external _) , `Nm_na
-            -> Js_module_as_class v
+            -> Js_module_as_class external_module_name
           | _, `Nm_payload _ , `Nm_na
             ->
             Location.raise_errorf ~loc
@@ -25920,19 +25926,22 @@ end = struct
 module E = Js_exp_make
 
 
+
 let handle_external 
+    ({bundle ; bind_name} : Ast_external_attributes.external_module_name)
+  =
+  match bind_name with 
+  | None -> 
+    Lam_compile_env.add_js_module bundle , bundle
+  | Some bind_name -> 
+    Lam_compile_env.add_js_module 
+      ~id:(Ext_ident.create_js_module bind_name) bundle,
+    bundle
+
+let handle_external_opt 
     (module_name : Ast_external_attributes.external_module_name option) = 
   match module_name with 
-  | Some {bundle ; bind_name} -> 
-    let id  = 
-      match bind_name with 
-      | None -> 
-        Lam_compile_env.add_js_module bundle , bundle
-      | Some bind_name -> 
-        Lam_compile_env.add_js_module 
-          ~id:(Ext_ident.create_js_module bind_name) bundle,
-        bundle
-    in Some id 
+  | Some module_name -> Some (handle_external module_name) 
   | None -> None 
 
 type typ = Ast_core_type.t
@@ -26068,7 +26077,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
                      }} -> 
       let fn =  
-        match handle_external module_name with 
+        match handle_external_opt module_name with 
         | Some (id,_) -> 
           E.dot (E.var id) fn
         | None ->  E.js_var fn
@@ -26082,18 +26091,15 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         E.call ~info:{arity=Full; call_info = Call_na} fn args
       end
     | Js_module_as_var module_name -> 
-      begin match handle_external (Some module_name) with 
-        | Some (id, name) -> 
-          E.external_var_dot id name None
-        | None -> assert false 
-      end
-    | Js_module_as_fn module_name ->
+      let (id, name) =  handle_external  module_name  in
+      E.external_var_dot id name None
+
+    | Js_module_as_fn {external_module_name = module_name; splice} ->
       let fn =
-        match handle_external (Some module_name) with
-        | Some (id,name) ->
-          E.external_var_dot id name None           
-        | None -> assert false in           
-      let args, eff = assemble_args arg_types args in 
+        let (id, name) = handle_external  module_name  in
+        E.external_var_dot id name None           
+      in           
+      let args, eff = assemble_args_splice splice arg_types args in 
         (* TODO: fix in rest calling convention *)          
       add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 
@@ -26104,10 +26110,8 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       end
     | Js_module_as_class module_name ->
       let fn =
-        match handle_external (Some module_name) with
-        | Some (id,name) ->
-          E.external_var_dot id name None           
-        | None -> assert false in           
+        let (id,name) = handle_external  module_name in
+        E.external_var_dot id name None in           
       let args,eff = assemble_args arg_types args in 
         (* TODO: fix in rest calling convention *)   
       add_eff eff        
@@ -26134,7 +26138,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       *)
       let args, eff = assemble_args arg_types args in
       let fn =  
-        match handle_external module_name with 
+        match handle_external_opt module_name with 
         | Some (id,name) ->  
           E.external_var_dot id name (Some fn)
 
@@ -26164,7 +26168,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
          2. support [@@bs.scope "window"]
          we need know whether we should call [add_js_module] or not 
       *)
-      begin match name, handle_external external_module_name with 
+      begin match name, handle_external_opt external_module_name with 
         | "true", None -> E.js_bool true
         | "false", None -> E.js_bool false
         | "null", None -> E.nil 

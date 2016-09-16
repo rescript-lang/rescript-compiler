@@ -66,7 +66,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	bs_ignore_test bs_ignore_effect \
 	ppx_this_obj_field single_module_alias \
 	CCSexpM CCSexpM_test CCSexp js_json_test array_subtle_test  \
-	bytes_split_gpr_743_test module_splice hello.foo
+	bytes_split_gpr_743_test module_splice_test hello.foo
 
 
 
