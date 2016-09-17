@@ -8,12 +8,12 @@ let eq loc (x, y) =
 
 let print_or_error fmt x  = 
   match x with
-  | `Ok  a -> Format.fprintf fmt "@[Ok:%a@]@." CCSexpM.print a 
+  | `Ok  a -> Format.fprintf fmt "@[Ok:%a@]@." Sexpm.print a 
   | `Error a -> Format.fprintf fmt "@[Error:%s@]@." a 
 
 let () = 
   begin 
-    let a = CCSexpM.parse_string "(x x gh 3 3)" in
+    let a = Sexpm.parse_string "(x x gh 3 3)" in
     eq __LOC__
       ( 
         `Ok (`List [`Atom "x"; `Atom "x"; `Atom "gh"; `Atom "3"; `Atom "3"]) ,
