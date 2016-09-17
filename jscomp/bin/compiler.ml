@@ -4575,7 +4575,7 @@ let handle_attributes
        { arg_label = Ast_core_type.label_name label ;
          arg_type =  get_arg_type ty 
        }) in      
-  let arg_types = 
+  let arg_type_specs = 
     List.map translate_arg_type arg_types_ty in
   let result_type = get_arg_type result_type_ty in
 
@@ -4607,7 +4607,7 @@ let handle_attributes
              ]}
           *)
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
-          arg_types in
+          arg_type_specs in
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
       Obj_create labels(* Need fetch label here, for better error message *)
@@ -4633,7 +4633,7 @@ let handle_attributes
       ->
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-      begin match arg_types with 
+      begin match arg_type_specs with 
         | [_obj; _v ; _value] 
           -> 
           Js_set_index
@@ -4660,7 +4660,7 @@ let handle_attributes
       } ->
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-      begin match arg_types with 
+      begin match arg_type_specs with 
         | [_obj; _v ] -> 
           Js_get_index
         | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
@@ -4756,7 +4756,7 @@ let handle_attributes
    }
    ->
    let name = string_of_bundle_source prim_name_or_pval_prim in
-   begin match arg_types with
+   begin match arg_type_specs with
      | [] -> Js_global {txt = name; external_module_name}
      | _ -> Js_call {txt = {splice; name}; external_module_name}                     
    end        
@@ -4774,7 +4774,7 @@ let handle_attributes
     get_name = `Nm_na ;
     external_module_name = None ;
    } -> 
-   begin match arg_types with 
+   begin match arg_type_specs with 
      | _self :: _args -> 
        Js_send {splice ; name; pipe = false}
      | _ ->
@@ -4835,7 +4835,7 @@ let handle_attributes
     external_module_name = None
    } 
    -> 
-   begin match arg_types with 
+   begin match arg_type_specs with 
      | [_obj; _v] -> 
        Js_set name 
      | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
@@ -4857,7 +4857,7 @@ let handle_attributes
     external_module_name = None
    }
    ->
-   begin match arg_types with 
+   begin match arg_type_specs with 
      | [_ ] -> Js_get name
      | _ ->
        Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
@@ -4865,50 +4865,54 @@ let handle_attributes
  | {get_name = #bundle_source}
    -> Location.raise_errorf ~loc "conflict attributes found"
  | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
-  check_ffi ~loc ffi;
-  (match ffi, result_type_ty with
-   | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
-     ->
-     let result =
-       Ast_core_type.make_obj ~loc (
-         List.fold_right2  (fun arg label acc ->
-             match arg, label with
-             | (_, ty), Ast_core_type.Label s
-               -> (s , [], ty) :: acc                 
-             | (_, ty), Optional s
-               ->
-               begin match (ty : Ast_core_type.t) with
-                 | {ptyp_desc =
-                      Ptyp_constr({txt =
-                                     Ldot (Lident "*predef*", "option") },
-                                  [ty])}
-                   ->                
-                   (s, [], Ast_comb.to_undefined_type loc ty) :: acc
-                 | _ -> assert false                 
-               end                 
-             | (_, _), Ast_core_type.Empty -> acc                
-           ) arg_types_ty arg_labels [])  in
-     Ast_core_type.replace_result type_annotation result
-   | Js_send {pipe = true }, _ ->
-     begin match st with       
-       | {val_send_pipe = Some obj } ->
-         Ast_core_type.replace_result type_annotation
-           (Ast_helper.Typ.arrow ~loc "" obj result_type_ty)
-       | {val_send_pipe = None ; } -> assert false
-     end           
-   | _, _ -> type_annotation
-  ) ,
+  begin 
+    check_ffi ~loc ffi;
+    (match ffi, result_type_ty with
+     | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
+       ->
+       (* special case: 
+          {[ external f : int -> string -> _ = "" ]}
+       *)
+       let result =
+         Ast_core_type.make_obj ~loc (
+           List.fold_right2  (fun arg label acc ->
+               match arg, label with
+               | (_, ty), Ast_core_type.Label s
+                 -> (s , [], ty) :: acc                 
+               | (_, ty), Optional s
+                 ->
+                 begin match (ty : Ast_core_type.t) with
+                   | {ptyp_desc =
+                        Ptyp_constr({txt =
+                                       Ldot (Lident "*predef*", "option") },
+                                    [ty])}
+                     ->                
+                     (s, [], Ast_comb.to_undefined_type loc ty) :: acc
+                   | _ -> assert false                 
+                 end                 
+               | (_, _), Ast_core_type.Empty -> acc                
+             ) arg_types_ty arg_labels [])  in
+       Ast_core_type.replace_result type_annotation result
+     | Js_send {pipe = true }, _ ->
+       begin match st with       
+         | {val_send_pipe = Some obj } ->
+           Ast_core_type.replace_result type_annotation
+             (Ast_helper.Typ.arrow ~loc "" obj result_type_ty)
+         | {val_send_pipe = None ; } -> assert false
+       end           
+     | _, _ -> type_annotation
+    ) ,
   (* TODO: document *)    
-  (match ffi , prim_name with
-   | Obj_create _ , _ -> prim_name
-   | _ , "" -> pval_prim
-   | _, _ -> prim_name),
-  (match st with
-   | {val_send_pipe = Some obj} ->      
-     Bs(arg_types @ [translate_arg_type ("", obj) ], result_type,  ffi)
-   | {val_send_pipe = None } ->       Bs(arg_types, result_type,  ffi)        
-  ), left_attrs
-
+    (match ffi , prim_name with
+     | Obj_create _ , _ -> prim_name
+     | _ , "" -> pval_prim
+     | _, _ -> prim_name),
+    (match st with
+     | {val_send_pipe = Some obj} ->      
+       Bs(arg_type_specs @ [translate_arg_type ("", obj) ], result_type,  ffi)
+     | {val_send_pipe = None } ->       Bs(arg_type_specs, result_type,  ffi)        
+    ), left_attrs
+  end
 
 let handle_attributes_as_string 
     pval_loc
