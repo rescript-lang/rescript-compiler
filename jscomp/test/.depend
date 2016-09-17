@@ -1,5 +1,3 @@
-CCSexp.cmi :
-CCSexpM.cmi : ../stdlib/format.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi
 a_recursive_type.cmi :
 abstract_type.cmi :
 ari_regress_test.cmi :
@@ -24,6 +22,8 @@ ocaml_proto_test.cmi :
 poly_variant_test.cmi :
 polymorphism_test.cmi :
 scanf_reference_error_regression_test.cmi :
+sexp.cmi :
+sexpm.cmi : ../stdlib/format.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi
 simple_derive_test.cmi : ../others/bs_dyn.cmi
 simple_derive_use.cmi :
 test_for_map2.cmi :
@@ -34,18 +34,6 @@ test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmj
 testing.cmi :
 ui_defs.cmi :
 unsafe_this.cmi : ../runtime/js.cmj
-CCSexp.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi \
-    ../stdlib/hashtbl.cmi CCSexp.cmi
-CCSexp.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx \
-    ../stdlib/hashtbl.cmx CCSexp.cmi
-CCSexpM.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi CCSexpM.cmi
-CCSexpM.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/printf.cmx \
-    ../stdlib/printexc.cmx ../stdlib/list.cmx ../stdlib/format.cmx \
-    ../stdlib/char.cmx ../stdlib/bytes.cmx ../stdlib/buffer.cmx CCSexpM.cmi
-CCSexpM_test.cmj : mt.cmi ../runtime/js.cmj ../stdlib/format.cmi CCSexpM.cmi
-CCSexpM_test.cmx : mt.cmx ../runtime/js.cmx ../stdlib/format.cmx CCSexpM.cmx
 a.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -556,6 +544,18 @@ scanf_reference_error_regression_test.cmx : ../stdlib/scanf.cmx \
     scanf_reference_error_regression_test.cmi
 scanf_test.cmj : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
 scanf_test.cmx : ../stdlib/scanf.cmx mt_global.cmx mt.cmx
+sexp.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
+    sexp.cmi
+sexp.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
+    sexp.cmi
+sexpm.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
+    ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
+    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi sexpm.cmi
+sexpm.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/printf.cmx \
+    ../stdlib/printexc.cmx ../stdlib/list.cmx ../stdlib/format.cmx \
+    ../stdlib/char.cmx ../stdlib/bytes.cmx ../stdlib/buffer.cmx sexpm.cmi
+sexpm_test.cmj : sexpm.cmi mt.cmi ../runtime/js.cmj ../stdlib/format.cmi
+sexpm_test.cmx : sexpm.cmx mt.cmx ../runtime/js.cmx ../stdlib/format.cmx
 shift_test.cmj : ../stdlib/nativeint.cmi
 shift_test.cmx : ../stdlib/nativeint.cmx
 simple_derive_test.cmj : ../runtime/js.cmj ../others/bs.cmj \
@@ -854,18 +854,6 @@ unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
 unsafe_this.cmx : ../runtime/js.cmx unsafe_this.cmi
 watch_test.cmj : ../others/node.cmj ../runtime/js.cmj
 watch_test.cmx : ../others/node.cmx ../runtime/js.cmx
-CCSexp.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi \
-    ../stdlib/hashtbl.cmi CCSexp.cmi
-CCSexp.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj \
-    ../stdlib/hashtbl.cmj CCSexp.cmi
-CCSexpM.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi CCSexpM.cmi
-CCSexpM.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
-    ../stdlib/printexc.cmj ../stdlib/list.cmj ../stdlib/format.cmj \
-    ../stdlib/char.cmj ../stdlib/bytes.cmj ../stdlib/buffer.cmj CCSexpM.cmi
-CCSexpM_test.cmo : mt.cmi ../runtime/js.cmo ../stdlib/format.cmi CCSexpM.cmi
-CCSexpM_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/format.cmj CCSexpM.cmj
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
@@ -1376,6 +1364,18 @@ scanf_reference_error_regression_test.cmj : ../stdlib/scanf.cmj \
     scanf_reference_error_regression_test.cmi
 scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
 scanf_test.cmj : ../stdlib/scanf.cmj mt_global.cmj mt.cmj
+sexp.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
+    sexp.cmi
+sexp.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
+    sexp.cmi
+sexpm.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
+    ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
+    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi sexpm.cmi
+sexpm.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
+    ../stdlib/printexc.cmj ../stdlib/list.cmj ../stdlib/format.cmj \
+    ../stdlib/char.cmj ../stdlib/bytes.cmj ../stdlib/buffer.cmj sexpm.cmi
+sexpm_test.cmo : sexpm.cmi mt.cmi ../runtime/js.cmo ../stdlib/format.cmi
+sexpm_test.cmj : sexpm.cmj mt.cmj ../runtime/js.cmj ../stdlib/format.cmj
 shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmj : ../stdlib/nativeint.cmj
 simple_derive_test.cmo : ../runtime/js.cmo ../others/bs.cmo \

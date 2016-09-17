@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt      = require("./mt");
-var Block   = require("../../lib/js/block");
-var Curry   = require("../../lib/js/curry");
-var Format  = require("../../lib/js/format");
-var CCSexpM = require("./CCSexpM");
+var Mt     = require("./mt");
+var Block  = require("../../lib/js/block");
+var Sexpm  = require("./sexpm");
+var Curry  = require("../../lib/js/curry");
+var Format = require("../../lib/js/format");
 
 var suites = [/* [] */0];
 
@@ -73,13 +73,13 @@ function print_or_error(fmt, x) {
                           ])
                       ]),
                     "@[Ok:%a@]@."
-                  ]), CCSexpM.print, x[1]);
+                  ]), Sexpm.print, x[1]);
   }
 }
 
-var a = CCSexpM.parse_string("(x x gh 3 3)");
+var a = Sexpm.parse_string("(x x gh 3 3)");
 
-eq('File "CCSexpM_test.ml", line 17, characters 7-14', /* tuple */[
+eq('File "sexpm_test.ml", line 17, characters 7-14', /* tuple */[
       /* `Ok */[
         17724,
         /* `List */[
@@ -120,7 +120,7 @@ eq('File "CCSexpM_test.ml", line 17, characters 7-14', /* tuple */[
       a
     ]);
 
-eq('File "CCSexpM_test.ml", line 21, characters 7-14', /* tuple */[
+eq('File "sexpm_test.ml", line 21, characters 7-14', /* tuple */[
       Curry._2(Format.asprintf(/* Format */[
                   /* Alpha */Block.__(15, [/* End_of_format */0]),
                   "%a"
@@ -128,7 +128,7 @@ eq('File "CCSexpM_test.ml", line 21, characters 7-14', /* tuple */[
       "Ok:(x x gh 3 3)\n".trim()
     ]);
 
-Mt.from_pair_suites("CCSexpM_test.ml", suites[0]);
+Mt.from_pair_suites("sexpm_test.ml", suites[0]);
 
 exports.suites         = suites;
 exports.test_id        = test_id;
