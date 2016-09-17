@@ -23,9 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = 
-  | Unsafe_ffi_bool_type
-  | Unsafe_poly_variant_type
-
-val print_string_warning : Location.t -> string -> unit
-val prerr_warning : Location.t -> t -> unit 
+let emit_external_warnings : Bs_ast_iterator .iterator=
+  {
+    Bs_ast_iterator.default_iterator with
+    attribute = (fun _ a ->
+        match a with
+        | {txt ; loc}, _ ->
+          if Ext_string.starts_with txt "bs." then 
+            Bs_warnings.print_string_warning loc ("Unused attribute " ^ txt ^ " \n" )
+      )
+  }

@@ -46,7 +46,12 @@ let to_string t =
 
 let warning_formatter = Format.err_formatter
 
+let print_string_warning loc x = 
+  Location.print warning_formatter loc ; 
+  Format.pp_print_string warning_formatter "Warning: ";
+  Format.pp_print_string warning_formatter x
+
 let prerr_warning loc x =
-  let warning = Warnings.Preprocessor (to_string x) in 
-  if Warnings.is_active warning then 
-  Location.prerr_warning loc warning
+  if not (!Js_config.no_warn_ffi_type ) then
+    print_string_warning loc (to_string x) 
+

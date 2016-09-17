@@ -27,6 +27,8 @@ let print_if ppf flag printer arg =
   arg
 
 let after_parsing_sig ppf sourcefile outputprefix ast  =
+  if not @@ !Js_config.no_warn_unused_bs_attribute then 
+    Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings ast ;
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter "Building %s@." sourcefile;    
   let modulename = module_of_filename ppf sourcefile outputprefix in
@@ -56,6 +58,8 @@ let interface ppf sourcefile outputprefix =
   |> after_parsing_sig ppf sourcefile outputprefix 
 
 let after_parsing_impl ppf sourcefile outputprefix ast =
+  if not @@ !Js_config.no_warn_unused_bs_attribute then 
+    Bs_ast_invariant.emit_external_warnings.structure Bs_ast_invariant.emit_external_warnings ast ;
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter "Building %s@." sourcefile;      
   let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
