@@ -408,24 +408,18 @@ let handle_attributes
         set_name = `Nm_na ;
         get_name = `Nm_na ;
         get_index = false ;
-      } -> 
-      let labels = List.map (function
+      } ->
+      if String.length prim_name <> 0 then 
+        Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+      Obj_create (List.map (function
           | {arg_type = Unit ; arg_label = (Empty as l)}
             -> l 
           | {arg_label = Label name } -> 
             Label (Lam_methname.translate ~loc name)            
           | {arg_label = Optional name} 
             -> Optional (Lam_methname.translate ~loc name)
-          (* TODO: more error checking here
-             {[
-               hi:_ kind -> lo:x
-             ]}
-          *)
           | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
-          arg_type_specs in
-      if String.length prim_name <> 0 then 
-        Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-      Obj_create labels(* Need fetch label here, for better error message *)
+          arg_type_specs)(* Need fetch label here, for better error message *)
     | {mk_obj = true; _}
       ->
       Location.raise_errorf ~loc "conflict attributes found"                
