@@ -240,8 +240,8 @@ ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
 ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
 ffi_array_test.cmj : mt.cmi ../others/js_array.cmj
 ffi_array_test.cmx : mt.cmx ../others/js_array.cmx
-ffi_js.cmj : ../stdlib/obj.cmi
-ffi_js.cmx : ../stdlib/obj.cmx
+ffi_js.cmj : ../stdlib/obj.cmi mt.cmi
+ffi_js.cmx : ../stdlib/obj.cmx mt.cmx
 ffi_test.cmj : ../runtime/js.cmj
 ffi_test.cmx : ../runtime/js.cmx
 fib.cmj :
@@ -255,9 +255,11 @@ float_of_bits_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
 float_record.cmj : float_record.cmi
 float_record.cmx : float_record.cmi
 float_test.cmj : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
-    mt.cmi ../runtime/js_float.cmj ../stdlib/int64.cmi ../stdlib/array.cmi
+    mt.cmi ../runtime/js_float.cmj ../runtime/js.cmj ../stdlib/int64.cmi \
+    ../stdlib/array.cmi
 float_test.cmx : ../stdlib/printf.cmx ../stdlib/pervasives.cmx mt_global.cmx \
-    mt.cmx ../runtime/js_float.cmx ../stdlib/int64.cmx ../stdlib/array.cmx
+    mt.cmx ../runtime/js_float.cmx ../runtime/js.cmx ../stdlib/int64.cmx \
+    ../stdlib/array.cmx
 for_loop_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/array.cmx
 for_side_effect_test.cmj : mt.cmi
@@ -1060,8 +1062,8 @@ ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
 ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
 ffi_array_test.cmo : mt.cmi ../others/js_array.cmo
 ffi_array_test.cmj : mt.cmj ../others/js_array.cmj
-ffi_js.cmo : ../stdlib/obj.cmi
-ffi_js.cmj : ../stdlib/obj.cmj
+ffi_js.cmo : ../stdlib/obj.cmi mt.cmi
+ffi_js.cmj : ../stdlib/obj.cmj mt.cmj
 ffi_test.cmo : ../runtime/js.cmo
 ffi_test.cmj : ../runtime/js.cmj
 fib.cmo :
@@ -1075,9 +1077,11 @@ float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
 float_record.cmo : float_record.cmi
 float_record.cmj : float_record.cmi
 float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
-    mt.cmi ../runtime/js_float.cmo ../stdlib/int64.cmi ../stdlib/array.cmi
+    mt.cmi ../runtime/js_float.cmo ../runtime/js.cmo ../stdlib/int64.cmi \
+    ../stdlib/array.cmi
 float_test.cmj : ../stdlib/printf.cmj ../stdlib/pervasives.cmj mt_global.cmj \
-    mt.cmj ../runtime/js_float.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
+    mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj ../stdlib/int64.cmj \
+    ../stdlib/array.cmj
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/array.cmj
 for_side_effect_test.cmo : mt.cmi

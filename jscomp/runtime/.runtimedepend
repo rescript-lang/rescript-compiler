@@ -6,10 +6,10 @@ caml_bytes.cmj : caml_bytes.cmi
 caml_bytes.cmx : caml_bytes.cmi
 caml_obj.cmj : js_obj.cmj js.cmj caml_obj.cmi
 caml_obj.cmx : js_obj.cmx js.cmx caml_obj.cmi
-caml_int64.cmj : typed_array.cmj js_float.cmj caml_utils.cmi caml_int32.cmi \
-    bs_string.cmj caml_int64.cmi
-caml_int64.cmx : typed_array.cmx js_float.cmx caml_utils.cmx caml_int32.cmx \
-    bs_string.cmx caml_int64.cmi
+caml_int64.cmj : typed_array.cmj js_float.cmj js.cmj caml_utils.cmi \
+    caml_int32.cmi bs_string.cmj caml_int64.cmi
+caml_int64.cmx : typed_array.cmx js_float.cmx js.cmx caml_utils.cmx \
+    caml_int32.cmx bs_string.cmx caml_int64.cmi
 caml_exceptions.cmj : caml_builtin_exceptions.cmi caml_exceptions.cmi
 caml_exceptions.cmx : caml_builtin_exceptions.cmx caml_exceptions.cmi
 caml_utils.cmj : caml_utils.cmi
@@ -18,8 +18,8 @@ caml_sys.cmj : js_float.cmj caml_sys.cmi
 caml_sys.cmx : js_float.cmx caml_sys.cmi
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
 caml_io.cmx : js_undefined.cmx js.cmx bs_string.cmx
-caml_float.cmj : typed_array.cmj js_float.cmj caml_float.cmi
-caml_float.cmx : typed_array.cmx js_float.cmx caml_float.cmi
+caml_float.cmj : typed_array.cmj js_float.cmj js.cmj caml_float.cmi
+caml_float.cmx : typed_array.cmx js_float.cmx js.cmx caml_float.cmi
 caml_lexer.cmj : caml_lexer.cmi
 caml_lexer.cmx : caml_lexer.cmi
 caml_parser.cmj : caml_parser.cmi
@@ -27,9 +27,9 @@ caml_parser.cmx : caml_parser.cmi
 caml_primitive.cmj : caml_primitive.cmi
 caml_primitive.cmx : caml_primitive.cmi
 caml_format.cmj : js_nativeint.cmj js_int64.cmj js_int.cmj js_float.cmj \
-    caml_utils.cmi bs_string.cmj caml_format.cmi
+    js.cmj caml_utils.cmi bs_string.cmj caml_format.cmi
 caml_format.cmx : js_nativeint.cmx js_int64.cmx js_int.cmx js_float.cmx \
-    caml_utils.cmx bs_string.cmx caml_format.cmi
+    js.cmx caml_utils.cmx bs_string.cmx caml_format.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_md5.cmx : bs_string.cmx caml_md5.cmi
 caml_queue.cmj : caml_queue.cmi
@@ -62,8 +62,8 @@ caml_module.cmj :
 caml_module.cmx :
 bs_string.cmj :
 bs_string.cmx :
-js_float.cmj :
-js_float.cmx :
+js_float.cmj : js.cmj
+js_float.cmx : js.cmx
 js_obj.cmj : js.cmj
 js_obj.cmx : js.cmx
 js_nativeint.cmj :
@@ -105,10 +105,10 @@ caml_bytes.cmo : caml_bytes.cmi
 caml_bytes.cmj : caml_bytes.cmi
 caml_obj.cmo : js_obj.cmo js.cmo caml_obj.cmi
 caml_obj.cmj : js_obj.cmj js.cmj caml_obj.cmi
-caml_int64.cmo : typed_array.cmo js_float.cmo caml_utils.cmi caml_int32.cmi \
-    bs_string.cmo caml_int64.cmi
-caml_int64.cmj : typed_array.cmj js_float.cmj caml_utils.cmj caml_int32.cmj \
-    bs_string.cmj caml_int64.cmi
+caml_int64.cmo : typed_array.cmo js_float.cmo js.cmo caml_utils.cmi \
+    caml_int32.cmi bs_string.cmo caml_int64.cmi
+caml_int64.cmj : typed_array.cmj js_float.cmj js.cmj caml_utils.cmj \
+    caml_int32.cmj bs_string.cmj caml_int64.cmi
 caml_exceptions.cmo : caml_builtin_exceptions.cmi caml_exceptions.cmi
 caml_exceptions.cmj : caml_builtin_exceptions.cmj caml_exceptions.cmi
 caml_utils.cmo : caml_utils.cmi
@@ -117,8 +117,8 @@ caml_sys.cmo : js_float.cmo caml_sys.cmi
 caml_sys.cmj : js_float.cmj caml_sys.cmi
 caml_io.cmo : js_undefined.cmo js.cmo bs_string.cmo
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
-caml_float.cmo : typed_array.cmo js_float.cmo caml_float.cmi
-caml_float.cmj : typed_array.cmj js_float.cmj caml_float.cmi
+caml_float.cmo : typed_array.cmo js_float.cmo js.cmo caml_float.cmi
+caml_float.cmj : typed_array.cmj js_float.cmj js.cmj caml_float.cmi
 caml_lexer.cmo : caml_lexer.cmi
 caml_lexer.cmj : caml_lexer.cmi
 caml_parser.cmo : caml_parser.cmi
@@ -126,9 +126,9 @@ caml_parser.cmj : caml_parser.cmi
 caml_primitive.cmo : caml_primitive.cmi
 caml_primitive.cmj : caml_primitive.cmi
 caml_format.cmo : js_nativeint.cmo js_int64.cmo js_int.cmo js_float.cmo \
-    caml_utils.cmi bs_string.cmo caml_format.cmi
+    js.cmo caml_utils.cmi bs_string.cmo caml_format.cmi
 caml_format.cmj : js_nativeint.cmj js_int64.cmj js_int.cmj js_float.cmj \
-    caml_utils.cmj bs_string.cmj caml_format.cmi
+    js.cmj caml_utils.cmj bs_string.cmj caml_format.cmi
 caml_md5.cmo : bs_string.cmo caml_md5.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_queue.cmo : caml_queue.cmi
@@ -161,8 +161,8 @@ caml_module.cmo :
 caml_module.cmj :
 bs_string.cmo :
 bs_string.cmj :
-js_float.cmo :
-js_float.cmj :
+js_float.cmo : js.cmo
+js_float.cmj : js.cmj
 js_obj.cmo : js.cmo
 js_obj.cmj : js.cmj
 js_nativeint.cmo :
