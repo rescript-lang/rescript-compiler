@@ -43,7 +43,7 @@ function $$caml_sys_getenv(n) {
 |}]
 
 external caml_sys_getenv : string -> string = "$$caml_sys_getenv"
-  [@@bs.val ] [@@bs.local]
+  [@@bs.val ] (* [@@bs.local] *)
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
 [%%bs.raw{|
@@ -54,7 +54,7 @@ function $$date(){
 |}]
 
 external current_date : unit -> float = "$$date"
-  [@@bs.val ] [@@bs.local]
+  [@@bs.val ] (* [@@bs.local] *)
 
 let caml_initial_time = current_date ()  *. 0.001
 

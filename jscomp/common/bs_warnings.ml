@@ -55,3 +55,5 @@ let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then
     print_string_warning loc (to_string x) 
 
+let warn_unused_attribute loc txt =
+  print_string_warning loc ("Unused attribute " ^ txt ^ " \n" )

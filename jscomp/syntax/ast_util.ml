@@ -559,9 +559,10 @@ let ocaml_obj_as_js_object
            label.Asttypes.txt
            label_type acc           
       ) labels label_types public_obj_type in
-  let pval_attributes = Ast_attributes.bs_obj pval_type in
+  let pval_attributes = 
+    Ast_attributes.bs_obj pval_type in (* FIXME no loc*)
   let local_fun_name = "mk" in
-  let pval_type, pval_prim =
+  let pval_type, pval_prim, pval_attributes =
     Ast_external_attributes.handle_attributes_as_string
       loc
       local_fun_name      
@@ -596,7 +597,7 @@ let record_as_js_object
   let pval_type = Ast_core_type.from_labels ~loc tyvars labels in 
   let pval_attributes = Ast_attributes.bs_obj pval_type in 
   let local_fun_name = "mk" in
-  let pval_type, pval_prim = 
+  let pval_type, pval_prim, pval_attributes = 
     Ast_external_attributes.handle_attributes_as_string
       loc 
       local_fun_name

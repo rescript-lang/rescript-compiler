@@ -529,7 +529,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         -> 
         let pval_type = self.typ self pval_type in
         let pval_attributes = self.attributes self pval_attributes in         
-        let pval_type, pval_prim = 
+        let pval_type, pval_prim, pval_attributes = 
           match pval_prim with 
           | [ v ] -> 
             Ast_external_attributes.handle_attributes_as_string
@@ -582,7 +582,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           -> 
           let pval_type = self.typ self pval_type in
           let pval_attributes = self.attributes self pval_attributes in         
-          let pval_type, pval_prim = 
+          let pval_type, pval_prim, pval_attributes = 
             match pval_prim with 
             | [ v] -> 
               Ast_external_attributes.handle_attributes_as_string

@@ -29,3 +29,4 @@ type t =
 
 val print_string_warning : Location.t -> string -> unit
 val prerr_warning : Location.t -> t -> unit 
+val warn_unused_attribute : Location.t -> string -> unit
