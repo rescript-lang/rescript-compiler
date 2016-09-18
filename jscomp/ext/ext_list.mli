@@ -113,3 +113,6 @@ val ref_push : 'a -> 'a t -> unit
 val ref_pop : 'a t -> 'a
 
 val rev_except_last : 'a list -> 'a list * 'a
+
+val sort_via_array :
+  ('a -> 'a -> int) -> 'a list -> 'a list
