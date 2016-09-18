@@ -925,6 +925,12 @@ function rev_except_last(xs) {
   };
 }
 
+function sort_via_array(cmp, lst) {
+  var arr = $$Array.of_list(lst);
+  $$Array.sort(cmp, arr);
+  return $$Array.to_list(arr);
+}
+
 exports.filter_map         = filter_map;
 exports.excludes           = excludes;
 exports.exclude_with_fact  = exclude_with_fact;
@@ -964,4 +970,5 @@ exports.ref_empty          = ref_empty;
 exports.ref_push           = ref_push;
 exports.ref_pop            = ref_pop;
 exports.rev_except_last    = rev_except_last;
+exports.sort_via_array     = sort_via_array;
 /* No side effect */

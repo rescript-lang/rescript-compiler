@@ -1293,6 +1293,9 @@ val ref_pop : 'a t -> 'a
 
 val rev_except_last : 'a list -> 'a list * 'a
 
+val sort_via_array :
+  ('a -> 'a -> int) -> 'a list -> 'a list
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1643,6 +1646,11 @@ let rev_except_last xs =
     | [ x ] -> acc ,x
     | x :: xs -> aux (x::acc) xs in
   aux [] xs   
+
+let sort_via_array cmp lst =
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Array.to_list arr
 
 end
 module Ast_comb : sig 
@@ -3722,6 +3730,7 @@ val tool_name : string
 val is_windows : bool 
 
 val better_errors : bool ref
+val sort_imports : bool ref 
 
 end = struct
 #1 "js_config.ml"
@@ -3952,6 +3961,7 @@ let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
+let sort_imports = ref false
     
 let is_windows = 
   match Sys.os_type with 
@@ -32664,8 +32674,18 @@ let compile  ~filename output_prefix no_export env _sigs
                 meta.env
                 meta.required_modules  
                 (Js_fold_basic.calculate_hard_dependencies js.block)
+              |>
+              (fun x ->
+                 if !Js_config.sort_imports then
+                   Ext_list.sort_via_array
+                     (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
+                       String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+                     ) x
+                 else
+                   x
+              )
             in
-            (* Exporting ... *)
+
             let v = 
               Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
                 (if no_export then Ident_map.empty else export_map) 
@@ -34379,6 +34399,12 @@ let set_noassert () =
 
 
 let buckle_script_flags =
+  (
+    "-bs-sort-imports",
+    Arg.Set Js_config.sort_imports,
+    " Sort the imports by lexical order so the output will be more stable"
+  )
+  ::
   ("-bs-better-errors",
    Arg.Set Js_config.better_errors,
    " Better error message combined with other tools "

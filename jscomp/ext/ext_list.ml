@@ -346,3 +346,8 @@ let rev_except_last xs =
     | [ x ] -> acc ,x
     | x :: xs -> aux (x::acc) xs in
   aux [] xs   
+
+let sort_via_array cmp lst =
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Array.to_list arr

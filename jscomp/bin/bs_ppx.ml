@@ -1293,6 +1293,9 @@ val ref_pop : 'a t -> 'a
 
 val rev_except_last : 'a list -> 'a list * 'a
 
+val sort_via_array :
+  ('a -> 'a -> int) -> 'a list -> 'a list
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1643,6 +1646,11 @@ let rev_except_last xs =
     | [ x ] -> acc ,x
     | x :: xs -> aux (x::acc) xs in
   aux [] xs   
+
+let sort_via_array cmp lst =
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Array.to_list arr
 
 end
 module Ast_comb : sig 
@@ -3530,6 +3538,7 @@ val tool_name : string
 val is_windows : bool 
 
 val better_errors : bool ref
+val sort_imports : bool ref 
 
 end = struct
 #1 "js_config.ml"
@@ -3760,6 +3769,7 @@ let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
+let sort_imports = ref false
     
 let is_windows = 
   match Sys.os_type with 

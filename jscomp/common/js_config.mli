@@ -159,3 +159,4 @@ val tool_name : string
 val is_windows : bool 
 
 val better_errors : bool ref
+val sort_imports : bool ref 

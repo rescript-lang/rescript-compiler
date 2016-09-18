@@ -94,6 +94,12 @@ let set_noassert () =
 
 
 let buckle_script_flags =
+  (
+    "-bs-sort-imports",
+    Arg.Set Js_config.sort_imports,
+    " Sort the imports by lexical order so the output will be more stable"
+  )
+  ::
   ("-bs-better-errors",
    Arg.Set Js_config.better_errors,
    " Better error message combined with other tools "

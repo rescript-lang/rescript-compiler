@@ -394,8 +394,18 @@ let compile  ~filename output_prefix no_export env _sigs
                 meta.env
                 meta.required_modules  
                 (Js_fold_basic.calculate_hard_dependencies js.block)
+              |>
+              (fun x ->
+                 if !Js_config.sort_imports then
+                   Ext_list.sort_via_array
+                     (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
+                       String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+                     ) x
+                 else
+                   x
+              )
             in
-            (* Exporting ... *)
+
             let v = 
               Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
                 (if no_export then Ident_map.empty else export_map) 
