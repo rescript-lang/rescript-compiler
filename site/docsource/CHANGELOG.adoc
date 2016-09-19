@@ -13,6 +13,7 @@
 
 - Add an option `-bs-no-warn-ffi-type` {issues}783[#783]
   By default, `bsc` will warn when it detect some ocaml datatype is passed from/to external FFi
+- Add an option `-bs-eval` {issues}784[784]
 
 == 1.01
 
