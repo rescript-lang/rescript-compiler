@@ -593,6 +593,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#__bs_package_name">-bs-package-name</a></li>
 <li><a href="#__bs_packge_output">-bs-packge-output</a></li>
 <li><a href="#__bs_gen_tds">-bs-gen-tds</a></li>
+<li><a href="#__bs_no_warn_ffi_type">-bs-no-warn-ffi-type</a></li>
+<li><a href="#__bs_eval">-bs-eval</a></li>
 <li><a href="#__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli">-bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli</a></li>
 </ul>
 </li>
@@ -3192,6 +3194,61 @@ typescript. This is still experimental.</p>
 </div>
 </div>
 <div class="sect2">
+<h3 id="__bs_no_warn_ffi_type"><a class="anchor" href="#__bs_no_warn_ffi_type"></a>-bs-no-warn-ffi-type</h3>
+<div class="paragraph">
+<p>Turn off warnings on FFI type declarations</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="__bs_eval"><a class="anchor" href="#__bs_eval"></a>-bs-eval</h3>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">bsc -I runtime -dparsetree -drawlambda -bs-eval <span class="tok-s1">&#39;Js.log &quot;hello&quot;&#39;</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-o">[</span> <b class="conum">(1)</b>
+  <span class="tok-n">structure_item</span> <span class="tok-o">(//</span><span class="tok-n">toplevel</span><span class="tok-o">//[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">0</span><span class="tok-o">]..[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">14</span><span class="tok-o">])</span>
+    <span class="tok-nc">Pstr_eval</span>
+    <span class="tok-n">expression</span> <span class="tok-o">(//</span><span class="tok-n">toplevel</span><span class="tok-o">//[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">0</span><span class="tok-o">]..[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">14</span><span class="tok-o">])</span>
+      <span class="tok-nc">Pexp_apply</span>
+      <span class="tok-n">expression</span> <span class="tok-o">(//</span><span class="tok-n">toplevel</span><span class="tok-o">//[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">0</span><span class="tok-o">]..[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">6</span><span class="tok-o">])</span>
+        <span class="tok-nc">Pexp_ident</span> <span class="tok-s2">&quot;Js.log&quot;</span> <span class="tok-o">(//</span><span class="tok-n">toplevel</span><span class="tok-o">//[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">0</span><span class="tok-o">]..[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">6</span><span class="tok-o">])</span>
+      <span class="tok-o">[</span>
+        <span class="tok-o">&lt;</span><span class="tok-n">label</span><span class="tok-o">&gt;</span> <span class="tok-s2">&quot;&quot;</span>
+          <span class="tok-n">expression</span> <span class="tok-o">(//</span><span class="tok-n">toplevel</span><span class="tok-o">//[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">7</span><span class="tok-o">]..[</span><span class="tok-mi">1</span><span class="tok-o">,</span><span class="tok-mi">0</span><span class="tok-o">+</span><span class="tok-mi">14</span><span class="tok-o">])</span>
+            <span class="tok-nc">Pexp_constant</span> <span class="tok-nc">Const_string</span><span class="tok-o">(</span><span class="tok-s2">&quot;hello&quot;</span><span class="tok-o">,</span><span class="tok-nc">None</span><span class="tok-o">)</span>
+      <span class="tok-o">]</span>
+<span class="tok-o">]</span>
+<b class="conum">(2)</b>
+<span class="tok-o">(</span><span class="tok-n">setglobal</span> <span class="tok-nc">Bs_internal_eval</span><span class="tok-o">!</span> <span class="tok-o">(</span><span class="tok-n">seq</span> <span class="tok-o">(</span><span class="tok-n">js_dump</span> <span class="tok-s2">&quot;hello&quot;</span><span class="tok-o">)</span> <span class="tok-o">(</span><span class="tok-n">makeblock</span> <span class="tok-mi">0</span><span class="tok-o">)))</span>
+<span class="tok-o">//</span> <span class="tok-nc">Generated</span> <span class="tok-n">by</span> <span class="tok-nc">BUCKLESCRIPT</span> <span class="tok-nc">VERSION</span> <span class="tok-mi">1</span><span class="tok-o">.</span><span class="tok-mi">0</span><span class="tok-o">.</span><span class="tok-mi">2</span> <span class="tok-o">,</span> <span class="tok-nc">PLEASE</span> <span class="tok-nc">EDIT</span> <span class="tok-nc">WITH</span> <span class="tok-nc">CARE</span>
+<span class="tok-k">&#39;</span><span class="tok-n">use</span> <span class="tok-n">strict&#39;</span><span class="tok-o">;</span>
+
+
+<span class="tok-n">console</span><span class="tok-o">.</span><span class="tok-n">log</span><span class="tok-o">(</span><span class="tok-s2">&quot;hello&quot;</span><span class="tok-o">);</span>
+
+<span class="tok-o">/*</span>  <span class="tok-nc">Not</span> <span class="tok-n">a</span> <span class="tok-n">pure</span> <span class="tok-k">module</span> <span class="tok-o">*/</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Output by flag -dparsetree</p>
+</li>
+<li>
+<p>Output by flag -drawlambda</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For this flag, it will not create any intermediate file, which is useful for
+learning or troubleshooting.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli"><a class="anchor" href="#__bs_no_builtin_ppx_ml_bs_no_builtin_ppx_mli"></a>-bs-no-builtin-ppx-ml, -bs-no-builtin-ppx-mli</h3>
 <div class="paragraph">
 <p>If users don&#8217;t use any bs specific annotaions, user can explicitly turn it off.
@@ -4110,6 +4167,9 @@ Array while js_of_ocaml requires its index 0 to be of value 0.</p>
 <li>
 <p>Add an option <code>-bs-no-warn-ffi-type</code> <a href="https://github.com/bloomberg/bucklescript/issues783">#783</a>
 By default, <code>bsc</code> will warn when it detect some ocaml datatype is passed from/to external FFi</p>
+</li>
+<li>
+<p>Add an option <code>-bs-eval</code> <a href="https://github.com/bloomberg/bucklescript/issues784">784</a></p>
 </li>
 </ul>
 </div>

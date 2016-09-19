@@ -43,7 +43,20 @@ let process_result ppf  main_file ast_table result =
       ("node " ^ Filename.chop_extension main_file ^ ".js")
   else 0
 
+type task = 
+  | Main of string
+  | Eval of string 
+  (* currently we just output JS file, 
+     it is compilicated to run via node.
+     1. Create a temporary file, it has to be in the same directory?
+     2. Via `node -e`, we need a module to do shell escaping properly
+  *)
+  | None
 
+
+let print_if ppf flag printer arg =
+  if !flag then Format.fprintf ppf "%a@." printer arg;
+  arg
 
 let batch_compile ppf files main_file =
   Compenv.readenv ppf Before_compile; 
@@ -61,19 +74,33 @@ let batch_compile ppf files main_file =
         Js_implementation.after_parsing_sig        
     end        
   ;
-  if String.length main_file <> 0 then
-    let ast_table, result =
-      Ast_extract.collect_from_main ppf
-        Ocaml_parse.lazy_parse_implementation
-        Ocaml_parse.lazy_parse_interface         
-        Lazy.force
-        Lazy.force
-        main_file in
-    if Queue.is_empty result then 
-      Bs_exception.error (Bs_main_not_exist main_file)
-    ;
-    process_result ppf main_file ast_table result     
-  else 0
+  begin match main_file with
+    | Main main_file -> 
+      let ast_table, result =
+        Ast_extract.collect_from_main ppf
+          Ocaml_parse.lazy_parse_implementation
+          Ocaml_parse.lazy_parse_interface         
+          Lazy.force
+          Lazy.force
+          main_file in
+      (* if Queue.is_empty result then  *)
+      (*   Bs_exception.error (Bs_main_not_exist main_file) *)
+      (* ; *) (* Not necessary since we will alwasy check [main_file] is valid or not*)
+      process_result ppf main_file ast_table result     
+    | None ->  0
+    | Eval s ->
+      Ext_ref.protect_list 
+        [Clflags.dont_write_files , true ; 
+         Clflags.annotations, false;
+         Clflags.binary_annotations, false;
+         Js_config.dump_js, true ;
+        ]  (fun _ -> 
+          Ocaml_parse.parse_implementation_from_string s 
+          |> print_if ppf Clflags.dump_parsetree Printast.implementation
+          |> print_if ppf Clflags.dump_spill Pprintast.structure
+          |> Js_implementation.after_parsing_impl ppf "//<toplevel>//" "Bs_internal_eval" 
+          ); 0
+  end
 
 
 

@@ -410,9 +410,7 @@ let compile  ~filename output_prefix no_export env _sigs
               Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
                 (if no_export then Ident_map.empty else export_map) 
             in
-
-
-            (if not @@ Ext_string.is_empty filename then
+            (if not @@ !Clflags.dont_write_files then
                Js_cmj_format.to_file 
                   (output_prefix ^ Js_config.cmj_ext) v);
             Js_program_loader.decorate_deps external_module_ids v.effect js
@@ -454,10 +452,13 @@ let lambda_as_module
          else 
            Filename.dirname filename) // basename         
       in 
-      Ext_pervasives.with_file_as_chan 
-        output_filename 
-        (fun chan -> 
-           Js_dump.dump_deps_program `NodeJS lambda_output chan)
+      let output_chan chan =         
+        Js_dump.dump_deps_program `NodeJS lambda_output chan in
+      (if !Js_config.dump_js then output_chan stdout);
+      if not @@ !Clflags.dont_write_files then 
+        Ext_pervasives.with_file_as_chan 
+          output_filename output_chan
+
 
     | NonBrowser (_package_name, module_systems) -> 
       module_systems |> List.iter begin fun (module_system, _path) -> 
@@ -466,13 +467,16 @@ let lambda_as_module
           _path //
           basename 
         in
-        Ext_pervasives.with_file_as_chan 
-          output_filename 
-          (fun chan -> 
-             Js_dump.dump_deps_program 
-               (module_system :> [Js_config.module_system | `Browser])
-               lambda_output
-               chan)
+        let output_chan chan  = 
+          Js_dump.dump_deps_program 
+            (module_system :> [Js_config.module_system | `Browser])
+            lambda_output
+            chan in
+        (if !Js_config.dump_js then 
+          output_chan stdout);
+        if not @@ !Clflags.dont_write_files then 
+          Ext_pervasives.with_file_as_chan output_filename output_chan
+            
       end
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 

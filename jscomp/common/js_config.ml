@@ -228,6 +228,7 @@ let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
 let sort_imports = ref false
+let dump_js = ref false 
     
 let is_windows = 
   match Sys.os_type with 

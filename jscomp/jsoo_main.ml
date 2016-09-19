@@ -40,6 +40,7 @@
 *)
 let () = 
   Js_config.set_browser ();
+  Clflags.dont_write_files := true;
   Clflags.unsafe_string := false
 
 let implementation impl no_export ppf  str  =

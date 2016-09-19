@@ -39,15 +39,24 @@ let intf filename =
 
 let batch_files  = ref []
 let main_file  = ref ""
+let eval_string = ref ""
     
 let collect_file name = 
   batch_files := name :: !batch_files
 
-let set_main_entry name =
-  if Sys.file_exists name then 
-    main_file := name  
-  else raise (Arg.Bad ("file " ^ name ^ " don't exist"))
 
+let set_main_entry name =
+  if !eval_string <> "" then
+    raise (Arg.Bad ("-bs-main conflicts with -bs-eval")) else 
+  if Sys.file_exists name then 
+    main_file := name else
+  raise (Arg.Bad ("file " ^ name ^ " don't exist"))
+
+
+let set_eval_string s = 
+  if !main_file <> "" then 
+    raise (Arg.Bad ("-bs-main conflicts with -bs-eval")) else 
+  eval_string :=  s 
 
 
 let (//) = Filename.concat
@@ -94,6 +103,11 @@ let set_noassert () =
 
 
 let buckle_script_flags =
+  ("-bs-eval", 
+   Arg.String set_eval_string, 
+   " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
+  )
+  ::
   (
     "-bs-sort-imports",
     Arg.Set Js_config.sort_imports,
@@ -183,7 +197,15 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-    exit (Ocaml_batch_compile.batch_compile ppf !batch_files !main_file) 
+    let main_file = !main_file in
+    let eval_string = !eval_string in
+    let task : Ocaml_batch_compile.task = 
+      if main_file <> "" then 
+        Main main_file
+      else if eval_string <> "" then 
+        Eval eval_string
+      else None in
+    exit (Ocaml_batch_compile.batch_compile ppf !batch_files task) 
   with x ->
     if not @@ !Js_config.better_errors then
       begin (* plain error messge reporting*)
