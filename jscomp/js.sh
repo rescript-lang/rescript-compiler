@@ -2,7 +2,7 @@
 set -e 
 ## building js 
 # ocamlbuild -use-ocamlfind -no-hygiene  -syntax camlp4o -pkgs js_of_ocaml,js_of_ocaml.syntax,js_of_ocaml.toplevel exports.byte
-FILE=bin/reason.byte
+FILE=jsoo_main.byte
 
 
 ocamlbuild -lflags -no-check-prims -use-ocamlfind -I bin -no-hygiene   -pkgs compiler-libs.common -no-links $FILE

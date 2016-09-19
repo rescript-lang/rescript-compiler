@@ -5,6 +5,7 @@ set -e
 # cd jscomp && git clean -dfx && cd ..
 
 # have no idea why the tar.gz is not correct
-cd ocaml && git clean -dfx && git archive HEAD -o ../ocaml.tar.gz && cd ..
+# git clean -dfx && 
+cd ocaml && git archive HEAD -o ../ocaml.tar.gz && cd ..
 
 

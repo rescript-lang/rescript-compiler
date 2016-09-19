@@ -87,7 +87,7 @@ Turn off warnings on FFI type declarations
 .Example
 [source,sh]
 ----------
-bsc -I runtime -dparsetree -drawlambda -bs-eval 'Js.log "hello"'
+bsc -dparsetree -drawlambda -bs-eval 'Js.log "hello"'
 ----------
 
 [source,ocaml]
