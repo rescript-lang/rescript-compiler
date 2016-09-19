@@ -14,9 +14,9 @@ define(["exports", "./caml_exceptions"],
     
     var cygwin = /* false */0;
     
-    var max_array_length = 4294967295;
+    var max_array_length = 2147483647;
     
-    var max_string_length = 4294967295;
+    var max_string_length = 2147483647;
     
     var interactive = [/* false */0];
     

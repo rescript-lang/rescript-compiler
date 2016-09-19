@@ -18,6 +18,8 @@ define(["exports"],
     
     var Types = 0;
     
+    var Json = 0;
+    
     exports.Null           = Null;
     exports.Undefined      = Undefined;
     exports.Null_undefined = Null_undefined;
@@ -26,6 +28,7 @@ define(["exports"],
     exports.$$String       = $$String;
     exports.Re             = Re;
     exports.Types          = Types;
+    exports.Json           = Json;
     
   })
 /* No side effect */
