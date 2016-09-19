@@ -42,4 +42,6 @@ val after_parsing_sig : Format.formatter -> string -> string -> Parsetree.signat
 val implementation : Format.formatter -> string -> string -> unit
 (** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
 
+
 val after_parsing_impl : Format.formatter -> string -> string -> Parsetree.structure -> unit
+(** [after_parsing_impl ppf sourcefile outputprefix ast ] *)

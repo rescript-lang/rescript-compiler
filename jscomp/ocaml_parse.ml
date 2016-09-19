@@ -35,6 +35,14 @@ let parse_implementation ppf sourcefile =
   if !Js_config.no_builtin_ppx_ml then ast else
     !Ppx_entry.rewrite_implementation ast 
 
+let parse_implementation_from_string  str = 
+  let lb = Lexing.from_string str in
+  Location.init lb "//toplevel//";
+  let ast = Parse.implementation lb  in 
+  if !Js_config.no_builtin_ppx_ml then ast else 
+    !Ppx_entry.rewrite_implementation ast 
+
+
 let lazy_parse_implementation ppf sourcefile =
   lazy (parse_implementation ppf sourcefile)
     

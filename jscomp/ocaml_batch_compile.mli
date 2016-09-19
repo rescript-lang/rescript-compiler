@@ -22,5 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type task = 
+  | Main of string
+  | Eval of string 
+  | None
+
 (** reutrn value is the error code *)
-val batch_compile : Format.formatter -> string list -> string ->  int
+val batch_compile : Format.formatter -> string list -> task ->  int

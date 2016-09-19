@@ -3672,6 +3672,7 @@ val is_windows : bool
 
 val better_errors : bool ref
 val sort_imports : bool ref 
+val dump_js : bool ref
 
 end = struct
 #1 "js_config.ml"
@@ -3905,6 +3906,7 @@ let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
 let sort_imports = ref false
+let dump_js = ref false 
     
 let is_windows = 
   match Sys.os_type with 
@@ -10990,6 +10992,8 @@ val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 *)
 val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 
+val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
+
 end = struct
 #1 "ext_ref.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11058,6 +11062,17 @@ let protect2 r1 r2 v1 v2 body =
     r1 := old1;
     r2 := old2;
     raise x
+
+let protect_list rvs body = 
+  let olds =  List.map (fun (x,y) -> !x)  rvs in 
+  let () = List.iter (fun (x,y) -> x:=y) rvs in 
+  try 
+    let res = body () in 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    res 
+  with e -> 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    raise e 
 
 end
 module Ext_sys : sig 
@@ -32831,9 +32846,7 @@ let compile  ~filename output_prefix no_export env _sigs
               Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
                 (if no_export then Ident_map.empty else export_map) 
             in
-
-
-            (if not @@ Ext_string.is_empty filename then
+            (if not @@ !Clflags.dont_write_files then
                Js_cmj_format.to_file 
                   (output_prefix ^ Js_config.cmj_ext) v);
             Js_program_loader.decorate_deps external_module_ids v.effect js
@@ -32875,10 +32888,13 @@ let lambda_as_module
          else 
            Filename.dirname filename) // basename         
       in 
-      Ext_pervasives.with_file_as_chan 
-        output_filename 
-        (fun chan -> 
-           Js_dump.dump_deps_program `NodeJS lambda_output chan)
+      let output_chan chan =         
+        Js_dump.dump_deps_program `NodeJS lambda_output chan in
+      (if !Js_config.dump_js then output_chan stdout);
+      if not @@ !Clflags.dont_write_files then 
+        Ext_pervasives.with_file_as_chan 
+          output_filename output_chan
+
 
     | NonBrowser (_package_name, module_systems) -> 
       module_systems |> List.iter begin fun (module_system, _path) -> 
@@ -32887,13 +32903,16 @@ let lambda_as_module
           _path //
           basename 
         in
-        Ext_pervasives.with_file_as_chan 
-          output_filename 
-          (fun chan -> 
-             Js_dump.dump_deps_program 
-               (module_system :> [Js_config.module_system | `Browser])
-               lambda_output
-               chan)
+        let output_chan chan  = 
+          Js_dump.dump_deps_program 
+            (module_system :> [Js_config.module_system | `Browser])
+            lambda_output
+            chan in
+        (if !Js_config.dump_js then 
+          output_chan stdout);
+        if not @@ !Clflags.dont_write_files then 
+          Ext_pervasives.with_file_as_chan output_filename output_chan
+            
       end
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
@@ -33681,6 +33700,7 @@ val parse_interface : Format.formatter -> string -> Parsetree.signature
 
 val parse_implementation : Format.formatter -> string -> Parsetree.structure
 
+val parse_implementation_from_string : string -> Parsetree.structure
 val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature lazy_t
 
 val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
@@ -33725,6 +33745,14 @@ let parse_implementation ppf sourcefile =
     Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile in 
   if !Js_config.no_builtin_ppx_ml then ast else
     !Ppx_entry.rewrite_implementation ast 
+
+let parse_implementation_from_string  str = 
+  let lb = Lexing.from_string str in
+  Location.init lb "//toplevel//";
+  let ast = Parse.implementation lb  in 
+  if !Js_config.no_builtin_ppx_ml then ast else 
+    !Ppx_entry.rewrite_implementation ast 
+
 
 let lazy_parse_implementation ppf sourcefile =
   lazy (parse_implementation ppf sourcefile)
@@ -33790,7 +33818,9 @@ val after_parsing_sig : Format.formatter -> string -> string -> Parsetree.signat
 val implementation : Format.formatter -> string -> string -> unit
 (** [implementation ppf sourcefile outprefix] compiles to JS directly *) 
 
+
 val after_parsing_impl : Format.formatter -> string -> string -> Parsetree.structure -> unit
+(** [after_parsing_impl ppf sourcefile outputprefix ast ] *)
 
 end = struct
 #1 "js_implementation.ml"
@@ -33934,8 +33964,13 @@ module Ocaml_batch_compile : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type task = 
+  | Main of string
+  | Eval of string 
+  | None
+
 (** reutrn value is the error code *)
-val batch_compile : Format.formatter -> string list -> string ->  int
+val batch_compile : Format.formatter -> string list -> task ->  int
 
 end = struct
 #1 "ocaml_batch_compile.ml"
@@ -33984,7 +34019,20 @@ let process_result ppf  main_file ast_table result =
       ("node " ^ Filename.chop_extension main_file ^ ".js")
   else 0
 
+type task = 
+  | Main of string
+  | Eval of string 
+  (* currently we just output JS file, 
+     it is compilicated to run via node.
+     1. Create a temporary file, it has to be in the same directory?
+     2. Via `node -e`, we need a module to do shell escaping properly
+  *)
+  | None
 
+
+let print_if ppf flag printer arg =
+  if !flag then Format.fprintf ppf "%a@." printer arg;
+  arg
 
 let batch_compile ppf files main_file =
   Compenv.readenv ppf Before_compile; 
@@ -34002,19 +34050,33 @@ let batch_compile ppf files main_file =
         Js_implementation.after_parsing_sig        
     end        
   ;
-  if String.length main_file <> 0 then
-    let ast_table, result =
-      Ast_extract.collect_from_main ppf
-        Ocaml_parse.lazy_parse_implementation
-        Ocaml_parse.lazy_parse_interface         
-        Lazy.force
-        Lazy.force
-        main_file in
-    if Queue.is_empty result then 
-      Bs_exception.error (Bs_main_not_exist main_file)
-    ;
-    process_result ppf main_file ast_table result     
-  else 0
+  begin match main_file with
+    | Main main_file -> 
+      let ast_table, result =
+        Ast_extract.collect_from_main ppf
+          Ocaml_parse.lazy_parse_implementation
+          Ocaml_parse.lazy_parse_interface         
+          Lazy.force
+          Lazy.force
+          main_file in
+      (* if Queue.is_empty result then  *)
+      (*   Bs_exception.error (Bs_main_not_exist main_file) *)
+      (* ; *) (* Not necessary since we will alwasy check [main_file] is valid or not*)
+      process_result ppf main_file ast_table result     
+    | None ->  0
+    | Eval s ->
+      Ext_ref.protect_list 
+        [Clflags.dont_write_files , true ; 
+         Clflags.annotations, false;
+         Clflags.binary_annotations, false;
+         Js_config.dump_js, true ;
+        ]  (fun _ -> 
+          Ocaml_parse.parse_implementation_from_string s 
+          |> print_if ppf Clflags.dump_parsetree Printast.implementation
+          |> print_if ppf Clflags.dump_spill Pprintast.structure
+          |> Js_implementation.after_parsing_impl ppf "//<toplevel>//" "Bs_internal_eval" 
+          ); 0
+  end
 
 
 
@@ -34489,15 +34551,24 @@ let intf filename =
 
 let batch_files  = ref []
 let main_file  = ref ""
+let eval_string = ref ""
     
 let collect_file name = 
   batch_files := name :: !batch_files
 
-let set_main_entry name =
-  if Sys.file_exists name then 
-    main_file := name  
-  else raise (Arg.Bad ("file " ^ name ^ " don't exist"))
 
+let set_main_entry name =
+  if !eval_string <> "" then
+    raise (Arg.Bad ("-bs-main conflicts with -bs-eval")) else 
+  if Sys.file_exists name then 
+    main_file := name else
+  raise (Arg.Bad ("file " ^ name ^ " don't exist"))
+
+
+let set_eval_string s = 
+  if !main_file <> "" then 
+    raise (Arg.Bad ("-bs-main conflicts with -bs-eval")) else 
+  eval_string :=  s 
 
 
 let (//) = Filename.concat
@@ -34544,6 +34615,11 @@ let set_noassert () =
 
 
 let buckle_script_flags =
+  ("-bs-eval", 
+   Arg.String set_eval_string, 
+   " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
+  )
+  ::
   (
     "-bs-sort-imports",
     Arg.Set Js_config.sort_imports,
@@ -34633,7 +34709,15 @@ let _ =
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-    exit (Ocaml_batch_compile.batch_compile ppf !batch_files !main_file) 
+    let main_file = !main_file in
+    let eval_string = !eval_string in
+    let task : Ocaml_batch_compile.task = 
+      if main_file <> "" then 
+        Main main_file
+      else if eval_string <> "" then 
+        Eval eval_string
+      else None in
+    exit (Ocaml_batch_compile.batch_compile ppf !batch_files task) 
   with x ->
     if not @@ !Js_config.better_errors then
       begin (* plain error messge reporting*)

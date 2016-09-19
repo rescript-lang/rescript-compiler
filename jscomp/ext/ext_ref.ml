@@ -64,3 +64,14 @@ let protect2 r1 r2 v1 v2 body =
     r1 := old1;
     r2 := old2;
     raise x
+
+let protect_list rvs body = 
+  let olds =  List.map (fun (x,y) -> !x)  rvs in 
+  let () = List.iter (fun (x,y) -> x:=y) rvs in 
+  try 
+    let res = body () in 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    res 
+  with e -> 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    raise e 

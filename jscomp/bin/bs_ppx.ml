@@ -3480,6 +3480,7 @@ val is_windows : bool
 
 val better_errors : bool ref
 val sort_imports : bool ref 
+val dump_js : bool ref
 
 end = struct
 #1 "js_config.ml"
@@ -3713,6 +3714,7 @@ let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
 let sort_imports = ref false
+let dump_js = ref false 
     
 let is_windows = 
   match Sys.os_type with 
@@ -5747,6 +5749,8 @@ val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 *)
 val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 
+val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
+
 end = struct
 #1 "ext_ref.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5815,6 +5819,17 @@ let protect2 r1 r2 v1 v2 body =
     r1 := old1;
     r2 := old2;
     raise x
+
+let protect_list rvs body = 
+  let olds =  List.map (fun (x,y) -> !x)  rvs in 
+  let () = List.iter (fun (x,y) -> x:=y) rvs in 
+  try 
+    let res = body () in 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    res 
+  with e -> 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    raise e 
 
 end
 module Ppx_entry : sig 
