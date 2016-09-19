@@ -494,12 +494,12 @@ let caml_format_float fmt x =
   let prec = if f.prec < 0 then 6 else f.prec in 
   let x = if x < 0. then (f.sign <- (-1); -. x) else x in 
   let s = ref "" in 
-  if Js_float.is_nan x then 
+  if Js.to_bool @@ Js_float.isNaN x then 
     begin 
       s := "nan";
       f.filter <- " "
     end
-  else if not @@ Js_float.is_finite x then
+  else if not @@ Js.to_bool @@ Js_float.isFinite x then
     begin 
       s := "inf";
       f.filter <- " " 
@@ -526,13 +526,13 @@ let caml_format_float fmt x =
         -> 
         (*  this will not work large numbers *)
         (* ("%3.10f", 3e+56, "300000000000000005792779041490073052596128503513888063488.0000000000") *)
-        s := Js_float.to_fixed x prec 
+        s := Js_float.toFixed x prec 
       | "g" -> 
         let prec = if prec <> 0 then prec else 1 in
         s := Js_float.to_exponential x (prec - 1);
         let j = Bs_string.index_of !s "e" in 
         let  exp = Js_int.from_any @@ Bs_string.slice_rest !s (j + 1)  in 
-        if exp < -4 || x >= 1e21 ||Bs_string.length (Js_float.to_fixed x 0) > prec then 
+        if exp < -4 || x >= 1e21 ||Bs_string.length (Js_float.toFixed x 0) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 
             decr i 
@@ -549,10 +549,10 @@ let caml_format_float fmt x =
           if exp < 0 then 
             begin 
               p := !p - (exp + 1);
-              s := Js_float.to_fixed x !p 
+              s := Js_float.toFixed x !p 
             end
           else 
-            while (s := Js_float.to_fixed x !p;Bs_string.length !s > prec + 1) do 
+            while (s := Js_float.toFixed x !p;Bs_string.length !s > prec + 1) do 
               decr p
             done ;
           if !p <> 0 then 

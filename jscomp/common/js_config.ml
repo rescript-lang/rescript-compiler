@@ -167,8 +167,10 @@ let default_gen_tds = ref false
      
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
+let no_warn_ffi_type = ref false
 
-
+(** TODO: will flip the option when it is ready *)
+let no_warn_unused_bs_attribute = ref true 
 
 
 let builtin_exceptions = "Caml_builtin_exceptions"

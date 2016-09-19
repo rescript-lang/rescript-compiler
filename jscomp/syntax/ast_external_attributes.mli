@@ -92,7 +92,7 @@ val handle_attributes_as_string :
   Ast_core_type.t ->
   Ast_attributes.t -> 
   string   ->
-  Ast_core_type.t * string list
+  Ast_core_type.t * string list * Ast_attributes.t
 
 
 val bs_external : string 

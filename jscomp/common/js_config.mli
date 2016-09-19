@@ -101,6 +101,8 @@ val default_gen_tds : bool ref
 (** options for builtion ppx *)
 val no_builtin_ppx_ml : bool ref 
 val no_builtin_ppx_mli : bool ref 
+val no_warn_ffi_type : bool ref 
+val no_warn_unused_bs_attribute : bool ref 
 
 (** check-div-by-zero option *)
 val check_div_by_zero : bool ref 
