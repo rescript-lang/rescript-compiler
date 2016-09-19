@@ -559,49 +559,29 @@ let ocaml_obj_as_js_object
            label.Asttypes.txt
            label_type acc           
       ) labels label_types public_obj_type in
-  let pval_attributes = 
-    Ast_attributes.bs_obj pval_type in (* FIXME no loc*)
-  let local_fun_name = "mk" in
-  let pval_type, pval_prim, pval_attributes =
-    Ast_external_attributes.handle_attributes_as_string
-      loc
-      local_fun_name      
-      pval_type pval_attributes "" in
   Ast_external.local_extern_cont
     loc
-    ~pval_attributes
-    ~pval_prim
-    ~local_fun_name
-    (fun e ->
+      ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+      (fun e ->
        Exp.apply ~loc e
          (List.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
     ~pval_type
+
 
 let record_as_js_object 
     loc 
     (self : Ast_mapper.mapper)
     (label_exprs : label_exprs)
      : Parsetree.expression_desc = 
-  let labels, args = 
-    Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
+
+  let labels,args, arity =
+    List.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
-          (x, (x, self.expr self e))
+          ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label "
-  ) label_exprs in 
-  let arity = List.length labels in 
-  let tyvars = (Ext_list.init arity (fun i ->      
-      Typ.var ~loc ("a" ^ string_of_int i))) in 
-  
-  let pval_type = Ast_core_type.from_labels ~loc tyvars labels in 
-  let pval_attributes = Ast_attributes.bs_obj pval_type in 
-  let pval_type, pval_prim, pval_attributes = 
-    Ast_external_attributes.handle_attributes_as_string
-      loc "mk"
-      pval_type pval_attributes "" in 
+          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
   Ast_external.create_local_external loc 
-    ~pval_prim
-    ~pval_type 
-    ~pval_attributes 
+    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+    ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 

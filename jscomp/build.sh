@@ -65,7 +65,7 @@ echo "........" >> ./build.compile
 echo "Done"
 
 echo "Make pack tools" >> ./build.compile
-make _build/bspack 2>> ./build.compile
+
 
 # make snapshot
 # generate new js_cmj_datasets

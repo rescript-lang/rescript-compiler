@@ -2,8 +2,10 @@
 [appendix]
 ## CHANGES
 
+== 1.03 (dev)
 
-== 1.02 (dev)
+
+== 1.02
 
 * Bug fixes and enhancement
 

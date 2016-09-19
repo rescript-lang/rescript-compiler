@@ -197,8 +197,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.0.2"
-
+let version = "1.0.3"
 let current_file = ref ""
 let debug_file = ref ""
 

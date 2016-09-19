@@ -20,6 +20,8 @@ js_json.cmj : js_types.cmi js_string.cmj js_dict.cmj js_array.cmj \
     js_json.cmi
 js_json.cmx : js_types.cmx js_string.cmx js_dict.cmx js_array.cmx \
     js_json.cmi
+js_obj.cmj :
+js_obj.cmx :
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn.cmx : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmi bs_dyn_lib.cmi
@@ -51,6 +53,8 @@ js_json.cmo : js_types.cmi js_string.cmo js_dict.cmo js_array.cmo \
     js_json.cmi
 js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
     js_json.cmi
+js_obj.cmo :
+js_obj.cmj :
 bs_dyn.cmo : bs_dyn.cmi
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmo : bs_dyn.cmi bs_dyn_lib.cmi

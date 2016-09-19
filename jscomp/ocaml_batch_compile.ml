@@ -97,7 +97,7 @@ let batch_compile ppf files main_file =
         ]  (fun _ -> 
           Ocaml_parse.parse_implementation_from_string s 
           |> print_if ppf Clflags.dump_parsetree Printast.implementation
-          |> print_if ppf Clflags.dump_spill Pprintast.structure
+          |> print_if ppf Clflags.dump_source Pprintast.structure
           |> Js_implementation.after_parsing_impl ppf "//<toplevel>//" "Bs_internal_eval" 
           ); 0
   end

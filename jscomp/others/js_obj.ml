@@ -21,45 +21,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type attr =  Parsetree.attribute
-type t =  attr list 
-
-type ('a,'b) st = 
-  { get : 'a option ; 
-    set : 'b option }
-
-val process_method_attributes_rev : 
-  t ->
-  (bool * bool , [`Get | `No_get ]) st * t 
-
-val process_attributes_rev : 
-  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
-
-val process_bs : 
-  t -> [ `Nothing | `Has] * t 
-
-val process_external : t -> bool 
-
-type derive_attr = {
-  explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
-}
-val process_bs_string_int : 
-  t -> [`Nothing | `String | `Int | `Ignore] 
-
-val process_bs_string_as :
-  t -> string option 
-val process_bs_int_as : 
-  t -> int option 
 
 
-val process_derive_type : 
-  t -> derive_attr * t 
-
-
-(* val bs_obj : Location.t  -> t  *)
-val bs : attr 
-val bs_this : attr
-val bs_method : attr
-
-
+external keys : _ Js.t -> string array = "Object.keys" [@@bs.val]

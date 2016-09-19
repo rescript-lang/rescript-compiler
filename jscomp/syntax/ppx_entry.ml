@@ -174,7 +174,7 @@ let handle_typ
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
-  | {ptyp_desc = Ptyp_extension({txt = "bs.obj"}, PTyp ty)}
+  | {ptyp_desc = Ptyp_extension({txt = ("bs.obj"|"obj")}, PTyp ty)}
     -> 
     Ext_ref.non_exn_protect record_as_js_object true 
       (fun _ -> self.typ self ty )
@@ -306,9 +306,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end             
 
         (** [bs.debugger], its output should not be rewritten any more*)
-        | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
+        | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
           -> {e with pexp_desc = Ast_util.handle_debugger loc payload}
-        | Pexp_extension ({txt = "bs.obj"; loc},  payload)
+        | Pexp_extension ({txt = ("bs.obj" | "obj"); loc},  payload)
           -> 
             begin match payload with 
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
