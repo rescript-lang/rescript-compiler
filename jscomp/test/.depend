@@ -480,8 +480,8 @@ pipe_send_readline.cmj : ../runtime/js.cmj
 pipe_send_readline.cmx : ../runtime/js.cmx
 poly_type.cmj : ../runtime/js.cmj
 poly_type.cmx : ../runtime/js.cmx
-poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
-poly_variant_test.cmx : ../runtime/js.cmx poly_variant_test.cmi
+poly_variant_test.cmj : mt.cmi ../runtime/js.cmj poly_variant_test.cmi
+poly_variant_test.cmx : mt.cmx ../runtime/js.cmx poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 polymorphism_test.cmx : polymorphism_test.cmi
 polyvar_test.cmj : ../runtime/js.cmj
@@ -1304,8 +1304,8 @@ pipe_send_readline.cmo : ../runtime/js.cmo
 pipe_send_readline.cmj : ../runtime/js.cmj
 poly_type.cmo : ../runtime/js.cmo
 poly_type.cmj : ../runtime/js.cmj
-poly_variant_test.cmo : ../runtime/js.cmo poly_variant_test.cmi
-poly_variant_test.cmj : ../runtime/js.cmj poly_variant_test.cmi
+poly_variant_test.cmo : mt.cmi ../runtime/js.cmo poly_variant_test.cmi
+poly_variant_test.cmj : mt.cmj ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmo : polymorphism_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
 polyvar_test.cmo : ../runtime/js.cmo

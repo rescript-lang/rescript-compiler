@@ -1,17 +1,26 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+
 [%%bs.raw{|
 function hey_string (option){
   switch(option){
-  case "on_closed" : return 1 ;
-  case "on_open" : return 2 ; 
-  case "in" : return 3;
+  case "on_closed" : 
+  case "on_open" : 
+  case "in" : return option
   default : throw Error ("impossible")
  }
 }
 function hey_int (option){
   switch (option){
-   case 0 : return 1;
-   case 3 : return 3;
-   case 4 : return 4;
+   case 0 : 
+   case 3 : 
+   case 4 : 
+   case 5:
+   case 6 : return option
    default : throw Error("impossible")
   }
  }
@@ -24,21 +33,31 @@ type u = [`on_closed | `on_open | `in_
 *)
 (** when marshall, make sure location does not matter *)
 external test_string_type : 
-  ([`on_closed | `on_open | `in_ [@bs.as "in"]]
-                [@bs.string]) -> int  = 
+  flag:([`on_closed | `on_open | `in_ [@bs.as "in"]]
+                [@bs.string]) -> string  = 
   "hey_string" [@@bs.val]
 
 external test_int_type : 
-  ([`on_closed | `on_open [@bs.as 3] | `in_ ]
+ ([`on_closed 
+   | `on_open [@bs.as 3] 
+   | `in_
+   | `again [@bs.as 5]
+   | `hey
+   ]
                 [@bs.int])  -> int  = 
   "hey_int" [@@bs.val]
 
 let uu =
-  [| test_string_type `on_open; test_string_type `on_closed; test_string_type `in_ |]
+  [| test_string_type ~flag: `on_open; test_string_type ~flag: `on_closed; 
+     test_string_type ~flag: `in_ |]
 
 let vv = 
   [| test_int_type `on_open; test_int_type `on_closed; test_int_type `in_ |]
 
+let () = 
+  eq __LOC__ vv [|3;0;4|];
+  eq __LOC__ (test_int_type `again, test_int_type `hey) (5,6);
+  eq __LOC__ uu [|"on_open"; "on_closed"; "in"|]
 
 
 let option = `on_closed 
@@ -110,3 +129,5 @@ let register readline =
 *)
 let test readline x  = 
   on readline x 
+
+let () = Mt.from_pair_suites __FILE__ !suites
