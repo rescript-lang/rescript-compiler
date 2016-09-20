@@ -211,7 +211,3 @@ let bs_method : attr
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
 
-let bs_obj pval_type : t
-  = 
-  [{txt = "bs.obj" ; loc = Location.none}, Ast_payload.empty 
-  ]

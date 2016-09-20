@@ -34,8 +34,9 @@ external slice : int -> int -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
 external slice_copy : unit -> 'this = "slice"[@@bs.send.pipe: 'a t as 'this]
 external slice_start : int -> 'this = "slice"[@@bs.send.pipe: 'a t as 'this]
 
-external indexOf : 'a -> int -> int = "" [@@bs.send.pipe: 'a t as 'this]
-external indexOf_start : 'a -> int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
+external indexOf : 'a  -> int = "" [@@bs.send.pipe: 'a t as 'this]
+external indexOfFrom : 'a -> int ->  int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
+external includes : 'a -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this]
 
 external lastIndexOf : 'a -> int -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external lastIndexOf_start : 'a -> int  = "lastIndex" [@@bs.send.pipe: 'a t as 'this]

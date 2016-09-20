@@ -135,7 +135,7 @@ let caml_hash count _limit seed obj =
       else if Js.typeof obj = "function" then
         () 
       else 
-        let size = Js_obj.size_of_any obj in 
+        let size = Bs_obj.size_of_any obj in 
         match Js_undefined.to_opt size with
         | None -> ()
         | Some size -> 

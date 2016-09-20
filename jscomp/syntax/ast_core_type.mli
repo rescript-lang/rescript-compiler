@@ -53,9 +53,13 @@ val label_name : string -> arg_label
 
 
 
-(** return a function type *)
+(** return a function type 
+    [from_labels ~loc tyvars labels]
+    example output:
+    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
+*)
 val from_labels :
-  loc:Location.t -> t list -> string list -> t
+  loc:Location.t -> int ->  string Asttypes.loc list -> t
 
 val make_obj :
   loc:Location.t ->

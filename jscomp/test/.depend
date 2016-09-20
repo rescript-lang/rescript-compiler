@@ -240,8 +240,10 @@ ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
 ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
 ffi_array_test.cmj : mt.cmi ../others/js_array.cmj
 ffi_array_test.cmx : mt.cmx ../others/js_array.cmx
-ffi_js.cmj : ../stdlib/obj.cmi mt.cmi
-ffi_js.cmx : ../stdlib/obj.cmx mt.cmx
+ffi_js.cmj : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmj ../runtime/js.cmj \
+    ../stdlib/array.cmi
+ffi_js.cmx : ../stdlib/obj.cmx mt.cmx ../others/js_obj.cmx ../runtime/js.cmx \
+    ../stdlib/array.cmx
 ffi_test.cmj : ../runtime/js.cmj
 ffi_test.cmx : ../runtime/js.cmx
 fib.cmj :
@@ -844,8 +846,8 @@ typeof_test.cmj : mt.cmi ../runtime/js.cmj
 typeof_test.cmx : mt.cmx ../runtime/js.cmx
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmi
 uncurry_glob_test.cmx : ../runtime/caml_utils.cmx
-undef_regression_test.cmj : ../runtime/js_obj.cmj ../runtime/js.cmj
-undef_regression_test.cmx : ../runtime/js_obj.cmx ../runtime/js.cmx
+undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
+undef_regression_test.cmx : ../runtime/js.cmx ../runtime/bs_obj.cmx
 unitest_string.cmj :
 unitest_string.cmx :
 unsafe_obj_external.cmj : ../runtime/js.cmj
@@ -1062,8 +1064,10 @@ ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
 ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
 ffi_array_test.cmo : mt.cmi ../others/js_array.cmo
 ffi_array_test.cmj : mt.cmj ../others/js_array.cmj
-ffi_js.cmo : ../stdlib/obj.cmi mt.cmi
-ffi_js.cmj : ../stdlib/obj.cmj mt.cmj
+ffi_js.cmo : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmo ../runtime/js.cmo \
+    ../stdlib/array.cmi
+ffi_js.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_obj.cmj ../runtime/js.cmj \
+    ../stdlib/array.cmj
 ffi_test.cmo : ../runtime/js.cmo
 ffi_test.cmj : ../runtime/js.cmj
 fib.cmo :
@@ -1666,8 +1670,8 @@ typeof_test.cmo : mt.cmi ../runtime/js.cmo
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
 uncurry_glob_test.cmo : ../runtime/caml_utils.cmi
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
-undef_regression_test.cmo : ../runtime/js_obj.cmo ../runtime/js.cmo
-undef_regression_test.cmj : ../runtime/js_obj.cmj ../runtime/js.cmj
+undef_regression_test.cmo : ../runtime/js.cmo ../runtime/bs_obj.cmo
+undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
 unitest_string.cmo :
 unitest_string.cmj :
 unsafe_obj_external.cmo : ../runtime/js.cmo

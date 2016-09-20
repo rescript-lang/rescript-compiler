@@ -4,8 +4,8 @@ caml_string.cmj : bs_string.cmj caml_string.cmi
 caml_string.cmx : bs_string.cmx caml_string.cmi
 caml_bytes.cmj : caml_bytes.cmi
 caml_bytes.cmx : caml_bytes.cmi
-caml_obj.cmj : js_obj.cmj js.cmj caml_obj.cmi
-caml_obj.cmx : js_obj.cmx js.cmx caml_obj.cmi
+caml_obj.cmj : js.cmj bs_obj.cmj caml_obj.cmi
+caml_obj.cmx : js.cmx bs_obj.cmx caml_obj.cmi
 caml_int64.cmj : typed_array.cmj js_float.cmj js.cmj caml_utils.cmi \
     caml_int32.cmi bs_string.cmj caml_int64.cmi
 caml_int64.cmx : typed_array.cmx js_float.cmx js.cmx caml_utils.cmx \
@@ -34,10 +34,10 @@ caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_md5.cmx : bs_string.cmx caml_md5.cmi
 caml_queue.cmj : caml_queue.cmi
 caml_queue.cmx : caml_queue.cmi
-caml_hash.cmj : js_undefined.cmj js_obj.cmj js.cmj caml_queue.cmi \
-    bs_string.cmj caml_hash.cmi
-caml_hash.cmx : js_undefined.cmx js_obj.cmx js.cmx caml_queue.cmx \
-    bs_string.cmx caml_hash.cmi
+caml_hash.cmj : js_undefined.cmj js.cmj caml_queue.cmi bs_string.cmj \
+    bs_obj.cmj caml_hash.cmi
+caml_hash.cmx : js_undefined.cmx js.cmx caml_queue.cmx bs_string.cmx \
+    bs_obj.cmx caml_hash.cmi
 caml_weak.cmj : js_undefined.cmj caml_array.cmi caml_weak.cmi
 caml_weak.cmx : js_undefined.cmx caml_array.cmx caml_weak.cmi
 caml_backtrace.cmj : caml_backtrace.cmi
@@ -54,8 +54,8 @@ js_primitive.cmx : js_undefined.cmx js_null_undefined.cmx js_null.cmx \
     js_primitive.cmi
 caml_basic.cmj : js_undefined.cmj js.cmj caml_basic.cmi
 caml_basic.cmx : js_undefined.cmx js.cmx caml_basic.cmi
-caml_oo.cmj : js_obj.cmj caml_array.cmi caml_oo.cmi
-caml_oo.cmx : js_obj.cmx caml_array.cmx caml_oo.cmi
+caml_oo.cmj : caml_array.cmi bs_obj.cmj caml_oo.cmi
+caml_oo.cmx : caml_array.cmx bs_obj.cmx caml_oo.cmi
 curry.cmj : caml_oo.cmi caml_array.cmi
 curry.cmx : caml_oo.cmx caml_array.cmx
 caml_module.cmj :
@@ -64,8 +64,8 @@ bs_string.cmj :
 bs_string.cmx :
 js_float.cmj : js.cmj
 js_float.cmx : js.cmx
-js_obj.cmj : js.cmj
-js_obj.cmx : js.cmx
+bs_obj.cmj : js.cmj
+bs_obj.cmx : js.cmx
 js_nativeint.cmj :
 js_nativeint.cmx :
 js_int.cmj :
@@ -103,8 +103,8 @@ caml_string.cmo : bs_string.cmo caml_string.cmi
 caml_string.cmj : bs_string.cmj caml_string.cmi
 caml_bytes.cmo : caml_bytes.cmi
 caml_bytes.cmj : caml_bytes.cmi
-caml_obj.cmo : js_obj.cmo js.cmo caml_obj.cmi
-caml_obj.cmj : js_obj.cmj js.cmj caml_obj.cmi
+caml_obj.cmo : js.cmo bs_obj.cmo caml_obj.cmi
+caml_obj.cmj : js.cmj bs_obj.cmj caml_obj.cmi
 caml_int64.cmo : typed_array.cmo js_float.cmo js.cmo caml_utils.cmi \
     caml_int32.cmi bs_string.cmo caml_int64.cmi
 caml_int64.cmj : typed_array.cmj js_float.cmj js.cmj caml_utils.cmj \
@@ -133,10 +133,10 @@ caml_md5.cmo : bs_string.cmo caml_md5.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_queue.cmo : caml_queue.cmi
 caml_queue.cmj : caml_queue.cmi
-caml_hash.cmo : js_undefined.cmo js_obj.cmo js.cmo caml_queue.cmi \
-    bs_string.cmo caml_hash.cmi
-caml_hash.cmj : js_undefined.cmj js_obj.cmj js.cmj caml_queue.cmj \
-    bs_string.cmj caml_hash.cmi
+caml_hash.cmo : js_undefined.cmo js.cmo caml_queue.cmi bs_string.cmo \
+    bs_obj.cmo caml_hash.cmi
+caml_hash.cmj : js_undefined.cmj js.cmj caml_queue.cmj bs_string.cmj \
+    bs_obj.cmj caml_hash.cmi
 caml_weak.cmo : js_undefined.cmo caml_array.cmi caml_weak.cmi
 caml_weak.cmj : js_undefined.cmj caml_array.cmj caml_weak.cmi
 caml_backtrace.cmo : caml_backtrace.cmi
@@ -153,8 +153,8 @@ js_primitive.cmj : js_undefined.cmj js_null_undefined.cmj js_null.cmj \
     js_primitive.cmi
 caml_basic.cmo : js_undefined.cmo js.cmo caml_basic.cmi
 caml_basic.cmj : js_undefined.cmj js.cmj caml_basic.cmi
-caml_oo.cmo : js_obj.cmo caml_array.cmi caml_oo.cmi
-caml_oo.cmj : js_obj.cmj caml_array.cmj caml_oo.cmi
+caml_oo.cmo : caml_array.cmi bs_obj.cmo caml_oo.cmi
+caml_oo.cmj : caml_array.cmj bs_obj.cmj caml_oo.cmi
 curry.cmo : caml_oo.cmi caml_array.cmi
 curry.cmj : caml_oo.cmj caml_array.cmj
 caml_module.cmo :
@@ -163,8 +163,8 @@ bs_string.cmo :
 bs_string.cmj :
 js_float.cmo : js.cmo
 js_float.cmj : js.cmj
-js_obj.cmo : js.cmo
-js_obj.cmj : js.cmj
+bs_obj.cmo : js.cmo
+bs_obj.cmj : js.cmj
 js_nativeint.cmo :
 js_nativeint.cmj :
 js_int.cmo :

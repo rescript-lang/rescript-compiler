@@ -101,3 +101,6 @@ val from_string : string -> t
 val unsafe_from_string : string -> t 
 val is_bs_external_prefix : string -> bool
 
+
+
+val pval_prim_of_labels : string Asttypes.loc list -> string list

@@ -26,7 +26,7 @@ type t = Parsetree.core_type
 type arg_label =
   | Label of string 
   | Optional of string 
-  | Empty
+  | Empty (* it will be ignored , side effect will be recorded *)
 
 type arg_type = 
   | NullString of (int * string) list 
@@ -80,14 +80,26 @@ let label_name l : arg_label =
   else Label l
 
 
-let from_labels ~loc tyvars (labels : string list)
-  : t = 
+(* Note that OCaml type checker will not allow arbitrary 
+   name as type variables, for example:
+   {[
+     '_x'_
+   ]}
+   will be recognized as a invalid program
+*)
+let from_labels ~loc arity labels 
+  : t =
+  let tyvars = 
+    ((Ext_list.init arity (fun i ->      
+           Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc  
-     (Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed)
+      (Typ.object_ ~loc
+         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
   in 
   List.fold_right2 
-    (fun label tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+    (fun {Asttypes.loc ; txt = label }
+      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
 
 
 let make_obj ~loc xs =

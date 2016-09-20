@@ -789,7 +789,7 @@ val process_derive_type :
   t -> derive_attr * t 
 
 
-val bs_obj : Parsetree.core_type -> t 
+(* val bs_obj : Location.t  -> t  *)
 val bs : attr 
 val bs_this : attr
 val bs_method : attr
@@ -1011,10 +1011,6 @@ let bs_method : attr
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
 
-let bs_obj pval_type : t
-  = 
-  [{txt = "bs.obj" ; loc = Location.none}, Ast_payload.empty 
-  ]
 
 end
 module Ast_literal : sig 
@@ -2457,9 +2453,13 @@ val label_name : string -> arg_label
 
 
 
-(** return a function type *)
+(** return a function type 
+    [from_labels ~loc tyvars labels]
+    example output:
+    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
+*)
 val from_labels :
-  loc:Location.t -> t list -> string list -> t
+  loc:Location.t -> int ->  string Asttypes.loc list -> t
 
 val make_obj :
   loc:Location.t ->
@@ -2496,7 +2496,7 @@ type t = Parsetree.core_type
 type arg_label =
   | Label of string 
   | Optional of string 
-  | Empty
+  | Empty (* it will be ignored , side effect will be recorded *)
 
 type arg_type = 
   | NullString of (int * string) list 
@@ -2550,14 +2550,26 @@ let label_name l : arg_label =
   else Label l
 
 
-let from_labels ~loc tyvars (labels : string list)
-  : t = 
+(* Note that OCaml type checker will not allow arbitrary 
+   name as type variables, for example:
+   {[
+     '_x'_
+   ]}
+   will be recognized as a invalid program
+*)
+let from_labels ~loc arity labels 
+  : t =
+  let tyvars = 
+    ((Ext_list.init arity (fun i ->      
+           Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc  
-     (Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed)
+      (Typ.object_ ~loc
+         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
   in 
   List.fold_right2 
-    (fun label tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+    (fun {Asttypes.loc ; txt = label }
+      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
 
 
 let make_obj ~loc xs =
@@ -3683,8 +3695,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.0.2"
-
+let version = "1.0.3"
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -4009,6 +4020,9 @@ val unsafe_from_string : string -> t
 val is_bs_external_prefix : string -> bool
 
 
+
+val pval_prim_of_labels : string Asttypes.loc list -> string list
+
 end = struct
 #1 "ast_external_attributes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4061,6 +4075,10 @@ type js_send = {
 type js_val = string external_module 
 
 
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
 
 type arg_type = Ast_core_type.arg_type
 type arg_label = Ast_core_type.arg_label
@@ -4070,10 +4088,8 @@ type arg_kind =
     arg_type : arg_type;
     arg_label : arg_label
   }
-type js_module_as_fn = 
-  { external_module_name : external_module_name;
-    splice : bool 
-  }
+
+
 type ffi = 
   | Obj_create of arg_label list
   | Js_global of js_val 
@@ -4089,6 +4105,12 @@ type ffi =
   | Js_get of string
   | Js_get_index
   | Js_set_index
+
+type t  = 
+  | Bs of arg_kind list  * Ast_core_type.arg_type * ffi
+  | Normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
 
 
 let get_arg_type (ty : Ast_core_type.t) : arg_type = 
@@ -4299,10 +4321,6 @@ let init_st =
 
   }
 
-type t  = 
-  | Bs of arg_kind list  * arg_type * ffi
-  | Normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
 
 let bs_external = "BS:" ^ Js_config.version
 let bs_external_length = String.length bs_external
@@ -4393,18 +4411,22 @@ let handle_attributes
   in    
   let result_type_ty, arg_types_ty =
     Ast_core_type.list_of_arrow type_annotation in
-  let (st, left_attrs) = 
-    process_external_attributes 
-      (arg_types_ty = [])
-      prim_name_or_pval_prim pval_prim prim_attributes in 
-
   let translate_arg_type =
     (fun (label, ty) -> 
        { arg_label = Ast_core_type.label_name label ;
          arg_type =  get_arg_type ty 
        }) in      
-  let arg_type_specs = 
-    List.map translate_arg_type arg_types_ty in
+  let arg_type_specs, arg_type_specs_length  = 
+    List.fold_right (fun v (arg_type_specs, i) -> 
+        (translate_arg_type v :: arg_type_specs, i + 1)
+      ) arg_types_ty ([],0) in 
+  
+  let (st, left_attrs) = 
+    process_external_attributes 
+      (arg_type_specs_length = 0)
+      prim_name_or_pval_prim pval_prim prim_attributes in 
+
+
   let result_type = get_arg_type result_type_ty in
 
   let ffi = 
@@ -4425,13 +4447,22 @@ let handle_attributes
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
       Obj_create (List.map (function
-          | {arg_type = Unit ; arg_label = (Empty as l)}
+          | {arg_label = (Empty as l) ; arg_type = Unit  }
             -> l 
-          | {arg_label = Label name } -> 
+          | {arg_label = Empty ; arg_type = _ }
+            -> Location.raise_errorf ~loc "expect label, optional, or unit here"
+          | {arg_label = (Label _) ; arg_type = (Ignore | Unit) ; }
+            -> Empty
+          | {arg_label = Label name ; arg_type = (Nothing | Array)} -> 
             Label (Lam_methname.translate ~loc name)            
-          | {arg_label = Optional name} 
+          | {arg_label = Label l ; arg_type = (NullString _ | NonNullString _ | Int _ ) }
+            -> Location.raise_errorf ~loc 
+                 "bs.obj label %s does not support such arg type" l
+          | {arg_label = Optional name ; arg_type = (Nothing | Array | Unit | Ignore)} 
             -> Optional (Lam_methname.translate ~loc name)
-          | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
+          | {arg_label = Optional l ; arg_type = (NullString _ | NonNullString _ | Int _)} 
+            -> Location.raise_errorf ~loc 
+                 "bs.obj optional %s does not support such arg type" l )
           arg_type_specs)(* Need fetch label here, for better error message *)
     | {mk_obj = true; _}
       ->
@@ -4455,12 +4486,11 @@ let handle_attributes
       ->
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-      begin match arg_type_specs with 
-        | [_obj; _v ; _value] 
-          -> 
+      if arg_type_specs_length = 3 then 
           Js_set_index
-        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
-      end
+      else 
+        Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+
     | {set_index = true; _}
       ->
       Location.raise_errorf ~loc "conflict attributes found"        
@@ -4482,11 +4512,10 @@ let handle_attributes
       } ->
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-      begin match arg_type_specs with 
-        | [_obj; _v ] -> 
+      if arg_type_specs_length = 2 then 
           Js_get_index
-        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
-      end
+      else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
+
     | {get_index = true; _}
       -> Location.raise_errorf ~loc "conflict attributes found"        
     | {module_as_val = Some external_module_name ;
@@ -4578,11 +4607,9 @@ let handle_attributes
    }
    ->
    let name = string_of_bundle_source prim_name_or_pval_prim in
-   begin match arg_type_specs with
-     | [] -> Js_global {txt = name; external_module_name}
-     | _ -> Js_call {txt = {splice; name}; external_module_name}                     
-   end        
-
+   if arg_type_specs_length  = 0 then
+     Js_global {txt = name; external_module_name}
+   else  Js_call {txt = {splice; name}; external_module_name}                     
  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
     splice;
     val_send_pipe = None;
@@ -4596,12 +4623,10 @@ let handle_attributes
     get_name = `Nm_na ;
     external_module_name = None ;
    } -> 
-   begin match arg_type_specs with 
-     | _self :: _args -> 
+   if arg_type_specs_length > 0 then 
        Js_send {splice ; name; pipe = false}
-     | _ ->
+   else 
        Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
-   end
  | {val_send = #bundle_source} 
    -> Location.raise_errorf ~loc "conflict attributes found"
 
@@ -4657,11 +4682,10 @@ let handle_attributes
     external_module_name = None
    } 
    -> 
-   begin match arg_type_specs with 
-     | [_obj; _v] -> 
+   if arg_type_specs_length = 2 then 
        Js_set name 
-     | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-   end
+   else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+
  | {set_name = #bundle_source}
    -> Location.raise_errorf ~loc "conflict attributes found"
 
@@ -4679,11 +4703,10 @@ let handle_attributes
     external_module_name = None
    }
    ->
-   begin match arg_type_specs with 
-     | [_ ] -> Js_get name
-     | _ ->
+   if arg_type_specs_length = 1 then  
+     Js_get name
+   else 
        Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
-   end
  | {get_name = #bundle_source}
    -> Location.raise_errorf ~loc "conflict attributes found"
  | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
@@ -4744,6 +4767,20 @@ let handle_attributes_as_string
     handle_attributes pval_loc pval_prim typ attrs v  in
   pval_type, [prim_name; to_string ffi], processed_attrs
     
+let pval_prim_of_labels labels = 
+  let encoding = 
+    let (arg_kinds, vs) = 
+      List.fold_right 
+        (fun {Asttypes.loc ; txt } (arg_kinds,v)
+          ->
+            let arg_label =  Ast_core_type.Label (Lam_methname.translate ~loc txt) in
+            {arg_type = Nothing ; 
+             arg_label  } :: arg_kinds, arg_label :: v
+        )
+        labels ([],[]) in 
+    to_string @@
+    Bs (arg_kinds , Nothing, Obj_create vs) in 
+  [""; encoding]
 
 
 end
@@ -5661,51 +5698,31 @@ let ocaml_obj_as_js_object
            label.Asttypes.txt
            label_type acc           
       ) labels label_types public_obj_type in
-  let pval_attributes = 
-    Ast_attributes.bs_obj pval_type in (* FIXME no loc*)
-  let local_fun_name = "mk" in
-  let pval_type, pval_prim, pval_attributes =
-    Ast_external_attributes.handle_attributes_as_string
-      loc
-      local_fun_name      
-      pval_type pval_attributes "" in
   Ast_external.local_extern_cont
     loc
-    ~pval_attributes
-    ~pval_prim
-    ~local_fun_name
-    (fun e ->
+      ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+      (fun e ->
        Exp.apply ~loc e
          (List.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
     ~pval_type
+
 
 let record_as_js_object 
     loc 
     (self : Ast_mapper.mapper)
     (label_exprs : label_exprs)
      : Parsetree.expression_desc = 
-  let labels, args = 
-    Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
+
+  let labels,args, arity =
+    List.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
-          (x, (x, self.expr self e))
+          ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label "
-  ) label_exprs in 
-  let arity = List.length labels in 
-  let tyvars = (Ext_list.init arity (fun i ->      
-      Typ.var ~loc ("a" ^ string_of_int i))) in 
-  
-  let pval_type = Ast_core_type.from_labels ~loc tyvars labels in 
-  let pval_attributes = Ast_attributes.bs_obj pval_type in 
-  let pval_type, pval_prim, pval_attributes = 
-    Ast_external_attributes.handle_attributes_as_string
-      loc "mk"
-      pval_type pval_attributes "" in 
+          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
   Ast_external.create_local_external loc 
-    ~pval_prim
-    ~pval_type 
-    ~pval_attributes 
+    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+    ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
 
 end
@@ -6079,7 +6096,7 @@ let handle_typ
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
-  | {ptyp_desc = Ptyp_extension({txt = "bs.obj"}, PTyp ty)}
+  | {ptyp_desc = Ptyp_extension({txt = ("bs.obj"|"obj")}, PTyp ty)}
     -> 
     Ext_ref.non_exn_protect record_as_js_object true 
       (fun _ -> self.typ self ty )
@@ -6211,9 +6228,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end             
 
         (** [bs.debugger], its output should not be rewritten any more*)
-        | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
+        | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
           -> {e with pexp_desc = Ast_util.handle_debugger loc payload}
-        | Pexp_extension ({txt = "bs.obj"; loc},  payload)
+        | Pexp_extension ({txt = ("bs.obj" | "obj"); loc},  payload)
           -> 
             begin match payload with 
             | PStr [{pstr_desc = Pstr_eval (e,_)}]

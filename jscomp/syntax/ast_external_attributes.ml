@@ -48,6 +48,10 @@ type js_send = {
 type js_val = string external_module 
 
 
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
 
 type arg_type = Ast_core_type.arg_type
 type arg_label = Ast_core_type.arg_label
@@ -57,10 +61,8 @@ type arg_kind =
     arg_type : arg_type;
     arg_label : arg_label
   }
-type js_module_as_fn = 
-  { external_module_name : external_module_name;
-    splice : bool 
-  }
+
+
 type ffi = 
   | Obj_create of arg_label list
   | Js_global of js_val 
@@ -76,6 +78,12 @@ type ffi =
   | Js_get of string
   | Js_get_index
   | Js_set_index
+
+type t  = 
+  | Bs of arg_kind list  * Ast_core_type.arg_type * ffi
+  | Normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
 
 
 let get_arg_type (ty : Ast_core_type.t) : arg_type = 
@@ -286,10 +294,6 @@ let init_st =
 
   }
 
-type t  = 
-  | Bs of arg_kind list  * arg_type * ffi
-  | Normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
 
 let bs_external = "BS:" ^ Js_config.version
 let bs_external_length = String.length bs_external
@@ -380,18 +384,22 @@ let handle_attributes
   in    
   let result_type_ty, arg_types_ty =
     Ast_core_type.list_of_arrow type_annotation in
-  let (st, left_attrs) = 
-    process_external_attributes 
-      (arg_types_ty = [])
-      prim_name_or_pval_prim pval_prim prim_attributes in 
-
   let translate_arg_type =
     (fun (label, ty) -> 
        { arg_label = Ast_core_type.label_name label ;
          arg_type =  get_arg_type ty 
        }) in      
-  let arg_type_specs = 
-    List.map translate_arg_type arg_types_ty in
+  let arg_type_specs, arg_type_specs_length  = 
+    List.fold_right (fun v (arg_type_specs, i) -> 
+        (translate_arg_type v :: arg_type_specs, i + 1)
+      ) arg_types_ty ([],0) in 
+  
+  let (st, left_attrs) = 
+    process_external_attributes 
+      (arg_type_specs_length = 0)
+      prim_name_or_pval_prim pval_prim prim_attributes in 
+
+
   let result_type = get_arg_type result_type_ty in
 
   let ffi = 
@@ -412,13 +420,22 @@ let handle_attributes
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
       Obj_create (List.map (function
-          | {arg_type = Unit ; arg_label = (Empty as l)}
+          | {arg_label = (Empty as l) ; arg_type = Unit  }
             -> l 
-          | {arg_label = Label name } -> 
+          | {arg_label = Empty ; arg_type = _ }
+            -> Location.raise_errorf ~loc "expect label, optional, or unit here"
+          | {arg_label = (Label _) ; arg_type = (Ignore | Unit) ; }
+            -> Empty
+          | {arg_label = Label name ; arg_type = (Nothing | Array)} -> 
             Label (Lam_methname.translate ~loc name)            
-          | {arg_label = Optional name} 
+          | {arg_label = Label l ; arg_type = (NullString _ | NonNullString _ | Int _ ) }
+            -> Location.raise_errorf ~loc 
+                 "bs.obj label %s does not support such arg type" l
+          | {arg_label = Optional name ; arg_type = (Nothing | Array | Unit | Ignore)} 
             -> Optional (Lam_methname.translate ~loc name)
-          | _ -> Location.raise_errorf ~loc "expect label, optional, or unit here" )
+          | {arg_label = Optional l ; arg_type = (NullString _ | NonNullString _ | Int _)} 
+            -> Location.raise_errorf ~loc 
+                 "bs.obj optional %s does not support such arg type" l )
           arg_type_specs)(* Need fetch label here, for better error message *)
     | {mk_obj = true; _}
       ->
@@ -442,12 +459,11 @@ let handle_attributes
       ->
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-      begin match arg_type_specs with 
-        | [_obj; _v ; _value] 
-          -> 
+      if arg_type_specs_length = 3 then 
           Js_set_index
-        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
-      end
+      else 
+        Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+
     | {set_index = true; _}
       ->
       Location.raise_errorf ~loc "conflict attributes found"        
@@ -469,11 +485,10 @@ let handle_attributes
       } ->
       if String.length prim_name <> 0 then 
         Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-      begin match arg_type_specs with 
-        | [_obj; _v ] -> 
+      if arg_type_specs_length = 2 then 
           Js_get_index
-        | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
-      end
+      else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
+
     | {get_index = true; _}
       -> Location.raise_errorf ~loc "conflict attributes found"        
     | {module_as_val = Some external_module_name ;
@@ -565,11 +580,9 @@ let handle_attributes
    }
    ->
    let name = string_of_bundle_source prim_name_or_pval_prim in
-   begin match arg_type_specs with
-     | [] -> Js_global {txt = name; external_module_name}
-     | _ -> Js_call {txt = {splice; name}; external_module_name}                     
-   end        
-
+   if arg_type_specs_length  = 0 then
+     Js_global {txt = name; external_module_name}
+   else  Js_call {txt = {splice; name}; external_module_name}                     
  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
     splice;
     val_send_pipe = None;
@@ -583,12 +596,10 @@ let handle_attributes
     get_name = `Nm_na ;
     external_module_name = None ;
    } -> 
-   begin match arg_type_specs with 
-     | _self :: _args -> 
+   if arg_type_specs_length > 0 then 
        Js_send {splice ; name; pipe = false}
-     | _ ->
+   else 
        Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
-   end
  | {val_send = #bundle_source} 
    -> Location.raise_errorf ~loc "conflict attributes found"
 
@@ -644,11 +655,10 @@ let handle_attributes
     external_module_name = None
    } 
    -> 
-   begin match arg_type_specs with 
-     | [_obj; _v] -> 
+   if arg_type_specs_length = 2 then 
        Js_set name 
-     | _ -> Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-   end
+   else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+
  | {set_name = #bundle_source}
    -> Location.raise_errorf ~loc "conflict attributes found"
 
@@ -666,11 +676,10 @@ let handle_attributes
     external_module_name = None
    }
    ->
-   begin match arg_type_specs with 
-     | [_ ] -> Js_get name
-     | _ ->
+   if arg_type_specs_length = 1 then  
+     Js_get name
+   else 
        Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
-   end
  | {get_name = #bundle_source}
    -> Location.raise_errorf ~loc "conflict attributes found"
  | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
@@ -731,4 +740,18 @@ let handle_attributes_as_string
     handle_attributes pval_loc pval_prim typ attrs v  in
   pval_type, [prim_name; to_string ffi], processed_attrs
     
+let pval_prim_of_labels labels = 
+  let encoding = 
+    let (arg_kinds, vs) = 
+      List.fold_right 
+        (fun {Asttypes.loc ; txt } (arg_kinds,v)
+          ->
+            let arg_label =  Ast_core_type.Label (Lam_methname.translate ~loc txt) in
+            {arg_type = Nothing ; 
+             arg_label  } :: arg_kinds, arg_label :: v
+        )
+        labels ([],[]) in 
+    to_string @@
+    Bs (arg_kinds , Nothing, Obj_create vs) in 
+  [""; encoding]
 

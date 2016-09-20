@@ -99,3 +99,4 @@ module String = Js_string
 module Re = Js_re
 module Types = Js_types
 module Json = Js_json
+module Obj  = Js_obj
