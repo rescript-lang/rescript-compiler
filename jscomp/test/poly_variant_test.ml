@@ -17,8 +17,11 @@ function hey_int (option){
  }
 |}]
 
-type u = [`on_closed | `on_open | `in_ [@bs.as "in"]]
-
+type u = [`on_closed | `on_open | `in_ 
+            (* [@bs.as "in"] TODO: warning test  *)]
+(* indeed we have a warning here*)
+(* TODO: add warning test 
+*)
 (** when marshall, make sure location does not matter *)
 external test_string_type : 
   ([`on_closed | `on_open | `in_ [@bs.as "in"]]

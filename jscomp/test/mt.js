@@ -3,10 +3,10 @@
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Assert                  = require("assert");
 var Curry                   = require("../../lib/js/curry");
-var $$Array                 = require("../../lib/js/array");
-var Path                    = require("path");
-var List                    = require("../../lib/js/list");
 var Process                 = require("process");
+var $$Array                 = require("../../lib/js/array");
+var List                    = require("../../lib/js/list");
+var Path                    = require("path");
 
 function is_mocha() {
   var match = $$Array.to_list(Process.argv);
