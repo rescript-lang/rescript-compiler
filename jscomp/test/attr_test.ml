@@ -3,13 +3,13 @@ let u = fun [@bs] x y -> x + y
 
 let h = u 1 2 [@bs]
 
-type u = < v : int ; y : int > [@bs]
+type u = < v : int ; y : int > 
 type ('a,'b) xx = 
   (< case : (int ->  (int -> 'a [@bs]) [@bs]); .. >   as 'b) 
 type ('a,'b) xx_uncurry = 
-  (< case : int ->  (int -> 'a ); .. >  [@bs]) as 'b
+  (< case : int ->  (int -> 'a ); .. >  ) as 'b
 
-type yy_uncurry = < x : int > [@bs]
+type yy_uncurry = < x : int > 
 type yy = < x : int > 
 type number = float
 

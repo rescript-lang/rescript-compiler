@@ -40,7 +40,7 @@ include (struct
   let t_to_value : t Bs_dyn.to_value = 
     fun [@bs] v -> _t_to_value v 
 end : sig 
-  val t_to_value : t Bs_dyn.to_value [@bs]
+  val t_to_value : t Bs_dyn.to_value 
 end)
 
 type u = 
