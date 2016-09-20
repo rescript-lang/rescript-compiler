@@ -38,16 +38,6 @@ type arg_type =
   | Ignore
 
 open Ast_helper
-(** TODO check the polymorphic *)
-let list_of_arrow (ty : t) = 
-  let rec aux (ty : Parsetree.core_type) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      aux ty acc 
-    | return_type -> ty, List.rev acc
-  in aux ty []
 
 let replace_result ty result = 
   let rec aux (ty : Parsetree.core_type) = 

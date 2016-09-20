@@ -148,58 +148,58 @@ let process_derive_type attrs =
 
 let process_bs_string_int attrs = 
   List.fold_left 
-    (fun st
-      (({txt ; loc}, payload ): attr)  ->
+    (fun (st,attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
       match  txt, st  with
       | "bs.string", (`Nothing | `String)
-        -> `String
+        -> `String, attrs
       | "bs.int", (`Nothing | `Int)
-        ->  `Int
+        ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
-        -> `Ignore
+        -> `Ignore, attrs
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
         -> 
         Location.raise_errorf ~loc "conflict attributes "
-      | _ , _ -> st 
-    ) `Nothing attrs
+      | _ , _ -> st, (attr :: attrs )
+    ) (`Nothing, []) attrs
 
 let process_bs_string_as  attrs = 
   List.fold_left 
-    (fun st
-      (({txt ; loc}, payload ): attr)  ->
+    (fun (st, attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
       match  txt, st  with
       | "bs.as", None
         ->
         begin match Ast_payload.is_single_string payload with 
           | None -> 
             Location.raise_errorf ~loc "expect string literal "
-          | Some  _ as v->  v  
+          | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
           Location.raise_errorf ~loc "duplicated bs.as "
-      | _ , _ -> st 
-    ) None attrs
+      | _ , _ -> (st, attr::attrs) 
+    ) (None, []) attrs
 
 let process_bs_int_as  attrs = 
   List.fold_left 
-    (fun st
-      (({txt ; loc}, payload ): attr)  ->
+    (fun (st, attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
       match  txt, st  with
       | "bs.as", None
         ->
         begin match Ast_payload.is_single_int payload with 
           | None -> 
             Location.raise_errorf ~loc "expect int literal "
-          | Some  _ as v->  v  
+          | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
           Location.raise_errorf ~loc "duplicated bs.as "
-      | _ , _ -> st 
-    ) None attrs
+      | _ , _ -> (st, attr::attrs) 
+    ) (None, []) attrs
 
 
 let bs : attr

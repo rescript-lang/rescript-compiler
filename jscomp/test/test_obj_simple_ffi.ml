@@ -67,9 +67,9 @@ type 'a v3 = int -> ('a -> int [@bs]) [@bs.this]
 let f (x : 'a v0) : 'a v1 = x
 let ff (x : 'a v2 ) : 'a v3 = x 
  
-type 'a u6 = < case : int -> 'a ret  ; >  [@bs] 
+type 'a u6 = < case : int -> 'a ret  ; >  
 
-type 'a u7 = < case : int -> ('a  -> int [@bs])  ; >  [@bs]
+type 'a u7 = < case : int -> ('a  -> int [@bs])  ; >  
 
 let fff (x : 'a u6) : 'a u7= x 
 

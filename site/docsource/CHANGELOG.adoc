@@ -3,7 +3,8 @@
 ## CHANGES
 
 == 1.03 (dev)
-
+* Features
+- Add an option `-bs-no-warn-unused-bs-attribute` {issues}787[#787]
 
 == 1.02
 

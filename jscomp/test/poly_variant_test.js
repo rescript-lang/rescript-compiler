@@ -1,28 +1,53 @@
 'use strict';
 
-var Fs = require("fs");
+var Mt    = require("./mt");
+var Block = require("../../lib/js/block");
+var Fs    = require("fs");
+
+var suites = [/* [] */0];
+
+var test_id = [0];
+
+function eq(loc, x, y) {
+  test_id[0] = test_id[0] + 1 | 0;
+  suites[0] = /* :: */[
+    /* tuple */[
+      loc + (" id " + test_id[0]),
+      function () {
+        return /* Eq */Block.__(0, [
+                  x,
+                  y
+                ]);
+      }
+    ],
+    suites[0]
+  ];
+  return /* () */0;
+}
 
 
 function hey_string (option){
   switch(option){
-  case "on_closed" : return 1 ;
-  case "on_open" : return 2 ; 
-  case "in" : return 3;
+  case "on_closed" : 
+  case "on_open" : 
+  case "in" : return option
   default : throw Error ("impossible")
  }
 }
 function hey_int (option){
   switch (option){
-   case 0 : return 1;
-   case 3 : return 3;
-   case 4 : return 4;
+   case 0 : 
+   case 3 : 
+   case 4 : 
+   case 5:
+   case 6 : return option
    default : throw Error("impossible")
   }
  }
 
 ;
 
-var uu = /* int array */[
+var uu = /* array */[
   hey_string("on_open"),
   hey_string("on_closed"),
   hey_string("in")
@@ -33,6 +58,26 @@ var vv = /* int array */[
   hey_int(0),
   hey_int(4)
 ];
+
+eq('File "poly_variant_test.ml", line 58, characters 5-12', vv, /* int array */[
+      3,
+      0,
+      4
+    ]);
+
+eq('File "poly_variant_test.ml", line 59, characters 5-12', /* tuple */[
+      hey_int(5),
+      hey_int(6)
+    ], /* tuple */[
+      5,
+      6
+    ]);
+
+eq('File "poly_variant_test.ml", line 60, characters 5-12', uu, /* array */[
+      "on_open",
+      "on_closed",
+      "in"
+    ]);
 
 hey_string("on_closed");
 
@@ -76,6 +121,8 @@ function test(readline, x) {
               }
             });
 }
+
+Mt.from_pair_suites("poly_variant_test.ml", suites[0]);
 
 function on2(prim, prim$1) {
   return prim.on2(function (action) {

@@ -1,7 +1,7 @@
 
 
 
-external describe : string -> ((unit -> unit)[@bs.nullary]) -> unit = "describe"
+external describe : string -> (unit -> unit[@bs]) -> unit = "describe"
     [@@bs.val]
 
 external it : string -> (unit -> unit) -> unit = "it" 
@@ -38,7 +38,7 @@ let from_suites name (suite :  (string * ('a -> unit)) list) =
   match Array.to_list Node.Process.process##argv with
   | cmd :: _ ->
     if is_mocha () then
-      describe name (fun _ -> 
+      describe name (fun [@bs] () -> 
           List.iter (fun (name, code) -> it name code) suite)
 
   | _ -> ()         
@@ -59,7 +59,7 @@ let from_pair_suites name (suites :  pair_suites) =
   match Array.to_list Node.Process.process##argv with
   | cmd :: _ ->
     if is_mocha () then
-      describe name (fun _ -> 
+      describe name (fun [@bs] () -> 
           suites |> 
           List.iter (fun (name, code) -> 
               it name (fun _ -> 

@@ -1,5 +1,9 @@
 S .
-B _build
+B _build/
+B _build/common
+B _build/ext
+B _build/syntax
+
 S runtime
 B runtime
 S stdlib

@@ -23,13 +23,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+let is_bs_attribute txt = 
+  let len = String.length txt  in 
+  String.unsafe_get txt 0 = 'b'&& 
+  String.unsafe_get txt 1 = 's' &&
+  (len = 2 ||
+   String.unsafe_get txt 2 = '.'
+  )
+  
 let emit_external_warnings : Bs_ast_iterator .iterator=
   {
     Bs_ast_iterator.default_iterator with
     attribute = (fun _ a ->
         match a with
         | {txt ; loc}, _ ->
-          if Ext_string.starts_with txt "bs." then (* TODO: should also check `bs`*)
+          if is_bs_attribute txt  then
             Bs_warnings.warn_unused_attribute loc txt 
       )
   }

@@ -11,12 +11,13 @@ class type v2 = object
 end [@bs]
 
 type vv = 
-  [%bs.obj: < 
+  [%obj: < 
     hey : int -> int -> int [@bs]
   >   ]
 
+
 type vv2 = 
-  [%bs.obj: < 
+  [%obj: < 
     hey : int ->  int -> int [@bs]
   > ] 
 

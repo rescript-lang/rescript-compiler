@@ -777,19 +777,19 @@ type derive_attr = {
   bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
 }
 val process_bs_string_int : 
-  t -> [`Nothing | `String | `Int | `Ignore] 
+  t -> [`Nothing | `String | `Int | `Ignore]  * t 
 
 val process_bs_string_as :
-  t -> string option 
+  t -> string option * t 
 val process_bs_int_as : 
-  t -> int option 
+  t -> int option * t 
 
 
 val process_derive_type : 
   t -> derive_attr * t 
 
 
-(* val bs_obj : Location.t  -> t  *)
+
 val bs : attr 
 val bs_this : attr
 val bs_method : attr
@@ -948,58 +948,58 @@ let process_derive_type attrs =
 
 let process_bs_string_int attrs = 
   List.fold_left 
-    (fun st
-      (({txt ; loc}, payload ): attr)  ->
+    (fun (st,attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
       match  txt, st  with
       | "bs.string", (`Nothing | `String)
-        -> `String
+        -> `String, attrs
       | "bs.int", (`Nothing | `Int)
-        ->  `Int
+        ->  `Int, attrs
       | "bs.ignore", (`Nothing | `Ignore)
-        -> `Ignore
+        -> `Ignore, attrs
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
         -> 
         Location.raise_errorf ~loc "conflict attributes "
-      | _ , _ -> st 
-    ) `Nothing attrs
+      | _ , _ -> st, (attr :: attrs )
+    ) (`Nothing, []) attrs
 
 let process_bs_string_as  attrs = 
   List.fold_left 
-    (fun st
-      (({txt ; loc}, payload ): attr)  ->
+    (fun (st, attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
       match  txt, st  with
       | "bs.as", None
         ->
         begin match Ast_payload.is_single_string payload with 
           | None -> 
             Location.raise_errorf ~loc "expect string literal "
-          | Some  _ as v->  v  
+          | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
           Location.raise_errorf ~loc "duplicated bs.as "
-      | _ , _ -> st 
-    ) None attrs
+      | _ , _ -> (st, attr::attrs) 
+    ) (None, []) attrs
 
 let process_bs_int_as  attrs = 
   List.fold_left 
-    (fun st
-      (({txt ; loc}, payload ): attr)  ->
+    (fun (st, attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
       match  txt, st  with
       | "bs.as", None
         ->
         begin match Ast_payload.is_single_int payload with 
           | None -> 
             Location.raise_errorf ~loc "expect int literal "
-          | Some  _ as v->  v  
+          | Some  _ as v->  (v, attrs)  
         end
       | "bs.as",  _ 
         -> 
           Location.raise_errorf ~loc "duplicated bs.as "
-      | _ , _ -> st 
-    ) None attrs
+      | _ , _ -> (st, attr::attrs) 
+    ) (None, []) attrs
 
 
 let bs : attr
@@ -2425,7 +2425,7 @@ module Ast_core_type : sig
 type t = Parsetree.core_type 
 
 
-val list_of_arrow : t -> t * (string * t ) list 
+
 val replace_result : t -> t -> t
 
 val is_unit : t -> bool 
@@ -2508,16 +2508,6 @@ type arg_type =
   | Ignore
 
 open Ast_helper
-(** TODO check the polymorphic *)
-let list_of_arrow (ty : t) = 
-  let rec aux (ty : Parsetree.core_type) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      aux ty acc 
-    | return_type -> ty, List.rev acc
-  in aux ty []
 
 let replace_result ty result = 
   let rec aux (ty : Parsetree.core_type) = 
@@ -3668,7 +3658,7 @@ let no_builtin_ppx_mli = ref false
 let no_warn_ffi_type = ref false
 
 (** TODO: will flip the option when it is ready *)
-let no_warn_unused_bs_attribute = ref true 
+let no_warn_unused_bs_attribute = ref false
 
 
 let builtin_exceptions = "Caml_builtin_exceptions"
@@ -4113,59 +4103,74 @@ type t  =
 
 
 
-let get_arg_type (ty : Ast_core_type.t) : arg_type = 
-  match ty with 
-  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
-    match 
-      Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
-    | `String,  Ptyp_variant ( row_fields, Closed, None)
+let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_core_type.t) : 
+  arg_type * Ast_core_type.t  = 
+    match Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
+    | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
-      let case, result = 
-        (List.fold_right (fun tag (nullary, acc) -> 
+      let case, result, row_fields  = 
+        (List.fold_right (fun tag (nullary, acc, row_fields) -> 
              match nullary, tag with 
-             | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
+             | (`Nothing | `Null), 
+               Parsetree.Rtag (label, attrs, true,  [])
                -> 
-               let name = 
-                 match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name -> name 
-                 | None -> label in
-               `Null, ((Btype.hash_variant label, name) :: acc )
-             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
-               -> 
-               let name = 
-                 match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name -> name 
-                 | None -> label in
-               `NonNull, ((Btype.hash_variant label, name) :: acc)
+               begin match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name, new_attrs  -> 
+                   `Null, ((Btype.hash_variant label, name) :: acc ), 
+                   Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
 
+                 | None, _ -> 
+                   `Null, ((Btype.hash_variant label, label) :: acc ), 
+                   tag :: row_fields
+               end
+             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
+               -> 
+               begin match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name, new_attrs -> 
+                   `NonNull, ((Btype.hash_variant label, name) :: acc),
+                   Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
+                 | None, _ -> 
+                   `NonNull, ((Btype.hash_variant label, label) :: acc),
+                   (tag :: row_fields)
+               end
              | _ -> Location.raise_errorf ~loc "Not a valid string type"
-           ) row_fields (`Nothing, [])) in 
-      begin match case with 
+           ) row_fields (`Nothing, [], [])) in 
+       (match case with 
         | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
         | `Null -> NullString result 
-        | `NonNull -> NonNullString result 
-      end
-    | `String,  _ -> Location.raise_errorf ~loc "Not a valid string type"
+        | `NonNull -> NonNullString result) , 
+       {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
+        ptyp_attributes ;
+       }
+    | (`String, _),  _ -> Location.raise_errorf ~loc "Not a valid string type"
 
-    | `Ignore, _  -> Ignore
-    | `Int , Ptyp_variant ( row_fields, Closed, None) -> 
-      let _, acc = 
+    | (`Ignore, ptyp_attributes), _  -> 
+      (Ignore, {ptyp with ptyp_attributes})
+    | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
+      let _, acc, rev_row_fields = 
         (List.fold_left 
-           (fun (i,acc) rtag -> 
+           (fun (i,acc, row_fields) rtag -> 
               match rtag with 
               | Parsetree.Rtag (label, attrs, true,  [])
                 -> 
-                let name = 
-                  match Ast_attributes.process_bs_int_as attrs with 
-                  | Some name -> name 
-                  | None -> i in
-                name + 1, ((Btype.hash_variant label , name):: acc )
-              | _ -> Location.raise_errorf ~loc "Not a valid string type"
-           ) (0, []) row_fields) in 
-      Int (List.rev acc)
+                  begin match Ast_attributes.process_bs_int_as attrs with 
+                  | Some i, new_attrs -> 
+                    i + 1, ((Btype.hash_variant label , i):: acc ), 
+                    Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
+                  | None, _ -> 
+                    i + 1 , ((Btype.hash_variant label , i):: acc ), rtag::row_fields
+                  end
 
-    | `Int, _ -> Location.raise_errorf ~loc "Not a valid string type"
-    | `Nothing, ptyp_desc ->
+              | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) (0, [],[]) row_fields) in 
+      Int (List.rev acc),
+      {ptyp with 
+       ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
+       ptyp_attributes
+      }
+      
+    | (`Int, _), _ -> Location.raise_errorf ~loc "Not a valid string type"
+    | (`Nothing, ptyp_attributes),  ptyp_desc ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"}, [])
           -> 
@@ -4180,7 +4185,7 @@ let get_arg_type (ty : Ast_core_type.t) : arg_type =
           Nothing           
         | _ ->
           Nothing           
-      end
+      end, ptyp
 
 
 let valid_js_char =
@@ -4399,6 +4404,19 @@ let process_external_attributes
     )
     (init_st, []) prim_attributes 
 
+
+let list_of_arrow (ty : Parsetree.core_type) = 
+  let rec aux (ty : Parsetree.core_type) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
+    | return_type -> ty, List.rev acc
+  in aux ty []
+
+(** Note that the passed [type_annotation] is already processed by visitor pattern before 
+*)
 let handle_attributes 
     (loc : Bs_loc.t)
     (pval_prim : string ) 
@@ -4409,25 +4427,33 @@ let handle_attributes
     if String.length prim_name = 0 then  `Nm_val pval_prim
     else  `Nm_external prim_name  (* need check name *)
   in    
-  let result_type_ty, arg_types_ty =
-    Ast_core_type.list_of_arrow type_annotation in
-  let translate_arg_type =
-    (fun (label, ty) -> 
-       { arg_label = Ast_core_type.label_name label ;
-         arg_type =  get_arg_type ty 
-       }) in      
-  let arg_type_specs, arg_type_specs_length  = 
-    List.fold_right (fun v (arg_type_specs, i) -> 
-        (translate_arg_type v :: arg_type_specs, i + 1)
-      ) arg_types_ty ([],0) in 
-  
+  let result_type, arg_types_ty =
+    list_of_arrow type_annotation in
+  let result_type_spec, new_result_type  = get_arg_type result_type in
   let (st, left_attrs) = 
     process_external_attributes 
-      (arg_type_specs_length = 0)
+      (arg_types_ty = [])
       prim_name_or_pval_prim pval_prim prim_attributes in 
+  let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
+    List.fold_right 
+      (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
+         let spec, new_ty = get_arg_type ty in
+        ({ arg_label = Ast_core_type.label_name label ; 
+           arg_type = spec 
+         } :: arg_type_specs,
+         (label, new_ty,attr,loc) :: arg_types,
+         i + 1)
+      ) arg_types_ty 
+      (match st with
+       | {val_send_pipe = Some obj} ->      
+         let spec, new_ty = get_arg_type obj in 
+         [{ arg_label = Empty ; 
+           arg_type = spec
+          }],
+         ["", new_ty, [], obj.ptyp_loc]
+         ,0
+       | {val_send_pipe = None } -> [],[], 0) in 
 
-
-  let result_type = get_arg_type result_type_ty in
 
   let ffi = 
     match st with 
@@ -4712,7 +4738,7 @@ let handle_attributes
  | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
   begin 
     check_ffi ~loc ffi;
-    (match ffi, result_type_ty with
+    (match ffi, new_result_type with
      | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
        ->
        (* special case: 
@@ -4722,9 +4748,9 @@ let handle_attributes
          Ast_core_type.make_obj ~loc (
            List.fold_right2  (fun arg label acc ->
                match arg, label with
-               | (_, ty), Ast_core_type.Label s
+               | (_, ty, _,_), Ast_core_type.Label s
                  -> (s , [], ty) :: acc                 
-               | (_, ty), Optional s
+               | (_, ty, _,_), Optional s
                  ->
                  begin match (ty : Ast_core_type.t) with
                    | {ptyp_desc =
@@ -4735,28 +4761,21 @@ let handle_attributes
                      (s, [], Ast_comb.to_undefined_type loc ty) :: acc
                    | _ -> assert false                 
                  end                 
-               | (_, _), Ast_core_type.Empty -> acc                
+               | (_, _, _,_), Ast_core_type.Empty -> acc                
              ) arg_types_ty arg_labels [])  in
-       Ast_core_type.replace_result type_annotation result
-     | Js_send {pipe = true }, _ ->
-       begin match st with       
-         | {val_send_pipe = Some obj } ->
-           Ast_core_type.replace_result type_annotation
-             (Ast_helper.Typ.arrow ~loc "" obj result_type_ty)
-         | {val_send_pipe = None ; } -> assert false
-       end           
-     | _, _ -> type_annotation
+
+       List.fold_right (fun (label,ty,attrs,loc) acc -> 
+           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
+           ) new_arg_types_ty result 
+
+       (* Ast_core_type.replace_result type_annotation result *)
+     | _  ->
+       List.fold_right (fun (label,ty,attrs,loc) acc -> 
+           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
+           ) new_arg_types_ty new_result_type
     ) ,
-  (* TODO: document *)    
-    (match ffi , prim_name with
-     | Obj_create _ , _ -> prim_name
-     | _ , "" -> pval_prim
-     | _, _ -> prim_name),
-    (match st with
-     | {val_send_pipe = Some obj} ->      
-       Bs(arg_type_specs @ [translate_arg_type ("", obj) ], result_type,  ffi)
-     | {val_send_pipe = None } ->       Bs(arg_type_specs, result_type,  ffi)        
-    ), left_attrs
+    prim_name,
+    (Bs(arg_type_specs, result_type_spec,  ffi)), left_attrs
   end
 
 let handle_attributes_as_string 
@@ -6091,7 +6110,7 @@ let handle_class_type_field self
   we can only use it locally
 *)
 
-let handle_typ 
+let handle_core_type 
     (super : Ast_mapper.mapper) 
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
@@ -6123,7 +6142,7 @@ let handle_typ
     } -> 
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
-    let methods =
+    let new_methods =
       List.fold_right (fun (label, ptyp_attrs, core_type) acc ->
           let get ty name attrs =
             let attrs, core_type =
@@ -6148,7 +6167,8 @@ let handle_typ
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty
             in               
-            name, attrs, Ast_util.to_method_type loc self "" core_type (Ast_literal.type_unit ~loc ()) in
+            name, attrs, Ast_util.to_method_type loc self "" core_type 
+              (Ast_literal.type_unit ~loc ()) in
           let no ty =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev ptyp_attrs with
@@ -6159,13 +6179,13 @@ let handle_typ
                 attrs, Ast_attributes.bs_method +> ty 
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty  in            
-            label, ptyp_attrs, self.typ self core_type in
+            label, attrs, self.typ self core_type in
           process_getter_setter ~no ~get ~set
             loc label ptyp_attrs core_type acc
         ) methods [] in      
     let inner_type =
       { ty
-        with ptyp_desc = Ptyp_object(methods, closed_flag);
+        with ptyp_desc = Ptyp_object(new_methods, closed_flag);
               } in 
     if !record_as_js_object then 
       Ast_comb.to_js_type loc inner_type          
@@ -6392,7 +6412,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end            
         | _ ->  Ast_mapper.default_mapper.expr self e
       );
-    typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
+    typ = (fun self typ -> handle_core_type Ast_mapper.default_mapper self typ);
     class_type = 
       (fun self ({pcty_attributes; pcty_loc} as ctd) -> 
          match Ast_attributes.process_bs pcty_attributes with 

@@ -1,10 +1,10 @@
 'use strict';
 
-var Pervasives = require("../../lib/js/pervasives");
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Curry      = require("../../lib/js/curry");
-var Ffi_js     = require("./ffi_js");
+var Pervasives  = require("../../lib/js/pervasives");
+var Mt          = require("./mt");
+var Block       = require("../../lib/js/block");
+var Curry       = require("../../lib/js/curry");
+var Ffi_js_test = require("./ffi_js_test");
 
 var x = ("\x01\x02\x03");
 
@@ -92,7 +92,7 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
               function () {
                 return /* Eq */Block.__(0, [
                           /* array */["a"],
-                          Ffi_js.keys(( {a : 3}))
+                          Ffi_js_test.keys(( {a : 3}))
                         ]);
               }
             ],
