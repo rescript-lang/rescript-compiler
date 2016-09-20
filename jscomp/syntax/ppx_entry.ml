@@ -169,7 +169,7 @@ let handle_class_type_field self
   we can only use it locally
 *)
 
-let handle_typ 
+let handle_core_type 
     (super : Ast_mapper.mapper) 
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
@@ -201,7 +201,7 @@ let handle_typ
     } -> 
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
-    let methods =
+    let new_methods =
       List.fold_right (fun (label, ptyp_attrs, core_type) acc ->
           let get ty name attrs =
             let attrs, core_type =
@@ -226,7 +226,8 @@ let handle_typ
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty
             in               
-            name, attrs, Ast_util.to_method_type loc self "" core_type (Ast_literal.type_unit ~loc ()) in
+            name, attrs, Ast_util.to_method_type loc self "" core_type 
+              (Ast_literal.type_unit ~loc ()) in
           let no ty =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev ptyp_attrs with
@@ -237,13 +238,13 @@ let handle_typ
                 attrs, Ast_attributes.bs_method +> ty 
               | `Meth_callback, attrs ->
                 attrs, Ast_attributes.bs_this +> ty  in            
-            label, ptyp_attrs, self.typ self core_type in
+            label, attrs, self.typ self core_type in
           process_getter_setter ~no ~get ~set
             loc label ptyp_attrs core_type acc
         ) methods [] in      
     let inner_type =
       { ty
-        with ptyp_desc = Ptyp_object(methods, closed_flag);
+        with ptyp_desc = Ptyp_object(new_methods, closed_flag);
               } in 
     if !record_as_js_object then 
       Ast_comb.to_js_type loc inner_type          
@@ -470,7 +471,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           end            
         | _ ->  Ast_mapper.default_mapper.expr self e
       );
-    typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
+    typ = (fun self typ -> handle_core_type Ast_mapper.default_mapper self typ);
     class_type = 
       (fun self ({pcty_attributes; pcty_loc} as ctd) -> 
          match Ast_attributes.process_bs pcty_attributes with 
