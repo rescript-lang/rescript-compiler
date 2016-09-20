@@ -86,59 +86,69 @@ type t  =
 
 
 
-let get_arg_type (ty : Ast_core_type.t) : arg_type = 
-  match ty with 
-  | {ptyp_desc; ptyp_attributes; ptyp_loc = loc} -> 
-    match 
-      Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
-    | `String,  Ptyp_variant ( row_fields, Closed, None)
+let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_core_type.t) : 
+  arg_type * Ast_core_type.t  = 
+    match Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
+    | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
-      let case, result = 
-        (List.fold_right (fun tag (nullary, acc) -> 
+      let case, result, row_fields  = 
+        (List.fold_right (fun tag (nullary, acc, row_fields) -> 
              match nullary, tag with 
-             | (`Nothing | `Null), Parsetree.Rtag (label, attrs, true,  [])
+             | (`Nothing | `Null), 
+               Parsetree.Rtag (label, attrs, true,  [])
                -> 
-               let name = 
-                 match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name -> name 
-                 | None -> label in
-               `Null, ((Btype.hash_variant label, name) :: acc )
-             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, [ _ ]) 
-               -> 
-               let name = 
-                 match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name -> name 
-                 | None -> label in
-               `NonNull, ((Btype.hash_variant label, name) :: acc)
+               begin match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name, new_attrs  -> 
+                   `Null, ((Btype.hash_variant label, name) :: acc ), 
+                   Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
 
+                 | None, _ -> 
+                   `Null, ((Btype.hash_variant label, label) :: acc ), 
+                   tag :: row_fields
+               end
+             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
+               -> 
+               begin match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name, new_attrs -> 
+                   `NonNull, ((Btype.hash_variant label, name) :: acc),
+                   Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
+                 | None, _ -> 
+                   `NonNull, ((Btype.hash_variant label, label) :: acc),
+                   (tag :: row_fields)
+               end
              | _ -> Location.raise_errorf ~loc "Not a valid string type"
-           ) row_fields (`Nothing, [])) in 
-      begin match case with 
+           ) row_fields (`Nothing, [], [])) in 
+       (match case with 
         | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
         | `Null -> NullString result 
-        | `NonNull -> NonNullString result 
-      end
-    | `String,  _ -> Location.raise_errorf ~loc "Not a valid string type"
+        | `NonNull -> NonNullString result) , 
+       {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
+        ptyp_attributes ;
+       }
+    | (`String, _),  _ -> Location.raise_errorf ~loc "Not a valid string type"
 
-    | `Ignore, _  -> Ignore
-    | `Int , Ptyp_variant ( row_fields, Closed, None) -> 
-      let _, acc = 
+    | (`Ignore, ptyp_attributes), _  -> 
+      (Ignore, {ptyp with ptyp_attributes})
+    | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
+      let _, acc, rev_row_fields = 
         (List.fold_left 
-           (fun (i,acc) rtag -> 
+           (fun (i,acc, row_fields) rtag -> 
               match rtag with 
               | Parsetree.Rtag (label, attrs, true,  [])
                 -> 
-                let name = 
-                  match Ast_attributes.process_bs_int_as attrs with 
-                  | Some name -> name 
-                  | None -> i in
-                name + 1, ((Btype.hash_variant label , name):: acc )
+                  begin match Ast_attributes.process_bs_int_as attrs with 
+                  | Some i, attrs -> 
+                    i + 1, ((Btype.hash_variant label , i):: acc ), 
+                    Parsetree.Rtag (label, attrs, true, []) :: row_fields
+                  | None, _ -> 
+                    i + 1 , ((Btype.hash_variant label , i):: acc ), rtag::row_fields
+                  end
               | _ -> Location.raise_errorf ~loc "Not a valid string type"
-           ) (0, []) row_fields) in 
-      Int (List.rev acc)
+           ) (0, [],[]) row_fields) in 
+      Int (List.rev acc), {ptyp with ptyp_desc = Ptyp_variant(List.rev row_fields, Closed, None )}
 
-    | `Int, _ -> Location.raise_errorf ~loc "Not a valid string type"
-    | `Nothing, ptyp_desc ->
+    | (`Int, _), _ -> Location.raise_errorf ~loc "Not a valid string type"
+    | (`Nothing, ptyp_attributes),  ptyp_desc ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"}, [])
           -> 
@@ -153,7 +163,7 @@ let get_arg_type (ty : Ast_core_type.t) : arg_type =
           Nothing           
         | _ ->
           Nothing           
-      end
+      end, ptyp
 
 
 let valid_js_char =
@@ -372,6 +382,19 @@ let process_external_attributes
     )
     (init_st, []) prim_attributes 
 
+
+let list_of_arrow (ty : Parsetree.core_type) = 
+  let rec aux (ty : Parsetree.core_type) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1,ty.ptyp_attributes) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
+    | return_type -> ty, List.rev acc
+  in aux ty []
+
+(** Note that the passed [type_annotation] is already processed by visitor pattern before 
+*)
 let handle_attributes 
     (loc : Bs_loc.t)
     (pval_prim : string ) 
@@ -383,24 +406,30 @@ let handle_attributes
     else  `Nm_external prim_name  (* need check name *)
   in    
   let result_type_ty, arg_types_ty =
-    Ast_core_type.list_of_arrow type_annotation in
+    list_of_arrow type_annotation in
   let translate_arg_type =
-    (fun (label, ty) -> 
+    (fun (label, ty, _) -> 
        { arg_label = Ast_core_type.label_name label ;
-         arg_type =  get_arg_type ty 
+         arg_type =  fst (get_arg_type ty )
        }) in      
-  let arg_type_specs, arg_type_specs_length  = 
-    List.fold_right (fun v (arg_type_specs, i) -> 
-        (translate_arg_type v :: arg_type_specs, i + 1)
-      ) arg_types_ty ([],0) in 
   
   let (st, left_attrs) = 
     process_external_attributes 
-      (arg_type_specs_length = 0)
+      (arg_types_ty = [])
       prim_name_or_pval_prim pval_prim prim_attributes in 
+  let arg_type_specs, arg_type_specs_length  = 
+    List.fold_right (fun v (arg_type_specs, i) -> 
+        (translate_arg_type v :: arg_type_specs, i + 1)
+      ) arg_types_ty 
+      ((match st with
+          | {val_send_pipe = Some obj} ->      
+            [translate_arg_type ("", obj, []) ]
+          | {val_send_pipe = None } -> []
+        ),
+       0) in 
 
 
-  let result_type = get_arg_type result_type_ty in
+  let result_type_spec, result_type  = get_arg_type result_type_ty in
 
   let ffi = 
     match st with 
@@ -695,9 +724,9 @@ let handle_attributes
          Ast_core_type.make_obj ~loc (
            List.fold_right2  (fun arg label acc ->
                match arg, label with
-               | (_, ty), Ast_core_type.Label s
+               | (_, ty, _), Ast_core_type.Label s
                  -> (s , [], ty) :: acc                 
-               | (_, ty), Optional s
+               | (_, ty, _), Optional s
                  ->
                  begin match (ty : Ast_core_type.t) with
                    | {ptyp_desc =
@@ -708,7 +737,7 @@ let handle_attributes
                      (s, [], Ast_comb.to_undefined_type loc ty) :: acc
                    | _ -> assert false                 
                  end                 
-               | (_, _), Ast_core_type.Empty -> acc                
+               | (_, _, _), Ast_core_type.Empty -> acc                
              ) arg_types_ty arg_labels [])  in
        Ast_core_type.replace_result type_annotation result
      | Js_send {pipe = true }, _ ->
@@ -725,11 +754,7 @@ let handle_attributes
      | Obj_create _ , _ -> prim_name
      | _ , "" -> pval_prim
      | _, _ -> prim_name),
-    (match st with
-     | {val_send_pipe = Some obj} ->      
-       Bs(arg_type_specs @ [translate_arg_type ("", obj) ], result_type,  ffi)
-     | {val_send_pipe = None } ->       Bs(arg_type_specs, result_type,  ffi)        
-    ), left_attrs
+    (Bs(arg_type_specs, result_type_spec,  ffi)), left_attrs
   end
 
 let handle_attributes_as_string 
