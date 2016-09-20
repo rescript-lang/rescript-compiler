@@ -60,7 +60,7 @@ type vv = int -> int [@bs]
     "unsafe_max", (fun _ -> Eq(2., max 1. 2. [@bs]));
     "unsafe_test", (fun _ -> Eq(3,v));
     "unsafe_max2", (fun _ -> Eq(2, ([%bs.raw {|Math.max|} ] : int ->  int -> int [@bs]) 1 2 [@bs] ));
-    "ffi_keys", ( fun _ -> Eq ([|"a"|], Ffi_js.keys [%bs.raw{| {a : 3}|}] [@bs]))
+    "ffi_keys", ( fun _ -> Eq ([|"a"|], Ffi_js_test.keys [%bs.raw{| {a : 3}|}] [@bs]))
 ]
 
 

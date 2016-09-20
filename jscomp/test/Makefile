@@ -37,7 +37,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	obj_magic_test caml_compare_test rec_module_test guide_for_ext local_exception_test js_obj_test extensible_variant_test\
 	ext_log lam_current_unit test_zero_nullable int64_test string_literal_print_test js_bool_test class_type_ffi_test unsafe_ppx_test\
 	js_date js_date_test es6_module_test int_overflow_test float_test bigarray_test float_of_bits_test swap_test int64_mul_div_test\
-	ffi_test shift_test debugger_test caml_format_test js_val epsilon_test io_test random_test ffi_js\
+	ffi_test shift_test debugger_test caml_format_test js_val epsilon_test io_test random_test ffi_js_test\
 	stringmatch_test printf_sim test_external_unit ext_array int32_test hamming_test pr_regression_test\
 	to_string_test print_alpha_test ffi_arity_test digest_test string_get_set_test exception_raise_test\
 	class_test debug_keep_test demo_int_map const_test class3_test class4_test class5_test class6_test\

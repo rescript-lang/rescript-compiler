@@ -240,10 +240,10 @@ ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
 ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
 ffi_array_test.cmj : mt.cmi ../others/js_array.cmj
 ffi_array_test.cmx : mt.cmx ../others/js_array.cmx
-ffi_js.cmj : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmj ../runtime/js.cmj \
-    ../stdlib/array.cmi
-ffi_js.cmx : ../stdlib/obj.cmx mt.cmx ../others/js_obj.cmx ../runtime/js.cmx \
-    ../stdlib/array.cmx
+ffi_js_test.cmj : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmj \
+    ../runtime/js.cmj ../stdlib/array.cmi
+ffi_js_test.cmx : ../stdlib/obj.cmx mt.cmx ../others/js_obj.cmx \
+    ../runtime/js.cmx ../stdlib/array.cmx
 ffi_test.cmj : ../runtime/js.cmj
 ffi_test.cmx : ../runtime/js.cmx
 fib.cmj :
@@ -852,8 +852,8 @@ unitest_string.cmj :
 unitest_string.cmx :
 unsafe_obj_external.cmj : ../runtime/js.cmj
 unsafe_obj_external.cmx : ../runtime/js.cmx
-unsafe_ppx_test.cmj : mt.cmi ffi_js.cmj
-unsafe_ppx_test.cmx : mt.cmx ffi_js.cmx
+unsafe_ppx_test.cmj : mt.cmi ffi_js_test.cmj
+unsafe_ppx_test.cmx : mt.cmx ffi_js_test.cmx
 unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
 unsafe_this.cmx : ../runtime/js.cmx unsafe_this.cmi
 watch_test.cmj : ../others/node.cmj ../runtime/js.cmj
@@ -1064,10 +1064,10 @@ ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
 ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
 ffi_array_test.cmo : mt.cmi ../others/js_array.cmo
 ffi_array_test.cmj : mt.cmj ../others/js_array.cmj
-ffi_js.cmo : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmo ../runtime/js.cmo \
-    ../stdlib/array.cmi
-ffi_js.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_obj.cmj ../runtime/js.cmj \
-    ../stdlib/array.cmj
+ffi_js_test.cmo : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmo \
+    ../runtime/js.cmo ../stdlib/array.cmi
+ffi_js_test.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_obj.cmj \
+    ../runtime/js.cmj ../stdlib/array.cmj
 ffi_test.cmo : ../runtime/js.cmo
 ffi_test.cmj : ../runtime/js.cmj
 fib.cmo :
@@ -1676,8 +1676,8 @@ unitest_string.cmo :
 unitest_string.cmj :
 unsafe_obj_external.cmo : ../runtime/js.cmo
 unsafe_obj_external.cmj : ../runtime/js.cmj
-unsafe_ppx_test.cmo : mt.cmi ffi_js.cmo
-unsafe_ppx_test.cmj : mt.cmj ffi_js.cmj
+unsafe_ppx_test.cmo : mt.cmi ffi_js_test.cmo
+unsafe_ppx_test.cmj : mt.cmj ffi_js_test.cmj
 unsafe_this.cmo : ../runtime/js.cmo unsafe_this.cmi
 unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
 watch_test.cmo : ../others/node.cmo ../runtime/js.cmo
