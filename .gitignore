@@ -37,10 +37,6 @@ _build
 *.gz
 # special file
 
-bsc
-bscc
-bsppx
-jscomp/bin/whole_compiler_config.ml
 .idea
 
 node_modules
