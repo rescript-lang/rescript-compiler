@@ -25,8 +25,6 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
 ## End Rules
 
-release:snapshot
-	$(MAKE) releasebuild
 
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
@@ -43,11 +41,6 @@ release:snapshot
 ./bin/bsppx.exe: ./bin/bsppx.mli ./bin/bsppx.ml
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin -I +compiler-libs ocamlcommon.cmxa   $^ -o $@
 
-releasebuild:./bin/bspack.exe
-	@echo "Make release compiler"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
-	@echo "Make release ppx"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bsppx.mli bin/bsppx.ml -o bin/bsppx.exe
 
 snapshot: ./bin/bspack.exe snapshotcmj
 	$(MAKE) snapshotml
@@ -92,6 +85,15 @@ libs:
 	@echo "Making others"
 	cd others && $(MAKE) all
 	@echo "Making others finished"
+
+releasebuild:./bin/bspack.exe
+	@echo "Make release compiler"
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
+	@echo "Make release ppx"
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bsppx.mli bin/bsppx.ml -o bin/bsppx.exe
+
+release:snapshot
+	$(MAKE) releasebuild
 
 world:
 	@echo "Making compiler"
