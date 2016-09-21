@@ -49,6 +49,7 @@ coverage
 *.g.js
 ppx_tools/
 ocaml/
+reason/
 man/
 lib/ocaml
 bin/*

@@ -1,6 +1,19 @@
 ## Installation
 
 
+[NOTE]
+.WINDOWS prerequisite
+============
+BuckleScript works natively on Windows, currently users have to install
+http://protz.github.io/ocaml-installer/[OCaml Cygwin] first,
+make sure that `ocamlopt` is in `PATH`.
+[source,sh]
+------------------------
+npm install bs-platform
+------------------------
+After installation, BuckleScript does not rely on Cygwin anymore.
+============
+
 
 ### Install from NPM registries
 
