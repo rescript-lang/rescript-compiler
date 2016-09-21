@@ -29,5 +29,5 @@ let u =
 
   
 (* local variables: *)
-(* compile-command: "bsc -I ../runtime -drawlambda  unsafe_obj_external.ml" *)
+(* compile-command: "bsc.exe -I ../runtime -drawlambda  unsafe_obj_external.ml" *)
 (* end: *)

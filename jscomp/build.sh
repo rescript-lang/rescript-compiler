@@ -16,7 +16,7 @@ make js_map.ml js_fold.ml  >> build.compile
 
 ocamlbuild -no-links -cflags $OCAMLBUILD_CFLAGS foo.otarget > build.compile
 
-make -r bin/bsc
+make -r bin/bsc.exe
 # TODO: this quick test is buggy, 
 # since a.ml maybe depend on another module 
 # we can not just comment it, it will also produce jslambda
@@ -69,5 +69,5 @@ echo "Make pack tools" >> ./build.compile
 
 # make snapshot
 # generate new js_cmj_datasets
-make snapshotml
+make snapshotml 2>> ./build.compile
 echo "Done" >> ./build.compile

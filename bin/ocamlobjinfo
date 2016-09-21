@@ -1,3 +1,0 @@
-#!/bin/sh
-echo "PLEASE RUN NPM POSTINSTALL TO GET BSC BINARY"
-exit 2

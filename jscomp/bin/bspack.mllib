@@ -2,7 +2,6 @@
 ../ocaml/utils/warnings
 ../ocaml/parsing/location
 common/bs_exception
-../ocaml/utils/config
 ../ocaml/utils/clflags
 ../ocaml/parsing/asttypes
 ../ocaml/utils/misc
@@ -19,6 +18,7 @@ common/js_config
 ext/string_map
 depends/ast_extract
 ext/ext_io
+ext/ext_list
 ../ocaml/parsing/docstrings
 ../ocaml/parsing/ast_helper
 ../ocaml/parsing/syntaxerr

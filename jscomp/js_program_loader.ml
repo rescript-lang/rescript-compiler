@@ -38,7 +38,7 @@ module S = Js_stmt_make
     1. We don't want to force user to have 
        [-bs-package-name] and [-bs-package-output] set
 
-       [bsc -c hello.ml] should just work 
+       [bsc.exe -c hello.ml] should just work 
        by producing a [hello.js] file in the same directory
 
     Some designs due to legacy reasons that we don't have all runtime

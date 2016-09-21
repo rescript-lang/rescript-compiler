@@ -9,5 +9,5 @@ export BS_RELEASE_BUILD=1
 make release
 
 
-# git clean -dfx
-# make world-test
+
+

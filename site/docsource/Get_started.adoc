@@ -13,7 +13,7 @@
         "bs-platform": "1.0.1" // <1>
     },
     "scripts" : {
-        "build" : "bsc -c  main_entry.ml"
+        "build" : "bsc.exe -c  main_entry.ml"
     }
 }
 ----
@@ -68,7 +68,7 @@ will call `fib`.
         "bs-platform": "1.0.1"
     },
     "scripts" : {
-        "build" : "bsc -c -bs-main main_entry.ml" // <1>
+        "build" : "bsc.exe -c -bs-main main_entry.ml" // <1>
     }
 }
 ----------

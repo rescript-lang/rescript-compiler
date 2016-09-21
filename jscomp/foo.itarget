@@ -3,7 +3,7 @@ ext/ext.cmxa
 syntax/syntax.cmxa
 core.cmxa
 depends/depends.cmxa
-bs_ppx_main.cmx
+bsppx_main.cmx
 bspack_main.cmx
 jsoo_main.cmo
 js_generate_require.cmo

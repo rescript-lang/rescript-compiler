@@ -15,10 +15,10 @@ directories, we have a flag
 
 [source,sh]
 -----------
-bsc -bs-package-name $npm_package_name -bs-package-output modulesystem:path/to/your/js/dir -c a.ml
+bsc.exe -bs-package-name $npm_package_name -bs-package-output modulesystem:path/to/your/js/dir -c a.ml
 -----------
 
-By passing this flag, `bsc` will store your `package_name` and
+By passing this flag, `bsc.exe` will store your `package_name` and
 relative path to `package.json` in `.cmj` files. It will also generate
 JS files in the directory you specified. You can, and are encouraged
 to, store Javascript files in a hierarchical directory.
@@ -39,7 +39,7 @@ pretty straightforward:
 
 [source,sh]
 -----------
-bsc -bs-package-include ocaml-package-name -c a.ml
+bsc.exe -bs-package-include ocaml-package-name -c a.ml
 -----------
 
 
@@ -50,7 +50,7 @@ Your command line would be like this:
 
 [source,sh]
 -----------
-bsc -bs-package-include ocaml-package1 -bs-package-include ocaml-package2  -bs-package-name $npm_package_name -bs-package-output commonjs:path/to/lib/js/ -c a.ml
+bsc.exe -bs-package-include ocaml-package1 -bs-package-include ocaml-package2  -bs-package-name $npm_package_name -bs-package-output commonjs:path/to/lib/js/ -c a.ml
 -----------
 
 ### Examples

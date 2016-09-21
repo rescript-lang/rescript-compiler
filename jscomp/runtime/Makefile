@@ -1,6 +1,6 @@
 include ../Makefile.shared
 
-COMPILER=../bin/bsc
+COMPILER=../bin/bsc.exe
 
 OTHERS= caml_array caml_string caml_bytes\
 	caml_obj caml_int64 \

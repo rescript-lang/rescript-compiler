@@ -3,8 +3,28 @@
 ## CHANGES
 
 == 1.03 (dev)
+
 * Features
 - Add an option `-bs-no-warn-unused-bs-attribute` {issues}787[#787]
+
+* Incompatible changes (due to proper Windows support):
+
+- `bsc`, `bspack` and `bsppx` are renamed into `bsc.exe`, `bspack.exe` and `bsppx.exe`
+- no symlink from .bin any more.
+
++
+.Old symlinks
+[source]
+------
+  tmp>ls -al node_modules/.bin/
+  total 96
+  drwxr-xr-x  14 hzhang295  staff  476 Sep 20 17:26 .
+  drwxr-xr-x   4 hzhang295  staff  136 Sep 20 17:27 ..
+  lrwxr-xr-x   1 hzhang295  staff   22 Sep 20 17:26 bsc -> ../bs-platform/bin/bsc
+  lrwxr-xr-x   1 hzhang295  staff   25 Sep 20 17:26 bspack -> ../bs-platform/bin/bspack
+  lrwxr-xr-x   1 hzhang295  staff   24 Sep 20 17:26 bsppx -> ../bs-platform/bin/bsppx
+------
+Now these symlinks are removed, you have to refer to `bs-platform/bin/bsc.exe`
 
 == 1.02
 
@@ -15,7 +35,7 @@
 * Features
 
 - Add an option `-bs-no-warn-ffi-type` {issues}783[#783]
-  By default, `bsc` will warn when it detect some ocaml datatype is passed from/to external FFi
+  By default, `bsc.exe` will warn when it detect some ocaml datatype is passed from/to external FFi
 - Add an option `-bs-eval` {issues}784[784]
 
 == 1.01

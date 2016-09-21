@@ -1,6 +1,6 @@
 include ../Makefile.shared
 
-CAMLC=../bin/bsc
+CAMLC=../bin/bsc.exe
 
 INCLUDES= -I ../stdlib  -I ../runtime -I ../others/
 
