@@ -1,6 +1,4 @@
-# [BuckleScript](http://bloomberg.github.io/bucklescript/)
-
-A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integration and clean generated code.
+[BuckleScript](http://bloomberg.github.io/bucklescript/): A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integration and clean generated code.
 
 [![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/)
 
