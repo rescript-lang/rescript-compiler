@@ -6,6 +6,7 @@ A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integrati
 
 [![Build Status](https://travis-ci.org/bloomberg/bucklescript.svg?branch=master)](https://travis-ci.org/bloomberg/bucklescript)
 [![Coverage Status](https://coveralls.io/repos/github/bloomberg/bucklescript/badge.svg?branch=master)](https://coveralls.io/github/bloomberg/bucklescript?branch=master)
+[![Try Online](https://img.shields.io/badge/try_it-online!-yellow.svg?style=flat-square)](https://bloomberg.github.io/bucklescript/js-demo)
 
 ## Try BuckleScript
 
