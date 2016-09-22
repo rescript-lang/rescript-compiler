@@ -230,6 +230,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
     | Js_new { external_module_name = module_name; 
                txt = fn;
+               splice 
              } -> 
       (* This has some side effect, it will 
          mark its identifier (If it has) as an object,
@@ -239,7 +240,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
          TODO: we should propagate this property 
          as much as we can(in alias table)
       *)
-      let args, eff = assemble_args arg_types args in
+      let args, eff = assemble_args_splice splice arg_types args in
       let fn =  
         match handle_external_opt module_name with 
         | Some (id,name) ->  

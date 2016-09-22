@@ -44,7 +44,16 @@ type js_send = {
   pipe : pipe   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_val = string external_module 
+type js_global_val = {
+  txt : string ; 
+  external_module_name : external_module_name option
+  }
+
+type js_new_val = {
+  splice : bool ;
+  txt : string ; 
+  external_module_name : external_module_name option
+}
 
 type arg_type = Ast_core_type.arg_type
   
@@ -61,13 +70,13 @@ type js_module_as_fn =
   }
 type ffi = 
   | Obj_create of arg_label list
-  | Js_global of js_val 
+  | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name       
   | Js_call of js_call external_module
   | Js_send of js_send
-  | Js_new of js_val
+  | Js_new of js_new_val
   | Js_set of string
   | Js_get of string
   | Js_get_index

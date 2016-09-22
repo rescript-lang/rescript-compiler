@@ -1,8 +1,11 @@
 
 [appendix]
 ## CHANGES
+== 1.1.0(dev)
 
-== 1.03 (dev)
+* Features
+
+== 1.03
 
 * Features
 - Add an option `-bs-no-warn-unused-bs-attribute` {issues}787[#787]
