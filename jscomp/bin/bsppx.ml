@@ -3861,7 +3861,7 @@ val translate : ?loc:Location.t -> string -> string
 end = struct
 #1 "lam_methname.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -3879,29 +3879,29 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let translate ?loc name = 
-  let i = Ext_string.rfind ~sub:"_" name  in 
-  if name.[0] = '_' then 
-    if i <= 0 then 
-      let len = (String.length name - 1) in 
-      if len = 0 then 
+let translate ?loc name =
+  let i = Ext_string.rfind ~sub:"_" name  in
+  if name.[0] = '_' then
+    if i <= 0 then
+      let len = (String.length name - 1) in
+      if len = 0 then
         Location.raise_errorf ?loc "invalid label %s" name
       else String.sub name 1 len
-    else 
+    else
       let len = (i - 1) in
-      if len = 0 then 
-        Location.raise_errorf ?loc "invlid label %s" name 
-      else 
+      if len = 0 then
+        Location.raise_errorf ?loc "invalid label %s" name 
+      else
         String.sub name 1 len
-  else if i > 0 then 
-    String.sub name 0 i 
-  else name 
+  else if i > 0 then
+    String.sub name 0 i
+  else name
 
 end
 module Ast_external_attributes : sig 
