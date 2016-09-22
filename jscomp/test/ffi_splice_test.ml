@@ -25,11 +25,29 @@ Make.prototype.sum = function(){
   return result
 }  
 
+Make.prototype.add = function(){
+  
+} 
 |}]
 
 type t 
 external make : int array -> t = "Make" [@@bs.splice] [@@bs.new]
+
 external sum : t -> unit -> int = "" [@@bs.send]
+
+(* compile error *)
+(* external join : string  -> string = "" [@@bs.module "path"] [@@bs.splice] *)
+external join : string array -> string = "" [@@bs.module "path"] [@@bs.splice]
+
+external test : string array -> t = "" [@@bs.send.pipe: t ] [@@bs.splice]
+
+(* compile error *)
+(* external test2 : int -> string -> t= "" [@@bs.send.pipe: t ] [@@bs.splice] *)
+
+let f x = 
+  x 
+  |> test  [| "a"; "b" |]
+  |> test  [| "a"; "b" |]
 
 let v = make [|1;2;3;4|]
 

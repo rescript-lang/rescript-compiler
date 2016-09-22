@@ -3935,15 +3935,11 @@ type external_module_name =
   { bundle : string ; 
     bind_name : string option
   }
-type 'a external_module = {
-  txt : 'a ;
-  external_module_name : external_module_name option;
-}
-
 
 type js_call = { 
   splice : bool ;
   name : string;
+  external_module_name : external_module_name option;
 }
 type pipe = bool 
 type js_send = { 
@@ -3982,7 +3978,7 @@ type ffi =
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name       
-  | Js_call of js_call external_module
+  | Js_call of js_call
   | Js_send of js_send
   | Js_new of js_new_val
   | Js_set of string
@@ -4054,15 +4050,12 @@ type external_module_name =
   { bundle : string ; 
     bind_name : string option
   }
-type 'a external_module = {
-  txt : 'a ;
-  external_module_name : external_module_name option;
-}
 
 type pipe = bool 
 type js_call = { 
   splice : bool ;
   name : string;
+  external_module_name : external_module_name option;
 }
 
 type js_send = { 
@@ -4103,7 +4096,7 @@ type ffi =
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name             
-  | Js_call of js_call external_module
+  | Js_call of js_call 
   | Js_send of js_send
   | Js_new of js_new_val
   | Js_set of string
@@ -4272,7 +4265,7 @@ let check_ffi ?loc ffi =
   | Js_module_as_class external_module_name             
     -> check_external_module_name external_module_name
   | Js_new {external_module_name ; txt = name}
-  | Js_call {external_module_name ; txt = {name ; _}}
+  | Js_call {external_module_name ;  name ; _}
     -> 
     check_external_module_name_opt ?loc external_module_name ;
     valid_global_name ?loc name     
@@ -4449,15 +4442,21 @@ let handle_attributes
     process_external_attributes 
       (arg_types_ty = [])
       prim_name_or_pval_prim pval_prim prim_attributes in 
+
+  let splice = st.splice in 
   let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
     List.fold_right 
       (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
          let spec, new_ty = get_arg_type ty in
-        ({ arg_label = Ast_core_type.label_name label ; 
-           arg_type = spec 
-         } :: arg_type_specs,
-         (label, new_ty,attr,loc) :: arg_types,
-         i + 1)
+         (if i = 0 && splice  then
+           match spec with 
+           | Array  -> ()
+           | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
+         ({ arg_label = Ast_core_type.label_name label ; 
+            arg_type = spec 
+          } :: arg_type_specs,
+          (label, new_ty,attr,loc) :: arg_types,
+          i + 1)
       ) arg_types_ty 
       (match st with
        | {val_send_pipe = Some obj} ->      
@@ -4609,7 +4608,7 @@ let handle_attributes
     set_name = `Nm_na ;
     get_name = `Nm_na 
    } -> 
-   Js_call {txt = {splice; name}; external_module_name}
+   Js_call {splice; name; external_module_name}
  | {call_name = #bundle_source } 
    -> Location.raise_errorf ~loc "conflict attributes found"
 
@@ -4650,7 +4649,7 @@ let handle_attributes
    let name = string_of_bundle_source prim_name_or_pval_prim in
    if arg_type_specs_length  = 0 then
      Js_global {txt = name; external_module_name}
-   else  Js_call {txt = {splice; name}; external_module_name}                     
+   else  Js_call {splice; name; external_module_name}                     
  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
     splice;
     val_send_pipe = None;
@@ -4672,7 +4671,7 @@ let handle_attributes
    -> Location.raise_errorf ~loc "conflict attributes found"
 
  | {val_send_pipe = Some typ; 
-    splice = (false as splice);
+    (* splice = (false as splice); *)
     val_send = `Nm_na;
     val_name = `Nm_na  ;
     call_name = `Nm_na ;

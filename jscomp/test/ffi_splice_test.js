@@ -40,20 +40,28 @@ Make.prototype.sum = function(){
   return result
 }  
 
+Make.prototype.add = function(){
+  
+} 
 
 ;
+
+function f(x) {
+  return x.test("a", "b").test("a", "b");
+}
 
 var v = new Make(1, 2, 3, 4);
 
 var u = v.sum();
 
-eq('File "ffi_splice_test.ml", line 39, characters 12-19', u, 10);
+eq('File "ffi_splice_test.ml", line 57, characters 12-19', u, 10);
 
 Mt.from_pair_suites("ffi_splice_test.ml", suites[0]);
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
+exports.f       = f;
 exports.v       = v;
 exports.u       = u;
 /*  Not a pure module */

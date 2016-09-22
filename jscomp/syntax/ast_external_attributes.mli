@@ -27,15 +27,11 @@ type external_module_name =
   { bundle : string ; 
     bind_name : string option
   }
-type 'a external_module = {
-  txt : 'a ;
-  external_module_name : external_module_name option;
-}
-
 
 type js_call = { 
   splice : bool ;
   name : string;
+  external_module_name : external_module_name option;
 }
 type pipe = bool 
 type js_send = { 
@@ -74,7 +70,7 @@ type ffi =
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name       
-  | Js_call of js_call external_module
+  | Js_call of js_call
   | Js_send of js_send
   | Js_new of js_new_val
   | Js_set of string

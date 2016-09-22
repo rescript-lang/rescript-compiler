@@ -176,9 +176,9 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     match ffi with 
     | Obj_create labels -> assemble_args_obj labels args 
     | Js_call{ external_module_name = module_name; 
-               txt = { name = fn; splice = js_splice ; 
+                 name = fn; splice = js_splice ; 
 
-                     }} -> 
+                     } -> 
       let fn =  
         match handle_external_opt module_name with 
         | Some (id,_) -> 
@@ -296,10 +296,10 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       end
     | Js_send { name ; pipe = true ; splice = js_splice}
       -> (* splice should not happen *)
-      assert (js_splice = false) ; 
+      (* assert (js_splice = false) ;  *)
       let self, args = Ext_list.exclude_tail args in
       let self_type, arg_types = Ext_list.exclude_tail arg_types in
-      let args, eff = assemble_args arg_types args in
+      let args, eff = assemble_args_splice js_splice arg_types args in
       add_eff eff @@
       E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 
