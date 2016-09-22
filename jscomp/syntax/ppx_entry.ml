@@ -261,17 +261,17 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         match e.pexp_desc with 
         (** Its output should not be rewritten anymore *)        
         | Pexp_extension (
-            {txt = "bs.raw"; loc} , payload)
+            {txt = ("bs.raw" | "raw"); loc} , payload)
           -> 
           Ast_util.handle_raw loc payload
         | Pexp_extension (
-            {txt = "bs.re"; loc} , payload)
+            {txt = ("bs.re" | "re"); loc} , payload)
           ->
           Exp.constraint_ ~loc
             (Ast_util.handle_raw loc payload)
             (Ast_comb.to_js_re_type loc)            
         | Pexp_extension
-            ({txt = "bs.node"; loc},
+            ({txt = ("bs.node" | "node"); loc},
              payload)
           ->
           let strip s =
@@ -552,7 +552,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
-        | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
+        | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
         | Pstr_type [ {ptype_attributes} as tdcl ]-> 

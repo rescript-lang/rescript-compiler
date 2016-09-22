@@ -244,6 +244,8 @@ ffi_js_test.cmj : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmj \
     ../runtime/js.cmj ../stdlib/array.cmi
 ffi_js_test.cmx : ../stdlib/obj.cmx mt.cmx ../others/js_obj.cmx \
     ../runtime/js.cmx ../stdlib/array.cmx
+ffi_splice_test.cmj : mt.cmi
+ffi_splice_test.cmx : mt.cmx
 ffi_test.cmj : ../runtime/js.cmj
 ffi_test.cmx : ../runtime/js.cmx
 fib.cmj :
@@ -1068,6 +1070,8 @@ ffi_js_test.cmo : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmo \
     ../runtime/js.cmo ../stdlib/array.cmi
 ffi_js_test.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_obj.cmj \
     ../runtime/js.cmj ../stdlib/array.cmj
+ffi_splice_test.cmo : mt.cmi
+ffi_splice_test.cmj : mt.cmj
 ffi_test.cmo : ../runtime/js.cmo
 ffi_test.cmj : ../runtime/js.cmj
 fib.cmo :

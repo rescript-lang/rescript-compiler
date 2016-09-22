@@ -45,8 +45,16 @@ type js_send = {
   pipe : bool   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_val = string external_module 
+type js_global_val = {
+  txt : string ; 
+  external_module_name : external_module_name option
+  }
 
+type js_new_val = {
+  splice : bool ;
+  txt : string ; 
+  external_module_name : external_module_name option
+}
 
 type js_module_as_fn = 
   { external_module_name : external_module_name;
@@ -65,15 +73,13 @@ type arg_kind =
 
 type ffi = 
   | Obj_create of arg_label list
-  | Js_global of js_val 
+  | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name             
   | Js_call of js_call external_module
   | Js_send of js_send
-    (* Note how we encode it will have a semantic difference 
-    *)
-  | Js_new of js_val
+  | Js_new of js_new_val
   | Js_set of string
   | Js_get of string
   | Js_get_index
@@ -671,9 +677,10 @@ let handle_attributes
     val_send = `Nm_na ;
     val_send_pipe = None;             
     set_name = `Nm_na ;
-    get_name = `Nm_na 
+    get_name = `Nm_na ;
+    splice 
    } 
-   -> Js_new {txt =name; external_module_name}
+   -> Js_new {txt =name; external_module_name; splice}
  | {new_name = #bundle_source }
    -> Location.raise_errorf ~loc "conflict attributes found"
 
