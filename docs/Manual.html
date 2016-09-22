@@ -568,6 +568,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_method_chaining">Method chaining</a></li>
 </ul>
 </li>
+<li><a href="#_object_label_translation_convention">Object label translation convention</a></li>
 </ul>
 </li>
 <li><a href="#_embedding_raw_javascript_code">Embedding raw Javascript code</a>
@@ -2808,6 +2809,62 @@ BuckleScript too.</p>
 <span class="tok-o">##(</span><span class="tok-n">meth2</span> <span class="tok-n">a</span> <span class="tok-n">b</span><span class="tok-o">)</span></code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_object_label_translation_convention"><a class="anchor" href="#_object_label_translation_convention"></a>Object label translation convention</h4>
+<div class="paragraph">
+<p>In JS, it is quite common to have several types for a single method, to model
+this ad-hoc polymorphism, we introduced a small convention when translating
+object labels, this is useful as below</p>
+</div>
+<div class="listingblock">
+<div class="title">Ad-hoc polymorphism</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">draw_cat</span> <span class="tok-o">(</span><span class="tok-n">x</span><span class="tok-o">,</span><span class="tok-n">y</span><span class="tok-o">)</span>
+<span class="tok-n">f</span><span class="tok-o">##</span><span class="tok-n">draw_dog</span> <span class="tok-o">(</span><span class="tok-n">x</span><span class="tok-o">,</span><span class="tok-n">y</span><span class="tok-o">)</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">OUTPUT:</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">f</span><span class="tok-p">.</span><span class="tok-nx">draw</span><span class="tok-p">(</span><span class="tok-nx">x</span><span class="tok-p">,</span><span class="tok-nx">y</span><span class="tok-p">)</span> <span class="tok-c1">// f.draw in JS can accept different types</span>
+<span class="tok-nx">f</span><span class="tok-p">.</span><span class="tok-nx">draw</span><span class="tok-p">(</span><span class="tok-nx">x</span><span class="tok-p">,</span><span class="tok-nx">y</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="title">Rules</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>If <code>_</code> apperas in the first char,</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The first char <code>_</code> will be discarded</p>
+</li>
+<li>
+<p>If there is <code>_</code> in the rest chars,
+chars after last <code>_</code> will be discarded</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Else if there is <code>_</code> in the rest chars,
+chars after last <code>_</code> will be discarded</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>

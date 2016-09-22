@@ -1101,6 +1101,40 @@ f
 ##(meth2 a b)
 -------------
 
+#### Object label translation convention
+
+In JS, it is quite common to have several types for a single method, to model
+this ad-hoc polymorphism, we introduced a small convention when translating
+object labels, this is useful as below
+
+.Ad-hoc polymorphism
+[source,ocaml]
+-------------
+f##draw_cat (x,y)
+f##draw_dog (x,y)
+-------------
+
+.OUTPUT:
+[source,js]
+-------------
+f.draw(x,y) // f.draw in JS can accept different types
+f.draw(x,y)
+-------------
+
+[NOTE]
+.Rules
+=======
+. If `_` apperas in the first char,
+   * The first char `_` will be discarded
+   * If there is `\_` in the rest chars,
+      chars after last `_` will be discarded
+. Else if there is `\_` in the rest chars,
+  chars after last `_` will be discarded
+=======
+
+
+
+
 
 ### Embedding raw Javascript code
 
