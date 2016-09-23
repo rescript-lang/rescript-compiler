@@ -43,7 +43,8 @@
     examples: "bs.splice"
  *)
 
-val translate : 
+val translate :
+  Location.t ->
   Lam_compile_defs.cxt -> 
   Primitive.description -> 
   J.expression list -> 

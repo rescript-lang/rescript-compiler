@@ -159,7 +159,8 @@ type switch =
     sw_failaction : t option}
 and prim_info = 
   { primitive : primitive ; 
-    args : t list ; 
+    args : t list ;
+    loc : Location.t;
   }
 and apply_status =
   | App_na
@@ -385,8 +386,8 @@ module Lift = struct
     Lconst (Const_base (Const_char b))    
 end
 
-let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t = 
-  let default () : t = Lprim { primitive = prim ;args =  ll } in 
+let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t = 
+  let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
   match ll with 
   | [Lconst a] -> 
     begin match prim, a  with 
@@ -541,20 +542,20 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
   | _ -> default ()
 
 
-let not_ x : t = 
-  prim Pnot [x] 
+let not_ loc x  : t = 
+  prim Pnot [x] loc
 
-let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t = 
+let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t = 
   match p with 
   | Pint_as_pointer 
   | Pidentity ->  
     begin match args with [x] -> x | _ -> assert false end
   | Pbytes_to_string 
-    -> prim ~primitive:Pbytes_to_string ~args
-  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args
+    -> prim ~primitive:Pbytes_to_string ~args loc
+  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
   | Pignore -> (* Pignore means return unit, it is not an nop *)
     begin match args with [x] -> seq x unit | _ -> assert false end
-  | Prevapply loc 
+  | Prevapply 
     -> 
     begin match args with 
     | [x ; Lapply{fn; args}]
@@ -563,7 +564,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     | _ -> assert false 
     end
 
-  | Pdirapply loc ->
+  | Pdirapply ->
     begin match args with 
     | [Lapply{fn ; args }; x ] 
       -> 
@@ -574,42 +575,42 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Ploc loc -> assert false (* already compiled away here*)
   | Pgetglobal id ->
     if Ident.is_predef_exn id then
-      prim ~primitive:(Pglobal_exception id) ~args      
+      prim ~primitive:(Pglobal_exception id) ~args loc       
     else       
-      prim ~primitive:(Pgetglobal id) ~args
-  | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args
+      prim ~primitive:(Pgetglobal id) ~args loc
+  | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args loc
   | Pmakeblock (tag,info, mutable_flag) 
-    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args
+    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
   | Pfield (id,info) 
-    -> prim ~primitive:(Pfield (id,info)) ~args
+    -> prim ~primitive:(Pfield (id,info)) ~args loc
 
   | Psetfield (id,b,info)
-    -> prim ~primitive:(Psetfield (id,b,info)) ~args
+    -> prim ~primitive:(Psetfield (id,b,info)) ~args loc
 
   | Pfloatfield (id,info)
-    -> prim ~primitive:(Pfloatfield (id,info)) ~args
+    -> prim ~primitive:(Pfloatfield (id,info)) ~args loc
   | Psetfloatfield (id,info) 
-    -> prim ~primitive:(Psetfloatfield (id,info)) ~args
+    -> prim ~primitive:(Psetfloatfield (id,info)) ~args loc
   | Pduprecord (repr,i) 
-    -> prim ~primitive:(Pduprecord(repr,i)) ~args
-  | Plazyforce -> prim ~primitive:Plazyforce ~args
+    -> prim ~primitive:(Pduprecord(repr,i)) ~args loc
+  | Plazyforce -> prim ~primitive:Plazyforce ~args loc
 
   | Pccall a -> 
     let prim_name = a.prim_name in
     if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-      prim ~primitive:(Pccall a ) ~args else 
+      prim ~primitive:(Pccall a ) ~args loc else 
     if prim_name =  Literals.js_debugger then 
-      prim ~primitive:Pdebugger ~args else 
+      prim ~primitive:Pdebugger ~args loc else 
     if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args else 
+      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
     if prim_name = Literals.js_fn_mk then 
-      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args else                
+      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
     if prim_name = Literals.js_fn_method then 
-      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args else
+      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
     if prim_name = Literals.js_fn_runmethod then 
-      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args 
+      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
     else
-      prim ~primitive:(Pccall a) ~args
+      prim ~primitive:(Pccall a) ~args loc
   | Praise _ ->
     if Js_config.get_no_any_assert () then 
       begin match args with 
@@ -620,97 +621,97 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
                   ]
                  } ] when Ident.global id
           -> assert_false_unit
-        | _ -> prim ~primitive:Praise ~args
+        | _ -> prim ~primitive:Praise ~args loc 
       end
-    else prim ~primitive:Praise ~args
-  | Psequand -> prim ~primitive:Psequand ~args 
-  | Psequor -> prim ~primitive:Psequor ~args
-  | Pnot -> prim ~primitive:Pnot ~args
-  | Pnegint -> prim ~primitive:Pnegint ~args 
-  | Paddint -> prim ~primitive:Paddint ~args
-  | Psubint -> prim ~primitive:Psubint ~args
-  | Pmulint -> prim ~primitive:Pmulint ~args
-  | Pdivint -> prim ~primitive:Pdivint ~args
-  | Pmodint -> prim ~primitive:Pmodint ~args
-  | Pandint -> prim ~primitive:Pandint ~args
-  | Porint -> prim ~primitive:Porint ~args
-  | Pxorint -> prim ~primitive:Pxorint ~args
-  | Plslint -> prim ~primitive:Plslint ~args
-  | Plsrint -> prim ~primitive:Plsrint ~args
-  | Pasrint -> prim ~primitive:Pasrint ~args
-  | Pstringlength -> prim ~primitive:Pstringlength ~args 
-  | Pstringrefu -> prim ~primitive:Pstringrefu ~args 
+    else prim ~primitive:Praise ~args loc 
+  | Psequand -> prim ~primitive:Psequand ~args loc
+  | Psequor -> prim ~primitive:Psequor ~args loc
+  | Pnot -> prim ~primitive:Pnot ~args loc 
+  | Pnegint -> prim ~primitive:Pnegint ~args  loc 
+  | Paddint -> prim ~primitive:Paddint ~args loc 
+  | Psubint -> prim ~primitive:Psubint ~args loc 
+  | Pmulint -> prim ~primitive:Pmulint ~args loc 
+  | Pdivint -> prim ~primitive:Pdivint ~args loc 
+  | Pmodint -> prim ~primitive:Pmodint ~args loc 
+  | Pandint -> prim ~primitive:Pandint ~args loc 
+  | Porint -> prim ~primitive:Porint ~args loc 
+  | Pxorint -> prim ~primitive:Pxorint ~args loc 
+  | Plslint -> prim ~primitive:Plslint ~args loc 
+  | Plsrint -> prim ~primitive:Plsrint ~args loc 
+  | Pasrint -> prim ~primitive:Pasrint ~args loc 
+  | Pstringlength -> prim ~primitive:Pstringlength ~args loc 
+  | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc 
   | Pstringsetu 
   | Pstringsets -> assert false
-  | Pstringrefs -> prim ~primitive:Pstringrefs ~args
+  | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc 
 
-  | Pbyteslength -> prim ~primitive:Pbyteslength ~args
-  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args
-  | Pbytessetu -> prim ~primitive:Pbytessetu ~args 
-  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args
-  | Pbytessets -> prim ~primitive:Pbytessets ~args
-  | Pisint -> prim ~primitive:Pisint ~args
-  | Pisout -> prim ~primitive:Pisout ~args
-  | Pbittest -> prim ~primitive:Pbittest ~args
-  | Pintoffloat -> prim ~primitive:Pintoffloat ~args
-  | Pfloatofint -> prim ~primitive:Pfloatofint ~args
-  | Pnegfloat -> prim ~primitive:Pnegfloat ~args
-  | Pabsfloat -> prim ~primitive:Pabsfloat ~args
-  | Paddfloat -> prim ~primitive:Paddfloat ~args
-  | Psubfloat -> prim ~primitive:Psubfloat ~args
-  | Pmulfloat -> prim ~primitive:Pmulfloat ~args
-  | Pdivfloat -> prim ~primitive:Pdivfloat ~args
+  | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc 
+  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args loc
+  | Pbytessetu -> prim ~primitive:Pbytessetu ~args  loc 
+  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args loc 
+  | Pbytessets -> prim ~primitive:Pbytessets ~args loc 
+  | Pisint -> prim ~primitive:Pisint ~args loc 
+  | Pisout -> prim ~primitive:Pisout ~args loc 
+  | Pbittest -> prim ~primitive:Pbittest ~args loc 
+  | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
+  | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc 
+  | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc 
+  | Pabsfloat -> prim ~primitive:Pabsfloat ~args loc 
+  | Paddfloat -> prim ~primitive:Paddfloat ~args loc 
+  | Psubfloat -> prim ~primitive:Psubfloat ~args loc 
+  | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc 
+  | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc 
 
-  | Pbswap16 -> prim ~primitive:Pbswap16 ~args
-  | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args
-  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args
-  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args 
-  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args
-  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args
-  | Parraylength x -> prim ~primitive:(Parraylength x) ~args
-  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args
-  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args
-  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args
-  | Parraysets x -> prim ~primitive:(Parraysets x) ~args
-  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args
-  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args
-  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args
-  | Paddbint x -> prim ~primitive:(Paddbint x) ~args
-  | Psubbint x -> prim ~primitive:(Psubbint x) ~args
-  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args
-  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args
-  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args
-  | Pandbint x -> prim ~primitive:(Pandbint x) ~args
-  | Porbint x -> prim ~primitive:(Porbint x) ~args
-  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args
-  | Plslbint x -> prim ~primitive:(Plslbint x) ~args
-  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args
-  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args
-  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args
-  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args
-  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args
-  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args
-  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args
-  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args
-  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args
-  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args
-  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args
-  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args
-  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args
-  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args
-  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args
+  | Pbswap16 -> prim ~primitive:Pbswap16 ~args loc 
+  | Pintcomp x -> prim ~primitive:(Pintcomp x)  ~args loc 
+  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc 
+  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
+  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc 
+  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args  loc 
+  | Parraylength x -> prim ~primitive:(Parraylength x) ~args loc
+  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args loc
+  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args loc 
+  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args loc 
+  | Parraysets x -> prim ~primitive:(Parraysets x) ~args loc 
+  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args loc 
+  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args loc 
+  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args loc 
+  | Paddbint x -> prim ~primitive:(Paddbint x) ~args loc 
+  | Psubbint x -> prim ~primitive:(Psubbint x) ~args loc 
+  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args loc 
+  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args loc 
+  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args loc 
+  | Pandbint x -> prim ~primitive:(Pandbint x) ~args loc 
+  | Porbint x -> prim ~primitive:(Porbint x) ~args loc 
+  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args loc 
+  | Plslbint x -> prim ~primitive:(Plslbint x) ~args loc 
+  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args loc 
+  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args loc 
+  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args loc 
+  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args loc 
+  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args loc 
+  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args loc 
+  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args loc 
+  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args loc 
+  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args loc 
+  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args loc 
+  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args loc 
+  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args loc 
+  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args loc 
+  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args loc 
+  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args loc 
   | Pctconst x ->
     begin match x with
       | Word_size ->
         Lift.int 32 (* TODO: documentation*)        
-      | _ -> prim ~primitive:(Pctconst x) ~args         
+      | _ -> prim ~primitive:(Pctconst x) ~args loc          
     end
 
-  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args
-  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args
-  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args
-  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args
-  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args
+  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args loc 
+  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args loc 
+  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc 
+  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc 
+  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc 
 
 
 let rec convert (lam : Lambda.lambda) : t = 
@@ -726,9 +727,9 @@ let rec convert (lam : Lambda.lambda) : t =
          [
           Lprim (
             Pgetglobal { name = "CamlinternalMod" },
-            _
+            _,_
           )
-        ]
+        ],loc
       ) -> (* replace all {!CamlinternalMod} function *)
       let args = List.map convert args in
       begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
@@ -736,27 +737,27 @@ let rec convert (lam : Lambda.lambda) : t =
           begin match shape with 
             | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
               -> unit  (* see {!Translmod.init_shape}*)
-            | _ ->  prim ~primitive:Pinit_mod ~args 
+            | _ ->  prim ~primitive:Pinit_mod ~args loc 
           end
       | "update_mod", [shape ;  _obj1; _obj2] -> 
             (* here array access will have side effect .. *)
             begin match shape with 
             | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
               -> unit (* see {!Translmod.init_shape}*)
-            | _ -> prim ~primitive:Pupdate_mod ~args 
+            | _ -> prim ~primitive:Pupdate_mod ~args loc
             end
       | _ -> assert false
       end
 
     | Lprim ( Pfield (id, _),
-              [Lprim (Pgetglobal ({name  = "Pervasives"} ), _)]              
+              [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
             )
       ->
       let args = List.map convert args in
       begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
         | "^", [ l; r ] 
           ->
-          prim ~primitive:Pstringadd ~args:[l;r]
+          prim ~primitive:Pstringadd ~args:[l;r] loc 
         | _ ->  apply (convert fn) args loc  App_na
       end
     | _ -> 
@@ -772,12 +773,12 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lletrec (bindings,body)
     -> 
     Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
-  | Lprim (primitive,args) 
-    -> convert_primitive primitive args 
+  | Lprim (primitive,args, loc) 
+    -> convert_primitive loc primitive args 
     (* Lprim {primitive ; args = List.map convert args } *)
   | Lswitch (e,s) -> 
     Lswitch (convert e, convert_switch s)
-  | Lstringswitch (e, cases, default) -> 
+  | Lstringswitch (e, cases, default,_) -> 
     Lstringswitch (convert e, List.map (fun (x, b) -> x, convert b ) cases, 
                    match default with 
                    | None -> None
@@ -803,13 +804,13 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lsend (kind, a,b,ls, loc) -> 
     (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
     begin match convert b with 
-      | Lprim {primitive =  Pccall {prim_name };  args}
+      | Lprim {primitive =  Pccall {prim_name };  args; loc}
         when prim_name = Literals.js_unsafe_downgrade
         -> 
         begin match kind, ls with 
           | Public (Some name), [] -> 
             prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
-              ~args
+              ~args loc 
           | _ -> assert false 
         end
       | b ->     
@@ -819,8 +820,8 @@ let rec convert (lam : Lambda.lambda) : t =
   | Levent (e, event) -> convert e 
   | Lifused (id, e) -> 
     Lifused(id, convert e) (* TODO: remove it ASAP *)
-and convert_primitive (primitive : Lambda.primitive) args = 
-  lam_prim ~primitive ~args:(List.map convert args)
+and convert_primitive loc (primitive : Lambda.primitive) args = 
+  lam_prim ~primitive ~args:(List.map convert args) loc
 and convert_switch (s : Lambda.lambda_switch) : switch = 
   { sw_numconsts = s.sw_numconsts ; 
     sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;

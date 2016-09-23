@@ -71,14 +71,14 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam.not_ ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
+            -> Lam.not_ (Location.none) ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l] Location.none) 
           | Undefined 
             -> 
-            Lam.not_ (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
+            Lam.not_  Location.none (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l] Location.none)
           | Null_undefined
             -> 
-            Lam.not_
-              ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l]) 
+            Lam.not_ Location.none
+              ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l] Location.none) 
           | Normal ->  l1 
         in 
         Lam.if_ l1 (simpl l2) (simpl l3)
@@ -95,8 +95,8 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim {primitive; args } 
-      -> Lam.prim ~primitive ~args:(List.map simpl  args)
+    | Lprim {primitive; args; loc } 
+      -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
 
     (* complicated 
         1. inline this function

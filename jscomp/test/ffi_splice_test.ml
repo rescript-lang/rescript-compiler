@@ -43,12 +43,12 @@ external test : string array -> t = "" [@@bs.send.pipe: t ] [@@bs.splice]
 
 (* compile error *)
 (* external test2 : int -> string -> t= "" [@@bs.send.pipe: t ] [@@bs.splice] *)
-
-let f x = 
+let u = [|"x";"d" |]
+let f x  = 
   x 
   |> test  [| "a"; "b" |]
   |> test  [| "a"; "b" |]
-
+  (* |> test u *)
 let v = make [|1;2;3;4|]
 
 let u = sum v ()

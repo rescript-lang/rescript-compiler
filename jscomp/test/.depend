@@ -450,6 +450,8 @@ nested_obj_test.cmj :
 nested_obj_test.cmx :
 noassert.cmj :
 noassert.cmx :
+node_path_test.cmj : ../runtime/js.cmj
+node_path_test.cmx : ../runtime/js.cmx
 number_lexer.cmj : ../stdlib/sys.cmi ../stdlib/lexing.cmi
 number_lexer.cmx : ../stdlib/sys.cmx ../stdlib/lexing.cmx
 obj_literal_ppx.cmj : ../stdlib/array.cmi
@@ -1276,6 +1278,8 @@ nested_obj_test.cmo :
 nested_obj_test.cmj :
 noassert.cmo :
 noassert.cmj :
+node_path_test.cmo : ../runtime/js.cmo
+node_path_test.cmj : ../runtime/js.cmj
 number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi
 number_lexer.cmj : ../stdlib/sys.cmj ../stdlib/lexing.cmj
 obj_literal_ppx.cmo : ../stdlib/array.cmi

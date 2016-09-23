@@ -933,7 +933,7 @@ and
               end
           | _ -> assert false 
         end
-    | Lprim{primitive = prim; args =  args_lambda} -> 
+    | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = False} x 
@@ -944,7 +944,7 @@ and
       in
       let args_code  = List.concat args_block in
       let exp  =  (* TODO: all can be done in [compile_primitive] *)
-        Lam_compile_primitive.translate cxt prim args_expr in
+        Lam_compile_primitive.translate loc cxt  prim args_expr in
       Js_output.handle_block_return st should_return lam args_code exp  
 
 

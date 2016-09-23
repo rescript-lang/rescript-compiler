@@ -140,7 +140,7 @@ let deep_flatten
                (Lam.let_ Alias id 
                   (Lam.prim 
                      ~primitive:(Pccall p)
-                     ~args: [Lam.var id'])
+                     ~args: [Lam.var id'] Location.none (* FIXME*))
                   body)
               )
     | Llet (str,id,arg,body) -> 
@@ -300,10 +300,10 @@ let deep_flatten
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim {primitive ; args }
+    | Lprim {primitive ; args; loc }
       -> 
       let args = List.map aux args in
-      Lam.prim ~primitive ~args
+      Lam.prim ~primitive ~args loc
 
     | Lfunction{arity; kind; params;  body = l} -> 
       Lam.function_ ~arity ~kind ~params  ~body:(aux  l)

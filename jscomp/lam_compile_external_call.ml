@@ -140,7 +140,7 @@ let assemble_args_obj labels args =
    Invariant : Array encoding
 *)
 
-let ocaml_to_js ~js_splice:(js_splice : bool) 
+let ocaml_to_js ~js_splice:(js_splice : bool) call_loc ffi
     last ({ Ast_external_attributes.arg_label;  arg_type = ty } as arg_ty)
     (arg : J.expression) 
   = 
@@ -151,16 +151,17 @@ let ocaml_to_js ~js_splice:(js_splice : bool)
         | {expression_desc = Array (ls,_mutable_flag) } -> 
           ls, [] 
         | _ -> 
-          assert false  
+          Location.raise_errorf ~loc:call_loc
+            "function call with %s  is a primitive with [@@bs.splice], it expects its arguments to be a syntactic array in the call site" (Ast_external_attributes.name_of_ffi ffi)
       end
     | _ -> assert  false
   else 
     ocaml_to_js_eff arg_ty arg 
 
-let assemble_args_splice js_splice arg_types args : E.t list * E.t option = 
+let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
   let args, eff = 
     Ext_list.fold_right2_last (fun last arg_ty arg (accs, effs)  -> 
-      let (acc,eff) = ocaml_to_js ~js_splice last arg_ty arg  in acc @ accs, eff @ effs
+      let (acc,eff) = ocaml_to_js call_loc ffi  ~js_splice last arg_ty arg  in acc @ accs, eff @ effs
       ) arg_types args ([], []) in
   args,
   begin  match eff with
@@ -169,7 +170,7 @@ let assemble_args_splice js_splice arg_types args : E.t list * E.t option =
   end
 
 
-let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
+let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
     (cxt  : Lam_compile_defs.cxt)
     arg_types result_type
     (args : J.expression list) = 
@@ -185,7 +186,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
           E.dot (E.var id) fn
         | None ->  E.js_var fn
       in
-      let args, eff  = assemble_args_splice js_splice arg_types args in 
+      let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
       add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 
       | Unit -> 
@@ -202,7 +203,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         let (id, name) = handle_external  module_name  in
         E.external_var_dot id name None           
       in           
-      let args, eff = assemble_args_splice splice arg_types args in 
+      let args, eff = assemble_args_splice   call_loc ffi splice arg_types args in 
         (* TODO: fix in rest calling convention *)          
       add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 
@@ -229,7 +230,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       end            
 
     | Js_new { external_module_name = module_name; 
-               txt = fn;
+               name = fn;
                splice 
              } -> 
       (* This has some side effect, it will 
@@ -240,7 +241,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
          TODO: we should propagate this property 
          as much as we can(in alias table)
       *)
-      let args, eff = assemble_args_splice splice arg_types args in
+      let args, eff = assemble_args_splice  call_loc  ffi splice arg_types args in
       let fn =  
         match handle_external_opt module_name with 
         | Some (id,name) ->  
@@ -265,7 +266,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
 
 
-    | Js_global {txt = name; external_module_name} -> 
+    | Js_global {name; external_module_name} -> 
 
       (* TODO #11
          1. check args -- error checking 
@@ -288,7 +289,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | self :: args -> 
           let [@warning"-8"] ( self_type::arg_types )
             = arg_types in
-          let args, eff = assemble_args_splice js_splice arg_types args in
+          let args, eff = assemble_args_splice  call_loc ffi  js_splice arg_types args in
           add_eff eff @@ 
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
         | _ -> 
@@ -299,7 +300,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       (* assert (js_splice = false) ;  *)
       let self, args = Ext_list.exclude_tail args in
       let self_type, arg_types = Ext_list.exclude_tail arg_types in
-      let args, eff = assemble_args_splice js_splice arg_types args in
+      let args, eff = assemble_args_splice call_loc ffi  js_splice arg_types args in
       add_eff eff @@
       E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 
@@ -333,7 +334,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     
 
 
-let translate cxt 
+let translate loc cxt 
     ({prim_name ;  prim_native_name} 
      : Primitive.description) args  = 
   if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
@@ -342,7 +343,7 @@ let translate cxt
       | Normal -> 
         Lam_dispatch_primitive.translate prim_name args 
       | Bs (arg_types, result_type, ffi) -> 
-        translate_ffi  ffi prim_name cxt arg_types result_type args 
+        translate_ffi loc  ffi prim_name cxt arg_types result_type args 
     end
   else 
     begin 

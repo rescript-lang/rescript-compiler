@@ -216,6 +216,30 @@ external set_name : textarea -> string -> unit = "name" [@@bs.set]
 external get_name : textarea -> string = "name" [@@bs.get]
 --------
 
+### Splice calling convention: bs.splice
+
+In JS, it is quite common to have a function take variadic arguments,
+BuckleScript support typing homogeneous variadic arguments. For example,
+
+[source,ocaml]
+--------------
+external join : string array -> string = "" [@@bs.module "path"]
+let v = join [| "a" "b"|]
+--------------
+
+[source,js]
+.Output
+------
+var Path = require("path")
+var v = Path.join("a","b")
+------
+
+[NOTE]
+======
+For the external call, if the `array` arguments is not a compile time array,
+the compiler will emit an error message
+======
+
 
 ### Special types on external declarations: bs.string, bs.int, bs.ignore
 

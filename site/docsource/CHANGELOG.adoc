@@ -10,7 +10,7 @@
 	Note that all attributes will still be qualified
 
 - Suport bs.splice in bs.new {issues}793[#793]
- 
+- Complete `bs.splice ` support and documentation {issues}798[#798]
 
 == 1.03
 
