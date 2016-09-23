@@ -167,6 +167,7 @@ and apply_info = private
 and prim_info = private
   { primitive : primitive ; 
     args : t list ; 
+    loc : Location.t 
   }
 and function_info = private
   { arity : int ; 
@@ -234,7 +235,7 @@ val unit : t
 
 val sequor : binop
 val sequand : binop
-val not_ : unop
+val not_ : Location.t ->  unop
 val seq : binop
 val while_ : binop
 val event : t -> Lambda.lambda_event -> t  
@@ -247,7 +248,7 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : primitive:primitive -> args:t list ->  t
+val prim : primitive:primitive -> args:t list -> Location.t  ->  t
 
 val staticcatch : 
   t -> int * ident list -> t -> t

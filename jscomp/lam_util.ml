@@ -96,8 +96,8 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
       Lam.letrec (List.map subst_decl decl) (subst body)
-    | Lprim { primitive ; args; _} -> 
-      Lam.prim ~primitive ~args:(List.map subst args)
+    | Lprim { primitive ; args; loc} -> 
+      Lam.prim ~primitive ~args:(List.map subst args) loc
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -147,10 +147,10 @@ let refine_let
   match (kind : Lambda.let_kind option), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
-  | _, _, Lprim {primitive ; args =  [Lvar w];  _} when Ident.same w param 
+  | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
                                  &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
-    ->  Lam.prim ~primitive ~args:[arg] 
+    ->  Lam.prim ~primitive ~args:[arg]  loc 
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -282,7 +282,7 @@ let get lam v i tbl : Lam.t =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
-      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] ]
+      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 

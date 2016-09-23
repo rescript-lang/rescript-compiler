@@ -29,26 +29,26 @@ type external_module_name =
   }
 
 type js_call = { 
-  splice : bool ;
   name : string;
   external_module_name : external_module_name option;
+  splice : bool 
 }
 type pipe = bool 
 type js_send = { 
-  splice : bool ; 
   name : string ;
+  splice : bool ; 
   pipe : pipe   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_global_val = {
-  txt : string ; 
+  name : string ; 
   external_module_name : external_module_name option
   }
 
 type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
   splice : bool ;
-  txt : string ; 
-  external_module_name : external_module_name option
 }
 
 type arg_type = Ast_core_type.arg_type
@@ -109,3 +109,5 @@ val is_bs_external_prefix : string -> bool
 
 
 val pval_prim_of_labels : string Asttypes.loc list -> string list
+
+val name_of_ffi : ffi -> string

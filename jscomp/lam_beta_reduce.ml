@@ -115,9 +115,9 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let l3 = aux l3 in
       Lam.for_ ident (aux  l1)  l2 dir  l3
     | Lconst _ -> lam
-    | Lprim {primitive; args } ->
+    | Lprim {primitive; args ; loc} ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam.prim ~primitive ~args:(List.map aux  args)
+      Lam.prim ~primitive ~args:(List.map aux  args) loc
     | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 

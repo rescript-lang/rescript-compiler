@@ -31,26 +31,26 @@ type external_module_name =
 
 type pipe = bool 
 type js_call = { 
-  splice : bool ;
   name : string;
   external_module_name : external_module_name option;
+  splice : bool 
 }
 
 type js_send = { 
-  splice : bool ; 
   name : string ;
-  pipe : bool   
+  splice : bool ; 
+  pipe : pipe   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_global_val = {
-  txt : string ; 
+  name : string ; 
   external_module_name : external_module_name option
   }
 
 type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
   splice : bool ;
-  txt : string ; 
-  external_module_name : external_module_name option
 }
 
 type js_module_as_fn = 
@@ -82,6 +82,26 @@ type ffi =
   | Js_get_index
   | Js_set_index
 
+let name_of_ffi ffi =
+  match ffi with 
+  | Js_get_index -> "[@@bs.get_index]"
+  | Js_set_index -> "[@@bs.set_index]"
+  | Js_get s -> Printf.sprintf "[@@bs.get %S]" s 
+  | Js_set s -> Printf.sprintf "[@@bs.set %S]" s 
+  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
+  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
+  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
+  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name                    
+  | Js_module_as_class v
+    -> Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_module_as_var v
+    -> 
+      Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_global v 
+    -> 
+      Printf.sprintf "[@@bs.val] %S " v.name                    
+  | Obj_create _ -> 
+    Printf.sprintf "[@@bs.obj]"
 type t  = 
   | Bs of arg_kind list  * Ast_core_type.arg_type * ffi
   | Normal 
@@ -229,7 +249,7 @@ let check_external_module_name_opt ?loc x =
 
 let check_ffi ?loc ffi = 
   match ffi with 
-  | Js_global {txt} -> valid_global_name ?loc  txt 
+  | Js_global {name} -> valid_global_name ?loc  name
   | Js_send {name } 
   | Js_set  name
   | Js_get name
@@ -242,7 +262,7 @@ let check_ffi ?loc ffi =
   | Js_module_as_fn {external_module_name; _}
   | Js_module_as_class external_module_name             
     -> check_external_module_name external_module_name
-  | Js_new {external_module_name ; txt = name}
+  | Js_new {external_module_name ;  name}
   | Js_call {external_module_name ;  name ; _}
     -> 
     check_external_module_name_opt ?loc external_module_name ;
@@ -605,7 +625,7 @@ let handle_attributes
 
    } 
    -> 
-   Js_global {txt = name; external_module_name}
+   Js_global { name; external_module_name}
  | {val_name = #bundle_source }
    -> Location.raise_errorf ~loc "conflict attributes found"
  | {splice ;
@@ -626,7 +646,7 @@ let handle_attributes
    ->
    let name = string_of_bundle_source prim_name_or_pval_prim in
    if arg_type_specs_length  = 0 then
-     Js_global {txt = name; external_module_name}
+     Js_global { name; external_module_name}
    else  Js_call {splice; name; external_module_name}                     
  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
     splice;
@@ -683,7 +703,7 @@ let handle_attributes
     get_name = `Nm_na ;
     splice 
    } 
-   -> Js_new {txt =name; external_module_name; splice}
+   -> Js_new {name; external_module_name; splice}
  | {new_name = #bundle_source }
    -> Location.raise_errorf ~loc "conflict attributes found"
 

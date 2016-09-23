@@ -4129,26 +4129,26 @@ type external_module_name =
   }
 
 type js_call = { 
-  splice : bool ;
   name : string;
   external_module_name : external_module_name option;
+  splice : bool 
 }
 type pipe = bool 
 type js_send = { 
-  splice : bool ; 
   name : string ;
+  splice : bool ; 
   pipe : pipe   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_global_val = {
-  txt : string ; 
+  name : string ; 
   external_module_name : external_module_name option
   }
 
 type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
   splice : bool ;
-  txt : string ; 
-  external_module_name : external_module_name option
 }
 
 type arg_type = Ast_core_type.arg_type
@@ -4210,6 +4210,8 @@ val is_bs_external_prefix : string -> bool
 
 val pval_prim_of_labels : string Asttypes.loc list -> string list
 
+val name_of_ffi : ffi -> string
+
 end = struct
 #1 "ast_external_attributes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4245,26 +4247,26 @@ type external_module_name =
 
 type pipe = bool 
 type js_call = { 
-  splice : bool ;
   name : string;
   external_module_name : external_module_name option;
+  splice : bool 
 }
 
 type js_send = { 
-  splice : bool ; 
   name : string ;
-  pipe : bool   
+  splice : bool ; 
+  pipe : pipe   
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
 type js_global_val = {
-  txt : string ; 
+  name : string ; 
   external_module_name : external_module_name option
   }
 
 type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
   splice : bool ;
-  txt : string ; 
-  external_module_name : external_module_name option
 }
 
 type js_module_as_fn = 
@@ -4296,6 +4298,26 @@ type ffi =
   | Js_get_index
   | Js_set_index
 
+let name_of_ffi ffi =
+  match ffi with 
+  | Js_get_index -> "[@@bs.get_index]"
+  | Js_set_index -> "[@@bs.set_index]"
+  | Js_get s -> Printf.sprintf "[@@bs.get %S]" s 
+  | Js_set s -> Printf.sprintf "[@@bs.set %S]" s 
+  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
+  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
+  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
+  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name                    
+  | Js_module_as_class v
+    -> Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_module_as_var v
+    -> 
+      Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_global v 
+    -> 
+      Printf.sprintf "[@@bs.val] %S " v.name                    
+  | Obj_create _ -> 
+    Printf.sprintf "[@@bs.obj]"
 type t  = 
   | Bs of arg_kind list  * Ast_core_type.arg_type * ffi
   | Normal 
@@ -4443,7 +4465,7 @@ let check_external_module_name_opt ?loc x =
 
 let check_ffi ?loc ffi = 
   match ffi with 
-  | Js_global {txt} -> valid_global_name ?loc  txt 
+  | Js_global {name} -> valid_global_name ?loc  name
   | Js_send {name } 
   | Js_set  name
   | Js_get name
@@ -4456,7 +4478,7 @@ let check_ffi ?loc ffi =
   | Js_module_as_fn {external_module_name; _}
   | Js_module_as_class external_module_name             
     -> check_external_module_name external_module_name
-  | Js_new {external_module_name ; txt = name}
+  | Js_new {external_module_name ;  name}
   | Js_call {external_module_name ;  name ; _}
     -> 
     check_external_module_name_opt ?loc external_module_name ;
@@ -4819,7 +4841,7 @@ let handle_attributes
 
    } 
    -> 
-   Js_global {txt = name; external_module_name}
+   Js_global { name; external_module_name}
  | {val_name = #bundle_source }
    -> Location.raise_errorf ~loc "conflict attributes found"
  | {splice ;
@@ -4840,7 +4862,7 @@ let handle_attributes
    ->
    let name = string_of_bundle_source prim_name_or_pval_prim in
    if arg_type_specs_length  = 0 then
-     Js_global {txt = name; external_module_name}
+     Js_global { name; external_module_name}
    else  Js_call {splice; name; external_module_name}                     
  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
     splice;
@@ -4897,7 +4919,7 @@ let handle_attributes
     get_name = `Nm_na ;
     splice 
    } 
-   -> Js_new {txt =name; external_module_name; splice}
+   -> Js_new {name; external_module_name; splice}
  | {new_name = #bundle_source }
    -> Location.raise_errorf ~loc "conflict attributes found"
 
@@ -8041,6 +8063,7 @@ and apply_info = private
 and prim_info = private
   { primitive : primitive ; 
     args : t list ; 
+    loc : Location.t 
   }
 and function_info = private
   { arity : int ; 
@@ -8108,7 +8131,7 @@ val unit : t
 
 val sequor : binop
 val sequand : binop
-val not_ : unop
+val not_ : Location.t ->  unop
 val seq : binop
 val while_ : binop
 val event : t -> Lambda.lambda_event -> t  
@@ -8121,7 +8144,7 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : primitive:primitive -> args:t list ->  t
+val prim : primitive:primitive -> args:t list -> Location.t  ->  t
 
 val staticcatch : 
   t -> int * ident list -> t -> t
@@ -8303,7 +8326,8 @@ type switch =
     sw_failaction : t option}
 and prim_info = 
   { primitive : primitive ; 
-    args : t list ; 
+    args : t list ;
+    loc : Location.t;
   }
 and apply_status =
   | App_na
@@ -8529,8 +8553,8 @@ module Lift = struct
     Lconst (Const_base (Const_char b))    
 end
 
-let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t = 
-  let default () : t = Lprim { primitive = prim ;args =  ll } in 
+let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t = 
+  let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
   match ll with 
   | [Lconst a] -> 
     begin match prim, a  with 
@@ -8685,20 +8709,20 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t =
   | _ -> default ()
 
 
-let not_ x : t = 
-  prim Pnot [x] 
+let not_ loc x  : t = 
+  prim Pnot [x] loc
 
-let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t = 
+let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t = 
   match p with 
   | Pint_as_pointer 
   | Pidentity ->  
     begin match args with [x] -> x | _ -> assert false end
   | Pbytes_to_string 
-    -> prim ~primitive:Pbytes_to_string ~args
-  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args
+    -> prim ~primitive:Pbytes_to_string ~args loc
+  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
   | Pignore -> (* Pignore means return unit, it is not an nop *)
     begin match args with [x] -> seq x unit | _ -> assert false end
-  | Prevapply loc 
+  | Prevapply 
     -> 
     begin match args with 
     | [x ; Lapply{fn; args}]
@@ -8707,7 +8731,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
     | _ -> assert false 
     end
 
-  | Pdirapply loc ->
+  | Pdirapply ->
     begin match args with 
     | [Lapply{fn ; args }; x ] 
       -> 
@@ -8718,42 +8742,42 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
   | Ploc loc -> assert false (* already compiled away here*)
   | Pgetglobal id ->
     if Ident.is_predef_exn id then
-      prim ~primitive:(Pglobal_exception id) ~args      
+      prim ~primitive:(Pglobal_exception id) ~args loc       
     else       
-      prim ~primitive:(Pgetglobal id) ~args
-  | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args
+      prim ~primitive:(Pgetglobal id) ~args loc
+  | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args loc
   | Pmakeblock (tag,info, mutable_flag) 
-    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args
+    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
   | Pfield (id,info) 
-    -> prim ~primitive:(Pfield (id,info)) ~args
+    -> prim ~primitive:(Pfield (id,info)) ~args loc
 
   | Psetfield (id,b,info)
-    -> prim ~primitive:(Psetfield (id,b,info)) ~args
+    -> prim ~primitive:(Psetfield (id,b,info)) ~args loc
 
   | Pfloatfield (id,info)
-    -> prim ~primitive:(Pfloatfield (id,info)) ~args
+    -> prim ~primitive:(Pfloatfield (id,info)) ~args loc
   | Psetfloatfield (id,info) 
-    -> prim ~primitive:(Psetfloatfield (id,info)) ~args
+    -> prim ~primitive:(Psetfloatfield (id,info)) ~args loc
   | Pduprecord (repr,i) 
-    -> prim ~primitive:(Pduprecord(repr,i)) ~args
-  | Plazyforce -> prim ~primitive:Plazyforce ~args
+    -> prim ~primitive:(Pduprecord(repr,i)) ~args loc
+  | Plazyforce -> prim ~primitive:Plazyforce ~args loc
 
   | Pccall a -> 
     let prim_name = a.prim_name in
     if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-      prim ~primitive:(Pccall a ) ~args else 
+      prim ~primitive:(Pccall a ) ~args loc else 
     if prim_name =  Literals.js_debugger then 
-      prim ~primitive:Pdebugger ~args else 
+      prim ~primitive:Pdebugger ~args loc else 
     if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args else 
+      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
     if prim_name = Literals.js_fn_mk then 
-      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args else                
+      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
     if prim_name = Literals.js_fn_method then 
-      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args else
+      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
     if prim_name = Literals.js_fn_runmethod then 
-      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args 
+      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
     else
-      prim ~primitive:(Pccall a) ~args
+      prim ~primitive:(Pccall a) ~args loc
   | Praise _ ->
     if Js_config.get_no_any_assert () then 
       begin match args with 
@@ -8764,97 +8788,97 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args  : t =
                   ]
                  } ] when Ident.global id
           -> assert_false_unit
-        | _ -> prim ~primitive:Praise ~args
+        | _ -> prim ~primitive:Praise ~args loc 
       end
-    else prim ~primitive:Praise ~args
-  | Psequand -> prim ~primitive:Psequand ~args 
-  | Psequor -> prim ~primitive:Psequor ~args
-  | Pnot -> prim ~primitive:Pnot ~args
-  | Pnegint -> prim ~primitive:Pnegint ~args 
-  | Paddint -> prim ~primitive:Paddint ~args
-  | Psubint -> prim ~primitive:Psubint ~args
-  | Pmulint -> prim ~primitive:Pmulint ~args
-  | Pdivint -> prim ~primitive:Pdivint ~args
-  | Pmodint -> prim ~primitive:Pmodint ~args
-  | Pandint -> prim ~primitive:Pandint ~args
-  | Porint -> prim ~primitive:Porint ~args
-  | Pxorint -> prim ~primitive:Pxorint ~args
-  | Plslint -> prim ~primitive:Plslint ~args
-  | Plsrint -> prim ~primitive:Plsrint ~args
-  | Pasrint -> prim ~primitive:Pasrint ~args
-  | Pstringlength -> prim ~primitive:Pstringlength ~args 
-  | Pstringrefu -> prim ~primitive:Pstringrefu ~args 
+    else prim ~primitive:Praise ~args loc 
+  | Psequand -> prim ~primitive:Psequand ~args loc
+  | Psequor -> prim ~primitive:Psequor ~args loc
+  | Pnot -> prim ~primitive:Pnot ~args loc 
+  | Pnegint -> prim ~primitive:Pnegint ~args  loc 
+  | Paddint -> prim ~primitive:Paddint ~args loc 
+  | Psubint -> prim ~primitive:Psubint ~args loc 
+  | Pmulint -> prim ~primitive:Pmulint ~args loc 
+  | Pdivint -> prim ~primitive:Pdivint ~args loc 
+  | Pmodint -> prim ~primitive:Pmodint ~args loc 
+  | Pandint -> prim ~primitive:Pandint ~args loc 
+  | Porint -> prim ~primitive:Porint ~args loc 
+  | Pxorint -> prim ~primitive:Pxorint ~args loc 
+  | Plslint -> prim ~primitive:Plslint ~args loc 
+  | Plsrint -> prim ~primitive:Plsrint ~args loc 
+  | Pasrint -> prim ~primitive:Pasrint ~args loc 
+  | Pstringlength -> prim ~primitive:Pstringlength ~args loc 
+  | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc 
   | Pstringsetu 
   | Pstringsets -> assert false
-  | Pstringrefs -> prim ~primitive:Pstringrefs ~args
+  | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc 
 
-  | Pbyteslength -> prim ~primitive:Pbyteslength ~args
-  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args
-  | Pbytessetu -> prim ~primitive:Pbytessetu ~args 
-  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args
-  | Pbytessets -> prim ~primitive:Pbytessets ~args
-  | Pisint -> prim ~primitive:Pisint ~args
-  | Pisout -> prim ~primitive:Pisout ~args
-  | Pbittest -> prim ~primitive:Pbittest ~args
-  | Pintoffloat -> prim ~primitive:Pintoffloat ~args
-  | Pfloatofint -> prim ~primitive:Pfloatofint ~args
-  | Pnegfloat -> prim ~primitive:Pnegfloat ~args
-  | Pabsfloat -> prim ~primitive:Pabsfloat ~args
-  | Paddfloat -> prim ~primitive:Paddfloat ~args
-  | Psubfloat -> prim ~primitive:Psubfloat ~args
-  | Pmulfloat -> prim ~primitive:Pmulfloat ~args
-  | Pdivfloat -> prim ~primitive:Pdivfloat ~args
+  | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc 
+  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args loc
+  | Pbytessetu -> prim ~primitive:Pbytessetu ~args  loc 
+  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args loc 
+  | Pbytessets -> prim ~primitive:Pbytessets ~args loc 
+  | Pisint -> prim ~primitive:Pisint ~args loc 
+  | Pisout -> prim ~primitive:Pisout ~args loc 
+  | Pbittest -> prim ~primitive:Pbittest ~args loc 
+  | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
+  | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc 
+  | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc 
+  | Pabsfloat -> prim ~primitive:Pabsfloat ~args loc 
+  | Paddfloat -> prim ~primitive:Paddfloat ~args loc 
+  | Psubfloat -> prim ~primitive:Psubfloat ~args loc 
+  | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc 
+  | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc 
 
-  | Pbswap16 -> prim ~primitive:Pbswap16 ~args
-  | Pintcomp x -> prim ~primitive:(Pintcomp x) ~args
-  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args
-  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args 
-  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args
-  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args
-  | Parraylength x -> prim ~primitive:(Parraylength x) ~args
-  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args
-  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args
-  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args
-  | Parraysets x -> prim ~primitive:(Parraysets x) ~args
-  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args
-  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args
-  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args
-  | Paddbint x -> prim ~primitive:(Paddbint x) ~args
-  | Psubbint x -> prim ~primitive:(Psubbint x) ~args
-  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args
-  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args
-  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args
-  | Pandbint x -> prim ~primitive:(Pandbint x) ~args
-  | Porbint x -> prim ~primitive:(Porbint x) ~args
-  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args
-  | Plslbint x -> prim ~primitive:(Plslbint x) ~args
-  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args
-  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args
-  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args
-  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args
-  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args
-  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args
-  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args
-  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args
-  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args
-  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args
-  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args
-  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args
-  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args
-  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args
-  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args
+  | Pbswap16 -> prim ~primitive:Pbswap16 ~args loc 
+  | Pintcomp x -> prim ~primitive:(Pintcomp x)  ~args loc 
+  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc 
+  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
+  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc 
+  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args  loc 
+  | Parraylength x -> prim ~primitive:(Parraylength x) ~args loc
+  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args loc
+  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args loc 
+  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args loc 
+  | Parraysets x -> prim ~primitive:(Parraysets x) ~args loc 
+  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args loc 
+  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args loc 
+  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args loc 
+  | Paddbint x -> prim ~primitive:(Paddbint x) ~args loc 
+  | Psubbint x -> prim ~primitive:(Psubbint x) ~args loc 
+  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args loc 
+  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args loc 
+  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args loc 
+  | Pandbint x -> prim ~primitive:(Pandbint x) ~args loc 
+  | Porbint x -> prim ~primitive:(Porbint x) ~args loc 
+  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args loc 
+  | Plslbint x -> prim ~primitive:(Plslbint x) ~args loc 
+  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args loc 
+  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args loc 
+  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args loc 
+  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args loc 
+  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args loc 
+  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args loc 
+  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args loc 
+  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args loc 
+  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args loc 
+  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args loc 
+  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args loc 
+  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args loc 
+  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args loc 
+  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args loc 
+  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args loc 
   | Pctconst x ->
     begin match x with
       | Word_size ->
         Lift.int 32 (* TODO: documentation*)        
-      | _ -> prim ~primitive:(Pctconst x) ~args         
+      | _ -> prim ~primitive:(Pctconst x) ~args loc          
     end
 
-  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args
-  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args
-  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args
-  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args
-  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args
+  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args loc 
+  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args loc 
+  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc 
+  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc 
+  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc 
 
 
 let rec convert (lam : Lambda.lambda) : t = 
@@ -8870,9 +8894,9 @@ let rec convert (lam : Lambda.lambda) : t =
          [
           Lprim (
             Pgetglobal { name = "CamlinternalMod" },
-            _
+            _,_
           )
-        ]
+        ],loc
       ) -> (* replace all {!CamlinternalMod} function *)
       let args = List.map convert args in
       begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
@@ -8880,27 +8904,27 @@ let rec convert (lam : Lambda.lambda) : t =
           begin match shape with 
             | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
               -> unit  (* see {!Translmod.init_shape}*)
-            | _ ->  prim ~primitive:Pinit_mod ~args 
+            | _ ->  prim ~primitive:Pinit_mod ~args loc 
           end
       | "update_mod", [shape ;  _obj1; _obj2] -> 
             (* here array access will have side effect .. *)
             begin match shape with 
             | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
               -> unit (* see {!Translmod.init_shape}*)
-            | _ -> prim ~primitive:Pupdate_mod ~args 
+            | _ -> prim ~primitive:Pupdate_mod ~args loc
             end
       | _ -> assert false
       end
 
     | Lprim ( Pfield (id, _),
-              [Lprim (Pgetglobal ({name  = "Pervasives"} ), _)]              
+              [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
             )
       ->
       let args = List.map convert args in
       begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
         | "^", [ l; r ] 
           ->
-          prim ~primitive:Pstringadd ~args:[l;r]
+          prim ~primitive:Pstringadd ~args:[l;r] loc 
         | _ ->  apply (convert fn) args loc  App_na
       end
     | _ -> 
@@ -8916,12 +8940,12 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lletrec (bindings,body)
     -> 
     Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
-  | Lprim (primitive,args) 
-    -> convert_primitive primitive args 
+  | Lprim (primitive,args, loc) 
+    -> convert_primitive loc primitive args 
     (* Lprim {primitive ; args = List.map convert args } *)
   | Lswitch (e,s) -> 
     Lswitch (convert e, convert_switch s)
-  | Lstringswitch (e, cases, default) -> 
+  | Lstringswitch (e, cases, default,_) -> 
     Lstringswitch (convert e, List.map (fun (x, b) -> x, convert b ) cases, 
                    match default with 
                    | None -> None
@@ -8947,13 +8971,13 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lsend (kind, a,b,ls, loc) -> 
     (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
     begin match convert b with 
-      | Lprim {primitive =  Pccall {prim_name };  args}
+      | Lprim {primitive =  Pccall {prim_name };  args; loc}
         when prim_name = Literals.js_unsafe_downgrade
         -> 
         begin match kind, ls with 
           | Public (Some name), [] -> 
             prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
-              ~args
+              ~args loc 
           | _ -> assert false 
         end
       | b ->     
@@ -8963,8 +8987,8 @@ let rec convert (lam : Lambda.lambda) : t =
   | Levent (e, event) -> convert e 
   | Lifused (id, e) -> 
     Lifused(id, convert e) (* TODO: remove it ASAP *)
-and convert_primitive (primitive : Lambda.primitive) args = 
-  lam_prim ~primitive ~args:(List.map convert args)
+and convert_primitive loc (primitive : Lambda.primitive) args = 
+  lam_prim ~primitive ~args:(List.map convert args) loc
 and convert_switch (s : Lambda.lambda_switch) : switch = 
   { sw_numconsts = s.sw_numconsts ; 
     sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;
@@ -17389,8 +17413,8 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
       Lam.letrec (List.map subst_decl decl) (subst body)
-    | Lprim { primitive ; args; _} -> 
-      Lam.prim ~primitive ~args:(List.map subst args)
+    | Lprim { primitive ; args; loc} -> 
+      Lam.prim ~primitive ~args:(List.map subst args) loc
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -17440,10 +17464,10 @@ let refine_let
   match (kind : Lambda.let_kind option), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
-  | _, _, Lprim {primitive ; args =  [Lvar w];  _} when Ident.same w param 
+  | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
                                  &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
-    ->  Lam.prim ~primitive ~args:[arg] 
+    ->  Lam.prim ~primitive ~args:[arg]  loc 
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -17575,7 +17599,7 @@ let get lam v i tbl : Lam.t =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
-      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] ]
+      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
@@ -23749,7 +23773,7 @@ let simple_beta_reduce params body args =
     | _ :: _ -> raise E.Not_simple_apply 
   in 
   match (body : Lam.t) with 
-  | Lprim { primitive ; args =  args' ; _}  (* There is no lambda in primitive *)
+  | Lprim { primitive ; args =  args' ; loc}  (* There is no lambda in primitive *)
     -> (* catch a special case of primitives *)
     (* Note in a very special case we can avoid any allocation
        {[
@@ -23768,7 +23792,7 @@ let simple_beta_reduce params body args =
         Hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
-            else code) param_hash (Lam.prim ~primitive ~args) in 
+            else code) param_hash (Lam.prim ~primitive ~args loc) in 
       Hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
@@ -23980,8 +24004,8 @@ let query_lambda id env =
                          ~args:[
                            Lam.prim 
                              ~primitive:(Pgetglobal id)
-                             ~args:[]])
-                     sigs))
+                             ~args:[] Location.none (* FIXME*)] Location.none)
+                     sigs) Location.none (* FIXME*))
 
 
 (* Given an module name and position, find its corresponding name  *)  
@@ -24218,9 +24242,9 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let l3 = aux l3 in
       Lam.for_ ident (aux  l1)  l2 dir  l3
     | Lconst _ -> lam
-    | Lprim {primitive; args } ->
+    | Lprim {primitive; args ; loc} ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam.prim ~primitive ~args:(List.map aux  args)
+      Lam.prim ~primitive ~args:(List.map aux  args) loc
     | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 
@@ -26807,7 +26831,8 @@ module Lam_compile_external_call : sig
     examples: "bs.splice"
  *)
 
-val translate : 
+val translate :
+  Location.t ->
   Lam_compile_defs.cxt -> 
   Primitive.description -> 
   J.expression list -> 
@@ -26957,7 +26982,7 @@ let assemble_args_obj labels args =
    Invariant : Array encoding
 *)
 
-let ocaml_to_js ~js_splice:(js_splice : bool) 
+let ocaml_to_js ~js_splice:(js_splice : bool) call_loc ffi
     last ({ Ast_external_attributes.arg_label;  arg_type = ty } as arg_ty)
     (arg : J.expression) 
   = 
@@ -26968,16 +26993,17 @@ let ocaml_to_js ~js_splice:(js_splice : bool)
         | {expression_desc = Array (ls,_mutable_flag) } -> 
           ls, [] 
         | _ -> 
-          assert false  
+          Location.raise_errorf ~loc:call_loc
+            "function call with %s  is a primitive with [@@bs.splice], it expects its arguments to be a syntactic array in the call site" (Ast_external_attributes.name_of_ffi ffi)
       end
     | _ -> assert  false
   else 
     ocaml_to_js_eff arg_ty arg 
 
-let assemble_args_splice js_splice arg_types args : E.t list * E.t option = 
+let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
   let args, eff = 
     Ext_list.fold_right2_last (fun last arg_ty arg (accs, effs)  -> 
-      let (acc,eff) = ocaml_to_js ~js_splice last arg_ty arg  in acc @ accs, eff @ effs
+      let (acc,eff) = ocaml_to_js call_loc ffi  ~js_splice last arg_ty arg  in acc @ accs, eff @ effs
       ) arg_types args ([], []) in
   args,
   begin  match eff with
@@ -26986,7 +27012,7 @@ let assemble_args_splice js_splice arg_types args : E.t list * E.t option =
   end
 
 
-let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
+let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
     (cxt  : Lam_compile_defs.cxt)
     arg_types result_type
     (args : J.expression list) = 
@@ -27002,7 +27028,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
           E.dot (E.var id) fn
         | None ->  E.js_var fn
       in
-      let args, eff  = assemble_args_splice js_splice arg_types args in 
+      let args, eff  = assemble_args_splice   call_loc ffi js_splice arg_types args in 
       add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 
       | Unit -> 
@@ -27019,7 +27045,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         let (id, name) = handle_external  module_name  in
         E.external_var_dot id name None           
       in           
-      let args, eff = assemble_args_splice splice arg_types args in 
+      let args, eff = assemble_args_splice   call_loc ffi splice arg_types args in 
         (* TODO: fix in rest calling convention *)          
       add_eff eff 
       begin match (result_type : Ast_core_type.arg_type) with 
@@ -27046,7 +27072,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       end            
 
     | Js_new { external_module_name = module_name; 
-               txt = fn;
+               name = fn;
                splice 
              } -> 
       (* This has some side effect, it will 
@@ -27057,7 +27083,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
          TODO: we should propagate this property 
          as much as we can(in alias table)
       *)
-      let args, eff = assemble_args_splice splice arg_types args in
+      let args, eff = assemble_args_splice  call_loc  ffi splice arg_types args in
       let fn =  
         match handle_external_opt module_name with 
         | Some (id,name) ->  
@@ -27082,7 +27108,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
 
 
 
-    | Js_global {txt = name; external_module_name} -> 
+    | Js_global {name; external_module_name} -> 
 
       (* TODO #11
          1. check args -- error checking 
@@ -27105,7 +27131,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
         | self :: args -> 
           let [@warning"-8"] ( self_type::arg_types )
             = arg_types in
-          let args, eff = assemble_args_splice js_splice arg_types args in
+          let args, eff = assemble_args_splice  call_loc ffi  js_splice arg_types args in
           add_eff eff @@ 
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
         | _ -> 
@@ -27116,7 +27142,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
       (* assert (js_splice = false) ;  *)
       let self, args = Ext_list.exclude_tail args in
       let self_type, arg_types = Ext_list.exclude_tail arg_types in
-      let args, eff = assemble_args_splice js_splice arg_types args in
+      let args, eff = assemble_args_splice call_loc ffi  js_splice arg_types args in
       add_eff eff @@
       E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 
@@ -27150,7 +27176,7 @@ let translate_ffi (ffi : Ast_external_attributes.ffi ) prim_name
     
 
 
-let translate cxt 
+let translate loc cxt 
     ({prim_name ;  prim_native_name} 
      : Primitive.description) args  = 
   if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
@@ -27159,7 +27185,7 @@ let translate cxt
       | Normal -> 
         Lam_dispatch_primitive.translate prim_name args 
       | Bs (arg_types, result_type, ffi) -> 
-        translate_ffi  ffi prim_name cxt arg_types result_type args 
+        translate_ffi loc  ffi prim_name cxt arg_types result_type args 
     end
   else 
     begin 
@@ -27208,6 +27234,7 @@ module Lam_compile_primitive : sig
  *)
 
 val translate : 
+  Location.t -> 
   Lam_compile_defs.cxt  -> Lam.primitive -> J.expression list -> J.expression
 
 end = struct
@@ -27255,7 +27282,7 @@ let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t 
   | EffectCall, False -> e 
   (* NeedValue should return a meaningful expression*)
 
-let translate 
+let translate  loc
     ({ meta = { env; _}; _} as cxt : Lam_compile_defs.cxt) 
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
@@ -27755,7 +27782,7 @@ let translate
       | _ -> assert false
       end
   | Pccall prim -> 
-      Lam_compile_external_call.translate cxt prim args 
+      Lam_compile_external_call.translate loc cxt prim args 
      (* Test if the argument is a block or an immediate integer *)
   | Pisint -> 
     begin 
@@ -29005,7 +29032,7 @@ and
               end
           | _ -> assert false 
         end
-    | Lprim{primitive = prim; args =  args_lambda} -> 
+    | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = False} x 
@@ -29016,7 +29043,7 @@ and
       in
       let args_code  = List.concat args_block in
       let exp  =  (* TODO: all can be done in [compile_primitive] *)
-        Lam_compile_primitive.translate cxt prim args_expr in
+        Lam_compile_primitive.translate loc cxt  prim args_expr in
       Js_output.handle_block_return st should_return lam args_code exp  
 
 
@@ -29906,7 +29933,7 @@ let deep_flatten
                (Lam.let_ Alias id 
                   (Lam.prim 
                      ~primitive:(Pccall p)
-                     ~args: [Lam.var id'])
+                     ~args: [Lam.var id'] Location.none (* FIXME*))
                   body)
               )
     | Llet (str,id,arg,body) -> 
@@ -30066,10 +30093,10 @@ let deep_flatten
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim {primitive ; args }
+    | Lprim {primitive ; args; loc }
       -> 
       let args = List.map aux args in
-      Lam.prim ~primitive ~args
+      Lam.prim ~primitive ~args loc
 
     | Lfunction{arity; kind; params;  body = l} -> 
       Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
@@ -30649,8 +30676,8 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
     | Lletrec (bindings, body) ->
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim {primitive; args } -> 
-      Lam.prim ~primitive ~args:(List.map simpl  args)
+    | Lprim {primitive; args ; loc} -> 
+      Lam.prim ~primitive ~args:(List.map simpl  args) loc
     | Lfunction {arity; kind; params; body = l} ->
       (* Lam_mk.lfunction kind params (simpl l) *)
       Lam.function_ ~arity ~kind ~params  ~body:(simpl  l)
@@ -31293,9 +31320,9 @@ let subst_helper (subst : subst_tbl) query lam =
       Lam.letrec
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim {primitive; args; _} -> 
+    | Lprim {primitive; args; loc} -> 
       let args = List.map simplif args in
-      Lam.prim primitive args
+      Lam.prim primitive args loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
@@ -31437,8 +31464,8 @@ let rec eliminate_ref id (lam : Lam.t) =
            args =  [Lvar v; e]} when Ident.same v id ->
     Lam.assign id (eliminate_ref id e)
   | Lprim {primitive = Poffsetref delta ; 
-           args =  [Lvar v]} when Ident.same v id ->
-    Lam.assign id (Lam.prim ~primitive:(Poffsetint delta) ~args:[Lam.var id])
+           args =  [Lvar v]; loc } when Ident.same v id ->
+    Lam.assign id (Lam.prim ~primitive:(Poffsetint delta) ~args:[Lam.var id] loc)
   | Lconst _  -> lam
   | Lapply{fn = e1; args =  el;  loc; status} ->
     Lam.apply 
@@ -31451,8 +31478,8 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.letrec
       (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
       (eliminate_ref id e2)
-  | Lprim {primitive ; args } ->
-    Lam.prim  ~primitive ~args:(List.map (eliminate_ref id) args)
+  | Lprim {primitive ; args ; loc} ->
+    Lam.prim  ~primitive ~args:(List.map (eliminate_ref id) args) loc
   | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
             {sw_numconsts = sw.sw_numconsts;
@@ -31534,7 +31561,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
     | Llet((Strict | StrictOpt as kind) ,
            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
                                    as primitive); 
-                      args = [linit]}), lbody)
+                      args = [linit] ; loc}), lbody)
       ->
       let slinit = simplif linit in
       let slbody = simplif lbody in
@@ -31544,7 +31571,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
             ~kind:Variable v slinit (eliminate_ref v slbody)
         with Real_reference ->
           Lam_util.refine_let 
-            ~kind v (Lam.prim ~primitive ~args:[slinit])
+            ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
             slbody
       end
     | Llet(Alias, v, l1, l2) ->
@@ -31626,8 +31653,8 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       Lam.letrec 
         (List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim {primitive; args } 
-      -> Lam.prim ~primitive ~args:(List.map simplif args)
+    | Lprim {primitive; args; loc} 
+      -> Lam.prim ~primitive ~args:(List.map simplif args) loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
@@ -32042,14 +32069,14 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam.not_ ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
+            -> Lam.not_ (Location.none) ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l] Location.none) 
           | Undefined 
             -> 
-            Lam.not_ (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
+            Lam.not_  Location.none (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l] Location.none)
           | Null_undefined
             -> 
-            Lam.not_
-              ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l]) 
+            Lam.not_ Location.none
+              ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l] Location.none) 
           | Normal ->  l1 
         in 
         Lam.if_ l1 (simpl l2) (simpl l3)
@@ -32066,8 +32093,8 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim {primitive; args } 
-      -> Lam.prim ~primitive ~args:(List.map simpl  args)
+    | Lprim {primitive; args; loc } 
+      -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
 
     (* complicated 
         1. inline this function

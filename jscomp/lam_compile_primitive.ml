@@ -41,7 +41,7 @@ let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t 
   | EffectCall, False -> e 
   (* NeedValue should return a meaningful expression*)
 
-let translate 
+let translate  loc
     ({ meta = { env; _}; _} as cxt : Lam_compile_defs.cxt) 
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
@@ -541,7 +541,7 @@ let translate
       | _ -> assert false
       end
   | Pccall prim -> 
-      Lam_compile_external_call.translate cxt prim args 
+      Lam_compile_external_call.translate loc cxt prim args 
      (* Test if the argument is a block or an immediate integer *)
   | Pisint -> 
     begin 

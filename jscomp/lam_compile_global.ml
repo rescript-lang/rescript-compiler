@@ -55,8 +55,8 @@ let query_lambda id env =
                          ~args:[
                            Lam.prim 
                              ~primitive:(Pgetglobal id)
-                             ~args:[]])
-                     sigs))
+                             ~args:[] Location.none (* FIXME*)] Location.none)
+                     sigs) Location.none (* FIXME*))
 
 
 (* Given an module name and position, find its corresponding name  *)  

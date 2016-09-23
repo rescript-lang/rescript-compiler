@@ -36,4 +36,5 @@
  *)
 
 val translate : 
+  Location.t -> 
   Lam_compile_defs.cxt  -> Lam.primitive -> J.expression list -> J.expression
