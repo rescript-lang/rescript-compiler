@@ -1634,7 +1634,7 @@ BuckleScript support typing homogeneous variadic arguments. For example,</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">join</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;path&quot;</span><span class="tok-o">]</span>
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">join</span> <span class="tok-o">:</span> <span class="tok-kt">string</span> <span class="tok-kt">array</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">string</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">module</span> <span class="tok-s2">&quot;path&quot;</span><span class="tok-o">]</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">splice</span><span class="tok-o">]</span>
 <span class="tok-k">let</span> <span class="tok-n">v</span> <span class="tok-o">=</span> <span class="tok-n">join</span> <span class="tok-o">[|</span> <span class="tok-s2">&quot;a&quot;</span> <span class="tok-s2">&quot;b&quot;</span><span class="tok-o">|]</span></code></pre>
 </div>
 </div>
