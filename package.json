@@ -15,6 +15,14 @@
     "should-equal": "^1.0.0",
     "uglify-js": "^2.6.1"
   },
+  "exportedEnvVars": {
+    "PATH": {
+      "global": true,
+      "globalCollisionBehavior": "joinPath",
+      "resolveAsRelativePath": true,
+      "val": "./bin/"
+    }
+  },
   "scripts": {
     "test": "mocha './jscomp/test/**/*test.js' ",
     "wtest": "mocha './jscomp/test/**/*test.js'  -R spec -w",
