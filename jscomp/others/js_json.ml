@@ -34,18 +34,20 @@ type _ kind =
   | Null : Js_types.null_val kind
 
 let reify_type (type a) (x : 'a) : (a kind * a ) = 
-  if Js.typeof x = "string" then 
-    (Obj.magic String, Obj.magic x) else
+  (if Js.typeof x = "string" then 
+    Obj.magic String else
   if Js.typeof x = "number" then 
-    (Obj.magic Number, Obj.magic x ) else 
-  if Js.typeof x = "boolean" then (* which one is faster, save [Js.typeof] or not *)
-    (Obj.magic Boolean, Obj.magic x) else
-  if (Obj.magic x) == Js.null then  (* providing a universal function *)
-    (Obj.magic Null, Obj.magic x) else 
+    Obj.magic Number  else 
+  if Js.typeof x = "boolean" then
+    (* which one is faster, save [Js.typeof] or not *)
+    Obj.magic Boolean else
+  if (Obj.magic x) == Js.null then
+    (* providing a universal function *)
+    Obj.magic Null else 
   if Js.to_bool @@ Js_array.isArray x  then 
-    (Obj.magic Array, Obj.magic x ) 
+    Obj.magic Array 
   else 
-    (Obj.magic Object, Obj.magic x )
+    Obj.magic Object ), Obj.magic x
 
 let test (type a) (x : 'a) (v : a kind) : bool =
   match v with

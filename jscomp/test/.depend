@@ -364,6 +364,8 @@ js_json_test.cmj : ../runtime/js.cmj
 js_json_test.cmx : ../runtime/js.cmx
 js_obj_test.cmj : mt.cmi
 js_obj_test.cmx : mt.cmx
+js_string_test.cmj : mt.cmi ../runtime/js.cmj
+js_string_test.cmx : mt.cmx ../runtime/js.cmx
 js_val.cmj :
 js_val.cmx :
 jsoo_400_test.cmj : ../stdlib/string.cmi mt.cmi
@@ -600,6 +602,8 @@ string_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ext_string.cmj ../stdlib/bytes.cmi
 string_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/list.cmx \
     ext_string.cmx ../stdlib/bytes.cmx
+string_unicode_test.cmj : ../runtime/js.cmj
+string_unicode_test.cmx : ../runtime/js.cmx
 stringmatch_test.cmj : ../stdlib/string.cmi
 stringmatch_test.cmx : ../stdlib/string.cmx
 swap_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
@@ -1192,6 +1196,8 @@ js_json_test.cmo : ../runtime/js.cmo
 js_json_test.cmj : ../runtime/js.cmj
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
+js_string_test.cmo : mt.cmi ../runtime/js.cmo
+js_string_test.cmj : mt.cmj ../runtime/js.cmj
 js_val.cmo :
 js_val.cmj :
 jsoo_400_test.cmo : ../stdlib/string.cmi mt.cmi
@@ -1428,6 +1434,8 @@ string_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ext_string.cmo ../stdlib/bytes.cmi
 string_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ext_string.cmj ../stdlib/bytes.cmj
+string_unicode_test.cmo : ../runtime/js.cmo
+string_unicode_test.cmj : ../runtime/js.cmj
 stringmatch_test.cmo : ../stdlib/string.cmi
 stringmatch_test.cmj : ../stdlib/string.cmj
 swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
