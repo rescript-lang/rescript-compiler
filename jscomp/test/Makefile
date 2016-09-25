@@ -67,7 +67,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	ppx_this_obj_field single_module_alias \
 	sexpm sexpm_test sexp js_json_test array_subtle_test  \
 	bytes_split_gpr_743_test module_splice_test hello.foo \
-	ffi_splice_test node_path_test
+	ffi_splice_test node_path_test js_string_test string_unicode_test
 
 
 

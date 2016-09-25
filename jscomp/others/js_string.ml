@@ -51,7 +51,8 @@ external charAt : int ->  t = "" [@@bs.send.pipe: t]
 
 external charCodeAt : int -> float  = "" [@@bs.send.pipe: t]
 (** type it as [float] due to that it may return NAN  *)
-external concat :  t -> t = "" [@@bs.send.pipe: t]
+external concat :  t array -> t = ""
+[@@bs.send.pipe: t] [@@bs.splice]
 
 external indexOf :  t -> int = "" [@@bs.send.pipe: t]
 external indexOf_from :  t -> int -> int = "indexOf" [@@bs.send.pipe: t]
