@@ -19501,7 +19501,7 @@ let pp_string f ?(quote='"') ?(utf=false) s =
       | '\000' when i = l - 1 || (let next = String.unsafe_get s (i + 1) in (next < '0' || next > '9'))
         -> P.string f "\\0"
 
-      | '\\' when not utf -> P.string f "\\\\"
+      | '\\' (* when not utf *) -> P.string f "\\\\"
 
 
       | '\000' .. '\031'  | '\127'->
@@ -19979,8 +19979,17 @@ and
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
      *)
-    let quote = best_string_quote s in 
-    pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
+    (**
+       String.escaped "你好";;
+       "\\228\\189\\160\\229\\165\\189"
+    *)
+    (* P.string f "\""; *)
+    (* (\* P.string f (String.escaped s); *\) *)
+    (* P.string f s ; *)
+    (* P.string f "\""; *)
+    (* cxt  *)
+    let quote = best_string_quote s in
+    pp_string f ~utf:true ~quote s; cxt
   | Raw_js_code (s,info) -> 
     begin match info with 
     | Exp -> 

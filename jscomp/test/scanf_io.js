@@ -146,7 +146,7 @@ function add_digest_ib(ob, ib) {
     return Curry._1(Scanf.bscanf(ib, /* Format */[
                     /* Scan_char_set */Block.__(20, [
                         /* None */0,
-                        "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                        "ÿÛÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                         /* Char_literal */Block.__(12, [
                             /* "\n" */10,
                             /* End_of_format */0
