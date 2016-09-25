@@ -3243,7 +3243,7 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
 
 
-
+let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
 
 (** path2: a/b 
     path1: a 
@@ -3257,15 +3257,18 @@ let node_relative_path (file1 : t)
     (`File file2 as dep_file : [`File of string]) = 
   let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
-  if v >= 0 then 
+  if v >= 0 then
     let rec skip  i =       
       if i >= len then
         Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
       else 
-        match file2.[i] with 
-        | '/'
-        | '.' ->  skip (i + 1) 
-        | _ -> i
+        (* https://en.wikipedia.org/wiki/Path_(computing))
+           most path separator are a single char 
+        *)
+        let curr_char = String.unsafe_get file2 i  in 
+        if curr_char = os_path_separator_char || curr_char = '.' then 
+          skip (i + 1) 
+        else i
         (*
           TODO: we need do more than this suppose user 
           input can be

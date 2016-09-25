@@ -206,6 +206,8 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
   }
 }
 
+var os_path_separator_char = Filename.dir_sep.charCodeAt(0);
+
 function node_relative_path(file1, dep_file) {
   var file2 = dep_file[1];
   var v = Ext_string.find(/* None */0, Literals.node_modules, file2);
@@ -227,8 +229,8 @@ function node_relative_path(file1, dep_file) {
                         ]), file2);
         }
         else {
-          var match = Caml_string.get(file2, i);
-          if (match === 47 || match === 46) {
+          var curr_char = file2.charCodeAt(i);
+          if (curr_char === os_path_separator_char || curr_char === /* "." */46) {
             _i = i + 1 | 0;
             continue ;
             
@@ -261,7 +263,7 @@ function find_package_json_dir(cwd) {
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 198, characters 15-22', /* Format */[
+        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 201, characters 15-22', /* Format */[
                         /* String_literal */Block.__(11, [
                             "package.json not found from ",
                             /* String */Block.__(2, [
@@ -312,6 +314,7 @@ exports.absolute_path          = absolute_path;
 exports.chop_extension         = chop_extension;
 exports.chop_extension_if_any  = chop_extension_if_any;
 exports.relative_path          = relative_path;
+exports.os_path_separator_char = os_path_separator_char;
 exports.node_relative_path     = node_relative_path;
 exports.find_package_json_dir  = find_package_json_dir;
 exports.package_dir            = package_dir;
