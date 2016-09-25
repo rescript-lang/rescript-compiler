@@ -84,9 +84,10 @@ let string_of_module_id
         let id = x.id in
         let file = Printf.sprintf "%s.js" id.name in
         let modulename = String.uncapitalize id.name in
+        let current_unit_dir =
+          (`Dir (Js_config.get_output_dir module_system !Location.input_name)) in
         let rebase dep =
-          Ext_filename.node_relative_path 
-            (`Dir (Js_config.get_output_dir module_system !Location.input_name)) dep 
+          Ext_filename.node_relative_path  current_unit_dir dep 
         in 
         let dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 

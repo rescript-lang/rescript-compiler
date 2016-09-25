@@ -3435,7 +3435,7 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
 
 
-
+let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
 
 (** path2: a/b 
     path1: a 
@@ -3449,15 +3449,18 @@ let node_relative_path (file1 : t)
     (`File file2 as dep_file : [`File of string]) = 
   let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
   let len = String.length file2 in 
-  if v >= 0 then 
+  if v >= 0 then
     let rec skip  i =       
       if i >= len then
         Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
       else 
-        match file2.[i] with 
-        | '/'
-        | '.' ->  skip (i + 1) 
-        | _ -> i
+        (* https://en.wikipedia.org/wiki/Path_(computing))
+           most path separator are a single char 
+        *)
+        let curr_char = String.unsafe_get file2 i  in 
+        if curr_char = os_path_separator_char || curr_char = '.' then 
+          skip (i + 1) 
+        else i
         (*
           TODO: we need do more than this suppose user 
           input can be
@@ -5064,7 +5067,8 @@ type error =
   | Bs_duplicated_module of string * string
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
-
+  | Bs_invalid_path of string
+      
 val error : error -> 'a 
 
 end = struct
@@ -5100,7 +5104,8 @@ type error =
   | Bs_duplicated_module of string * string
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
-
+  | Bs_invalid_path of string
+      
 exception Error of error
 
 let error err = raise (Error err)
@@ -5125,7 +5130,8 @@ let report_error ppf = function
     ->
     Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
       package package
-
+  | Bs_invalid_path path
+    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
 let () =
   Location.register_error_of_exn
     (function
@@ -7730,7 +7736,9 @@ module Bs_ast_invariant
 
 
 let is_bs_attribute txt = 
-  let len = String.length txt  in 
+  let len = String.length txt  in
+  len >= 2 &&
+  (*TODO: check the stringing padding rule, this preciate may not be needed *)
   String.unsafe_get txt 0 = 'b'&& 
   String.unsafe_get txt 1 = 's' &&
   (len = 2 ||
@@ -19142,9 +19150,10 @@ let string_of_module_id
         let id = x.id in
         let file = Printf.sprintf "%s.js" id.name in
         let modulename = String.uncapitalize id.name in
+        let current_unit_dir =
+          (`Dir (Js_config.get_output_dir module_system !Location.input_name)) in
         let rebase dep =
-          Ext_filename.node_relative_path 
-            (`Dir (Js_config.get_output_dir module_system !Location.input_name)) dep 
+          Ext_filename.node_relative_path  current_unit_dir dep 
         in 
         let dependency_pkg_info = 
           Lam_compile_env.get_package_path_from_cmj module_system x 

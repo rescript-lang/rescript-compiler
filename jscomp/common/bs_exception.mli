@@ -28,5 +28,6 @@ type error =
   | Bs_duplicated_module of string * string
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
-
+  | Bs_invalid_path of string
+      
 val error : error -> 'a 

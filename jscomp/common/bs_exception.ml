@@ -29,7 +29,8 @@ type error =
   | Bs_duplicated_module of string * string
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
-
+  | Bs_invalid_path of string
+      
 exception Error of error
 
 let error err = raise (Error err)
@@ -54,7 +55,8 @@ let report_error ppf = function
     ->
     Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
       package package
-
+  | Bs_invalid_path path
+    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
 let () =
   Location.register_error_of_exn
     (function
