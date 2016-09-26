@@ -16,7 +16,7 @@ caml_utils.cmj : caml_utils.cmi
 caml_utils.cmx : caml_utils.cmi
 caml_sys.cmj : js_float.cmj caml_sys.cmi
 caml_sys.cmx : js_float.cmx caml_sys.cmi
-caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
+caml_io.cmj : js_undefined.cmi js.cmj bs_string.cmj
 caml_io.cmx : js_undefined.cmx js.cmx bs_string.cmx
 caml_float.cmj : typed_array.cmj js_float.cmj js.cmj caml_float.cmi
 caml_float.cmx : typed_array.cmx js_float.cmx js.cmx caml_float.cmi
@@ -34,11 +34,11 @@ caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_md5.cmx : bs_string.cmx caml_md5.cmi
 caml_queue.cmj : caml_queue.cmi
 caml_queue.cmx : caml_queue.cmi
-caml_hash.cmj : js_undefined.cmj js.cmj caml_queue.cmi bs_string.cmj \
+caml_hash.cmj : js_undefined.cmi js.cmj caml_queue.cmi bs_string.cmj \
     bs_obj.cmj caml_hash.cmi
 caml_hash.cmx : js_undefined.cmx js.cmx caml_queue.cmx bs_string.cmx \
     bs_obj.cmx caml_hash.cmi
-caml_weak.cmj : js_undefined.cmj caml_array.cmi caml_weak.cmi
+caml_weak.cmj : js_undefined.cmi caml_array.cmi caml_weak.cmi
 caml_weak.cmx : js_undefined.cmx caml_array.cmx caml_weak.cmi
 caml_backtrace.cmj : caml_backtrace.cmi
 caml_backtrace.cmx : caml_backtrace.cmi
@@ -48,11 +48,9 @@ caml_gc.cmj : caml_gc.cmi
 caml_gc.cmx : caml_gc.cmi
 typed_array.cmj :
 typed_array.cmx :
-js_primitive.cmj : js_undefined.cmj js_null_undefined.cmj js_null.cmj \
-    js_primitive.cmi
-js_primitive.cmx : js_undefined.cmx js_null_undefined.cmx js_null.cmx \
-    js_primitive.cmi
-caml_basic.cmj : js_undefined.cmj js.cmj caml_basic.cmi
+js_primitive.cmj : js_undefined.cmi js.cmj js_primitive.cmi
+js_primitive.cmx : js_undefined.cmx js.cmx js_primitive.cmi
+caml_basic.cmj : js_undefined.cmi js.cmj caml_basic.cmi
 caml_basic.cmx : js_undefined.cmx js.cmx caml_basic.cmi
 caml_oo.cmj : caml_array.cmi bs_obj.cmj caml_oo.cmi
 caml_oo.cmx : caml_array.cmx bs_obj.cmx caml_oo.cmi
@@ -70,10 +68,8 @@ js_nativeint.cmj :
 js_nativeint.cmx :
 js_int.cmj :
 js_int.cmx :
-js_null.cmj : js.cmj
-js_null.cmx : js.cmx
-js_null_undefined.cmj : js.cmj
-js_null_undefined.cmx : js.cmx
+js_null.cmj : js.cmj js_null.cmi
+js_null.cmx : js.cmx js_null.cmi
 caml_array.cmi :
 caml_string.cmi :
 caml_bytes.cmi :
@@ -94,9 +90,10 @@ caml_weak.cmi :
 caml_backtrace.cmi :
 caml_int32.cmi :
 caml_gc.cmi :
-js_primitive.cmi : js_undefined.cmj js_null_undefined.cmj
-caml_basic.cmi : js_undefined.cmj js.cmj
+js_primitive.cmi : js_undefined.cmi js.cmj
+caml_basic.cmi : js_undefined.cmi js.cmj
 caml_oo.cmi :
+js_null.cmi : js.cmj
 caml_array.cmo : caml_array.cmi
 caml_array.cmj : caml_array.cmi
 caml_string.cmo : bs_string.cmo caml_string.cmi
@@ -115,7 +112,7 @@ caml_utils.cmo : caml_utils.cmi
 caml_utils.cmj : caml_utils.cmi
 caml_sys.cmo : js_float.cmo caml_sys.cmi
 caml_sys.cmj : js_float.cmj caml_sys.cmi
-caml_io.cmo : js_undefined.cmo js.cmo bs_string.cmo
+caml_io.cmo : js_undefined.cmi js.cmo bs_string.cmo
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
 caml_float.cmo : typed_array.cmo js_float.cmo js.cmo caml_float.cmi
 caml_float.cmj : typed_array.cmj js_float.cmj js.cmj caml_float.cmi
@@ -133,11 +130,11 @@ caml_md5.cmo : bs_string.cmo caml_md5.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_queue.cmo : caml_queue.cmi
 caml_queue.cmj : caml_queue.cmi
-caml_hash.cmo : js_undefined.cmo js.cmo caml_queue.cmi bs_string.cmo \
+caml_hash.cmo : js_undefined.cmi js.cmo caml_queue.cmi bs_string.cmo \
     bs_obj.cmo caml_hash.cmi
 caml_hash.cmj : js_undefined.cmj js.cmj caml_queue.cmj bs_string.cmj \
     bs_obj.cmj caml_hash.cmi
-caml_weak.cmo : js_undefined.cmo caml_array.cmi caml_weak.cmi
+caml_weak.cmo : js_undefined.cmi caml_array.cmi caml_weak.cmi
 caml_weak.cmj : js_undefined.cmj caml_array.cmj caml_weak.cmi
 caml_backtrace.cmo : caml_backtrace.cmi
 caml_backtrace.cmj : caml_backtrace.cmi
@@ -147,11 +144,9 @@ caml_gc.cmo : caml_gc.cmi
 caml_gc.cmj : caml_gc.cmi
 typed_array.cmo :
 typed_array.cmj :
-js_primitive.cmo : js_undefined.cmo js_null_undefined.cmo js_null.cmo \
-    js_primitive.cmi
-js_primitive.cmj : js_undefined.cmj js_null_undefined.cmj js_null.cmj \
-    js_primitive.cmi
-caml_basic.cmo : js_undefined.cmo js.cmo caml_basic.cmi
+js_primitive.cmo : js_undefined.cmi js.cmo js_primitive.cmi
+js_primitive.cmj : js_undefined.cmj js.cmj js_primitive.cmi
+caml_basic.cmo : js_undefined.cmi js.cmo caml_basic.cmi
 caml_basic.cmj : js_undefined.cmj js.cmj caml_basic.cmi
 caml_oo.cmo : caml_array.cmi bs_obj.cmo caml_oo.cmi
 caml_oo.cmj : caml_array.cmj bs_obj.cmj caml_oo.cmi
@@ -169,7 +164,5 @@ js_nativeint.cmo :
 js_nativeint.cmj :
 js_int.cmo :
 js_int.cmj :
-js_null.cmo : js.cmo
-js_null.cmj : js.cmj
-js_null_undefined.cmo : js.cmo
-js_null_undefined.cmj : js.cmj
+js_null.cmo : js.cmo js_null.cmi
+js_null.cmj : js.cmj js_null.cmi

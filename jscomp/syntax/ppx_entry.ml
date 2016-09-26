@@ -303,7 +303,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 else
                   Ast_literal.type_string ~loc () in                  
               Exp.constraint_ ~loc exp typ                
-            | Some _ | None -> Location.raise_errorf ~loc "Ilegal payload"              
+            | Some _ | None ->
+              begin match payload with 
+              | PTyp _ -> 
+                Location.raise_errorf 
+                  ~loc "Illegal payload, expect an expression payload instead of type payload"              
+              | PPat _ ->
+                Location.raise_errorf 
+                  ~loc "Illegal payload, expect an expression payload instead of pattern  payload"        
+              | _ -> 
+                Location.raise_errorf 
+                  ~loc "Illegal payload"
+              end
+
           end             
 
         (** [bs.debugger], its output should not be rewritten any more*)

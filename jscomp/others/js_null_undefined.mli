@@ -27,3 +27,8 @@ external to_opt : 'a t -> 'a option = "js_from_nullable_def"
 external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "js_is_nil_undef"
 external empty : 'a t = "undefined" [@@bs.val]
+
+(** we did not add [bind] yet, since the return value is 
+    ambiguous and [to_opt] depends on {!Js_primitive}
+*)
+val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
