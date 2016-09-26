@@ -1334,7 +1334,7 @@ let rec filter_map (f: 'a -> 'b option) xs =
       | Some z -> z :: filter_map f ys
       end
 
-let excludes p l =
+let excludes (p : 'a -> bool ) l : bool * 'a list=
   let excluded = ref false in 
   let rec aux accu = function
   | [] -> List.rev accu
