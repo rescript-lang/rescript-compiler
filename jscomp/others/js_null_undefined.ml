@@ -22,11 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type + 'a t = 'a Js.null_undefined
+external to_opt : 'a t -> 'a option = "js_from_nullable_def"
+external return : 'a -> 'a t = "%identity"
+external test : 'a t -> bool =  "js_is_nil_undef"
+external empty : 'a t = "undefined" [@@bs.val]
 
-
-
-val js_is_nil_undef : 'a Js.null_undefined -> bool
-
-val js_from_nullable_def : 'a Js.null_undefined -> 'a option
-
-val option_get : 'a option -> 'a Js_undefined.t 
+let bind x f =
+  match to_opt x with
+  | None -> empty
+  | Some x -> return (f  x [@bs])
+    

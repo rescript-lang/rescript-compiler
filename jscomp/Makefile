@@ -129,7 +129,8 @@ install:
 	@echo "copy stdlib"
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \
-	./runtime/js_undefined.ml ./runtime/js_undefined.cmi ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi  $(DEST)
+	./runtime/js_undefined.ml ./runtime/js_undefined.cmi   $(DEST)
+# ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi
 
 
 .PHONY: test  quicktest release snapshot snapshotcmj releasebuild libs

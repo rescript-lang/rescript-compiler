@@ -10,6 +10,7 @@ demo_int_map.cmi :
 ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
 ext_sys.cmi :
 float_record.cmi :
+flow_parser_reg_test.cmi :
 gpr_405_test.cmi :
 infer_type_test.cmi : ../runtime/js.cmj
 inline_edge_cases.cmi :
@@ -264,6 +265,20 @@ float_test.cmj : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
 float_test.cmx : ../stdlib/printf.cmx ../stdlib/pervasives.cmx mt_global.cmx \
     mt.cmx ../runtime/js_float.cmx ../runtime/js.cmx ../stdlib/int64.cmx \
     ../stdlib/array.cmx
+flow_parser_reg_test.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi \
+    ../stdlib/set.cmi ../stdlib/queue.cmi ../stdlib/printf.cmi \
+    ../stdlib/pervasives.cmi ../stdlib/obj.cmi ../others/node.cmj mt.cmi \
+    ../stdlib/map.cmi ../stdlib/list.cmi ../stdlib/lexing.cmi \
+    ../runtime/js.cmj ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
+    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi \
+    ../stdlib/array.cmi flow_parser_reg_test.cmi
+flow_parser_reg_test.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx \
+    ../stdlib/set.cmx ../stdlib/queue.cmx ../stdlib/printf.cmx \
+    ../stdlib/pervasives.cmx ../stdlib/obj.cmx ../others/node.cmx mt.cmx \
+    ../stdlib/map.cmx ../stdlib/list.cmx ../stdlib/lexing.cmx \
+    ../runtime/js.cmx ../stdlib/hashtbl.cmx ../stdlib/filename.cmx \
+    ../stdlib/char.cmx ../stdlib/bytes.cmx ../stdlib/buffer.cmx \
+    ../stdlib/array.cmx flow_parser_reg_test.cmi
 for_loop_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/array.cmx
 for_side_effect_test.cmj : mt.cmi
@@ -452,6 +467,8 @@ nested_obj_test.cmj :
 nested_obj_test.cmx :
 noassert.cmj :
 noassert.cmx :
+node_fs_test.cmj : ../others/node.cmj ../runtime/js.cmj
+node_fs_test.cmx : ../others/node.cmx ../runtime/js.cmx
 node_path_test.cmj : ../runtime/js.cmj
 node_path_test.cmx : ../runtime/js.cmx
 number_lexer.cmj : ../stdlib/sys.cmi ../stdlib/lexing.cmi
@@ -1096,6 +1113,20 @@ float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
 float_test.cmj : ../stdlib/printf.cmj ../stdlib/pervasives.cmj mt_global.cmj \
     mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj ../stdlib/int64.cmj \
     ../stdlib/array.cmj
+flow_parser_reg_test.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi \
+    ../stdlib/set.cmi ../stdlib/queue.cmi ../stdlib/printf.cmi \
+    ../stdlib/pervasives.cmi ../stdlib/obj.cmi ../others/node.cmo mt.cmi \
+    ../stdlib/map.cmi ../stdlib/list.cmi ../stdlib/lexing.cmi \
+    ../runtime/js.cmo ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
+    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi \
+    ../stdlib/array.cmi flow_parser_reg_test.cmi
+flow_parser_reg_test.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj \
+    ../stdlib/set.cmj ../stdlib/queue.cmj ../stdlib/printf.cmj \
+    ../stdlib/pervasives.cmj ../stdlib/obj.cmj ../others/node.cmj mt.cmj \
+    ../stdlib/map.cmj ../stdlib/list.cmj ../stdlib/lexing.cmj \
+    ../runtime/js.cmj ../stdlib/hashtbl.cmj ../stdlib/filename.cmj \
+    ../stdlib/char.cmj ../stdlib/bytes.cmj ../stdlib/buffer.cmj \
+    ../stdlib/array.cmj flow_parser_reg_test.cmi
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/array.cmj
 for_side_effect_test.cmo : mt.cmi
@@ -1284,6 +1315,8 @@ nested_obj_test.cmo :
 nested_obj_test.cmj :
 noassert.cmo :
 noassert.cmj :
+node_fs_test.cmo : ../others/node.cmo ../runtime/js.cmo
+node_fs_test.cmj : ../others/node.cmj ../runtime/js.cmj
 node_path_test.cmo : ../runtime/js.cmo
 node_path_test.cmj : ../runtime/js.cmj
 number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi
