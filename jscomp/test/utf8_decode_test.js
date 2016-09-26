@@ -1,0 +1,343 @@
+'use strict';
+
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Stream                  = require("../../lib/js/stream");
+var Mt                      = require("./mt");
+var Block                   = require("../../lib/js/block");
+var Curry                   = require("../../lib/js/curry");
+var Caml_bytes              = require("../../lib/js/caml_bytes");
+var List                    = require("../../lib/js/list");
+
+function classify(chr) {
+  if (chr & 128) {
+    if (chr & 64) {
+      if (chr & 32) {
+        if (chr & 16) {
+          if (chr & 8) {
+            if (chr & 4) {
+              if (chr & 2) {
+                return /* Invalid */0;
+              }
+              else {
+                return /* Leading */Block.__(2, [
+                          5,
+                          chr & 1
+                        ]);
+              }
+            }
+            else {
+              return /* Leading */Block.__(2, [
+                        4,
+                        chr & 3
+                      ]);
+            }
+          }
+          else {
+            return /* Leading */Block.__(2, [
+                      3,
+                      chr & 7
+                    ]);
+          }
+        }
+        else {
+          return /* Leading */Block.__(2, [
+                    2,
+                    chr & 15
+                  ]);
+        }
+      }
+      else {
+        return /* Leading */Block.__(2, [
+                  1,
+                  chr & 31
+                ]);
+      }
+    }
+    else {
+      return /* Cont */Block.__(1, [chr & 63]);
+    }
+  }
+  else {
+    return /* Single */Block.__(0, [chr]);
+  }
+}
+
+function utf8_decode(strm) {
+  return Stream.slazy(function () {
+              var match = Stream.peek(strm);
+              if (match) {
+                Stream.junk(strm);
+                var match$1 = classify(match[0]);
+                if (typeof match$1 === "number") {
+                  throw [
+                        Stream.$$Error,
+                        "Invalid byte"
+                      ];
+                }
+                else {
+                  switch (match$1.tag | 0) {
+                    case 0 : 
+                        return Stream.icons(match$1[0], utf8_decode(strm));
+                    case 1 : 
+                        throw [
+                              Stream.$$Error,
+                              "Unexpected continuation byte"
+                            ];
+                    case 2 : 
+                        var follow = function (strm, _n, _c) {
+                          while(true) {
+                            var c = _c;
+                            var n = _n;
+                            if (n) {
+                              var match = classify(Stream.next(strm));
+                              if (typeof match === "number") {
+                                throw [
+                                      Stream.$$Error,
+                                      "Continuation byte expected"
+                                    ];
+                              }
+                              else if (match.tag === 1) {
+                                _c = (c << 6) | match[0] & 63;
+                                _n = n - 1 | 0;
+                                continue ;
+                                
+                              }
+                              else {
+                                throw [
+                                      Stream.$$Error,
+                                      "Continuation byte expected"
+                                    ];
+                              }
+                            }
+                            else {
+                              return c;
+                            }
+                          };
+                        };
+                        return Stream.icons(follow(strm, match$1[0], match$1[1]), utf8_decode(strm));
+                    
+                  }
+                }
+              }
+              else {
+                return Stream.sempty;
+              }
+            });
+}
+
+function decode(bytes, offset) {
+  var offset$1 = offset;
+  var match = classify(Caml_bytes.get(bytes, offset$1));
+  if (typeof match === "number") {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "decode"
+        ];
+  }
+  else {
+    switch (match.tag | 0) {
+      case 0 : 
+          return /* tuple */[
+                  match[0],
+                  offset$1 + 1 | 0
+                ];
+      case 1 : 
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "decode"
+              ];
+      case 2 : 
+          var _n = match[0];
+          var _c = match[1];
+          var _offset = offset$1 + 1 | 0;
+          while(true) {
+            var offset$2 = _offset;
+            var c = _c;
+            var n = _n;
+            if (n) {
+              var match$1 = classify(Caml_bytes.get(bytes, offset$2));
+              if (typeof match$1 === "number") {
+                throw [
+                      Caml_builtin_exceptions.invalid_argument,
+                      "decode"
+                    ];
+              }
+              else if (match$1.tag === 1) {
+                _offset = offset$2 + 1 | 0;
+                _c = (c << 6) | match$1[0] & 63;
+                _n = n - 1 | 0;
+                continue ;
+                
+              }
+              else {
+                throw [
+                      Caml_builtin_exceptions.invalid_argument,
+                      "decode"
+                    ];
+              }
+            }
+            else {
+              return /* tuple */[
+                      c,
+                      offset$2
+                    ];
+            }
+          };
+      
+    }
+  }
+}
+
+function eq_list(cmp, _xs, _ys) {
+  while(true) {
+    var ys = _ys;
+    var xs = _xs;
+    if (xs) {
+      if (ys) {
+        if (Curry._2(cmp, xs[0], ys[0])) {
+          _ys = ys[1];
+          _xs = xs[1];
+          continue ;
+          
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else if (ys) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  };
+}
+
+var suites = [/* [] */0];
+
+var test_id = [0];
+
+function eq(loc, param) {
+  var y = param[1];
+  var x = param[0];
+  test_id[0] = test_id[0] + 1 | 0;
+  console.log(/* tuple */[
+        x,
+        y
+      ]);
+  suites[0] = /* :: */[
+    /* tuple */[
+      loc + (" id " + test_id[0]),
+      function () {
+        return /* Eq */Block.__(0, [
+                  x,
+                  y
+                ]);
+      }
+    ],
+    suites[0]
+  ];
+  return /* () */0;
+}
+
+var v = [/* [] */0];
+
+function add(u) {
+  v[0] = /* :: */[
+    u,
+    v[0]
+  ];
+  return /* () */0;
+}
+
+Stream.iter(add, utf8_decode(Stream.of_string("\xe4\xbd\xa0\xe5\xa5\xbdBuckleScript,\xe6\x9c\x80\xe5\xa5\xbd\xe7\x9a\x84JS\xe8\xaf\xad\xe8\xa8\x80")));
+
+var codes = List.rev(v[0]);
+
+eq('File "utf8_decode_test.ml", line 125, characters 5-12', /* tuple */[
+      /* true */1,
+      eq_list(function (x, y) {
+            return +(x === y);
+          }, codes, /* :: */[
+            20320,
+            /* :: */[
+              22909,
+              /* :: */[
+                66,
+                /* :: */[
+                  117,
+                  /* :: */[
+                    99,
+                    /* :: */[
+                      107,
+                      /* :: */[
+                        108,
+                        /* :: */[
+                          101,
+                          /* :: */[
+                            83,
+                            /* :: */[
+                              99,
+                              /* :: */[
+                                114,
+                                /* :: */[
+                                  105,
+                                  /* :: */[
+                                    112,
+                                    /* :: */[
+                                      116,
+                                      /* :: */[
+                                        44,
+                                        /* :: */[
+                                          26368,
+                                          /* :: */[
+                                            22909,
+                                            /* :: */[
+                                              30340,
+                                              /* :: */[
+                                                74,
+                                                /* :: */[
+                                                  83,
+                                                  /* :: */[
+                                                    35821,
+                                                    /* :: */[
+                                                      35328,
+                                                      /* [] */0
+                                                    ]
+                                                  ]
+                                                ]
+                                              ]
+                                            ]
+                                          ]
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ])
+    ]);
+
+Mt.from_pair_suites("utf8_decode_test.ml", suites[0]);
+
+exports.classify    = classify;
+exports.utf8_decode = utf8_decode;
+exports.decode      = decode;
+exports.eq_list     = eq_list;
+exports.suites      = suites;
+exports.test_id     = test_id;
+exports.eq          = eq;
+/*  Not a pure module */

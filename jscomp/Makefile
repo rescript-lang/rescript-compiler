@@ -6,23 +6,26 @@ ifndef EXE
 endif
 NATIVE=ocamlopt.opt$(EXE)
 BYTE=ocamlc.opt$(EXE)
-CAMLP4OF=camlp4of.opt$(EXE)
+
+CAMLP4OF=camlp4of
+## native plugin was not installed in opam..
+
 ## Beging Rules only make sense in dev mode
 js_map.ml:js_map.mlp j.ml
 	@echo "Regenrating j_map.ml"
-	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
+	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o -o  $@
 
 js_fold.ml:js_fold.mlp j.ml
 	@echo "Regenrating j_fold.ml"
-	$(CAMLP4OF) -filter fold  -filter trash -impl $< -printer o > $@
+	$(CAMLP4OF) -filter Camlp4FoldGenerator  -filter trash -impl $< -printer o -o $@
 
-lam_map.ml: lambda_map.mlp lambda.mlp
-	@echo "Regenrating lambda_map.ml"
-	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
+# lam_map.ml: lambda_map.mlp lambda.mlp
+# 	@echo "Regenrating lambda_map.ml"
+# 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer -o  $@
 
-lam_fold.ml: lambda_fold.mlp lambda.mlp
-	@echo "Regenrating lambda_map.ml"
-	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
+# lam_fold.ml: lambda_fold.mlp lambda.mlp
+# 	@echo "Regenrating lambda_map.ml"
+# 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer -o  $@
 ## End Rules
 
 

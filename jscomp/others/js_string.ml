@@ -55,27 +55,27 @@ external concat :  t array -> t = ""
 [@@bs.send.pipe: t] [@@bs.splice]
 
 external indexOf :  t -> int = "" [@@bs.send.pipe: t]
-external indexOf_from :  t -> int -> int = "indexOf" [@@bs.send.pipe: t]
+external indexOfFrom :  t -> int -> int = "indexOf" [@@bs.send.pipe: t]
 
 external lastIndexOf :  t -> int = "" [@@bs.send.pipe: t]
-external lastIndexOf_from :  t -> int -> int = "lastIndexOf" [@@bs.send.pipe: t]
+external lastIndexOfFrom :  t -> int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 
 external localeCompare :  t -> float = "" [@@bs.send.pipe: t]
 
-external replaceByReg : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
+external replaceByRe : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
 external replace :  t ->  t ->  t = "" [@@bs.send.pipe: t]
 
 external search : Js_re.t -> int = "" [@@bs.send.pipe: t]
 external slice : int -> int ->  t = "" [@@bs.send.pipe: t]
-external slice_end : int ->  t = "slice" [@@bs.send.pipe: t]
+external sliceToEnd : int ->  t = "slice" [@@bs.send.pipe: t]
 
 external split :  t -> t array  = "" [@@bs.send.pipe: t]
-external split_limited :  t -> int -> t array = "split" [@@bs.send.pipe: t]
-external split_by_reg : Js_re.t  ->  t array = "split" [@@bs.send.pipe: t]
-external split_regExpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
+external splitLimited :  t -> int -> t array = "split" [@@bs.send.pipe: t]
+external splitByRe : Js_re.t  ->  t array = "split" [@@bs.send.pipe: t]
+external splitRegexpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
 
 external substring : int -> int ->  t = "" [@@bs.send.pipe: t]
-external substring_toEnd : int ->  t = "substring" [@@bs.send.pipe: t]
+external substringToEnd : int ->  t = "substring" [@@bs.send.pipe: t]
 external toLowerCase :  t = "" [@@bs.send.pipe: t]
 external toLocaleLowerCase :  t = "" [@@bs.send.pipe: t]
 external toUpperCase :  t = "" [@@bs.send.pipe: t]

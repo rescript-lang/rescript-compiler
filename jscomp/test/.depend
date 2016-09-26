@@ -881,6 +881,10 @@ unsafe_ppx_test.cmj : mt.cmi ffi_js_test.cmj
 unsafe_ppx_test.cmx : mt.cmx ffi_js_test.cmx
 unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
 unsafe_this.cmx : ../runtime/js.cmx unsafe_this.cmi
+utf8_decode_test.cmj : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
+    ../runtime/js.cmj ../stdlib/bytes.cmi
+utf8_decode_test.cmx : ../stdlib/stream.cmx mt.cmx ../stdlib/list.cmx \
+    ../runtime/js.cmx ../stdlib/bytes.cmx
 watch_test.cmj : ../others/node.cmj ../runtime/js.cmj
 watch_test.cmx : ../others/node.cmx ../runtime/js.cmx
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
@@ -1729,5 +1733,9 @@ unsafe_ppx_test.cmo : mt.cmi ffi_js_test.cmo
 unsafe_ppx_test.cmj : mt.cmj ffi_js_test.cmj
 unsafe_this.cmo : ../runtime/js.cmo unsafe_this.cmi
 unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
+utf8_decode_test.cmo : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
+    ../runtime/js.cmo ../stdlib/bytes.cmi
+utf8_decode_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
+    ../runtime/js.cmj ../stdlib/bytes.cmj
 watch_test.cmo : ../others/node.cmo ../runtime/js.cmo
 watch_test.cmj : ../others/node.cmj ../runtime/js.cmj
