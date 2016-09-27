@@ -1,0 +1,25 @@
+// @flow
+
+type M__t = number
+
+type char = /* abstract w/o manifest */any
+
+type obj_t = /* Tobject */any
+
+type rec_t = /* Type_record */any
+
+type Util__t = {id: number}
+
+declare export var do_if: (p0: /* bool */any) => /* bool */any;
+
+declare export var mk_tuple: (p0: M__t, p1: number, p2: void) => [number, number, string, char];
+
+declare export var mk_rec: (p0: obj_t) => rec_t;
+
+declare export var mk_obj: (p0: /* Tvar - */any) => {id: number, name: string};
+
+declare export var mk_arr: (p0: void) => Array<number>;
+
+declare export var from_util: (p0: Util__t) => void;
+
+declare export var float_: number;

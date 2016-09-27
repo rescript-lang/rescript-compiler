@@ -1,0 +1,5 @@
+// @flow
+
+
+
+declare export var next: (p0: void) => number;
