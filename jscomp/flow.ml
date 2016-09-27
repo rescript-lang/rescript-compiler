@@ -1,7 +1,10 @@
+open Flow_tree
+
 type state = {
   env: Env.t;
   mutable used_types: string list;
-  mutable before: string list;
+  mutable types: decl list;
+  mutable exports: decl list;
 }
 
 let print_id s id = Ident.name id
@@ -12,30 +15,27 @@ let rec print_path s path =
   | Path.Pident id -> print_id s id
   | Path.Pdot (p, str, _) -> print_path s p ^ "__" ^ str
   | Path.Papply _ -> "Dunno_what_Papply_is"
-
-let rec p_sig s (sig_ : Types.signature) =
-  let lines = List.map (p_sig_item s) sig_ in
-  let lines = List.filter (fun l -> l <> "") lines in
-  String.concat "\n\n" lines
-
-and p_sig_item s = function
-  | Sig_value (id, val_desc) ->
-    let name = Ident.name id in
-    let desc = p_type_expr s val_desc.val_type in
-    "declare export var " ^ name ^ ": " ^ desc ^ ";"
-  | Sig_type _ -> "" (* Types are declared on demand *)
-  | Sig_typext _ -> ""
-  | Sig_module _ -> "" (* Non-toplevel values are not exposed *)
-  | Sig_modtype _ -> ""
-  | Sig_class _ -> ""
-  | Sig_class_type _ -> ""
+  
+let rec p_sigs s sigs = List.iter (p_sig s) sigs
+  
+and p_sig s = function
+  | Types.Sig_value (id, val_desc) ->
+    let decl_name = Ident.name id in
+    let decl_type = p_type_expr s val_desc.val_type in
+    s.exports <- {decl_name; decl_type} :: s.exports
+  | Sig_type _ -> () (* Types are declared on demand *)
+  | Sig_typext _ -> ()
+  | Sig_module _ -> () (* Non-toplevel values are not exposed *)
+  | Sig_modtype _ -> ()
+  | Sig_class _ -> ()
+  | Sig_class_type _ -> ()
 
 and p_type_decl s type_decl =
   match type_decl.Types.type_kind with
   | Type_abstract ->
     begin match type_decl.type_manifest with
     | Some expr -> p_type_expr s expr
-    | None -> "/* abstract w/o manifest */ mixed"
+    | None -> p_any "abstract w/o manifest"
     end
   | Type_record _ -> p_any "Type_record"
   | Type_variant _ -> p_any "Type_variant"
@@ -49,25 +49,26 @@ and p_type_expr s type_expr =
       | None -> "-" in
     p_any ("Tvar " ^ str)
   | Tarrow (label, left, right, c) -> p_arrow s (label, left, right, c)
-  | Ttuple tl -> "[" ^ (String.concat ", " (List.map (p_type_expr s) tl)) ^ "]"
+  | Ttuple tl -> T_tuple (List.map (p_type_expr s) tl)
   | Tconstr (path, tl, _) ->
     let name = Path.name path in
     begin match name, tl with
-    | "unit", _ -> "void"
-    | "string", _ -> "string"
-    | "int", _ | "float", _ -> "number"
-    | "bool", _ -> "any"
-    | "array", _ -> "Array<" ^ (p_type_expr s (List.hd tl)) ^ ">"
+    | "unit", _ -> p_named "void"
+    | "string", _ -> p_named "string"
+    | "int", _ | "float", _ -> p_named "number"
+    | "bool", _ -> p_any "bool"
+    | "array", _ -> p_named ~tl:[p_type_expr s (List.hd tl)] "Array"
     | "Js.t", [{desc = Tobject (t, _); _}] ->
       p_js_obj s t
     | _ ->
-      let path_ = print_path s path in
-      if not (List.mem path_ s.used_types) then begin
-        s.used_types <- path_ :: s.used_types;
-        let t_def = p_type_decl s (Env.find_type path s.env) in
-        s.before <- ("type " ^ path_ ^ " = " ^ t_def ^ ";") :: s.before
+      let decl_name = print_path s path in
+      if not (List.mem decl_name s.used_types) then begin
+        s.used_types <- decl_name :: s.used_types;
+        let decl_type = p_type_decl s (Env.find_type path s.env) in
+        let decl = {decl_name; decl_type} in
+        s.types <- decl :: s.types
       end;
-      path_
+      p_named decl_name
     end
   | Tobject _ -> p_any "Tobject"
   | Tfield _ -> p_any "Tfield" (* Shouldn't ever happen? *)
@@ -87,27 +88,29 @@ and p_arrow s t =
     | Tlink right -> collect (label, left, right, c)
     | _ -> ([left], right)
   in
-  let (params, result) = collect t in
-  let params = List.mapi (fun i p ->
-    "p" ^ (string_of_int i) ^ ": " ^ (p_type_expr s p)
-  ) params in
-  "(" ^ (String.concat ", " params) ^ ") => " ^ (p_type_expr s result)
+  let (params, ret) = collect t in
+  let params = List.map (p_type_expr s) params in
+  T_fun (params, p_type_expr s ret)
   
 and p_js_obj s t =
   let rec loop t acc =
     match t.Types.desc with
-    | Tfield (name, _, left, right) ->
-      (name ^ ": " ^ (p_type_expr s left)) :: (loop right acc)
+    | Tfield (field_name, _, left, right) ->
+      {field_name; field_type=(p_type_expr s left)} :: (loop right acc)
     | Tnil -> acc
     | _ -> acc
   in
   let fields = loop t [] in
-  "{" ^ (String.concat ", " fields) ^ "}"
+  T_obj fields
 
-and p_any comment = "/* " ^ comment ^ " */any"
+and p_any comment = p_named ~comment "any"
+
+and p_named ?(tl=[]) ?comment name = T_name (name, tl, comment)
 
 let print_signature env sigs =
-  let s = {env; used_types = []; before = []} in
-  let src = p_sig s sigs in
-  let before = String.concat "" (List.map (fun x -> x ^ "\n\n") s.before) in
-  "// @flow\n\n" ^ before ^ src
+  let s = {env; used_types = []; types = []; exports = []} in
+  List.iter (p_sig s) sigs;
+  Flow_print.print {
+    prog_types = List.rev s.types;
+    prog_exports = List.rev s.exports;
+  }
