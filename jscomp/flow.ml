@@ -1,5 +1,8 @@
 open Flow_tree
 
+module SSet = Set.Make(String)
+module SMap = Map.Make(String)
+
 type state = {
   env: Env.t;
   mutable used_types: string list;
@@ -107,10 +110,63 @@ and p_any comment = p_named ~comment "any"
 
 and p_named ?(tl=[]) ?comment name = T_name (name, tl, comment)
 
+let mk_type_name name used_names =
+  let is_unique name = not (SSet.mem name used_names) in
+  let rec loop i =
+    let new_name = name ^ "$" ^ (string_of_int i) in
+    if is_unique new_name then new_name else loop (i + 1)
+  in
+  if is_unique name then name else loop 0
+
+let get_type_map types exports =
+  let used_names = List.fold_left (fun names e ->
+    print_endline ("add export " ^ e.decl_name);
+    SSet.add e.decl_name names
+  ) SSet.empty exports in
+  let (_, type_map) = List.fold_left (fun (used_names, type_map) t ->
+    print_endline ("add type " ^ t.decl_name);
+    let name = mk_type_name t.decl_name used_names in
+    let type_names = SSet.add name used_names in
+    let type_map = SMap.add t.decl_name name type_map in
+    (type_names, type_map)
+  ) (used_names, SMap.empty) types in
+  SMap.iter (fun k v -> print_endline (k ^ " -> " ^ v)) type_map;
+  type_map
+
+let rename_types prog type_map =
+  let get_name name =
+    if SMap.mem name type_map then SMap.find name type_map else name
+  in
+  let rec rename t =
+    match t with
+    | T_name (name, tl, comment) ->
+      let name = get_name name in
+      let tl = List.map rename tl in
+      T_name (name, tl, comment)
+    | T_fun (args, ret) -> T_fun (List.map rename args, rename ret)
+    | T_obj fields ->
+      let map f = {
+        field_name = f.field_name;
+        field_type = rename f.field_type;
+      } in
+      T_obj (List.map map fields)
+    | T_tuple tl -> T_tuple (List.map rename tl)
+  in
+  let prog_types = List.map (fun d ->
+    {decl_name = get_name d.decl_name; decl_type = rename d.decl_type}
+  ) prog.prog_types in
+  let prog_exports = List.map (fun d ->
+    {d with decl_type = rename d.decl_type}
+  ) prog.prog_exports in
+  {prog_types; prog_exports}
+
 let print_signature env sigs =
   let s = {env; used_types = []; types = []; exports = []} in
   List.iter (p_sig s) sigs;
-  Flow_print.print {
+  let prog = {
     prog_types = List.rev s.types;
     prog_exports = List.rev s.exports;
-  }
+  } in
+  let type_map = get_type_map s.types s.exports in
+  let prog = rename_types prog type_map in
+  Flow_print.print prog

@@ -29,3 +29,6 @@ let mk_arr () = [|1; 2; 3|]
 let from_util (a: Util.t) = ()
 
 let float_ = 1.0
+
+type tt = int
+let tt: tt = 0
