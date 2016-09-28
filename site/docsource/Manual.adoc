@@ -55,6 +55,8 @@ include::./Semantic-differences-from-other-backends.adoc[]
 
 include::./FAQ.adoc[]
 
+include::./Suggestions-on-writing-idiomatic-bucklescript-code.adoc[]
+
 include::./Compiler-overview.adoc[]
 
 include::./Runtime-representation.adoc[]

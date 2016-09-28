@@ -1,0 +1,29 @@
+== Suggestions & Tricks(WIP)
+
+[WARNING]
+===============================================================
+These are opinionated suggestions based on my programming experience,
+it might _change_ over time.
+===============================================================
+
+
+// === Dirty but useful hacks
+//
+// . Escape the type system
+//
+// The `Obj.magic` provides a way to escape the type system, it is like `reinterpret_cast` in
+// C++, it is recommended to write functions with name `unsafe_` to do such hacks when really necessary
+//
+// [source,ocaml]
+
+=== Optimizations
+
+[NOTE]
+======
+BuckleScript is  a young project  and moves very fast, this will be updated accordingly
+======
+
+==== Performance of stdlib
+
+
+==== Optimize callbacks
