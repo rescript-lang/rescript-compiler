@@ -605,6 +605,10 @@ stack_comp_test.cmj : ../stdlib/stack.cmi mt_global.cmi mt.cmi
 stack_comp_test.cmx : ../stdlib/stack.cmx mt_global.cmx mt.cmx
 stack_test.cmj : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
+stream_parser_test.cmj : ../stdlib/stream.cmi ../stdlib/queue.cmi mt.cmi \
+    ../stdlib/genlex.cmi
+stream_parser_test.cmx : ../stdlib/stream.cmx ../stdlib/queue.cmx mt.cmx \
+    ../stdlib/genlex.cmx
 string_bound_get_test.cmj : ../stdlib/string.cmi ../stdlib/bytes.cmi
 string_bound_get_test.cmx : ../stdlib/string.cmx ../stdlib/bytes.cmx
 string_get_set_test.cmj : mt.cmi
@@ -1457,6 +1461,10 @@ stack_comp_test.cmo : ../stdlib/stack.cmi mt_global.cmi mt.cmi
 stack_comp_test.cmj : ../stdlib/stack.cmj mt_global.cmj mt.cmj
 stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
+stream_parser_test.cmo : ../stdlib/stream.cmi ../stdlib/queue.cmi mt.cmi \
+    ../stdlib/genlex.cmi
+stream_parser_test.cmj : ../stdlib/stream.cmj ../stdlib/queue.cmj mt.cmj \
+    ../stdlib/genlex.cmj
 string_bound_get_test.cmo : ../stdlib/string.cmi ../stdlib/bytes.cmi
 string_bound_get_test.cmj : ../stdlib/string.cmj ../stdlib/bytes.cmj
 string_get_set_test.cmo : mt.cmi
