@@ -53,3 +53,8 @@ val bad_argf : ('a, unit, string, 'b) format4 -> 'a
 val dump : 'a -> string 
 
 external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int

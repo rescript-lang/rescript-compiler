@@ -122,21 +122,21 @@ let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_cor
                -> 
                begin match Ast_attributes.process_bs_string_as attrs with 
                  | Some name, new_attrs  -> 
-                   `Null, ((Btype.hash_variant label, name) :: acc ), 
+                   `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
                    Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
 
                  | None, _ -> 
-                   `Null, ((Btype.hash_variant label, label) :: acc ), 
+                   `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
                    tag :: row_fields
                end
              | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
                -> 
                begin match Ast_attributes.process_bs_string_as attrs with 
                  | Some name, new_attrs -> 
-                   `NonNull, ((Btype.hash_variant label, name) :: acc),
+                   `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
                    Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
                  | None, _ -> 
-                   `NonNull, ((Btype.hash_variant label, label) :: acc),
+                   `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
                    (tag :: row_fields)
                end
              | _ -> Location.raise_errorf ~loc "Not a valid string type"
@@ -161,10 +161,10 @@ let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_cor
                 -> 
                   begin match Ast_attributes.process_bs_int_as attrs with 
                   | Some i, new_attrs -> 
-                    i + 1, ((Btype.hash_variant label , i):: acc ), 
+                    i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
                     Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
                   | None, _ -> 
-                    i + 1 , ((Btype.hash_variant label , i):: acc ), rtag::row_fields
+                    i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
                   end
 
               | _ -> Location.raise_errorf ~loc "Not a valid string type"

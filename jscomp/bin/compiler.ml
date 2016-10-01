@@ -2900,6 +2900,11 @@ val dump : 'a -> string
 
 external id : 'a -> 'a = "%identity"
 
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
+
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3053,6 +3058,18 @@ let rec dump r =
 let dump v = dump (Obj.repr v)
 
 external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
 
 end
 module Literals : sig 
@@ -4341,21 +4358,21 @@ let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_cor
                -> 
                begin match Ast_attributes.process_bs_string_as attrs with 
                  | Some name, new_attrs  -> 
-                   `Null, ((Btype.hash_variant label, name) :: acc ), 
+                   `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
                    Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
 
                  | None, _ -> 
-                   `Null, ((Btype.hash_variant label, label) :: acc ), 
+                   `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
                    tag :: row_fields
                end
              | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
                -> 
                begin match Ast_attributes.process_bs_string_as attrs with 
                  | Some name, new_attrs -> 
-                   `NonNull, ((Btype.hash_variant label, name) :: acc),
+                   `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
                    Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
                  | None, _ -> 
-                   `NonNull, ((Btype.hash_variant label, label) :: acc),
+                   `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
                    (tag :: row_fields)
                end
              | _ -> Location.raise_errorf ~loc "Not a valid string type"
@@ -4380,10 +4397,10 @@ let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_cor
                 -> 
                   begin match Ast_attributes.process_bs_int_as attrs with 
                   | Some i, new_attrs -> 
-                    i + 1, ((Btype.hash_variant label , i):: acc ), 
+                    i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
                     Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
                   | None, _ -> 
-                    i + 1 , ((Btype.hash_variant label , i):: acc ), rtag::row_fields
+                    i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
                   end
 
               | _ -> Location.raise_errorf ~loc "Not a valid string type"
@@ -34832,7 +34849,11 @@ let buckle_script_flags =
 let _ = 
   Clflags.unsafe_string := false;
   Clflags.debug := true;
-
+  Lexer.replace_directive_built_in_value "bs" (Dir_bool true);
+  let major, minor, patch, add = Lexer.semantic_version_parse Js_config.version in 
+  Lexer.replace_directive_built_in_value "bs_major" (Dir_int major);
+  Lexer.replace_directive_built_in_value "bs_minor" (Dir_int minor);
+  Lexer.replace_directive_built_in_value "bs_patch" (Dir_int minor);
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
