@@ -32064,7 +32064,7 @@ let rec filter_row_fields erase = function
                     (**************************************)
 
 
-exception Non_closed
+exception Non_closed0
 
 let rec closed_schema_rec ty =
   let ty = repr ty in
@@ -32073,7 +32073,7 @@ let rec closed_schema_rec ty =
     ty.level <- pivot_level - level;
     match ty.desc with
       Tvar _ when level <> generic_level ->
-        raise Non_closed
+        raise Non_closed0
     | Tfield(_, kind, t1, t2) ->
         if field_kind_repr kind = Fpresent then
           closed_schema_rec t1;
@@ -32092,7 +32092,7 @@ let closed_schema ty =
     closed_schema_rec ty;
     unmark_type ty;
     true
-  with Non_closed ->
+  with Non_closed0 ->
     unmark_type ty;
     false
 
@@ -32204,7 +32204,7 @@ type closed_class_failure =
     CC_Method of type_expr * bool * string * type_expr
   | CC_Value of type_expr * bool * string * type_expr
 
-exception Failure of closed_class_failure
+exception CCFailure of closed_class_failure
 
 let closed_class params sign =
   let ty = object_fields (repr sign.csig_self) in
@@ -32220,13 +32220,13 @@ let closed_class params sign =
       (fun (lab, kind, ty) ->
         if field_kind_repr kind = Fpresent then
         try closed_type ty with Non_closed (ty0, real) ->
-          raise (Failure (CC_Method (ty0, real, lab, ty))))
+          raise (CCFailure (CC_Method (ty0, real, lab, ty))))
       fields;
     mark_type_params (repr sign.csig_self);
     List.iter unmark_type params;
     unmark_class_signature sign;
     None
-  with Failure reason ->
+  with CCFailure reason ->
     mark_type_params (repr sign.csig_self);
     List.iter unmark_type params;
     unmark_class_signature sign;

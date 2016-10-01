@@ -26,7 +26,7 @@ let eq loc x y =
 
 let () = 
   eq __LOC__ vv 3  ;
-  eq __LOC__ !v 4
+  eq __LOC__ !v 2
 
 
 ;; Mt.from_pair_suites __FILE__ !suites

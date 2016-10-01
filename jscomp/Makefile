@@ -98,7 +98,7 @@ releasebuild:./bin/bspack.exe
 	@echo "Make release compiler"
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
 	@echo "Make release ppx"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/bsppx.mli bin/bsppx.ml -o bin/bsppx.exe
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I bin  bin/config_bsppx.mli bin/config_bsppx.ml  bin/bsppx.mli bin/bsppx.ml -o bin/bsppx.exe
 
 release:snapshot
 	$(MAKE) releasebuild

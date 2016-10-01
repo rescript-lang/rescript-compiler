@@ -32,7 +32,7 @@ function eq(loc, x, y) {
 
 eq('File "condition_compilation_test.ml", line 28, characters 5-12', 3, 3);
 
-eq('File "condition_compilation_test.ml", line 29, characters 5-12', v[0], 4);
+eq('File "condition_compilation_test.ml", line 29, characters 5-12', v[0], 2);
 
 Mt.from_pair_suites("condition_compilation_test.ml", suites[0]);
 
