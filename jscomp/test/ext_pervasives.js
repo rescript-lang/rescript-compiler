@@ -5,6 +5,7 @@ var Caml_obj                = require("../../lib/js/caml_obj");
 var Obj                     = require("../../lib/js/obj");
 var Pervasives              = require("../../lib/js/pervasives");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Caml_int32              = require("../../lib/js/caml_int32");
 var Arg                     = require("../../lib/js/arg");
 var Block                   = require("../../lib/js/block");
 var Curry                   = require("../../lib/js/curry");
@@ -13,6 +14,7 @@ var $$Array                 = require("../../lib/js/array");
 var $$String                = require("../../lib/js/string");
 var Format                  = require("../../lib/js/format");
 var List                    = require("../../lib/js/list");
+var Caml_string             = require("../../lib/js/caml_string");
 
 function $$finally(v, action, f) {
   var exit = 0;
@@ -272,6 +274,20 @@ function dump(r) {
 
 var dump$1 = dump
 
+function hash_variant(s) {
+  var accu = 0;
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+    accu = Caml_int32.imul(223, accu) + Caml_string.get(s, i) | 0;
+  }
+  accu = accu & 2147483647;
+  if (accu > 1073741823) {
+    return accu - -2147483648 | 0;
+  }
+  else {
+    return accu;
+  }
+}
+
 exports.$$finally         = $$finally;
 exports.with_file_as_chan = with_file_as_chan;
 exports.with_file_as_pp   = with_file_as_pp;
@@ -280,4 +296,5 @@ exports.failwithf         = failwithf;
 exports.invalid_argf      = invalid_argf;
 exports.bad_argf          = bad_argf;
 exports.dump              = dump$1;
+exports.hash_variant      = hash_variant;
 /* Format Not a pure module */

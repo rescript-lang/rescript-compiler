@@ -32,7 +32,7 @@ js_fold.ml:js_fold.mlp j.ml
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
 
-./bin/bspack.exe: ./bin/bspack_config.mli ./bin/bspack_config.ml ./bin/bspack.mli ./bin/bspack.ml
+./bin/bspack.exe: ./bin/config_bspack.mli ./bin/config_bspack.ml ./bin/bspack.mli ./bin/bspack.ml
 	$(NATIVE) -w -a -I bin  unix.cmxa  $^ -o $@
 
 # For faster compilation when can cache ast file instead for Linux/MacOS users
@@ -41,8 +41,8 @@ js_fold.ml:js_fold.mlp j.ml
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 
-./bin/bsppx.exe: ./bin/bsppx.mli ./bin/bsppx.ml
-	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin -I +compiler-libs ocamlcommon.cmxa   $^ -o $@
+./bin/bsppx.exe: ./bin/config_bsppx.mli ./bin/config_bsppx.ml ./bin/bsppx.mli ./bin/bsppx.ml
+	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin    $^ -o $@
 
 
 snapshot: ./bin/bspack.exe snapshotcmj
@@ -51,8 +51,8 @@ snapshot: ./bin/bspack.exe snapshotcmj
 snapshotml:./bin/bspack.exe ./bin/compiler.mllib
 	@echo "Snapshot ml"
 	$< -bs-mllib bin/compiler.mllib -o bin/compiler.ml
-	$< -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
-	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Whole_compiler_config ' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
+	$< -bs-log-mllib bin/bsppx.mllib  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
+	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 
 snapshotcmj:
 	@echo "Collecting cmj files"
@@ -60,12 +60,17 @@ snapshotcmj:
 
 # git diff bin/bspack.ml
 # bootbspack requires ../ocaml has parser, lexer processed by ocamlyacc and ocamllex
-bootbspack: ./bin/bspack.exe
+
+
+# bootbspack should not depend on bspack.exe
+# if so, `make bootbspack` will cause `bspack.exe` to be rebuilt
+# which may already be wrong
+bootbspack: 
 	@echo "Bootstrap bspack.exe"
-	./bin/bspack.exe -bs-log-mllib bin/bspack.mllib -prelude-str 'module Config = Bspack_config '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
-	$(NATIVE) -w -40  unix.cmxa  -I bin bin/bspack_config.mli bin/bspack_config.ml bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
+	./bin/bspack.exe -bs-log-mllib bin/bspack.mllib -prelude-str 'module Config = Config_bspack '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	$(NATIVE) -w -40  unix.cmxa  -I bin bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
 	@echo "Using the bootstrapped bspack.exe to genreate new bspack.ml: `date`"
-	./bin/bspack.exe -bs-log-mllib bin/bspack.mllib -prelude-str  'module Config = Bspack_config '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	./bin/bspack.exe -bs-log-mllib bin/bspack.mllib -prelude-str  'module Config = Config_bspack'   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
 	@echo "Rebuilding bspack.exe"
 	make -B ./bin/bspack.exe
@@ -106,7 +111,7 @@ world:
 
 dist-world:
 	@echo "Making compiler"
-	$(NATIVE) -w -a -I bin  ./bin/whole_compiler_config.mli ./bin/whole_compiler_config.ml  ./bin/whole_compiler.mli ./bin/whole_compiler.ml -o bin/bsc.exe
+	$(NATIVE) -w -a -I bin  ./bin/config_whole_compiler.mli ./bin/config_whole_compiler.ml  ./bin/whole_compiler.mli ./bin/whole_compiler.ml -o bin/bsc.exe
 	$(MAKE) bin/bspack.exe
 	$(MAKE) bin/bsppx.exe
 	$(MAKE) libs

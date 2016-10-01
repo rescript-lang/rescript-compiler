@@ -193,7 +193,11 @@ let buckle_script_flags =
 let _ = 
   Clflags.unsafe_string := false;
   Clflags.debug := true;
-
+  Lexer.replace_directive_built_in_value "bs" (Dir_bool true);
+  let major, minor, patch, add = Lexer.semantic_version_parse Js_config.version in 
+  Lexer.replace_directive_built_in_value "bs_major" (Dir_int major);
+  Lexer.replace_directive_built_in_value "bs_minor" (Dir_int minor);
+  Lexer.replace_directive_built_in_value "bs_patch" (Dir_int minor);
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
