@@ -52,6 +52,18 @@ only update the compiler occasionally).
 Which version of JavaScript syntax does BuckleScript target?::
 BuckleScript targets **ES5**.
 
+Does BuckleScript work with merlin?::
+  Yes, you need edit your `.merlin` file:
++
+[source]
+--------
+B node_modules/bs-platform/lib/ocaml
+S node_modules/bs-platform/lib/ocaml
+FLG -ppx node_modules/bs-platform/bin/bsppx.exe
+--------
++
+Note there is a https://github.com/the-lambda-church/merlin/issues/568[upstream fix] in Merlin, make sure your merlin is updated
+
 What polyfills does BuckleScript need?::
 
 - _Math.imul_:
