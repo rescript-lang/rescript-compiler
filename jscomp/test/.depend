@@ -141,8 +141,8 @@ complex_test.cmj : mt.cmi ../stdlib/complex.cmi
 complex_test.cmx : mt.cmx ../stdlib/complex.cmx
 complex_while_loop.cmj :
 complex_while_loop.cmx :
-condition_compilation_test.cmj : mt.cmi
-condition_compilation_test.cmx : mt.cmx
+condition_compilation_test.cmj :
+condition_compilation_test.cmx :
 config1_test.cmj :
 config1_test.cmx :
 config2_test.cmj : ../runtime/js.cmj config2_test.cmi
@@ -999,8 +999,8 @@ complex_test.cmo : mt.cmi ../stdlib/complex.cmi
 complex_test.cmj : mt.cmj ../stdlib/complex.cmj
 complex_while_loop.cmo :
 complex_while_loop.cmj :
-condition_compilation_test.cmo : mt.cmi
-condition_compilation_test.cmj : mt.cmj
+condition_compilation_test.cmo :
+condition_compilation_test.cmj :
 config1_test.cmo :
 config1_test.cmj :
 config2_test.cmo : ../runtime/js.cmo config2_test.cmi

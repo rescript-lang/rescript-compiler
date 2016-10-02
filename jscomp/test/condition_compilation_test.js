@@ -30,18 +30,27 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq('File "condition_compilation_test.ml", line 28, characters 5-12', 3, 3);
+eq('File "condition_compilation_test.ml", line 63, characters 5-12', 3, 3);
 
-eq('File "condition_compilation_test.ml", line 29, characters 5-12', v[0], 2);
+eq('File "condition_compilation_test.ml", line 64, characters 5-12', v[0], 2);
 
 Mt.from_pair_suites("condition_compilation_test.ml", suites[0]);
 
 var vv = 3;
 
-exports.vv      = vv;
-exports.v       = v;
-exports.a       = a;
-exports.suites  = suites;
-exports.test_id = test_id;
-exports.eq      = eq;
+var version_gt_3 = /* true */1;
+
+var version = -1;
+
+var ocaml_veriosn = "4.02.3";
+
+exports.vv            = vv;
+exports.v             = v;
+exports.a             = a;
+exports.version_gt_3  = version_gt_3;
+exports.version       = version;
+exports.ocaml_veriosn = ocaml_veriosn;
+exports.suites        = suites;
+exports.test_id       = test_id;
+exports.eq            = eq;
 /*  Not a pure module */
