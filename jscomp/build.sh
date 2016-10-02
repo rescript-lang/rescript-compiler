@@ -8,6 +8,11 @@ export OCAMLRUNPARAM=b
 export OCAMLBUILD_CFLAGS=-g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,+compiler-libs
 export npm_package_name=bs-platform
 
+# This is to make ocamldep happy
+# eventually we want replace ocamldep with bsdep
+# or just integrate it 
+export BS_VERSION="1.1.0"
+export BS=true
 
 ## Only make sense for dev 
 make js_map.ml js_fold.ml  >> build.compile
