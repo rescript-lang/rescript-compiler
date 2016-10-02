@@ -3570,6 +3570,20 @@ only update the compiler occasionally).</p>
 <p>BuckleScript targets <strong>ES5</strong>.</p>
 </li>
 <li>
+<p><em>Does BuckleScript work with merlin?</em></p>
+<p>Yes, you need edit your <code>.merlin</code> file:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code>B node_modules/bs-platform/lib/ocaml
+S node_modules/bs-platform/lib/ocaml
+FLG -ppx node_modules/bs-platform/bin/bsppx.exe</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note there is a <a href="https://github.com/the-lambda-church/merlin/issues/568">upstream fix</a> in Merlin, make sure your merlin is updated</p>
+</div>
+</li>
+<li>
 <p><em>What polyfills does BuckleScript need?</em></p>
 <div class="ulist">
 <ul>

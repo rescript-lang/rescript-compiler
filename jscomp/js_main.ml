@@ -182,6 +182,9 @@ let buckle_script_flags =
    Arg.Rest collect_file, 
    " Provide batch of files, the compiler will sort it before compiling"
   )
+  (* :: *)
+  (* ("-bs-list-directives", *)
+  (* ) *)
   :: Ocaml_options.mk_impl impl
   :: Ocaml_options.mk_intf intf 
   :: Ocaml_options.mk__ anonymous
@@ -193,11 +196,10 @@ let buckle_script_flags =
 let _ = 
   Clflags.unsafe_string := false;
   Clflags.debug := true;
-  Lexer.replace_directive_built_in_value "bs" (Dir_bool true);
-  let major, minor, patch, add = Lexer.semantic_version_parse Js_config.version in 
-  Lexer.replace_directive_built_in_value "bs_major" (Dir_int major);
-  Lexer.replace_directive_built_in_value "bs_minor" (Dir_int minor);
-  Lexer.replace_directive_built_in_value "bs_patch" (Dir_int minor);
+
+  (* Lexer.replace_directive_built_in_value "JJ" (Dir_string "xghso"); *)
+  Lexer.replace_directive_built_in_value "BS" (Dir_bool true);
+  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Js_config.version);
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
