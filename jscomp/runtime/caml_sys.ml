@@ -58,7 +58,7 @@ external current_date : unit -> float = "$$date"
 
 let caml_initial_time = current_date ()  *. 0.001
 
-let caml_sys_time () = (current_date () -. caml_initial_time ) *. 0.001
+let caml_sys_time () = (current_date () *. 0.001) -. caml_initial_time
 
 let caml_sys_random_seed () : nativeint array = 
    [|
