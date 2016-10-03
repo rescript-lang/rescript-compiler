@@ -196,9 +196,7 @@ let buckle_script_flags =
 let _ = 
   Clflags.unsafe_string := false;
   Clflags.debug := true;
-
-  Lexer.replace_directive_built_in_value "BS" (Dir_bool true);
-  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Js_config.version);
+  Bs_conditional_initial.setup_env ();
   try
     Compenv.readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
