@@ -21,7 +21,7 @@
 
 
 (* The main OCaml version string has moved to ../VERSION *)
-let version = Sys.ocaml_version
+let version = "4.02.3+BS"
 
 let standard_library_default = "/usr/local/lib/ocaml/lib/ocaml" (* does not matter *)
 
