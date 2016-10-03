@@ -133,7 +133,12 @@ let find_dependency target_kind modname (byt_deps, opt_deps) =
         | ML  -> [basename ^ ".cmi";]
       else
         (* again, make-specific hack *)
-        [basename ^ (if !native_only then ".cmx" else ".cmo")] in
+        [basename ^ 
+         (* BS patch*)
+         ".cmj" 
+         (* (if !native_only then ".cmx" else ".cmo") *)
+         (* BS patch*)
+        ] in
     let optnames =
       if !all_dependencies
       then match target_kind with
@@ -249,6 +254,9 @@ let ml_file_dependencies source_file =
       | Ptop_dir _ -> []
     in
     List.flatten (List.map f (Parse.use_file lexbuf))
+    (* BS patch *)
+    |> !Ppx_entry.rewrite_implementation
+    (* BS patch *)
   in
   let extracted_deps =
     read_parse_and_extract parse_use_file_as_impl Depend.add_implementation
@@ -261,11 +269,13 @@ let ml_file_dependencies source_file =
       print_raw_dependencies source_file extracted_deps
     end else begin
       let basename = Filename.chop_extension source_file in
-      let byte_targets = [ basename ^ ".cmo" ] in
-      let native_targets =
-        if !all_dependencies
-        then [ basename ^ ".cmx"; basename ^ ".o" ]
-        else [ basename ^ ".cmx" ] in
+      (* BS patch *)
+      (* let byte_targets = [ basename ^ ".cmo" ] in *)
+      (* let native_targets = *)
+      (*   if !all_dependencies *)
+      (*   then [ basename ^ ".cmx"; basename ^ ".o" ] *)
+      (*   else [ basename ^ ".cmx" ] in *)
+      (* BS patch *)
       let init_deps = if !all_dependencies then [source_file] else [] in
       let cmi_name = basename ^ ".cmi" in
       let init_deps, extra_targets =
@@ -278,14 +288,24 @@ let ml_file_dependencies source_file =
       let (byt_deps, native_deps) =
         Depend.StringSet.fold (find_dependency ML)
           extracted_deps init_deps in
-      print_dependencies (byte_targets @ extra_targets) byt_deps;
-      print_dependencies (native_targets @ extra_targets) native_deps;
+      (* BS patch *)
+      print_dependencies ([basename ^ ".cmj" ] @ extra_targets) byt_deps;
+      (* print_dependencies (byte_targets @ extra_targets) byt_deps; *)
+      (* print_dependencies (native_targets @ extra_targets) native_deps; *)
+      (* BS patch *)
     end
 
 let mli_file_dependencies source_file =
   let extracted_deps =
-    read_parse_and_extract Parse.interface Depend.add_signature
-                           Config.ast_intf_magic_number source_file
+    read_parse_and_extract 
+      (*BS patch *)
+      (fun lexbuf -> 
+         Parse.interface lexbuf
+         |> !Ppx_entry.rewrite_signature
+      )
+      (*BS patch *)
+      Depend.add_signature
+      Config.ast_intf_magic_number source_file
   in
   if !sort_files then
     files := (source_file, MLI, extracted_deps) :: !files
@@ -413,6 +433,9 @@ let print_version_num () =
 ;;
 
 let _ =
+  (* BS patch*)
+  Bs_conditional_initial.setup_env ();
+  (* BS patch*)
   Clflags.classic := false;
   add_to_list first_include_dirs Filename.current_dir_name;
   Compenv.readenv ppf Before_args;
