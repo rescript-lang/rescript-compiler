@@ -621,6 +621,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_examples_3">Examples</a></li>
 </ul>
 </li>
+<li><a href="#_build_system_support">Build system support</a></li>
 <li><a href="#_faq">FAQ</a></li>
 <li><a href="#_high_level_compiler_workflow">High Level compiler workflow</a>
 <ul class="sectlevel2">
@@ -648,8 +649,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_difference_from_a_href_https_github_com_ocsigen_js_of_ocaml_js_of_ocaml_a">Difference from <a href="https://github.com/ocsigen/js_of_ocaml">js_of_ocaml</a></a></li>
 </ul>
 </li>
-<li><a href="#_changes">Appendix A: CHANGES</a></li>
-<li><a href="#_1_1_0_dev">1.1.0(dev)</a></li>
+<li><a href="#_1_1_1_dev">Appendix A: 1.1.1(dev)</a></li>
+<li><a href="#_changes">CHANGES</a></li>
+<li><a href="#_1_1_0">1.1.0</a></li>
 <li><a href="#_1_03">1.03</a></li>
 <li><a href="#_1_02">1.02</a></li>
 <li><a href="#_1_01">1.01</a></li>
@@ -3664,15 +3666,13 @@ it would  be string</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_faq"><a class="anchor" href="#_faq"></a>FAQ</h2>
+<h2 id="_build_system_support"><a class="anchor" href="#_build_system_support"></a>Build system support</h2>
 <div class="sectionbody">
-<div class="qlist qanda">
-<ol>
-<li>
-<p><em>How to adapt your build system?</em></p>
-<p>The BuckleScript compilation model is the same as the OCaml compiler.
+<div class="paragraph">
+<p>The BuckleScript compilation model is similar to OCaml native compiler.
 If <code>b.ml</code> depends on <code>a.ml</code>, you have to compile <code>a.ml</code> <strong>and</strong> <code>a.mli</code>
 first.</p>
+</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -3690,26 +3690,29 @@ inlining, arity inference and other information.</p>
 </table>
 </div>
 <div class="paragraph">
+<p>BuckleScript distribution has <code>bsdep.exe</code> which has the same interface as <code>ocamldep</code></p>
+</div>
+<div class="paragraph">
 <p>Here is a simple Makefile to get started:</p>
 </div>
 <div class="listingblock">
 <div class="title">Makefile</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="make"><span class="tok-nv">OCAMLC</span><span class="tok-o">=</span>bsc.exe <b class="conum">(1)</b>
-<span class="tok-nv">OCAMLDEP</span><span class="tok-o">=</span>ocamldep <b class="conum">(2)</b>
+<span class="tok-nv">OCAMLDEP</span><span class="tok-o">=</span>bsdep.exe <b class="conum">(2)</b>
 <span class="tok-nv">SOURCE_LIST</span> <span class="tok-o">:=</span> src_a src_b
 <span class="tok-nv">SOURCE_MLI</span>  <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .mli, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
 <span class="tok-nv">SOURCE_ML</span>   <span class="tok-o">=</span> <span class="tok-k">$(</span>addsuffix .ml, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
 <span class="tok-nv">TARGETS</span> <span class="tok-o">:=</span> <span class="tok-k">$(</span>addsuffix .cmj, <span class="tok-k">$(</span>SOURCE_LIST<span class="tok-k">))</span>
 <span class="tok-nv">INCLUDES</span><span class="tok-o">=</span>
 <span class="tok-nf">all</span><span class="tok-o">:</span> <span class="tok-k">$(</span><span class="tok-nv">TARGETS</span><span class="tok-k">)</span>
-<span class="tok-nf">%.cmi</span><span class="tok-o">:</span> %.<span class="tok-n">mli</span>
+<span class="tok-nf">.mli</span><span class="tok-o">:</span>.<span class="tok-n">cmi</span>
         <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
-<span class="tok-nf">%.ml</span><span class="tok-o">:</span> %.<span class="tok-n">cmj</span>:
+<span class="tok-nf">.ml</span><span class="tok-o">:</span>.<span class="tok-n">cmj</span>:
         <span class="tok-k">$(</span>OCAMLC<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>COMPFLAGS<span class="tok-k">)</span>  -c <span class="tok-nv">$&lt;</span>
 <span class="tok-cp">-include .depend</span>
 <span class="tok-nf">depend</span><span class="tok-o">:</span>
-        <span class="tok-k">$(</span>OCAMLDEP<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_ML<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_MLI<span class="tok-k">)</span> <span class="tok-p">|</span> sed -e <span class="tok-s1">&#39;s/\.cmx/.cmj/g&#39;</span> &gt; .depend</code></pre>
+        <span class="tok-k">$(</span>OCAMLDEP<span class="tok-k">)</span> <span class="tok-k">$(</span>INCLUDES<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_ML<span class="tok-k">)</span> <span class="tok-k">$(</span>SOURCE_MLI<span class="tok-k">)</span> &gt; .depend</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -3722,7 +3725,61 @@ inlining, arity inference and other information.</p>
 </li>
 </ol>
 </div>
+<div class="paragraph">
+<p>In theory, people need run <code>make depend &amp;&amp; make all</code>, <code>make depend</code> will calculate dependency
+while <code>make all</code> will do the job.</p>
+</div>
+<div class="paragraph">
+<p>However, in practice, people used to use a file watch service,
+take <a href="https://facebook.github.io/watchman/">watchman</a> for example, you need json configure</p>
+</div>
+<div class="listingblock">
+<div class="title">build.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="json"><span class="tok-p">[</span>
+    <span class="tok-s2">&quot;trigger&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;.&quot;</span><span class="tok-p">,</span> <span class="tok-p">{</span>
+        <span class="tok-nt">&quot;name&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;build&quot;</span><span class="tok-p">,</span>
+        <span class="tok-nt">&quot;expression&quot;</span><span class="tok-p">:</span> <span class="tok-p">[</span><span class="tok-s2">&quot;pcre&quot;</span><span class="tok-p">,</span> <span class="tok-s2">&quot;(\\.(ml|mll|mly|mli|sh|sh)$|Makefile)&quot;</span><span class="tok-p">],</span> <b class="conum">(1)</b>
+        <span class="tok-nt">&quot;command&quot;</span><span class="tok-p">:</span> <span class="tok-p">[</span><span class="tok-s2">&quot;./build.sh&quot;</span><span class="tok-p">],</span>
+        <span class="tok-nt">&quot;append_files&quot;</span> <span class="tok-p">:</span> <span class="tok-kc">true</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">]</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>whenever such files changed, it will trigger <code>command</code> field to be run</p>
 </li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">build.sh</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">make -r -j8 all <b class="conum">(1)</b>
+make depend <b class="conum">(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>build</p>
+</li>
+<li>
+<p>update the dependency</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Now in your working directory, type <code>watchman -j &lt; build.json</code> and enjoy the lightning build speed.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_faq"><a class="anchor" href="#_faq"></a>FAQ</h2>
+<div class="sectionbody">
+<div class="qlist qanda">
+<ol>
 <li>
 <p><em>How does IO work in browser?</em></p>
 <p>In general, it is very hard to simulate IO in browser, we recommend users to write bindings to NodeJS directly for server side, or use <code>Js.log</code> in client side, see disucssions in <a href="https://github.com/bloomberg/bucklescript/issues/748">#748</a></p>
@@ -4444,13 +4501,19 @@ Array while js_of_ocaml requires its index 0 to be of value 0.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_changes"><a class="anchor" href="#_changes"></a>Appendix A: CHANGES</h2>
+<h2 id="_1_1_1_dev"><a class="anchor" href="#_1_1_1_dev"></a>Appendix A: 1.1.1(dev)</h2>
 <div class="sectionbody">
 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_1_1_0_dev"><a class="anchor" href="#_1_1_0_dev"></a>1.1.0(dev)</h2>
+<h2 id="_changes"><a class="anchor" href="#_changes"></a>CHANGES</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_1_0"><a class="anchor" href="#_1_1_0"></a>1.1.0</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
