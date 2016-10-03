@@ -1,7 +1,11 @@
 
 [appendix]
+
+== 1.1.1(dev)
+
+
 ## CHANGES
-== 1.1.0(dev)
+== 1.1.0
 
 * Features
 - Add bsdep.exe {issues}822[#822]	

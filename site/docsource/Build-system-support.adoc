@@ -1,0 +1,72 @@
+
+== Build system support
+
+The BuckleScript compilation model is similar to OCaml native compiler.
+If `b.ml` depends on `a.ml`, you have to compile `a.ml` *and* `a.mli`
+first.
+
+
+[NOTE]
+======
+The technical reason is that BuckleScript will generate intermediate
+files with the extension `.cmj` which are later used for cross module
+inlining, arity inference and other information.
+======
+
+BuckleScript distribution has `bsdep.exe` which has the same interface as `ocamldep`
+
+Here is a simple Makefile to get started:
+
+.Makefile
+[source,make]
+-------------
+OCAMLC=bsc.exe # <1>
+OCAMLDEP=bsdep.exe # <2>
+SOURCE_LIST := src_a src_b
+SOURCE_MLI  = $(addsuffix .mli, $(SOURCE_LIST))
+SOURCE_ML   = $(addsuffix .ml, $(SOURCE_LIST))
+TARGETS := $(addsuffix .cmj, $(SOURCE_LIST))
+INCLUDES=
+all: $(TARGETS)
+.mli:.cmi
+        $(OCAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+.ml:.cmj:
+        $(OCAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+-include .depend
+depend:
+        $(OCAMLDEP) $(INCLUDES) $(SOURCE_ML) $(SOURCE_MLI) > .depend
+-------------
+<1> bsc.exe is the BuckleScript compiler
+<2> ocamldep executable is part of the OCaml compiler installation
+
+In theory, people need run `make depend && make all`, `make depend` will calculate dependency
+while `make all` will do the job.
+
+However, in practice, people used to use a file watch service,
+take https://facebook.github.io/watchman/[watchman] for example, you need json configure
+
+.build.json
+[source,json]
+-------------
+[
+    "trigger", ".", {
+        "name": "build",
+        "expression": ["pcre", "(\\.(ml|mll|mly|mli|sh|sh)$|Makefile)"], // <1>
+        "command": ["./build.sh"],
+        "append_files" : true
+    }
+]
+-------------
+<1> whenever such files changed, it will trigger `command` field to be run
+
+.build.sh
+[source,sh]
+-----------
+make -r -j8 all <1>
+make depend // <2>
+-----------
+<1> build
+<2> update the dependency
+
+
+Now in your working directory, type `watchman -j < build.json` and enjoy the lightning build speed.

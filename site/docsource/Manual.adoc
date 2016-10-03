@@ -55,13 +55,13 @@ include::./Semantic-differences-from-other-backends.adoc[]
 
 include::./Conditional-compilation-support.adoc[]
 
+include::./Build-system-support.adoc[]
+
 include::./FAQ.adoc[]
 
 include::./Compiler-overview.adoc[]
 
 include::./Runtime-representation.adoc[]
-
-
 
 include::./Integration_with_reason.adoc[]
 

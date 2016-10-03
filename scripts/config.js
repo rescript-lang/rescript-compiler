@@ -90,7 +90,7 @@ function getConfigOutput(){
 
     }
     catch(e){
-        console.log(e)
+        console.log("configuire failure")
         return false
     }
 }
@@ -104,7 +104,7 @@ if(config_map && config_map.version.indexOf('4.02') >= 0 ){
     if (is_windows){
         process.env.WIN32='1'
     }
-    var whole_compiler_config = path.join(jscomp, 'bin', 'whole_compiler_config.ml' )
+    var whole_compiler_config = path.join(jscomp, 'bin', 'config_whole_compiler.ml' )
     var content = fs.readFileSync(whole_compiler_config,'utf8')
     var generated =  content.replace(/%%(\w+)%%/g,
         function(_whole,p0){
