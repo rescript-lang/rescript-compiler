@@ -21,5 +21,5 @@ cat reason_parser.ml | wc
 It depends on `Reason_toolchain` which is not stand alone any more,
 depends on `Ocaml_re`
 
-Temporaryily removed, since it becomes more and more difficult 
+# Temporaryily removed, since it becomes more and more difficult 
 to provide stand alone reason parser
