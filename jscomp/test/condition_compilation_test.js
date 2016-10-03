@@ -30,9 +30,9 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq('File "condition_compilation_test.ml", line 61, characters 5-12', 3, 3);
+eq('File "condition_compilation_test.ml", line 83, characters 5-12', 3, 3);
 
-eq('File "condition_compilation_test.ml", line 62, characters 5-12', v[0], 2);
+eq('File "condition_compilation_test.ml", line 84, characters 5-12', v[0], 2);
 
 Mt.from_pair_suites("condition_compilation_test.ml", suites[0]);
 

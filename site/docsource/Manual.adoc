@@ -53,6 +53,8 @@ include::./Compiler-options.adoc[]
 
 include::./Semantic-differences-from-other-backends.adoc[]
 
+include::./Conditional-compilation-support.adoc[]
+
 include::./FAQ.adoc[]
 
 include::./Compiler-overview.adoc[]
