@@ -1,19 +1,41 @@
 
 
-let vv = 
+
+type open_flag = Unix.open_flag =
+  | O_RDONLY
+  | O_WRONLY
+  | O_RDWR
+  | O_NONBLOCK
+  | O_APPEND
+  | O_CREAT
+  | O_TRUNC
+  | O_EXCL
+  | O_NOCTTY
+  | O_DSYNC
+  | O_SYNC
+  | O_RSYNC
+#if OCAML_VERSION =~ ">=3.13" #then
+  | O_SHARE_DELETE
+#end
+#if OCAML_VERSION =~ ">=4.01" #then
+  | O_CLOEXEC
+#end
+
+
+let vv =
 #if OCAML_PATCH = "BS" #then
     3
-#else 
+#else
     1
 #end
 
 
-let v = ref 1 
+let v = ref 1
 
-let a = 
+let a =
 #if OCAML_PATCH = "BS" #then
  let () = incr v  in
-#end !v 
+#end !v
 
 let version_gt_3 =
 #if OCAML_VERSION  (* comment *) =~ ">1" #then
@@ -33,7 +55,7 @@ let version =
   -1
 #end
 
-let ocaml_veriosn = 
+let ocaml_veriosn =
 #if OCAML_VERSION =~ "~4.02.0" #then
    "4.02.3"
 #else "unknown"
@@ -51,13 +73,13 @@ let ocaml_veriosn =
 (* #end *)
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
-let eq loc x y = 
-  incr test_id ; 
-  suites := 
+let eq loc x y =
+  incr test_id ;
+  suites :=
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 
-let () = 
+let () =
   eq __LOC__ vv 3  ;
   eq __LOC__ !v 2
 

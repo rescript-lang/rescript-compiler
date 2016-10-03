@@ -4,7 +4,7 @@
 == 1.1.0(dev)
 
 * Features
-
+- Conditional compilation support {issues}820[#820]
 - Relax syntactic restrictions for all extension point {issues}793[#793]
 	so that `bs.obj`, `obj`, `bs.raw`, `raw`, etc will both work.
 	Note that all attributes will still be qualified
