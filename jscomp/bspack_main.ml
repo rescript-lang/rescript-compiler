@@ -31,6 +31,19 @@ let (@>) (b, v) acc =
   else
       acc
 
+(* let preprocess_string fn str oc = *)
+
+(*   let lexbuf = Lexing.from_string  str in  *)
+(*   Lexer.init () ;  *)
+(*   Location.init lexbuf fn;  *)
+(*   let segments =   *)
+(*     lexbuf *)
+(*     |> Lexer.filter_directive_from_lexbuf   in *)
+(*   segments *)
+(*   |> List.iter  *)
+(*     (fun (start, pos) ->  *)
+(*        output_substring  oc str start (pos - start) *)
+(*     ) *)
 
 let (//) = Filename.concat
 
