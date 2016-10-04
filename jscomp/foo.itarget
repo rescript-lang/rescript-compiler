@@ -9,3 +9,4 @@ jsoo_main.cmo
 js_generate_require.cmo
 js_pack.cmo
 bsdep_main.cmo
+js_cmi_datasets.cmo
