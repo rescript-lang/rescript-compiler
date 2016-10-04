@@ -1,0 +1,14 @@
+../ocaml/utils/terminfo
+../ocaml/utils/warnings
+../ocaml/parsing/location
+../ocaml/parsing/asttypes
+../ocaml/utils/misc
+../ocaml/parsing/longident
+../ocaml/parsing/parsetree
+../ocaml/parsing/docstrings
+../ocaml/parsing/ast_helper
+../ocaml/utils/clflags
+../ocaml/parsing/syntaxerr
+../ocaml/parsing/parser
+../ocaml/parsing/lexer
+./bspp_main

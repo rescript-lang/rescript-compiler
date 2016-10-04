@@ -44,18 +44,27 @@ js_fold.ml:js_fold.mlp j.ml
 ./bin/bsppx.exe: ./bin/config_bsppx.mli ./bin/config_bsppx.ml ./bin/bsppx.mli ./bin/bsppx.ml
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin    $^ -o $@
 
+./bin/bspp.exe: ./bin/config_bspp.mli ./bin/config_bspp.ml ./bin/bspp.mli ./bin/bspp.ml
+	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin    $^ -o $@
+
 ./bin/bsdep.exe: ./bin/config_bsdep.mli ./bin/config_bsdep.ml ./bin/bsdep.mli ./bin/bsdep.ml
 	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin    $^ -o $@
 
 snapshot: ./bin/bspack.exe snapshotcmj
 	$(MAKE) snapshotml
 
+
+# TODO
+# enhace for Parser module, we only care about Parser.token 
+# files including Parsetree/Parser should be shaked 
 snapshotml:./bin/bspack.exe ./bin/compiler.mllib
 	@echo "Snapshot ml"
 	$< -bs-mllib bin/compiler.mllib -o bin/compiler.ml
 	$< -bs-log-mllib bin/bsppx.mllib  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
 	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 	$< -bs-log-mllib bin/bsdep.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I depends -bs-main bsdep_main.ml -o bin/bsdep.ml
+	$< -bs-log-mllib bin/bspp.mllib  -prelude-str 'module Config = Config_bspp'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/  -I common -I ext -I syntax -I depends -bs-main bspp_main.ml -o bin/bspp.ml
+
 
 snapshotcmj:
 	@echo "Collecting cmj files"
@@ -97,12 +106,13 @@ libs:
 	cd others && $(MAKE) all
 	@echo "Making others finished"
 
-releasebuild:./bin/bspack.exe
+releasebuild:
 	@echo "Make release compiler"
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
 	@echo "Make release ppx"
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I bin  bin/config_bsppx.mli bin/config_bsppx.ml  bin/bsppx.mli bin/bsppx.ml -o bin/bsppx.exe
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I bin  bin/config_bsdep.mli bin/config_bsdep.ml  bin/bsdep.mli bin/bsdep.ml -o bin/bsdep.exe
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I bin  bin/config_bspp.mli bin/config_bspp.ml  bin/bspp.mli bin/bspp.ml -o bin/bspp.exe
 
 release:snapshot
 	$(MAKE) releasebuild
@@ -119,6 +129,7 @@ dist-world:
 	$(MAKE) bin/bspack.exe
 	$(MAKE) bin/bsppx.exe
 	$(MAKE) bin/bsdep.exe
+	$(MAKE) bin/bspp.exe
 	$(MAKE) libs
 
 
@@ -138,7 +149,7 @@ DEST_BIN=../bin
 install:
 	@echo "copy exe"
 	mkdir -p $(DEST_BIN) $(DEST)
-	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe $(DEST_BIN)
+	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe ./bin/bsdep.exe $(DEST_BIN)
 	@echo "copy stdlib"
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \

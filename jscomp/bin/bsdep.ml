@@ -18272,6 +18272,8 @@ val iter_directive_built_in_value :
 (** semantic version predicate *)
 val semver : Location.t ->   string -> string -> bool
 
+val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
+
 end = struct
 #1 "lexer.ml"
 # 15 "parsing/lexer.mll"
@@ -21006,6 +21008,94 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
 
   and docstring = Docstrings.docstring
 
+  let interpret_directive lexbuf cont look_ahead = 
+    let if_then_else = !if_then_else in
+    begin match token_with_comments lexbuf, if_then_else with 
+    |  IF, Dir_out  ->
+        let rec skip_from_if_false () = 
+          let token = token_with_comments lexbuf in
+          if token = EOF then 
+            raise (Error (Unterminated_if, Location.curr lexbuf)) else
+          if token = SHARP && at_bol lexbuf then 
+            begin 
+              let token = token_with_comments lexbuf in
+              match token with
+              | END -> 
+                  begin
+                    update_if_then_else Dir_out;
+                    cont lexbuf
+                  end
+              | ELSE -> 
+                  begin
+                    update_if_then_else Dir_if_false;
+                    cont lexbuf
+                  end
+              | IF ->
+                  raise (Error (Unexpected_directive, Location.curr lexbuf))
+              | _ -> 
+                  if is_elif token &&
+                     directive_parse token_with_comments lexbuf then
+                    begin
+                      update_if_then_else Dir_if_true;
+                      cont lexbuf
+                    end
+                  else skip_from_if_false ()                               
+            end
+          else skip_from_if_false () in 
+        if directive_parse token_with_comments lexbuf then
+          begin 
+            update_if_then_else Dir_if_true (* Next state: ELSE *);
+            cont lexbuf
+          end
+        else
+          skip_from_if_false ()
+    | IF,  (Dir_if_false | Dir_if_true)->
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | LIDENT "elif", (Dir_if_false | Dir_out)
+      -> (* when the predicate is false, it will continue eating `elif` *)
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | (LIDENT "elif" | ELSE as token), Dir_if_true ->           
+        (* looking for #end, however, it can not see #if anymore *)
+        let rec skip_from_if_true else_seen = 
+          let token = token_with_comments lexbuf in
+          if token = EOF then 
+            raise (Error (Unterminated_else, Location.curr lexbuf)) else
+          if token = SHARP && at_bol lexbuf then 
+            begin 
+              let token = token_with_comments lexbuf in 
+              match token with  
+              | END -> 
+                  begin
+                    update_if_then_else Dir_out;
+                    cont lexbuf
+                  end  
+              | IF ->  
+                  raise (Error (Unexpected_directive, Location.curr lexbuf)) 
+              | ELSE ->
+                  if else_seen then 
+                    raise (Error (Unexpected_directive, Location.curr lexbuf))
+                  else 
+                    skip_from_if_true true
+              | _ ->
+                  if else_seen && is_elif token then  
+                    raise (Error (Unexpected_directive, Location.curr lexbuf))
+                  else 
+                    skip_from_if_true else_seen
+            end
+          else skip_from_if_true else_seen in 
+        skip_from_if_true (token = ELSE)
+    | ELSE, Dir_if_false 
+    | ELSE, Dir_out -> 
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | END, (Dir_if_false | Dir_if_true ) -> 
+        update_if_then_else  Dir_out;
+        cont lexbuf
+    | END,  Dir_out  -> 
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | token, (Dir_if_true | Dir_if_false | Dir_out) ->
+        look_ahead token 
+    end
+
   let token lexbuf =
     let post_pos = lexeme_end_p lexbuf in
     let attach lines docs pre_pos =
@@ -21052,93 +21142,10 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
             | BlankLine -> BlankLine
           in
           loop lines' docs lexbuf
-      | SHARP when at_bol lexbuf ->
-          let if_then_else = !if_then_else in
-          begin match token_with_comments lexbuf, if_then_else with 
-          |  IF, Dir_out  ->
-              let rec skip_from_if_false () :  Parser.token = 
-                let token = token_with_comments lexbuf in
-                if token = EOF then 
-                  raise (Error (Unterminated_if, Location.curr lexbuf)) else
-                if token = SHARP && at_bol lexbuf then 
-                  begin 
-                    let token = token_with_comments lexbuf in
-                    match token with
-                    | END -> 
-                        begin
-                          update_if_then_else Dir_out;
-                          loop lines docs lexbuf
-                        end
-                    | ELSE -> 
-                        begin
-                          update_if_then_else Dir_if_false;
-                          loop lines docs lexbuf
-                        end
-                    | IF ->
-                        raise (Error (Unexpected_directive, Location.curr lexbuf))
-                    | _ -> 
-                        if is_elif token &&
-                           directive_parse token_with_comments lexbuf then
-                            begin
-                              update_if_then_else Dir_if_true;
-                              loop lines docs lexbuf
-                            end
-                        else skip_from_if_false ()                               
-                  end
-                else skip_from_if_false () in 
-              if directive_parse token_with_comments lexbuf then
-                begin 
-                  update_if_then_else Dir_if_true (* Next state: ELSE *);
-                  loop lines docs lexbuf
-                end
-              else
-                skip_from_if_false ()
-          | IF,  (Dir_if_false | Dir_if_true)->
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | LIDENT "elif", (Dir_if_false | Dir_out)
-            -> (* when the predicate is false, it will continue eating `elif` *)
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | (LIDENT "elif" | ELSE as token), Dir_if_true ->           
-              (* looking for #end, however, it can not see #if anymore *)
-              let rec skip_from_if_true else_seen = 
-                let token = token_with_comments lexbuf in
-                if token = EOF then 
-                  raise (Error (Unterminated_else, Location.curr lexbuf)) else
-                if token = SHARP && at_bol lexbuf then 
-                  begin 
-                    let token = token_with_comments lexbuf in 
-                    match token with  
-                    | END -> 
-                      begin
-                        update_if_then_else Dir_out;
-                        loop lines docs lexbuf
-                      end  
-                    | IF ->  
-                      raise (Error (Unexpected_directive, Location.curr lexbuf)) 
-                    | ELSE ->
-                      if else_seen then 
-                        raise (Error (Unexpected_directive, Location.curr lexbuf))
-                      else 
-                        skip_from_if_true true
-                    | _ ->
-                      if else_seen && is_elif token then  
-                        raise (Error (Unexpected_directive, Location.curr lexbuf))
-                      else 
-                        skip_from_if_true else_seen
-                  end
-                else skip_from_if_true else_seen in 
-              skip_from_if_true (token = ELSE)
-          | ELSE, Dir_if_false 
-          | ELSE, Dir_out -> 
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | END, (Dir_if_false | Dir_if_true ) -> 
-              update_if_then_else  Dir_out;
-              loop lines docs lexbuf
-          | END,  Dir_out  -> 
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | token, (Dir_if_true | Dir_if_false | Dir_out) ->
-              sharp_look_ahead := Some token; SHARP
-           end
+      | SHARP when at_bol lexbuf -> 
+          interpret_directive lexbuf 
+            (fun lexbuf -> loop lines docs lexbuf)
+            (fun token -> sharp_look_ahead := Some token; SHARP)
       | DOCSTRING doc ->
           add_docstring_comment doc;
           let docs' =
@@ -21174,12 +21181,32 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     | None -> ()
     | Some (init, _preprocess) -> init ()
 
+  let rec filter_directive pos   acc lexbuf : (int * int ) list =
+    match token_with_comments lexbuf with
+    | SHARP when at_bol lexbuf ->
+        (* ^[start_pos]#if ... #then^[end_pos] *)
+        let start_pos = Lexing.lexeme_start lexbuf in 
+        interpret_directive lexbuf 
+          (fun lexbuf -> 
+             filter_directive 
+               (Lexing.lexeme_end lexbuf)
+               ((pos, start_pos) :: acc)
+               lexbuf
+          
+          )
+          (fun _token -> filter_directive pos acc lexbuf  )
+    | EOF -> (pos, Lexing.lexeme_end lexbuf) :: acc
+    | _ -> filter_directive pos  acc lexbuf
+
+  let filter_directive_from_lexbuf lexbuf = 
+    List.rev (filter_directive 0 [] lexbuf )
+
   let set_preprocessor init preprocess =
     escaped_newlines := true;
     preprocessor := Some (init, preprocess)
 
 
-# 2907 "parsing/lexer.ml"
+# 2932 "parsing/lexer.ml"
 
 end
 module Bs_conditional_initial : sig 
