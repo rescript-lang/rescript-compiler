@@ -27,17 +27,19 @@
 
 
 
-let get_files dir = 
+let get_files ext dir = 
   let arr = 
     Sys.readdir dir 
     |> Ext_array.filter_map 
-        (fun  x -> if Ext_string.ends_with x Js_config.cmj_ext then Some (Filename.concat dir x) else None )
+        (fun  x ->
+          if Ext_string.ends_with x  ext 
+          then Some (Filename.concat dir x) else None )
   in
   (* Sort to guarantee it works the same across OSes *)
   Array.sort (fun (x : string) y -> Pervasives.compare x y ) arr;
   Array.to_list arr
 
-let from_cmj files output_file = 
+let from_cmj (files : string list) (output_file : string) = 
   let raw_to_str f str = 
     Ext_pp.string f "\""   ;
     Ext_pp.string f (Ext_string.escaped str);
@@ -71,10 +73,54 @@ let from_cmj files output_file =
       in
       Ext_pp.string f "(* -*-mode:fundamental-*- *)"  ;
       Ext_pp.newline f ;
-      Ext_pp.string f "let cmj_data_sets = String_map.of_list "    ;
+      Ext_pp.string f "let data_sets = String_map.of_list "    ;
+      Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
+
+
+(** the cache should be readable and also update *)
+let from_cmi (files : string list) (output_file : string) = 
+  let raw_to_str f str = 
+    Ext_pp.string f "\""   ;
+    Ext_pp.string f (Ext_string.escaped str);
+    Ext_pp.string f "\""
+  in  
+  let v = open_out_bin output_file in
+  Ext_pervasives.finally v close_out (fun v ->   
+      let f = Ext_pp.from_channel v in  
+      let aux file = 
+        let cmi = Cmi_format.read_cmi file in 
+        let str = Marshal.to_string cmi [] in 
+        begin
+
+          Ext_pp.paren_group f 1 (fun _ ->
+          raw_to_str f (Filename.basename file) ;
+          Ext_pp.string f ",";
+          Ext_pp.string f "lazy";
+          Ext_pp.space f ;
+          Ext_pp.paren_group f 1 (fun _ ->
+              Ext_pp.string f "Marshal.from_string " ;
+              raw_to_str f str;
+              Ext_pp.space f;
+              Ext_pp.string f "0";
+              Ext_pp.space f ;
+              Ext_pp.string f ":" ; 
+              Ext_pp.space f ;
+              Ext_pp.string f "Cmi_format.cmi_infos"
+            ));
+          Ext_pp.string f  ";";
+          Ext_pp.newline f ;          
+        end
+      in
+      Ext_pp.string f "(* -*-mode:fundamental-*- *)"  ;
+      Ext_pp.newline f ;
+      Ext_pp.string f "let data_sets = String_map.of_list "    ;
       Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
 
 
 let () = 
-  from_cmj (get_files "stdlib" @ get_files "runtime" @ get_files "others") "js_cmj_datasets.ml";;  
+  from_cmj (get_files Js_config.cmj_ext "stdlib"
+            @ get_files Js_config.cmj_ext "runtime"
+            @ get_files Js_config.cmj_ext "others") "js_cmj_datasets.ml";
+  from_cmi (get_files ".cmi" "stdlib"
+            @ get_files ".cmi" "others") "js_cmi_datasets.ml"
 
