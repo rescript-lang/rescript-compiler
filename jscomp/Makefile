@@ -53,6 +53,10 @@ js_fold.ml:js_fold.mlp j.ml
 snapshot: ./bin/bspack.exe snapshotcmj
 	$(MAKE) snapshotml
 
+
+# TODO
+# enhace for Parser module, we only care about Parser.token 
+# files including Parsetree/Parser should be shaked 
 snapshotml:./bin/bspack.exe ./bin/compiler.mllib
 	@echo "Snapshot ml"
 	$< -bs-mllib bin/compiler.mllib -o bin/compiler.ml
@@ -60,6 +64,7 @@ snapshotml:./bin/bspack.exe ./bin/compiler.mllib
 	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 	$< -bs-log-mllib bin/bsdep.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I depends -bs-main bsdep_main.ml -o bin/bsdep.ml
 	$< -bs-log-mllib bin/bspp.mllib  -prelude-str 'module Config = Config_bspp'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/  -I common -I ext -I syntax -I depends -bs-main bspp_main.ml -o bin/bspp.ml
+
 
 snapshotcmj:
 	@echo "Collecting cmj files"
