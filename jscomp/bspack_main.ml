@@ -193,8 +193,35 @@ let set_prelude f =
   else raise (Arg.Bad ("file " ^ f ^ " don't exist "))
 let prelude_str = ref None
 let set_prelude_str f = prelude_str := Some f 
-let includes = ref []
-let add_include dir = includes := dir :: !includes
+
+(**
+{[
+# process_include "ghsogh?a,b,c";;
+- : [> `Dir of string | `Dir_with_excludes of string * string list ] =
+`Dir_with_excludes ("ghsogh", ["a"; "b"; "c"])
+# process_include "ghsogh?a";;
+- : [> `Dir of string | `Dir_with_excludes of string * string list ] =
+`Dir_with_excludes ("ghsogh", ["a"])
+]}
+*)
+type dir_spec = 
+  [ `Dir of string | `Dir_with_excludes of string * string list ]
+
+let process_include s : dir_spec = 
+  match String.rindex s '?'  with 
+  | exception Not_found -> 
+    `Dir s 
+  | i ->
+    `Dir_with_excludes
+      (String.sub s 0 i,  
+       Ext_string.split 
+         (String.sub s (i + 1) (String.length s - i - 1)    )
+         ',')
+
+let includes :  _ list ref = ref []
+
+let add_include dir = 
+  includes := process_include    dir :: !includes
 
 let exclude_modules = ref []                                     
 let add_exclude module_ = 

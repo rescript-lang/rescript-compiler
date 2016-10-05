@@ -225,11 +225,20 @@ let collect_from_main
           (Filename.concat dirname source_file) :: acc else acc ) []   
       (Sys.readdir dirname) in 
   let files = 
-    List.fold_left (fun acc dirname -> 
+    List.fold_left (fun acc dir_spec -> 
+        let  dirname, excludes = 
+          match dir_spec with 
+          | `Dir dirname -> dirname, excludes
+          | `Dir_with_excludes (dirname, dir_excludes) ->
+            dirname,
+            Ext_list.flat_map 
+              (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
+              dir_excludes @ excludes
+        in 
         Array.fold_left (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
                Ext_string.ends_with source_file ".mli" )
-               && not_excluded source_file
+               && (* not_excluded source_file *) (not (List.mem source_file excludes))
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))

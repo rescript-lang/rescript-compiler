@@ -3307,6 +3307,8 @@ val module_name_of_file : string -> string
 
 val chop_extension_if_any : string -> string
 
+val absolute_path : string -> string
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3386,9 +3388,7 @@ let absolute_path s =
       else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
       else aux dir // base
     in aux s  in 
-  match s with 
-  | `File x -> `File (process x )
-  | `Dir x -> `Dir (process x)
+  process s 
 
 
 let chop_extension ?(loc="") name =
@@ -3491,8 +3491,13 @@ let node_relative_path (file1 : t)
       (skip (v + Literals.node_modules_length)) 
   else 
     relative_path 
-       (absolute_path dep_file)
-       (absolute_path file1)
+      (  match dep_file with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir (absolute_path x))
+
+       (match file1 with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir(absolute_path x))
      ^ node_sep ^
     chop_extension_if_any (Filename.basename file2)
 
@@ -5812,7 +5817,7 @@ val collect_ast_map :
 
 
 val collect_from_main :
-  ?extra_dirs:string list -> 
+  ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
   ?excludes : string list -> 
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
@@ -6073,11 +6078,20 @@ let collect_from_main
           (Filename.concat dirname source_file) :: acc else acc ) []   
       (Sys.readdir dirname) in 
   let files = 
-    List.fold_left (fun acc dirname -> 
+    List.fold_left (fun acc dir_spec -> 
+        let  dirname, excludes = 
+          match dir_spec with 
+          | `Dir dirname -> dirname, excludes
+          | `Dir_with_excludes (dirname, dir_excludes) ->
+            dirname,
+            Ext_list.flat_map 
+              (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
+              dir_excludes @ excludes
+        in 
         Array.fold_left (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
                Ext_string.ends_with source_file ".mli" )
-               && not_excluded source_file
+               && (* not_excluded source_file *) (not (List.mem source_file excludes))
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
