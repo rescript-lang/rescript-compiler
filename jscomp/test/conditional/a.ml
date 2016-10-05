@@ -1,8 +1,8 @@
 
 let u =
-#if B #then
+#if defined B then
     B.value
-#elif C #then
+#elif defined C then
     C.value
 #else 
   assert false

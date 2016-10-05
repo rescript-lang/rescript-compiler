@@ -75,9 +75,7 @@ let absolute_path s =
       else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
       else aux dir // base
     in aux s  in 
-  match s with 
-  | `File x -> `File (process x )
-  | `Dir x -> `Dir (process x)
+  process s 
 
 
 let chop_extension ?(loc="") name =
@@ -180,8 +178,13 @@ let node_relative_path (file1 : t)
       (skip (v + Literals.node_modules_length)) 
   else 
     relative_path 
-       (absolute_path dep_file)
-       (absolute_path file1)
+      (  match dep_file with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir (absolute_path x))
+
+       (match file1 with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir(absolute_path x))
      ^ node_sep ^
     chop_extension_if_any (Filename.basename file2)
 

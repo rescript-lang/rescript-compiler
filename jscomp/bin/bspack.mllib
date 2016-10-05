@@ -14,11 +14,11 @@ ext/ext_string
 ext/literals
 ext/ext_filename
 ext/ext_format
+ext/ext_list
 common/js_config
 ext/string_map
 depends/ast_extract
 ext/ext_io
-ext/ext_list
 ../ocaml/parsing/docstrings
 ../ocaml/parsing/ast_helper
 ../ocaml/parsing/syntaxerr

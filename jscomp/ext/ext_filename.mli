@@ -67,3 +67,5 @@ val replace_backward_slash : string -> string
 val module_name_of_file : string -> string
 
 val chop_extension_if_any : string -> string
+
+val absolute_path : string -> string

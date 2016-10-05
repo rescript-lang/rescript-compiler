@@ -30,11 +30,15 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq('File "condition_compilation_test.ml", line 83, characters 5-12', 3, 3);
+eq('File "condition_compilation_test.ml", line 96, characters 5-12', 3, 3);
 
-eq('File "condition_compilation_test.ml", line 84, characters 5-12', v[0], 2);
+eq('File "condition_compilation_test.ml", line 97, characters 5-12', v[0], 2);
 
 Mt.from_pair_suites("condition_compilation_test.ml", suites[0]);
+
+var b = "u";
+
+var buffer_size = 1;
 
 var vv = 3;
 
@@ -44,6 +48,8 @@ var version = -1;
 
 var ocaml_veriosn = "4.02.3";
 
+exports.b             = b;
+exports.buffer_size   = buffer_size;
 exports.vv            = vv;
 exports.v             = v;
 exports.a             = a;

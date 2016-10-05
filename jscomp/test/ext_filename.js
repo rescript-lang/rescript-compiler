@@ -51,54 +51,41 @@ function path_as_directory(x) {
 }
 
 function absolute_path(s) {
-  var process = function (s) {
-    var s$1;
-    if (Curry._1(Filename.is_relative, s)) {
-      var tag = cwd.tag | 0;
-      s$1 = Filename.concat(tag === 250 ? cwd[0] : (
-              tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-            ), s);
-    }
-    else {
-      s$1 = s;
-    }
-    var aux = function (_s) {
-      while(true) {
-        var s = _s;
-        var match_000 = Curry._1(Filename.basename, s);
-        var match_001 = Curry._1(Filename.dirname, s);
-        var dir = match_001;
-        var base = match_000;
-        if (dir === s) {
-          return dir;
-        }
-        else if (base === Filename.current_dir_name) {
-          _s = dir;
-          continue ;
-          
-        }
-        else if (base === Filename.parent_dir_name) {
-          return Curry._1(Filename.dirname, aux(dir));
-        }
-        else {
-          return Filename.concat(aux(dir), base);
-        }
-      };
-    };
-    return aux(s$1);
-  };
-  if (s[0] >= 781515420) {
-    return /* `File */[
-            781515420,
-            process(s[1])
-          ];
+  var s$1 = s;
+  var s$2;
+  if (Curry._1(Filename.is_relative, s$1)) {
+    var tag = cwd.tag | 0;
+    s$2 = Filename.concat(tag === 250 ? cwd[0] : (
+            tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
+          ), s$1);
   }
   else {
-    return /* `Dir */[
-            3405101,
-            process(s[1])
-          ];
+    s$2 = s$1;
   }
+  var aux = function (_s) {
+    while(true) {
+      var s = _s;
+      var match_000 = Curry._1(Filename.basename, s);
+      var match_001 = Curry._1(Filename.dirname, s);
+      var dir = match_001;
+      var base = match_000;
+      if (dir === s) {
+        return dir;
+      }
+      else if (base === Filename.current_dir_name) {
+        _s = dir;
+        continue ;
+        
+      }
+      else if (base === Filename.parent_dir_name) {
+        return Curry._1(Filename.dirname, aux(dir));
+      }
+      else {
+        return Filename.concat(aux(dir), base);
+      }
+    };
+  };
+  return aux(s$2);
 }
 
 function chop_extension($staropt$star, name) {
@@ -217,7 +204,7 @@ function node_relative_path(file1, dep_file) {
       while(true) {
         var i = _i;
         if (i >= len) {
-          return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 161, characters 38-45', /* Format */[
+          return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 159, characters 38-45', /* Format */[
                           /* String_literal */Block.__(11, [
                               "invalid path: ",
                               /* String */Block.__(2, [
@@ -244,7 +231,19 @@ function node_relative_path(file1, dep_file) {
     return Ext_string.tail_from(file2, skip(v + Literals.node_modules_length | 0));
   }
   else {
-    return relative_path(absolute_path(dep_file), absolute_path(file1)) + (node_sep + chop_extension_if_any(Curry._1(Filename.basename, file2)));
+    return relative_path(dep_file[0] >= 781515420 ? /* `File */[
+                  781515420,
+                  absolute_path(dep_file[1])
+                ] : /* `Dir */[
+                  3405101,
+                  absolute_path(dep_file[1])
+                ], file1[0] >= 781515420 ? /* `File */[
+                  781515420,
+                  absolute_path(file1[1])
+                ] : /* `Dir */[
+                  3405101,
+                  absolute_path(file1[1])
+                ]) + (node_sep + chop_extension_if_any(Curry._1(Filename.basename, file2)));
   }
 }
 
@@ -263,7 +262,7 @@ function find_package_json_dir(cwd) {
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 201, characters 15-22', /* Format */[
+        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 204, characters 15-22', /* Format */[
                         /* String_literal */Block.__(11, [
                             "package.json not found from ",
                             /* String */Block.__(2, [
