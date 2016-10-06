@@ -25,11 +25,11 @@ but there are several advantages.
 [source,bnf]
 ------------
 static-if
-| IF-BOL conditional-expression THEN // <1>
+| HASH-IF-BOL conditional-expression THEN // <1>
    tokens
-(ELIF-BOL conditional-expression THEN) *
+(HASH-ELIF-BOL conditional-expression THEN) *
 (ELSE-BOL tokens)?
-END-BOL
+HASH-END-BOL
 
 conditional-expression
 | conditional-expression && conditional-expression
@@ -93,15 +93,28 @@ type open_flag =
   | O_DSYNC
   | O_SYNC
   | O_RSYNC
-#if OCAML_VERSION =~ ">=3.13" #then
+#if OCAML_VERSION =~ ">=3.13" then
   | O_SHARE_DELETE
 #end
-#if OCAML_VERSION =~ ">=4.01" #then
+#if OCAML_VERSION =~ ">=4.01" then
   | O_CLOEXEC
 #end
 -------------
 
-[NOTE]
+=== Changes to command line options
+For BuckleScript users, nothing needs to be done (it is baked in the language level),
+for non BuckleScript users, we provide an external pre-processor, so it will work with other OCaml
+compilers too.
+
+.Example
+[source,sh]
+-----------
+bsc.exe -c lwt_unix.mli
+ocamlc -pp 'bspp.exe' -c lwt_unix.mli
+-----------
+
+
+[WARNING]
 ======
 This is a very small extension to the OCaml language, it is backward compatible with OCaml language with such exception.
 

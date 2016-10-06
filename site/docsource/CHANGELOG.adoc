@@ -1,14 +1,24 @@
 
 [appendix]
 
-== 1.1.1(dev)
-
-
 ## CHANGES
-== 1.1.0
+
+== 1.1.3 (dev)
+
+== 1.1.2
+
+* Fixes
+
+- Bug fix with opam issues {issues}831[#831]
 
 * Features
-- Add bsdep.exe {issues}822[#822]	
+
+- Provide bspp.exe for official compiler
+
+== 1.1.1
+
+* Features
+- Add bsdep.exe {issues}822[#822]
 - Conditional compilation support {issues}820[#820]
 - Relax syntactic restrictions for all extension point {issues}793[#793]
 	so that `bs.obj`, `obj`, `bs.raw`, `raw`, etc will both work.
