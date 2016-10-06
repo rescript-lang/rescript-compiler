@@ -163,3 +163,4 @@ val is_windows : bool
 val better_errors : bool ref
 val sort_imports : bool ref 
 val dump_js : bool ref
+val syntax_only  : bool ref

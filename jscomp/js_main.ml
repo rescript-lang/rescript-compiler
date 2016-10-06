@@ -103,6 +103,11 @@ let set_noassert () =
 
 
 let buckle_script_flags =
+  ("-bs-syntax-only", 
+   Arg.Set Js_config.syntax_only,
+   " only check syntax"
+  )
+  ::
   ("-bs-eval", 
    Arg.String set_eval_string, 
    " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
