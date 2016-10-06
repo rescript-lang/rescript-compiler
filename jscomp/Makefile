@@ -111,11 +111,12 @@ world:
 
 dist-world:
 	@echo "Making compiler"
-	$(MAKE) -C bin all
+	$(MAKE) -C bin -j5  all
 	$(MAKE) libs
 
 
-travis-world-test:./bin/bspack.exe
+travis-world-test:
+	$(MAKE) -C bin bspack.exe
 	@echo "Generating the compiler"
 	rm -f bin/compiler.ml bin/bsppx.ml
 	$(MAKE) snapshotml

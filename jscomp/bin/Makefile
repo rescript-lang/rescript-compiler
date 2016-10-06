@@ -21,4 +21,4 @@ bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli 
 bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
 	$(NATIVE) -w -a unix.cmxa  $^ -o $@
 
-all: bsppx.exe bspp.exe bsdep.exe
+all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe
