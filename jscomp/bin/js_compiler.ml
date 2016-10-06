@@ -866,6 +866,8 @@ val module_name_of_file : string -> string
 
 val chop_extension_if_any : string -> string
 
+val absolute_path : string -> string
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -945,9 +947,7 @@ let absolute_path s =
       else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
       else aux dir // base
     in aux s  in 
-  match s with 
-  | `File x -> `File (process x )
-  | `Dir x -> `Dir (process x)
+  process s 
 
 
 let chop_extension ?(loc="") name =
@@ -1050,8 +1050,13 @@ let node_relative_path (file1 : t)
       (skip (v + Literals.node_modules_length)) 
   else 
     relative_path 
-       (absolute_path dep_file)
-       (absolute_path file1)
+      (  match dep_file with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir (absolute_path x))
+
+       (match file1 with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir(absolute_path x))
      ^ node_sep ^
     chop_extension_if_any (Filename.basename file2)
 
@@ -1258,7 +1263,7 @@ val dump_js : bool ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -1276,7 +1281,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -1287,8 +1292,8 @@ end = struct
 
 
 
-type env = 
-  | Browser   
+type env =
+  | Browser
   (* "browser-internal" used internal *)
   | NodeJS
   | AmdJS
@@ -1296,16 +1301,16 @@ type env =
 
 
 
-type path = string 
-type module_system = 
+type path = string
+type module_system =
   [ `NodeJS | `AmdJS | `Goog ]
-type package_info = 
+type package_info =
  ( module_system * string )
 
 type package_name  = string
 type packages_info =
-  | Empty (* No set *) 
-  | Browser 
+  | Empty (* No set *)
+  | Browser
   | NonBrowser of (package_name * package_info  list)
 (** we don't force people to use package *)
 
@@ -1321,43 +1326,43 @@ let get_ext () = !ext
 
 let packages_info : packages_info ref = ref Empty
 
-let set_browser () = 
-  packages_info :=  Browser 
-let is_browser () = !packages_info = Browser 
+let set_browser () =
+  packages_info :=  Browser
+let is_browser () = !packages_info = Browser
 
-let get_package_name () = 
-  match !packages_info with 
+let get_package_name () =
+  match !packages_info with
   | Empty | Browser -> None
   | NonBrowser(n,_) -> Some n
 
-let no_version_header = ref false 
+let no_version_header = ref false
 
-let set_package_name name = 
+let set_package_name name =
   match !packages_info with
   | Empty -> packages_info := NonBrowser(name,  [])
-  |  _ -> 
+  |  _ ->
     Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
 
-let set_npm_package_path s = 
-  match !packages_info  with 
-  | Empty -> 
+let set_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | Browser -> 
+  | Browser ->
     Ext_pervasives.bad_argf "invalid options, already set to browser ";
-  | NonBrowser(name,  envs) -> 
-    let env, path = 
+  | NonBrowser(name,  envs) ->
+    let env, path =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ package_name; path]  ->
-        (match package_name with 
+        (match package_name with
          | "commonjs" -> `NodeJS
          | "amdjs" -> `AmdJS
-         | "goog" -> `Goog 
+         | "goog" -> `Goog
          | _ ->
            Ext_pervasives.bad_argf "invalid module system %s" package_name), path
       | [path] ->
         `NodeJS, path
-      | _ -> 
+      | _ ->
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
     packages_info := NonBrowser (name,  ((env,path) :: envs))
@@ -1369,61 +1374,61 @@ let set_npm_package_path s =
 let cross_module_inline = ref false
 
 let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b = 
+let set_cross_module_inline b =
   cross_module_inline := b
 
 
-let diagnose = ref false 
+let diagnose = ref false
 let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b 
+let set_diagnose b = diagnose := b
 
-let (//) = Filename.concat 
+let (//) = Filename.concat
 
 let get_packages_info () = !packages_info
 
-type info_query = 
-  [ `Empty 
+type info_query =
+  [ `Empty
   | `Package_script of string
-  | `Found of package_name * string 
+  | `Found of package_name * string
   | `NotFound ]
-let query_package_infos package_infos module_system = 
-  match package_infos with 
-  | Browser -> 
+let query_package_infos package_infos module_system =
+  match package_infos with
+  | Browser ->
     `Empty
   | Empty -> `Empty
   | NonBrowser (name, []) -> `Package_script name
-  | NonBrowser (name, paths) -> 
-    begin match List.find (fun (k, _) -> k = module_system) paths with 
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> k = module_system) paths with
       | (_, x) -> `Found (name, x)
       | exception _ -> `NotFound
     end
 
-let get_current_package_name_and_path   module_system = 
+let get_current_package_name_and_path   module_system =
   query_package_infos !packages_info module_system
 
 
-(* for a single pass compilation, [output_dir] 
-   can be cached 
+(* for a single pass compilation, [output_dir]
+   can be cached
 *)
 let get_output_dir module_system filename =
-  match !packages_info with 
-  | Empty | Browser | NonBrowser (_, [])-> 
+  match !packages_info with
+  | Empty | Browser | NonBrowser (_, [])->
     if Filename.is_relative filename then
       Lazy.force Ext_filename.cwd //
       Filename.dirname filename
-    else 
+    else
       Filename.dirname filename
-  | NonBrowser (_,  modules) -> 
-    begin match List.find (fun (k,_) -> k = module_system) modules with 
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> k = module_system) modules with
       | (_, _path) -> Lazy.force Ext_filename.package_dir // _path
-      |  exception _ -> assert false 
+      |  exception _ -> assert false
     end
 
 
-    
-      
+
+
 let default_gen_tds = ref false
-     
+
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 let no_warn_ffi_type = ref false
@@ -1442,7 +1447,7 @@ let obj_runtime = "Caml_obj"
 let array = "Caml_array"
 let format = "Caml_format"
 let string = "Caml_string"
-let bytes = "Caml_bytes"  
+let bytes = "Caml_bytes"
 let float = "Caml_float"
 let hash = "Caml_hash"
 let oo = "Caml_oo"
@@ -1456,14 +1461,14 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.1.0"
+let version = "1.1.2"
 let current_file = ref ""
 let debug_file = ref ""
 
-let set_current_file f  = current_file := f 
+let set_current_file f  = current_file := f
 let get_current_file () = !current_file
-let get_module_name () = 
-  Filename.chop_extension 
+let get_module_name () =
+  Filename.chop_extension
     (Filename.basename (String.uncapitalize !current_file))
 
 let iset_debug_file _ = ()
@@ -1471,26 +1476,26 @@ let set_debug_file  f = debug_file := f
 let get_debug_file  () = !debug_file
 
 
-let is_same_file () = 
+let is_same_file () =
   !debug_file <> "" &&  !debug_file = !current_file
 
 let tool_name = "BuckleScript"
 
 let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero 
+let get_check_div_by_zero () = !check_div_by_zero
 
-let no_any_assert = ref false 
+let no_any_assert = ref false
 
 let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
 let sort_imports = ref false
-let dump_js = ref false 
-    
-let is_windows = 
-  match Sys.os_type with 
-  | "Win32" 
+let dump_js = ref false
+
+let is_windows =
+  match Sys.os_type with
+  | "Win32"
   | "Cygwin"-> true
   | _ -> false
 
@@ -18272,6 +18277,8 @@ val iter_directive_built_in_value :
 (** semantic version predicate *)
 val semver : Location.t ->   string -> string -> bool
 
+val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
+
 end = struct
 #1 "lexer.ml"
 # 15 "parsing/lexer.mll"
@@ -18349,9 +18356,11 @@ let () =
     (Dir_string Config.version);
   replace_directive_built_in_value "OCAML_PATCH"
     (Dir_string 
-       (let i = String.rindex Sys.ocaml_version '+' in
-        String.sub Config.version (i + 1)
-          (String.length Config.version - i - 1)))
+       (match String.rindex Config.version '+' with 
+       | exception Not_found -> ""
+       | i -> 
+           String.sub Config.version (i + 1)
+             (String.length Config.version - i - 1)))
   ;
   replace_directive_built_in_value "OS_TYPE" 
     (Dir_string Sys.os_type);
@@ -18443,20 +18452,25 @@ let semver loc lhs str =
 
 
     
-
+let defined str = 
+  try ignore @@ Sys.getenv str; true with _ -> 
+    try ignore @@ find_directive_built_in_value str ; true with _ ->  false
 let query loc str =
   match Sys.getenv str with
-  | "true" -> Dir_bool true
-  | "false" -> Dir_bool false
   | v ->
       begin 
-        try Dir_int (int_of_string v )
-        with 
+        try Dir_bool (bool_of_string v) with 
           _ -> 
-            begin try (Dir_float (float_of_string v)) 
-            with _ -> Dir_string v
+            begin 
+              try Dir_int (int_of_string v )
+              with 
+                _ -> 
+                  begin try (Dir_float (float_of_string v)) 
+                  with _ -> Dir_string v
+                  end
             end
       end
+
 
   | exception Not_found ->
       begin
@@ -18489,7 +18503,9 @@ let directive_parse token_with_comments lexbuf =
        let rec skip () = 
         match token_with_comments lexbuf  with
         | COMMENT _ -> skip ()
+
         | DOCSTRING _ -> skip ()
+
         | EOL -> skip ()
         | EOF -> raise (Error (Unterminated_if, Location.curr lexbuf)) 
         | t -> t 
@@ -18501,10 +18517,7 @@ let directive_parse token_with_comments lexbuf =
     look_ahead := Some e 
   in
   let rec
-    parse_or () : bool =
-    parse_or_aux (parse_and ())
-  and 
-    token_op   ~no  lhs   =
+    token_op calc   ~no  lhs   =
     match token () with 
     | (LESS 
     | GREATER 
@@ -18523,8 +18536,10 @@ let directive_parse token_with_comments lexbuf =
         in 
         let curr_loc = Location.curr lexbuf in 
         let rhs = value_of_token curr_loc (token ()) in 
+        not calc ||
         f lhs (assert_same_type lexbuf lhs rhs)
     | INFIXOP0 "=~" -> 
+        not calc ||
         begin match lhs with 
         | Dir_string s ->
             let curr_loc = Location.curr lexbuf in 
@@ -18545,24 +18560,26 @@ let directive_parse token_with_comments lexbuf =
         end
     | e -> no e 
   and
-    parse_or_aux v : bool =
-    let l = v  in
+    parse_or calc : bool =
+    parse_or_aux calc (parse_and calc)
+  and  (* a || (b || (c || d))*)
+    parse_or_aux calc v : bool =
+    (* let l = v  in *)
     match token () with
     | BARBAR ->
-        let b =   parse_or ()  in
-        l || b 
+        let b =   parse_or (calc && not v)  in
+        v || b 
     | e -> push e ; v
-  and parse_and () =
-    parse_and_aux (parse_relation ())
-  and
-    parse_and_aux v =
-    let l = v  in
+  and parse_and calc = 
+    parse_and_aux calc (parse_relation calc)
+  and parse_and_aux calc v = (* a && (b && (c && d)) *)
+    (* let l = v  in *)
     match token () with
     | AMPERAMPER ->
-        let b =  parse_and () in
-        l && b
+        let b =  parse_and (calc && v) in
+        v && b
     | e -> push e ; v
-  and parse_relation () : bool  =
+  and parse_relation (calc : bool) : bool  =
     let curr_token = token () in
     let curr_loc = Location.curr lexbuf in
     match curr_token with
@@ -18570,7 +18587,7 @@ let directive_parse token_with_comments lexbuf =
     | FALSE -> false
     | UIDENT v ->
         let value_v = query curr_loc v in
-        token_op 
+        token_op calc 
           ~no:(fun e -> push e ;
                 match value_v with 
                 | Dir_bool b -> b 
@@ -18581,26 +18598,37 @@ let directive_parse token_with_comments lexbuf =
                              curr_loc)))
           value_v
     | INT v -> 
-        token_op 
+        token_op calc
           ~no:(fun e -> 
               raise(Error(Conditional_expr_expected_type(Dir_type_bool,Dir_type_int), 
                           curr_loc)))
           (Dir_int v)
     | FLOAT v -> 
-        token_op
+        token_op calc
           ~no:(fun e -> 
               raise (Error(Conditional_expr_expected_type(Dir_type_bool, Dir_type_float),
                            curr_loc)))
           (Dir_float (float_of_string v))
     | STRING (v,_) -> 
-        token_op 
+        token_op calc
           ~no:(fun e ->
               raise (Error
                        (Conditional_expr_expected_type(Dir_type_bool, Dir_type_string),
                         curr_loc)))
           (Dir_string v)
+    | LIDENT ("defined" | "undefined" as r) ->
+        let t = token () in 
+        let loc = Location.curr lexbuf in
+        begin match t with
+        | UIDENT s -> 
+            not calc || 
+            if r.[0] = 'u' then 
+              not @@ defined s
+            else defined s 
+        | _ -> raise (Error (Unexpected_token_in_conditional, loc))
+        end
     | LPAREN ->
-        let v = parse_or () in
+        let v = parse_or calc in
         begin match token () with
         | RPAREN ->  v
         | _ -> raise (Error(Unterminated_paren_in_conditional, Location.curr lexbuf))
@@ -18608,14 +18636,12 @@ let directive_parse token_with_comments lexbuf =
 
     | _ -> raise (Error (Unexpected_token_in_conditional, curr_loc))
   in
-  let v = parse_or () in
-  match token () with 
-  | SHARP ->
-    begin match token () with
-    | THEN ->  v 
-    | _ -> raise (Error (Expect_hash_then_in_conditional, Location.curr lexbuf))
-    end
+  let v = parse_or true in
+  begin match token () with
+  | THEN ->  v 
   | _ -> raise (Error (Expect_hash_then_in_conditional, Location.curr lexbuf))
+  end
+
 
 type dir_conditional =
   | Dir_if_true
@@ -18854,8 +18880,10 @@ let add_comment com =
   comment_list := com :: !comment_list
 
 let add_docstring_comment ds =
+
   let com = (Docstrings.docstring_body ds, Docstrings.docstring_loc ds) in
     add_comment com
+
 
 let comments () = List.rev !comment_list
 
@@ -18891,7 +18919,7 @@ let report_error ppf = function
   | Unterminated_paren_in_conditional ->
     fprintf ppf "Unterminated parens in conditional predicate"
   | Expect_hash_then_in_conditional -> 
-      fprintf ppf "Expect #then after conditioal predicate"
+      fprintf ppf "Expect `then` after conditioal predicate"
   | Conditional_expr_expected_type (a,b) -> 
       fprintf ppf "Conditional expression type mismatch (%s,%s)" 
         (string_of_type_directive a )
@@ -18908,7 +18936,7 @@ let () =
     )
 
 
-# 636 "parsing/lexer.ml"
+# 659 "parsing/lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\164\255\165\255\224\000\003\001\038\001\073\001\108\001\
@@ -20151,123 +20179,123 @@ let rec token lexbuf =
 and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 676 "parsing/lexer.mll"
+# 699 "parsing/lexer.mll"
                  (
       if not !escaped_newlines then
         raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf));
       update_loc lexbuf None 1 false 0;
       token lexbuf )
-# 1886 "parsing/lexer.ml"
+# 1909 "parsing/lexer.ml"
 
   | 1 ->
-# 683 "parsing/lexer.mll"
+# 706 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         EOL )
-# 1892 "parsing/lexer.ml"
+# 1915 "parsing/lexer.ml"
 
   | 2 ->
-# 686 "parsing/lexer.mll"
+# 709 "parsing/lexer.mll"
       ( token lexbuf )
-# 1897 "parsing/lexer.ml"
+# 1920 "parsing/lexer.ml"
 
   | 3 ->
-# 688 "parsing/lexer.mll"
+# 711 "parsing/lexer.mll"
       ( UNDERSCORE )
-# 1902 "parsing/lexer.ml"
+# 1925 "parsing/lexer.ml"
 
   | 4 ->
-# 690 "parsing/lexer.mll"
+# 713 "parsing/lexer.mll"
       ( TILDE )
-# 1907 "parsing/lexer.ml"
+# 1930 "parsing/lexer.ml"
 
   | 5 ->
-# 692 "parsing/lexer.mll"
+# 715 "parsing/lexer.mll"
       ( LABEL (get_label_name lexbuf) )
-# 1912 "parsing/lexer.ml"
+# 1935 "parsing/lexer.ml"
 
   | 6 ->
-# 694 "parsing/lexer.mll"
+# 717 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; LABEL (get_label_name lexbuf) )
-# 1917 "parsing/lexer.ml"
+# 1940 "parsing/lexer.ml"
 
   | 7 ->
-# 696 "parsing/lexer.mll"
+# 719 "parsing/lexer.mll"
       ( QUESTION )
-# 1922 "parsing/lexer.ml"
+# 1945 "parsing/lexer.ml"
 
   | 8 ->
-# 698 "parsing/lexer.mll"
+# 721 "parsing/lexer.mll"
       ( OPTLABEL (get_label_name lexbuf) )
-# 1927 "parsing/lexer.ml"
+# 1950 "parsing/lexer.ml"
 
   | 9 ->
-# 700 "parsing/lexer.mll"
+# 723 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; OPTLABEL (get_label_name lexbuf) )
-# 1932 "parsing/lexer.ml"
+# 1955 "parsing/lexer.ml"
 
   | 10 ->
-# 702 "parsing/lexer.mll"
+# 725 "parsing/lexer.mll"
       ( let s = Lexing.lexeme lexbuf in
         try Hashtbl.find keyword_table s
         with Not_found -> LIDENT s )
-# 1939 "parsing/lexer.ml"
+# 1962 "parsing/lexer.ml"
 
   | 11 ->
-# 706 "parsing/lexer.mll"
+# 729 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; LIDENT (Lexing.lexeme lexbuf) )
-# 1944 "parsing/lexer.ml"
+# 1967 "parsing/lexer.ml"
 
   | 12 ->
-# 708 "parsing/lexer.mll"
+# 731 "parsing/lexer.mll"
       ( UIDENT(Lexing.lexeme lexbuf) )
-# 1949 "parsing/lexer.ml"
+# 1972 "parsing/lexer.ml"
 
   | 13 ->
-# 710 "parsing/lexer.mll"
+# 733 "parsing/lexer.mll"
       ( warn_latin1 lexbuf; UIDENT(Lexing.lexeme lexbuf) )
-# 1954 "parsing/lexer.ml"
+# 1977 "parsing/lexer.ml"
 
   | 14 ->
-# 712 "parsing/lexer.mll"
+# 735 "parsing/lexer.mll"
       ( try
           INT (cvt_int_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int", Location.curr lexbuf))
       )
-# 1963 "parsing/lexer.ml"
+# 1986 "parsing/lexer.ml"
 
   | 15 ->
-# 718 "parsing/lexer.mll"
+# 741 "parsing/lexer.mll"
       ( FLOAT (remove_underscores(Lexing.lexeme lexbuf)) )
-# 1968 "parsing/lexer.ml"
+# 1991 "parsing/lexer.ml"
 
   | 16 ->
-# 720 "parsing/lexer.mll"
+# 743 "parsing/lexer.mll"
       ( try
           INT32 (cvt_int32_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int32", Location.curr lexbuf)) )
-# 1976 "parsing/lexer.ml"
+# 1999 "parsing/lexer.ml"
 
   | 17 ->
-# 725 "parsing/lexer.mll"
+# 748 "parsing/lexer.mll"
       ( try
           INT64 (cvt_int64_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int64", Location.curr lexbuf)) )
-# 1984 "parsing/lexer.ml"
+# 2007 "parsing/lexer.ml"
 
   | 18 ->
-# 730 "parsing/lexer.mll"
+# 753 "parsing/lexer.mll"
       ( try
           NATIVEINT (cvt_nativeint_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "nativeint", Location.curr lexbuf)) )
-# 1992 "parsing/lexer.ml"
+# 2015 "parsing/lexer.ml"
 
   | 19 ->
-# 735 "parsing/lexer.mll"
+# 758 "parsing/lexer.mll"
       ( reset_string_buffer();
         is_in_string := true;
         let string_start = lexbuf.lex_start_p in
@@ -20276,10 +20304,10 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), None) )
-# 2004 "parsing/lexer.ml"
+# 2027 "parsing/lexer.ml"
 
   | 20 ->
-# 744 "parsing/lexer.mll"
+# 767 "parsing/lexer.mll"
       ( reset_string_buffer();
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -20290,61 +20318,64 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), Some delim) )
-# 2018 "parsing/lexer.ml"
+# 2041 "parsing/lexer.ml"
 
   | 21 ->
-# 755 "parsing/lexer.mll"
+# 778 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         CHAR (Lexing.lexeme_char lexbuf 1) )
-# 2024 "parsing/lexer.ml"
+# 2047 "parsing/lexer.ml"
 
   | 22 ->
-# 758 "parsing/lexer.mll"
+# 781 "parsing/lexer.mll"
       ( CHAR(Lexing.lexeme_char lexbuf 1) )
-# 2029 "parsing/lexer.ml"
+# 2052 "parsing/lexer.ml"
 
   | 23 ->
-# 760 "parsing/lexer.mll"
+# 783 "parsing/lexer.mll"
       ( CHAR(char_for_backslash (Lexing.lexeme_char lexbuf 2)) )
-# 2034 "parsing/lexer.ml"
+# 2057 "parsing/lexer.ml"
 
   | 24 ->
-# 762 "parsing/lexer.mll"
+# 785 "parsing/lexer.mll"
       ( CHAR(char_for_decimal_code lexbuf 2) )
-# 2039 "parsing/lexer.ml"
+# 2062 "parsing/lexer.ml"
 
   | 25 ->
-# 764 "parsing/lexer.mll"
+# 787 "parsing/lexer.mll"
       ( CHAR(char_for_hexadecimal_code lexbuf 3) )
-# 2044 "parsing/lexer.ml"
+# 2067 "parsing/lexer.ml"
 
   | 26 ->
-# 766 "parsing/lexer.mll"
+# 789 "parsing/lexer.mll"
       ( let l = Lexing.lexeme lexbuf in
         let esc = String.sub l 1 (String.length l - 1) in
         raise (Error(Illegal_escape esc, Location.curr lexbuf))
       )
-# 2052 "parsing/lexer.ml"
+# 2075 "parsing/lexer.ml"
 
   | 27 ->
-# 771 "parsing/lexer.mll"
+# 794 "parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2058 "parsing/lexer.ml"
+# 2081 "parsing/lexer.ml"
 
   | 28 ->
-# 774 "parsing/lexer.mll"
+# 797 "parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
-        DOCSTRING (Docstrings.docstring s loc) )
-# 2064 "parsing/lexer.ml"
+
+        DOCSTRING (Docstrings.docstring s loc) 
+
+)
+# 2092 "parsing/lexer.ml"
 
   | 29 ->
 let
-# 776 "parsing/lexer.mll"
+# 804 "parsing/lexer.mll"
                     stars
-# 2070 "parsing/lexer.ml"
+# 2098 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 777 "parsing/lexer.mll"
+# 805 "parsing/lexer.mll"
       ( let s, loc =
           with_comment_buffer
             (fun lexbuf ->
@@ -20353,28 +20384,28 @@ let
             lexbuf
         in
         COMMENT (s, loc) )
-# 2081 "parsing/lexer.ml"
+# 2109 "parsing/lexer.ml"
 
   | 30 ->
-# 786 "parsing/lexer.mll"
+# 814 "parsing/lexer.mll"
       ( if !print_warnings then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Comment_start;
         let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2089 "parsing/lexer.ml"
+# 2117 "parsing/lexer.ml"
 
   | 31 ->
 let
-# 790 "parsing/lexer.mll"
+# 818 "parsing/lexer.mll"
                    stars
-# 2095 "parsing/lexer.ml"
+# 2123 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_curr_pos + -2) in
-# 791 "parsing/lexer.mll"
+# 819 "parsing/lexer.mll"
       ( COMMENT (stars, Location.curr lexbuf) )
-# 2099 "parsing/lexer.ml"
+# 2127 "parsing/lexer.ml"
 
   | 32 ->
-# 793 "parsing/lexer.mll"
+# 821 "parsing/lexer.mll"
       ( let loc = Location.curr lexbuf in
         Location.prerr_warning loc Warnings.Comment_not_end;
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
@@ -20382,307 +20413,307 @@ let
         lexbuf.lex_curr_p <- { curpos with pos_cnum = curpos.pos_cnum - 1 };
         STAR
       )
-# 2110 "parsing/lexer.ml"
+# 2138 "parsing/lexer.ml"
 
   | 33 ->
 let
-# 800 "parsing/lexer.mll"
+# 828 "parsing/lexer.mll"
                                    num
-# 2116 "parsing/lexer.ml"
+# 2144 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_mem.(1)
 and
-# 801 "parsing/lexer.mll"
+# 829 "parsing/lexer.mll"
                                            name
-# 2121 "parsing/lexer.ml"
+# 2149 "parsing/lexer.ml"
 = Lexing.sub_lexeme_opt lexbuf lexbuf.Lexing.lex_mem.(3) lexbuf.Lexing.lex_mem.(2) in
-# 803 "parsing/lexer.mll"
+# 831 "parsing/lexer.mll"
       ( update_loc lexbuf name (int_of_string num) true 0;
         token lexbuf
       )
-# 2127 "parsing/lexer.ml"
+# 2155 "parsing/lexer.ml"
 
   | 34 ->
-# 806 "parsing/lexer.mll"
+# 834 "parsing/lexer.mll"
          ( SHARP )
-# 2132 "parsing/lexer.ml"
+# 2160 "parsing/lexer.ml"
 
   | 35 ->
-# 807 "parsing/lexer.mll"
+# 835 "parsing/lexer.mll"
          ( AMPERSAND )
-# 2137 "parsing/lexer.ml"
+# 2165 "parsing/lexer.ml"
 
   | 36 ->
-# 808 "parsing/lexer.mll"
+# 836 "parsing/lexer.mll"
          ( AMPERAMPER )
-# 2142 "parsing/lexer.ml"
+# 2170 "parsing/lexer.ml"
 
   | 37 ->
-# 809 "parsing/lexer.mll"
+# 837 "parsing/lexer.mll"
          ( BACKQUOTE )
-# 2147 "parsing/lexer.ml"
+# 2175 "parsing/lexer.ml"
 
   | 38 ->
-# 810 "parsing/lexer.mll"
+# 838 "parsing/lexer.mll"
          ( QUOTE )
-# 2152 "parsing/lexer.ml"
+# 2180 "parsing/lexer.ml"
 
   | 39 ->
-# 811 "parsing/lexer.mll"
+# 839 "parsing/lexer.mll"
          ( LPAREN )
-# 2157 "parsing/lexer.ml"
+# 2185 "parsing/lexer.ml"
 
   | 40 ->
-# 812 "parsing/lexer.mll"
+# 840 "parsing/lexer.mll"
          ( RPAREN )
-# 2162 "parsing/lexer.ml"
+# 2190 "parsing/lexer.ml"
 
   | 41 ->
-# 813 "parsing/lexer.mll"
+# 841 "parsing/lexer.mll"
          ( STAR )
-# 2167 "parsing/lexer.ml"
+# 2195 "parsing/lexer.ml"
 
   | 42 ->
-# 814 "parsing/lexer.mll"
+# 842 "parsing/lexer.mll"
          ( COMMA )
-# 2172 "parsing/lexer.ml"
+# 2200 "parsing/lexer.ml"
 
   | 43 ->
-# 815 "parsing/lexer.mll"
+# 843 "parsing/lexer.mll"
          ( MINUSGREATER )
-# 2177 "parsing/lexer.ml"
+# 2205 "parsing/lexer.ml"
 
   | 44 ->
-# 816 "parsing/lexer.mll"
+# 844 "parsing/lexer.mll"
          ( DOT )
-# 2182 "parsing/lexer.ml"
+# 2210 "parsing/lexer.ml"
 
   | 45 ->
-# 817 "parsing/lexer.mll"
+# 845 "parsing/lexer.mll"
          ( DOTDOT )
-# 2187 "parsing/lexer.ml"
+# 2215 "parsing/lexer.ml"
 
   | 46 ->
-# 818 "parsing/lexer.mll"
+# 846 "parsing/lexer.mll"
          ( COLON )
-# 2192 "parsing/lexer.ml"
+# 2220 "parsing/lexer.ml"
 
   | 47 ->
-# 819 "parsing/lexer.mll"
+# 847 "parsing/lexer.mll"
          ( COLONCOLON )
-# 2197 "parsing/lexer.ml"
+# 2225 "parsing/lexer.ml"
 
   | 48 ->
-# 820 "parsing/lexer.mll"
+# 848 "parsing/lexer.mll"
          ( COLONEQUAL )
-# 2202 "parsing/lexer.ml"
+# 2230 "parsing/lexer.ml"
 
   | 49 ->
-# 821 "parsing/lexer.mll"
+# 849 "parsing/lexer.mll"
          ( COLONGREATER )
-# 2207 "parsing/lexer.ml"
+# 2235 "parsing/lexer.ml"
 
   | 50 ->
-# 822 "parsing/lexer.mll"
+# 850 "parsing/lexer.mll"
          ( SEMI )
-# 2212 "parsing/lexer.ml"
+# 2240 "parsing/lexer.ml"
 
   | 51 ->
-# 823 "parsing/lexer.mll"
+# 851 "parsing/lexer.mll"
          ( SEMISEMI )
-# 2217 "parsing/lexer.ml"
+# 2245 "parsing/lexer.ml"
 
   | 52 ->
-# 824 "parsing/lexer.mll"
+# 852 "parsing/lexer.mll"
          ( LESS )
-# 2222 "parsing/lexer.ml"
+# 2250 "parsing/lexer.ml"
 
   | 53 ->
-# 825 "parsing/lexer.mll"
+# 853 "parsing/lexer.mll"
          ( LESSMINUS )
-# 2227 "parsing/lexer.ml"
+# 2255 "parsing/lexer.ml"
 
   | 54 ->
-# 826 "parsing/lexer.mll"
+# 854 "parsing/lexer.mll"
          ( EQUAL )
-# 2232 "parsing/lexer.ml"
+# 2260 "parsing/lexer.ml"
 
   | 55 ->
-# 827 "parsing/lexer.mll"
+# 855 "parsing/lexer.mll"
          ( LBRACKET )
-# 2237 "parsing/lexer.ml"
+# 2265 "parsing/lexer.ml"
 
   | 56 ->
-# 828 "parsing/lexer.mll"
+# 856 "parsing/lexer.mll"
          ( LBRACKETBAR )
-# 2242 "parsing/lexer.ml"
+# 2270 "parsing/lexer.ml"
 
   | 57 ->
-# 829 "parsing/lexer.mll"
+# 857 "parsing/lexer.mll"
          ( LBRACKETLESS )
-# 2247 "parsing/lexer.ml"
+# 2275 "parsing/lexer.ml"
 
   | 58 ->
-# 830 "parsing/lexer.mll"
+# 858 "parsing/lexer.mll"
          ( LBRACKETGREATER )
-# 2252 "parsing/lexer.ml"
+# 2280 "parsing/lexer.ml"
 
   | 59 ->
-# 831 "parsing/lexer.mll"
+# 859 "parsing/lexer.mll"
          ( RBRACKET )
-# 2257 "parsing/lexer.ml"
+# 2285 "parsing/lexer.ml"
 
   | 60 ->
-# 832 "parsing/lexer.mll"
+# 860 "parsing/lexer.mll"
          ( LBRACE )
-# 2262 "parsing/lexer.ml"
+# 2290 "parsing/lexer.ml"
 
   | 61 ->
-# 833 "parsing/lexer.mll"
+# 861 "parsing/lexer.mll"
          ( LBRACELESS )
-# 2267 "parsing/lexer.ml"
+# 2295 "parsing/lexer.ml"
 
   | 62 ->
-# 834 "parsing/lexer.mll"
+# 862 "parsing/lexer.mll"
          ( BAR )
-# 2272 "parsing/lexer.ml"
+# 2300 "parsing/lexer.ml"
 
   | 63 ->
-# 835 "parsing/lexer.mll"
+# 863 "parsing/lexer.mll"
          ( BARBAR )
-# 2277 "parsing/lexer.ml"
+# 2305 "parsing/lexer.ml"
 
   | 64 ->
-# 836 "parsing/lexer.mll"
+# 864 "parsing/lexer.mll"
          ( BARRBRACKET )
-# 2282 "parsing/lexer.ml"
+# 2310 "parsing/lexer.ml"
 
   | 65 ->
-# 837 "parsing/lexer.mll"
+# 865 "parsing/lexer.mll"
          ( GREATER )
-# 2287 "parsing/lexer.ml"
+# 2315 "parsing/lexer.ml"
 
   | 66 ->
-# 838 "parsing/lexer.mll"
+# 866 "parsing/lexer.mll"
          ( GREATERRBRACKET )
-# 2292 "parsing/lexer.ml"
+# 2320 "parsing/lexer.ml"
 
   | 67 ->
-# 839 "parsing/lexer.mll"
+# 867 "parsing/lexer.mll"
          ( RBRACE )
-# 2297 "parsing/lexer.ml"
+# 2325 "parsing/lexer.ml"
 
   | 68 ->
-# 840 "parsing/lexer.mll"
+# 868 "parsing/lexer.mll"
          ( GREATERRBRACE )
-# 2302 "parsing/lexer.ml"
+# 2330 "parsing/lexer.ml"
 
   | 69 ->
-# 841 "parsing/lexer.mll"
+# 869 "parsing/lexer.mll"
          ( LBRACKETAT )
-# 2307 "parsing/lexer.ml"
+# 2335 "parsing/lexer.ml"
 
   | 70 ->
-# 842 "parsing/lexer.mll"
+# 870 "parsing/lexer.mll"
          ( LBRACKETPERCENT )
-# 2312 "parsing/lexer.ml"
+# 2340 "parsing/lexer.ml"
 
   | 71 ->
-# 843 "parsing/lexer.mll"
+# 871 "parsing/lexer.mll"
           ( LBRACKETPERCENTPERCENT )
-# 2317 "parsing/lexer.ml"
+# 2345 "parsing/lexer.ml"
 
   | 72 ->
-# 844 "parsing/lexer.mll"
+# 872 "parsing/lexer.mll"
           ( LBRACKETATAT )
-# 2322 "parsing/lexer.ml"
+# 2350 "parsing/lexer.ml"
 
   | 73 ->
-# 845 "parsing/lexer.mll"
+# 873 "parsing/lexer.mll"
            ( LBRACKETATATAT )
-# 2327 "parsing/lexer.ml"
+# 2355 "parsing/lexer.ml"
 
   | 74 ->
-# 846 "parsing/lexer.mll"
+# 874 "parsing/lexer.mll"
          ( BANG )
-# 2332 "parsing/lexer.ml"
+# 2360 "parsing/lexer.ml"
 
   | 75 ->
-# 847 "parsing/lexer.mll"
+# 875 "parsing/lexer.mll"
          ( INFIXOP0 "!=" )
-# 2337 "parsing/lexer.ml"
+# 2365 "parsing/lexer.ml"
 
   | 76 ->
-# 848 "parsing/lexer.mll"
+# 876 "parsing/lexer.mll"
          ( PLUS )
-# 2342 "parsing/lexer.ml"
+# 2370 "parsing/lexer.ml"
 
   | 77 ->
-# 849 "parsing/lexer.mll"
+# 877 "parsing/lexer.mll"
          ( PLUSDOT )
-# 2347 "parsing/lexer.ml"
+# 2375 "parsing/lexer.ml"
 
   | 78 ->
-# 850 "parsing/lexer.mll"
+# 878 "parsing/lexer.mll"
          ( PLUSEQ )
-# 2352 "parsing/lexer.ml"
+# 2380 "parsing/lexer.ml"
 
   | 79 ->
-# 851 "parsing/lexer.mll"
+# 879 "parsing/lexer.mll"
          ( MINUS )
-# 2357 "parsing/lexer.ml"
+# 2385 "parsing/lexer.ml"
 
   | 80 ->
-# 852 "parsing/lexer.mll"
+# 880 "parsing/lexer.mll"
          ( MINUSDOT )
-# 2362 "parsing/lexer.ml"
+# 2390 "parsing/lexer.ml"
 
   | 81 ->
-# 855 "parsing/lexer.mll"
+# 883 "parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2367 "parsing/lexer.ml"
+# 2395 "parsing/lexer.ml"
 
   | 82 ->
-# 857 "parsing/lexer.mll"
+# 885 "parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2372 "parsing/lexer.ml"
+# 2400 "parsing/lexer.ml"
 
   | 83 ->
-# 859 "parsing/lexer.mll"
+# 887 "parsing/lexer.mll"
             ( INFIXOP0(Lexing.lexeme lexbuf) )
-# 2377 "parsing/lexer.ml"
+# 2405 "parsing/lexer.ml"
 
   | 84 ->
-# 861 "parsing/lexer.mll"
+# 889 "parsing/lexer.mll"
             ( INFIXOP1(Lexing.lexeme lexbuf) )
-# 2382 "parsing/lexer.ml"
+# 2410 "parsing/lexer.ml"
 
   | 85 ->
-# 863 "parsing/lexer.mll"
+# 891 "parsing/lexer.mll"
             ( INFIXOP2(Lexing.lexeme lexbuf) )
-# 2387 "parsing/lexer.ml"
+# 2415 "parsing/lexer.ml"
 
   | 86 ->
-# 865 "parsing/lexer.mll"
+# 893 "parsing/lexer.mll"
             ( INFIXOP4(Lexing.lexeme lexbuf) )
-# 2392 "parsing/lexer.ml"
+# 2420 "parsing/lexer.ml"
 
   | 87 ->
-# 866 "parsing/lexer.mll"
+# 894 "parsing/lexer.mll"
             ( PERCENT )
-# 2397 "parsing/lexer.ml"
+# 2425 "parsing/lexer.ml"
 
   | 88 ->
-# 868 "parsing/lexer.mll"
+# 896 "parsing/lexer.mll"
             ( INFIXOP3(Lexing.lexeme lexbuf) )
-# 2402 "parsing/lexer.ml"
+# 2430 "parsing/lexer.ml"
 
   | 89 ->
-# 870 "parsing/lexer.mll"
+# 898 "parsing/lexer.mll"
             ( SHARPOP(Lexing.lexeme lexbuf) )
-# 2407 "parsing/lexer.ml"
+# 2435 "parsing/lexer.ml"
 
   | 90 ->
-# 871 "parsing/lexer.mll"
+# 899 "parsing/lexer.mll"
         (
       if !if_then_else <> Dir_out then
         if !if_then_else = Dir_if_true then
@@ -20692,14 +20723,14 @@ and
         EOF
         
     )
-# 2420 "parsing/lexer.ml"
+# 2448 "parsing/lexer.ml"
 
   | 91 ->
-# 881 "parsing/lexer.mll"
+# 909 "parsing/lexer.mll"
       ( raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf))
       )
-# 2427 "parsing/lexer.ml"
+# 2455 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_token_rec lexbuf __ocaml_lex_state
@@ -20709,15 +20740,15 @@ and comment lexbuf =
 and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 887 "parsing/lexer.mll"
+# 915 "parsing/lexer.mll"
       ( comment_start_loc := (Location.curr lexbuf) :: !comment_start_loc;
         store_lexeme lexbuf;
         comment lexbuf;
       )
-# 2442 "parsing/lexer.ml"
+# 2470 "parsing/lexer.ml"
 
   | 1 ->
-# 892 "parsing/lexer.mll"
+# 920 "parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | [_] -> comment_start_loc := []; Location.curr lexbuf
@@ -20725,10 +20756,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
                   store_lexeme lexbuf;
                   comment lexbuf;
        )
-# 2453 "parsing/lexer.ml"
+# 2481 "parsing/lexer.ml"
 
   | 2 ->
-# 900 "parsing/lexer.mll"
+# 928 "parsing/lexer.mll"
       (
         string_start_loc := Location.curr lexbuf;
         store_string_char '"';
@@ -20746,10 +20777,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         store_string_char '"';
         comment lexbuf )
-# 2474 "parsing/lexer.ml"
+# 2502 "parsing/lexer.ml"
 
   | 3 ->
-# 918 "parsing/lexer.mll"
+# 946 "parsing/lexer.mll"
       (
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -20771,43 +20802,43 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         store_string delim;
         store_string_char '}';
         comment lexbuf )
-# 2499 "parsing/lexer.ml"
+# 2527 "parsing/lexer.ml"
 
   | 4 ->
-# 941 "parsing/lexer.mll"
+# 969 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2504 "parsing/lexer.ml"
+# 2532 "parsing/lexer.ml"
 
   | 5 ->
-# 943 "parsing/lexer.mll"
+# 971 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2512 "parsing/lexer.ml"
+# 2540 "parsing/lexer.ml"
 
   | 6 ->
-# 948 "parsing/lexer.mll"
+# 976 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2517 "parsing/lexer.ml"
+# 2545 "parsing/lexer.ml"
 
   | 7 ->
-# 950 "parsing/lexer.mll"
+# 978 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2522 "parsing/lexer.ml"
+# 2550 "parsing/lexer.ml"
 
   | 8 ->
-# 952 "parsing/lexer.mll"
+# 980 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2527 "parsing/lexer.ml"
+# 2555 "parsing/lexer.ml"
 
   | 9 ->
-# 954 "parsing/lexer.mll"
+# 982 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2532 "parsing/lexer.ml"
+# 2560 "parsing/lexer.ml"
 
   | 10 ->
-# 956 "parsing/lexer.mll"
+# 984 "parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | loc :: _ ->
@@ -20815,20 +20846,20 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
           comment_start_loc := [];
           raise (Error (Unterminated_comment start, loc))
       )
-# 2543 "parsing/lexer.ml"
+# 2571 "parsing/lexer.ml"
 
   | 11 ->
-# 964 "parsing/lexer.mll"
+# 992 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2551 "parsing/lexer.ml"
+# 2579 "parsing/lexer.ml"
 
   | 12 ->
-# 969 "parsing/lexer.mll"
+# 997 "parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2556 "parsing/lexer.ml"
+# 2584 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec lexbuf __ocaml_lex_state
@@ -20838,42 +20869,42 @@ and string lexbuf =
 and __ocaml_lex_string_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 973 "parsing/lexer.mll"
+# 1001 "parsing/lexer.mll"
       ( () )
-# 2568 "parsing/lexer.ml"
+# 2596 "parsing/lexer.ml"
 
   | 1 ->
 let
-# 974 "parsing/lexer.mll"
+# 1002 "parsing/lexer.mll"
                                   space
-# 2574 "parsing/lexer.ml"
+# 2602 "parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_curr_pos in
-# 975 "parsing/lexer.mll"
+# 1003 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false (String.length space);
         string lexbuf
       )
-# 2580 "parsing/lexer.ml"
+# 2608 "parsing/lexer.ml"
 
   | 2 ->
-# 979 "parsing/lexer.mll"
+# 1007 "parsing/lexer.mll"
       ( store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
         string lexbuf )
-# 2586 "parsing/lexer.ml"
+# 2614 "parsing/lexer.ml"
 
   | 3 ->
-# 982 "parsing/lexer.mll"
+# 1010 "parsing/lexer.mll"
       ( store_string_char(char_for_decimal_code lexbuf 1);
          string lexbuf )
-# 2592 "parsing/lexer.ml"
+# 2620 "parsing/lexer.ml"
 
   | 4 ->
-# 985 "parsing/lexer.mll"
+# 1013 "parsing/lexer.mll"
       ( store_string_char(char_for_hexadecimal_code lexbuf 2);
          string lexbuf )
-# 2598 "parsing/lexer.ml"
+# 2626 "parsing/lexer.ml"
 
   | 5 ->
-# 988 "parsing/lexer.mll"
+# 1016 "parsing/lexer.mll"
       ( if in_comment ()
         then string lexbuf
         else begin
@@ -20888,29 +20919,29 @@ let
           string lexbuf
         end
       )
-# 2616 "parsing/lexer.ml"
+# 2644 "parsing/lexer.ml"
 
   | 6 ->
-# 1003 "parsing/lexer.mll"
+# 1031 "parsing/lexer.mll"
       ( if not (in_comment ()) then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Eol_in_string;
         update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         string lexbuf
       )
-# 2626 "parsing/lexer.ml"
+# 2654 "parsing/lexer.ml"
 
   | 7 ->
-# 1010 "parsing/lexer.mll"
+# 1038 "parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2632 "parsing/lexer.ml"
+# 2660 "parsing/lexer.ml"
 
   | 8 ->
-# 1013 "parsing/lexer.mll"
+# 1041 "parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         string lexbuf )
-# 2638 "parsing/lexer.ml"
+# 2666 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_string_rec lexbuf __ocaml_lex_state
@@ -20920,34 +20951,34 @@ and quoted_string delim lexbuf =
 and __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1018 "parsing/lexer.mll"
+# 1046 "parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         quoted_string delim lexbuf
       )
-# 2653 "parsing/lexer.ml"
+# 2681 "parsing/lexer.ml"
 
   | 1 ->
-# 1023 "parsing/lexer.mll"
+# 1051 "parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2659 "parsing/lexer.ml"
+# 2687 "parsing/lexer.ml"
 
   | 2 ->
-# 1026 "parsing/lexer.mll"
+# 1054 "parsing/lexer.mll"
       (
         let edelim = Lexing.lexeme lexbuf in
         let edelim = String.sub edelim 1 (String.length edelim - 2) in
         if delim = edelim then ()
         else (store_lexeme lexbuf; quoted_string delim lexbuf)
       )
-# 2669 "parsing/lexer.ml"
+# 2697 "parsing/lexer.ml"
 
   | 3 ->
-# 1033 "parsing/lexer.mll"
+# 1061 "parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         quoted_string delim lexbuf )
-# 2675 "parsing/lexer.ml"
+# 2703 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state
@@ -20957,26 +20988,26 @@ and skip_sharp_bang lexbuf =
 and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1038 "parsing/lexer.mll"
+# 1066 "parsing/lexer.mll"
        ( update_loc lexbuf None 3 false 0 )
-# 2687 "parsing/lexer.ml"
+# 2715 "parsing/lexer.ml"
 
   | 1 ->
-# 1040 "parsing/lexer.mll"
+# 1068 "parsing/lexer.mll"
        ( update_loc lexbuf None 1 false 0 )
-# 2692 "parsing/lexer.ml"
+# 2720 "parsing/lexer.ml"
 
   | 2 ->
-# 1041 "parsing/lexer.mll"
+# 1069 "parsing/lexer.mll"
        ( () )
-# 2697 "parsing/lexer.ml"
+# 2725 "parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 1043 "parsing/lexer.mll"
+# 1071 "parsing/lexer.mll"
  
 
   let at_bol lexbuf = 
@@ -20997,6 +21028,7 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
 
   type doc_state =
     | Initial  (* There have been no docstrings yet *)
+
     | After of docstring list
         (* There have been docstrings, none of which were
            preceeded by a blank line *)
@@ -21006,8 +21038,97 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
 
   and docstring = Docstrings.docstring
 
+  let interpret_directive lexbuf cont look_ahead = 
+    let if_then_else = !if_then_else in
+    begin match token_with_comments lexbuf, if_then_else with 
+    |  IF, Dir_out  ->
+        let rec skip_from_if_false () = 
+          let token = token_with_comments lexbuf in
+          if token = EOF then 
+            raise (Error (Unterminated_if, Location.curr lexbuf)) else
+          if token = SHARP && at_bol lexbuf then 
+            begin 
+              let token = token_with_comments lexbuf in
+              match token with
+              | END -> 
+                  begin
+                    update_if_then_else Dir_out;
+                    cont lexbuf
+                  end
+              | ELSE -> 
+                  begin
+                    update_if_then_else Dir_if_false;
+                    cont lexbuf
+                  end
+              | IF ->
+                  raise (Error (Unexpected_directive, Location.curr lexbuf))
+              | _ -> 
+                  if is_elif token &&
+                     directive_parse token_with_comments lexbuf then
+                    begin
+                      update_if_then_else Dir_if_true;
+                      cont lexbuf
+                    end
+                  else skip_from_if_false ()                               
+            end
+          else skip_from_if_false () in 
+        if directive_parse token_with_comments lexbuf then
+          begin 
+            update_if_then_else Dir_if_true (* Next state: ELSE *);
+            cont lexbuf
+          end
+        else
+          skip_from_if_false ()
+    | IF,  (Dir_if_false | Dir_if_true)->
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | LIDENT "elif", (Dir_if_false | Dir_out)
+      -> (* when the predicate is false, it will continue eating `elif` *)
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | (LIDENT "elif" | ELSE as token), Dir_if_true ->           
+        (* looking for #end, however, it can not see #if anymore *)
+        let rec skip_from_if_true else_seen = 
+          let token = token_with_comments lexbuf in
+          if token = EOF then 
+            raise (Error (Unterminated_else, Location.curr lexbuf)) else
+          if token = SHARP && at_bol lexbuf then 
+            begin 
+              let token = token_with_comments lexbuf in 
+              match token with  
+              | END -> 
+                  begin
+                    update_if_then_else Dir_out;
+                    cont lexbuf
+                  end  
+              | IF ->  
+                  raise (Error (Unexpected_directive, Location.curr lexbuf)) 
+              | ELSE ->
+                  if else_seen then 
+                    raise (Error (Unexpected_directive, Location.curr lexbuf))
+                  else 
+                    skip_from_if_true true
+              | _ ->
+                  if else_seen && is_elif token then  
+                    raise (Error (Unexpected_directive, Location.curr lexbuf))
+                  else 
+                    skip_from_if_true else_seen
+            end
+          else skip_from_if_true else_seen in 
+        skip_from_if_true (token = ELSE)
+    | ELSE, Dir_if_false 
+    | ELSE, Dir_out -> 
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | END, (Dir_if_false | Dir_if_true ) -> 
+        update_if_then_else  Dir_out;
+        cont lexbuf
+    | END,  Dir_out  -> 
+        raise (Error(Unexpected_directive, Location.curr lexbuf))
+    | token, (Dir_if_true | Dir_if_false | Dir_out) ->
+        look_ahead token 
+    end
+
   let token lexbuf =
     let post_pos = lexeme_end_p lexbuf in
+
     let attach lines docs pre_pos =
       let open Docstrings in
         match docs, lines with
@@ -21033,6 +21154,7 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
               (List.rev_append f (List.rev b));
             set_pre_extra_docstrings pre_pos (List.rev a)
     in
+
     let rec loop lines docs lexbuf : Parser.token =
       match token_with_comments lexbuf with
       | COMMENT (s, loc) ->
@@ -21052,93 +21174,11 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
             | BlankLine -> BlankLine
           in
           loop lines' docs lexbuf
-      | SHARP when at_bol lexbuf ->
-          let if_then_else = !if_then_else in
-          begin match token_with_comments lexbuf, if_then_else with 
-          |  IF, Dir_out  ->
-              let rec skip_from_if_false () :  Parser.token = 
-                let token = token_with_comments lexbuf in
-                if token = EOF then 
-                  raise (Error (Unterminated_if, Location.curr lexbuf)) else
-                if token = SHARP && at_bol lexbuf then 
-                  begin 
-                    let token = token_with_comments lexbuf in
-                    match token with
-                    | END -> 
-                        begin
-                          update_if_then_else Dir_out;
-                          loop lines docs lexbuf
-                        end
-                    | ELSE -> 
-                        begin
-                          update_if_then_else Dir_if_false;
-                          loop lines docs lexbuf
-                        end
-                    | IF ->
-                        raise (Error (Unexpected_directive, Location.curr lexbuf))
-                    | _ -> 
-                        if is_elif token &&
-                           directive_parse token_with_comments lexbuf then
-                            begin
-                              update_if_then_else Dir_if_true;
-                              loop lines docs lexbuf
-                            end
-                        else skip_from_if_false ()                               
-                  end
-                else skip_from_if_false () in 
-              if directive_parse token_with_comments lexbuf then
-                begin 
-                  update_if_then_else Dir_if_true (* Next state: ELSE *);
-                  loop lines docs lexbuf
-                end
-              else
-                skip_from_if_false ()
-          | IF,  (Dir_if_false | Dir_if_true)->
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | LIDENT "elif", (Dir_if_false | Dir_out)
-            -> (* when the predicate is false, it will continue eating `elif` *)
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | (LIDENT "elif" | ELSE as token), Dir_if_true ->           
-              (* looking for #end, however, it can not see #if anymore *)
-              let rec skip_from_if_true else_seen = 
-                let token = token_with_comments lexbuf in
-                if token = EOF then 
-                  raise (Error (Unterminated_else, Location.curr lexbuf)) else
-                if token = SHARP && at_bol lexbuf then 
-                  begin 
-                    let token = token_with_comments lexbuf in 
-                    match token with  
-                    | END -> 
-                      begin
-                        update_if_then_else Dir_out;
-                        loop lines docs lexbuf
-                      end  
-                    | IF ->  
-                      raise (Error (Unexpected_directive, Location.curr lexbuf)) 
-                    | ELSE ->
-                      if else_seen then 
-                        raise (Error (Unexpected_directive, Location.curr lexbuf))
-                      else 
-                        skip_from_if_true true
-                    | _ ->
-                      if else_seen && is_elif token then  
-                        raise (Error (Unexpected_directive, Location.curr lexbuf))
-                      else 
-                        skip_from_if_true else_seen
-                  end
-                else skip_from_if_true else_seen in 
-              skip_from_if_true (token = ELSE)
-          | ELSE, Dir_if_false 
-          | ELSE, Dir_out -> 
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | END, (Dir_if_false | Dir_if_true ) -> 
-              update_if_then_else  Dir_out;
-              loop lines docs lexbuf
-          | END,  Dir_out  -> 
-              raise (Error(Unexpected_directive, Location.curr lexbuf))
-          | token, (Dir_if_true | Dir_if_false | Dir_out) ->
-              sharp_look_ahead := Some token; SHARP
-           end
+      | SHARP when at_bol lexbuf -> 
+          interpret_directive lexbuf 
+            (fun lexbuf -> loop lines docs lexbuf)
+            (fun token -> sharp_look_ahead := Some token; SHARP)
+
       | DOCSTRING doc ->
           add_docstring_comment doc;
           let docs' =
@@ -21151,8 +21191,11 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
             | Before(a, f, b), BlankLine -> Before(a, b @ f, [doc])
           in
           loop NoLine docs' lexbuf
+
       | tok ->
+
           attach lines docs (lexeme_start_p lexbuf);
+
           tok
 
           
@@ -21174,12 +21217,32 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     | None -> ()
     | Some (init, _preprocess) -> init ()
 
+  let rec filter_directive pos   acc lexbuf : (int * int ) list =
+    match token_with_comments lexbuf with
+    | SHARP when at_bol lexbuf ->
+        (* ^[start_pos]#if ... #then^[end_pos] *)
+        let start_pos = Lexing.lexeme_start lexbuf in 
+        interpret_directive lexbuf 
+          (fun lexbuf -> 
+             filter_directive 
+               (Lexing.lexeme_end lexbuf)
+               ((pos, start_pos) :: acc)
+               lexbuf
+          
+          )
+          (fun _token -> filter_directive pos acc lexbuf  )
+    | EOF -> (pos, Lexing.lexeme_end lexbuf) :: acc
+    | _ -> filter_directive pos  acc lexbuf
+
+  let filter_directive_from_lexbuf lexbuf = 
+    List.rev (filter_directive 0 [] lexbuf )
+
   let set_preprocessor init preprocess =
     escaped_newlines := true;
     preprocessor := Some (init, preprocess)
 
 
-# 2907 "parsing/lexer.ml"
+# 2967 "parsing/lexer.ml"
 
 end
 module Bs_conditional_initial : sig 
@@ -60737,12 +60800,12 @@ let to_file name (v : t) =
 end
 module Js_cmj_datasets : sig 
 #1 "js_cmj_datasets.mli"
-val cmj_data_sets : Js_cmj_format.t Lazy.t String_map.t
+val data_sets : Js_cmj_format.t Lazy.t String_map.t
 
 end = struct
 #1 "js_cmj_datasets.ml"
 (* -*-mode:fundamental-*- *)
-let cmj_data_sets = String_map.of_list [
+let data_sets = String_map.of_list [
   ("arg.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\025\000\000\000\137\000\000\001\218\000\000\001\188\176\208\208\208\208@#Bad\160\176@@@@@A$Help\160\004\003@@B%align\160\176A\160\160B\144\160\176\001\004\145%*opt*@\160\176\001\004\148(speclist@@@@@\208\208@'current\160\176A@@@@A%parse\160\176@\160\160C\144\160\176\001\004i!l@\160\176\001\004j!f@\160\176\001\004k#msg@@@@@@BC*parse_argv\160\176A\160\160E\144\160\176\001\004a\004 @\160\176\001\004d$argv@\160\176\001\004e(speclist@\160\176\001\004f'anonfun@\160\176\001\004g&errmsg@@@@@\208\208@2parse_argv_dynamic\160\176A\160\160E\144\160\176\001\0043\0046@\160\176\001\0046$argv@\160\176\001\0047(speclist@\160\176\001\0048'anonfun@\160\176\001\0049&errmsg@@@@@@A-parse_dynamic\160\176@\160\160C\144\160\176\001\004o!l@\160\176\001\004p!f@\160\176\001\004q#msg@@@@@\208@%usage\160\176@\160\160B\144\160\176\001\004/(speclist@\160\176\001\0040&errmsg@@@@@\208@,usage_string\160\176A\160\160B\144\160\176\001\004+(speclist@\160\176\001\004,&errmsg@@@@@@ABCD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003s\000\000\001\022\000\000\003\144\000\000\003r\176\208\208\208@&append\160\176@\160\160B\144\160\176\001\004\012\"a1@\160\176\001\004\r\"a2@@@@@\208@$blit\160\176@\160\160E\144\160\176\001\004\026\"a1@\160\176\001\004\027$ofs1@\160\176\001\004\028\"a2@\160\176\001\004\029$ofs2@\160\176\001\004\030#len@@@@@@AB&concat\160@\144\147\192A@\160\176\001\004\159$prim@@\150\176\153\2081caml_array_concatAA @\160\144\004\n@\176\192&_none_A@\000\255\004\002A\208\208@$copy\160\176@\160\160A\144\160\176\001\004\t!a@@@@@@A-create_matrix\160\176@\160\160C\144\160\176\001\004\002\"sx@\160\176\001\004\003\"sy@\160\176\001\004\004$init@@@@@\208\208@)fast_sort\160\176@\160\160B\144\160\176\001\004w#cmp@\160\176\001\004x!a@@@@@@A$fill\160\176A\160\160D\144\160\176\001\004\020!a@\160\176\001\004\021#ofs@\160\176\001\004\022#len@\160\176\001\004\023!v@@@@@\208@)fold_left\160\176@\160\160C\144\160\176\001\004F!f@\160\176\001\004G!x@\160\176\001\004H!a@@@@@\208@*fold_right\160\176@\160\160C\144\160\176\001\004L!f@\160\176\001\004M!a@\160\176\001\004N!x@@@@@@ABCDE$init\160\176@\160\160B\144\160\176\001\003\253!l@\160\176\001\003\254!f@@@@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004 !f@\160\176\001\004!!a@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\004*!f@\160\176\001\004+!a@@@@@@AB+make_matrix\160\004v@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004$!f@\160\176\001\004%!a@@@@@\208@$mapi\160\176@\160\160B\144\160\176\001\004.!f@\160\176\001\004/!a@@@@@@AB'of_list\160\176@\160\160A\144\160\176\001\004?!l@@@@@\208@$sort\160\176A\160\160B\144\160\176\001\004S#cmp@\160\176\001\004T!a@@@@@\208@+stable_sort\160\004\154@@ABC#sub\160\176@\160\160C\144\160\176\001\004\016!a@\160\176\001\004\017#ofs@\160\176\001\004\018#len@@@@@\208@'to_list\160\176@\160\160A\144\160\176\001\0044!a@@@@@@ADEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("arrayLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\0034\000\000\001\005\000\000\003V\000\000\003<\176\208\208\208@&append\160\176@\160\160B\144\160\176\001\004\012\"a1@\160\176\001\004\r\"a2@@@@@\208@$blit\160\176@\160\160E\144\160\176\001\004\026\"a1@\160\176\001\004\027$ofs1@\160\176\001\004\028\"a2@\160\176\001\004\029$ofs2@\160\176\001\004\030#len@@@@@@AB&concat\160@@\208\208@$copy\160\176@\160\160A\144\160\176\001\004\t!a@@@@@@A-create_matrix\160\176@\160\160C\144\160\176\001\004\002\"sx@\160\176\001\004\003\"sy@\160\176\001\004\004$init@@@@@\208\208@)fast_sort\160\176@\160\160B\144\160\176\001\004w#cmp@\160\176\001\004x!a@@@@@@A$fill\160\176A\160\160D\144\160\176\001\004\020!a@\160\176\001\004\021#ofs@\160\176\001\004\022#len@\160\176\001\004\023!v@@@@@\208@)fold_left\160\176@\160\160C\144\160\176\001\004F!f@\160\176\001\004G!x@\160\176\001\004H!a@@@@@\208@*fold_right\160\176@\160\160C\144\160\176\001\004L!f@\160\176\001\004M!a@\160\176\001\004N!x@@@@@@ABCDE$init\160\176@\160\160B\144\160\176\001\003\253!l@\160\176\001\003\254!f@@@@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004 !f@\160\176\001\004!!a@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\004*!f@\160\176\001\004+!a@@@@@@AB+make_matrix\160\004v@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004$!f@\160\176\001\004%!a@@@@@\208@$mapi\160\176@\160\160B\144\160\176\001\004.!f@\160\176\001\004/!a@@@@@@AB'of_list\160\176@\160\160A\144\160\176\001\004?!l@@@@@\208@$sort\160\176A\160\160B\144\160\176\001\004S#cmp@\160\176\001\004T!a@@@@@\208@+stable_sort\160\004\154@@ABC#sub\160\176@\160\160C\144\160\176\001\004\016!a@\160\176\001\004\017#ofs@\160\176\001\004\018#len@@@@@\208@'to_list\160\176@\160\160A\144\160\176\001\0044!a@@@@@@ADEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
@@ -60800,7 +60863,7 @@ let cmj_data_sets = String_map.of_list [
   ("bs_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001#\000\000\000J\000\000\000\248\000\000\000\234\176\208\208\208@/caml_array_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A1caml_array_concat\160\176@\160\160A\144\160\176\001\004\t!l@@@@@@B.caml_array_sub\160\176@\160\160C\144\160\176\001\003\244!x@\160\176\001\003\245&offset@\160\176\001\003\246#len@@@@@\208@.caml_make_vect\160\176@\160\160B\144\160\176\001\004\020#len@\160\176\001\004\021$init@@@@@@AC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_backtrace.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\029\000\000\0005\000\000\000\197\000\000\000\178\176\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\003\241%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\176\192&_none_A@\000\255\004\002A\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@\176\1921caml_backtrace.mla\001\005\149\001\005\162\192\004\002a\001\005\149\001\005\217@@\176\192\004\004a\001\005\149\001\005\153\192\004\005a\001\005\149\001\005\158@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002@\000\000\000\143\000\000\001\242\000\000\001\215\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!y@@@@\144\147\192B@\004\t\150\176\179@\160\"::A@\160\144\004\015\160\144\004\014@\176\192-caml_basic.mlm\001\006^\001\006m\192\004\002m\001\006^\001\006s@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\003\252!x@@@@\144\147\192A@\004\006\188\144\004\007\150\176\153\208%false@A\t(BS:1.1.0\132\149\166\190\000\000\000\012\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160%false@@@\176\192\004\025r\001\006\190\001\006\199\192\004\026r\001\006\190\001\006\208@\150\176\153\208$true@A\t'BS:1.1.0\132\149\166\190\000\000\000\011\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160$true@@@\176\192\004\"q\001\006\171\001\006\181\192\004#q\001\006\171\001\006\189@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\147\192A@\004\006\188\144\004\007\150\176\153\004 @\176\192\0046c\001\005\139\001\005\148\192\0047c\001\005\139\001\005\157@\150\176\153\004\029@\176\192\004<b\001\005u\001\005\129\192\004=b\001\005u\001\005\137@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\147\192A@\004\006\150\176\179@\160$SomeA@\160\144\004\012@\176\192\004Z^\001\0051\001\005>\192\004[^\001\0051\001\005D@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002@\000\000\000\143\000\000\001\242\000\000\001\215\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!y@@@@\144\147\192B@\004\t\150\176\179@\160\"::A@\160\144\004\015\160\144\004\014@\176\192-caml_basic.mlm\001\006^\001\006m\192\004\002m\001\006^\001\006s@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\003\252!x@@@@\144\147\192A@\004\006\188\144\004\007\150\176\153\208%false@A\t(BS:1.1.2\132\149\166\190\000\000\000\012\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160%false@@@\176\192\004\025r\001\006\190\001\006\199\192\004\026r\001\006\190\001\006\208@\150\176\153\208$true@A\t'BS:1.1.2\132\149\166\190\000\000\000\011\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160$true@@@\176\192\004\"q\001\006\171\001\006\181\192\004#q\001\006\171\001\006\189@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\147\192A@\004\006\188\144\004\007\150\176\153\004 @\176\192\0046c\001\005\139\001\005\148\192\0047c\001\005\139\001\005\157@\150\176\153\004\029@\176\192\004<b\001\005u\001\005\129\192\004=b\001\005u\001\005\137@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\147\192A@\004\006\150\176\179@\160$SomeA@\160\144\004\012@\176\192\004Z^\001\0051\001\005>\192\004[^\001\0051\001\005D@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_builtin_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\0017\000\000\0001\000\000\000\210\000\000\000\185\176\208\208\208\208@.assert_failure\160@@@A0division_by_zero\160@@@B+end_of_file\160@@\208@'failure\160@@@AC0invalid_argument\160@@\208\208\208@-match_failure\160@@@A)not_found\160@@@B-out_of_memory\160@@\208\208@.stack_overflow\160@@\208@.sys_blocked_io\160@@@AB)sys_error\160@@\208@:undefined_recursive_module\160@@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_bytes.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000c\000\000\000\026\000\000\000S\000\000\000O\176\208@#get\160\176A\160\160B\144\160\176\001\003\241!s@\160\176\001\003\242!i@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\166\000\000\000+\000\000\000\144\000\000\000\135\176\208@.caml_set_oo_id\160\176@\160\160A\144\160\176\001\003\242!b@@@@@\208\208@&create\160\176@\160\160A\144\160\176\001\003\245#str@@@@@@A&get_id\160\176@\160\160A\144\160\176\001\003\247%param@@@@@@BC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
@@ -60811,16 +60874,16 @@ let cmj_data_sets = String_map.of_list [
   ("caml_int32.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\255\000\000\000D\000\000\000\233\000\000\000\219\176\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\247!x@@@@@\208@0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\249!x@@@@@\208@4caml_nativeint_bswap\160\004\n@@ABC#div\160\176A\160\160B\144\160\176\001\003\241!x@\160\176\001\003\242!y@@@@@\208\208@$imul\160\176@@@@@A$mod_\160\176A\160\160B\144\160\176\001\003\244!x@\160\176\001\003\245!y@@@@@@BD\144$imul\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_int64.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\231\000\000\001\132\000\000\005\n\000\000\004\220\176\208\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\004\227%param@\160\176\001\004\228%param@@@@@@A$asr_\160\176@\160\160B\144\160\176\001\004*!x@\160\176\001\004+'numBits@@@@@\208\208\208@-bits_of_float\160\176A\160\160A\144\160\176\001\004\170!x@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004w$self@\160\176\001\004x%other@@@@@\208@,discard_sign\160\176A\160\160A\144\160\176\001\004\133!x@@@@@@AB#div\160\176@\160\160B\144\160\176\001\004`$self@\160\176\001\004a%other@@@@@\208\208@'div_mod\160\176A\160\160B\144\160\176\001\004s$self@\160\176\001\004t%other@@@@@@A\"eq\160\176A\160\160B\144\160\176\001\004\019!x@\160\176\001\004\020!y@@@@@\208@-float_of_bits\160\176@\160\160A\144\160\176\001\004\153!x@@@@@@ABCD\"ge\160\176A\160\160B\144\160\176\001\004\206\004j@\160\176\001\004\207\004i@@@@@\208\208\208@%get64\160\176A\160\160B\144\160\176\001\004\176!s@\160\176\001\004\177!i@@@@@@A\"gt\160\176A\160\160B\144\160\176\001\004R!x@\160\176\001\004S!y@@@@@@B'is_zero\160\176A\160\160A\144\160\176\001\004\221\004\140@@@@@\208@\"le\160\176A\160\160B\144\160\176\001\004U!x@\160\176\001\004V!y@@@@@@ACE$lsl_\160\176@\160\160B\144\160\176\001\004\031!x@\160\176\001\004 'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\144\160\176\001\004$!x@\160\176\001\004%'numBits@@@@@\208@\"lt\160\176A\160\160B\144\160\176\001\004O!x@\160\176\001\004P!y@@@@@@AB'max_int\160@@@CF'min_int\160@@\208\208\208\208\208@$mod_\160\176A\160\160B\144\160\176\001\004p$self@\160\176\001\004q%other@@@@@@A#mul\160\176@\160\160B\144\160\176\001\004.$this@\160\176\001\004/%other@@@@@@B#neg\160\176@\160\160A\144\160\176\001\004\024!x@@@@@\208@#neq\160\176A\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@@@AC#not\160\176A\160\160A\144\160\176\001\004\226\004\255@@@@@\208\208@(of_float\160\176@\160\160A\144\160\176\001\004^!x@@@@@@A(of_int32\160\176A\160\160A\144\160\176\001\004{\"lo@@@@@@BD#one\160@@\208\208\208@#sub\160\176A\160\160B\144\160\176\001\004\026!x@\160\176\001\004\027!y@@@@@@A$swap\160\176A\160\160A\144\160\176\001\004\208\005\001,@@@@@\208@(to_float\160\176@\160\160A\144\160\176\001\004\205\005\0015@@@@@\208@&to_hex\160\176@\160\160A\144\160\176\001\004\127!x@@@@@@ABC(to_int32\160\176A\160\160A\144\160\176\001\004}!x@@@@\144\147\192A@\004\006\150\176\b\000\000\004\030@\160\150\176\164A\144\"lo\160\144\004\016@\176\192-caml_int64.ml\001\001u\001'\194\001'\227\192\004\002\001\001u\001'\194\001'\231@\160\145\144\150\018_n\000\001\000\000\000\000@\176\192\004\t\001\001u\001'\194\001'\211\192\004\n\001\001u\001'\194\001'\235@\208@$zero\160@@@ADEG\144.two_ptr_32_dbl\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_io.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\131\000\000\001\002\000\000\003\156\000\000\003b\176\208\208\208\208@!^\160\176@\160\160B\144\160\176\001\004+$prim@\160\176\001\004*\004\003@@@@\144\147\192B@\004\b\150\176\153\2080js_string_appendBA @\160\144\004\015\160\144\004\014@\176\192*caml_io.ml`\001\005$\001\005.\192\004\002`\001\005$\001\005>@@A-caml_ml_flush\160\176A\160\160A\144\160\176\001\004\001\"oc@@@@@\208@-caml_ml_input\160\176A\160\160D\144\160\176\001\004\014\"ic@\160\176\001\004\015%bytes@\160\176\001\004\016&offset@\160\176\001\004\017#len@@@A\144\147\192D@\004\015\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\176\192&_none_A@\000\255\004\002A\160\145\144\162\t caml_ml_input ic not implemented@@\176\192\0047\000m\001\014i\001\014t\192\0048\000m\001\014i\001\014\159@@\176\192\004:\000m\001\014i\001\014k\192\004;\000m\001\014i\001\014p@\208@2caml_ml_input_char\160\176A\160\160A\144\160\176\001\004\019\"ic@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004'@\004%\160\145\144\162\t!caml_ml_input_char not implemnted@@\176\192\004Y\000p\001\014\212\001\014\223\192\004Z\000p\001\014\212\001\015\n@@\176\192\004\\\000p\001\014\212\001\014\214\192\004]\000p\001\014\212\001\014\219@@ABC:caml_ml_open_descriptor_in\160\176A\160\160A\144\160\176\001\003\253!i@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004H@\004F\160\145\144\162\t*caml_ml_open_descriptor_in not implemented@@\176\192\004z\000@\001\bZ\001\bb\192\004{\000@\001\bZ\001\b\152@@\176\192\004}\000@\001\bZ\001\b\\\004\003@\208\208@;caml_ml_open_descriptor_out\160\176A\160\160A\144\160\176\001\003\255!i@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004j@\004h\160\145\144\162\t+caml_ml_open_descriptor_out not implemented@@\176\192\004\156\000B\001\b\215\001\b\223\192\004\157\000B\001\b\215\001\t\022@@\176\192\004\159\000B\001\b\215\001\b\217\004\003@\208@9caml_ml_out_channels_list\160\176A\160\160A\144\160\176\001\004#%param@@@@@@AB.caml_ml_output\160\176A\160\160D\144\160\176\001\004\004\"oc@\160\176\001\004\005#str@\160\176\001\004\006&offset@\160\176\001\004\007#len@@@@@\208\208@3caml_ml_output_char\160\176A\160\160B\144\160\176\001\004\011\"oc@\160\176\001\004\012$char@@@@@@A/node_std_output\160\176@@@@@BCD&stderr\160\176A@@@\208@%stdin\160\004\007@\208@&stdout\160\004\007@@ABE\144%stdin\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002'\000\000\000g\000\000\001~\000\000\001W\176\208\208@/caml_lex_engine\160@\144\147\192C@\160\176\001\003\248$prim@\160\176\001\003\247\004\003@\160\176\001\003\246\004\005@@\150\176\153\2081$$caml_lex_engineCA\tABS:1.1.0\132\149\166\190\000\000\000%\000\000\000\n\000\000\000\"\000\000\000 \176\160\160B@\160\160B@\160\160B@@B\149\1761$$caml_lex_engine@@@\160\144\004\014\160\144\004\r\160\144\004\r@\176\192&_none_A@\000\255\004\002A\208@3caml_new_lex_engine\160@\144\147\192C@\160\176\001\003\245\004\028@\160\176\001\003\244\004\030@\160\176\001\003\243\004 @@\150\176\153\2085$$caml_new_lex_engineCA\tEBS:1.1.0\132\149\166\190\000\000\000)\000\000\000\n\000\000\000#\000\000\000 \176\160\160B@\160\160B@\160\160B@@B\149\1765$$caml_new_lex_engine@@@\160\144\004\r\160\144\004\r\160\144\004\r@\004\027@AB$fail\160\176A\160\160A\144\160\176\001\003\249%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\0043\160\145\144\1623lexing: empty token@@\176\192-caml_lexer.mld\001\005|\001\005\144\192\004\002d\001\005|\001\005\175@@\176\192\004\004d\001\005|\001\005\138\004\003@@C\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002'\000\000\000g\000\000\001~\000\000\001W\176\208\208@/caml_lex_engine\160@\144\147\192C@\160\176\001\003\248$prim@\160\176\001\003\247\004\003@\160\176\001\003\246\004\005@@\150\176\153\2081$$caml_lex_engineCA\tABS:1.1.2\132\149\166\190\000\000\000%\000\000\000\n\000\000\000\"\000\000\000 \176\160\160B@\160\160B@\160\160B@@B\149\1761$$caml_lex_engine@@@\160\144\004\014\160\144\004\r\160\144\004\r@\176\192&_none_A@\000\255\004\002A\208@3caml_new_lex_engine\160@\144\147\192C@\160\176\001\003\245\004\028@\160\176\001\003\244\004\030@\160\176\001\003\243\004 @@\150\176\153\2085$$caml_new_lex_engineCA\tEBS:1.1.2\132\149\166\190\000\000\000)\000\000\000\n\000\000\000#\000\000\000 \176\160\160B@\160\160B@\160\160B@@B\149\1765$$caml_new_lex_engine@@@\160\144\004\r\160\144\004\r\160\144\004\r@\004\027@AB$fail\160\176A\160\160A\144\160\176\001\003\249%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\0043\160\145\144\1623lexing: empty token@@\176\192-caml_lexer.mld\001\005|\001\005\144\192\004\002d\001\005|\001\005\175@@\176\192\004\004d\001\005|\001\005\138\004\003@@C\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_md5.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000}\000\000\000\029\000\000\000`\000\000\000Y\176\208@/caml_md5_string\160\176@\160\160C\144\160\176\001\004/!s@\160\176\001\0040%start@\160\176\001\0041#len@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_module.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\163\000\000\000*\000\000\000\139\000\000\000\131\176\208@(init_mod\160\176A\160\160B\144\160\176\001\003\242#loc@\160\176\001\003\243%shape@@@@@\208@*update_mod\160\176A\160\160C\144\160\176\001\004\001%shape@\160\176\001\004\002!o@\160\176\001\004\003!n@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\204\000\000\000\181\000\000\002y\000\000\002V\176\208\208\208\208@,caml_compare\160\176@\160\160B\144\160\176\001\004\014!a@\160\176\001\004\015!b@@@@@@A*caml_equal\160\176@\160\160B\144\160\176\001\004&!a@\160\176\001\004'!b@@@@@\208@1caml_greaterequal\160\176A\160\160B\144\160\176\001\0046!a@\160\176\001\0047!b@@@@@\208@0caml_greaterthan\160\176A\160\160B\144\160\176\001\0049!a@\160\176\001\004:!b@@@@@@ABC2caml_int32_compare\160\176A\160\160B\144\160\176\001\004\002!x@\160\176\001\004\003!y@@@@@\208@0caml_int_compare\160\004\r@@AD6caml_lazy_make_forward\160\176A\160\160A\144\160\176\001\003\251!x@@@@\144\147\192A@\004\006\150\176\179\001\000\250B@\160\144\004\n@\176\192+caml_obj.ml\000D\001\b\172\001\b\208\192\004\002\000D\001\b\172\001\b\209@\208\208\208\208@.caml_lessequal\160\176A\160\160B\144\160\176\001\004<!a@\160\176\001\004=!b@@@@@@A-caml_lessthan\160\176A\160\160B\144\160\176\001\004?!a@\160\176\001\004@!b@@@@@@B6caml_nativeint_compare\160\004@@\208@-caml_notequal\160\176A\160\160B\144\160\176\001\0041!a@\160\176\001\0042!b@@@@@@AC,caml_obj_dup\160\176@\160\160A\144\160\176\001\003\241!x@@@@@\208@1caml_obj_truncate\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247(new_size@@@@@\208@1caml_update_dummy\160\176@\160\160B\144\160\176\001\003\253!x@\160\176\001\003\254!y@@@@@@ABDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_oo.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\136\000\000\000\029\000\000\000b\000\000\000Z\176\208@6caml_get_public_method\160\176A\160\160C\144\160\176\001\003\243#obj@\160\176\001\003\244#tag@\160\176\001\003\245'cacheid@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\251\000\000\000&\000\000\000\151\000\000\000\129\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\147\192A@\160\176\001\003\242$prim@@\150\176\153\2087$$caml_set_parser_traceAA\t?BS:1.1.0\132\149\166\190\000\000\000#\000\000\000\006\000\000\000\023\000\000\000\020\176\160\160B@@B\149\1767$$caml_set_parser_trace@@@\160\144\004\n@\176\192&_none_A@\000\255\004\002A@AB\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\251\000\000\000&\000\000\000\151\000\000\000\129\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\147\192A@\160\176\001\003\242$prim@@\150\176\153\2087$$caml_set_parser_traceAA\t?BS:1.1.2\132\149\166\190\000\000\000#\000\000\000\006\000\000\000\023\000\000\000\020\176\160\160B@@B\149\1767$$caml_set_parser_trace@@@\160\144\004\n@\176\192&_none_A@\000\255\004\002A@AB\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_primitive.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_queue.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001T\000\000\000e\000\000\001E\000\000\0017\176\208@&create\160\176A\160\160A\144\160\176\001\004\006%param@@@@\144\147\192A@\004\006\150\176\179@\146\160&length$tailA\160\145\144\144@\160\145\161@\144$None@\176\192-caml_queue.mln\001\bC\001\bS\192\004\002q\001\b{\001\b|@\208\208@(is_empty\160\176A\160\160A\144\160\176\001\004\003!q@@@@\144\147\192A@\004\006\150\176\154@\160\150\176\164@\144\004%\160\144\004\015@\176\192\004\028\000S\001\n\186\001\n\188\192\004\029\000S\001\n\186\001\n\196@\160\145\144\144@@\176\004\007\192\004#\000S\001\n\186\001\n\200@@A$push\160\176A\160\160B\144\160\176\001\003\248!x@\160\176\001\003\249!q@@@@@\208@*unsafe_pop\160\176@\160\160A\144\160\176\001\003\255!q@@@@@@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\129\000\000\000\216\000\000\002\243\000\000\002\199\176\208\208\208@/bytes_of_string\160\176@\160\160A\144\160\176\001\004(!s@@@@@@A/bytes_to_string\160\176@\160\160A\144\160\176\001\0047!a@@@@@\208\208\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\030\"s1@\160\176\001\004\031\"i1@\160\176\001\004 \"s2@\160\176\001\004!\"i2@\160\176\001\004\"#len@@@@@@A0caml_blit_string\160\176A\160\160E\144\160\176\001\004\007\"s1@\160\176\001\004\b\"i1@\160\176\001\004\t\"s2@\160\176\001\004\n\"i2@\160\176\001\004\011#len@@@@@@B2caml_create_string\160\176@\160\160A\144\160\176\001\003\252#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\004\001!s@\160\176\001\004\002!i@\160\176\001\004\003!l@\160\176\001\004\004!c@@@@@@ACD1caml_is_printable\160\176A\160\160A\144\160\176\001\004>!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\254\"s1@\160\176\001\003\255\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\249!s@\160\176\001\003\250!i@@@@@\208\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\004A!s@\160\176\001\004B!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\004D!s@\160\176\001\004E!i@@@@@@AB9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\0049%chars@@@@@\208\208@#get\160\176A\160\160B\144\160\176\001\004G!s@\160\176\001\004H!i@@@@@@A1js_string_of_char\160\176@\160\160A\144\160\176\001\004L$prim@@@@\144\147\192A@\004\006\150\176\153\2083String.fromCharCodeAA\t;BS:1.1.0\132\149\166\190\000\000\000\031\000\000\000\006\000\000\000\022\000\000\000\020\176\160\160B@@B\149\1763String.fromCharCode@@@\160\144\004\r@\176\192.caml_string.mll\001\007o\001\007\135\192\004\002l\001\007o\001\007\152@@BCDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003G\000\000\000\179\000\000\002\136\000\000\002V\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\146\176T)Not_foundC@\176\192&_none_A@\000\255\004\002A@\176\192+caml_sys.ml]\001\005!\001\005?\192\004\002]\001\005!\001\005N@\208\208@4caml_sys_file_exists\160\176A\160\160A\144\160\176\001\003\251\"_s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\004!\160\145\144\162\t$caml_sys_file_exists not implemented@@\176\192\004#\000M\001\t\171\001\t\182\192\004$\000M\001\t\171\001\t\228@@\176\192\004&\000M\001\t\171\001\t\173\192\004'\000M\001\t\171\001\t\178@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\004@@@@@\144\147\192A@\004\005\145\144\162!/@@BC/caml_sys_getenv\160@\144\147\192A@\160\176\001\003\252$prim@@\150\176\153\2081$$caml_sys_getenvAA\t9BS:1.1.0\132\149\166\190\000\000\000\029\000\000\000\006\000\000\000\022\000\000\000\020\176\160\160B@@B\149\1761$$caml_sys_getenv@@@\160\144\004\n@\004K\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\249\"_s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004E@\004d\160\145\144\162\t%caml_sys_is_directory not implemented@@\176\192\004f\000J\001\tP\001\t[\192\004g\000J\001\tP\001\t\138@@\176\192\004i\000J\001\tP\001\tR\192\004j\000J\001\tP\001\tW@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004\131@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004\140@@@@\144\147\192A@\004\005\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004\154@@@@@@CD\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\129\000\000\000\216\000\000\002\243\000\000\002\199\176\208\208\208@/bytes_of_string\160\176@\160\160A\144\160\176\001\004(!s@@@@@@A/bytes_to_string\160\176@\160\160A\144\160\176\001\0047!a@@@@@\208\208\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\030\"s1@\160\176\001\004\031\"i1@\160\176\001\004 \"s2@\160\176\001\004!\"i2@\160\176\001\004\"#len@@@@@@A0caml_blit_string\160\176A\160\160E\144\160\176\001\004\007\"s1@\160\176\001\004\b\"i1@\160\176\001\004\t\"s2@\160\176\001\004\n\"i2@\160\176\001\004\011#len@@@@@@B2caml_create_string\160\176@\160\160A\144\160\176\001\003\252#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\004\001!s@\160\176\001\004\002!i@\160\176\001\004\003!l@\160\176\001\004\004!c@@@@@@ACD1caml_is_printable\160\176A\160\160A\144\160\176\001\004>!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\254\"s1@\160\176\001\003\255\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\249!s@\160\176\001\003\250!i@@@@@\208\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\004A!s@\160\176\001\004B!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\004D!s@\160\176\001\004E!i@@@@@@AB9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\0049%chars@@@@@\208\208@#get\160\176A\160\160B\144\160\176\001\004G!s@\160\176\001\004H!i@@@@@@A1js_string_of_char\160\176@\160\160A\144\160\176\001\004L$prim@@@@\144\147\192A@\004\006\150\176\153\2083String.fromCharCodeAA\t;BS:1.1.2\132\149\166\190\000\000\000\031\000\000\000\006\000\000\000\022\000\000\000\020\176\160\160B@@B\149\1763String.fromCharCode@@@\160\144\004\r@\176\192.caml_string.mll\001\007o\001\007\135\192\004\002l\001\007o\001\007\152@@BCDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
+  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003G\000\000\000\179\000\000\002\136\000\000\002V\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\146\176T)Not_foundC@\176\192&_none_A@\000\255\004\002A@\176\192+caml_sys.ml]\001\005!\001\005?\192\004\002]\001\005!\001\005N@\208\208@4caml_sys_file_exists\160\176A\160\160A\144\160\176\001\003\251\"_s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\004!\160\145\144\162\t$caml_sys_file_exists not implemented@@\176\192\004#\000M\001\t\170\001\t\181\192\004$\000M\001\t\170\001\t\227@@\176\192\004&\000M\001\t\170\001\t\172\192\004'\000M\001\t\170\001\t\177@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\004@@@@@\144\147\192A@\004\005\145\144\162!/@@BC/caml_sys_getenv\160@\144\147\192A@\160\176\001\003\252$prim@@\150\176\153\2081$$caml_sys_getenvAA\t9BS:1.1.2\132\149\166\190\000\000\000\029\000\000\000\006\000\000\000\022\000\000\000\020\176\160\160B@@B\149\1761$$caml_sys_getenv@@@\160\144\004\n@\004K\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\249\"_s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004E@\004d\160\145\144\162\t%caml_sys_is_directory not implemented@@\176\192\004f\000J\001\tO\001\tZ\192\004g\000J\001\tO\001\t\137@@\176\192\004i\000J\001\tO\001\tQ\192\004j\000J\001\tO\001\tV@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004\131@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004\140@@@@\144\147\192A@\004\005\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004\154@@@@@@CD\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_utils.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000X\000\000\000\019\000\000\000?\000\000\0009\176\208@&repeat\160\176@@@@@A\144&repeat\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("caml_weak.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\011\000\000\000\137\000\000\001\206\000\000\001\185\176\208\208\208\208@.caml_weak_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A/caml_weak_check\160\176A\160\160B\144\160\176\001\004\000\"xs@\160\176\001\004\001!i@@@@@@B0caml_weak_create\160\176@\160\160A\144\160\176\001\003\242!n@@@@\144\147\192A@\004\006\150\176\153\208/js_create_arrayAA @\160\144\004\r@\176\192,caml_weak.mla\001\005`\001\005b\192\004\002a\001\005`\001\005\128@@C-caml_weak_get\160\176@\160\160B\144\160\176\001\003\249\"xs@\160\176\001\003\250!i@@@@\144\147\192B@\004\t\150\176\153\208+js_from_defAA @\160\150\176\b\000\000\004\016@\160\144\004\020\160\144\004\019@\176\192\004!i\001\006\t\001\006\031\192\004\"i\001\006\t\001\006%@@\176\192\004$i\001\006\t\001\006\011\004\003@\208\208@2caml_weak_get_copy\160\176A\160\160B\144\160\176\001\003\252\"xs@\160\176\001\003\253!i@@@@@@A-caml_weak_set\160\176A\160\160C\144\160\176\001\003\244\"xs@\160\176\001\003\245!i@\160\176\001\003\246!v@@@@@@BD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
   ("curry.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\b\186\000\000\002\225\000\000\t\014\000\000\b\230\176\208\208\208\208\208@\"_1\160\176@\160\160B\144\160\176\001\004\014!o@\160\176\001\004\015\"a0@@@@@@A\"_2\160\176@\160\160C\144\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@@@@@\208@\"_3\160\176@\160\160D\144\160\176\001\0044!o@\160\176\001\0045\"a0@\160\176\001\0046\"a1@\160\176\001\0047\"a2@@@@@@AB\"_4\160\176@\160\160E\144\160\176\001\004M!o@\160\176\001\004N\"a0@\160\176\001\004O\"a1@\160\176\001\004P\"a2@\160\176\001\004Q\"a3@@@@@\208\208@\"_5\160\176@\160\160F\144\160\176\001\004j!o@\160\176\001\004k\"a0@\160\176\001\004l\"a1@\160\176\001\004m\"a2@\160\176\001\004n\"a3@\160\176\001\004o\"a4@@@@@@A\"_6\160\176@\160\160G\144\160\176\001\004\139!o@\160\176\001\004\140\"a0@\160\176\001\004\141\"a1@\160\176\001\004\142\"a2@\160\176\001\004\143\"a3@\160\176\001\004\144\"a4@\160\176\001\004\145\"a5@@@@@\208@\"_7\160\176@\160\160H\144\160\176\001\004\176!o@\160\176\001\004\177\"a0@\160\176\001\004\178\"a1@\160\176\001\004\179\"a2@\160\176\001\004\180\"a3@\160\176\001\004\181\"a4@\160\176\001\004\182\"a5@\160\176\001\004\183\"a6@@@@@\208@\"_8\160\176@\160\160I\144\160\176\001\004\217!o@\160\176\001\004\218\"a0@\160\176\001\004\219\"a1@\160\176\001\004\220\"a2@\160\176\001\004\221\"a3@\160\176\001\004\222\"a4@\160\176\001\004\223\"a5@\160\176\001\004\224\"a6@\160\176\001\004\225\"a7@@@@@@ABCD#__1\160\176@\160\160A\144\160\176\001\004\022!o@@@@@\208\208\208@#__2\160\176@\160\160A\144\160\176\001\004)!o@@@@@@A#__3\160\176@\160\160A\144\160\176\001\004@!o@@@@@\208@#__4\160\176@\160\160A\144\160\176\001\004[!o@@@@@@AB#__5\160\176@\160\160A\144\160\176\001\004z!o@@@@@\208@#__6\160\176@\160\160A\144\160\176\001\004\157!o@@@@@\208@#__7\160\176@\160\160A\144\160\176\001\004\196!o@@@@@\208@#__8\160\176@\160\160A\144\160\176\001\004\239!o@@@@@@ABCDE#app\160\176@\160\160B\144\160\176\001\003\244!f@\160\176\001\003\245$args@@@@@\208\208\208\208@'curry_1\160\176@\160\160C\144\160\176\001\004\n!o@\160\176\001\004\011\"a0@\160\176\001\004\012%arity@@@@@@A'curry_2\160\176@\160\160D\144\160\176\001\004\026!o@\160\176\001\004\027\"a0@\160\176\001\004\028\"a1@\160\176\001\004\029%arity@@@@@\208@'curry_3\160\176@\160\160E\144\160\176\001\004.!o@\160\176\001\004/\"a0@\160\176\001\0040\"a1@\160\176\001\0041\"a2@\160\176\001\0042%arity@@@@@@AB'curry_4\160\176@\160\160F\144\160\176\001\004F!o@\160\176\001\004G\"a0@\160\176\001\004H\"a1@\160\176\001\004I\"a2@\160\176\001\004J\"a3@\160\176\001\004K%arity@@@@@\208\208@'curry_5\160\176@\160\160G\144\160\176\001\004b!o@\160\176\001\004c\"a0@\160\176\001\004d\"a1@\160\176\001\004e\"a2@\160\176\001\004f\"a3@\160\176\001\004g\"a4@\160\176\001\004h%arity@@@@@@A'curry_6\160\176@\160\160H\144\160\176\001\004\130!o@\160\176\001\004\131\"a0@\160\176\001\004\132\"a1@\160\176\001\004\133\"a2@\160\176\001\004\134\"a3@\160\176\001\004\135\"a4@\160\176\001\004\136\"a5@\160\176\001\004\137%arity@@@@@\208@'curry_7\160\176@\160\160I\144\160\176\001\004\166!o@\160\176\001\004\167\"a0@\160\176\001\004\168\"a1@\160\176\001\004\169\"a2@\160\176\001\004\170\"a3@\160\176\001\004\171\"a4@\160\176\001\004\172\"a5@\160\176\001\004\173\"a6@\160\176\001\004\174%arity@@@@@\208@'curry_8\160\176@\160\160J\144\160\176\001\004\206!o@\160\176\001\004\207\"a0@\160\176\001\004\208\"a1@\160\176\001\004\209\"a2@\160\176\001\004\210\"a3@\160\176\001\004\211\"a4@\160\176\001\004\212\"a5@\160\176\001\004\213\"a6@\160\176\001\004\214\"a7@\160\176\001\004\215%arity@@@@@@ABCD\"js\160\176@\160\160D\144\160\176\001\003\252%label@\160\176\001\003\253'cacheid@\160\176\001\003\254#obj@\160\176\001\003\255$args@@@@@\208\208\208@#js1\160\176@\160\160C\144\160\176\001\004\018%label@\160\176\001\004\019'cacheid@\160\176\001\004\020\"a0@@@@@@A#js2\160\176@\160\160D\144\160\176\001\004$%label@\160\176\001\004%'cacheid@\160\176\001\004&\"a0@\160\176\001\004'\"a1@@@@@\208@#js3\160\176@\160\160E\144\160\176\001\004:%label@\160\176\001\004;'cacheid@\160\176\001\004<\"a0@\160\176\001\004=\"a1@\160\176\001\004>\"a2@@@@@@AB#js4\160\176@\160\160F\144\160\176\001\004T%label@\160\176\001\004U'cacheid@\160\176\001\004V\"a0@\160\176\001\004W\"a1@\160\176\001\004X\"a2@\160\176\001\004Y\"a3@@@@@\208\208@#js5\160\176@\160\160G\144\160\176\001\004r%label@\160\176\001\004s'cacheid@\160\176\001\004t\"a0@\160\176\001\004u\"a1@\160\176\001\004v\"a2@\160\176\001\004w\"a3@\160\176\001\004x\"a4@@@@@@A#js6\160\176@\160\160H\144\160\176\001\004\148%label@\160\176\001\004\149'cacheid@\160\176\001\004\150\"a0@\160\176\001\004\151\"a1@\160\176\001\004\152\"a2@\160\176\001\004\153\"a3@\160\176\001\004\154\"a4@\160\176\001\004\155\"a5@@@@@\208@#js7\160\176@\160\160I\144\160\176\001\004\186%label@\160\176\001\004\187'cacheid@\160\176\001\004\188\"a0@\160\176\001\004\189\"a1@\160\176\001\004\190\"a2@\160\176\001\004\191\"a3@\160\176\001\004\192\"a4@\160\176\001\004\193\"a5@\160\176\001\004\194\"a6@@@@@\208@#js8\160\176@\160\160J\144\160\176\001\004\228%label@\160\176\001\004\229'cacheid@\160\176\001\004\230\"a0@\160\176\001\004\231\"a1@\160\176\001\004\232\"a2@\160\176\001\004\233\"a3@\160\176\001\004\234\"a4@\160\176\001\004\235\"a5@\160\176\001\004\236\"a6@\160\176\001\004\237\"a7@@@@@@ABCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
@@ -60952,7 +61015,7 @@ let find_cmj file =
       let target = String.uncapitalize (Filename.basename file) in
       match 
         String_map.find  target
-          Js_cmj_datasets.cmj_data_sets with 
+          Js_cmj_datasets.data_sets with 
       | v
         -> 
         begin match Lazy.force v with
