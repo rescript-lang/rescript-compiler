@@ -197,7 +197,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.1.2"
+let version = "1.1.2+dev"
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -234,3 +234,5 @@ let is_windows =
   | "Win32"
   | "Cygwin"-> true
   | _ -> false
+
+let syntax_only = ref false
