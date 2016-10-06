@@ -101,7 +101,7 @@ function getConfigOutput(){
 var config_map = getConfigOutput()
 console.log('config_map',config_map)
 
-if(config_map && config_map.version.indexOf('4.02') >= 0 ){
+if(config_map && config_map.version.indexOf('4.02.3') >= 0 ){
     //
     if (is_windows){
         process.env.WIN32='1'
