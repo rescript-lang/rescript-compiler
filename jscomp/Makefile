@@ -32,8 +32,6 @@ js_fold.ml:js_fold.mlp j.ml
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
 
-./bin/bspack.exe: ./bin/config_bspack.mli ./bin/config_bspack.ml ./bin/bspack.mli ./bin/bspack.ml
-	$(NATIVE) -w -a -I bin  unix.cmxa  $^ -o $@
 
 # For faster compilation when can cache ast file instead for Linux/MacOS users
 # For windows user, we just ship the binary
@@ -41,14 +39,6 @@ js_fold.ml:js_fold.mlp j.ml
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 
-./bin/bsppx.exe: ./bin/config_bsppx.mli ./bin/config_bsppx.ml ./bin/bsppx.mli ./bin/bsppx.ml
-	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin    $^ -o $@
-
-./bin/bspp.exe: ./bin/config_bspp.mli ./bin/config_bspp.ml ./bin/bspp.mli ./bin/bspp.ml
-	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin    $^ -o $@
-
-./bin/bsdep.exe: ./bin/config_bsdep.mli ./bin/config_bsdep.ml ./bin/bsdep.mli ./bin/bsdep.ml
-	$(NATIVE) -g -inline 1000 -linkall -w -a -I bin    $^ -o $@
 
 snapshot: ./bin/bspack.exe snapshotcmj
 	$(MAKE) snapshotml
@@ -63,7 +53,7 @@ snapshotml:./bin/bspack.exe ./bin/compiler.mllib
 	$< -bs-log-mllib bin/bsppx.mllib  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
 	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 	$< -bs-log-mllib bin/bsdep.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I depends -bs-main bsdep_main.ml -o bin/bsdep.ml
-	NO_DOCSTRINGS=true $< -bs-log-mllib bin/bspp.mllib  -prelude-str 'module Config = Config_bspp'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -bs-main bspp_main.ml -o bin/bspp.ml
+	BS_MIN_LEX_DEPS=true $< -bs-log-mllib bin/bspp.mllib   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -bs-main bspp_main.ml -o bin/bspp.ml
 
 
 snapshotcmj:
@@ -85,7 +75,7 @@ bootbspack:
 	./bin/bspack.exe -bs-log-mllib bin/bspack.mllib -prelude-str  'module Config = Config_bspack'   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
 	@echo "Rebuilding bspack.exe"
-	make -B ./bin/bspack.exe
+	make -C bin -B bspack.exe
 	@echo "Rebuilding bspack.exe finsihed"
 
 libs:
@@ -108,11 +98,7 @@ libs:
 
 releasebuild:
 	@echo "Make release compiler"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
-	@echo "Make release ppx"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I bin  bin/config_bsppx.mli bin/config_bsppx.ml  bin/bsppx.mli bin/bsppx.ml -o bin/bsppx.exe
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I bin  bin/config_bsdep.mli bin/config_bsdep.ml  bin/bsdep.mli bin/bsdep.ml -o bin/bsdep.exe
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I bin  bin/config_bspp.mli bin/config_bspp.ml  bin/bspp.mli bin/bspp.ml -o bin/bspp.exe
+	$(MAKE) -C bin all 
 
 release:snapshot
 	$(MAKE) releasebuild
@@ -125,15 +111,12 @@ world:
 
 dist-world:
 	@echo "Making compiler"
-	$(NATIVE) -w -a -I bin  ./bin/config_whole_compiler.mli ./bin/config_whole_compiler.ml  ./bin/whole_compiler.mli ./bin/whole_compiler.ml -o bin/bsc.exe
-	$(MAKE) bin/bspack.exe
-	$(MAKE) bin/bsppx.exe
-	$(MAKE) bin/bsdep.exe
-	$(MAKE) bin/bspp.exe
+	$(MAKE) -C bin -j5  all
 	$(MAKE) libs
 
 
-travis-world-test:./bin/bspack.exe
+travis-world-test:
+	$(MAKE) -C bin bspack.exe
 	@echo "Generating the compiler"
 	rm -f bin/compiler.ml bin/bsppx.ml
 	$(MAKE) snapshotml
