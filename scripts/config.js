@@ -57,7 +57,9 @@ var map = {
 var is_windows = ! (os.type().indexOf('Windows') < 0)
 
 process.env.BS_RELEASE_BUILD = 1
-process.env.OCAMLPARAM = '_,bin-annot=1'
+delete process.env.OCAMLPARAM // stdlib is already compiled using -bin-annot
+// delete process.env.OCAMLLIB // this will not work on Windows
+// delete process.env.CAMLLIB
 process.env.OCAMLRUNPARAM = 'b'
 
 // return False if it does not exist otherwise the map
