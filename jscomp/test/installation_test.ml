@@ -18,10 +18,16 @@ let _ : _ Js.undefined =
           (bsc_exe ^ " -where ") 
           (Node.Child_process.option  ~encoding:"utf8" ()) in 
       let dir = Js.String.trim output in 
+      let files = Node.Fs.readdirSync dir  in
       let exists = 
-        (Node.Fs.readdirSync dir ) 
-        |> Js.Array.includes "pervasives.cmi" in 
-      eq __LOC__ exists Js.true_
+        files 
+        |> Js.Array.indexOf "pervasives.cmi" in 
+      let non_exists = 
+        files 
+        |> Js.Array.indexOf "pervasive.cmi" in 
+      let v = (exists >= 0 && non_exists < 0) in
+      Js.log v;
+      eq __LOC__  v true
 
     )
 
