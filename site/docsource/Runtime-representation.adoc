@@ -15,7 +15,7 @@ JavaScript; instead, the OCaml stdlib provides three functions: `List.cons`, `Li
 
 [options="header"]
 |==============
-| ocaml type | JavaScrit type
+| ocaml type | JavaScript type
 
 | int | number
 | nativeint | number
