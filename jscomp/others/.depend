@@ -28,6 +28,8 @@ bs_dyn.cmj : bs_dyn.cmi
 bs_dyn.cmx : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmi bs_dyn_lib.cmi
 bs_dyn_lib.cmx : bs_dyn.cmx bs_dyn_lib.cmi
+node_child_process.cmj :
+node_child_process.cmx :
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
@@ -64,3 +66,5 @@ bs_dyn.cmo : bs_dyn.cmi
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmo : bs_dyn.cmi bs_dyn_lib.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
+node_child_process.cmo :
+node_child_process.cmj :

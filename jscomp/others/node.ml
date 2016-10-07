@@ -32,7 +32,7 @@ module Process = Node_process
 
 module Module =  Node_module
 module Buffer = Node_buffer
-
+module Child_process = Node_child_process
 
 type node_exports 
 type node_module = <
