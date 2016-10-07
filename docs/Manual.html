@@ -3644,10 +3644,10 @@ it would  be string</p>
 for non BuckleScript users, we provide an external pre-processor, so it will work with other OCaml
 compilers too.
 Note that the <a href="https://github.com/bloomberg/bucklescript/blob/master/jscomp/bin/bspp.ml">bspp.ml</a> is a stand alone file,
-so that it even works without compilation.
-.Example</p>
+so that it even works without compilation.</p>
 </div>
 <div class="listingblock">
+<div class="title">Example</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">bsc.exe -c lwt_unix.mli
 ocamlc -pp <span class="tok-s1">&#39;bspp.exe&#39;</span> -c lwt_unix.mli
@@ -4032,7 +4032,7 @@ JavaScript; instead, the OCaml stdlib provides three functions: <code>List.cons<
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">ocaml type</th>
-<th class="tableblock halign-left valign-top">JavaScrit type</th>
+<th class="tableblock halign-left valign-top">JavaScript type</th>
 </tr>
 </thead>
 <tbody>
@@ -4187,6 +4187,9 @@ We might encode it as buffer  in NodeJS.
 </li>
 <li>
 <p><code>x::y</code> &#8594; <code>[x,y]</code></p>
+</li>
+<li>
+<p><code>1::2::[3]</code> &#8594; <code>[ 1, [ 2, [ 3, 0 ] ] ]</code></p>
 </li>
 </ul>
 </div></div></td>
