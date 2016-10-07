@@ -39,7 +39,9 @@ js_fold.ml:js_fold.mlp j.ml
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 
-
+# this target  is used to make snapshotml
+./bin/bspack.exe: bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml
+	$(MAKE) -C bin bspack.exe
 snapshot: ./bin/bspack.exe snapshotcmj
 	$(MAKE) snapshotml
 
@@ -103,9 +105,14 @@ releasebuild:
 release:snapshot
 	$(MAKE) releasebuild
 
+## this target is 
+## shared with our bundled compiler
+## in this condition, `Config_whole_compiler.ml` is not configured
+## we reuse the compiler-libs
 world:
 	@echo "Making compiler"
-	$(MAKE) releasebuild
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
+	$(MAKE) -C bin -j 4 bspack.exe bsdep.exe bsppx.exe bspp.exe
 	@echo "Making compiler finished"
 	$(MAKE) libs
 
@@ -132,7 +139,7 @@ DEST_BIN=../bin
 install:
 	@echo "copy exe"
 	mkdir -p $(DEST_BIN) $(DEST)
-	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe ./bin/bsdep.exe $(DEST_BIN)
+	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe  $(DEST_BIN)
 	@echo "copy stdlib"
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \
