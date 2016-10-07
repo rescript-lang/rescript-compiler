@@ -39,7 +39,9 @@ js_fold.ml:js_fold.mlp j.ml
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 
-
+# this target  is used to make snapshotml
+./bin/bspack.exe: bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml
+	$(MAKE) -C bin bspack.exe
 snapshot: ./bin/bspack.exe snapshotcmj
 	$(MAKE) snapshotml
 
