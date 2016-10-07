@@ -4,8 +4,8 @@ caml_string.cmj : bs_string.cmj caml_string.cmi
 caml_string.cmx : bs_string.cmx caml_string.cmi
 caml_bytes.cmj : caml_bytes.cmi
 caml_bytes.cmx : caml_bytes.cmi
-caml_obj.cmj : js.cmj bs_obj.cmj caml_obj.cmi
-caml_obj.cmx : js.cmx bs_obj.cmx caml_obj.cmi
+caml_obj.cmj : js.cmj caml_array.cmi bs_obj.cmj caml_obj.cmi
+caml_obj.cmx : js.cmx caml_array.cmx bs_obj.cmx caml_obj.cmi
 caml_int64.cmj : typed_array.cmj js_float.cmj js.cmj caml_utils.cmi \
     caml_int32.cmi bs_string.cmj caml_int64.cmi
 caml_int64.cmx : typed_array.cmx js_float.cmx js.cmx caml_utils.cmx \
@@ -100,8 +100,8 @@ caml_string.cmo : bs_string.cmo caml_string.cmi
 caml_string.cmj : bs_string.cmj caml_string.cmi
 caml_bytes.cmo : caml_bytes.cmi
 caml_bytes.cmj : caml_bytes.cmi
-caml_obj.cmo : js.cmo bs_obj.cmo caml_obj.cmi
-caml_obj.cmj : js.cmj bs_obj.cmj caml_obj.cmi
+caml_obj.cmo : js.cmo caml_array.cmi bs_obj.cmo caml_obj.cmi
+caml_obj.cmj : js.cmj caml_array.cmj bs_obj.cmj caml_obj.cmi
 caml_int64.cmo : typed_array.cmo js_float.cmo js.cmo caml_utils.cmi \
     caml_int32.cmi bs_string.cmo caml_int64.cmi
 caml_int64.cmj : typed_array.cmj js_float.cmj js.cmj caml_utils.cmj \
