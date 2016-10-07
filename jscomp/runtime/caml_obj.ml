@@ -41,14 +41,45 @@
       { tag : tag ; length : size }      
     ]}
     we don't need fill fields, since it is not required by GC    
+
 *)
+
+(** 
+   Since now we change it back to use 
+   Array representation      
+   this function is higly dependent 
+   on how objects are encoded in buckle.
+
+   There are potentially some issues with wrong implementation of
+   `caml_obj_dup`, for example, people call `Obj.dup` for a record, 
+   and new record, since currently, `new record` will generate a 
+   `slice` function (which assume the record is an array), and the 
+   output is no longer an array. (it might be  something like { 0 : x , 1 : y} )
+
+   {[
+     let u : record = Obj.dup x in
+     let h = {u with x = 3}
+   ]} 
+
+   ==>
+
+   {[
+     var u = caml_obj_dup (x)
+     var new_record = u.slice ()
+            
+   ]}
+*)
+
 let caml_obj_dup (x : Obj.t) = 
   let len = Bs_obj.length x in
-  let v = Bs_obj.uninitialized_object (Bs_obj.tag x ) len in
+  let v = Caml_array.new_uninitialized  len in
   for i = 0 to len - 1 do 
-    Obj.set_field v i (Obj.field x i)
+    Array.unsafe_set v i (Obj.field x i)
   done;
-  v   
+  Obj.set_tag (Obj.repr v) (Bs_obj.tag x );
+  Obj.repr v   
+
+
 
 let caml_obj_truncate (x : Obj.t) (new_size : int) = 
   let len = Bs_obj.length x in
