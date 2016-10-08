@@ -47,10 +47,7 @@ and p_type_decl s type_decl =
 and p_type_expr s type_expr =
   match type_expr.desc with
   | Tvar str ->
-    let str = match str with
-      | Some x -> x
-      | None -> "-" in
-    p_any ("Tvar " ^ str)
+    p_any ("Tvar " ^ (string_of_int type_expr.id))
   | Tarrow (label, left, right, c) -> p_arrow s (label, left, right, c)
   | Ttuple tl -> T_tuple (List.map (p_type_expr s) tl)
   | Tconstr (path, tl, _) ->
@@ -71,7 +68,7 @@ and p_type_expr s type_expr =
         let decl = {decl_name; decl_type} in
         s.types <- decl :: s.types
       end;
-      p_named decl_name
+      p_named ~tl:(List.map (p_type_expr s) tl) decl_name
     end
   | Tobject _ -> p_any "Tobject"
   | Tfield _ -> p_any "Tfield" (* Shouldn't ever happen? *)

@@ -32,3 +32,5 @@ let float_ = 1.0
 
 type tt = int
 let tt: tt = 0
+
+let iter items1 items2 fn1 fn2 = Array.iter fn1 items1; Array.iter fn2 items2

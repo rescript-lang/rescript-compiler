@@ -18,7 +18,7 @@ declare export var mk_tuple: (p0: M__t, p1: number, p2: void) => [number, number
 
 declare export var mk_rec: (p0: obj_t) => rec_t;
 
-declare export var mk_obj: (p0: /* Tvar - */any) => {id: number, name: string};
+declare export var mk_obj: (p0: /* Tvar 1912 */any) => {id: number, name: string};
 
 declare export var mk_arr: (p0: void) => Array<number>;
 
@@ -27,3 +27,5 @@ declare export var from_util: (p0: Util__t) => void;
 declare export var float_: number;
 
 declare export var tt: tt$0;
+
+declare export var iter: (p0: Array</* Tvar 2242 */any>, p1: Array</* Tvar 2255 */any>, p2: (p0: /* Tvar 2242 */any) => void, p3: (p0: /* Tvar 2255 */any) => void) => void;
