@@ -10,7 +10,7 @@ let rec print_type = function
       | [] -> ""
       | tl -> "<" ^ (String.concat ", " tl) ^ ">"
     in
-    comment ^ name ^ args
+    comment ^ name.id ^ args
   | T_fun (args, ret) ->
     let args_str = args
       |> List.mapi (fun i t -> "p" ^ (string_of_int i) ^ ": " ^ (print_type t))
@@ -30,11 +30,11 @@ let rec print_type = function
     
 let print_type_decl decl =
   let type_str = print_type decl.decl_type in
-  "type " ^ decl.decl_name ^ " = " ^ type_str
+  "type " ^ decl.decl_name.id ^ " = " ^ type_str
 
 let print_decl decl =
   let type_ = print_type decl.decl_type in
-  "declare export var " ^ decl.decl_name ^ ": " ^ type_ ^ ";"
+  "declare export var " ^ decl.decl_name.id ^ ": " ^ type_ ^ ";"
 
 let print prog =
   let types = List.map print_type_decl prog.prog_types in
