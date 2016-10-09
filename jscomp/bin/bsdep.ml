@@ -447,7 +447,13 @@ let split_by ?(keep_empty=false) is_delim str =
   let len = String.length str in
   let rec loop acc last_pos pos =
     if pos = -1 then
-      String.sub str 0 last_pos :: acc
+      if last_pos = 0 && not keep_empty then
+        (*
+           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+        *)
+        acc
+      else 
+        String.sub str 0 last_pos :: acc
     else
       if is_delim str.[pos] then
         let new_len = (last_pos - pos - 1) in
@@ -28876,12 +28882,9 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
 
 
 end
-module Bsdep_main : sig 
-#1 "bsdep_main.mli"
-(* *)
-
-end = struct
-#1 "bsdep_main.ml"
+module Ocamldep
+= struct
+#1 "ocamldep.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -28912,6 +28915,10 @@ let sort_files = ref false
 let all_dependencies = ref false
 let one_line = ref false
 let files = ref []
+
+let cmx_suffix = 
+
+    ".cmj"
 
 (* Fix path to use '/' as directory separator instead of '\'.
    Only under Windows. *)
@@ -28995,12 +29002,12 @@ let find_dependency target_kind modname (byt_deps, opt_deps) =
         match target_kind with
         | MLI -> [ cmi_file ]
         | ML  ->
-          cmi_file :: (if ml_exists then [ basename ^ ".cmx"] else [])
+          cmi_file :: (if ml_exists then [ basename ^ cmx_suffix] else [])
       else
         (* this is a make-specific hack that makes .cmx to be a 'proxy'
            target that would force the dependency on .cmi via transitivity *)
         if ml_exists
-        then [ basename ^ ".cmx" ]
+        then [ basename ^ cmx_suffix ]
         else [ cmi_file ]
     in
     ( cmi_file :: byt_deps, new_opt_dep @ opt_deps)
@@ -29017,18 +29024,13 @@ let find_dependency target_kind modname (byt_deps, opt_deps) =
         | ML  -> [basename ^ ".cmi";]
       else
         (* again, make-specific hack *)
-        [basename ^ 
-         (* BS patch*)
-         ".cmj" 
-         (* (if !native_only then ".cmx" else ".cmo") *)
-         (* BS patch*)
-        ] in
+        [basename ^ (if !native_only then cmx_suffix else ".cmo")] in
     let optnames =
       if !all_dependencies
       then match target_kind with
         | MLI -> [basename ^ ".cmi"]
-        | ML  -> [basename ^ ".cmi"; basename ^ ".cmx"]
-      else [ basename ^ ".cmx" ]
+        | ML  -> [basename ^ ".cmi"; basename ^ cmx_suffix]
+      else [ basename ^ cmx_suffix ]
     in
     (bytenames @ byt_deps, optnames @  opt_deps)
   with Not_found ->
@@ -29138,9 +29140,9 @@ let ml_file_dependencies source_file =
       | Ptop_dir _ -> []
     in
     List.flatten (List.map f (Parse.use_file lexbuf))
-    (* BS patch *)
+
     |> !Ppx_entry.rewrite_implementation
-    (* BS patch *)
+
   in
   let extracted_deps =
     read_parse_and_extract parse_use_file_as_impl Depend.add_implementation
@@ -29153,13 +29155,11 @@ let ml_file_dependencies source_file =
       print_raw_dependencies source_file extracted_deps
     end else begin
       let basename = Filename.chop_extension source_file in
-      (* BS patch *)
-      (* let byte_targets = [ basename ^ ".cmo" ] in *)
-      (* let native_targets = *)
-      (*   if !all_dependencies *)
-      (*   then [ basename ^ ".cmx"; basename ^ ".o" ] *)
-      (*   else [ basename ^ ".cmx" ] in *)
-      (* BS patch *)
+      let byte_targets = [ basename ^ ".cmo" ] in
+      let native_targets =
+        if !all_dependencies
+        then [ basename ^ cmx_suffix; basename ^ ".o" ]
+        else [ basename ^ cmx_suffix ] in
       let init_deps = if !all_dependencies then [source_file] else [] in
       let cmi_name = basename ^ ".cmi" in
       let init_deps, extra_targets =
@@ -29172,22 +29172,16 @@ let ml_file_dependencies source_file =
       let (byt_deps, native_deps) =
         Depend.StringSet.fold (find_dependency ML)
           extracted_deps init_deps in
-      (* BS patch *)
-      print_dependencies ([basename ^ ".cmj" ] @ extra_targets) byt_deps;
-      (* print_dependencies (byte_targets @ extra_targets) byt_deps; *)
-      (* print_dependencies (native_targets @ extra_targets) native_deps; *)
-      (* BS patch *)
+
+      print_dependencies (native_targets @ extra_targets) native_deps;
     end
 
 let mli_file_dependencies source_file =
   let extracted_deps =
     read_parse_and_extract 
-      (*BS patch *)
-      (fun lexbuf -> 
-         Parse.interface lexbuf
-         |> !Ppx_entry.rewrite_signature
-      )
-      (*BS patch *)
+
+      (fun lexbuf -> !Ppx_entry.rewrite_signature (Parse.interface lexbuf) )
+
       Depend.add_signature
       Config.ast_intf_magic_number source_file
   in
@@ -29317,9 +29311,11 @@ let print_version_num () =
 ;;
 
 let _ =
-  (* BS patch*)
+
+  native_only := true;
   Bs_conditional_initial.setup_env ();
-  (* BS patch*)
+  one_line := true;
+
   Clflags.classic := false;
   add_to_list first_include_dirs Filename.current_dir_name;
   Compenv.readenv ppf Before_args;

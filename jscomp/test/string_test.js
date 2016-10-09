@@ -252,94 +252,108 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                     ],
                     /* :: */[
                       /* tuple */[
-                        "rfind",
+                        "split_empty2",
                         function () {
                           return /* Eq */Block.__(0, [
-                                    7,
-                                    Ext_string.rfind("__", "__index__js")
+                                    /* :: */[
+                                      "test_unsafe_obj_ffi_ppx.cmi",
+                                      /* [] */0
+                                    ],
+                                    Ext_string.split(/* Some */[/* false */0], " test_unsafe_obj_ffi_ppx.cmi", /* " " */32)
                                   ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
-                          "rfind_2",
+                          "rfind",
                           function () {
                             return /* Eq */Block.__(0, [
-                                      0,
-                                      Ext_string.rfind("__", "__index_js")
+                                      7,
+                                      Ext_string.rfind("__", "__index__js")
                                     ]);
                           }
                         ],
                         /* :: */[
                           /* tuple */[
-                            "rfind_3",
+                            "rfind_2",
                             function () {
                               return /* Eq */Block.__(0, [
-                                        -1,
-                                        Ext_string.rfind("__", "_index_js")
+                                        0,
+                                        Ext_string.rfind("__", "__index_js")
                                       ]);
                             }
                           ],
                           /* :: */[
                             /* tuple */[
-                              "find",
+                              "rfind_3",
                               function () {
                                 return /* Eq */Block.__(0, [
-                                          0,
-                                          Ext_string.find(/* None */0, "__", "__index__js")
+                                          -1,
+                                          Ext_string.rfind("__", "_index_js")
                                         ]);
                               }
                             ],
                             /* :: */[
                               /* tuple */[
-                                "find_2",
+                                "find",
                                 function () {
                                   return /* Eq */Block.__(0, [
-                                            6,
-                                            Ext_string.find(/* None */0, "__", "_index__js")
+                                            0,
+                                            Ext_string.find(/* None */0, "__", "__index__js")
                                           ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "find_3",
+                                  "find_2",
                                   function () {
                                     return /* Eq */Block.__(0, [
-                                              -1,
-                                              Ext_string.find(/* None */0, "__", "_index_js")
+                                              6,
+                                              Ext_string.find(/* None */0, "__", "_index__js")
                                             ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "of_char",
+                                    "find_3",
                                     function () {
                                       return /* Eq */Block.__(0, [
-                                                "0",
-                                                Caml_string.bytes_to_string(Bytes.make(1, /* "0" */48))
+                                                -1,
+                                                Ext_string.find(/* None */0, "__", "_index_js")
                                               ]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "of_chars",
+                                      "of_char",
                                       function () {
                                         return /* Eq */Block.__(0, [
-                                                  string_of_chars(/* :: */[
-                                                        /* "0" */48,
-                                                        /* :: */[
-                                                          /* "1" */49,
-                                                          /* :: */[
-                                                            /* "2" */50,
-                                                            /* [] */0
-                                                          ]
-                                                        ]
-                                                      ]),
-                                                  "012"
+                                                  "0",
+                                                  Caml_string.bytes_to_string(Bytes.make(1, /* "0" */48))
                                                 ]);
                                       }
                                     ],
-                                    /* [] */0
+                                    /* :: */[
+                                      /* tuple */[
+                                        "of_chars",
+                                        function () {
+                                          return /* Eq */Block.__(0, [
+                                                    string_of_chars(/* :: */[
+                                                          /* "0" */48,
+                                                          /* :: */[
+                                                            /* "1" */49,
+                                                            /* :: */[
+                                                              /* "2" */50,
+                                                              /* [] */0
+                                                            ]
+                                                          ]
+                                                        ]),
+                                                    "012"
+                                                  ]);
+                                        }
+                                      ],
+                                      /* [] */0
+                                    ]
                                   ]
                                 ]
                               ]

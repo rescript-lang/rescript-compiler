@@ -19,7 +19,7 @@ common/js_config
 ../ocaml/parsing/lexer
 ./bs_conditional_initial
 ../ocaml/driver/compenv
-depends/depend
+../ocaml/tools/depend
 ../ocaml/parsing/parse
 ../ocaml/parsing/ast_mapper
 ../ocaml/utils/ccomp
@@ -43,4 +43,4 @@ syntax/ast_pat
 syntax/ast_util
 ext/ext_ref
 syntax/ppx_entry
-./bsdep_main
+../ocaml/tools/ocamldep
