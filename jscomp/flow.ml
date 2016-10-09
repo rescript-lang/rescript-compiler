@@ -85,7 +85,7 @@ and p_type_expr s type_expr =
     | "unit", _ -> p_type_name s "void"
     | "string", _ -> p_type_name s "string"
     | "int", _ | "float", _ -> p_type_name s "number"
-    | "bool", _ -> p_any s "bool"
+    | "bool", _ -> T_bool
     | "array", _ -> p_type_name ~tl:[p_type_expr s (List.hd tl)] s "Array"
     | "Js.t", [{desc = Tobject (t, _); _}] ->
       p_js_obj s t

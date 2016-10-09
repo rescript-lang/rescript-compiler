@@ -14,7 +14,7 @@ type tt$0 = number
 
 type pair$0<TVAR_2272> = [TVAR_2272, TVAR_2272]
 
-declare export var do_if: (p0: /* bool */any) => /* bool */any;
+declare export var do_if: (p0: 0 | 1) => 0 | 1;
 
 declare export var mk_tuple: (p0: M__t, p1: number, p2: void) => [number, number, string, char];
 

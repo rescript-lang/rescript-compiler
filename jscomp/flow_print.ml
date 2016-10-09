@@ -18,6 +18,7 @@ let rec print_type = function
     in
     comment ^ name.id ^ args
   | T_tvar id -> print_tvar id
+  | T_bool -> "0 | 1"
   | T_fun {func_args; func_ret; func_tvars} ->
     let args_str = func_args
       |> List.mapi (fun i t -> "p" ^ (string_of_int i) ^ ": " ^ (print_type t))

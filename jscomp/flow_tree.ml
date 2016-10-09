@@ -12,6 +12,7 @@ and decl = {
 and type_ =
   | T_name of id * type_ list * string option
   | T_tvar of int
+  | T_bool
   | T_fun of func
   | T_obj of field list
   | T_tuple of type_ list
