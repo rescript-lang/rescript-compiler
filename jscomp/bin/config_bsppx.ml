@@ -26,12 +26,6 @@ let version = "4.02.3+BS"
 let standard_library_default = "/usr/local/lib/ocaml/lib/ocaml" (* does not matter *)
 
 let standard_library =
-  try
-    Sys.getenv "OCAMLLIB"
-  with Not_found ->
-  try
-    Sys.getenv "CAMLLIB"
-  with Not_found ->
     standard_library_default
 
 let standard_runtime = "/usr/local/bin/ocaml/bin/ocamlrun"
