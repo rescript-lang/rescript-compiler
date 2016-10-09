@@ -1,5 +1,11 @@
 open Flow_tree
 
+let print_tvar id = "TVAR_" ^ (string_of_int id)
+
+let print_tvars = function
+  | [] -> ""
+  | ids -> "<" ^ (String.concat ", " (List.map print_tvar ids)) ^ ">"
+
 let rec print_type = function
   | T_name (name, tl, comment) ->
     let comment = match comment with
@@ -11,13 +17,15 @@ let rec print_type = function
       | tl -> "<" ^ (String.concat ", " tl) ^ ">"
     in
     comment ^ name.id ^ args
-  | T_fun (args, ret) ->
-    let args_str = args
+  | T_tvar id -> print_tvar id
+  | T_fun {func_args; func_ret; func_tvars} ->
+    let args_str = func_args
       |> List.mapi (fun i t -> "p" ^ (string_of_int i) ^ ": " ^ (print_type t))
       |> String.concat ", "
     in
-    let ret = print_type ret in
-    "(" ^ args_str ^ ") => " ^ ret
+    let ret = print_type func_ret in
+    let tvars = print_tvars func_tvars in
+    tvars ^ "(" ^ args_str ^ ") => " ^ ret
   | T_obj fields ->
     let fields_str = fields
       |> List.map (fun f -> f.field_name ^ ": " ^ (print_type f.field_type))
@@ -29,8 +37,9 @@ let rec print_type = function
     "[" ^ types_str ^ "]"
     
 let print_type_decl decl =
+  let tvars = print_tvars decl.decl_tvars in
   let type_str = print_type decl.decl_type in
-  "type " ^ decl.decl_name.id ^ " = " ^ type_str
+  "type " ^ decl.decl_name.id ^ tvars ^ " = " ^ type_str
 
 let print_decl decl =
   let type_ = print_type decl.decl_type in

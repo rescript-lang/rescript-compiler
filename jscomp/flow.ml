@@ -11,6 +11,8 @@ type state = {
   
   mutable types: decl list;
   mutable exports: decl list;
+  
+  mutable curr_tvars: int list option;
 }
 
 let get_type_id s name =
@@ -37,6 +39,8 @@ let rec print_path s path =
   | Path.Pident id -> print_id s id
   | Path.Pdot (p, str, _) -> print_path s p ^ "__" ^ str
   | Path.Papply _ -> "Dunno_what_Papply_is"
+
+let print_tvar id = "TVAR_" ^ (string_of_int id)
   
 let rec p_sigs s sigs = List.iter (p_sig s) sigs
   
@@ -44,7 +48,7 @@ and p_sig s = function
   | Types.Sig_value (id, val_desc) ->
     let decl_name = get_val_id s (Ident.name id) in
     let decl_type = p_type_expr s val_desc.val_type in
-    s.exports <- {decl_name; decl_type} :: s.exports
+    s.exports <- {decl_name; decl_type; decl_tvars = []} :: s.exports
   | Sig_type _ -> () (* Types are declared on demand *)
   | Sig_typext _ -> ()
   | Sig_module _ -> () (* Non-toplevel values are not exposed *)
@@ -66,7 +70,13 @@ and p_type_decl s type_decl =
 and p_type_expr s type_expr =
   match type_expr.desc with
   | Tvar str ->
-    p_any s ("Tvar " ^ (string_of_int type_expr.id))
+    (match s.curr_tvars with
+    | Some tvars ->
+        let id = type_expr.id in
+        if not (List.mem id tvars) then s.curr_tvars <- Some (id :: tvars);
+        T_tvar id
+    | None -> p_any s ("Tvar " ^ (string_of_int type_expr.id))
+    )
   | Tarrow (label, left, right, c) -> p_arrow s (label, left, right, c)
   | Ttuple tl -> T_tuple (List.map (p_type_expr s) tl)
   | Tconstr (path, tl, _) ->
@@ -83,9 +93,14 @@ and p_type_expr s type_expr =
       let type_name = print_path s path in
       if not (List.mem type_name s.used_types) then begin
         s.used_types <- type_name :: s.used_types;
+        let prev_tvars = s.curr_tvars in
+        s.curr_tvars <- Some [];
         let decl_name = get_type_id s type_name in
-        let decl_type = p_type_decl s (Env.find_type path s.env) in
-        let decl = {decl_name; decl_type} in
+        let type_decl = Env.find_type path s.env in
+        let decl_type = p_type_decl s type_decl in
+        let decl_tvars = List.map (fun t -> t.Types.id) type_decl.Types.type_params in
+        s.curr_tvars <- prev_tvars;
+        let decl = {decl_name; decl_type; decl_tvars} in
         s.types <- decl :: s.types
       end;
       p_type_name ~tl:(List.map (p_type_expr s) tl) s type_name
@@ -108,9 +123,20 @@ and p_arrow s t =
     | Tlink right -> collect (label, left, right, c)
     | _ -> ([left], right)
   in
+  let top_tvars = s.curr_tvars in
+  if top_tvars = None then s.curr_tvars <- Some [];
   let (params, ret) = collect t in
-  let params = List.map (p_type_expr s) params in
-  T_fun (params, p_type_expr s ret)
+  let func_args = List.map (p_type_expr s) params in
+  let func_ret = p_type_expr s ret in
+  let func_tvars =
+    if top_tvars = None then (
+      let v = s.curr_tvars in
+      s.curr_tvars <- None;
+      match v with Some x -> x | None -> []
+    )
+    else []
+  in
+  T_fun {func_tvars; func_args; func_ret}
   
 and p_js_obj s t =
   let rec loop t acc =
@@ -155,6 +181,7 @@ let print_signature env sigs =
     val_ids = SMap.empty;
     types = [];
     exports = [];
+    curr_tvars = None;
   } in
   List.iter (p_sig s) sigs;
   rename_types s;

@@ -55,6 +55,25 @@ function iter(items1, items2, fn1, fn2) {
   return $$Array.iter(fn2, items2);
 }
 
+function pair(a) {
+  return /* tuple */[
+          a,
+          a
+        ];
+}
+
+function fn_in_obj_000(a) {
+  return /* tuple */[
+          a,
+          a
+        ];
+}
+
+var fn_in_obj = /* tuple */[
+  fn_in_obj_000,
+  1
+];
+
 var M1 = 0;
 
 var float_ = 1.0;
@@ -72,4 +91,6 @@ exports.from_util = from_util;
 exports.float_    = float_;
 exports.tt        = tt;
 exports.iter      = iter;
+exports.pair      = pair;
+exports.fn_in_obj = fn_in_obj;
 /* No side effect */

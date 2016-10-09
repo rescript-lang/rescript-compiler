@@ -12,13 +12,15 @@ type Util__t = {id: number}
 
 type tt$0 = number
 
+type pair$0<TVAR_2272> = [TVAR_2272, TVAR_2272]
+
 declare export var do_if: (p0: /* bool */any) => /* bool */any;
 
 declare export var mk_tuple: (p0: M__t, p1: number, p2: void) => [number, number, string, char];
 
 declare export var mk_rec: (p0: obj_t) => rec_t;
 
-declare export var mk_obj: (p0: /* Tvar 1912 */any) => {id: number, name: string};
+declare export var mk_obj: <TVAR_1912>(p0: TVAR_1912) => {id: number, name: string};
 
 declare export var mk_arr: (p0: void) => Array<number>;
 
@@ -28,4 +30,8 @@ declare export var float_: number;
 
 declare export var tt: tt$0;
 
-declare export var iter: (p0: Array</* Tvar 2242 */any>, p1: Array</* Tvar 2255 */any>, p2: (p0: /* Tvar 2242 */any) => void, p3: (p0: /* Tvar 2255 */any) => void) => void;
+declare export var iter: <TVAR_2255, TVAR_2242>(p0: Array<TVAR_2242>, p1: Array<TVAR_2255>, p2: (p0: TVAR_2242) => void, p3: (p0: TVAR_2255) => void) => void;
+
+declare export var pair: <TVAR_2300>(p0: pair$0<TVAR_2300>) => [pair$0<TVAR_2300>, pair$0<TVAR_2300>];
+
+declare export var fn_in_obj: [<TVAR_2326>(p0: pair$0<TVAR_2326>) => [pair$0<TVAR_2326>, pair$0<TVAR_2326>], number];

@@ -34,3 +34,12 @@ type tt = int
 let tt: tt = 0
 
 let iter items1 items2 fn1 fn2 = Array.iter fn1 items1; Array.iter fn2 items2
+
+type 'a pair = 'a * 'a
+
+let pair (a : 'a pair) = (a, a)
+
+let fn_in_obj = (
+  (fun a -> pair a),
+  1
+)
