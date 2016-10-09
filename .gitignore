@@ -73,3 +73,7 @@ ocaml_src
 !bin/ocamlc.opt
 !bin/bspack
 !ocaml.tar.gz
+
+#ninja
+.ninja_log
+.ninja_deps

@@ -74,6 +74,9 @@ let string_of_chars  x = String.concat "" @@ List.map string_of_char  x
 
   "xsplit", (fun _ -> Eq(["a";"b";"c"], xsplit ~delim:'.' "a.b.c") );
   "split_empty", (fun _ -> Eq([], Ext_string.split "" '_') );
+  "split_empty2", (fun _ -> 
+      Eq(["test_unsafe_obj_ffi_ppx.cmi"],
+         Ext_string.split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ') );
   "rfind", (fun _ -> Eq( 7, Ext_string.rfind "__index__js" ~sub:"__"));
   "rfind_2", (fun _ -> Eq( 0, Ext_string.rfind "__index_js" ~sub:"__"));
   "rfind_3", (fun _ -> Eq( -1, Ext_string.rfind "_index_js" ~sub:"__"));

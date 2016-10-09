@@ -20,10 +20,15 @@ function split_by($staropt$star, is_delim, str) {
     var last_pos = _last_pos;
     var acc = _acc;
     if (pos === -1) {
-      return /* :: */[
-              $$String.sub(str, 0, last_pos),
-              acc
-            ];
+      if (last_pos === 0 && !keep_empty) {
+        return acc;
+      }
+      else {
+        return /* :: */[
+                $$String.sub(str, 0, last_pos),
+                acc
+              ];
+      }
     }
     else if (Curry._1(is_delim, Caml_string.get(str, pos))) {
       var new_len = (last_pos - pos | 0) - 1 | 0;

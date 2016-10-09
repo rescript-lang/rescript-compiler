@@ -33,7 +33,13 @@ let split_by ?(keep_empty=false) is_delim str =
   let len = String.length str in
   let rec loop acc last_pos pos =
     if pos = -1 then
-      String.sub str 0 last_pos :: acc
+      if last_pos = 0 && not keep_empty then
+        (*
+           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+        *)
+        acc
+      else 
+        String.sub str 0 last_pos :: acc
     else
       if is_delim str.[pos] then
         let new_len = (last_pos - pos - 1) in
