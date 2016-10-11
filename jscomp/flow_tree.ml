@@ -1,12 +1,14 @@
 type prog = {
-  prog_types: decl list;
-  prog_exports: decl list;
+  prog_decls: decl list;
 }
 
-and decl = {
+and decl =
+  | Decl_type of (* tvars *) int list * decl_desc
+  | Decl_val of decl_desc
+
+and decl_desc = {
   decl_name: id;
   decl_type: type_;
-  decl_tvars: int list;
 }
 
 and type_ =

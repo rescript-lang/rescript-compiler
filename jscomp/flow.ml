@@ -9,8 +9,7 @@ type state = {
   mutable type_ids: id SMap.t;
   mutable val_ids: id SMap.t;
   
-  mutable types: decl list;
-  mutable exports: decl list;
+  mutable decls: decl list;
   
   mutable curr_tvars: int list option;
 }
@@ -48,7 +47,7 @@ and p_sig s = function
   | Types.Sig_value (id, val_desc) ->
     let decl_name = get_val_id s (Ident.name id) in
     let decl_type = p_type_expr s val_desc.val_type in
-    s.exports <- {decl_name; decl_type; decl_tvars = []} :: s.exports
+    s.decls <- Decl_val {decl_name; decl_type} :: s.decls
   | Sig_type _ -> () (* Types are declared on demand *)
   | Sig_typext _ -> ()
   | Sig_module _ -> () (* Non-toplevel values are not exposed *)
@@ -98,10 +97,10 @@ and p_type_expr s type_expr =
         let decl_name = get_type_id s type_name in
         let type_decl = Env.find_type path s.env in
         let decl_type = p_type_decl s type_decl in
-        let decl_tvars = List.map (fun t -> t.Types.id) type_decl.Types.type_params in
+        let tvars = List.map (fun t -> t.Types.id) type_decl.Types.type_params in
         s.curr_tvars <- prev_tvars;
-        let decl = {decl_name; decl_type; decl_tvars} in
-        s.types <- decl :: s.types
+        let decl = Decl_type (tvars, {decl_name; decl_type}) in
+        s.decls <- decl :: s.decls
       end;
       p_type_name ~tl:(List.map (p_type_expr s) tl) s type_name
     end
@@ -179,14 +178,12 @@ let print_signature env sigs =
     used_types = [];
     type_ids = SMap.empty;
     val_ids = SMap.empty;
-    types = [];
-    exports = [];
+    decls = [];
     curr_tvars = None;
   } in
   List.iter (p_sig s) sigs;
   rename_types s;
   let prog = {
-    prog_types = List.rev s.types;
-    prog_exports = List.rev s.exports;
+    prog_decls = List.rev s.decls;
   } in
   Flow_print.print prog

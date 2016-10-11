@@ -37,20 +37,18 @@ let rec print_type = function
     let types_str = types |> List.map print_type |> String.concat ", " in
     "[" ^ types_str ^ "]"
     
-let print_type_decl decl =
-  let tvars = print_tvars decl.decl_tvars in
-  let type_str = print_type decl.decl_type in
-  "type " ^ decl.decl_name.id ^ tvars ^ " = " ^ type_str
-
 let print_decl decl =
-  let type_ = print_type decl.decl_type in
-  "declare export var " ^ decl.decl_name.id ^ ": " ^ type_ ^ ";"
+  match decl with
+  | Decl_type (tvars, desc) ->
+      let tvars = print_tvars tvars in
+      let type_str = print_type desc.decl_type in
+      "type " ^ desc.decl_name.id ^ tvars ^ " = " ^ type_str
+  | Decl_val desc ->
+      let type_ = print_type desc.decl_type in
+      "declare export var " ^ desc.decl_name.id ^ ": " ^ type_ ^ ";"
 
 let print prog =
-  let types = List.map print_type_decl prog.prog_types in
-  let decls = List.map print_decl prog.prog_exports in
+  let decls = List.map print_decl prog.prog_decls in
   "// @flow\n\n" ^
-  (String.concat "\n\n" types) ^
-  "\n\n" ^
   (String.concat "\n\n" decls) ^
   "\n"
