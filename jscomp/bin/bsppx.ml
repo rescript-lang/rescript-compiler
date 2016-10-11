@@ -4545,7 +4545,23 @@ val split : ?keep_empty:bool -> string -> char -> string list
 
 val starts_with : string -> string -> bool
 
+(**
+   return [-1] when not found, the returned index is useful 
+   see [ends_with_then_chop]
+*)
+val ends_with_index : string -> string -> int
+
 val ends_with : string -> string -> bool
+
+(**
+   {[
+     ends_with_then_chop "a.cmj" ".cmj"
+     "a"
+   ]}
+   This is useful in controlled or file case sensitve system
+*)
+val ends_with_then_chop : string -> string -> string option
+
 
 val escaped : string -> string
 
@@ -4653,19 +4669,26 @@ let starts_with s beg =
   )
 
 
-(* TODO: optimization *)
-let ends_with s beg = 
+
+let ends_with_index s beg = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length beg - 1 in
-  if s_beg > s_finish then false 
+  if s_beg > s_finish then -1
   else
     let rec aux j k = 
-      if k < 0 then true 
+      if k < 0 then (j + 1)
       else if String.unsafe_get s j = String.unsafe_get beg k then 
         aux (j - 1) (k - 1)
-      else  false in 
+      else  -1 in 
     aux s_finish s_beg
 
+let ends_with s beg = ends_with_index s beg >= 0 
+
+
+let ends_with_then_chop s beg = 
+  let i =  ends_with_index s beg in 
+  if i >= 0 then Some (String.sub s 0 i) 
+  else None
 
 (**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
      this version try to make it not locale senstive, this bug is fixed
@@ -4792,6 +4815,8 @@ let starts_with_and_number s ~offset beg =
         digits_of_str ~offset:finish_delim s 2 
       else 
         -1 
+
+let equal (x : string) y  = x = y
 
 end
 module Ast_attributes : sig 
@@ -7026,6 +7051,16 @@ val node_modules : string
 val node_modules_length : int
 val package_json : string  
 
+val suffix_cmj : string
+val suffix_cmi : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mliast : string
+val suffix_mll : string
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7105,6 +7140,16 @@ let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
 let package_json = "package.json"
 
+
+let suffix_cmj = ".cmj"
+let suffix_cmi = ".cmi"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mlast = ".mlast"
+let suffix_mliast = ".mliast"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
 
 
 
@@ -7404,7 +7449,11 @@ let module_name_of_file file =
     String.capitalize 
       (Filename.chop_extension @@ Filename.basename file)  
 
-
+(** For win32 or case insensitve OS 
+    [".cmj"] is the same as [".CMJ"]
+  *)
+(* let has_exact_suffix_then_chop fname suf =  *)
+  
 
 end
 module Js_config : sig 
@@ -7575,6 +7624,7 @@ val better_errors : bool ref
 val sort_imports : bool ref 
 val dump_js : bool ref
 val syntax_only  : bool ref
+val binary_ast : bool ref
 
 end = struct
 #1 "js_config.ml"
@@ -7816,6 +7866,7 @@ let is_windows =
   | _ -> false
 
 let syntax_only = ref false
+let binary_ast = ref false
 
 end
 module Bs_warnings : sig 

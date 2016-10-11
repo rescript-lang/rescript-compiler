@@ -36,6 +36,8 @@ external slice_start : int -> 'this = "slice"[@@bs.send.pipe: 'a t as 'this]
 
 external indexOf : 'a  -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external indexOfFrom : 'a -> int ->  int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
+
+(* TODO: Not available in Node V4  *)
 external includes : 'a -> Js.boolean = "" [@@bs.send.pipe: 'a t as 'this]
 
 external lastIndexOf : 'a -> int -> int = "" [@@bs.send.pipe: 'a t as 'this]

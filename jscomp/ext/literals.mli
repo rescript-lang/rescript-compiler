@@ -75,3 +75,13 @@ val bs_type : string
 val node_modules : string
 val node_modules_length : int
 val package_json : string  
+
+val suffix_cmj : string
+val suffix_cmi : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mliast : string
+val suffix_mll : string
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string

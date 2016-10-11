@@ -103,11 +103,11 @@ function starts_with(s, beg) {
   }
 }
 
-function ends_with(s, beg) {
+function ends_with_index(s, beg) {
   var s_finish = s.length - 1 | 0;
   var s_beg = beg.length - 1 | 0;
   if (s_beg > s_finish) {
-    return /* false */0;
+    return -1;
   }
   else {
     var _j = s_finish;
@@ -116,7 +116,7 @@ function ends_with(s, beg) {
       var k = _k;
       var j = _j;
       if (k < 0) {
-        return /* true */1;
+        return j + 1 | 0;
       }
       else if (s[j] === beg[k]) {
         _k = k - 1 | 0;
@@ -125,9 +125,23 @@ function ends_with(s, beg) {
         
       }
       else {
-        return /* false */0;
+        return -1;
       }
     };
+  }
+}
+
+function ends_with(s, beg) {
+  return +(ends_with_index(s, beg) >= 0);
+}
+
+function ends_with_then_chop(s, beg) {
+  var i = ends_with_index(s, beg);
+  if (i >= 0) {
+    return /* Some */[$$String.sub(s, 0, i)];
+  }
+  else {
+    return /* None */0;
   }
 }
 
@@ -205,10 +219,6 @@ function repeat(n, s) {
     $$String.blit(s, 0, res, Caml_int32.imul(i, len), len);
   }
   return Bytes.to_string(res);
-}
-
-function equal(x, y) {
-  return +(x === y);
 }
 
 function _is_sub(sub, i, s, j, len) {
@@ -336,20 +346,26 @@ function starts_with_and_number(s, offset, beg) {
   }
 }
 
+function equal(x, y) {
+  return +(x === y);
+}
+
 exports.split_by               = split_by;
 exports.trim                   = trim;
 exports.split                  = split;
 exports.starts_with            = starts_with;
+exports.ends_with_index        = ends_with_index;
 exports.ends_with              = ends_with;
+exports.ends_with_then_chop    = ends_with_then_chop;
 exports.escaped                = escaped;
 exports.for_all                = for_all;
 exports.is_empty               = is_empty;
 exports.repeat                 = repeat;
-exports.equal                  = equal;
 exports._is_sub                = _is_sub;
 exports.find                   = find;
 exports.rfind                  = rfind;
 exports.tail_from              = tail_from;
 exports.digits_of_str          = digits_of_str;
 exports.starts_with_and_number = starts_with_and_number;
+exports.equal                  = equal;
 /* No side effect */

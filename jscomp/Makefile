@@ -6,6 +6,7 @@ ifndef EXE
 endif
 NATIVE=ocamlopt.opt$(EXE)
 BYTE=ocamlc.opt$(EXE)
+OCAMLLEX=ocamllex.opt$(EXE)
 
 CAMLP4OF=camlp4of
 ## native plugin was not installed in opam..
@@ -19,6 +20,9 @@ js_fold.ml:js_fold.mlp j.ml
 	@echo "Regenrating j_fold.ml"
 	$(CAMLP4OF) -filter Camlp4FoldGenerator  -filter trash -impl $< -printer o -o $@
 
+sexp_lexer.ml: sexp_lexer.gen.mll
+	@echo "Regenerating sexp_lexer.ml"
+	$(OCAMLLEX) $< -o $@
 # lam_map.ml: lambda_map.mlp lambda.mlp
 # 	@echo "Regenrating lambda_map.ml"
 # 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer -o  $@
@@ -55,6 +59,7 @@ snapshotml:./bin/bspack.exe ./bin/compiler.mllib
 	$< -bs-log-mllib bin/bsppx.mllib  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
 	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 	BS_OCAMLDEP=true $< -bs-log-mllib bin/bsdep.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I .  -bs-main ../ocaml/tools/ocamldep.ml -o bin/bsdep.ml
+	$< -bs-log-mllib bin/bsbuild.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I depends -bs-main ./bsbuild_main.ml -o bin/bsbuild.ml
 	BS_MIN_LEX_DEPS=true $< -bs-log-mllib bin/bspp.mllib   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -bs-main bspp_main.ml -o bin/bspp.ml
 
 

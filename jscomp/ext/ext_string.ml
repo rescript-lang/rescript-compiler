@@ -82,19 +82,26 @@ let starts_with s beg =
   )
 
 
-(* TODO: optimization *)
-let ends_with s beg = 
+
+let ends_with_index s beg = 
   let s_finish = String.length s - 1 in
   let s_beg = String.length beg - 1 in
-  if s_beg > s_finish then false 
+  if s_beg > s_finish then -1
   else
     let rec aux j k = 
-      if k < 0 then true 
+      if k < 0 then (j + 1)
       else if String.unsafe_get s j = String.unsafe_get beg k then 
         aux (j - 1) (k - 1)
-      else  false in 
+      else  -1 in 
     aux s_finish s_beg
 
+let ends_with s beg = ends_with_index s beg >= 0 
+
+
+let ends_with_then_chop s beg = 
+  let i =  ends_with_index s beg in 
+  if i >= 0 then Some (String.sub s 0 i) 
+  else None
 
 (**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
      this version try to make it not locale senstive, this bug is fixed
@@ -221,3 +228,5 @@ let starts_with_and_number s ~offset beg =
         digits_of_str ~offset:finish_delim s 2 
       else 
         -1 
+
+let equal (x : string) y  = x = y
