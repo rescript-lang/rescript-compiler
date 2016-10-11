@@ -1,37 +1,35 @@
 // @flow
 
-type M__t = number
-
-type char = /* abstract w/o manifest */any
-
-type obj_t = /* Tobject */any
+type Mod__t = number
 
 type rec_t = /* Type_record */any
+
+type obj_t = /* Tobject */any
 
 type Util__t = {id: number}
 
 type tt$0 = number
 
-type pair$0<TVAR_2272> = [TVAR_2272, TVAR_2272]
+type pair$0<TVAR_2148> = [TVAR_2148, TVAR_2148]
 
-declare export var do_if: (p0: 0 | 1) => 0 | 1;
+declare export var tuple: [string, number, number, 0 | 1, 0 | 1];
 
-declare export var mk_tuple: (p0: M__t, p1: number, p2: void) => [number, number, string, char];
+declare export var aliased: Mod__t;
 
-declare export var mk_rec: (p0: obj_t) => rec_t;
+declare export var js_obj: {id: number, name: string};
 
-declare export var mk_obj: <TVAR_1912>(p0: TVAR_1912) => {id: number, name: string};
+declare export var record: rec_t;
 
-declare export var mk_arr: (p0: void) => Array<number>;
+declare export var obj_arg: (p0: obj_t) => void;
+
+declare export var arr: Array<number>;
 
 declare export var from_util: (p0: Util__t) => void;
 
-declare export var float_: number;
-
 declare export var tt: tt$0;
 
-declare export var iter: <TVAR_2255, TVAR_2242>(p0: Array<TVAR_2242>, p1: Array<TVAR_2255>, p2: (p0: TVAR_2242) => void, p3: (p0: TVAR_2255) => void) => void;
+declare export var iter: <TVAR_2135>(p0: Array<TVAR_2135>, p1: (p0: TVAR_2135) => void) => void;
 
-declare export var pair: <TVAR_2300>(p0: pair$0<TVAR_2300>) => [pair$0<TVAR_2300>, pair$0<TVAR_2300>];
+declare export var pair: <TVAR_2176>(p0: pair$0<TVAR_2176>) => void;
 
-declare export var fn_in_obj: [<TVAR_2326>(p0: pair$0<TVAR_2326>) => [pair$0<TVAR_2326>, pair$0<TVAR_2326>], number];
+declare export var tuple_with_fn: [<TVAR_2197>(p0: pair$0<TVAR_2197>) => void, number];
