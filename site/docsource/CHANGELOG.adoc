@@ -9,7 +9,7 @@
 
 * Fixes
 
-- Bug fix with opam issues {issues}831[#831]
+- Bug fix with opam issues {issues}/831[#831]
 
 * Features
 
@@ -18,19 +18,19 @@
 == 1.1.1
 
 * Features
-- Add bsdep.exe {issues}822[#822]
-- Conditional compilation support {issues}820[#820]
-- Relax syntactic restrictions for all extension point {issues}793[#793]
+- Add bsdep.exe {issues}/822[#822]
+- Conditional compilation support {issues}/820[#820]
+- Relax syntactic restrictions for all extension point {issues}/793[#793]
 	so that `bs.obj`, `obj`, `bs.raw`, `raw`, etc will both work.
 	Note that all attributes will still be qualified
 
-- Suport bs.splice in bs.new {issues}793[#793]
-- Complete `bs.splice ` support and documentation {issues}798[#798]
+- Suport bs.splice in bs.new {issues}/793[#793]
+- Complete `bs.splice ` support and documentation {issues}/798[#798]
 
 == 1.03
 
 * Features
-- Add an option `-bs-no-warn-unused-bs-attribute` {issues}787[#787]
+- Add an option `-bs-no-warn-unused-bs-attribute` {issues}/787[#787]
 
 * Incompatible changes (due to proper Windows support):
 
@@ -55,13 +55,13 @@ Now these symlinks are removed, you have to refer to `bs-platform/bin/bsc.exe`
 
 * Bug fixes and enhancement
 
-- Fix Bytes.blit when src==dst {issues}743[#743]
+- Fix Bytes.blit when src==dst {issues}/743[#743]
 
 * Features
 
-- Add an option `-bs-no-warn-ffi-type` {issues}783[#783]
+- Add an option `-bs-no-warn-ffi-type` {issues}/783[#783]
   By default, `bsc.exe` will warn when it detect some ocaml datatype is passed from/to external FFi
-- Add an option `-bs-eval` {issues}784[784]
+- Add an option `-bs-eval` {issues}/784[784]
 
 == 1.01
 
@@ -73,7 +73,7 @@ Now these symlinks are removed, you have to refer to `bs-platform/bin/bsc.exe`
 
 * Bug fixes and enhancement
 
-- Enforce `#=` always return unit {issues}718[#718] for better error messages
+- Enforce `#=` always return unit {issues}/718[#718] for better error messages
 
 
 == 1.0
