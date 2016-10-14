@@ -7,6 +7,8 @@
 
 * Features
 - add `-bs-D` `-bs-list-conditionals` flags {issues}/851[#851]
+- add `-bs-syntax-only`
+- add `-bs-binary-ast` {issues}/854[#854]
 
 === 1.1.2
 
