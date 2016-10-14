@@ -1,0 +1,35 @@
+// @flow
+
+declare export var tuple: [string, number, number, 0 | 1, 0 | 1];
+
+type Mod__t = number
+
+declare export var aliased: Mod__t;
+
+declare export var js_obj: {id: number, name: string};
+
+type rec_t = /* Type_record */any
+
+declare export var record: rec_t;
+
+type obj_t = /* Tobject */any
+
+declare export var obj_arg: (p0: obj_t) => void;
+
+declare export var arr: Array<number>;
+
+type Util__t = {id: number}
+
+declare export var from_util: (p0: Util__t) => void;
+
+type tt$0 = number
+
+declare export var tt: tt$0;
+
+declare export var iter: <TVAR_2135>(p0: Array<TVAR_2135>, p1: (p0: TVAR_2135) => void) => void;
+
+type pair$0<TVAR_2148> = [TVAR_2148, TVAR_2148]
+
+declare export var pair: <TVAR_2176>(p0: pair$0<TVAR_2176>) => void;
+
+declare export var tuple_with_fn: [<TVAR_2197>(p0: pair$0<TVAR_2197>) => void, number];
