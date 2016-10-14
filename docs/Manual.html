@@ -619,6 +619,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_concrete_syntax">Concrete syntax</a></li>
 <li><a href="#_typing_rules">Typing rules</a></li>
 <li><a href="#_examples_3">Examples</a></li>
+<li><a href="#_built_in_variables_and_custom_variables">Built in variables and custom variables</a></li>
 <li><a href="#_changes_to_command_line_options">Changes to command line options</a></li>
 </ul>
 </li>
@@ -3552,6 +3553,8 @@ conditional-expression
 
 atom-predicate
 | atom operator atom
+| defined UIDENT
+| undefined UIDENT
 
 operator
 | (= | &lt; | &gt; | &lt;= | &gt;= | =~ )
@@ -3634,6 +3637,22 @@ it would  be string</p>
 <span class="tok-o">#</span><span class="tok-k">if</span> <span class="tok-nc">OCAML_VERSION</span> <span class="tok-o">=~</span> <span class="tok-s2">&quot;&gt;=4.01&quot;</span> <span class="tok-k">then</span>
   <span class="tok-o">|</span> <span class="tok-nc">O_CLOEXEC</span>
 <span class="tok-o">#</span><span class="tok-k">end</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_built_in_variables_and_custom_variables"><a class="anchor" href="#_built_in_variables_and_custom_variables"></a>Built in variables and custom variables</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">ocamlscript&gt;bsc.exe -bs-D <span class="tok-nv">CUSTOM_A</span><span class="tok-o">=</span><span class="tok-s2">&quot;ghsigh&quot;</span> -bs-list-conditionals
+OCAML_PATCH <span class="tok-s2">&quot;BS&quot;</span>
+BS_VERSION <span class="tok-s2">&quot;1.2.1&quot;</span>
+OS_TYPE <span class="tok-s2">&quot;Unix&quot;</span>
+BS <span class="tok-nb">true</span>
+CUSTOM_A <span class="tok-s2">&quot;ghsigh&quot;</span>
+WORD_SIZE 64
+OCAML_VERSION <span class="tok-s2">&quot;4.02.3+BS&quot;</span>
+BIG_ENDIAN <span class="tok-nb">false</span></code></pre>
 </div>
 </div>
 </div>
@@ -4545,7 +4564,7 @@ Array while js_of_ocaml requires its index 0 to be of value 0.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Bug fix with opam issues <a href="https://github.com/bloomberg/bucklescript/issues831">#831</a></p>
+<p>Bug fix with opam issues <a href="https://github.com/bloomberg/bucklescript/issues/831">#831</a></p>
 </li>
 </ul>
 </div>
@@ -4574,21 +4593,21 @@ Array while js_of_ocaml requires its index 0 to be of value 0.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Add bsdep.exe <a href="https://github.com/bloomberg/bucklescript/issues822">#822</a></p>
+<p>Add bsdep.exe <a href="https://github.com/bloomberg/bucklescript/issues/822">#822</a></p>
 </li>
 <li>
-<p>Conditional compilation support <a href="https://github.com/bloomberg/bucklescript/issues820">#820</a></p>
+<p>Conditional compilation support <a href="https://github.com/bloomberg/bucklescript/issues/820">#820</a></p>
 </li>
 <li>
-<p>Relax syntactic restrictions for all extension point <a href="https://github.com/bloomberg/bucklescript/issues793">#793</a>
+<p>Relax syntactic restrictions for all extension point <a href="https://github.com/bloomberg/bucklescript/issues/793">#793</a>
 so that <code>bs.obj</code>, <code>obj</code>, <code>bs.raw</code>, <code>raw</code>, etc will both work.
 Note that all attributes will still be qualified</p>
 </li>
 <li>
-<p>Suport bs.splice in bs.new <a href="https://github.com/bloomberg/bucklescript/issues793">#793</a></p>
+<p>Suport bs.splice in bs.new <a href="https://github.com/bloomberg/bucklescript/issues/793">#793</a></p>
 </li>
 <li>
-<p>Complete `bs.splice ` support and documentation <a href="https://github.com/bloomberg/bucklescript/issues798">#798</a></p>
+<p>Complete `bs.splice ` support and documentation <a href="https://github.com/bloomberg/bucklescript/issues/798">#798</a></p>
 </li>
 </ul>
 </div>
@@ -4607,7 +4626,7 @@ Note that all attributes will still be qualified</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Add an option <code>-bs-no-warn-unused-bs-attribute</code> <a href="https://github.com/bloomberg/bucklescript/issues787">#787</a></p>
+<p>Add an option <code>-bs-no-warn-unused-bs-attribute</code> <a href="https://github.com/bloomberg/bucklescript/issues/787">#787</a></p>
 </li>
 </ul>
 </div>
@@ -4654,7 +4673,7 @@ Note that all attributes will still be qualified</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Fix Bytes.blit when src==dst <a href="https://github.com/bloomberg/bucklescript/issues743">#743</a></p>
+<p>Fix Bytes.blit when src==dst <a href="https://github.com/bloomberg/bucklescript/issues/743">#743</a></p>
 </li>
 </ul>
 </div>
@@ -4664,11 +4683,11 @@ Note that all attributes will still be qualified</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Add an option <code>-bs-no-warn-ffi-type</code> <a href="https://github.com/bloomberg/bucklescript/issues783">#783</a>
+<p>Add an option <code>-bs-no-warn-ffi-type</code> <a href="https://github.com/bloomberg/bucklescript/issues/783">#783</a>
 By default, <code>bsc.exe</code> will warn when it detect some ocaml datatype is passed from/to external FFi</p>
 </li>
 <li>
-<p>Add an option <code>-bs-eval</code> <a href="https://github.com/bloomberg/bucklescript/issues784">784</a></p>
+<p>Add an option <code>-bs-eval</code> <a href="https://github.com/bloomberg/bucklescript/issues/784">784</a></p>
 </li>
 </ul>
 </div>
@@ -4702,7 +4721,7 @@ polymorphism <a href="https://github.com/bloomberg/bucklescript/issues/686">#686
 <div class="ulist">
 <ul>
 <li>
-<p>Enforce <code>#=</code> always return unit <a href="https://github.com/bloomberg/bucklescript/issues718">#718</a> for better error messages</p>
+<p>Enforce <code>#=</code> always return unit <a href="https://github.com/bloomberg/bucklescript/issues/718">#718</a> for better error messages</p>
 </li>
 </ul>
 </div>
