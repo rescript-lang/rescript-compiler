@@ -38,6 +38,8 @@ conditional-expression
 
 atom-predicate
 | atom operator atom
+| defined UIDENT
+| undefined UIDENT
 
 operator
 | (= | < | > | <= | >= | =~ )
@@ -100,6 +102,21 @@ type open_flag =
   | O_CLOEXEC
 #end
 -------------
+=== Built in variables and custom variables
+
+[source,sh]
+--------------
+ocamlscript>bsc.exe -bs-D CUSTOM_A="ghsigh" -bs-list-conditionals
+OCAML_PATCH "BS"
+BS_VERSION "1.2.1"
+OS_TYPE "Unix"
+BS true
+CUSTOM_A "ghsigh"
+WORD_SIZE 64
+OCAML_VERSION "4.02.3+BS"
+BIG_ENDIAN false
+--------------
+
 
 === Changes to command line options
 For BuckleScript users, nothing needs to be done (it is baked in the language level),
