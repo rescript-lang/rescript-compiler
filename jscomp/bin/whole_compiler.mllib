@@ -84,7 +84,6 @@ ext/ext_pp_scope
 ./lam_compile_util
 ./js_exp_make
 ./js_number
-./js_cmj_datasets
 ./config_util
 ext/hash_set
 ./lam_module_ident

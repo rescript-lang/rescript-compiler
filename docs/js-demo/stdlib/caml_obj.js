@@ -4,13 +4,11 @@ define(["exports", "./caml_builtin_exceptions", "./block"],
     'use strict';
     function caml_obj_dup(x) {
       var len = x.length;
-      var v = {
-        length: len,
-        tag: x.tag | 0
-      };
+      var v = new Array(len);
       for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
         v[i] = x[i];
       }
+      v.tag = x.tag | 0;
       return v;
     }
     

@@ -29,7 +29,7 @@
 
 
 type env =
-  | Browser
+  (* | Browser *)
   (* "browser-internal" used internal *)
   | NodeJS
   | AmdJS

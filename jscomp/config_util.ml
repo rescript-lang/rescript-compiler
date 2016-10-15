@@ -46,7 +46,8 @@ let find_cmj file =
     Js_cmj_format.from_file f             
   | exception Not_found -> 
     (* ONLY read the stored cmj data in browser environment *)
-    if Js_config.is_browser () then     
+#if BS_COMPILER_IN_BROWSER then     
+    (* if Js_config.is_browser () then      *)
       let target = String.uncapitalize (Filename.basename file) in
       match 
         String_map.find  target
@@ -65,7 +66,8 @@ let find_cmj file =
         ->     
         Ext_log.warn __LOC__ "@[%s not found @]" file ;
         Js_cmj_format.no_pure_dummy 
-    else
-      Bs_exception.error (Cmj_not_found file)      
+#else
+      Bs_exception.error (Cmj_not_found file)
+#end        
 
 
