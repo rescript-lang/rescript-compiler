@@ -307,7 +307,7 @@ let log_counter = ref 0
 
 let dump env ext  lam = 
 #if BS_COMPILER_IN_BROWSER then
-    ()
+    lam
 #else    
   if (* (not (Js_config.is_browser ())) *)
   (* && *)

@@ -31,7 +31,7 @@ let log_counter = ref 0
 
 let dump name (prog : J.program) =
 #if BS_COMPILER_IN_BROWSER then
-    ()
+    prog
 #else    
   begin
     let () = 

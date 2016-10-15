@@ -62,5 +62,9 @@
     "Static_if" : {
       "file" : "static_if.ml",
       "eval" : true
+    },
+    "Functor_collections" : {
+      "file" : "functor_set.ml",
+      "eval" : true 
     }
 }
