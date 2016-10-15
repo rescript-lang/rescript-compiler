@@ -35,6 +35,8 @@ _build
 *.lambda
 *.zip
 *.gz
+*.mlast
+*.mliast
 # special file
 
 .idea
@@ -77,3 +79,5 @@ ocaml_src
 #ninja
 .ninja_log
 .ninja_deps
+*.d
+.bsbuild

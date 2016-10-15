@@ -42,7 +42,23 @@ val split : ?keep_empty:bool -> string -> char -> string list
 
 val starts_with : string -> string -> bool
 
+(**
+   return [-1] when not found, the returned index is useful 
+   see [ends_with_then_chop]
+*)
+val ends_with_index : string -> string -> int
+
 val ends_with : string -> string -> bool
+
+(**
+   {[
+     ends_with_then_chop "a.cmj" ".cmj"
+     "a"
+   ]}
+   This is useful in controlled or file case sensitve system
+*)
+val ends_with_then_chop : string -> string -> string option
+
 
 val escaped : string -> string
 

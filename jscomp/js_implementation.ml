@@ -26,7 +26,18 @@ let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg;
   arg
 
+
+
 let after_parsing_sig ppf sourcefile outputprefix ast  =
+  if !Js_config.binary_ast then
+    begin 
+      Binary_ast.write_ast
+        Mli
+        ~fname:sourcefile
+        ~output:((Filename.chop_extension sourcefile) ^ ".mliast")
+        ast 
+
+    end;
   if !Js_config.syntax_only then () else 
     begin 
       if not @@ !Js_config.no_warn_unused_bs_attribute then 
@@ -60,8 +71,14 @@ let interface ppf sourcefile outputprefix =
   |> after_parsing_sig ppf sourcefile outputprefix 
 
 let after_parsing_impl ppf sourcefile outputprefix ast =
+  if !Js_config.binary_ast then
+      Binary_ast.write_ast ~fname:sourcefile 
+        Ml ~output:((Filename.chop_extension sourcefile) ^ ".mlast")
+        ast ;
+
   if !Js_config.syntax_only then () else 
     begin
+      
       if not @@ !Js_config.no_warn_unused_bs_attribute then 
         Bs_ast_invariant.emit_external_warnings.structure Bs_ast_invariant.emit_external_warnings ast ;
       if Js_config.get_diagnose () then

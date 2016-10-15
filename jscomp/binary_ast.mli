@@ -23,29 +23,45 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind 
+
+val read_ast : 'a kind -> string -> 'a 
+
+(**
+   The [.ml] file can be recognized as an ast directly, the format
+   is
+   {
+   magic number;
+   filename;
+   ast
+   }
+   when [fname] is "-" it means the file is from an standard input or pipe.
+   An empty name would marshallized.
+
+   Use case cat - | fan -printer -impl -
+   redirect the standard input to fan
+ *)
+val write_ast : fname:string -> output:string -> 'a kind -> 'a -> unit
 
 
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
 
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
 
-(** Some utilities for {!Array} operations *)
+val write_build_cache : string -> module_info String_map.t -> unit
 
-val reverse_in_place : 'a array -> unit
-
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
-
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
-
-val rfind_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> [ `No_split | `Split of 'a array * 'a array ]
+val read_build_cache : string -> module_info String_map.t

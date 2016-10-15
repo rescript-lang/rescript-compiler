@@ -67,6 +67,24 @@ var node_modules_length = 12;
 
 var package_json = "package.json";
 
+var suffix_cmj = ".cmj";
+
+var suffix_cmi = ".cmi";
+
+var suffix_ml = ".ml";
+
+var suffix_mlast = ".mlast";
+
+var suffix_mliast = ".mliast";
+
+var suffix_mll = ".mll";
+
+var suffix_d = ".d";
+
+var suffix_mlastd = ".mlast.d";
+
+var suffix_mliastd = ".mliast.d";
+
 exports.js_array_ctor       = js_array_ctor;
 exports.js_type_number      = js_type_number;
 exports.js_type_string      = js_type_string;
@@ -100,4 +118,13 @@ exports.bs_type             = bs_type;
 exports.node_modules        = node_modules;
 exports.node_modules_length = node_modules_length;
 exports.package_json        = package_json;
+exports.suffix_cmj          = suffix_cmj;
+exports.suffix_cmi          = suffix_cmi;
+exports.suffix_ml           = suffix_ml;
+exports.suffix_mlast        = suffix_mlast;
+exports.suffix_mliast       = suffix_mliast;
+exports.suffix_mll          = suffix_mll;
+exports.suffix_d            = suffix_d;
+exports.suffix_mlastd       = suffix_mlastd;
+exports.suffix_mliastd      = suffix_mliastd;
 /* No side effect */

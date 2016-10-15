@@ -150,7 +150,11 @@ let buckle_script_flags =
   ::
   ("-bs-list-conditionals",
    Arg.Unit list_variables,
-   " List existing conditional variables"
+   " List existing conditional variables")
+  ::
+  (
+    "-bs-binary-ast", Arg.Set Js_config.binary_ast,
+    " generate binary .mli_ast and ml_ast"
   )
   ::
   ("-bs-syntax-only", 

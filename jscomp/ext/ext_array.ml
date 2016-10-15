@@ -98,3 +98,30 @@ let to_list_map f a =
          | Some v -> v :: res
          | None -> res) in
   tolist (Array.length a - 1) []
+
+(**
+{[
+# rfind_with_index [|1;2;3|] (=) 2;;
+- : int = 1
+# rfind_with_index [|1;2;3|] (=) 1;;
+- : int = 0
+# rfind_with_index [|1;2;3|] (=) 3;;
+- : int = 2
+# rfind_with_index [|1;2;3|] (=) 4;;
+- : int = -1
+]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+let rfind_and_split arr cmp v = 
+  let i = rfind_with_index arr cmp v in 
+  if  i < 0 then 
+    `No_split 
+  else 
+    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))

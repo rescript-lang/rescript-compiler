@@ -236,3 +236,4 @@ let is_windows =
   | _ -> false
 
 let syntax_only = ref false
+let binary_ast = ref false

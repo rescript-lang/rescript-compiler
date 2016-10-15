@@ -9,5 +9,7 @@ jsoo_main.cmo
 bspp_main.cmo
 js_generate_require.cmo
 js_pack.cmo
-bsdep_main.cmo
 js_cmi_datasets.cmo
+bsbuild_main.cmo
+sexp_lexer.cmo
+sexp_eval.cmo

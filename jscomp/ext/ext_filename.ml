@@ -217,4 +217,8 @@ let module_name_of_file file =
     String.capitalize 
       (Filename.chop_extension @@ Filename.basename file)  
 
-
+(** For win32 or case insensitve OS 
+    [".cmj"] is the same as [".CMJ"]
+  *)
+(* let has_exact_suffix_then_chop fname suf =  *)
+  
