@@ -64465,19 +64465,21 @@ let generate_label ?(name="") ()  =
 
 let log_counter = ref 0
 
+
 let dump env ext  lam = 
     
-  if (* (not (Js_config.is_browser ())) *)
-  (* && *)
-  Js_config.is_same_file ()
-  then
-    incr log_counter;
-    Lam_print.seriaize env 
-      (Ext_filename.chop_extension 
-         ~loc:__LOC__ 
-         (Js_config.get_current_file ()) ^ 
-       (Printf.sprintf ".%02d%s.lam" !log_counter ext)
-      ) lam;
+  if Js_config.is_same_file ()
+  then 
+    (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
+    begin 
+      incr log_counter;
+      Lam_print.seriaize env 
+        (Ext_filename.chop_extension 
+           ~loc:__LOC__ 
+           (Js_config.get_current_file ()) ^ 
+         (Printf.sprintf ".%02d%s.lam" !log_counter ext)
+        ) lam;
+    end;
   lam
 
 

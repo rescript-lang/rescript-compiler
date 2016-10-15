@@ -72,7 +72,6 @@ let string_of_module_id
     (module_system : Lam_module_ident.system)
     (x : Lam_module_ident.t) : string =
 #if BS_COMPILER_IN_BROWSER then   
-  (* if Js_config.is_browser () then *)
     match x.kind with
     | Runtime | Ml -> 
       "stdlib" // String.uncapitalize x.id.name

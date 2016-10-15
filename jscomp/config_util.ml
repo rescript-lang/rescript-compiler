@@ -47,11 +47,8 @@ let find_cmj file =
   | exception Not_found -> 
     (* ONLY read the stored cmj data in browser environment *)
 #if BS_COMPILER_IN_BROWSER then     
-    (* if Js_config.is_browser () then      *)
       let target = String.uncapitalize (Filename.basename file) in
-      match 
-        String_map.find  target
-          Js_cmj_datasets.data_sets with 
+      match String_map.find  target Js_cmj_datasets.data_sets with 
       | v
         -> 
         begin match Lazy.force v with
