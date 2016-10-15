@@ -1192,8 +1192,8 @@ type packages_info =
 val cmj_ext : string 
 
 
-val is_browser : unit -> bool 
-val set_browser : unit -> unit
+(* val is_browser : unit -> bool  *)
+(* val set_browser : unit -> unit *)
 
 
 val get_ext : unit -> string
@@ -1350,7 +1350,7 @@ end = struct
 
 
 type env =
-  | Browser
+  (* | Browser *)
   (* "browser-internal" used internal *)
   | NodeJS
   | AmdJS

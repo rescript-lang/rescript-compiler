@@ -70,13 +70,14 @@ let (//) = Filename.concat
 
 let string_of_module_id 
     (module_system : Lam_module_ident.system)
-    (x : Lam_module_ident.t) : string =           
-  if Js_config.is_browser () then
+    (x : Lam_module_ident.t) : string =
+#if BS_COMPILER_IN_BROWSER then   
+  (* if Js_config.is_browser () then *)
     match x.kind with
     | Runtime | Ml -> 
       "stdlib" // String.uncapitalize x.id.name
     | External name -> name
-  else
+#else
     let result = 
       match x.kind  with 
       | Runtime  
@@ -148,7 +149,7 @@ let string_of_module_id
       | External name -> name in 
     if Js_config.is_windows then Ext_filename.replace_backward_slash result 
     else result 
-
+#end
 
 
 (* support es6 modules instead

@@ -306,11 +306,14 @@ let generate_label ?(name="") ()  =
 let log_counter = ref 0
 
 let dump env ext  lam = 
-  incr log_counter ; 
-  if (not (Js_config.is_browser ()))
-  (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
-  && Js_config.is_same_file ()
-  then 
+#if BS_COMPILER_IN_BROWSER then
+    ()
+#else    
+  if (* (not (Js_config.is_browser ())) *)
+  (* && *)
+  Js_config.is_same_file ()
+  then
+    incr log_counter;
     Lam_print.seriaize env 
       (Ext_filename.chop_extension 
          ~loc:__LOC__ 
@@ -318,8 +321,7 @@ let dump env ext  lam =
        (Printf.sprintf ".%02d%s.lam" !log_counter ext)
       ) lam;
   lam
-
-
+#end
 
 let ident_set_of_list ls = 
   List.fold_left

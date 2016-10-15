@@ -29,12 +29,13 @@
 
 let log_counter = ref 0 
 
-let dump name (prog : J.program) = 
+let dump name (prog : J.program) =
+#if BS_COMPILER_IN_BROWSER then
+    ()
+#else    
   begin
     let () = 
-      if (not (Js_config.is_browser () ))
-      (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
-      && Js_config.is_same_file ()
+      if Js_config.is_same_file ()
       then 
         begin
           incr log_counter ; 
@@ -45,5 +46,5 @@ let dump name (prog : J.program) =
         end in
     prog    
   end
-
+#end
  
