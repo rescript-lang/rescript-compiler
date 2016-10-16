@@ -6,4 +6,4 @@ asciidoctor -a reproducible -D ../../docs/blog ./blog/index.adoc 2>> build.compi
 asciidoctor -a reproducible -a linkcss -a stylesheet!  -D ../../docs/ ./index.adoc 2>> build.compile
 echo "Finished" >> build.compile
 reload
-wkhtmltopdf ../../docs/Manual.html ../../docs/Manual.pdf &
+# wkhtmltopdf -B 20 -T 20 ../../docs/Manual.html ../../docs/Manual.pdf &
