@@ -1623,19 +1623,6 @@ let node_program f ( x : J.deps_program) =
          x.modules)
   in
   program f cxt x.program  
-  
-let browser_program f ( x : J.deps_program) = 
-  let cxt = 
-    requires 
-      L.require
-      Ext_pp_scope.empty
-      f
-      (List.map 
-         (fun x -> 
-            Lam_module_ident.id x, "./" ^ (String.uncapitalize x.id.name))
-         x.modules)
-  in
-  program f cxt x.program  
 
 
 let amd_program f 
@@ -1689,7 +1676,7 @@ let bs_header =
   " , PLEASE EDIT WITH CARE"
 
 let pp_deps_program 
-    (kind : [Lam_module_ident.system | `Browser])
+    (kind : Lam_module_ident.system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
     if not !Js_config.no_version_header then 
@@ -1702,8 +1689,8 @@ let pp_deps_program
     ignore (match kind with 
      | `AmdJS -> 
        amd_program f program
-     | `Browser ->
-        browser_program f program
+     (* | `Browser -> *)
+     (*    browser_program f program *)
      | `NodeJS -> 
        begin match Sys.getenv "OCAML_AMD_MODULE" with 
          | exception Not_found -> 

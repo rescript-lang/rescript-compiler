@@ -3625,7 +3625,6 @@ type package_info =
 type package_name  = string
 type packages_info =
   | Empty 
-  | Browser 
   | NonBrowser of (package_name * package_info  list)
 
 
@@ -3791,8 +3790,6 @@ end = struct
 
 
 type env =
-  (* | Browser *)
-  (* "browser-internal" used internal *)
   | NodeJS
   | AmdJS
   | Goog (* of string option *)
@@ -3808,7 +3805,6 @@ type package_info =
 type package_name  = string
 type packages_info =
   | Empty (* No set *)
-  | Browser
   | NonBrowser of (package_name * package_info  list)
 (** we don't force people to use package *)
 
@@ -3824,13 +3820,10 @@ let get_ext () = !ext
 
 let packages_info : packages_info ref = ref Empty
 
-let set_browser () =
-  packages_info :=  Browser
-let is_browser () = !packages_info = Browser
 
 let get_package_name () =
   match !packages_info with
-  | Empty | Browser -> None
+  | Empty  -> None
   | NonBrowser(n,_) -> Some n
 
 let no_version_header = ref false
@@ -3846,8 +3839,6 @@ let set_npm_package_path s =
   match !packages_info  with
   | Empty ->
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | Browser ->
-    Ext_pervasives.bad_argf "invalid options, already set to browser ";
   | NonBrowser(name,  envs) ->
     let env, path =
       match Ext_string.split ~keep_empty:false s ':' with
@@ -3891,8 +3882,6 @@ type info_query =
   | `NotFound ]
 let query_package_infos package_infos module_system =
   match package_infos with
-  | Browser ->
-    `Empty
   | Empty -> `Empty
   | NonBrowser (name, []) -> `Package_script name
   | NonBrowser (name, paths) ->
@@ -3910,7 +3899,7 @@ let get_current_package_name_and_path   module_system =
 *)
 let get_output_dir module_system filename =
   match !packages_info with
-  | Empty | Browser | NonBrowser (_, [])->
+  | Empty | NonBrowser (_, [])->
     if Filename.is_relative filename then
       Lazy.force Ext_filename.cwd //
       Filename.dirname filename
@@ -19613,10 +19602,10 @@ module Js_dump : sig
 
 
 val pp_deps_program : 
-  [Lam_module_ident.system | `Browser] -> J.deps_program -> Ext_pp.t -> unit
+  Lam_module_ident.system -> J.deps_program -> Ext_pp.t -> unit
 
 val dump_deps_program : 
-  [Lam_module_ident.system | `Browser] -> J.deps_program -> out_channel -> unit
+  Lam_module_ident.system  -> J.deps_program -> out_channel -> unit
 
 (** 2 functions Only used for debugging *)
 val string_of_block : J.block -> string
@@ -21252,19 +21241,6 @@ let node_program f ( x : J.deps_program) =
          x.modules)
   in
   program f cxt x.program  
-  
-let browser_program f ( x : J.deps_program) = 
-  let cxt = 
-    requires 
-      L.require
-      Ext_pp_scope.empty
-      f
-      (List.map 
-         (fun x -> 
-            Lam_module_ident.id x, "./" ^ (String.uncapitalize x.id.name))
-         x.modules)
-  in
-  program f cxt x.program  
 
 
 let amd_program f 
@@ -21318,7 +21294,7 @@ let bs_header =
   " , PLEASE EDIT WITH CARE"
 
 let pp_deps_program 
-    (kind : [Lam_module_ident.system | `Browser])
+    (kind : Lam_module_ident.system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
     if not !Js_config.no_version_header then 
@@ -21331,8 +21307,8 @@ let pp_deps_program
     ignore (match kind with 
      | `AmdJS -> 
        amd_program f program
-     | `Browser ->
-        browser_program f program
+     (* | `Browser -> *)
+     (*    browser_program f program *)
      | `NodeJS -> 
        begin match Sys.getenv "OCAML_AMD_MODULE" with 
          | exception Not_found -> 
@@ -33328,7 +33304,6 @@ let lambda_as_module
         ) ^  Js_config.get_ext() in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
-    | Browser -> ()
     | Empty 
     | NonBrowser (_, []) -> 
       (* script mode *)
@@ -33356,7 +33331,7 @@ let lambda_as_module
         in
         let output_chan chan  = 
           Js_dump.dump_deps_program 
-            (module_system :> [Js_config.module_system | `Browser])
+            module_system 
             lambda_output
             chan in
         (if !Js_config.dump_js then 

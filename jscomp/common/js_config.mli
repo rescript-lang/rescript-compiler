@@ -33,7 +33,6 @@ type package_info =
 type package_name  = string
 type packages_info =
   | Empty 
-  | Browser 
   | NonBrowser of (package_name * package_info  list)
 
 
