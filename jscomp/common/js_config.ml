@@ -29,8 +29,6 @@
 
 
 type env =
-  (* | Browser *)
-  (* "browser-internal" used internal *)
   | NodeJS
   | AmdJS
   | Goog (* of string option *)
@@ -46,7 +44,6 @@ type package_info =
 type package_name  = string
 type packages_info =
   | Empty (* No set *)
-  | Browser
   | NonBrowser of (package_name * package_info  list)
 (** we don't force people to use package *)
 
@@ -62,13 +59,10 @@ let get_ext () = !ext
 
 let packages_info : packages_info ref = ref Empty
 
-let set_browser () =
-  packages_info :=  Browser
-let is_browser () = !packages_info = Browser
 
 let get_package_name () =
   match !packages_info with
-  | Empty | Browser -> None
+  | Empty  -> None
   | NonBrowser(n,_) -> Some n
 
 let no_version_header = ref false
@@ -84,8 +78,6 @@ let set_npm_package_path s =
   match !packages_info  with
   | Empty ->
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | Browser ->
-    Ext_pervasives.bad_argf "invalid options, already set to browser ";
   | NonBrowser(name,  envs) ->
     let env, path =
       match Ext_string.split ~keep_empty:false s ':' with
@@ -129,8 +121,6 @@ type info_query =
   | `NotFound ]
 let query_package_infos package_infos module_system =
   match package_infos with
-  | Browser ->
-    `Empty
   | Empty -> `Empty
   | NonBrowser (name, []) -> `Package_script name
   | NonBrowser (name, paths) ->
@@ -148,7 +138,7 @@ let get_current_package_name_and_path   module_system =
 *)
 let get_output_dir module_system filename =
   match !packages_info with
-  | Empty | Browser | NonBrowser (_, [])->
+  | Empty | NonBrowser (_, [])->
     if Filename.is_relative filename then
       Lazy.force Ext_filename.cwd //
       Filename.dirname filename

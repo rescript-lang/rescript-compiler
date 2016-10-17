@@ -14,7 +14,7 @@ let rec sort ls =
     (x :: sort (List.filter (fun u -> u > x) xs))
 
 let () = 
-    [| 1;3 ; 2;4;5; 10; 23; 3|]
+    [| 1; 3 ; 2; 4; 5; 10; 23; 3|]
     |> Array.to_list 
     |> sort
     |> Array.of_list

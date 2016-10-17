@@ -441,7 +441,6 @@ let lambda_as_module
         ) ^  Js_config.get_ext() in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
-    | Browser -> ()
     | Empty 
     | NonBrowser (_, []) -> 
       (* script mode *)
@@ -469,7 +468,7 @@ let lambda_as_module
         in
         let output_chan chan  = 
           Js_dump.dump_deps_program 
-            (module_system :> [Js_config.module_system | `Browser])
+            module_system 
             lambda_output
             chan in
         (if !Js_config.dump_js then 
