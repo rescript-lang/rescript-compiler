@@ -46,5 +46,6 @@ val decorate_deps :
   string option ->
   J.program -> J.deps_program
 
-val string_of_module_id : 
+val string_of_module_id :
+  output_prefix:string ->
   Lam_module_ident.system -> Lam_module_ident.t -> string

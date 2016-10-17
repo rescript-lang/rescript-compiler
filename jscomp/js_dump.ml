@@ -1592,7 +1592,7 @@ let program f cxt   ( x : J.program ) =
   let () = P.force_newline f in
   exports cxt f x.exports
 
-let goog_program f goog_package (x : J.deps_program)  = 
+let goog_program ~output_prefix f goog_package (x : J.deps_program)  = 
   P.newline f ;
   P.string f L.goog_module;
   P.string f "(";
@@ -1606,12 +1606,14 @@ let goog_program f goog_package (x : J.deps_program)  =
       f 
       (List.map 
          (fun x -> 
-            Lam_module_ident.id x, Js_program_loader.string_of_module_id `Goog x)
+            Lam_module_ident.id x,
+            Js_program_loader.string_of_module_id
+              ~output_prefix `Goog x)
          x.modules) 
   in
   program f cxt x.program  
 
-let node_program f ( x : J.deps_program) = 
+let node_program ~output_prefix f ( x : J.deps_program) = 
   let cxt = 
     requires 
       L.require
@@ -1619,15 +1621,16 @@ let node_program f ( x : J.deps_program) =
       f
       (List.map 
          (fun x -> 
-            Lam_module_ident.id x, Js_program_loader.string_of_module_id `NodeJS x)
+            Lam_module_ident.id x,
+            Js_program_loader.string_of_module_id
+              ~output_prefix
+              `NodeJS x)
          x.modules)
   in
   program f cxt x.program  
 
 
-let amd_program f 
-    (  x : J.deps_program)
-  = 
+let amd_program ~output_prefix f (  x : J.deps_program) = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
@@ -1636,7 +1639,7 @@ let amd_program f
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = Js_program_loader.string_of_module_id `AmdJS x in
+      let s = Js_program_loader.string_of_module_id ~output_prefix `AmdJS x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -1675,7 +1678,8 @@ let bs_header =
   Js_config.version ^
   " , PLEASE EDIT WITH CARE"
 
-let pp_deps_program 
+let pp_deps_program
+    ~output_prefix
     (kind : Lam_module_ident.system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
@@ -1688,16 +1692,9 @@ let pp_deps_program
     P.newline f ;    
     ignore (match kind with 
      | `AmdJS -> 
-       amd_program f program
-     (* | `Browser -> *)
-     (*    browser_program f program *)
+       amd_program ~output_prefix f program
      | `NodeJS -> 
-       begin match Sys.getenv "OCAML_AMD_MODULE" with 
-         | exception Not_found -> 
-           node_program f program
-           (* amd_program f program *)
-         | _ -> amd_program f program
-       end 
+       node_program ~output_prefix f program
      | `Goog  -> 
        let goog_package = 
          let v = Js_config.get_module_name () in
@@ -1706,7 +1703,7 @@ let pp_deps_program
            -> v 
          | Some x -> x ^ "." ^ v 
        in 
-       goog_program f goog_package  program
+       goog_program ~output_prefix f goog_package  program
       ) ;
     P.newline f ;
     P.string f (
@@ -1720,11 +1717,12 @@ let pp_deps_program
 let dump_program (x : J.program) oc = 
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
-let dump_deps_program 
+let dump_deps_program
+    ~output_prefix
     kind
     x 
     (oc : out_channel) = 
-  pp_deps_program kind x (P.from_channel oc)
+  pp_deps_program ~output_prefix  kind x (P.from_channel oc)
 
 let string_of_block  block  
   = 

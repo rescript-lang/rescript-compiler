@@ -452,7 +452,7 @@ let lambda_as_module
            Filename.dirname filename) // basename         
       in 
       let output_chan chan =         
-        Js_dump.dump_deps_program `NodeJS lambda_output chan in
+        Js_dump.dump_deps_program output_prefix `NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
@@ -467,12 +467,12 @@ let lambda_as_module
           basename 
         in
         let output_chan chan  = 
-          Js_dump.dump_deps_program 
+          Js_dump.dump_deps_program ~output_prefix
             module_system 
             lambda_output
             chan in
         (if !Js_config.dump_js then 
-          output_chan stdout);
+          output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan output_filename output_chan
             
