@@ -6,6 +6,8 @@
 === 1.2.1 + dev
 
 * Features
+- add `-bs-assume-no-mli`, `-bs-no-implicit-include` {issues}/861[#861]
+  it's for deterministic build
 - add `-bs-D` `-bs-list-conditionals` flags {issues}/851[#851]
 - add `-bs-syntax-only`
 - add `-bs-binary-ast` {issues}/854[#854]
