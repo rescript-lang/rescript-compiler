@@ -5710,6 +5710,11 @@ val keep_locs : bool ref
 val unsafe_string : bool ref
 val opaque : bool ref
 
+ 
+val no_implicit_current_dir : bool ref
+val assume_no_mli : bool ref 
+
+
 end = struct
 #1 "clflags.ml"
 (***********************************************************************)
@@ -5827,6 +5832,11 @@ let runtime_variant = ref "";;      (* -runtime-variant *)
 let keep_docs = ref false              (* -keep-docs *)
 let keep_locs = ref false              (* -keep-locs *)
 let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+ 
+let no_implicit_current_dir = ref false
+let assume_no_mli = ref false 
+
 
 end
 module Syntaxerr : sig 
@@ -53770,7 +53780,9 @@ let type_implementation_more sourcefile outputprefix modulename initial_env ast 
   end else begin
     let sourceintf =
       Misc.chop_extension_if_any sourcefile ^ !Config.interface_suffix in
-    if Sys.file_exists sourceintf then begin
+ 
+    if not !Clflags.assume_no_mli && Sys.file_exists sourceintf then begin
+
       let intf_file =
         try
           find_in_path_uncap !Config.load_path (modulename ^ ".cmi")
@@ -53867,7 +53879,9 @@ let package_units initial_env objfiles cmifile modulename =
   (* See if explicit interface is provided *)
   let prefix = chop_extension_if_any cmifile in
   let mlifile = prefix ^ !Config.interface_suffix in
-  if Sys.file_exists mlifile then begin
+
+  if not !Clflags.assume_no_mli && Sys.file_exists mlifile then begin 
+
     if not (Sys.file_exists cmifile) then begin
       raise(Error(Location.in_file mlifile, Env.empty,
                   Interface_not_compiled mlifile))
@@ -54043,8 +54057,13 @@ let init_path native =
   in
   let exp_dirs =
     List.map (Misc.expand_directory Config.standard_library) dirs in
-  Config.load_path := "" ::
-      List.rev_append exp_dirs (Clflags.std_include_dir ());
+ 
+    Config.load_path :=
+      (if !Clflags.no_implicit_current_dir then 
+         List.rev_append exp_dirs (Clflags.std_include_dir ())
+       else 
+         "" :: List.rev_append exp_dirs (Clflags.std_include_dir ()));
+
   Env.reset_cache ()
 
 (* Return the initial environment in which compilation proceeds. *)
@@ -98676,6 +98695,12 @@ let define_variable s =
   | _ -> raise (Arg.Bad ("illegal definition" ^ s))
   
 let buckle_script_flags =
+  ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
+  , " Don't include current dir implicitly")
+  ::
+  ("-bs-assume-no-mli", Arg.Set Clflags.assume_no_mli,
+  " Don't lookup whether mli exist or not")
+  ::
   ("-bs-D", Arg.String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"
   )

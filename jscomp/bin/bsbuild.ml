@@ -1402,6 +1402,11 @@ val keep_locs : bool ref
 val unsafe_string : bool ref
 val opaque : bool ref
 
+ 
+val no_implicit_current_dir : bool ref
+val assume_no_mli : bool ref 
+
+
 end = struct
 #1 "clflags.ml"
 (***********************************************************************)
@@ -1519,6 +1524,11 @@ let runtime_variant = ref "";;      (* -runtime-variant *)
 let keep_docs = ref false              (* -keep-docs *)
 let keep_locs = ref false              (* -keep-locs *)
 let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+ 
+let no_implicit_current_dir = ref false
+let assume_no_mli = ref false 
+
 
 end
 (** Interface as module  *)

@@ -144,6 +144,12 @@ let define_variable s =
   | _ -> raise (Arg.Bad ("illegal definition" ^ s))
   
 let buckle_script_flags =
+  ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
+  , " Don't include current dir implicitly")
+  ::
+  ("-bs-assume-no-mli", Arg.Set Clflags.assume_no_mli,
+  " Don't lookup whether mli exist or not")
+  ::
   ("-bs-D", Arg.String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"
   )
