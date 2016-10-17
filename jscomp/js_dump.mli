@@ -26,10 +26,12 @@
 
 
 
-val pp_deps_program : 
+val pp_deps_program :
+  output_prefix:string ->
   Lam_module_ident.system -> J.deps_program -> Ext_pp.t -> unit
 
-val dump_deps_program : 
+val dump_deps_program :
+  output_prefix:string ->
   Lam_module_ident.system  -> J.deps_program -> out_channel -> unit
 
 (** 2 functions Only used for debugging *)
