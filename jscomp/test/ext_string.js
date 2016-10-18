@@ -8,6 +8,7 @@ var Curry                   = require("../../lib/js/curry");
 var Ext_bytes               = require("./ext_bytes");
 var $$String                = require("../../lib/js/string");
 var Caml_string             = require("../../lib/js/caml_string");
+var List                    = require("../../lib/js/list");
 
 function split_by($staropt$star, is_delim, str) {
   var keep_empty = $staropt$star ? $staropt$star[0] : /* false */0;
@@ -350,22 +351,46 @@ function equal(x, y) {
   return +(x === y);
 }
 
-exports.split_by               = split_by;
-exports.trim                   = trim;
-exports.split                  = split;
-exports.starts_with            = starts_with;
-exports.ends_with_index        = ends_with_index;
-exports.ends_with              = ends_with;
-exports.ends_with_then_chop    = ends_with_then_chop;
-exports.escaped                = escaped;
-exports.for_all                = for_all;
-exports.is_empty               = is_empty;
-exports.repeat                 = repeat;
-exports._is_sub                = _is_sub;
-exports.find                   = find;
-exports.rfind                  = rfind;
-exports.tail_from              = tail_from;
-exports.digits_of_str          = digits_of_str;
-exports.starts_with_and_number = starts_with_and_number;
-exports.equal                  = equal;
+function unsafe_concat_with_length(len, sep, l) {
+  if (l) {
+    var hd = l[0];
+    var r = Caml_string.caml_create_string(len);
+    var hd_len = hd.length;
+    var sep_len = sep.length;
+    Caml_string.caml_blit_string(hd, 0, r, 0, hd_len);
+    var pos = [hd_len];
+    List.iter(function (s) {
+          var s_len = s.length;
+          Caml_string.caml_blit_string(sep, 0, r, pos[0], sep_len);
+          pos[0] = pos[0] + sep_len | 0;
+          Caml_string.caml_blit_string(s, 0, r, pos[0], s_len);
+          pos[0] = pos[0] + s_len | 0;
+          return /* () */0;
+        }, l[1]);
+    return Caml_string.bytes_to_string(r);
+  }
+  else {
+    return "";
+  }
+}
+
+exports.split_by                  = split_by;
+exports.trim                      = trim;
+exports.split                     = split;
+exports.starts_with               = starts_with;
+exports.ends_with_index           = ends_with_index;
+exports.ends_with                 = ends_with;
+exports.ends_with_then_chop       = ends_with_then_chop;
+exports.escaped                   = escaped;
+exports.for_all                   = for_all;
+exports.is_empty                  = is_empty;
+exports.repeat                    = repeat;
+exports._is_sub                   = _is_sub;
+exports.find                      = find;
+exports.rfind                     = rfind;
+exports.tail_from                 = tail_from;
+exports.digits_of_str             = digits_of_str;
+exports.starts_with_and_number    = starts_with_and_number;
+exports.equal                     = equal;
+exports.unsafe_concat_with_length = unsafe_concat_with_length;
 /* No side effect */

@@ -1,3 +1,4 @@
+
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22,30 +23,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
 
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
 
+val write_build_cache : string -> module_info String_map.t -> unit
 
+val read_build_cache : string -> module_info String_map.t
 
-
-
-
-(** A module to create the whole JS program IR with [requires] and [exports] *)
-
-(* TODO: 
-   1. support es6 modle
-   2. make sure exported have its origin name, 
-      this makes it easier to read code 
- *)
-
-val make_program : 
-    string -> 
-    Ident.t list -> J.block -> J.program
-
-val decorate_deps : 
-  J.required_modules ->
-  string option ->
-  J.program -> J.deps_program
-
-val string_of_module_id :
-  output_prefix:string ->
-  Lam_module_ident.system -> Lam_module_ident.t -> string
+val bsbuild_cache : string

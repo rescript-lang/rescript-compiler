@@ -79,3 +79,5 @@ val tail_from : string -> int -> string
 val digits_of_str : string -> offset:int -> int -> int
 
 val starts_with_and_number : string -> offset:int -> string -> int
+
+val unsafe_concat_with_length : int -> string -> string list -> string

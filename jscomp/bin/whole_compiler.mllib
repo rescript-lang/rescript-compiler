@@ -21,8 +21,7 @@ common/js_config
 common/bs_exception
 ../ocaml/driver/compenv
 ext/ext_sys
-ext/string_map
-./binary_ast
+depends/binary_ast
 syntax/bs_ast_iterator
 common/bs_warnings
 syntax/bs_ast_invariant
@@ -74,6 +73,7 @@ ext/ident_set
 ./j
 ./ocaml_stdlib_slots
 ./lam
+ext/string_map
 ./js_cmj_format
 ext/ext_pp
 ext/int_map
@@ -176,7 +176,8 @@ syntax/ppx_entry
 ../ocaml/parsing/printast
 ../ocaml/typing/printtyped
 ./js_implementation
-depends/depend
+depends/binary_cache
+../ocaml/parsing/depend
 depends/ast_extract
 ./ocaml_batch_compile
 ./ocaml_options

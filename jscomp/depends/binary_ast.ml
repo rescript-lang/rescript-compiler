@@ -1,3 +1,4 @@
+
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -27,41 +28,33 @@ type _ kind =
   | Ml : Parsetree.structure kind 
   | Mli : Parsetree.signature kind 
 
-val read_ast : 'a kind -> string -> 'a 
 
-(**
-   The [.ml] file can be recognized as an ast directly, the format
-   is
-   {
-   magic number;
-   filename;
-   ast
-   }
-   when [fname] is "-" it means the file is from an standard input or pipe.
-   An empty name would marshallized.
+let read_ast (type t ) (kind : t kind) fn : t  =
+  let magic =
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in 
+  let ic = open_in_bin fn in
+  try
+    let buffer = really_input_string ic (String.length magic) in
+    assert(buffer = magic); (* already checked by apply_rewriter *)
+    Location.input_name := input_value ic;
+    let ast = input_value ic in
+    close_in ic;
+    ast
+  with exn ->
+    close_in ic;
+    raise exn
 
-   Use case cat - | fan -printer -impl -
-   redirect the standard input to fan
- *)
-val write_ast : fname:string -> output:string -> 'a kind -> 'a -> unit
 
+let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : unit =
+  let magic = 
+    match kind with 
+    | Ml -> Config.ast_impl_magic_number
+    | Mli -> Config.ast_intf_magic_number in
+  let oc = open_out output in 
+  output_string oc magic ;
+  output_value oc fname;
+  output_value oc pt;
+  close_out oc 
 
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-val write_build_cache : string -> module_info String_map.t -> unit
-
-val read_build_cache : string -> module_info String_map.t

@@ -15,7 +15,7 @@ bspp.exe:  bspp.mli bspp.ml
 bsdep.exe: config_bsdep.mli config_bsdep.ml bsdep.mli bsdep.ml
 	$(NATIVE) -g -inline 1000 -linkall -w -a $^ -o $@
 
-bsbuild.exe: config_bsdep.mli config_bsdep.ml bsbuild.mli bsbuild.ml
+bsbuild.exe:  bsbuild.mli bsbuild.ml
 	$(NATIVE) -g -inline 1000  -linkall unix.cmxa -w -a $^ -o $@
 
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml

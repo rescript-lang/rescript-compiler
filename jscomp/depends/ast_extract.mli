@@ -95,3 +95,6 @@ val build_lazy_queue :
   (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
   (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
   (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
+
+val handle_depfile : 
+  string option -> string -> unit

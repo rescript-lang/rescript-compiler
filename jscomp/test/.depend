@@ -1,5 +1,5 @@
 a_recursive_type.cmi :
-abstract_type.cmi :
+abstract_type.cmi : mt.cmi
 ari_regress_test.cmi :
 array_test.cmi :
 basic_module_test.cmi :
@@ -53,6 +53,8 @@ abstract_type.cmj : abstract_type.cmi
 abstract_type.cmx : abstract_type.cmi
 and_or_tailcall_test.cmj : mt.cmi
 and_or_tailcall_test.cmx : mt.cmx
+app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
+app_root_finder.cmx : ../others/node.cmx ../runtime/js.cmx
 ari_regress_test.cmj : mt.cmi ari_regress_test.cmi
 ari_regress_test.cmx : mt.cmx ari_regress_test.cmi
 arith_lexer.cmj : ../stdlib/lexing.cmi arith_syntax.cmj arith_parser.cmj
@@ -227,10 +229,10 @@ ext_pervasives.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/obj.cmx ../stdlib/list.cmx ../stdlib/int32.cmx \
     ../stdlib/format.cmx ../stdlib/char.cmx ../stdlib/array.cmx \
     ../stdlib/arg.cmx ext_pervasives.cmi
-ext_string.cmj : ../stdlib/string.cmi ext_bytes.cmj ../stdlib/char.cmi \
-    ../stdlib/bytes.cmi
-ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/char.cmx \
-    ../stdlib/bytes.cmx
+ext_string.cmj : ../stdlib/string.cmi ../stdlib/list.cmi ext_bytes.cmj \
+    ../stdlib/char.cmi ../stdlib/bytes.cmi
+ext_string.cmx : ../stdlib/string.cmx ../stdlib/list.cmx ext_bytes.cmx \
+    ../stdlib/char.cmx ../stdlib/bytes.cmx
 ext_sys.cmj : ../stdlib/sys.cmi ext_sys.cmi
 ext_sys.cmx : ../stdlib/sys.cmx ext_sys.cmi
 extensible_variant_test.cmj : mt.cmi
@@ -345,8 +347,10 @@ inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
 inline_string_test.cmj : ../runtime/js.cmj
 inline_string_test.cmx : ../runtime/js.cmx
-installation_test.cmj : ../others/node.cmj mt.cmi ../runtime/js.cmj
-installation_test.cmx : ../others/node.cmx mt.cmx ../runtime/js.cmx
+installation_test.cmj : ../others/node.cmj mt.cmi ../runtime/js.cmj \
+    app_root_finder.cmj
+installation_test.cmx : ../others/node.cmx mt.cmx ../runtime/js.cmx \
+    app_root_finder.cmx
 int32_test.cmj : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
     ext_array.cmj ../stdlib/array.cmi
 int32_test.cmx : mt.cmx ../stdlib/int32.cmx ../stdlib/format.cmx \
@@ -915,6 +919,8 @@ abstract_type.cmo : abstract_type.cmi
 abstract_type.cmj : abstract_type.cmi
 and_or_tailcall_test.cmo : mt.cmi
 and_or_tailcall_test.cmj : mt.cmj
+app_root_finder.cmo : ../others/node.cmo ../runtime/js.cmo
+app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
 ari_regress_test.cmo : mt.cmi ari_regress_test.cmi
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
 arith_lexer.cmo : ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo
@@ -1089,10 +1095,10 @@ ext_pervasives.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/obj.cmj ../stdlib/list.cmj ../stdlib/int32.cmj \
     ../stdlib/format.cmj ../stdlib/char.cmj ../stdlib/array.cmj \
     ../stdlib/arg.cmj ext_pervasives.cmi
-ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/char.cmi \
-    ../stdlib/bytes.cmi
-ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/char.cmj \
-    ../stdlib/bytes.cmj
+ext_string.cmo : ../stdlib/string.cmi ../stdlib/list.cmi ext_bytes.cmo \
+    ../stdlib/char.cmi ../stdlib/bytes.cmi
+ext_string.cmj : ../stdlib/string.cmj ../stdlib/list.cmj ext_bytes.cmj \
+    ../stdlib/char.cmj ../stdlib/bytes.cmj
 ext_sys.cmo : ../stdlib/sys.cmi ext_sys.cmi
 ext_sys.cmj : ../stdlib/sys.cmj ext_sys.cmi
 extensible_variant_test.cmo : mt.cmi
@@ -1207,8 +1213,10 @@ inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
 inline_string_test.cmo : ../runtime/js.cmo
 inline_string_test.cmj : ../runtime/js.cmj
-installation_test.cmo : ../others/node.cmo mt.cmi ../runtime/js.cmo
-installation_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj
+installation_test.cmo : ../others/node.cmo mt.cmi ../runtime/js.cmo \
+    app_root_finder.cmo
+installation_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
+    app_root_finder.cmj
 int32_test.cmo : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
     ext_array.cmo ../stdlib/array.cmi
 int32_test.cmj : mt.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \

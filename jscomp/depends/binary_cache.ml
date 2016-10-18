@@ -24,40 +24,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind 
-
-
-let read_ast (type t ) (kind : t kind) fn : t  =
-  let magic =
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in 
-  let ic = open_in_bin fn in
-  try
-    let buffer = really_input_string ic (String.length magic) in
-    assert(buffer = magic); (* already checked by apply_rewriter *)
-    Location.input_name := input_value ic;
-    let ast = input_value ic in
-    close_in ic;
-    ast
-  with exn ->
-    close_in ic;
-    raise exn
-
-
-let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : unit =
-  let magic = 
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in
-  let oc = open_out output in 
-  output_string oc magic ;
-  output_value oc fname;
-  output_value oc pt;
-  close_out oc 
-
 type ml_kind =
   | Ml of string 
   | Re of string 
@@ -89,3 +55,6 @@ let read_build_cache bsbuild : module_info String_map.t =
   let data : module_info String_map.t = input_value ic in 
   close_in ic ;
   data 
+
+
+let bsbuild_cache = ".bsbuild"

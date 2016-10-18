@@ -39,7 +39,7 @@
      *  }
 *)
 let () = 
-  (* Js_config.set_browser (); *)
+  Clflags.assume_no_mli := true;
   Bs_conditional_initial.setup_env ();
   Clflags.dont_write_files := true;
   Clflags.unsafe_string := false
@@ -65,7 +65,9 @@ let implementation impl no_export ppf  str  =
   |>  Translmod.transl_implementation modulename
   |> (* Printlambda.lambda ppf *) (fun lam -> 
       let buffer = Buffer.create 1000 in 
-      let () = Js_dump.(pp_deps_program `NodeJS
+      let () = Js_dump.(pp_deps_program
+                          ~output_prefix:"" (* does not matter here *)
+                          `NodeJS
                           (Lam_compile_group.compile ~filename:"" "" no_export
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in

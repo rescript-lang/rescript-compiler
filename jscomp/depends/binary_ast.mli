@@ -22,30 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind 
 
+val read_ast : 'a kind -> string -> 'a 
 
+(**
+   The [.ml] file can be recognized as an ast directly, the format
+   is
+   {
+   magic number;
+   filename;
+   ast
+   }
+   when [fname] is "-" it means the file is from an standard input or pipe.
+   An empty name would marshallized.
 
-
-
-
-
-(** A module to create the whole JS program IR with [requires] and [exports] *)
-
-(* TODO: 
-   1. support es6 modle
-   2. make sure exported have its origin name, 
-      this makes it easier to read code 
+   Use case cat - | fan -printer -impl -
+   redirect the standard input to fan
  *)
+val write_ast : fname:string -> output:string -> 'a kind -> 'a -> unit
 
-val make_program : 
-    string -> 
-    Ident.t list -> J.block -> J.program
-
-val decorate_deps : 
-  J.required_modules ->
-  string option ->
-  J.program -> J.deps_program
-
-val string_of_module_id :
-  output_prefix:string ->
-  Lam_module_ident.system -> Lam_module_ident.t -> string

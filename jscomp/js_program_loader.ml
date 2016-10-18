@@ -68,7 +68,7 @@ module S = Js_stmt_make
 
 let (//) = Filename.concat 
 
-let string_of_module_id 
+let string_of_module_id ~output_prefix
     (module_system : Lam_module_ident.system)
     (x : Lam_module_ident.t) : string =
 #if BS_COMPILER_IN_BROWSER then   
@@ -85,7 +85,7 @@ let string_of_module_id
         let file = Printf.sprintf "%s.js" id.name in
         let modulename = String.uncapitalize id.name in
         let current_unit_dir =
-          (`Dir (Js_config.get_output_dir module_system !Location.input_name)) in
+          `Dir (Js_config.get_output_dir module_system output_prefix) in
         let rebase dep =
           Ext_filename.node_relative_path  current_unit_dir dep 
         in 
