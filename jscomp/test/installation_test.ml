@@ -9,26 +9,29 @@ let eq loc x y =
 
 
 let _ : _ Js.undefined = 
-  Js.Undefined.bind [%node __dirname] (fun [@bs] p -> 
+  Js.Undefined.bind [%node __dirname] (fun [@bs] p ->
+      let root = App_root_finder.find_package_json p in
       let bsc_exe = 
         Node.Path.join 
-          [| p ;  ".."; "bin"; "bsc.exe" |] in 
-      let output = 
-        Node.Child_process.execSync 
-          (bsc_exe ^ " -where ") 
-          (Node.Child_process.option  ~encoding:"utf8" ()) in 
-      let dir = Js.String.trim output in 
-      let files = Node.Fs.readdirSync dir  in
-      let exists = 
-        files 
-        |> Js.Array.indexOf "pervasives.cmi" in 
-      let non_exists = 
-        files 
-        |> Js.Array.indexOf "pervasive.cmi" in 
-      let v = (exists >= 0 && non_exists < 0) in
-      Js.log v;
-      eq __LOC__  v true
+          [| root ; "jscomp";  "bin"; "bsc.exe" |] in 
 
+      match Node.Child_process.execSync 
+              (bsc_exe ^ " -where ") 
+              (Node.Child_process.option  ~encoding:"utf8" ()) with 
+      | output -> 
+        let dir = Js.String.trim output in 
+        let files = Node.Fs.readdirSync dir  in
+        let exists = 
+          files 
+          |> Js.Array.indexOf "pervasives.cmi" in 
+        let non_exists = 
+          files 
+          |> Js.Array.indexOf "pervasive.cmi" in 
+        let v = (exists >= 0 && non_exists < 0) in
+        Js.log v;
+        eq __LOC__  v true
+      | exception e -> 
+        assert false
     )
 
 let () = 

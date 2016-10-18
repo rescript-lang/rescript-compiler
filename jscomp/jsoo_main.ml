@@ -39,7 +39,7 @@
      *  }
 *)
 let () = 
-  (* Js_config.set_browser (); *)
+  Clflags.assume_no_mli := true;
   Bs_conditional_initial.setup_env ();
   Clflags.dont_write_files := true;
   Clflags.unsafe_string := false

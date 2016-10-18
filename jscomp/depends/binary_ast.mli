@@ -22,62 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type _ kind = 
+  | Ml : Parsetree.structure kind 
+  | Mli : Parsetree.signature kind 
 
-
-
-
-
-
-
-(** Extension to the standard library [String] module, avoid locale sensitivity *) 
-
-
-val trim : string -> string 
-
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
-
-val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
-
-val starts_with : string -> string -> bool
+val read_ast : 'a kind -> string -> 'a 
 
 (**
-   return [-1] when not found, the returned index is useful 
-   see [ends_with_then_chop]
-*)
-val ends_with_index : string -> string -> int
+   The [.ml] file can be recognized as an ast directly, the format
+   is
+   {
+   magic number;
+   filename;
+   ast
+   }
+   when [fname] is "-" it means the file is from an standard input or pipe.
+   An empty name would marshallized.
 
-val ends_with : string -> string -> bool
+   Use case cat - | fan -printer -impl -
+   redirect the standard input to fan
+ *)
+val write_ast : fname:string -> output:string -> 'a kind -> 'a -> unit
 
-(**
-   {[
-     ends_with_then_chop "a.cmj" ".cmj"
-     "a"
-   ]}
-   This is useful in controlled or file case sensitve system
-*)
-val ends_with_then_chop : string -> string -> string option
-
-
-val escaped : string -> string
-
-val for_all : (char -> bool) -> string -> bool
-
-val is_empty : string -> bool
-
-val repeat : int -> string -> string 
-
-val equal : string -> string -> bool
-
-val find : ?start:int -> sub:string -> string -> int
-
-val rfind : sub:string -> string -> int
-
-val tail_from : string -> int -> string
-
-val digits_of_str : string -> offset:int -> int -> int
-
-val starts_with_and_number : string -> offset:int -> string -> int
-
-val unsafe_concat_with_length : int -> string -> string list -> string

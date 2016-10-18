@@ -5710,6 +5710,11 @@ val keep_locs : bool ref
 val unsafe_string : bool ref
 val opaque : bool ref
 
+ 
+val no_implicit_current_dir : bool ref
+val assume_no_mli : bool ref 
+
+
 end = struct
 #1 "clflags.ml"
 (***********************************************************************)
@@ -5827,6 +5832,11 @@ let runtime_variant = ref "";;      (* -runtime-variant *)
 let keep_docs = ref false              (* -keep-docs *)
 let keep_locs = ref false              (* -keep-locs *)
 let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+ 
+let no_implicit_current_dir = ref false
+let assume_no_mli = ref false 
+
 
 end
 module Syntaxerr : sig 
@@ -52532,7 +52542,9 @@ let type_implementation_more sourcefile outputprefix modulename initial_env ast 
   end else begin
     let sourceintf =
       Misc.chop_extension_if_any sourcefile ^ !Config.interface_suffix in
-    if Sys.file_exists sourceintf then begin
+ 
+    if not !Clflags.assume_no_mli && Sys.file_exists sourceintf then begin
+
       let intf_file =
         try
           find_in_path_uncap !Config.load_path (modulename ^ ".cmi")
@@ -52629,7 +52641,9 @@ let package_units initial_env objfiles cmifile modulename =
   (* See if explicit interface is provided *)
   let prefix = chop_extension_if_any cmifile in
   let mlifile = prefix ^ !Config.interface_suffix in
-  if Sys.file_exists mlifile then begin
+
+  if not !Clflags.assume_no_mli && Sys.file_exists mlifile then begin 
+
     if not (Sys.file_exists cmifile) then begin
       raise(Error(Location.in_file mlifile, Env.empty,
                   Interface_not_compiled mlifile))
@@ -52805,8 +52819,13 @@ let init_path native =
   in
   let exp_dirs =
     List.map (Misc.expand_directory Config.standard_library) dirs in
-  Config.load_path := "" ::
-      List.rev_append exp_dirs (Clflags.std_include_dir ());
+ 
+    Config.load_path :=
+      (if !Clflags.no_implicit_current_dir then 
+         List.rev_append exp_dirs (Clflags.std_include_dir ())
+       else 
+         "" :: List.rev_append exp_dirs (Clflags.std_include_dir ()));
+
   Env.reset_cache ()
 
 (* Return the initial environment in which compilation proceeds. *)
@@ -63517,7 +63536,8 @@ val decorate_deps :
   string option ->
   J.program -> J.deps_program
 
-val string_of_module_id : 
+val string_of_module_id :
+  output_prefix:string ->
   Lam_module_ident.system -> Lam_module_ident.t -> string
 
 end = struct
@@ -63592,7 +63612,7 @@ module S = Js_stmt_make
 
 let (//) = Filename.concat 
 
-let string_of_module_id 
+let string_of_module_id ~output_prefix
     (module_system : Lam_module_ident.system)
     (x : Lam_module_ident.t) : string =
    
@@ -63661,10 +63681,12 @@ module Js_dump : sig
 
 
 
-val pp_deps_program : 
+val pp_deps_program :
+  output_prefix:string ->
   Lam_module_ident.system -> J.deps_program -> Ext_pp.t -> unit
 
-val dump_deps_program : 
+val dump_deps_program :
+  output_prefix:string ->
   Lam_module_ident.system  -> J.deps_program -> out_channel -> unit
 
 (** 2 functions Only used for debugging *)
@@ -65270,7 +65292,7 @@ let program f cxt   ( x : J.program ) =
   let () = P.force_newline f in
   exports cxt f x.exports
 
-let goog_program f goog_package (x : J.deps_program)  = 
+let goog_program ~output_prefix f goog_package (x : J.deps_program)  = 
   P.newline f ;
   P.string f L.goog_module;
   P.string f "(";
@@ -65284,12 +65306,14 @@ let goog_program f goog_package (x : J.deps_program)  =
       f 
       (List.map 
          (fun x -> 
-            Lam_module_ident.id x, Js_program_loader.string_of_module_id `Goog x)
+            Lam_module_ident.id x,
+            Js_program_loader.string_of_module_id
+              ~output_prefix `Goog x)
          x.modules) 
   in
   program f cxt x.program  
 
-let node_program f ( x : J.deps_program) = 
+let node_program ~output_prefix f ( x : J.deps_program) = 
   let cxt = 
     requires 
       L.require
@@ -65297,15 +65321,16 @@ let node_program f ( x : J.deps_program) =
       f
       (List.map 
          (fun x -> 
-            Lam_module_ident.id x, Js_program_loader.string_of_module_id `NodeJS x)
+            Lam_module_ident.id x,
+            Js_program_loader.string_of_module_id
+              ~output_prefix
+              `NodeJS x)
          x.modules)
   in
   program f cxt x.program  
 
 
-let amd_program f 
-    (  x : J.deps_program)
-  = 
+let amd_program ~output_prefix f (  x : J.deps_program) = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
@@ -65314,7 +65339,7 @@ let amd_program f
   P.string f (Printf.sprintf "%S" L.exports);
 
   List.iter (fun x ->
-      let s = Js_program_loader.string_of_module_id `AmdJS x in
+      let s = Js_program_loader.string_of_module_id ~output_prefix `AmdJS x in
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
@@ -65353,7 +65378,8 @@ let bs_header =
   Js_config.version ^
   " , PLEASE EDIT WITH CARE"
 
-let pp_deps_program 
+let pp_deps_program
+    ~output_prefix
     (kind : Lam_module_ident.system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
   begin
@@ -65366,16 +65392,9 @@ let pp_deps_program
     P.newline f ;    
     ignore (match kind with 
      | `AmdJS -> 
-       amd_program f program
-     (* | `Browser -> *)
-     (*    browser_program f program *)
+       amd_program ~output_prefix f program
      | `NodeJS -> 
-       begin match Sys.getenv "OCAML_AMD_MODULE" with 
-         | exception Not_found -> 
-           node_program f program
-           (* amd_program f program *)
-         | _ -> amd_program f program
-       end 
+       node_program ~output_prefix f program
      | `Goog  -> 
        let goog_package = 
          let v = Js_config.get_module_name () in
@@ -65384,7 +65403,7 @@ let pp_deps_program
            -> v 
          | Some x -> x ^ "." ^ v 
        in 
-       goog_program f goog_package  program
+       goog_program ~output_prefix f goog_package  program
       ) ;
     P.newline f ;
     P.string f (
@@ -65398,11 +65417,12 @@ let pp_deps_program
 let dump_program (x : J.program) oc = 
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
-let dump_deps_program 
+let dump_deps_program
+    ~output_prefix
     kind
     x 
     (oc : out_channel) = 
-  pp_deps_program kind x (P.from_channel oc)
+  pp_deps_program ~output_prefix  kind x (P.from_channel oc)
 
 let string_of_block  block  
   = 
@@ -89469,7 +89489,7 @@ let lambda_as_module
            Filename.dirname filename) // basename         
       in 
       let output_chan chan =         
-        Js_dump.dump_deps_program `NodeJS lambda_output chan in
+        Js_dump.dump_deps_program output_prefix `NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
@@ -89484,12 +89504,12 @@ let lambda_as_module
           basename 
         in
         let output_chan chan  = 
-          Js_dump.dump_deps_program 
+          Js_dump.dump_deps_program ~output_prefix
             module_system 
             lambda_output
             chan in
         (if !Js_config.dump_js then 
-          output_chan stdout);
+          output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan output_filename output_chan
             
@@ -92083,7 +92103,7 @@ end = struct
      *  }
 *)
 let () = 
-  (* Js_config.set_browser (); *)
+  Clflags.assume_no_mli := true;
   Bs_conditional_initial.setup_env ();
   Clflags.dont_write_files := true;
   Clflags.unsafe_string := false
@@ -92109,7 +92129,9 @@ let implementation impl no_export ppf  str  =
   |>  Translmod.transl_implementation modulename
   |> (* Printlambda.lambda ppf *) (fun lam -> 
       let buffer = Buffer.create 1000 in 
-      let () = Js_dump.(pp_deps_program `NodeJS
+      let () = Js_dump.(pp_deps_program
+                          ~output_prefix:"" (* does not matter here *)
+                          `NodeJS
                           (Lam_compile_group.compile ~filename:"" "" no_export
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in

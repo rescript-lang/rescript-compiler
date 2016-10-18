@@ -123,3 +123,6 @@ external readFileSync :
     | `utf16le ][@bs.string]) ->
   string = "readFileSync" 
 [@@bs.val] [@@bs.module "fs"]
+
+external existsSync : string -> Js.boolean = ""
+[@@bs.val] [@@bs.module "fs"]  

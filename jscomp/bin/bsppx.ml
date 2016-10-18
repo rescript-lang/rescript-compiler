@@ -4583,6 +4583,8 @@ val digits_of_str : string -> offset:int -> int -> int
 
 val starts_with_and_number : string -> offset:int -> string -> int
 
+val unsafe_concat_with_length : int -> string -> string list -> string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4817,6 +4819,25 @@ let starts_with_and_number s ~offset beg =
         -1 
 
 let equal (x : string) y  = x = y
+
+let unsafe_concat_with_length len sep l =
+  match l with 
+  | [] -> ""
+  | hd :: tl -> (* num is positive *)
+  let r = Bytes.create len in
+  let hd_len = String.length hd in 
+  let sep_len = String.length sep in 
+  String.unsafe_blit hd 0 r 0 hd_len;
+  let pos = ref hd_len in
+  List.iter
+    (fun s ->
+       let s_len = String.length s in
+       String.unsafe_blit sep 0 r !pos sep_len;
+       pos := !pos +  sep_len;
+       String.unsafe_blit s 0 r !pos s_len;
+       pos := !pos + s_len)
+    tl;
+  Bytes.unsafe_to_string r
 
 end
 module Ast_attributes : sig 

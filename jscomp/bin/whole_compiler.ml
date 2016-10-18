@@ -426,6 +426,8 @@ val digits_of_str : string -> offset:int -> int -> int
 
 val starts_with_and_number : string -> offset:int -> string -> int
 
+val unsafe_concat_with_length : int -> string -> string list -> string
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -660,6 +662,25 @@ let starts_with_and_number s ~offset beg =
         -1 
 
 let equal (x : string) y  = x = y
+
+let unsafe_concat_with_length len sep l =
+  match l with 
+  | [] -> ""
+  | hd :: tl -> (* num is positive *)
+  let r = Bytes.create len in
+  let hd_len = String.length hd in 
+  let sep_len = String.length sep in 
+  String.unsafe_blit hd 0 r 0 hd_len;
+  let pos = ref hd_len in
+  List.iter
+    (fun s ->
+       let s_len = String.length s in
+       String.unsafe_blit sep 0 r !pos sep_len;
+       pos := !pos +  sep_len;
+       String.unsafe_blit s 0 r !pos s_len;
+       pos := !pos + s_len)
+    tl;
+  Bytes.unsafe_to_string r
 
 end
 module Literals : sig 
@@ -21882,82 +21903,6 @@ let is_directory_no_exn f =
   try Sys.is_directory f with _ -> false 
 
 end
-module String_map : sig 
-#1 "string_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.S with type key = string 
-
-val of_list : (key * 'a) list -> 'a t
-
-end = struct
-#1 "string_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.Make(String)
-
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
-
-end
 module Binary_ast : sig 
 #1 "binary_ast.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21984,7 +21929,6 @@ module Binary_ast : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type _ kind = 
   | Ml : Parsetree.structure kind 
   | Mli : Parsetree.signature kind 
@@ -22007,26 +21951,6 @@ val read_ast : 'a kind -> string -> 'a
  *)
 val write_ast : fname:string -> output:string -> 'a kind -> 'a -> unit
 
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-val write_build_cache : string -> module_info String_map.t -> unit
-
-val read_build_cache : string -> module_info String_map.t
 
 end = struct
 #1 "binary_ast.ml"
@@ -22090,37 +22014,6 @@ let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : uni
   output_value oc pt;
   close_out oc 
 
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-let module_info_magic_number = "BSBUILD20161012"
-
-let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
-  let oc = open_out_bin bsbuild in 
-  output_string oc module_info_magic_number ;
-  output_value oc bs_files ;
-  close_out oc 
-
-let read_build_cache bsbuild : module_info String_map.t = 
-  let ic = open_in bsbuild in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : module_info String_map.t = input_value ic in 
-  close_in ic ;
-  data 
 
 end
 module Bs_ast_iterator : sig 
@@ -58573,6 +58466,82 @@ and convert_switch (s : Lambda.lambda_switch) : switch =
       | None -> None 
       | Some a -> Some (convert a)
   }  
+
+end
+module String_map : sig 
+#1 "string_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.S with type key = string 
+
+val of_list : (key * 'a) list -> 'a t
+
+end = struct
+#1 "string_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.Make(String)
+
+let of_list (xs : ('a * 'b) list ) = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
 
 end
 module Js_cmj_format : sig 
@@ -97028,7 +96997,8 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
       Binary_ast.write_ast
         Mli
         ~fname:sourcefile
-        ~output:((Filename.chop_extension sourcefile) ^ ".mliast")
+        ~output:(outputprefix ^ Literals.suffix_mliast)
+        (* to support relocate to another directory *)
         ast 
 
     end;
@@ -97067,7 +97037,7 @@ let interface ppf sourcefile outputprefix =
 let after_parsing_impl ppf sourcefile outputprefix ast =
   if !Js_config.binary_ast then
       Binary_ast.write_ast ~fname:sourcefile 
-        Ml ~output:((Filename.chop_extension sourcefile) ^ ".mlast")
+        Ml ~output:(outputprefix ^ Literals.suffix_mlast)
         ast ;
 
   if !Js_config.syntax_only then () else 
@@ -97125,6 +97095,119 @@ let implementation ppf sourcefile outputprefix =
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf sourcefile outputprefix 
+
+end
+module Binary_cache : sig 
+#1 "binary_cache.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
+
+val write_build_cache : string -> module_info String_map.t -> unit
+
+val read_build_cache : string -> module_info String_map.t
+
+val bsbuild_cache : string
+
+end = struct
+#1 "binary_cache.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
+
+let module_info_magic_number = "BSBUILD20161012"
+
+let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
+  let oc = open_out_bin bsbuild in 
+  output_string oc module_info_magic_number ;
+  output_value oc bs_files ;
+  close_out oc 
+
+let read_build_cache bsbuild : module_info String_map.t = 
+  let ic = open_in bsbuild in 
+  let buffer = really_input_string ic (String.length module_info_magic_number) in
+  assert(buffer = module_info_magic_number); 
+  let data : module_info String_map.t = input_value ic in 
+  close_in ic ;
+  data 
+
+
+let bsbuild_cache = ".bsbuild"
 
 end
 module Depend : sig 
@@ -97633,6 +97716,9 @@ val build_lazy_queue :
   (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
   (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
 
+val handle_depfile : 
+  string option -> string -> unit
+
 end = struct
 #1 "ast_extract.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -97977,6 +98063,67 @@ let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
         after_parsing_impl ppf source_file2 opref2 impl
       | exception Not_found -> assert false 
     )
+
+
+let dep_lit = " :"
+let space = " "
+let (//) = Filename.concat
+let length_space = String.length space 
+let handle_depfile oprefix  (fn : string) : unit = 
+  let op_concat s = match oprefix with None -> s | Some v -> v // s in 
+  let data =
+    Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
+  let deps = 
+    match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
+    | Some  input_file -> 
+      let stru  = Binary_ast.read_ast Ml  fn in 
+      let set = read_parse_and_extract Ml_kind stru in 
+      let dependent_file = (input_file ^ Literals.suffix_cmj) ^ dep_lit in
+      let (files, len) = 
+      String_set.fold
+        (fun k ((acc, len) as v) -> 
+           match String_map.find k data with
+           | {ml = Ml s | Re s  } 
+           | {mll = Some s } 
+             -> 
+             let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
+             in (new_file :: acc , len + String.length new_file + length_space)
+           | {mli = Mli s | Rei s } -> 
+             let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+             (new_file :: acc , len + String.length new_file + length_space)
+           | _ -> assert false
+           | exception Not_found -> v
+        ) set ([],String.length dependent_file)in
+      Ext_string.unsafe_concat_with_length len
+        space
+        (dependent_file :: files)
+    | None -> 
+      begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
+      | Some input_file -> 
+        let stri = Binary_ast.read_ast Mli  fn in 
+        let s = read_parse_and_extract Mli_kind stri in 
+        let dependent_file = (input_file ^ Literals.suffix_cmi) ^ dep_lit in
+        let (files, len) = 
+          String_set.fold
+            (fun k ((acc, len) as v) ->
+               match String_map.find k data with 
+               | { ml = Ml f | Re f  }
+               | { mll = Some f }
+               | { mli = Mli f | Rei f } -> 
+                 let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                 (new_file :: acc , len + String.length new_file + length_space)
+               | _ -> assert false
+               | exception Not_found -> v
+            ) s  ([], String.length dependent_file) in 
+        Ext_string.unsafe_concat_with_length len
+          space 
+          (dependent_file :: files) 
+      | None -> 
+        raise (Arg.Bad ("don't know what to do with  " ^ fn))
+      end
+  in 
+  let output = fn ^ Literals.suffix_d in
+  Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
 
 end
 module Ocaml_batch_compile : sig 

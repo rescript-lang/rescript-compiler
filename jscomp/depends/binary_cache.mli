@@ -1,3 +1,4 @@
+
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22,62 +23,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
 
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
 
+val write_build_cache : string -> module_info String_map.t -> unit
 
+val read_build_cache : string -> module_info String_map.t
 
-
-
-
-(** Extension to the standard library [String] module, avoid locale sensitivity *) 
-
-
-val trim : string -> string 
-
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
-
-val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
-
-val starts_with : string -> string -> bool
-
-(**
-   return [-1] when not found, the returned index is useful 
-   see [ends_with_then_chop]
-*)
-val ends_with_index : string -> string -> int
-
-val ends_with : string -> string -> bool
-
-(**
-   {[
-     ends_with_then_chop "a.cmj" ".cmj"
-     "a"
-   ]}
-   This is useful in controlled or file case sensitve system
-*)
-val ends_with_then_chop : string -> string -> string option
-
-
-val escaped : string -> string
-
-val for_all : (char -> bool) -> string -> bool
-
-val is_empty : string -> bool
-
-val repeat : int -> string -> string 
-
-val equal : string -> string -> bool
-
-val find : ?start:int -> sub:string -> string -> int
-
-val rfind : sub:string -> string -> int
-
-val tail_from : string -> int -> string
-
-val digits_of_str : string -> offset:int -> int -> int
-
-val starts_with_and_number : string -> offset:int -> string -> int
-
-val unsafe_concat_with_length : int -> string -> string list -> string
+val bsbuild_cache : string

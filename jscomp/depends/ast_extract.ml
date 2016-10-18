@@ -340,3 +340,64 @@ let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
         after_parsing_impl ppf source_file2 opref2 impl
       | exception Not_found -> assert false 
     )
+
+
+let dep_lit = " :"
+let space = " "
+let (//) = Filename.concat
+let length_space = String.length space 
+let handle_depfile oprefix  (fn : string) : unit = 
+  let op_concat s = match oprefix with None -> s | Some v -> v // s in 
+  let data =
+    Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
+  let deps = 
+    match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
+    | Some  input_file -> 
+      let stru  = Binary_ast.read_ast Ml  fn in 
+      let set = read_parse_and_extract Ml_kind stru in 
+      let dependent_file = (input_file ^ Literals.suffix_cmj) ^ dep_lit in
+      let (files, len) = 
+      String_set.fold
+        (fun k ((acc, len) as v) -> 
+           match String_map.find k data with
+           | {ml = Ml s | Re s  } 
+           | {mll = Some s } 
+             -> 
+             let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
+             in (new_file :: acc , len + String.length new_file + length_space)
+           | {mli = Mli s | Rei s } -> 
+             let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+             (new_file :: acc , len + String.length new_file + length_space)
+           | _ -> assert false
+           | exception Not_found -> v
+        ) set ([],String.length dependent_file)in
+      Ext_string.unsafe_concat_with_length len
+        space
+        (dependent_file :: files)
+    | None -> 
+      begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
+      | Some input_file -> 
+        let stri = Binary_ast.read_ast Mli  fn in 
+        let s = read_parse_and_extract Mli_kind stri in 
+        let dependent_file = (input_file ^ Literals.suffix_cmi) ^ dep_lit in
+        let (files, len) = 
+          String_set.fold
+            (fun k ((acc, len) as v) ->
+               match String_map.find k data with 
+               | { ml = Ml f | Re f  }
+               | { mll = Some f }
+               | { mli = Mli f | Rei f } -> 
+                 let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                 (new_file :: acc , len + String.length new_file + length_space)
+               | _ -> assert false
+               | exception Not_found -> v
+            ) s  ([], String.length dependent_file) in 
+        Ext_string.unsafe_concat_with_length len
+          space 
+          (dependent_file :: files) 
+      | None -> 
+        raise (Arg.Bad ("don't know what to do with  " ^ fn))
+      end
+  in 
+  let output = fn ^ Literals.suffix_d in
+  Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
