@@ -33,7 +33,13 @@ module String_map : sig
 
 include Map.S with type key = string 
 
-val of_list : (key * 'a) list -> 'a t
+val of_list : (string * 'a) list -> 'a t
+
+val find_opt : string -> 'a t -> 'a option
+
+val find_default : string -> 'a -> 'a t -> 'a
+
+val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
 
 end = struct
 #1 "string_map.ml"
@@ -72,6 +78,23 @@ include Map.Make(String)
 
 let of_list (xs : ('a * 'b) list ) = 
   List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+let find_opt k m =
+  match find k m with 
+  | exception v -> None
+  | u -> Some u
+
+let find_default k default m =
+  match find k m with 
+  | exception v -> default 
+  | u -> u
+
+let print p_v fmt  m =
+  iter (fun k v -> 
+      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
+    ) m
+
+
 
 end
 module Binary_cache : sig 
@@ -2019,36 +2042,123 @@ let sort_via_array cmp lst =
   Array.to_list arr
 
 end
-module Sexp_lexer : sig 
-#1 "sexp_lexer.mli"
-type t  =  
-  | Atom of string 
-  | List of t list
-  | Data of t list 
-  | Lit of string 
+module Json_lexer : sig 
+#1 "json_lexer.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type js_array =  
+  { content : t array ; 
+    loc_start : Lexing.position ; 
+    loc_finish : Lexing.position ; 
+  }
+and t = 
+  [
+    `True
+  | `False
+  | `Null
+  | `Flo of string 
+  | `Str of string 
+  | `Arr of js_array
+  | `Obj of t String_map.t 
+  ]
+
+val parse_json : Lexing.lexbuf -> t 
+val parse_json_from_string : string -> t 
+val parse_json_from_file  : string -> t
+
+type path = string list 
+type status = 
+  | No_path
+  | Found of t 
+  | Wrong_type of path 
 
 
-val token :  Lexing.lexbuf ->  t list
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Flo of (string -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (t String_map.t -> unit)
+  | `Arr of (t array -> unit )
+  | `Null of (unit -> unit)
+  ]
 
-val from_file : string -> t list 
+val test:
+  ?fail:(unit -> unit) ->
+  string -> callback -> t String_map.t -> t String_map.t
 
+val query : path -> t ->  status
 
 end = struct
-#1 "sexp_lexer.ml"
-# 1 "sexp_lexer.gen.mll"
+#1 "json_lexer.ml"
+# 1 "json_lexer.gen.mll"
  
-
 type error =
   | Illegal_character of char
+  | Unterminated_string
   | Illegal_escape of string
-  | Unbalanced_paren 
-  | Unterminated_paren
-  | Non_sexp_outside
+  | Unexpected_token 
+  | Expect_comma_or_rbracket
+  | Expect_comma_or_rbrace
+  | Expect_colon
+  | Expect_string_or_rbrace 
+  | Expect_eof 
 exception Error of error * Lexing.position * Lexing.position;;
+
+type path = string list 
+
+
+
+type token = 
+  | Comma
+  | Eof
+  | False
+  | Lbrace
+  | Lbracket
+  | Null
+  | Colon
+  | Number of string
+  | Rbrace
+  | Rbracket
+  | String of string
+  | True   
+  
 
 let error  (lexbuf : Lexing.lexbuf) e = 
   raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
 
+let lexeme_len (x : Lexing.lexbuf) =
+  x.lex_curr_pos - x.lex_start_pos
+
+let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
+  lexbuf.lex_curr_p <-
+    {
+      lex_curr_p with
+      pos_lnum = lex_curr_p.pos_lnum + 1;
+      pos_bol = lex_curr_p.pos_cnum - diff;
+    }
 
 let char_for_backslash = function
   | 'n' -> '\010'
@@ -2056,8 +2166,6 @@ let char_for_backslash = function
   | 'b' -> '\008'
   | 't' -> '\009'
   | c -> c
-
-let lf = '\010'
 
 let dec_code c1 c2 c3 =
   100 * (Char.code c1 - 48) + 10 * (Char.code c2 - 48) + (Char.code c3 - 48)
@@ -2075,139 +2183,87 @@ let hex_code c1 c2 =
     else d2 - 48 in
   val1 * 16 + val2
 
-let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
-  lexbuf.lex_curr_p <-
-    {
-      lex_curr_p with
-      pos_lnum = lex_curr_p.pos_lnum + 1;
-      pos_bol = lex_curr_p.pos_cnum - diff;
-    }
+let lf = '\010'
 
-let lexeme_len ({ lex_start_pos; lex_curr_pos; _ } : Lexing.lexbuf) =
-  lex_curr_pos - lex_start_pos
-
-
-
-type t  =
-  | Atom of string 
-  | List of t list
-  | Data of t list 
-  | Lit of string 
-
-
-
-type st = 
-  { sexps : (t list * bool) Stack.t ; 
-    mutable top : t list   ;
-    mutable has_prime : bool ;
-    buf : Buffer.t;
-    mutable paren_depth : int
-  }
-
-let push_atom lexbuf atom (buf : st ) = 
-  buf.top <- atom:: buf.top
-
-(** entering the new stack *)
-let new_lparen has_prime buf = 
-  buf.paren_depth <- buf.paren_depth + 1 ;
-  Stack.push (buf.top, buf.has_prime) buf.sexps ;
-  buf.top <- [];
-  buf.has_prime <- has_prime
-
-(** exit the stack *)
-let new_rparen  buf lexbuf = 
-  buf.paren_depth <- buf.paren_depth - 1 ; 
-  if buf.paren_depth < 0  then
-    error lexbuf Unbalanced_paren
-  else 
-    let new_sexp =
-      if buf.has_prime then 
-        Data (List.rev   buf.top)
-      else List (List.rev   buf.top) 
-    in 
-    let top, has_prime =  Stack.pop buf.sexps in
-    buf.top<- top;
-    buf.has_prime<-has_prime;
-    push_atom lexbuf new_sexp buf 
-
-let get_data buf = buf.top
-
-
-# 100 "sexp_lexer.ml"
+# 74 "json_lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
-   "\000\000\246\255\247\255\078\000\249\255\250\255\251\255\002\000\
-    \001\000\006\000\006\000\255\255\252\255\191\000\246\255\192\000\
-    \248\255\195\000\255\255\249\255\012\001\161\000\252\255\007\000\
-    \011\000\012\000\210\000\251\255\035\001\250\255";
+   "\000\000\240\255\241\255\242\255\000\000\025\000\011\000\023\000\
+    \245\255\246\255\247\255\248\255\249\255\250\255\000\000\000\000\
+    \000\000\001\000\254\255\005\000\001\000\002\000\253\255\000\000\
+    \000\000\003\000\252\255\001\000\003\000\251\255\005\000\079\000\
+    \089\000\099\000\121\000\131\000\141\000\153\000\163\000\006\000\
+    \246\255\073\000\248\255\216\000\255\255\249\255\250\000\182\000\
+    \252\255\009\000\011\000\063\000\226\000\251\255\033\001\250\255\
+    ";
   Lexing.lex_backtrk = 
-   "\255\255\255\255\255\255\007\000\255\255\255\255\255\255\008\000\
-    \002\000\001\000\008\000\255\255\255\255\255\255\255\255\008\000\
-    \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
-    \001\000\002\000\255\255\255\255\255\255\255\255";
+   "\255\255\255\255\255\255\255\255\012\000\012\000\015\000\015\000\
+    \255\255\255\255\255\255\255\255\255\255\255\255\015\000\015\000\
+    \015\000\015\000\255\255\000\000\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\011\000\255\255\
+    \255\255\012\000\255\255\012\000\255\255\012\000\255\255\255\255\
+    \255\255\008\000\255\255\255\255\255\255\255\255\006\000\006\000\
+    \255\255\006\000\001\000\002\000\255\255\255\255\255\255\255\255\
+    ";
   Lexing.lex_default = 
-   "\002\000\000\000\000\000\255\255\000\000\000\000\000\000\255\255\
-    \008\000\255\255\255\255\000\000\000\000\015\000\000\000\015\000\
-    \000\000\019\000\000\000\000\000\255\255\255\255\000\000\255\255\
-    \255\255\255\255\255\255\000\000\255\255\000\000";
+   "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\255\255\
+    \000\000\000\000\000\000\000\000\000\000\000\000\255\255\255\255\
+    \255\255\255\255\000\000\255\255\255\255\255\255\000\000\255\255\
+    \255\255\255\255\000\000\255\255\255\255\000\000\030\000\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\041\000\
+    \000\000\041\000\000\000\045\000\000\000\000\000\255\255\255\255\
+    \000\000\255\255\255\255\255\255\255\255\000\000\255\255\000\000\
+    ";
   Lexing.lex_trans = 
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\009\000\011\000\255\255\009\000\010\000\255\255\009\000\
-    \011\000\025\000\009\000\000\000\024\000\025\000\000\000\000\000\
+    \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
+    \042\000\019\000\255\255\051\000\050\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \009\000\000\000\004\000\000\000\000\000\000\000\009\000\007\000\
-    \006\000\005\000\012\000\024\000\025\000\003\000\003\000\000\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\000\000\008\000\000\000\003\000\000\000\003\000\
-    \000\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\000\000\000\000\000\000\000\000\003\000\
-    \000\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\000\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \000\000\000\000\000\000\003\000\000\000\003\000\000\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\000\000\000\000\000\000\000\000\003\000\000\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\016\000\255\255\000\000\000\000\024\000\000\000\000\000\
-    \023\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\
-    \026\000\026\000\026\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\018\000\255\255\022\000\000\000\022\000\000\000\000\000\
-    \000\000\000\000\022\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\021\000\021\000\021\000\021\000\021\000\
-    \021\000\021\000\021\000\021\000\021\000\000\000\000\000\000\000\
-    \001\000\255\255\027\000\027\000\027\000\027\000\027\000\027\000\
-    \027\000\027\000\027\000\027\000\000\000\000\000\000\000\000\000\
+    \019\000\000\000\003\000\000\000\000\000\019\000\000\000\000\000\
+    \044\000\000\000\000\000\050\000\009\000\006\000\032\000\007\000\
+    \004\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\008\000\004\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\005\000\005\000\005\000\031\000\030\000\032\000\
+    \051\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\005\000\255\255\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\013\000\000\000\012\000\031\000\051\000\
+    \000\000\023\000\043\000\000\000\000\000\031\000\015\000\022\000\
+    \026\000\000\000\000\000\255\255\024\000\028\000\014\000\029\000\
+    \000\000\000\000\020\000\025\000\016\000\027\000\021\000\000\000\
+    \000\000\000\000\038\000\011\000\038\000\010\000\031\000\037\000\
+    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
+    \037\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
+    \033\000\033\000\033\000\033\000\033\000\033\000\033\000\033\000\
+    \033\000\033\000\033\000\033\000\033\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\036\000\255\255\036\000\000\000\
+    \034\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
+    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
+    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\035\000\
+    \035\000\035\000\035\000\035\000\035\000\035\000\035\000\000\000\
+    \034\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
+    \037\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
+    \037\000\037\000\037\000\037\000\037\000\000\000\000\000\000\000\
+    \000\000\000\000\050\000\000\000\000\000\049\000\052\000\052\000\
+    \052\000\052\000\052\000\052\000\052\000\052\000\052\000\052\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\017\000\255\255\000\000\000\000\022\000\
-    \000\000\000\000\000\000\000\000\000\000\022\000\000\000\000\000\
+    \048\000\000\000\048\000\000\000\000\000\000\000\000\000\048\000\
+    \002\000\000\000\000\000\000\000\000\000\255\255\040\000\000\000\
+    \047\000\047\000\047\000\047\000\047\000\047\000\047\000\047\000\
+    \047\000\047\000\053\000\053\000\053\000\053\000\053\000\053\000\
+    \053\000\053\000\053\000\053\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\022\000\000\000\000\000\000\000\022\000\000\000\022\000\
-    \000\000\000\000\000\000\020\000\028\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\028\000\028\000\028\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\029\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\029\000\029\000\029\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\000\000\000\000\000\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\054\000\054\000\054\000\054\000\054\000\054\000\
+    \054\000\054\000\054\000\054\000\048\000\000\000\000\000\000\000\
+    \000\000\000\000\048\000\054\000\054\000\054\000\054\000\054\000\
+    \054\000\000\000\000\000\000\000\000\000\000\000\048\000\000\000\
+    \000\000\255\255\048\000\000\000\048\000\000\000\000\000\000\000\
+    \046\000\055\000\055\000\055\000\055\000\055\000\055\000\055\000\
+    \055\000\055\000\055\000\054\000\054\000\054\000\054\000\054\000\
+    \054\000\000\000\055\000\055\000\055\000\055\000\055\000\055\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\014\000\
-    \255\255\000\000\000\000\255\255\000\000\000\000\000\000\000\000\
+    \000\000\000\000\055\000\055\000\055\000\055\000\055\000\055\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -2218,66 +2274,66 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000";
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+    \000\000\000\000";
   Lexing.lex_check = 
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\000\000\000\000\008\000\000\000\000\000\008\000\009\000\
-    \010\000\023\000\009\000\255\255\024\000\025\000\255\255\255\255\
+    \255\255\000\000\000\000\017\000\000\000\000\000\019\000\030\000\
+    \039\000\019\000\030\000\049\000\050\000\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \000\000\255\255\000\000\255\255\255\255\255\255\009\000\000\000\
-    \000\000\000\000\007\000\024\000\025\000\000\000\000\000\255\255\
+    \000\000\255\255\000\000\255\255\255\255\019\000\255\255\255\255\
+    \039\000\255\255\255\255\050\000\000\000\000\000\004\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\255\255\000\000\255\255\000\000\255\255\000\000\
-    \255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\255\255\255\255\255\255\255\255\000\000\
-    \255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\003\000\003\000\255\255\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \255\255\255\255\255\255\003\000\255\255\003\000\255\255\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\255\255\255\255\255\255\255\255\003\000\255\255\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\013\000\015\000\255\255\255\255\017\000\255\255\255\255\
-    \017\000\021\000\021\000\021\000\021\000\021\000\021\000\021\000\
-    \021\000\021\000\021\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\013\000\015\000\017\000\255\255\017\000\255\255\255\255\
-    \255\255\255\255\017\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\017\000\017\000\017\000\017\000\017\000\
-    \017\000\017\000\017\000\017\000\017\000\255\255\255\255\255\255\
-    \000\000\008\000\026\000\026\000\026\000\026\000\026\000\026\000\
-    \026\000\026\000\026\000\026\000\255\255\255\255\255\255\255\255\
+    \000\000\000\000\000\000\006\000\006\000\006\000\006\000\006\000\
+    \006\000\006\000\006\000\006\000\006\000\004\000\007\000\005\000\
+    \051\000\005\000\005\000\005\000\005\000\005\000\005\000\005\000\
+    \005\000\005\000\005\000\041\000\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\000\000\255\255\000\000\005\000\051\000\
+    \255\255\015\000\039\000\255\255\255\255\004\000\000\000\021\000\
+    \025\000\255\255\255\255\041\000\023\000\027\000\000\000\028\000\
+    \255\255\255\255\016\000\024\000\000\000\014\000\020\000\255\255\
+    \255\255\255\255\031\000\000\000\031\000\000\000\005\000\031\000\
+    \031\000\031\000\031\000\031\000\031\000\031\000\031\000\031\000\
+    \031\000\032\000\032\000\032\000\032\000\032\000\032\000\032\000\
+    \032\000\032\000\032\000\033\000\033\000\033\000\033\000\033\000\
+    \033\000\033\000\033\000\033\000\033\000\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\034\000\041\000\034\000\255\255\
+    \033\000\034\000\034\000\034\000\034\000\034\000\034\000\034\000\
+    \034\000\034\000\034\000\035\000\035\000\035\000\035\000\035\000\
+    \035\000\035\000\035\000\035\000\035\000\036\000\036\000\036\000\
+    \036\000\036\000\036\000\036\000\036\000\036\000\036\000\255\255\
+    \033\000\037\000\037\000\037\000\037\000\037\000\037\000\037\000\
+    \037\000\037\000\037\000\038\000\038\000\038\000\038\000\038\000\
+    \038\000\038\000\038\000\038\000\038\000\255\255\255\255\255\255\
+    \255\255\255\255\043\000\255\255\255\255\043\000\047\000\047\000\
+    \047\000\047\000\047\000\047\000\047\000\047\000\047\000\047\000\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\013\000\015\000\255\255\255\255\017\000\
-    \255\255\255\255\255\255\255\255\255\255\017\000\255\255\255\255\
+    \043\000\255\255\043\000\255\255\255\255\255\255\255\255\043\000\
+    \000\000\255\255\255\255\255\255\255\255\030\000\039\000\255\255\
+    \043\000\043\000\043\000\043\000\043\000\043\000\043\000\043\000\
+    \043\000\043\000\052\000\052\000\052\000\052\000\052\000\052\000\
+    \052\000\052\000\052\000\052\000\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\017\000\255\255\255\255\255\255\017\000\255\255\017\000\
-    \255\255\255\255\255\255\017\000\020\000\020\000\020\000\020\000\
-    \020\000\020\000\020\000\020\000\020\000\020\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\020\000\020\000\020\000\
-    \020\000\020\000\020\000\028\000\028\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\028\000\028\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\028\000\028\000\028\000\028\000\
-    \028\000\028\000\255\255\255\255\255\255\020\000\020\000\020\000\
-    \020\000\020\000\020\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\028\000\028\000\028\000\028\000\
-    \028\000\028\000\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\046\000\046\000\046\000\046\000\046\000\046\000\
+    \046\000\046\000\046\000\046\000\043\000\255\255\255\255\255\255\
+    \255\255\255\255\043\000\046\000\046\000\046\000\046\000\046\000\
+    \046\000\255\255\255\255\255\255\255\255\255\255\043\000\255\255\
+    \255\255\041\000\043\000\255\255\043\000\255\255\255\255\255\255\
+    \043\000\054\000\054\000\054\000\054\000\054\000\054\000\054\000\
+    \054\000\054\000\054\000\046\000\046\000\046\000\046\000\046\000\
+    \046\000\255\255\054\000\054\000\054\000\054\000\054\000\054\000\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\013\000\
-    \015\000\255\255\255\255\017\000\255\255\255\255\255\255\255\255\
+    \255\255\255\255\054\000\054\000\054\000\054\000\054\000\054\000\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
@@ -2288,8 +2344,16 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \043\000\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255";
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
+    \255\255\255\255";
   Lexing.lex_base_code = 
    "";
   Lexing.lex_backtrk_code = 
@@ -2304,159 +2368,170 @@ let __ocaml_lex_tables = {
    "";
 }
 
-let rec main buf lexbuf =
-    __ocaml_lex_main_rec buf lexbuf 0
-and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
+let rec lex_json buf lexbuf =
+    __ocaml_lex_lex_json_rec buf lexbuf 0
+and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 110 "sexp_lexer.gen.mll"
-                     ( 
-    update_loc lexbuf 0;
-    main (buf : st ) lexbuf  )
-# 280 "sexp_lexer.ml"
+# 88 "json_lexer.gen.mll"
+          ( lex_json buf lexbuf)
+# 264 "json_lexer.ml"
 
   | 1 ->
-# 113 "sexp_lexer.gen.mll"
-           ( main buf lexbuf  )
-# 285 "sexp_lexer.ml"
+# 89 "json_lexer.gen.mll"
+                   ( 
+    update_loc lexbuf 0;
+    lex_json buf  lexbuf
+  )
+# 272 "json_lexer.ml"
 
   | 2 ->
-# 114 "sexp_lexer.gen.mll"
-                       (  main buf lexbuf )
-# 290 "sexp_lexer.ml"
+# 94 "json_lexer.gen.mll"
+         ( True)
+# 277 "json_lexer.ml"
 
   | 3 ->
-# 115 "sexp_lexer.gen.mll"
-         (
-    new_lparen true buf; 
-    main buf lexbuf
-  )
-# 298 "sexp_lexer.ml"
+# 95 "json_lexer.gen.mll"
+          (False)
+# 282 "json_lexer.ml"
 
   | 4 ->
-# 119 "sexp_lexer.gen.mll"
-        ( 
-    new_lparen false buf ; 
-    main buf lexbuf 
-  )
-# 306 "sexp_lexer.ml"
+# 96 "json_lexer.gen.mll"
+         (Null)
+# 287 "json_lexer.ml"
 
   | 5 ->
-# 123 "sexp_lexer.gen.mll"
-        ( 
-      new_rparen  buf lexbuf; 
-      main buf lexbuf 
-  )
-# 314 "sexp_lexer.ml"
+# 97 "json_lexer.gen.mll"
+       (Lbracket)
+# 292 "json_lexer.ml"
 
   | 6 ->
-# 128 "sexp_lexer.gen.mll"
-      (
-        let pos = Lexing.lexeme_start_p lexbuf in
-        scan_string buf.buf pos lexbuf;
-        push_atom lexbuf  ( Lit (Buffer.contents  buf.buf)) buf;
-        Buffer.clear buf.buf;
-        main buf lexbuf
-      )
-# 325 "sexp_lexer.ml"
+# 98 "json_lexer.gen.mll"
+       (Rbracket)
+# 297 "json_lexer.ml"
 
   | 7 ->
-let
-# 135 "sexp_lexer.gen.mll"
-                    s
-# 331 "sexp_lexer.ml"
-= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 136 "sexp_lexer.gen.mll"
-    ( push_atom lexbuf (Atom s) buf ; 
-      main buf lexbuf
-    )
-# 337 "sexp_lexer.ml"
+# 99 "json_lexer.gen.mll"
+       (Lbrace)
+# 302 "json_lexer.ml"
 
   | 8 ->
-let
-# 139 "sexp_lexer.gen.mll"
-         c
-# 343 "sexp_lexer.ml"
-= Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 140 "sexp_lexer.gen.mll"
-      (  error  lexbuf (Illegal_character c))
-# 347 "sexp_lexer.ml"
+# 100 "json_lexer.gen.mll"
+       (Rbrace)
+# 307 "json_lexer.ml"
 
   | 9 ->
-# 142 "sexp_lexer.gen.mll"
-        (
-    if buf.paren_depth > 0 then 
-      error lexbuf Unterminated_paren
-    else 
-      get_data buf )
-# 356 "sexp_lexer.ml"
+# 101 "json_lexer.gen.mll"
+       (Comma)
+# 312 "json_lexer.ml"
+
+  | 10 ->
+# 102 "json_lexer.gen.mll"
+        (Colon)
+# 317 "json_lexer.ml"
+
+  | 11 ->
+# 103 "json_lexer.gen.mll"
+                      (lex_json buf lexbuf)
+# 322 "json_lexer.ml"
+
+  | 12 ->
+# 105 "json_lexer.gen.mll"
+         ( Number (Lexing.lexeme lexbuf))
+# 327 "json_lexer.ml"
+
+  | 13 ->
+# 107 "json_lexer.gen.mll"
+      (
+  let pos = Lexing.lexeme_start_p lexbuf in
+  scan_string buf pos lexbuf;
+  let content = (Buffer.contents  buf) in 
+  Buffer.clear buf ;
+  String content 
+)
+# 338 "json_lexer.ml"
+
+  | 14 ->
+# 114 "json_lexer.gen.mll"
+       (Eof )
+# 343 "json_lexer.ml"
+
+  | 15 ->
+let
+# 115 "json_lexer.gen.mll"
+       c
+# 349 "json_lexer.ml"
+= Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
+# 115 "json_lexer.gen.mll"
+          ( error lexbuf (Illegal_character c ))
+# 353 "json_lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state
+      __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    __ocaml_lex_scan_string_rec buf start lexbuf 13
+    __ocaml_lex_scan_string_rec buf start lexbuf 39
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 149 "sexp_lexer.gen.mll"
-        ( () )
-# 368 "sexp_lexer.ml"
+# 120 "json_lexer.gen.mll"
+      ( () )
+# 365 "json_lexer.ml"
 
   | 1 ->
-# 151 "sexp_lexer.gen.mll"
-      (
+# 122 "json_lexer.gen.mll"
+  (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 378 "sexp_lexer.ml"
+# 375 "json_lexer.ml"
 
   | 2 ->
-# 158 "sexp_lexer.gen.mll"
+# 129 "json_lexer.gen.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 387 "sexp_lexer.ml"
+# 384 "json_lexer.ml"
 
   | 3 ->
 let
-# 163 "sexp_lexer.gen.mll"
-                                                 c
-# 393 "sexp_lexer.ml"
+# 134 "json_lexer.gen.mll"
+                                               c
+# 390 "json_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 164 "sexp_lexer.gen.mll"
+# 135 "json_lexer.gen.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 400 "sexp_lexer.ml"
+# 397 "json_lexer.ml"
 
   | 4 ->
 let
-# 168 "sexp_lexer.gen.mll"
-                   c1
-# 406 "sexp_lexer.ml"
+# 139 "json_lexer.gen.mll"
+                 c1
+# 403 "json_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 168 "sexp_lexer.gen.mll"
-                                 c2
-# 411 "sexp_lexer.ml"
+# 139 "json_lexer.gen.mll"
+                               c2
+# 408 "json_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 168 "sexp_lexer.gen.mll"
-                                               c3
-# 416 "sexp_lexer.ml"
+# 139 "json_lexer.gen.mll"
+                                             c3
+# 413 "json_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 168 "sexp_lexer.gen.mll"
-                                                      s
-# 421 "sexp_lexer.ml"
+# 139 "json_lexer.gen.mll"
+                                                    s
+# 418 "json_lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 169 "sexp_lexer.gen.mll"
+# 140 "json_lexer.gen.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -2465,55 +2540,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 432 "sexp_lexer.ml"
+# 429 "json_lexer.ml"
 
   | 5 ->
 let
-# 177 "sexp_lexer.gen.mll"
-                          c1
-# 438 "sexp_lexer.ml"
+# 148 "json_lexer.gen.mll"
+                        c1
+# 435 "json_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 177 "sexp_lexer.gen.mll"
-                                           c2
-# 443 "sexp_lexer.ml"
+# 148 "json_lexer.gen.mll"
+                                         c2
+# 440 "json_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 178 "sexp_lexer.gen.mll"
+# 149 "json_lexer.gen.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 452 "sexp_lexer.ml"
+# 449 "json_lexer.ml"
 
   | 6 ->
 let
-# 184 "sexp_lexer.gen.mll"
-               c
-# 458 "sexp_lexer.ml"
+# 155 "json_lexer.gen.mll"
+             c
+# 455 "json_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 185 "sexp_lexer.gen.mll"
+# 156 "json_lexer.gen.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 467 "sexp_lexer.ml"
+# 464 "json_lexer.ml"
 
   | 7 ->
-# 192 "sexp_lexer.gen.mll"
+# 163 "json_lexer.gen.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 477 "sexp_lexer.ml"
+# 474 "json_lexer.ml"
 
   | 8 ->
-# 199 "sexp_lexer.gen.mll"
+# 170 "json_lexer.gen.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -2521,115 +2596,159 @@ let
 
         scan_string buf start lexbuf
       )
-# 488 "sexp_lexer.ml"
+# 485 "json_lexer.ml"
 
   | 9 ->
-# 207 "sexp_lexer.gen.mll"
+# 178 "json_lexer.gen.mll"
       (
-        let msg =
-          Printf.sprintf
-            "Sexplib.Lexer.scan_string: unterminated string at line %d char %d"
-            start.pos_lnum (start.pos_cnum - start.pos_bol)
-        in
-        failwith msg
+        error lexbuf Unterminated_string
       )
-# 500 "sexp_lexer.ml"
+# 492 "json_lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 216 "sexp_lexer.gen.mll"
-  
+# 182 "json_lexer.gen.mll"
+ 
 
-    let token  lexbuf  =
-      List.rev @@ main { 
-        buf = Buffer.create 256 ;
-        sexps = Stack.create () ; 
-        paren_depth = 0; 
-        top = [];
-        has_prime = false } lexbuf
-    let from_file file = 
-      let in_channel =  open_in file in 
-      match  token (Lexing.from_channel in_channel) with 
-      | exception  e -> close_in in_channel; raise e 
-      | sexps -> close_in in_channel ; sexps
+type js_array =
+  { content : t array ; 
+    loc_start : Lexing.position ; 
+    loc_finish : Lexing.position ; 
+  }
+and t = 
+  [  
+    `True
+  | `False
+  | `Null
+  | `Flo of string 
+  | `Str of string 
+  | `Arr  of js_array
+  | `Obj of t String_map.t 
+   ]
 
-# 523 "sexp_lexer.ml"
-
-end
-module Sexp_eval
-= struct
-#1 "sexp_eval.ml"
-type env = (string, Sexp_lexer.t) Hashtbl.t
-
-let rec print fmt (x : Sexp_lexer.t) =
-  match x with 
-  | Atom v -> 
-    Format.pp_print_string fmt v
-  | Lit s -> 
-    Format.fprintf fmt "%S" s (* TODO: string escaping*)
-  | List vs -> 
-    Format.fprintf fmt  "@[(@ %a@ )@]" 
-      (Format.pp_print_list ~pp_sep:(Format.pp_print_space) print ) vs 
-  | Data vs
-    -> 
-    Format.fprintf fmt "@['(@ %a@ )@]" 
-      (Format.pp_print_list ~pp_sep:(Format.pp_print_space) print) vs 
-
-let print_env fmt  env = 
-  Hashtbl.iter (fun k v -> 
-      Format.fprintf fmt
-        "@[%s@ ->@ %a@]@."
-        k print v 
-    ) env 
+type status = 
+  | No_path
+  | Found  of t 
+  | Wrong_type of path 
 
 
-let nil : Sexp_lexer.t = List []  
 
-exception Unbound_value of string 
+let rec parse_json lexbuf =
+  let buf = Buffer.create 64 in 
+  let look_ahead = ref None in
+  let token () : token = 
+    match !look_ahead with 
+    | None ->  
+      lex_json buf lexbuf 
+    | Some x -> 
+      look_ahead := None ;
+      x 
+  in
+  let push e = look_ahead := Some e in 
+  let rec json (lexbuf : Lexing.lexbuf) = 
+    match token () with 
+    | True -> `True
+    | False -> `False
+    | Null -> `Null
+    | Number s ->  `Flo s 
+    | String s -> `Str s 
+    | Lbracket -> parse_array lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> parse_map String_map.empty lexbuf
+    |  _ -> error lexbuf Unexpected_token
+  and parse_array  loc_start loc_finish acc lexbuf =
+    match token () with 
+    | Rbracket -> `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+                            loc_finish = lexbuf.lex_curr_p }
+    | x -> 
+      push x ;
+      let new_one = json lexbuf in 
+      begin match token ()  with 
+      | Comma -> 
+          parse_array loc_start loc_finish (new_one :: acc) lexbuf 
+      | Rbracket 
+        -> `Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+                     loc_start ; 
+                     loc_finish = lexbuf.lex_curr_p }
+      | _ -> 
+        error lexbuf Expect_comma_or_rbracket
+      end
+  and parse_map acc lexbuf = 
+    match token () with 
+    | Rbrace -> `Obj acc 
+    | String key -> 
+      begin match token () with 
+      | Colon ->
+        let value = json lexbuf in
+        begin match token () with 
+        | Rbrace -> `Obj (String_map.add key value acc )
+        | Comma -> 
+          parse_map (String_map.add key value acc) lexbuf 
+        | _ -> error lexbuf Expect_comma_or_rbrace
+        end
+      | _ -> error lexbuf Expect_colon
+      end
+    | _ -> error lexbuf Expect_string_or_rbrace
+  in 
+  let v = json lexbuf in 
+  match token () with 
+  | Eof -> v 
+  | _ -> error lexbuf Expect_eof
 
-let rec eval env (x : Sexp_lexer.t) : Sexp_lexer.t =
-  match x with 
-  | Atom x ->
-    begin match Hashtbl.find env x  with
-    | exception Not_found 
-      -> raise (Unbound_value x)
-    | x -> x 
-    end
-  | Lit _ -> x 
-  | Data xs -> List xs
-  | List [] -> nil
-  | List (command::rest) -> 
-    begin match command with 
-    | Atom "setq" 
-      -> let rec loop last_value rest =
-           match rest with 
-           | Sexp_lexer.Atom x :: v :: rest -> 
-             let xvalue = eval env v in 
-             Hashtbl.add env x xvalue ; 
-             loop xvalue rest 
-           | [Atom x] 
-             ->  Hashtbl.add env x nil ; nil 
-           | [] -> last_value
-           | (Lit _ | Data _ | List _ ) :: _  
-             -> assert false  in 
-      loop nil rest
-    | _ -> assert false
-    end
+let parse_json_from_string s = 
+  parse_json (Lexing.from_string s )
 
-let eval_file s = 
-  let sexps = Sexp_lexer.from_file s in 
-  let env = Hashtbl.create 64 in 
-  List.iter (fun x -> ignore (eval env x )) sexps ; 
-  env 
+let parse_json_from_file s = 
+  let in_chan = open_in s in 
+  let lexbuf = Lexing.from_channel in_chan in 
+  match parse_json lexbuf with 
+  | exception e -> close_in in_chan ; raise e
+  | v  -> close_in in_chan;  v
 
-let eval_string s = 
-  let sexps = Sexp_lexer.token (Lexing.from_string s) in 
-  let env = Hashtbl.create 64 in 
-  List.iter (fun x -> ignore (eval env x )) sexps ; 
-  env 
+
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Flo of (string -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (t String_map.t -> unit)
+  | `Arr of (t array -> unit )
+  | `Null of (unit -> unit)
+  ]
+
+let test   ?(fail=(fun () -> ())) key 
+    (cb : callback) m 
+     =
+     begin match String_map.find key m, cb with 
+       | exception Not_found -> fail ()
+       | `True, `Bool cb -> cb true
+       | `False, `Bool cb  -> cb false 
+       | `Flo s , `Flo cb  -> cb s 
+       | `Obj b , `Obj cb -> cb b 
+       | `Arr {content}, `Arr cb -> cb content 
+       | `Null, `Null cb  -> cb ()
+       | `Str s, `Str cb  -> cb s 
+       | _, _ -> fail () 
+     end;
+     m
+let query path (json : t ) =
+  let rec aux acc paths json =
+    match path with 
+    | [] ->  Found json
+    | p :: rest -> 
+      begin match json with 
+        | `Obj m -> 
+          begin match String_map.find p m with 
+            | m' -> aux (p::acc) rest m'
+            | exception Not_found ->  No_path
+          end
+        | _ -> Wrong_type acc 
+      end
+  in aux [] path json
+
+# 637 "json_lexer.ml"
 
 end
 module Bsbuild_main
@@ -2660,11 +2779,30 @@ module Bsbuild_main
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+module Schemas = struct 
+  let files = "files"
+end
 type module_info = Binary_cache.module_info 
+type 'a file_group = 
+  { dir : string ;
+    sources : 'a
+  } 
 
 let main_ninja = "build.ninja"
 let (//) = Filename.concat 
+module Default = struct
+  let bsc = ref  "bsc.exe"
+  let bsbuild = ref "bsbuild.exe"
+  let bsdep = ref "bsdep.exe"
+  let ocamllex =  ref "ocamllex.opt"
+  let bs_external_includes = ref []
+  let package_name = ref None
+  let bsc_flags = ref []
+  let ppx_flags = ref []
+  let static_resources = ref []
+  let build_output_prefix = ref "_build"
+  let bs_file_groups = ref []
+end
 module Flags = struct 
   let bsc = ("bsc", "bsc.exe")
   let bsbuild = ("bsbuild", "bsbuild.exe")
@@ -2675,7 +2813,6 @@ module Flags = struct
   let bs_external_includes = "bs-external-includes"
   let bsc_flags = "bsc-flags"
   let file_groups = "file-groups"
-  let files = "files"
   let ppx_flags = "ppx-flags"
   let build_output_prefix = ("build-output-prefix", Filename.current_dir_name)
   let static_resources = "static-resources"
@@ -2729,92 +2866,23 @@ let map_update ?dir map  name =
   | v -> 
     String_map.add module_name (aux (Some v) name)  map
 
-type ty = 
-  | Any
-  | String 
-  | List of ty
 
-exception Expect of string * ty
-
-let error (x,ty) = raise (Expect (x,ty) )
-
-let expect_string (key, default) (global_data : Sexp_eval.env) =
-  match Hashtbl.find global_data key with 
-  | exception Not_found -> default
-  | Atom s | Lit s -> s 
-  | List _ | Data _ -> error (key, String)
-
-let expect_string_opt key (global_data : Sexp_eval.env) =
-  match Hashtbl.find global_data key with 
-  | exception Not_found -> None
-  | Atom s | Lit s -> Some s 
-  | List _ | Data _ -> error (key, String)
-
-let expect_string_list key (global_data : Sexp_eval.env) = 
-  match Hashtbl.find global_data key  with 
-  | exception Not_found -> [ ]
-  | Atom _ | Lit _ | Data _ -> error(key, List String)
-  | List xs -> 
-    Ext_list.filter_map (fun x -> 
-        match  x with 
-        | Sexp_lexer.Atom x | Lit x -> Some x 
-        | _ -> None 
-      ) xs 
-
-let expect_string_list_unordered 
-  key 
-  (global_data : Sexp_eval.env) 
-  init update = 
-  match Hashtbl.find global_data Flags.files with 
-  | exception Not_found -> init
-  | Atom _ | Lit _ 
-  | Data _ -> error(key, List String)
-  | List files -> 
-    List.fold_left (fun acc s ->
-        match s with 
-        | Sexp_lexer.Atom s | Lit s -> update acc s 
-        | _ -> acc (* raise Type error *)
-      ) init files 
-
-type 'a file_group = 
-  { dir : string ;
-    sources : 'a
-  } 
-let rec expect_file_groups  key (global_data : Sexp_eval.env) =
-  match Hashtbl.find global_data key with 
-  | exception Not_found -> []
-  | Atom _ | Lit _ 
-  | Data _ -> error (key, List Any)
-  | List ls -> List.map expect_file_group  ls 
-
-and expect_file_group (x : Sexp_lexer.t)  =
-  match x with 
-  | List [ List [ Atom "dir"; Lit dir ] ; List [ Atom "sources";  List files] ] -> 
-    { dir ; 
-      sources = List.fold_left (fun acc s ->
-        match s with 
-        | Sexp_lexer.Atom s | Lit s -> map_update ~dir  acc s 
-        | _ -> acc (* raise Type error *)
-      ) String_map.empty files
-    }
-
-  | _ -> error ("", List Any)
-
-let output_ninja (global_data : Sexp_eval.env)  = 
-  let bsc = expect_string Flags.bsc global_data in 
-  let bsbuild = expect_string Flags.bsbuild global_data in 
-  let bsdep = expect_string Flags.bsdep global_data in
-  let package_name = expect_string_opt Flags.package_name global_data in 
-  let ocamllex = expect_string Flags.ocamllex global_data in 
-  let build_output_prefix = expect_string Flags.build_output_prefix global_data in 
-  let bs_external_includes =
-    expect_string_list Flags.bs_external_includes  global_data in 
-  let static_resources = 
-    expect_string_list Flags.static_resources global_data in
-
-  let bs_file_groups = expect_file_groups Flags.file_groups global_data
-  in  
-  (* let bs_files = expect_string_list_unordered Flags.files global_data String_map.empty map_update in *)
+let output_ninja 
+    bsc
+    bsbuild
+    bsdep
+    package_name
+    ocamllex
+    build_output_prefix
+    bs_external_includes
+    static_resources 
+    bs_file_groups 
+    bsc_flags
+    ppx_flags 
+  = 
+  let ppx_flags =
+  String.concat space @@
+    Ext_list.flat_map (fun x -> ["-ppx";  x ])  ppx_flags in 
   let bs_files, source_dirs  = List.fold_left (fun (acc,dirs) {sources ; dir } -> 
       String_map.merge (fun modname k1 k2 ->
           match k1 , k2 with
@@ -2830,10 +2898,6 @@ let output_ninja (global_data : Sexp_eval.env)  =
     end;
   Binary_cache.write_build_cache (build_output_prefix // Binary_cache.bsbuild_cache) bs_files ;
 
-  let ppx_flags = 
-    String.concat space @@
-      Ext_list.flat_map (fun x -> ["-ppx";  x ])  @@
-    expect_string_list Flags.ppx_flags global_data in 
   let bsc_computed_flags =
     let internal_includes =
       source_dirs
@@ -2845,7 +2909,7 @@ let output_ninja (global_data : Sexp_eval.env)  =
       | None -> external_includes @ internal_includes 
       | Some x -> Flags.bs_package_name ::  x :: external_includes @ internal_includes
     in 
-    let bsc_flags = expect_string_list Flags.bsc_flags global_data in 
+
     String.concat " " ( bsc_flags @ init_flags)
   in
   let oc = open_out main_ninja in 
@@ -3006,7 +3070,7 @@ rule copy_resources
 rule reload
       command = ${bsbuild} -init
 |};
-    output_string oc (Printf.sprintf "build build.ninja : reload | bs.el\n" );
+    output_string oc (Printf.sprintf "build build.ninja : reload | bsconfig.json\n" );
 
     output_string oc (Printf.sprintf "build config : phony %s\n" 
                         (String.concat " "   !all_deps)) ;
@@ -3017,8 +3081,103 @@ rule reload
   end
 
 let write_ninja_file () = 
-  let global_data = Sexp_eval.eval_file "bs.el" in 
-  output_ninja global_data 
+  let global_data = Json_lexer.parse_json_from_file "bsconfig.json" in
+  let get_list_string s = 
+    Ext_array.to_list_map (fun (x : Json_lexer.t) ->
+        match x with 
+        | `Str x -> Some x 
+        | _ -> None
+      ) s   in 
+  let () = 
+    match global_data with
+    | `Obj map -> 
+      map 
+      |>
+      Json_lexer.test "config"   (`Obj  begin fun m ->
+          m
+          |> Json_lexer.test "bsc"  (`Str (fun s -> Default.bsc := s))
+          |> Json_lexer.test "bsbuild"  (`Str (fun s -> Default.bsbuild := s))
+          |> Json_lexer.test "bsdep"  (`Str (fun s -> Default.bsdep := s))
+          |> Json_lexer.test "package-name" (`Str (fun s -> Default.package_name := Some s))
+          |> Json_lexer.test "ocamllex" (`Str (fun s -> Default.ocamllex :=  s))
+          |> Json_lexer.test "external-includes" 
+            (`Arr (fun s -> Default.bs_external_includes := get_list_string s))
+
+          |> Json_lexer.test "bsc-flags" (`Arr (fun s -> Default.bsc_flags :=  get_list_string s ))
+
+          |> Json_lexer.test "ppx-flags" (`Arr (fun s -> Default.ppx_flags := get_list_string s))
+          |> Json_lexer.test "copy-or-symlink" (`Arr (fun s -> 
+              Default.static_resources := get_list_string s))
+          |> ignore
+        end)
+      |> 
+      ignore
+      ;
+      map
+      |> Json_lexer.test "file-groups" (`Arr (fun file_groups ->
+          let  expect_file_group (x : Json_lexer.t String_map.t )  =
+            let dir = ref Filename.current_dir_name in 
+            let sources = ref String_map.empty in 
+            let auto_discovery = ref false in
+            let () = 
+
+              x 
+              |> Json_lexer.test "directory" 
+                (`Str (fun s -> dir := s))
+              |> Json_lexer.test "auto-discover"
+                (`Bool (fun b ->auto_discovery:=b ))
+              |> ignore ; 
+              let dir = !dir in 
+              let auto_discovery = !auto_discovery in
+              if auto_discovery then 
+                let files = Sys.readdir dir  in 
+                sources :=
+                  Array.fold_left (fun acc name -> 
+                    if Filename.check_suffix name ".ml" ||
+                       Filename.check_suffix name ".mll" ||
+                       Filename.check_suffix name ".mli" ||
+                       Filename.check_suffix name ".re" ||
+                       Filename.check_suffix name ".rei" then 
+                      map_update ~dir acc name 
+                    else acc
+                  ) String_map.empty files
+              else 
+                x |> Json_lexer.test Schemas.files
+                  (`Arr (fun s -> 
+                       sources :=
+                         Array.fold_left (fun acc s ->
+                             match s with 
+                             | `Str s -> 
+                               map_update ~dir acc s
+                             | _ -> acc
+                           ) String_map.empty s
+                     ))
+              |> ignore 
+            in 
+            {dir = !dir; sources = !sources} in 
+          Default.bs_file_groups := Ext_array.to_list_map (fun x ->
+              match x with 
+              | `Obj map -> Some (expect_file_group map)
+              | _ -> None
+            ) file_groups
+
+        ))
+      |> ignore
+
+    | _ -> ()
+  in
+  Default.(output_ninja 
+             !bsc     
+             !bsbuild
+             !bsdep
+             !package_name
+             !ocamllex
+             !build_output_prefix
+             !bs_external_includes
+             !static_resources 
+             !bs_file_groups 
+             !bsc_flags
+             !ppx_flags )
 
 let load_ninja = ref false
 
@@ -3035,18 +3194,12 @@ let load_ninja ninja_flags =
 let call_ninja flags = 
   Sys.command 
     (String.concat " " (ninja :: "-d" :: "keepdepfile":: flags))
-let output_prefix = ref None
+
 let bsninja_flags =
   [
-    (* "-bs-depfile", Arg.String (fun x -> handle_depfile !output_prefix x)  , *)
-    (* " generate deps file for ml"; *)
-    "-oprefix", Arg.String (fun x -> output_prefix := Some x),
-    " set output prefix";
     "-init", Arg.Unit write_ninja_file,
     " generate build.ninja";
-    (* "--", Arg.Rest collect_ninja_flags, *)
-    (* " flags passed to ninja" *)
- ]
+  ]
 
 let usage = {|Usage: bsbuild.exe <options> <files>
 Options are:|}

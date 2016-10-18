@@ -23,6 +23,10 @@ js_fold.ml:js_fold.mlp j.ml
 sexp_lexer.ml: sexp_lexer.gen.mll
 	@echo "Regenerating sexp_lexer.ml"
 	$(OCAMLLEX) $< -o $@
+json_lexer.ml: json_lexer.gen.mll
+	@echo "Regenerating sexp_lexer.ml"
+	$(OCAMLLEX) $< -o $@ || (rm $@ && exit 2)
+
 # lam_map.ml: lambda_map.mlp lambda.mlp
 # 	@echo "Regenrating lambda_map.ml"
 # 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer -o  $@

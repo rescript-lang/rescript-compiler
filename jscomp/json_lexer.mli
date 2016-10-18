@@ -22,31 +22,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type js_array =  
+  { content : t array ; 
+    loc_start : Lexing.position ; 
+    loc_finish : Lexing.position ; 
+  }
+and t = 
+  [
+    `True
+  | `False
+  | `Null
+  | `Flo of string 
+  | `Str of string 
+  | `Arr of js_array
+  | `Obj of t String_map.t 
+  ]
+
+val parse_json : Lexing.lexbuf -> t 
+val parse_json_from_string : string -> t 
+val parse_json_from_file  : string -> t
+
+type path = string list 
+type status = 
+  | No_path
+  | Found of t 
+  | Wrong_type of path 
 
 
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Flo of (string -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (t String_map.t -> unit)
+  | `Arr of (t array -> unit )
+  | `Null of (unit -> unit)
+  ]
 
+val test:
+  ?fail:(unit -> unit) ->
+  string -> callback -> t String_map.t -> t String_map.t
 
-
-
-
-include Map.Make(String)
-
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
-
-let find_opt k m =
-  match find k m with 
-  | exception v -> None
-  | u -> Some u
-
-let find_default k default m =
-  match find k m with 
-  | exception v -> default 
-  | u -> u
-
-let print p_v fmt  m =
-  iter (fun k v -> 
-      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
-    ) m
-
-
+val query : path -> t ->  status

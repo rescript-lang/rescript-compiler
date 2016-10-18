@@ -2828,7 +2828,13 @@ module String_map : sig
 
 include Map.S with type key = string 
 
-val of_list : (key * 'a) list -> 'a t
+val of_list : (string * 'a) list -> 'a t
+
+val find_opt : string -> 'a t -> 'a option
+
+val find_default : string -> 'a -> 'a t -> 'a
+
+val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
 
 end = struct
 #1 "string_map.ml"
@@ -2867,6 +2873,23 @@ include Map.Make(String)
 
 let of_list (xs : ('a * 'b) list ) = 
   List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+let find_opt k m =
+  match find k m with 
+  | exception v -> None
+  | u -> Some u
+
+let find_default k default m =
+  match find k m with 
+  | exception v -> default 
+  | u -> u
+
+let print p_v fmt  m =
+  iter (fun k v -> 
+      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
+    ) m
+
+
 
 end
 module Binary_cache : sig 

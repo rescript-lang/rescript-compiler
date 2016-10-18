@@ -66,3 +66,70 @@ let eval_string s =
   let env = Hashtbl.create 64 in 
   List.iter (fun x -> ignore (eval env x )) sexps ; 
   env 
+
+type ty = 
+  | Any
+  | String 
+  | List of ty
+
+exception Expect of string * ty
+
+let error (x,ty) = raise (Expect (x,ty) )
+
+let expect_string (key, default) (global_data : env) =
+  match Hashtbl.find global_data key with 
+  | exception Not_found -> default
+  | Atom s | Lit s -> s 
+  | List _ | Data _ -> error (key, String)
+
+let expect_string_opt key (global_data : env) =
+  match Hashtbl.find global_data key with 
+  | exception Not_found -> None
+  | Atom s | Lit s -> Some s 
+  | List _ | Data _ -> error (key, String)
+
+let expect_string_list key (global_data : env) = 
+  match Hashtbl.find global_data key  with 
+  | exception Not_found -> [ ]
+  | Atom _ | Lit _ | Data _ -> error(key, List String)
+  | List xs -> 
+    Ext_list.filter_map (fun x -> 
+        match  x with 
+        | Sexp_lexer.Atom x | Lit x -> Some x 
+        | _ -> None 
+      ) xs 
+
+let expect_string_list_unordered 
+  key 
+  (global_data : env) 
+  init update = 
+  match Hashtbl.find global_data key with 
+  | exception Not_found -> init
+  | Atom _ | Lit _ 
+  | Data _ -> error(key, List String)
+  | List files -> 
+    List.fold_left (fun acc s ->
+        match s with 
+        | Sexp_lexer.Atom s | Lit s -> update acc s 
+        | _ -> acc (* raise Type error *)
+      ) init files 
+
+(* let rec expect_file_groups  key (global_data : env) = *)
+(*   match Hashtbl.find global_data key with  *)
+(*   | exception Not_found -> [] *)
+(*   | Atom _ | Lit _  *)
+(*   | Data _ -> error (key, List Any) *)
+(*   | List ls -> List.map expect_file_group  ls  *)
+
+(* and expect_file_group (x : Sexp_lexer.t)  = *)
+(*   match x with  *)
+(*   | List [ List [ Atom "dir"; Lit dir ] ; List [ Atom "sources";  List files] ] ->  *)
+(*     ( dir , *)
+(*        List.fold_left (fun acc s -> *)
+(*         match s with  *)
+(*         | Sexp_lexer.Atom s | Lit s -> map_update ~dir  acc s  *)
+(*         | _ -> acc (\* raise Type error *\) *)
+(*       ) String_map.empty files *)
+(*     ) *)
+
+(*   | _ -> error ("", List Any) *)

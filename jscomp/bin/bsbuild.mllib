@@ -7,6 +7,5 @@ ext/ext_string
 ext/literals
 ext/ext_filename
 ext/ext_list
-./sexp_lexer
-./sexp_eval
+./json_lexer
 ./bsbuild_main

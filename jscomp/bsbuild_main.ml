@@ -23,11 +23,30 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+module Schemas = struct 
+  let files = "files"
+end
 type module_info = Binary_cache.module_info 
+type 'a file_group = 
+  { dir : string ;
+    sources : 'a
+  } 
 
 let main_ninja = "build.ninja"
 let (//) = Filename.concat 
+module Default = struct
+  let bsc = ref  "bsc.exe"
+  let bsbuild = ref "bsbuild.exe"
+  let bsdep = ref "bsdep.exe"
+  let ocamllex =  ref "ocamllex.opt"
+  let bs_external_includes = ref []
+  let package_name = ref None
+  let bsc_flags = ref []
+  let ppx_flags = ref []
+  let static_resources = ref []
+  let build_output_prefix = ref "_build"
+  let bs_file_groups = ref []
+end
 module Flags = struct 
   let bsc = ("bsc", "bsc.exe")
   let bsbuild = ("bsbuild", "bsbuild.exe")
@@ -38,7 +57,6 @@ module Flags = struct
   let bs_external_includes = "bs-external-includes"
   let bsc_flags = "bsc-flags"
   let file_groups = "file-groups"
-  let files = "files"
   let ppx_flags = "ppx-flags"
   let build_output_prefix = ("build-output-prefix", Filename.current_dir_name)
   let static_resources = "static-resources"
@@ -92,92 +110,23 @@ let map_update ?dir map  name =
   | v -> 
     String_map.add module_name (aux (Some v) name)  map
 
-type ty = 
-  | Any
-  | String 
-  | List of ty
 
-exception Expect of string * ty
-
-let error (x,ty) = raise (Expect (x,ty) )
-
-let expect_string (key, default) (global_data : Sexp_eval.env) =
-  match Hashtbl.find global_data key with 
-  | exception Not_found -> default
-  | Atom s | Lit s -> s 
-  | List _ | Data _ -> error (key, String)
-
-let expect_string_opt key (global_data : Sexp_eval.env) =
-  match Hashtbl.find global_data key with 
-  | exception Not_found -> None
-  | Atom s | Lit s -> Some s 
-  | List _ | Data _ -> error (key, String)
-
-let expect_string_list key (global_data : Sexp_eval.env) = 
-  match Hashtbl.find global_data key  with 
-  | exception Not_found -> [ ]
-  | Atom _ | Lit _ | Data _ -> error(key, List String)
-  | List xs -> 
-    Ext_list.filter_map (fun x -> 
-        match  x with 
-        | Sexp_lexer.Atom x | Lit x -> Some x 
-        | _ -> None 
-      ) xs 
-
-let expect_string_list_unordered 
-  key 
-  (global_data : Sexp_eval.env) 
-  init update = 
-  match Hashtbl.find global_data Flags.files with 
-  | exception Not_found -> init
-  | Atom _ | Lit _ 
-  | Data _ -> error(key, List String)
-  | List files -> 
-    List.fold_left (fun acc s ->
-        match s with 
-        | Sexp_lexer.Atom s | Lit s -> update acc s 
-        | _ -> acc (* raise Type error *)
-      ) init files 
-
-type 'a file_group = 
-  { dir : string ;
-    sources : 'a
-  } 
-let rec expect_file_groups  key (global_data : Sexp_eval.env) =
-  match Hashtbl.find global_data key with 
-  | exception Not_found -> []
-  | Atom _ | Lit _ 
-  | Data _ -> error (key, List Any)
-  | List ls -> List.map expect_file_group  ls 
-
-and expect_file_group (x : Sexp_lexer.t)  =
-  match x with 
-  | List [ List [ Atom "dir"; Lit dir ] ; List [ Atom "sources";  List files] ] -> 
-    { dir ; 
-      sources = List.fold_left (fun acc s ->
-        match s with 
-        | Sexp_lexer.Atom s | Lit s -> map_update ~dir  acc s 
-        | _ -> acc (* raise Type error *)
-      ) String_map.empty files
-    }
-
-  | _ -> error ("", List Any)
-
-let output_ninja (global_data : Sexp_eval.env)  = 
-  let bsc = expect_string Flags.bsc global_data in 
-  let bsbuild = expect_string Flags.bsbuild global_data in 
-  let bsdep = expect_string Flags.bsdep global_data in
-  let package_name = expect_string_opt Flags.package_name global_data in 
-  let ocamllex = expect_string Flags.ocamllex global_data in 
-  let build_output_prefix = expect_string Flags.build_output_prefix global_data in 
-  let bs_external_includes =
-    expect_string_list Flags.bs_external_includes  global_data in 
-  let static_resources = 
-    expect_string_list Flags.static_resources global_data in
-
-  let bs_file_groups = expect_file_groups Flags.file_groups global_data
-  in  
-  (* let bs_files = expect_string_list_unordered Flags.files global_data String_map.empty map_update in *)
+let output_ninja 
+    bsc
+    bsbuild
+    bsdep
+    package_name
+    ocamllex
+    build_output_prefix
+    bs_external_includes
+    static_resources 
+    bs_file_groups 
+    bsc_flags
+    ppx_flags 
+  = 
+  let ppx_flags =
+  String.concat space @@
+    Ext_list.flat_map (fun x -> ["-ppx";  x ])  ppx_flags in 
   let bs_files, source_dirs  = List.fold_left (fun (acc,dirs) {sources ; dir } -> 
       String_map.merge (fun modname k1 k2 ->
           match k1 , k2 with
@@ -193,10 +142,6 @@ let output_ninja (global_data : Sexp_eval.env)  =
     end;
   Binary_cache.write_build_cache (build_output_prefix // Binary_cache.bsbuild_cache) bs_files ;
 
-  let ppx_flags = 
-    String.concat space @@
-      Ext_list.flat_map (fun x -> ["-ppx";  x ])  @@
-    expect_string_list Flags.ppx_flags global_data in 
   let bsc_computed_flags =
     let internal_includes =
       source_dirs
@@ -208,7 +153,7 @@ let output_ninja (global_data : Sexp_eval.env)  =
       | None -> external_includes @ internal_includes 
       | Some x -> Flags.bs_package_name ::  x :: external_includes @ internal_includes
     in 
-    let bsc_flags = expect_string_list Flags.bsc_flags global_data in 
+
     String.concat " " ( bsc_flags @ init_flags)
   in
   let oc = open_out main_ninja in 
@@ -369,7 +314,7 @@ rule copy_resources
 rule reload
       command = ${bsbuild} -init
 |};
-    output_string oc (Printf.sprintf "build build.ninja : reload | bs.el\n" );
+    output_string oc (Printf.sprintf "build build.ninja : reload | bsconfig.json\n" );
 
     output_string oc (Printf.sprintf "build config : phony %s\n" 
                         (String.concat " "   !all_deps)) ;
@@ -380,8 +325,103 @@ rule reload
   end
 
 let write_ninja_file () = 
-  let global_data = Sexp_eval.eval_file "bs.el" in 
-  output_ninja global_data 
+  let global_data = Json_lexer.parse_json_from_file "bsconfig.json" in
+  let get_list_string s = 
+    Ext_array.to_list_map (fun (x : Json_lexer.t) ->
+        match x with 
+        | `Str x -> Some x 
+        | _ -> None
+      ) s   in 
+  let () = 
+    match global_data with
+    | `Obj map -> 
+      map 
+      |>
+      Json_lexer.test "config"   (`Obj  begin fun m ->
+          m
+          |> Json_lexer.test "bsc"  (`Str (fun s -> Default.bsc := s))
+          |> Json_lexer.test "bsbuild"  (`Str (fun s -> Default.bsbuild := s))
+          |> Json_lexer.test "bsdep"  (`Str (fun s -> Default.bsdep := s))
+          |> Json_lexer.test "package-name" (`Str (fun s -> Default.package_name := Some s))
+          |> Json_lexer.test "ocamllex" (`Str (fun s -> Default.ocamllex :=  s))
+          |> Json_lexer.test "external-includes" 
+            (`Arr (fun s -> Default.bs_external_includes := get_list_string s))
+
+          |> Json_lexer.test "bsc-flags" (`Arr (fun s -> Default.bsc_flags :=  get_list_string s ))
+
+          |> Json_lexer.test "ppx-flags" (`Arr (fun s -> Default.ppx_flags := get_list_string s))
+          |> Json_lexer.test "copy-or-symlink" (`Arr (fun s -> 
+              Default.static_resources := get_list_string s))
+          |> ignore
+        end)
+      |> 
+      ignore
+      ;
+      map
+      |> Json_lexer.test "file-groups" (`Arr (fun file_groups ->
+          let  expect_file_group (x : Json_lexer.t String_map.t )  =
+            let dir = ref Filename.current_dir_name in 
+            let sources = ref String_map.empty in 
+            let auto_discovery = ref false in
+            let () = 
+
+              x 
+              |> Json_lexer.test "directory" 
+                (`Str (fun s -> dir := s))
+              |> Json_lexer.test "auto-discover"
+                (`Bool (fun b ->auto_discovery:=b ))
+              |> ignore ; 
+              let dir = !dir in 
+              let auto_discovery = !auto_discovery in
+              if auto_discovery then 
+                let files = Sys.readdir dir  in 
+                sources :=
+                  Array.fold_left (fun acc name -> 
+                    if Filename.check_suffix name ".ml" ||
+                       Filename.check_suffix name ".mll" ||
+                       Filename.check_suffix name ".mli" ||
+                       Filename.check_suffix name ".re" ||
+                       Filename.check_suffix name ".rei" then 
+                      map_update ~dir acc name 
+                    else acc
+                  ) String_map.empty files
+              else 
+                x |> Json_lexer.test Schemas.files
+                  (`Arr (fun s -> 
+                       sources :=
+                         Array.fold_left (fun acc s ->
+                             match s with 
+                             | `Str s -> 
+                               map_update ~dir acc s
+                             | _ -> acc
+                           ) String_map.empty s
+                     ))
+              |> ignore 
+            in 
+            {dir = !dir; sources = !sources} in 
+          Default.bs_file_groups := Ext_array.to_list_map (fun x ->
+              match x with 
+              | `Obj map -> Some (expect_file_group map)
+              | _ -> None
+            ) file_groups
+
+        ))
+      |> ignore
+
+    | _ -> ()
+  in
+  Default.(output_ninja 
+             !bsc     
+             !bsbuild
+             !bsdep
+             !package_name
+             !ocamllex
+             !build_output_prefix
+             !bs_external_includes
+             !static_resources 
+             !bs_file_groups 
+             !bsc_flags
+             !ppx_flags )
 
 let load_ninja = ref false
 
@@ -398,18 +438,12 @@ let load_ninja ninja_flags =
 let call_ninja flags = 
   Sys.command 
     (String.concat " " (ninja :: "-d" :: "keepdepfile":: flags))
-let output_prefix = ref None
+
 let bsninja_flags =
   [
-    (* "-bs-depfile", Arg.String (fun x -> handle_depfile !output_prefix x)  , *)
-    (* " generate deps file for ml"; *)
-    "-oprefix", Arg.String (fun x -> output_prefix := Some x),
-    " set output prefix";
     "-init", Arg.Unit write_ninja_file,
     " generate build.ninja";
-    (* "--", Arg.Rest collect_ninja_flags, *)
-    (* " flags passed to ninja" *)
- ]
+  ]
 
 let usage = {|Usage: bsbuild.exe <options> <files>
 Options are:|}

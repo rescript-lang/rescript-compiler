@@ -5,6 +5,7 @@ type error =
   | Illegal_escape of string
   | Unbalanced_paren 
   | Unterminated_paren
+  | Unterminated_string
   | Non_sexp_outside
 exception Error of error * Lexing.position * Lexing.position;;
 
@@ -205,12 +206,7 @@ and scan_string buf start = parse
       }
   | eof
       {
-        let msg =
-          Printf.sprintf
-            "Sexplib.Lexer.scan_string: unterminated string at line %d char %d"
-            start.pos_lnum (start.pos_cnum - start.pos_bol)
-        in
-        failwith msg
+        error lexbuf Unterminated_string
       }
 
 { 
