@@ -4863,11 +4863,28 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
 # 2974 "parsing/lexer.ml"
 
 end
-module Bspp_main
-= struct
+module Bspp_main : sig 
+#1 "bspp_main.mli"
+(** *)
+
+end = struct
 #1 "bspp_main.ml"
 
 
+let buffer_intervals (intervals : (int * int) list) buf ic oc =
+  intervals
+  |> List.iter
+    (fun (start, stop) -> 
+       let len = stop - start in 
+       if len <> 0 then 
+         begin
+           seek_in ic start ; 
+           Buffer.add_channel buf ic len ; 
+           Buffer.output_buffer oc buf ; 
+           Buffer.clear buf;
+         end
+    )
+  
 
 let preprocess fn oc = 
   let ic = open_in fn in 

@@ -1,5 +1,19 @@
 
 
+let buffer_intervals (intervals : (int * int) list) buf ic oc =
+  intervals
+  |> List.iter
+    (fun (start, stop) -> 
+       let len = stop - start in 
+       if len <> 0 then 
+         begin
+           seek_in ic start ; 
+           Buffer.add_channel buf ic len ; 
+           Buffer.output_buffer oc buf ; 
+           Buffer.clear buf;
+         end
+    )
+  
 
 let preprocess fn oc = 
   let ic = open_in fn in 
