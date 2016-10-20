@@ -9,6 +9,8 @@ type error =
   | Expect_colon
   | Expect_string_or_rbrace 
   | Expect_eof 
+  | Trailing_comma_in_obj
+  | Trailing_comma_in_array
 exception Error of error * Lexing.position * Lexing.position;;
 
 let fprintf  = Format.fprintf
@@ -32,6 +34,10 @@ let report_error ppf = function
   | Unexpected_token 
     ->
     fprintf ppf "Unexpected_token"
+  | Trailing_comma_in_obj 
+    -> fprintf ppf "Trailing_comma_in_obj"
+  | Trailing_comma_in_array 
+    -> fprintf ppf "Trailing_comma_in_array"
 let print_position fmt (pos : Lexing.position) = 
   Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
@@ -258,19 +264,23 @@ let rec parse_json lexbuf =
     | Null -> `Null
     | Number s ->  `Flo s 
     | String s -> `Str s 
-    | Lbracket -> parse_array lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map String_map.empty lexbuf
+    | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  loc_start loc_finish acc lexbuf =
+  and parse_array  trailing_comma loc_start loc_finish acc lexbuf =
     match token () with 
-    | Rbracket -> `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
-                            loc_end = lexbuf.lex_curr_p }
+    | Rbracket ->
+      if trailing_comma then 
+        error lexbuf Trailing_comma_in_array
+      else 
+        `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+              loc_end = lexbuf.lex_curr_p }
     | x -> 
       push x ;
       let new_one = json lexbuf in 
       begin match token ()  with 
       | Comma -> 
-          parse_array loc_start loc_finish (new_one :: acc) lexbuf 
+          parse_array true loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
         -> `Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
@@ -278,9 +288,13 @@ let rec parse_json lexbuf =
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map acc lexbuf = 
+  and parse_map trailing_comma acc lexbuf = 
     match token () with 
-    | Rbrace -> `Obj acc 
+    | Rbrace -> 
+      if trailing_comma then 
+        error lexbuf Trailing_comma_in_obj
+      else 
+        `Obj acc 
     | String key -> 
       begin match token () with 
       | Colon ->
@@ -288,7 +302,7 @@ let rec parse_json lexbuf =
         begin match token () with 
         | Rbrace -> `Obj (String_map.add key value acc )
         | Comma -> 
-          parse_map (String_map.add key value acc) lexbuf 
+          parse_map true  (String_map.add key value acc) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon
