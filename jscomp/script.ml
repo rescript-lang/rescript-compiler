@@ -1,5 +1,17 @@
+#mod_use "ext/ext_string.ml";;
+#mod_use "ext/ext_bytes.ml";;
+#mod_use "ext/string_map.ml";;
+#mod_use "ext/ext_array.ml";;
+#mod_use "json_lexer.ml";;
+
+#install_printer String_map.print;;
+
+let print_position fmt (pos : Lexing.position) = 
+  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+#install_printer print_position;;
 #mod_use "sexp_lexer.ml";;
 #mod_use "sexp_eval.ml";;
+
 #install_printer Sexp_eval.print_env;;
 #install_printer Sexp_eval.print;;
 (try ignore @@ Sexp_lexer.token (Lexing.from_string {|  (1 2 3  ( a (b) ) |}); 

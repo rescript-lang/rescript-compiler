@@ -31,4 +31,10 @@
 
 include Map.S with type key = string 
 
-val of_list : (key * 'a) list -> 'a t
+val of_list : (string * 'a) list -> 'a t
+
+val find_opt : string -> 'a t -> 'a option
+
+val find_default : string -> 'a -> 'a t -> 'a
+
+val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
