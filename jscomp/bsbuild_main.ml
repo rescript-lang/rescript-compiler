@@ -324,8 +324,12 @@ rule reload
     close_out oc;
   end
 
+let config_file = "bsconfig.json"
+let config_file_bak = "bsconfig.json.bak"
 let write_ninja_file () = 
-  let global_data = Json_lexer.parse_json_from_file "bsconfig.json" in
+  let config_json_chan = open_in_bin config_file in 
+  let global_data = Json_lexer.parse_json_from_chan config_json_chan  in
+  let update_queue = ref [] in 
   let get_list_string s = 
     Ext_array.to_list_map (fun (x : Json_lexer.t) ->
         match x with 
@@ -362,40 +366,62 @@ let write_ninja_file () =
           let  expect_file_group (x : Json_lexer.t String_map.t )  =
             let dir = ref Filename.current_dir_name in 
             let sources = ref String_map.empty in 
-            let auto_discovery = ref false in
             let () = 
-
               x 
               |> Json_lexer.test "directory" 
                 (`Str (fun s -> dir := s))
-              |> Json_lexer.test "auto-discover"
-                (`Bool (fun b ->auto_discovery:=b ))
-              |> ignore ; 
-              let dir = !dir in 
-              let auto_discovery = !auto_discovery in
-              if auto_discovery then 
-                let files = Sys.readdir dir  in 
-                sources :=
-                  Array.fold_left (fun acc name -> 
-                    if Filename.check_suffix name ".ml" ||
-                       Filename.check_suffix name ".mll" ||
-                       Filename.check_suffix name ".mli" ||
-                       Filename.check_suffix name ".re" ||
-                       Filename.check_suffix name ".rei" then 
-                      map_update ~dir acc name 
-                    else acc
-                  ) String_map.empty files
-              else 
-                x |> Json_lexer.test Schemas.files
-                  (`Arr (fun s -> 
-                       sources :=
-                         Array.fold_left (fun acc s ->
-                             match s with 
-                             | `Str s -> 
-                               map_update ~dir acc s
-                             | _ -> acc
-                           ) String_map.empty s
-                     ))
+              |> Json_lexer.test Schemas.files 
+                (`Arr_loc (fun s loc_start loc_end ->
+                     let dir = !dir in 
+                     if Array.length s  = 0 then 
+                       begin 
+                         let files_array = Sys.readdir dir  in 
+                         let files, file_array =
+                           Array.fold_left (fun (acc, f) name -> 
+                               if Filename.check_suffix name ".ml" ||
+                                  Filename.check_suffix name ".mll" ||
+                                  Filename.check_suffix name ".mli" ||
+                                  Filename.check_suffix name ".re" ||
+                                  Filename.check_suffix name ".rei" then 
+                                 (map_update ~dir acc name , name :: f)
+                               else (acc,f)
+                             ) (String_map.empty, []) files_array in 
+                         update_queue :=
+                           {Ext_file_pp.loc_start ;
+                            loc_end; action = (`print (fun oc offset -> 
+                               let indent = String.make offset ' ' in 
+                               let p_str s = 
+                                 output_string oc indent ; 
+                                 output_string oc s ;
+                                 output_string oc "\n"
+                               in
+                               match file_array with 
+                               | []
+                                 -> output_string oc "[ ]\n"
+                               | first::rest 
+                                 -> 
+                                 output_string oc "[ \n";
+                                 p_str ("\"" ^ first ^ "\"");
+                                 List.iter 
+                                   (fun f -> 
+                                      p_str (", \"" ^f ^ "\"")
+                                   ) rest;
+                                 p_str "]" 
+                                 (* we need add a new line in the end,
+                                    otherwise it will be idented twice
+                                 *)
+                             ))} :: !update_queue;
+                         sources := files
+                       end
+              
+                     else 
+                       sources := Array.fold_left (fun acc s ->
+                           match s with 
+                           | `Str s -> 
+                             map_update ~dir acc s
+                           | _ -> acc
+                         ) String_map.empty s
+                      ))
               |> ignore 
             in 
             {dir = !dir; sources = !sources} in 
@@ -410,6 +436,19 @@ let write_ninja_file () =
 
     | _ -> ()
   in
+  begin match List.sort Ext_file_pp.interval_compare  !update_queue with 
+  | [] -> ()
+  | queue -> 
+    let file_size = in_channel_length config_json_chan in
+    let oc = open_out_bin config_file_bak in
+    let () = 
+      Ext_file_pp.process_wholes
+        queue file_size config_json_chan oc in 
+    close_out oc ;
+    close_in config_json_chan ; 
+    Unix.unlink config_file; 
+    Unix.rename config_file_bak config_file
+  end;
   Default.(output_ninja 
              !bsc     
              !bsbuild
