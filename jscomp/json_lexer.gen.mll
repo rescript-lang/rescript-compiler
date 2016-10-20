@@ -2,6 +2,7 @@
 type error =
   | Illegal_character of char
   | Unterminated_string
+  | Unterminated_comment
   | Illegal_escape of string
   | Unexpected_token 
   | Expect_comma_or_rbracket
@@ -38,6 +39,9 @@ let report_error ppf = function
     -> fprintf ppf "Trailing_comma_in_obj"
   | Trailing_comma_in_array 
     -> fprintf ppf "Trailing_comma_in_array"
+  | Unterminated_comment 
+    -> fprintf ppf "Unterminated_comment"
+         
 let print_position fmt (pos : Lexing.position) = 
   Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
 
@@ -125,13 +129,17 @@ let exp = e digits
 let positive_int = (digit | nonzero digits)
 let number = '-'? positive_int (frac | exp | frac exp) ?
 let hexdigit = digit | ['a'-'f' 'A'-'F']    
+
+let comment_start = "/*"
+let comment_end = "*/"
+
 rule lex_json buf  = parse
 | blank + { lex_json buf lexbuf}
 | lf | dos_newline { 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   }
-
+| comment_start { comment buf lexbuf}
 | "true" { True}
 | "false" {False}
 | "null" {Null}
@@ -154,7 +162,10 @@ rule lex_json buf  = parse
 }
 | eof  {Eof }
 | _ as c  { error lexbuf (Illegal_character c )}
-
+and comment buf  = parse 
+| comment_end {lex_json buf lexbuf}
+| _  {comment buf lexbuf}
+| eof  {error lexbuf Unterminated_comment}
 (* Note this is wrong for JSON conversion *)
 (* We should fix it later *)
 and scan_string buf start = parse

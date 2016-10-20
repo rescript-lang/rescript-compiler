@@ -1,5 +1,6 @@
 bsc = jscomp/bin/bsc.exe
 bsc_computed_flags = -w -40 -bs-no-version-header -bs-cross-module-opt -bs-package-name bs-platform -I jscomp/runtime -I jscomp/stdlib -I jscomp/others -I _build/jscomp/test/
+bsc_parsing_flags = -w -40 -bs-no-version-header -bs-cross-module-opt
 bsbuild = jscomp/bin/bsbuild.exe
 bsdep = jscomp/bin/bsdep.exe
 ocamllex = ocamllex.opt
@@ -7,14 +8,15 @@ ppx_flags =
 build_output_prefix = _build
 builddir = _build
 
+# for ast building, we remove most flags with respect to -I 
 rule build_ast
-  command = ${bsc} ${pp_flags} ${ppx_flags} ${bsc_computed_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}
+  command = ${bsc} ${pp_flags} ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}
   description = Building ast  ${out}
 rule build_ast_from_reason_impl
-  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_computed_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}     
+  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}     
   description = Building ast from reason re ${out}
 rule build_ast_from_reason_intf
-  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_computed_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}        
+  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}        
   description = Building ast from reason rei  ${out}
 
 rule build_deps

@@ -435,5 +435,22 @@
                         ]
                                     
         }
-    ]
+/*        ,
+        {
+            "directory" : "jscomp/test/cyc",
+            "files" : [ 
+                        "x.ml"
+                        , "c.ml"
+                        , "b_a.ml"
+                        , "a_b.ml"
+                        , "a4_a5.ml"
+                        , "a3_a4.ml"
+                        , "a2_a3.ml"
+                        , "a1_a2.mli"
+                        , "a1_a2.ml"
+                        , "a0_a1.ml"
+                        ]
+                        
+        }
+*/    ]
 }

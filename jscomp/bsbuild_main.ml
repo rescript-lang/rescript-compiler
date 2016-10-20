@@ -141,13 +141,16 @@ let output_ninja
       ignore @@ Unix.mkdir build_output_prefix 0o777
     end;
   Binary_cache.write_build_cache (build_output_prefix // Binary_cache.bsbuild_cache) bs_files ;
-
-  let bsc_computed_flags =
-    let internal_includes =
+  let internal_includes =
       source_dirs
       |> Ext_list.flat_map (fun x -> ["-I" ; build_output_prefix // x ]) in 
-    let external_includes = 
+  let external_includes = 
       Ext_list.flat_map (fun x -> ["-I" ; x]) bs_external_includes in 
+
+  let bsc_parsing_flags =
+    String.concat " " bsc_flags 
+  in  
+  let bsc_computed_flags =
     let init_flags = 
       match package_name with 
       | None -> external_includes @ internal_includes 
@@ -163,6 +166,7 @@ let output_ninja
     let () = 
       output_string oc "bsc = "; output_string oc bsc ; output_string oc "\n";
       output_string oc "bsc_computed_flags = "; output_string oc bsc_computed_flags ; output_string oc "\n";
+      output_string oc "bsc_parsing_flags = "; output_string oc bsc_parsing_flags ; output_string oc "\n";
       output_string oc "bsbuild = "; output_string oc bsbuild ; output_string oc "\n";
       output_string oc "bsdep = "; output_string oc bsdep ; output_string oc "\n";
       output_string oc "ocamllex = "; output_string oc ocamllex ; output_string oc "\n";
@@ -170,14 +174,15 @@ let output_ninja
       output_string oc "build_output_prefix = "; output_string oc build_output_prefix ; output_string oc "\n";
       output_string oc "builddir = "; output_string oc build_output_prefix ; output_string oc "\n";
       output_string oc {|
+# for ast building, we remove most flags with respect to -I 
 rule build_ast
-  command = ${bsc} ${pp_flags} ${ppx_flags} ${bsc_computed_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}
+  command = ${bsc} ${pp_flags} ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}
   description = Building ast  ${out}
 rule build_ast_from_reason_impl
-  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_computed_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}     
+  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}     
   description = Building ast from reason re ${out}
 rule build_ast_from_reason_intf
-  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_computed_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}        
+  command = ${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}        
   description = Building ast from reason rei  ${out}
 
 rule build_deps
