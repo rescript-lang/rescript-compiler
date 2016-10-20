@@ -716,7 +716,7 @@ function test_fmt(fmt, s) {
   return +(unit(fmt, s) === s);
 }
 
-var test9_string = "\xef\xbb\xbf";
+var test9_string = "ï»¿";
 
 var partial_arg = /* Format */[
   /* Caml_string */Block.__(3, [
@@ -731,7 +731,7 @@ function test_S(param) {
 }
 
 function test9() {
-  if (test_S("poi") && test_S('a"b') && test_S("a\nb") && test_S("a\nb") && test_S("a\\\nb \\\nc\n\\\nb") && test_S("a\\\n\\\n\\\nb \\\nc\n\\\nb") && test_S("\xef") && test_S("\\xef") && Curry._1(Scanf.sscanf('"\\xef"', /* Format */[
+  if (test_S("poi") && test_S('a"b') && test_S("a\nb") && test_S("a\nb") && test_S("a\\\nb \\\nc\n\\\nb") && test_S("a\\\n\\\n\\\nb \\\nc\n\\\nb") && test_S("ï") && test_S("\\xef") && Curry._1(Scanf.sscanf('"\\xef"', /* Format */[
               /* Caml_string */Block.__(3, [
                   /* No_padding */0,
                   /* End_of_format */0
@@ -739,7 +739,7 @@ function test9() {
               "%S"
             ]), function (s) {
           return s;
-        }) === "\xef" && Curry._1(Scanf.sscanf('"\\xef\\xbb\\xbf"', /* Format */[
+        }) === "ï" && Curry._1(Scanf.sscanf('"\\xef\\xbb\\xbf"', /* Format */[
               /* Caml_string */Block.__(3, [
                   /* No_padding */0,
                   /* End_of_format */0
@@ -755,7 +755,7 @@ function test9() {
               "%S"
             ]), function (s) {
           return s;
-        }) === "\xef\xbb\xbf" && Curry._1(Scanf.sscanf('"\xef\xbb\xbf"', /* Format */[
+        }) === "ï»¿" && Curry._1(Scanf.sscanf('"ï»¿"', /* Format */[
               /* Caml_string */Block.__(3, [
                   /* No_padding */0,
                   /* End_of_format */0
@@ -873,12 +873,12 @@ function test11() {
         }) && Curry._1(Scanf.sscanf("Jean-Luc\tde Leage\t68", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\xff\xfd\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                  "ÿýÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                   /* Char_literal */Block.__(12, [
                       /* " " */32,
                       /* Scan_char_set */Block.__(20, [
                           /* None */0,
-                          "\xff\xfd\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                          "ÿýÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                           /* Char_literal */Block.__(12, [
                               /* " " */32,
                               /* Int */Block.__(4, [
@@ -1002,7 +1002,7 @@ function test110() {
         }) && Curry._1(Scanf.sscanf("", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                  "ÿûÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                   /* End_of_format */0
                 ]),
               "%[^\n]"
@@ -1011,7 +1011,7 @@ function test110() {
         }) && Curry._1(Scanf.sscanf("", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                  "ÿûÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                   /* Char_literal */Block.__(12, [
                       /* " " */32,
                       /* End_of_format */0
@@ -1153,7 +1153,7 @@ function test111() {
   return Curry._1(Scanf.sscanf("", /* Format */[
                   /* Scan_char_set */Block.__(20, [
                       /* None */0,
-                      "\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                      "ÿûÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                       /* Formatting_lit */Block.__(17, [
                           /* Force_newline */3,
                           /* End_of_format */0
@@ -3162,7 +3162,7 @@ function test40() {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Scan_char_set */Block.__(20, [
                       /* None */0,
-                      "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                      "ÿÿÿÿÿÿÿÿÿÿÿÿùÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                       /* String */Block.__(2, [
                           /* No_padding */0,
                           /* Flush */Block.__(10, [/* End_of_format */0])
@@ -3186,7 +3186,7 @@ function test41() {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Scan_char_set */Block.__(20, [
                       /* None */0,
-                      "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                      "ÿÿÿÿÿÿÿÿÿÿÿÿñÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                       /* Scan_char_set */Block.__(20, [
                           /* None */0,
                           "\0\0\0\0\0\0\0\0\0\0\0\0\x0e\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -3212,7 +3212,7 @@ function test42() {
   if (Curry._1(Scanf.bscanf(ib, /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf1\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                  "ÿÿÿÿÿÿÿÿÿÿÿÿñÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                   /* Scan_char_set */Block.__(20, [
                       /* None */0,
                       "\0\0\0\0\0\0\0\0\0\0\0\0\x0e\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -3293,12 +3293,12 @@ function test45() {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Scan_char_set */Block.__(20, [
                       /* None */0,
-                      "\0\0\0\0\0\0\xff\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                      "\0\0\0\0\0\0ÿ\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                       /* Char_literal */Block.__(12, [
                           /* "." */46,
                           /* Scan_char_set */Block.__(20, [
                               /* None */0,
-                              "\0\0\0\0\0\0\xff\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                              "\0\0\0\0\0\0ÿ\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                               /* String */Block.__(2, [
                                   /* No_padding */0,
                                   /* Flush */Block.__(10, [/* End_of_format */0])
@@ -3678,7 +3678,7 @@ function test49() {
         }) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\0\0\0\0\0\0\0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                  "\0\0\0\0\0\0\0\0\0\0\0\0þÿÿ\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* End_of_format */0
                 ]),
               "%[a-z]"
@@ -3699,7 +3699,7 @@ function test49() {
         }) && Curry._1(Scanf.sscanf("as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\0\0\0\0\0\0\0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                  "\0\0\0\0\0\0\0\0\0\0\0\0þÿÿ\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* String */Block.__(2, [
                       /* No_padding */0,
                       /* End_of_format */0
@@ -3711,7 +3711,7 @@ function test49() {
         }) && Curry._1(Scanf.sscanf("-as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\0\0\0\0\0 \0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                  "\0\0\0\0\0 \0\0\0\0\0\0þÿÿ\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* End_of_format */0
                 ]),
               "%[-a-z]"
@@ -3720,7 +3720,7 @@ function test49() {
         }) && Curry._1(Scanf.sscanf("-as", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\0\0\0\0\0 \0\0\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                  "\0\0\0\0\0 \0\0\0\0\0\0þÿÿ\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* Formatting_lit */Block.__(17, [
                       /* Scan_indic */Block.__(2, [/* "s" */115]),
                       /* End_of_format */0
@@ -3830,7 +3830,7 @@ function reader(ib, ob) {
     return Curry._1(Scanf.bscanf(ib, /* Format */[
                     /* Scan_char_set */Block.__(20, [
                         /* None */0,
-                        "\xff\xfb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                        "ÿûÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ",
                         /* Char_literal */Block.__(12, [
                             /* "\n" */10,
                             /* End_of_format */0
@@ -4583,7 +4583,7 @@ function test58() {
             ]), Pervasives.$caret) === "string1string2" && Curry._1(Scanf.sscanf("string1@string2", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
-                  "\0\0\0\0\0\0\xff\x03\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                  "\0\0\0\0\0\0ÿ\x03\0\0\0\0þÿÿ\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                   /* Char_literal */Block.__(12, [
                       /* "@" */64,
                       /* String */Block.__(2, [
@@ -4597,7 +4597,7 @@ function test58() {
     return +(Curry._1(Scanf.sscanf("string1@%string2", /* Format */[
                       /* Scan_char_set */Block.__(20, [
                           /* None */0,
-                          "\0\0\0\0\0\0\xff\x03\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                          "\0\0\0\0\0\0ÿ\x03\0\0\0\0þÿÿ\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                           /* Char_literal */Block.__(12, [
                               /* "@" */64,
                               /* Char_literal */Block.__(12, [
