@@ -41,6 +41,7 @@
             "description": "package name"
         },        
         "ocaml-config" : {
+            "title": "OCaml Configuration format",
             "properties": {
                 "bsdep": {
                     "type": "string",
@@ -71,7 +72,7 @@
                 },
                 "bs-lib-dir": {
                     "type": "string",
-                    "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/buckle "
+                    "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/bs "
                 },
                 "bs-dependencies": {
                     "type" : "object",
