@@ -19,7 +19,8 @@
                       "$ref" : "#/definitions/sourceItem"
                   }
               }  
-            } 
+            },
+            "required": ["dir","files"] 
         },
         "stringArray" : {
             "type" : "array",
@@ -40,7 +41,6 @@
             "description": "package name"
         },        
         "ocaml-config" : {
-            "type": "object",
             "properties": {
                 "bsdep": {
                     "type": "string",
@@ -67,10 +67,6 @@
                 },
                 "bs-external-includes": {
                     "$ref": "#/definitions/stringArray",
-                    "type": "array",
-                    "items": {
-                        "type": "array"
-                    },
                     "description": "external include directories, which will be applied -I to all compilation units, it is not needed in most cases"
                 },
                 "bs-lib-dir": {
@@ -94,9 +90,12 @@
                         "$ref" : "#/definitions/sourceItem"
                     }
                 }
-            }            
+            },
+            "required": ["sources"] ,
+            "additionalProperties": false           
         }
     },
     "required": ["version", "name", "ocaml-config"]
+    
 }
 

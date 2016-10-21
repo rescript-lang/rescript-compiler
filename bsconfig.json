@@ -1,34 +1,40 @@
 {
-    "config" : 
+    "name" :"bs-platform",
+    "version": "1.2.1",
+    "ocaml-config" : 
     {
         "bsdep" : "jscomp/bin/bsdep.exe",
         "bsbuild" : "jscomp/bin/bsbuild.exe",
         "bsc" : "jscomp/bin/bsc.exe",
-        "external-includes" : ["jscomp/runtime", "jscomp/stdlib", "jscomp/others"],
-        "package-name" : "bs-platform", // could be inferred from package.json?
+        "bs-external-includes" : [
+            "jscomp/runtime", 
+            "jscomp/stdlib", 
+            "jscomp/others"
+            ],
+
+        
         "bsc-flags" : 
         [
             "-w", "-40",  "-bs-no-version-header", "-bs-cross-module-opt"
         ],
-
-        "copy-or-symlink" :  
+        "bs-copy-or-symlink" :  
         // for out of source build, on Unix will do a symlink
         // on windows will copy
         [
             "jscomp/test/flow_parser_sample.js",
             "jscomp/test/joinClasses.js"
         ]
-         
-    },
-    "file-groups" : 
+        ,
+    "sources" : 
     [ 
-        {
-            "directory" : "jscomp/test/" ,
-            // so the design is this way
+             // so the design is this way
             // if we find 
             // "files" : [
             // ]
             // we will update it *before* spitting out build.ninja
+
+        {
+            "dir" : "jscomp/test/" ,
             "files" : [ 
                         "watch_test.ml"
                         , "utf8_decode_test.ml"
@@ -435,6 +441,11 @@
                         ]
                                     
         }
+    ]
+    }
+}
+         
+    
 /*        ,
         {
             "directory" : "jscomp/test/cyc",
@@ -452,5 +463,4 @@
                         ]
                         
         }
-*/    ]
-}
+*/  
