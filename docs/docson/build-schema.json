@@ -62,6 +62,16 @@
                     "type": "string",
                     "description": "the path to bsc"
                 },
+                "ocamllex" : {
+                    "type" : "string",
+                    "description": "path to ocamllex"
+                },
+                "ocamlyacc" : {
+                    "type": "string"
+                }, 
+                "menhir" : {
+                    "type": "string"
+                },
                 "refmt" : {
                     "type" : "string",
                     "description": "the path to refmt" 
