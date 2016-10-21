@@ -11,7 +11,8 @@
                   "type" : "array",
                   "items" : {
                       "type" : "string"
-                  }
+                  },
+                  "description": "if files are empty, the build tool will populate it automatically, this is useful for initial adoption"
               },
               "subdirs" : {
                   "type" : "array",
