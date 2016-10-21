@@ -3044,7 +3044,11 @@ type 'a file_group =
   } 
 
 let main_ninja = "build.ninja"
-let (//) = Filename.concat 
+let (//) (x : string)  y =
+  if x = Filename.current_dir_name then y else 
+  if y = Filename.current_dir_name then x else 
+    Filename.concat x y
+      
 module Default = struct
   let bsc = ref  "bsc.exe"
   let bsbuild = ref "bsbuild.exe"
@@ -3151,9 +3155,8 @@ let output_ninja
     let init_flags = 
       match package_name with 
       | None -> external_includes @ internal_includes 
-      | Some x -> Schemas.name ::  x :: external_includes @ internal_includes
+      | Some x -> "-bs-package-name" ::  x :: external_includes @ internal_includes
     in 
-
     String.concat " " ( bsc_flags @ init_flags)
   in
   let oc = open_out main_ninja in 
@@ -3332,6 +3335,87 @@ let config_file_bak = "bsconfig.json.bak"
 let (|?)  m (key, cb) =
     m  |> Json_lexer.test key cb 
 
+let rec handle_list_files update_queue dir s loc_start loc_end =  
+  if Array.length s  = 0 then 
+    begin 
+      let files_array = Sys.readdir dir  in 
+      let files, file_array =
+        Array.fold_left (fun (acc, f) name -> 
+            if Filename.check_suffix name ".ml" ||
+               Filename.check_suffix name ".mll" ||
+               Filename.check_suffix name ".mli" ||
+               Filename.check_suffix name ".re" ||
+               Filename.check_suffix name ".rei" then 
+              (map_update ~dir acc name , name :: f)
+            else (acc,f)
+          ) (String_map.empty, []) files_array in 
+      update_queue :=
+        {Ext_file_pp.loc_start ;
+         loc_end; action = (`print (fun oc offset -> 
+            let indent = String.make offset ' ' in 
+            let p_str s = 
+              output_string oc indent ; 
+              output_string oc s ;
+              output_string oc "\n"
+            in
+            match file_array with 
+            | []
+              -> output_string oc "[ ]\n"
+            | first::rest 
+              -> 
+              output_string oc "[ \n";
+              p_str ("\"" ^ first ^ "\"");
+              List.iter 
+                (fun f -> 
+                   p_str (", \"" ^f ^ "\"")
+                ) rest;
+              p_str "]" 
+              (* we need add a new line in the end,
+                 otherwise it will be idented twice
+              *)
+          ))} :: !update_queue;
+       files
+    end
+
+  else 
+     Array.fold_left (fun acc s ->
+        match s with 
+        | `Str s -> 
+          map_update ~dir acc s
+        | _ -> acc
+      ) String_map.empty s
+
+and parsing_sources (file_groups : Json_lexer.t array) update_queue = 
+  let rec expect_file_group cwd (x : Json_lexer.t String_map.t )  =
+    let dir = ref cwd in
+    let sources = ref String_map.empty in 
+    let children = ref [] in 
+    let () = 
+      x 
+      |?  (Schemas.dir, `Str (fun s -> dir := cwd // s))
+      |?  (Schemas.files ,
+           `Arr_loc (fun s loc_start loc_end ->
+               let dir = !dir in 
+               sources := handle_list_files update_queue dir s loc_start loc_end
+             ))
+      |? (Schemas.subdirs, `Arr (fun s -> 
+          children := 
+            Array.fold_left (fun acc json ->
+                match json with 
+                | `Obj m -> 
+                  expect_file_group !dir  m @ acc
+                | _ -> acc ) [] s 
+        ))
+      |> ignore 
+    in 
+    {dir = !dir; sources = !sources} :: !children in 
+  Default.bs_file_groups := Ext_list.flat_map (fun x ->
+      match x with 
+      | `Obj map ->  (expect_file_group Filename.current_dir_name map)
+      | _ -> []
+    ) (Array.to_list file_groups)
+
+
 let write_ninja_file () = 
   let config_json_chan = open_in_bin config_file in 
   let global_data = Json_lexer.parse_json_from_chan config_json_chan  in
@@ -3361,76 +3445,7 @@ let write_ninja_file () =
           |?  (Schemas.ppx_flags, `Arr (fun s -> Default.ppx_flags := get_list_string s))
           |?  (Schemas.bs_copy_or_symlink, `Arr (fun s -> 
               Default.static_resources := get_list_string s))
-          |?  (Schemas.sources, `Arr (fun file_groups ->
-              let  expect_file_group (x : Json_lexer.t String_map.t )  =
-                let dir = ref Filename.current_dir_name in 
-                let sources = ref String_map.empty in 
-                let () = 
-                  x 
-                  |> Json_lexer.test Schemas.dir
-                    (`Str (fun s -> dir := s))
-                  |> Json_lexer.test Schemas.files 
-                    (`Arr_loc (fun s loc_start loc_end ->
-                         let dir = !dir in 
-                         if Array.length s  = 0 then 
-                           begin 
-                             let files_array = Sys.readdir dir  in 
-                             let files, file_array =
-                               Array.fold_left (fun (acc, f) name -> 
-                                   if Filename.check_suffix name ".ml" ||
-                                      Filename.check_suffix name ".mll" ||
-                                      Filename.check_suffix name ".mli" ||
-                                      Filename.check_suffix name ".re" ||
-                                      Filename.check_suffix name ".rei" then 
-                                     (map_update ~dir acc name , name :: f)
-                                   else (acc,f)
-                                 ) (String_map.empty, []) files_array in 
-                             update_queue :=
-                               {Ext_file_pp.loc_start ;
-                                loc_end; action = (`print (fun oc offset -> 
-                                   let indent = String.make offset ' ' in 
-                                   let p_str s = 
-                                     output_string oc indent ; 
-                                     output_string oc s ;
-                                     output_string oc "\n"
-                                   in
-                                   match file_array with 
-                                   | []
-                                     -> output_string oc "[ ]\n"
-                                   | first::rest 
-                                     -> 
-                                     output_string oc "[ \n";
-                                     p_str ("\"" ^ first ^ "\"");
-                                     List.iter 
-                                       (fun f -> 
-                                          p_str (", \"" ^f ^ "\"")
-                                       ) rest;
-                                     p_str "]" 
-                                     (* we need add a new line in the end,
-                                        otherwise it will be idented twice
-                                     *)
-                                 ))} :: !update_queue;
-                             sources := files
-                           end
-
-                         else 
-                           sources := Array.fold_left (fun acc s ->
-                               match s with 
-                               | `Str s -> 
-                                 map_update ~dir acc s
-                               | _ -> acc
-                             ) String_map.empty s
-                       ))
-                  |> ignore 
-                in 
-                {dir = !dir; sources = !sources} in 
-              Default.bs_file_groups := Ext_array.to_list_map (fun x ->
-                  match x with 
-                  | `Obj map -> Some (expect_file_group map)
-                  | _ -> None
-                ) file_groups
-
-            ))
+          |?  (Schemas.sources, `Arr (fun xs -> parsing_sources xs  update_queue))
 
           |> ignore
         end)
