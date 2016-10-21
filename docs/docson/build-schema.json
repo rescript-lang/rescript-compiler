@@ -11,7 +11,8 @@
                   "type" : "array",
                   "items" : {
                       "type" : "string"
-                  }
+                  },
+                  "description": "if files are empty, the build tool will populate it automatically, this is useful for initial adoption"
               },
               "subdirs" : {
                   "type" : "array",
@@ -41,6 +42,7 @@
             "description": "package name"
         },        
         "ocaml-config" : {
+            "title": "OCaml Configuration format",
             "properties": {
                 "bsdep": {
                     "type": "string",
@@ -61,6 +63,16 @@
                     "type": "string",
                     "description": "the path to bsc"
                 },
+                "ocamllex" : {
+                    "type" : "string",
+                    "description": "path to ocamllex"
+                },
+                "ocamlyacc" : {
+                    "type": "string"
+                }, 
+                "menhir" : {
+                    "type": "string"
+                },
                 "refmt" : {
                     "type" : "string",
                     "description": "the path to refmt" 
@@ -71,7 +83,7 @@
                 },
                 "bs-lib-dir": {
                     "type": "string",
-                    "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/buckle "
+                    "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/bs "
                 },
                 "bs-dependencies": {
                     "type" : "object",
