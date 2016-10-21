@@ -1,6 +1,7 @@
 ext/string_map
 depends/binary_cache
 ext/ext_array
+ext/ext_file_pp
 ext/ext_pervasives
 ext/ext_bytes
 ext/ext_string

@@ -59,11 +59,18 @@ snapshot: ./bin/bspack.exe snapshotcmj
 # files including Parsetree/Parser should be shaked 
 snapshotml:./bin/bspack.exe ./bin/compiler.mllib
 	@echo "Snapshot ml"
-	$< -bs-mllib bin/compiler.mllib -o bin/compiler.ml
+	make -j6 snapshot1 snapshot2 snapshot3 snapshot4 snapshot5 snapshot6
+snapshot1:./bin/bspack.exe ./bin/compiler.mllib
+	$< -bs-log-mllib bin/compiler.mllib -o bin/compiler.ml -bs-main js_main.ml -I ext -I syntax -I depends -I common
+snapshot2:./bin/bspack.exe ./bin/compiler.mllib
 	$< -bs-log-mllib bin/bsppx.mllib  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
+snapshot3:./bin/bspack.exe ./bin/compiler.mllib
 	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
+snapshot4:./bin/bspack.exe ./bin/compiler.mllib
 	BS_OCAMLDEP=true $< -bs-log-mllib bin/bsdep.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I depends -I .  -bs-main ../ocaml/tools/ocamldep.ml -o bin/bsdep.ml
+snapshot5:./bin/bspack.exe ./bin/compiler.mllib
 	$< -bs-log-mllib bin/bsbuild.mllib -I common -I ext -I syntax -I depends -bs-main ./bsbuild_main.ml -o bin/bsbuild.ml
+snapshot6:./bin/bspack.exe ./bin/compiler.mllib
 	BS_MIN_LEX_DEPS=true $< -bs-log-mllib bin/bspp.mllib   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -bs-main bspp_main.ml -o bin/bspp.ml
 
 
@@ -156,4 +163,4 @@ install:
 # ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi
 
 
-.PHONY: test  quicktest release snapshot snapshotcmj releasebuild libs
+.PHONY: test  quicktest release snapshot snapshotcmj releasebuild libs snapshot1 snapshot2 snapshot3 snapshot4 snapshot5 snapshot6

@@ -2,6 +2,7 @@
 type error =
   | Illegal_character of char
   | Unterminated_string
+  | Unterminated_comment
   | Illegal_escape of string
   | Unexpected_token 
   | Expect_comma_or_rbracket
@@ -9,8 +10,52 @@ type error =
   | Expect_colon
   | Expect_string_or_rbrace 
   | Expect_eof 
+  | Trailing_comma_in_obj
+  | Trailing_comma_in_array
 exception Error of error * Lexing.position * Lexing.position;;
 
+let fprintf  = Format.fprintf
+let report_error ppf = function
+  | Illegal_character c ->
+      fprintf ppf "Illegal character (%s)" (Char.escaped c)
+  | Illegal_escape s ->
+      fprintf ppf "Illegal backslash escape in string or character (%s)" s
+  | Unterminated_string -> 
+      fprintf ppf "Unterminated_string"
+  | Expect_comma_or_rbracket ->
+    fprintf ppf "Expect_comma_or_rbracket"
+  | Expect_comma_or_rbrace -> 
+    fprintf ppf "Expect_comma_or_rbrace"
+  | Expect_colon -> 
+    fprintf ppf "Expect_colon"
+  | Expect_string_or_rbrace  -> 
+    fprintf ppf "Expect_string_or_rbrace"
+  | Expect_eof  -> 
+    fprintf ppf "Expect_eof"
+  | Unexpected_token 
+    ->
+    fprintf ppf "Unexpected_token"
+  | Trailing_comma_in_obj 
+    -> fprintf ppf "Trailing_comma_in_obj"
+  | Trailing_comma_in_array 
+    -> fprintf ppf "Trailing_comma_in_array"
+  | Unterminated_comment 
+    -> fprintf ppf "Unterminated_comment"
+         
+let print_position fmt (pos : Lexing.position) = 
+  Format.fprintf fmt "(%d,%d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+
+
+let () = 
+  Printexc.register_printer
+    (function x -> 
+     match x with 
+     | Error (e , a, b) -> 
+       Some (Format.asprintf "@[%a:@ %a@ -@ %a)@]" report_error e 
+               print_position a print_position b)
+     | _ -> None
+    )
+  
 type path = string list 
 
 
@@ -84,13 +129,17 @@ let exp = e digits
 let positive_int = (digit | nonzero digits)
 let number = '-'? positive_int (frac | exp | frac exp) ?
 let hexdigit = digit | ['a'-'f' 'A'-'F']    
+
+let comment_start = "/*"
+let comment_end = "*/"
+
 rule lex_json buf  = parse
 | blank + { lex_json buf lexbuf}
 | lf | dos_newline { 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   }
-
+| comment_start { comment buf lexbuf}
 | "true" { True}
 | "false" {False}
 | "null" {Null}
@@ -113,7 +162,10 @@ rule lex_json buf  = parse
 }
 | eof  {Eof }
 | _ as c  { error lexbuf (Illegal_character c )}
-
+and comment buf  = parse 
+| comment_end {lex_json buf lexbuf}
+| _  {comment buf lexbuf}
+| eof  {error lexbuf Unterminated_comment}
 (* Note this is wrong for JSON conversion *)
 (* We should fix it later *)
 and scan_string buf start = parse
@@ -184,7 +236,7 @@ and scan_string buf start = parse
 type js_array =
   { content : t array ; 
     loc_start : Lexing.position ; 
-    loc_finish : Lexing.position ; 
+    loc_end : Lexing.position ; 
   }
 and t = 
   [  
@@ -223,29 +275,37 @@ let rec parse_json lexbuf =
     | Null -> `Null
     | Number s ->  `Flo s 
     | String s -> `Str s 
-    | Lbracket -> parse_array lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> parse_map String_map.empty lexbuf
+    | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  loc_start loc_finish acc lexbuf =
+  and parse_array  trailing_comma loc_start loc_finish acc lexbuf =
     match token () with 
-    | Rbracket -> `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
-                            loc_finish = lexbuf.lex_curr_p }
+    | Rbracket ->
+      if trailing_comma then 
+        error lexbuf Trailing_comma_in_array
+      else 
+        `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+              loc_end = lexbuf.lex_curr_p }
     | x -> 
       push x ;
       let new_one = json lexbuf in 
       begin match token ()  with 
       | Comma -> 
-          parse_array loc_start loc_finish (new_one :: acc) lexbuf 
+          parse_array true loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
         -> `Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
-                     loc_finish = lexbuf.lex_curr_p }
+                     loc_end = lexbuf.lex_curr_p }
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map acc lexbuf = 
+  and parse_map trailing_comma acc lexbuf = 
     match token () with 
-    | Rbrace -> `Obj acc 
+    | Rbrace -> 
+      if trailing_comma then 
+        error lexbuf Trailing_comma_in_obj
+      else 
+        `Obj acc 
     | String key -> 
       begin match token () with 
       | Colon ->
@@ -253,7 +313,7 @@ let rec parse_json lexbuf =
         begin match token () with 
         | Rbrace -> `Obj (String_map.add key value acc )
         | Comma -> 
-          parse_map (String_map.add key value acc) lexbuf 
+          parse_map true  (String_map.add key value acc) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon
@@ -268,12 +328,17 @@ let rec parse_json lexbuf =
 let parse_json_from_string s = 
   parse_json (Lexing.from_string s )
 
+let parse_json_from_chan in_chan = 
+  let lexbuf = Lexing.from_channel in_chan in 
+  parse_json lexbuf 
+
 let parse_json_from_file s = 
   let in_chan = open_in s in 
   let lexbuf = Lexing.from_channel in_chan in 
   match parse_json lexbuf with 
   | exception e -> close_in in_chan ; raise e
   | v  -> close_in in_chan;  v
+
 
 
 type callback = 
@@ -283,6 +348,7 @@ type callback =
   | `Bool of (bool -> unit )
   | `Obj of (t String_map.t -> unit)
   | `Arr of (t array -> unit )
+  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   ]
 
@@ -296,6 +362,8 @@ let test   ?(fail=(fun () -> ())) key
        | `Flo s , `Flo cb  -> cb s 
        | `Obj b , `Obj cb -> cb b 
        | `Arr {content}, `Arr cb -> cb content 
+       | `Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+         cb content  loc_start loc_end 
        | `Null, `Null cb  -> cb ()
        | `Str s, `Str cb  -> cb s 
        | _, _ -> fail () 

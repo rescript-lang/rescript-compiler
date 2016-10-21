@@ -1,5 +1,5 @@
-module String_map : sig 
-#1 "string_map.mli"
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -31,18 +31,38 @@ module String_map : sig
 
 
 
-include Map.S with type key = string 
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
 
-val of_list : (string * 'a) list -> 'a t
+external reraise: exn -> 'a = "%reraise"
 
-val find_opt : string -> 'a t -> 'a option
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
-val find_default : string -> 'a -> 'a t -> 'a
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
-val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+val dump : 'a -> string 
+
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
 
 end = struct
-#1 "string_map.ml"
+#1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -72,281 +92,140 @@ end = struct
 
 
 
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let with_file_as_chan filename f = 
+  finally (open_out filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
 
 
-include Map.Make(String)
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
 
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
-
-let find_opt k m =
-  match find k m with 
-  | exception v -> None
-  | u -> Some u
-
-let find_default k default m =
-  match find k m with 
-  | exception v -> default 
-  | u -> u
-
-let print p_v fmt  m =
-  iter (fun k v -> 
-      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
-    ) m
-
-
-
-end
-module Ast_payload : sig 
-#1 "ast_payload.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(** A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI attributes and built-in ppx  *)
-
-type t = Parsetree.payload
-type lid = Longident.t Asttypes.loc
-type label_expr = lid  * Parsetree.expression
-type action = 
-   lid * Parsetree.expression option 
-
-val is_single_string : t -> string option
-val is_single_int : t -> int option 
-
-val as_string_exp : t -> Parsetree.expression option
-val as_core_type : Location.t -> t -> Parsetree.core_type    
-val as_empty_structure :  t -> bool 
-val as_ident : t -> lid option
-val raw_string_payload : Location.t -> string -> t 
-val assert_strings :
-  Location.t -> t -> string list  
-
-(** as a record or empty 
-    it will accept 
-    {[ [@@@bs.config ]]}
-    or 
-    {[ [@@@bs.config { property  .. } ]]}    
-*)
-val as_record_and_process : 
-  Location.t ->
-  t -> action list 
-
-val assert_bool_lit : Parsetree.expression -> bool
-
-val empty : t 
-
-val table_dispatch : 
-  (Parsetree.expression option  -> 'a) String_map.t -> action -> 'a
-
-end = struct
-#1 "ast_payload.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.payload
-
-let is_single_string (x : t ) = 
-  match x with  (** TODO also need detect empty phrase case *)
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] -> Some name
-  | _  -> None
-
-let is_single_int (x : t ) = 
-  match x with  (** TODO also need detect empty phrase case *)
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_int name);
-           _},_);
-      _}] -> Some name
-  | _  -> None
-
-let as_string_exp (x : t ) = 
-  match x with  (** TODO also need detect empty phrase case *)
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (_,_));
-           _} as e ,_);
-      _}] -> Some e
-  | _  -> None
-
-let as_core_type loc x =
-  match  x with
-  | Parsetree.PTyp x -> x
-  | _ -> Location.raise_errorf ~loc "except a core type"
-           
-let as_ident (x : t ) =
-  match x with
-  | PStr [
-      {pstr_desc =
-         Pstr_eval (
-           {
-             pexp_desc =
-               Pexp_ident ident 
-                 
-           } , _)
-      }
-    ] -> Some ident
-  | _ -> None
-open Ast_helper
-
-let raw_string_payload loc (s : string) : t =
-  PStr [ Str.eval ~loc (Exp.constant ~loc (Const_string (s,None)  ))]
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
     
-let as_empty_structure (x : t ) = 
-  match x with 
-  | PStr ([]) -> true
-  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
-type lid = Longident.t Asttypes.loc
-type label_expr = lid  * Parsetree.expression
-type action = 
-   lid * Parsetree.expression option 
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
 
 
-let as_record_and_process 
-    loc
-    x 
-  = 
-  match  x with 
-  | Parsetree.PStr 
-      [ {pstr_desc = Pstr_eval
-             ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
-         _
-        }]
-    -> 
-    begin match with_obj with
-    | None ->
-      List.map
-        (fun (x,y) -> 
-           match (x,y) with 
-           | ({Asttypes.txt = Longident.Lident name; loc} ) , 
-             ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
-             when name2 = name -> 
-              (x, None)
-           | _ ->  (x, Some y))
-        label_exprs
-    | Some _ -> 
-      Location.raise_errorf ~loc "with is not supported"
-    end
-  | Parsetree.PStr [] -> []
-  | _ -> 
-    Location.raise_errorf ~loc "this is not a valid record config"
+let rec dump r =
+  if Obj.is_int r then
+    string_of_int (Obj.magic r : int)
+  else (* Block. *)
+    let rec get_fields acc = function
+      | 0 -> acc
+      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
+    in
+    let rec is_list r =
+      if Obj.is_int r then
+        r = Obj.repr 0 (* [] *)
+      else
+        let s = Obj.size r and t = Obj.tag r in
+        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
+    in
+    let rec get_list r =
+      if Obj.is_int r then
+        []
+      else
+        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
+        h :: t
+    in
+    let opaque name =
+      (* XXX In future, print the address of value 'r'.  Not possible
+       * in pure OCaml at the moment.  *)
+      "<" ^ name ^ ">"
+    in
+    let s = Obj.size r and t = Obj.tag r in
+    (* From the tag, determine the type of block. *)
+    match t with
+    | _ when is_list r ->
+      let fields = get_list r in
+      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+    | 0 ->
+      let fields = get_fields [] s in
+      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.lazy_tag ->
+      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
+         * clear if very large constructed values could have the same
+         * tag. XXX *)
+      opaque "lazy"
+    | x when x = Obj.closure_tag ->
+      opaque "closure"
+    | x when x = Obj.object_tag ->
+      let fields = get_fields [] s in
+      let _clasz, id, slots =
+        match fields with
+        | h::h'::t -> h, h', t
+        | _ -> assert false
+      in
+      (* No information on decoding the class (first field).  So just print
+         * out the ID and the slots. *)
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+    | x when x = Obj.infix_tag ->
+      opaque "infix"
+    | x when x = Obj.forward_tag ->
+      opaque "forward"
+    | x when x < Obj.no_scan_tag ->
+      let fields = get_fields [] s in
+      "Tag" ^ string_of_int t ^
+      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.string_tag ->
+      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
+    | x when x = Obj.double_tag ->
+      string_of_float (Obj.magic r : float)
+    | x when x = Obj.abstract_tag ->
+      opaque "abstract"
+    | x when x = Obj.custom_tag ->
+      opaque "custom"
+    | x when x = Obj.custom_tag ->
+      opaque "final"
+    | x when x = Obj.double_array_tag ->
+      "[|"^
+      String.concat ";"
+        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
+      "|]"
+    | _ ->
+      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
+
+let dump v = dump (Obj.repr v)
+
+external id : 'a -> 'a = "%identity"
 
 
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
 
-let assert_strings loc (x : t) : string list
-   = 
-  let module M = struct exception Not_str end  in 
-  match x with 
-  | PStr [ {pstr_desc =  
-              Pstr_eval (
-                {pexp_desc = 
-                   Pexp_tuple strs;
-                 _},_);
-            pstr_loc = loc ;            
-            _}] ->
-    (try 
-        strs |> List.map (fun e ->
-           match (e : Parsetree.expression) with
-           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
-             name
-           | _ -> raise M.Not_str)
-     with M.Not_str ->
-       Location.raise_errorf ~loc "expect string tuple list"
-    )
-  | PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] ->  [name] 
-  | PStr [] ->  []
-  | PStr _                
-  | PTyp _ | PPat _ ->
-    Location.raise_errorf ~loc "expect string tuple list"
-let assert_bool_lit  (e : Parsetree.expression) = 
-  match e.pexp_desc with
-  | Pexp_construct ({txt = Lident "true" }, None)
-    -> true
-  | Pexp_construct ({txt = Lident "false" }, None)
-    -> false 
-  | _ ->
-    Location.raise_errorf ~loc:e.pexp_loc "expect `true` or `false` in this field"
-
-
-let empty : t = Parsetree.PStr []
-
-
-
-let table_dispatch table (action : action)
-     = 
-  match action with 
-  | {txt = Lident name; loc  }, y -> 
-    begin match String_map.find name table with 
-      | fn -> fn y
-      | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
-    end
-  | { loc ; }, _  -> 
-    Location.raise_errorf ~loc "invalid label for config"
 
 end
 module Ext_bytes : sig 
@@ -801,2350 +680,6 @@ let unsafe_concat_with_length len sep l =
        pos := !pos + s_len)
     tl;
   Bytes.unsafe_to_string r
-
-end
-module Ast_attributes : sig 
-#1 "ast_attributes.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type attr =  Parsetree.attribute
-type t =  attr list 
-
-type ('a,'b) st = 
-  { get : 'a option ; 
-    set : 'b option }
-
-val process_method_attributes_rev : 
-  t ->
-  (bool * bool , [`Get | `No_get ]) st * t 
-
-val process_attributes_rev : 
-  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
-
-val process_bs : 
-  t -> [ `Nothing | `Has] * t 
-
-val process_external : t -> bool 
-
-type derive_attr = {
-  explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
-}
-val process_bs_string_int : 
-  t -> [`Nothing | `String | `Int | `Ignore]  * t 
-
-val process_bs_string_as :
-  t -> string option * t 
-val process_bs_int_as : 
-  t -> int option * t 
-
-
-val process_derive_type : 
-  t -> derive_attr * t 
-
-
-
-val bs : attr 
-val bs_this : attr
-val bs_method : attr
-
-
-
-end = struct
-#1 "ast_attributes.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type attr =  Parsetree.attribute
-type t =  attr list 
-
-type ('a,'b) st = 
-  { get : 'a option ; 
-    set : 'b option }
-
-
-let process_method_attributes_rev (attrs : t) = 
-  List.fold_left (fun (st,acc) (({txt ; loc}, payload) as attr : attr) -> 
-
-      match txt  with 
-      | "bs.get" (* [@@bs.get{null; undefined}]*)
-        -> 
-        let result = 
-          List.fold_left 
-          (fun 
-            (null, undefined)
-            (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt = Lident "null" then 
-              (match opt_expr with 
-              | None -> true
-              | Some e -> 
-                Ast_payload.assert_bool_lit e), undefined
-
-            else if txt = Lident "undefined" then 
-              null, 
-              (match opt_expr with
-               | None ->  true
-               | Some e -> 
-                 Ast_payload.assert_bool_lit e)
-
-            else Location.raise_errorf ~loc "unsupported predicates"
-          ) (false, false) (Ast_payload.as_record_and_process loc payload)  in 
-
-        ({st with get = Some result}, acc  )
-
-      | "bs.set"
-        -> 
-        let result = 
-          List.fold_left 
-          (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt = Lident "no_get" then 
-              match opt_expr with 
-              | None -> `No_get 
-              | Some e -> 
-                if Ast_payload.assert_bool_lit e then 
-                  `No_get
-                else `Get
-            else Location.raise_errorf ~loc "unsupported predicates"
-          ) `Get (Ast_payload.as_record_and_process loc payload)  in 
-        (* properties -- void 
-              [@@bs.set{only}]
-           *)
-        {st with set = Some result }, acc
-      | _ -> 
-        (st, attr::acc  )
-    ) ( {get = None ; set = None}, []) attrs
-
-
-let process_attributes_rev (attrs : t) = 
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
-      match txt, st  with 
-      | "bs", (`Nothing | `Uncurry) 
-        -> 
-        `Uncurry, acc
-      | "bs.this", (`Nothing | `Meth_callback)
-        ->  `Meth_callback, acc
-      | "bs.meth",  (`Nothing | `Method)
-        -> `Method, acc
-      | "bs", _
-      | "bs.this", _
-        -> Location.raise_errorf 
-             ~loc
-             "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
-      | _ , _ -> 
-        st, attr::acc 
-    ) ( `Nothing, []) attrs
-
-let process_bs attrs = 
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
-      match txt, st  with 
-      | "bs", _
-        -> 
-        `Has, acc
-      | _ , _ -> 
-        st, attr::acc 
-    ) ( `Nothing, []) attrs
-
-let process_external attrs = 
-  List.exists (fun (({txt; }, _)  : attr) -> 
-      if Ext_string.starts_with txt "bs." then true 
-      else false
-    ) attrs
-
-
-type derive_attr = {
-  explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
-}
-
-let process_derive_type attrs =
-  List.fold_left 
-    (fun (st, acc) 
-      (({txt ; loc}, payload  as attr): attr)  ->
-      match  st, txt  with
-      |  {bs_deriving = `Nothing}, "bs.deriving"
-        ->
-        {st with
-         bs_deriving = `Has_deriving 
-             (Ast_payload.as_record_and_process loc payload)}, acc 
-      | {bs_deriving = `Has_deriving _}, "bs.deriving"
-        -> 
-        Location.raise_errorf ~loc "duplicated bs.deriving attribute"
-      | _ , _ ->
-        let st = 
-          if txt = "nonrec" then 
-            { st with explict_nonrec = true }
-          else st in 
-        st, attr::acc
-    ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
-
-
-
-let process_bs_string_int attrs = 
-  List.fold_left 
-    (fun (st,attrs)
-      (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.string", (`Nothing | `String)
-        -> `String, attrs
-      | "bs.int", (`Nothing | `Int)
-        ->  `Int, attrs
-      | "bs.ignore", (`Nothing | `Ignore)
-        -> `Ignore, attrs
-      | "bs.int", _
-      | "bs.string", _
-      | "bs.ignore", _
-        -> 
-        Location.raise_errorf ~loc "conflict attributes "
-      | _ , _ -> st, (attr :: attrs )
-    ) (`Nothing, []) attrs
-
-let process_bs_string_as  attrs = 
-  List.fold_left 
-    (fun (st, attrs)
-      (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.as", None
-        ->
-        begin match Ast_payload.is_single_string payload with 
-          | None -> 
-            Location.raise_errorf ~loc "expect string literal "
-          | Some  _ as v->  (v, attrs)  
-        end
-      | "bs.as",  _ 
-        -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
-      | _ , _ -> (st, attr::attrs) 
-    ) (None, []) attrs
-
-let process_bs_int_as  attrs = 
-  List.fold_left 
-    (fun (st, attrs)
-      (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.as", None
-        ->
-        begin match Ast_payload.is_single_int payload with 
-          | None -> 
-            Location.raise_errorf ~loc "expect int literal "
-          | Some  _ as v->  (v, attrs)  
-        end
-      | "bs.as",  _ 
-        -> 
-          Location.raise_errorf ~loc "duplicated bs.as "
-      | _ , _ -> (st, attr::attrs) 
-    ) (None, []) attrs
-
-
-let bs : attr
-  =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
-let bs_this : attr
-  =  {txt = "bs.this" ; loc = Location.none}, Ast_payload.empty
-
-let bs_method : attr 
-  =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
-
-
-
-end
-module Ast_literal : sig 
-#1 "ast_literal.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-module Lid : sig
-  type t = Longident.t 
-  val val_unit : t 
-  val type_unit : t 
-  val js_fn : t 
-  val js_meth : t 
-  val js_meth_callback : t 
-  val js_obj : t 
-
-  val ignore_id : t 
-  val js_null : t 
-  val js_undefined : t
-  val js_null_undefined : t 
-  val js_re_id : t 
-  val js_unsafe : t 
-end
-
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-val val_unit : expression_lit
-
-val type_unit : core_type_lit
-
-val type_string : core_type_lit
-
-val type_any : core_type_lit
-
-val pat_unit : pattern_lit
-
-end = struct
-#1 "ast_literal.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-
-module Lid = struct 
-  type t = Longident.t 
-  let val_unit : t = Lident "()"
-  let type_unit : t = Lident "unit"
-  let type_string : t = Lident "string"
-  (* TODO should be renamed in to {!Js.fn} *)
-  (* TODO should be moved into {!Js.t} Later *)
-  let js_fn = Longident.Ldot (Lident "Js", "fn")
-  let js_meth = Longident.Ldot (Lident "Js", "meth")
-  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
-  let js_obj = Longident.Ldot (Lident "Js", "t") 
-  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
-  let js_null  = Longident.Ldot (Lident "Js", "null")
-  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
-  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
-  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
-  let js_unsafe = Longident.Lident "Js_unsafe"
-end
-
-module No_loc = struct 
-  let loc = Location.none
-  let val_unit = 
-    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
-  let type_unit =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-  let type_string =   
-    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-  let type_any = Ast_helper.Typ.any ()
-  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
-end 
-
-type 'a  lit = ?loc: Location.t -> unit -> 'a
-type expression_lit = Parsetree.expression lit 
-type core_type_lit = Parsetree.core_type lit 
-type pattern_lit = Parsetree.pattern lit 
-
-let val_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.val_unit
-  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
-
-
-let type_unit ?loc () = 
-  match loc with
-  | None ->     
-    No_loc.type_unit
-  | Some loc -> 
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
-
-let type_string ?loc () = 
-  match loc with 
-  | None -> No_loc.type_string 
-  | Some loc ->     
-    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
-let type_any ?loc () = 
-  match loc with 
-  | None -> No_loc.type_any
-  | Some loc -> Ast_helper.Typ.any ~loc ()
-
-let pat_unit ?loc () = 
-  match loc with 
-  | None -> No_loc.pat_unit
-  | Some loc -> 
-    Pat.construct ~loc {txt = Lid.val_unit; loc} None
-
-end
-module Ext_list : sig 
-#1 "ext_list.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [List] module *)
-    
-(** TODO some function are no efficiently implemented. *) 
-
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
-
-val excludes : ('a -> bool) -> 'a list -> bool * 'a list
-val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
-val exclude_with_fact2 : 
-  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
-val same_length : 'a list -> 'b list -> bool
-
-val init : int -> (int -> 'a) -> 'a list
-
-val take : int -> 'a list -> 'a list * 'a list
-val try_take : int -> 'a list -> 'a list * int * 'a list 
-
-val exclude_tail : 'a list -> 'a * 'a list
-
-val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
-
-val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
-
-val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
-
-(** for the last element the first element will be passed [true] *)
-
-val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
-
-val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
-
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
-
-val drop : int -> 'a list -> 'a list 
-
-val for_all_ret : ('a -> bool) -> 'a list -> 'a option
-
-val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
-(** [for_all_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
- *)
-
-val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-(** same as [List.fold_left]. 
-    Provide an api so that list can be easily swapped by other containers  
- *)
-
-val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
-
-val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
-
-val rev_iter : ('a -> unit) -> 'a list -> unit
-
-val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option
-
-(** [f] is applied follow the list order *)
-val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
-
-
-val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
-
-(** [fn] is applied from left to right *)
-val reduce_from_left : ('a -> 'a -> 'a) -> 'a list -> 'a
-
-
-type 'a t = 'a list ref
-
-val create_ref_empty : unit -> 'a t
-
-val ref_top : 'a t -> 'a 
-
-val ref_empty : 'a t -> bool
-
-val ref_push : 'a -> 'a t -> unit
-
-val ref_pop : 'a t -> 'a
-
-val rev_except_last : 'a list -> 'a list * 'a
-
-val sort_via_array :
-  ('a -> 'a -> int) -> 'a list -> 'a list
-
-end = struct
-#1 "ext_list.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let rec filter_map (f: 'a -> 'b option) xs = 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-      begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
-      end
-
-let excludes (p : 'a -> bool ) l : bool * 'a list=
-  let excluded = ref false in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := true ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  if !excluded then true, v else false,l
-
-let exclude_with_fact p l =
-  let excluded = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := Some x ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded , if !excluded <> None then v else l 
-
-
-(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
-let exclude_with_fact2 p1 p2 l =
-  let excluded1 = ref None in 
-  let excluded2 = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p1 x then 
-      begin 
-        excluded1 := Some x ;
-        aux accu l
-      end
-    else if p2 x then 
-      begin 
-        excluded2 := Some x ; 
-        aux accu l 
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
-
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
-  | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
-
-let  filter_mapi (f: int -> 'a -> 'b option) xs = 
-  let rec aux i xs = 
-    match xs with 
-    | [] -> []
-    | y :: ys -> 
-        begin match f i y with 
-        | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-        end in
-  aux 0 xs 
-
-let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f u v with 
-      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2 f us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2"
-
-let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
-  let rec aux i xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f i u v with 
-      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: aux (i + 1) us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2i" in
-  aux 0 xs ys
-
-let rec rev_map_append  f l1 l2 =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append f l (f a :: l2)
-
-let flat_map2 f lx ly = 
-  let rec aux acc lx ly = 
-    match lx, ly with 
-    | [], [] 
-      -> List.rev acc
-    | x::xs, y::ys 
-      ->  aux (List.rev_append (f x y) acc) xs ys
-    | _, _ -> invalid_arg "Ext_list.flat_map2" in
-  aux [] lx ly
-        
-let flat_map f lx =
-  let rec aux acc lx =
-    match lx with
-    | [] -> List.rev acc
-    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
-  aux [] lx
-
-let rec map2_last f l1 l2 =
-  match (l1, l2) with
-  | ([], []) -> []
-  | [u], [v] -> [f true u v ]
-  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
-  | (_, _) -> invalid_arg "List.map2_last"
-
-let rec map_last f l1 =
-  match l1 with
-  | [] -> []
-  | [u]-> [f true u ]
-  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
-
-
-let rec fold_right2_last f l1 l2 accu  = 
-  match (l1, l2) with
-  | ([], []) -> accu
-  | [last1], [last2] -> f true  last1 last2 accu
-  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2"
-
-
-let init n f = 
-  Array.to_list (Array.init n f)
-
-let take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  < n then invalid_arg "Ext_list.take"
-  else (Array.to_list (Array.sub arr 0 n ), 
-        Array.to_list (Array.sub arr n (arr_length - n)))
-
-let try_take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  <= n then 
-    l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
-
-let exclude_tail (x : 'a list) = 
-  let rec aux acc x = 
-    match x with 
-    | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ x ] ->  x, List.rev acc
-    | y0::ys -> aux (y0::acc) ys in
-  aux [] x
-
-(* For small list, only need partial equality 
-   {[
-   group (=) [1;2;3;4;3]
-   ;;
-   - : int list list = [[3; 3]; [4]; [2]; [1]]
-   # group (=) [];;
-   - : 'a list list = []
-   ]}
- *)
-let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-      aux cmp x (group cmp xs )
-
-and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | y::ys -> 
-      if cmp x (List.hd y) (* cannot be null*) then
-        (x::y) :: ys 
-      else
-        y :: aux cmp x ys                                 
-  
-let stable_group cmp lst =  group cmp lst |> List.rev 
-
-let rec drop n h = 
-  if n < 0 then invalid_arg "Ext_list.drop"
-  else if n = 0 then h 
-  else if h = [] then invalid_arg "Ext_list.drop"
-  else 
-    drop (n - 1) (List.tl h)
-
-let rec for_all_ret  p = function
-  | [] -> None
-  | a::l -> 
-      if p a 
-      then for_all_ret p l
-      else Some a 
-
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-      match p a with
-      | None -> for_all_opt p l
-      | v -> v 
-
-let fold f l init = 
-  List.fold_left (fun acc i -> f  i init) init l 
-
-let rev_map_acc  acc f l = 
-  let rec rmap_f accu = function
-    | [] -> accu
-    | a::l -> rmap_f (f a :: accu) l
-  in
-  rmap_f acc l
-
-let rec rev_iter f xs =
-    match xs with    
-    | [] -> ()
-    | y :: ys -> 
-      rev_iter f ys ;
-      f y      
-      
-let rec for_all2_no_exn p l1 l2 = 
-  match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
-  | (_, _) -> false
-
-
-let rec find_no_exn p = function
-  | [] -> None
-  | x :: l -> if p x then Some x else find_no_exn p l
-
-
-let rec find_opt p = function
-  | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt p l
-
-
-let split_map 
-    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
-  let rec aux bs cs xs =
-    match xs with 
-    | [] -> List.rev bs, List.rev cs 
-    | u::us -> 
-      let b,c =  f u in aux (b::bs) (c ::cs) us in 
-
-  aux [] [] xs 
-
-
-(*
-   {[
-     reduce_from_right (-) [1;2;3];;
-     - : int = 2
-               # reduce_from_right (-) [1;2;3; 4];;
-     - : int = -2
-                # reduce_from_right (-) [1];;
-     - : int = 1
-               # reduce_from_right (-) [1;2;3; 4; 5];;
-     - : int = 3
-   ]} 
-*)
-let reduce_from_right fn lst = 
-  begin match List.rev lst with
-    | last :: rest -> 
-      List.fold_left  (fun x y -> fn y x) last rest 
-    | _ -> invalid_arg "Ext_list.reduce" 
-  end
-let reduce_from_left fn lst = 
-  match lst with 
-  | first :: rest ->  List.fold_left fn first rest 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
-
-
-type 'a t = 'a list ref
-
-let create_ref_empty () = ref []
-
-let ref_top x = 
-  match !x with 
-  | y::_ -> y 
-  | _ -> invalid_arg "Ext_list.ref_top"
-
-let ref_empty x = 
-  match !x with [] -> true | _ -> false 
-
-let ref_push x refs = 
-  refs := x :: !refs
-
-let ref_pop refs = 
-  match !refs with 
-  | [] -> invalid_arg "Ext_list.ref_pop"
-  | x::rest -> 
-    refs := rest ; 
-    x     
-
-let rev_except_last xs =
-  let rec aux acc xs =
-    match xs with
-    | [ ] -> invalid_arg "Ext_list.rev_except_last"
-    | [ x ] -> acc ,x
-    | x :: xs -> aux (x::acc) xs in
-  aux [] xs   
-
-let sort_via_array cmp lst =
-  let arr = Array.of_list lst  in
-  Array.sort cmp arr;
-  Array.to_list arr
-
-end
-module Ast_comb : sig 
-#1 "ast_comb.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val exp_apply_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
-
-val fun_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
-
-val arrow_no_label : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-val discard_exp_as_unit : 
-  Location.t -> Parsetree.expression -> Parsetree.expression
-
-
-val tuple_type_pair : 
-  ?loc:Ast_helper.loc ->
-  [< `Make | `Run ] ->
-  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
-
-val to_js_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type
-
-
-(** TODO: make it work for browser too *)
-val to_undefined_type :
-  Location.t -> Parsetree.core_type -> Parsetree.core_type  
-
-val to_js_re_type : Location.t -> Parsetree.core_type
-
-end = struct
-#1 "ast_comb.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-open Ast_helper 
-
-let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
-
-let fun_no_label ?loc ?attrs  pat body = 
-  Exp.fun_ ?loc ?attrs "" None pat body
-
-let arrow_no_label ?loc ?attrs b c = 
-  Typ.arrow ?loc ?attrs "" b c 
-
-let discard_exp_as_unit loc e = 
-  exp_apply_no_label ~loc     
-    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
-    [Exp.constraint_ ~loc e 
-       (Ast_literal.type_unit ~loc ())]
-
-
-let tuple_type_pair ?loc kind arity = 
-  let prefix  = "a" in
-  if arity = 0 then 
-    let ty = Typ.var ?loc ( prefix ^ "0") in 
-    match kind with 
-    | `Run -> ty,  [], ty 
-    | `Make -> 
-      (Typ.arrow "" ?loc
-         (Ast_literal.type_unit ?loc ())
-         ty ,
-       [], ty)
-  else
-    let number = arity + 1 in
-    let tys = Ext_list.init number (fun i -> 
-        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
-      )  in
-    match tys with 
-    | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
-      List.rev rest , result
-    | [] -> assert false
-    
-    
-
-let js_obj_type_id  = 
-  Ast_literal.Lid.js_obj 
-
-let re_id  = 
-  Ast_literal.Lid.js_re_id 
-
-let to_js_type loc  x  = 
-  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
-
-let to_js_re_type loc  =
-  Typ.constr ~loc { txt = re_id ; loc} []
-    
-let to_undefined_type loc x =
-  Typ.constr ~loc
-    {txt = Ast_literal.Lid.js_undefined ; loc}
-    [x]  
-
-
-end
-module Ast_core_type : sig 
-#1 "ast_core_type.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-
-
-
-val replace_result : t -> t -> t
-
-val is_unit : t -> bool 
-val is_array : t -> bool 
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Array 
-  | Unit
-  | Nothing
-  | Ignore
-
-(** for 
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
-
-
-(** return a function type 
-    [from_labels ~loc tyvars labels]
-    example output:
-    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
-*)
-val from_labels :
-  loc:Location.t -> int ->  string Asttypes.loc list -> t
-
-val make_obj :
-  loc:Location.t ->
-  (string * Parsetree.attributes * t) list ->
-  t
-
-end = struct
-#1 "ast_core_type.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.core_type 
-type arg_label =
-  | Label of string 
-  | Optional of string 
-  | Empty (* it will be ignored , side effect will be recorded *)
-
-type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
-  | Int of (int * int ) list 
-  | Array 
-  | Unit
-  | Nothing
-  | Ignore
-
-open Ast_helper
-
-let replace_result ty result = 
-  let rec aux (ty : Parsetree.core_type) = 
-    match ty with 
-    | { ptyp_desc = 
-          Ptyp_arrow (label,t1,t2)
-      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
-    | {ptyp_desc = Ptyp_poly(fs,ty)} 
-      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
-    | _ -> result in 
-  aux ty 
-
-let is_unit (ty : t ) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "unit"}, []) -> true
-  | _ -> false 
-
-let is_array (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false 
-
-let is_optional l =
-  String.length l > 0 && l.[0] = '?'
-
-let label_name l : arg_label =
-  if l = "" then Empty else 
-  if is_optional l 
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Label l
-
-
-(* Note that OCaml type checker will not allow arbitrary 
-   name as type variables, for example:
-   {[
-     '_x'_
-   ]}
-   will be recognized as a invalid program
-*)
-let from_labels ~loc arity labels 
-  : t =
-  let tyvars = 
-    ((Ext_list.init arity (fun i ->      
-           Typ.var ~loc ("a" ^ string_of_int i)))) in
-  let result_type =
-    Ast_comb.to_js_type loc  
-      (Typ.object_ ~loc
-         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
-  in 
-  List.fold_right2 
-    (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
-
-
-let make_obj ~loc xs =
-  Ast_comb.to_js_type loc @@
-  Ast_helper.Typ.object_  ~loc xs   Closed
-
-end
-module Ast_signature : sig 
-#1 "ast_signature.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type item = Parsetree.signature_item
-type t = item list 
-val fuse : ?loc:Ast_helper.loc -> item -> t -> item
-
-end = struct
-#1 "ast_signature.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type item = Parsetree.signature_item
-type t = item list 
-
-open Ast_helper
-let fuse ?(loc=Location.none) (item : item) (t : t) : item = 
-  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc (item::t)))
-
-end
-module Ast_structure : sig 
-#1 "ast_structure.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type item = Parsetree.structure_item
-
-type t = item list 
-
-val fuse : ?loc:Ast_helper.loc -> item -> t -> item
-
-val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
-
-end = struct
-#1 "ast_structure.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type item = Parsetree.structure_item
-
-type t = item list 
-
-open Ast_helper
-
-let fuse ?(loc=Location.none) (item : item ) (t : t) : item = 
-  Str.include_ ~loc 
-    (Incl.mk ~loc (Mod.structure ~loc (item :: t) ))
-
-let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) = 
-  Str.include_ ~loc
-    (Incl.mk ~loc 
-       (Mod.constraint_ ~loc (Mod.structure ~loc stru) (Mty.signature ~loc sign)))
-
-end
-module Ast_derive : sig 
-#1 "ast_derive.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val type_deriving_structure: 
-  Parsetree.type_declaration ->
-  Ast_payload.action list ->
-  bool -> 
-  Ast_structure.t
-val type_deriving_signature: 
-  Parsetree.type_declaration ->
-  Ast_payload.action list -> 
-  bool -> 
-  Ast_signature.t
-
-type gen = {
-  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) ; 
-}
-
-val derive_table: (Parsetree.expression option -> gen) String_map.t
-
-end = struct
-#1 "ast_derive.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-let not_supported loc = 
-  Location.raise_errorf ~loc "not supported in deriving"
-
-let current_name_set : string list ref = ref []
-
-let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) = 
-  match tdcl with 
-  | {ptype_name = {txt ; loc};
-     ptype_params ;
-    } -> Typ.constr {txt = Lident txt ; loc} (List.map fst ptype_params)
-let loc = Location.none 
-
-let (+>) = Typ.arrow ""
-
-type lid = Longident.t Asttypes.loc
-
-
-let record_to_value = "record_to_value"
-let variant_to_value = "variant_to_value"
-let shape = "shape"
-let js_dyn = "Bs_dyn"
-let value = "value"
-let record_shape = "record_shape"
-let to_value = "_to_value"
-let to_value_ = "_to_value_"
-let shape_of_variant = "shape_of_variant"
-let shape_of_record = "shape_of_record"
-let option_to_value = "option_to_value"
-(**
-   {[Ptyp_constr of Longident.t loc * core_type list ]}
-   ['u M.t]
-*)
-
-
-let bs_attrs = [Ast_attributes.bs]
-
-(** template for 
-    {[fun (value : t) -> 
-      match value with 
-        cases 
-    ]}
-*)
-let js_dyn_value_type () =
-  Typ.constr {txt = Longident.Ldot ((Lident  js_dyn), value) ; loc} []
-let get_js_dyn_record_shape_type () = 
-  Typ.constr {txt = Ldot (Lident js_dyn, record_shape); loc} []
-let js_dyn_shape_of_variant () = 
-  Exp.ident {txt = Ldot (Lident js_dyn, shape_of_variant); loc}
-let js_dyn_shape_of_record () = 
-  Exp.ident {txt = Ldot (Lident js_dyn, shape_of_record); loc}
-
-let js_dyn_to_value_type ty  = 
-  Typ.arrow "" ty  (js_dyn_value_type ())
-let js_dyn_to_value_uncurry_type ty = 
-  Typ.arrow "" ~attrs:bs_attrs ty (js_dyn_value_type ())
-
-let js_dyn_variant_to_value () = 
-  Exp.ident {txt = Ldot (Lident js_dyn, variant_to_value); loc}
-
-let js_dyn_option_to_value () = 
-  Exp.ident {txt = Ldot (Lident js_dyn, option_to_value); loc}
-
-let js_dyn_tuple_to_value i = 
-  Exp.ident {txt = Ldot (
-      Lident js_dyn,
-      "tuple_" ^ string_of_int i ^ "_to_value"); loc}
-
-
-let lift_string_list_to_array (labels : string list) = 
-  Exp.array
-    (List.map (fun s -> Exp.constant (Const_string (s, None)))
-       labels)
-let lift_int i = Exp.constant (Const_int i)
-let lift_int_list_to_array (labels : int list) = 
-  Exp.array (List.map lift_int labels)
-
-let bs_apply1 f v = 
-  Exp.apply f ["",v] ~attrs:bs_attrs
-
-
-
-(** [M.t]-> [M.t_to_value ] *)
-
-let fn_of_lid  suffix (x : lid) : lid = 
-  match x with
-  | { txt = Lident name} 
-    -> { x with  txt = Lident (name ^ suffix )}
-  | { txt = Ldot (v,name)} 
-    -> {x with txt = Ldot (v,  name ^ suffix )}
-  | { txt = Lapply _} -> not_supported x.loc 
-
-let rec exp_of_core_type prefix 
-    ({ptyp_loc = loc} as x : Parsetree.core_type)
-  : Parsetree.expression = 
-  match x.ptyp_desc with 
-  | Ptyp_constr (
-      {txt = 
-         Lident (
-           "int" 
-         | "int32" 
-         | "int64" 
-         | "nativeint"
-         | "bool"
-         | "float"
-         | "char"
-         | "string" 
-           as name );
-       loc }, ([] as params))
-  | Ptyp_constr (
-      {txt = 
-         Lident (
-           "option" 
-         | "list" 
-         | "array" 
-           as name );
-       loc }, ([_] as params))
-    -> exp_of_core_type prefix 
-         {x with 
-          ptyp_desc =
-            Ptyp_constr ({txt =  Ldot(Lident js_dyn,name);loc}, params)}
-  | Ptyp_constr ({txt ; loc} as lid, []) -> 
-    Exp.ident (fn_of_lid prefix lid)       
-  | Ptyp_constr (lid, params)
-    -> 
-    Exp.apply (Exp.ident (fn_of_lid prefix lid))
-      (List.map (fun x -> "",exp_of_core_type prefix x ) params) 
-  | Ptyp_tuple lst -> 
-    begin match lst with 
-    | [x] -> exp_of_core_type prefix x 
-    | [] -> assert false 
-    | _ -> 
-      let len = List.length lst in 
-      if len > 6 then 
-        Location.raise_errorf ~loc "tuple arity > 6 not supported yet"
-      else 
-        let fn = js_dyn_tuple_to_value len in 
-        let args = List.map (fun x -> "", exp_of_core_type prefix x) lst in 
-        Exp.apply fn args 
-    end
-
-
-  | _ -> assert false
-
-let mk_fun (typ : Parsetree.core_type) 
-    (value : string) body
-  : Parsetree.expression = 
-  Exp.fun_ 
-    "" None
-    (Pat.constraint_ (Pat.var {txt = value ; loc}) typ)
-    body
-
-let destruct_label_declarations
-    (arg_name : string)
-    (labels : Parsetree.label_declaration list) : 
-  (Parsetree.core_type * Parsetree.expression) list * string list 
-  =
-  List.fold_right
-    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
-      (core_type_exps, labels) -> 
-      ((pld_type, 
-        Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
-          {txt = Lident txt ; loc}) :: core_type_exps),
-      txt :: labels 
-    ) labels ([], [])
-
-
-(** return an expression node of array type *)
-let exp_of_core_type_exprs 
-    (core_type_exprs : (Parsetree.core_type * Parsetree.expression) list) 
-  : Parsetree.expression  = 
-    Exp.array 
-      (List.fold_right (fun (core_type, exp) acc -> 
-           bs_apply1
-             (exp_of_core_type to_value  core_type) exp
-
-           (* depends on [core_type] is in recursive name set or not ,
-              if not, then uncurried application, otherwise, since 
-              the uncurried version is not in scope yet, we 
-              have to use the curried version
-              the complexity is necessary
-              think about such scenario:
-              {[
-                type nonrec t = A of t (* t_to_value *)
-                and u = t (* t_to_value_ *)
-              ]}
-           *)
-           :: acc 
-       ) core_type_exprs [])
-
-let destruct_constructor_declaration 
-    ({pcd_name = {txt ;loc}; pcd_args} : Parsetree.constructor_declaration)  = 
-  let last_i, core_type_exprs, pats = 
-    List.fold_left (fun (i,core_type_exps, pats) core_type -> 
-      let  txt = "a" ^ string_of_int i  in
-      (i+1, (core_type, Exp.ident {txt = Lident txt  ;loc}) :: core_type_exps, 
-       Pat.var {txt ; loc} :: pats )
-    ) (0, [], []) pcd_args in 
-  let core_type_exprs, pats  = List.rev core_type_exprs, List.rev pats in
-  Pat.construct {txt = Lident txt ; loc}
-    (if last_i = 0 then 
-       None
-     else if last_i = 1 then 
-       Some (List.hd pats) 
-     else
-       Some (Pat.tuple pats)  ), core_type_exprs
-
-
-let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) = 
-    Exp.function_ 
-      (List.mapi (fun i ctdcl -> 
-           let pat, core_type_exprs = destruct_constructor_declaration ctdcl in 
-           Exp.case pat 
-             (Exp.apply 
-                (js_dyn_variant_to_value ())
-                [("", Exp.ident {txt = Lident shape ; loc});
-                 ("", lift_int i);
-                 ("", exp_of_core_type_exprs core_type_exprs);
-                ]
-             )) ctdcls
-      )
-let record args = 
-  Exp.apply 
-    (Exp.ident {txt = Ldot (Lident js_dyn, record_to_value ); loc})
-    ["", Exp.ident {txt = Lident shape ; loc};
-     ("",  args)
-    ]      
-
-
-let fun_1 name = 
-  Exp.fun_ "" None ~attrs:bs_attrs 
-    (Pat.var {txt = "x"; loc})
-    (Exp.apply (Exp.ident name)
-       ["",(Exp.ident {txt = Lident "x"; loc})])
-
-let record_exp  name core_type  labels : Ast_structure.t = 
-  let arg_name : string = "args" in
-  let core_type_exprs, labels = 
-    destruct_label_declarations arg_name labels in
-
-  [Str.value Nonrecursive @@ 
-   [Vb.mk 
-     (Pat.var {txt = shape;  loc}) 
-     (Exp.apply (js_dyn_shape_of_record ())
-        ["", (lift_string_list_to_array labels)]
-     ) ];
-   Str.value Nonrecursive @@ 
-   [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc })
-     (mk_fun core_type arg_name 
-        (record (exp_of_core_type_exprs core_type_exprs))
-     )];
-   Str.value Nonrecursive @@
-   [Vb.mk (Pat.var {txt = name ^ to_value; loc})
-      ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
-   ]        
-  ]
-
-
-
-    
-
-
-type gen = {
-  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) ; 
-}
-let derive_table = 
-  String_map.of_list 
-    ["dynval",
-     begin fun (x : Parsetree.expression option) -> 
-       match x with 
-       | Some {pexp_loc = loc} 
-         -> Location.raise_errorf ~loc "such configuration is not supported"
-       | None -> 
-         { structure_gen = 
-             begin  fun (tdcl  : Parsetree.type_declaration) explict_nonrec -> 
-               let core_type = core_type_of_type_declaration tdcl in 
-               let name = tdcl.ptype_name.txt in
-               let loc = tdcl.ptype_loc in 
-               let signatures = 
-                 [Sig.value ~loc 
-                    (Val.mk {txt =  name ^ to_value  ; loc}
-                       (js_dyn_to_value_uncurry_type core_type))
-                 ] in
-               let constraint_ strs = 
-                 [Ast_structure.constraint_  ~loc strs signatures] in
-               match tdcl with 
-               | {ptype_params = [];
-                  ptype_kind  = Ptype_variant cd;
-                  ptype_loc = loc;
-                 } -> 
-                 if explict_nonrec then 
-                   let names, arities = 
-                     List.fold_right 
-                       (fun (ctdcl : Parsetree.constructor_declaration) 
-                         (names,arities) -> 
-                         ctdcl.pcd_name.txt :: names, 
-                         List.length ctdcl.pcd_args :: arities
-                       ) cd ([],[]) in 
-                   constraint_ 
-                     [
-                       Str.value Nonrecursive @@ 
-                       [Vb.mk (Pat.var {txt = shape ; loc})
-                          (      Exp.apply (js_dyn_shape_of_variant ())
-                                   [ "", (lift_string_list_to_array names);
-                                     "", (lift_int_list_to_array arities )
-                                   ])];
-                       Str.value Nonrecursive @@ 
-                       [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc})
-                          (case_of_ctdcl cd)
-                       ];
-                       Str.value Nonrecursive @@
-                       [Vb.mk (Pat.var {txt = name ^ to_value; loc})
-                          ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
-                       ]        
-                     ]
-                 else 
-                   []
-               | {ptype_params = []; 
-                  ptype_kind = Ptype_abstract; 
-                  ptype_manifest = Some x 
-                 } -> (** case {[ type t = int ]}*)
-                 constraint_ 
-                   [
-                     Str.value Nonrecursive @@ 
-                     [Vb.mk (Pat.var {txt = name ^ to_value  ; loc})
-                        (exp_of_core_type to_value x)
-                     ]
-                   ]
-
-               |{ptype_params = [];
-                 ptype_kind  = Ptype_record labels;
-                 ptype_loc = loc;
-                } -> 
-                 if explict_nonrec then constraint_ (record_exp name core_type labels) 
-                 else []
-
-               | _ -> 
-                 []
-             end; 
-           expression_gen =  begin fun core_type -> 
-               exp_of_core_type to_value core_type
-             end;
-           signature_gen = begin fun 
-             (tdcl : Parsetree.type_declaration)
-             (explict_nonrec : bool) -> 
-             let core_type = core_type_of_type_declaration tdcl in 
-             let name = tdcl.ptype_name.txt in
-             let loc = tdcl.ptype_loc in 
-             [Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
-                                (js_dyn_to_value_uncurry_type core_type))
-             ]
-           end
-
-         }
-     end]
-
-let type_deriving_structure 
-    (tdcl  : Parsetree.type_declaration)
-    (actions :  Ast_payload.action list ) 
-    (explict_nonrec : bool )
-  : Ast_structure.t = 
-  Ext_list.flat_map
-    (fun action -> 
-       (Ast_payload.table_dispatch derive_table action).structure_gen 
-         tdcl explict_nonrec) actions
-
-let type_deriving_signature
-    (tdcl  : Parsetree.type_declaration)
-    (actions :  Ast_payload.action list ) 
-    (explict_nonrec : bool )
-  : Ast_signature.t = 
-  Ext_list.flat_map
-    (fun action -> 
-       (Ast_payload.table_dispatch derive_table action).signature_gen
-         tdcl explict_nonrec) actions
-
-end
-module Ast_exp : sig 
-#1 "ast_exp.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end = struct
-#1 "ast_exp.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end
-module Ast_external : sig 
-#1 "ast_external.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val create_local_external : Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (string * Parsetree.expression) list -> Parsetree.expression_desc
-
-val local_extern_cont : 
-  Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
-
-end = struct
-#1 "ast_external.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let create_local_external loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
-
-let local_extern_cont loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     (cb : Parsetree.expression -> 'a) 
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                 loc};
-         pexp_attributes = [] ;
-         pexp_loc = loc}
-)
-
-end
-module Bs_loc : sig 
-#1 "bs_loc.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Location.t = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position ; 
-  loc_ghost : bool
-} 
-
-val is_ghost : t -> bool
-val merge : t -> t -> t 
-val none : t 
-
-
-end = struct
-#1 "bs_loc.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Location.t = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position ; 
-  loc_ghost : bool
-} 
-
-let is_ghost x = x.loc_ghost
-
-let merge (l: t) (r : t) = 
-  if is_ghost l then r 
-  else if is_ghost r then l 
-  else match l,r with 
-  | {loc_start ; }, {loc_end; _} (* TODO: improve*)
-    -> 
-    {loc_start ;loc_end; loc_ghost = false}
-
-let none = Location.none
-
-end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let with_file_as_chan filename f = 
-  finally (open_out filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-
-let rec dump r =
-  if Obj.is_int r then
-    string_of_int (Obj.magic r : int)
-  else (* Block. *)
-    let rec get_fields acc = function
-      | 0 -> acc
-      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
-    in
-    let rec is_list r =
-      if Obj.is_int r then
-        r = Obj.repr 0 (* [] *)
-      else
-        let s = Obj.size r and t = Obj.tag r in
-        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
-    in
-    let rec get_list r =
-      if Obj.is_int r then
-        []
-      else
-        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
-        h :: t
-    in
-    let opaque name =
-      (* XXX In future, print the address of value 'r'.  Not possible
-       * in pure OCaml at the moment.  *)
-      "<" ^ name ^ ">"
-    in
-    let s = Obj.size r and t = Obj.tag r in
-    (* From the tag, determine the type of block. *)
-    match t with
-    | _ when is_list r ->
-      let fields = get_list r in
-      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
-    | 0 ->
-      let fields = get_fields [] s in
-      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.lazy_tag ->
-      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
-         * clear if very large constructed values could have the same
-         * tag. XXX *)
-      opaque "lazy"
-    | x when x = Obj.closure_tag ->
-      opaque "closure"
-    | x when x = Obj.object_tag ->
-      let fields = get_fields [] s in
-      let _clasz, id, slots =
-        match fields with
-        | h::h'::t -> h, h', t
-        | _ -> assert false
-      in
-      (* No information on decoding the class (first field).  So just print
-         * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
-    | x when x = Obj.infix_tag ->
-      opaque "infix"
-    | x when x = Obj.forward_tag ->
-      opaque "forward"
-    | x when x < Obj.no_scan_tag ->
-      let fields = get_fields [] s in
-      "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.string_tag ->
-      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
-      string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
-      opaque "abstract"
-    | x when x = Obj.custom_tag ->
-      opaque "custom"
-    | x when x = Obj.custom_tag ->
-      opaque "final"
-    | x when x = Obj.double_array_tag ->
-      "[|"^
-      String.concat ";"
-        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
-      "|]"
-    | _ ->
-      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
-
-let dump v = dump (Obj.repr v)
-
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
 
 end
 module Literals : sig 
@@ -4034,8 +1569,8 @@ let syntax_only = ref false
 let binary_ast = ref false
 
 end
-module Bs_warnings : sig 
-#1 "bs_warnings.mli"
+module Bs_conditional_initial : sig 
+#1 "bs_conditional_initial.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4060,23 +1595,10 @@ module Bs_warnings : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type t = 
-  | Unsafe_ffi_bool_type
-  | Unsafe_poly_variant_type
-
-(* val print_string_warning : Location.t -> string -> unit *)
-
-val prerr_warning : Location.t -> t -> unit
-
-(**It will always warn not relevant to whether {!Js_config.warn_unused_attribute} set or not
-   User should check it first. 
-   The reason is that we will do a global check first, then start warning later
-*)
-val warn_unused_attribute : Location.t -> string -> unit
+val setup_env : unit -> unit
 
 end = struct
-#1 "bs_warnings.ml"
+#1 "bs_conditional_initial.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4102,44 +1624,13 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-type t = 
-  | Unsafe_ffi_bool_type
-
-  | Unsafe_poly_variant_type
-  (* for users write code like this:
-     {[ external f : [`a of int ] -> string = ""]}
-     Here users forget about `[@bs.string]` or `[@bs.int]`
-  *)    
-
-
-
-let to_string t =
-  match t with
-  | Unsafe_ffi_bool_type
-    ->   
-    "You are passing a OCaml bool type into JS, probabaly you want to pass Js.boolean"
-  | Unsafe_poly_variant_type 
-    -> 
-    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
-
-let warning_formatter = Format.err_formatter
-
-let print_string_warning loc x = 
-  Location.print warning_formatter loc ; 
-  Format.pp_print_string warning_formatter "Warning: ";
-  Format.pp_print_string warning_formatter x
-
-let prerr_warning loc x =
-  if not (!Js_config.no_warn_ffi_type ) then
-    print_string_warning loc (to_string x) 
-
-let warn_unused_attribute loc txt =
-  print_string_warning loc ("Unused attribute " ^ txt ^ " \n" )
+let setup_env () = 
+  Lexer.replace_directive_built_in_value "BS" (Dir_bool true);
+  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Js_config.version)
 
 end
-module Lam_methname : sig 
-#1 "lam_methname.mli"
+module Bs_exception : sig 
+#1 "bs_exception.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4164,990 +1655,145 @@ module Lam_methname : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-val translate : ?loc:Location.t -> string -> string
-
-end = struct
-#1 "lam_methname.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let translate ?loc name =
-  let i = Ext_string.rfind ~sub:"_" name  in
-  if name.[0] = '_' then
-    if i <= 0 then
-      let len = (String.length name - 1) in
-      if len = 0 then
-        Location.raise_errorf ?loc "invalid label %s" name
-      else String.sub name 1 len
-    else
-      let len = (i - 1) in
-      if len = 0 then
-        Location.raise_errorf ?loc "invalid label %s" name 
-      else
-        String.sub name 1 len
-  else if i > 0 then
-    String.sub name 0 i
-  else name
-
-end
-module Ast_external_attributes : sig 
-#1 "ast_external_attributes.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type external_module_name = 
-  { bundle : string ; 
-    bind_name : string option
-  }
-
-type js_call = { 
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool 
-}
-type pipe = bool 
-type js_send = { 
-  name : string ;
-  splice : bool ; 
-  pipe : pipe   
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_global_val = {
-  name : string ; 
-  external_module_name : external_module_name option
-  }
-
-type js_new_val = {
-  name : string ; 
-  external_module_name : external_module_name option;
-  splice : bool ;
-}
-
-type arg_type = Ast_core_type.arg_type
-  
-type arg_label = Ast_core_type.arg_label 
-
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
-type js_module_as_fn = 
-  { external_module_name : external_module_name;
-    splice : bool 
-  }
-type ffi = 
-  | Obj_create of arg_label list
-  | Js_global of js_global_val 
-  | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of js_module_as_fn
-  | Js_module_as_class of external_module_name       
-  | Js_call of js_call
-  | Js_send of js_send
-  | Js_new of js_new_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
-
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
-type t  = 
-  | Bs of arg_kind list  * arg_type *   ffi
-  | Normal 
-
-
-
-
-
-(**
-   return value is of [pval_type, pval_prim]
-*)    
-val handle_attributes_as_string : 
-  Bs_loc.t ->
-  string  ->
-  Ast_core_type.t ->
-  Ast_attributes.t -> 
-  string   ->
-  Ast_core_type.t * string list * Ast_attributes.t
-
-
-val bs_external : string 
-val to_string : t -> string 
-val from_string : string -> t 
-val unsafe_from_string : string -> t 
-val is_bs_external_prefix : string -> bool
-
-
-
-val pval_prim_of_labels : string Asttypes.loc list -> string list
-
-val name_of_ffi : ffi -> string
-
-end = struct
-#1 "ast_external_attributes.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type external_module_name = 
-  { bundle : string ; 
-    bind_name : string option
-  }
-
-type pipe = bool 
-type js_call = { 
-  name : string;
-  external_module_name : external_module_name option;
-  splice : bool 
-}
-
-type js_send = { 
-  name : string ;
-  splice : bool ; 
-  pipe : pipe   
-} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
-
-type js_global_val = {
-  name : string ; 
-  external_module_name : external_module_name option
-  }
-
-type js_new_val = {
-  name : string ; 
-  external_module_name : external_module_name option;
-  splice : bool ;
-}
-
-type js_module_as_fn = 
-  { external_module_name : external_module_name;
-    splice : bool 
-  }
-
-type arg_type = Ast_core_type.arg_type
-type arg_label = Ast_core_type.arg_label
-
-type arg_kind = 
-  {
-    arg_type : arg_type;
-    arg_label : arg_label
-  }
-
-
-type ffi = 
-  | Obj_create of arg_label list
-  | Js_global of js_global_val 
-  | Js_module_as_var of  external_module_name
-  | Js_module_as_fn of js_module_as_fn
-  | Js_module_as_class of external_module_name             
-  | Js_call of js_call 
-  | Js_send of js_send
-  | Js_new of js_new_val
-  | Js_set of string
-  | Js_get of string
-  | Js_get_index
-  | Js_set_index
-
-let name_of_ffi ffi =
-  match ffi with 
-  | Js_get_index -> "[@@bs.get_index]"
-  | Js_set_index -> "[@@bs.set_index]"
-  | Js_get s -> Printf.sprintf "[@@bs.get %S]" s 
-  | Js_set s -> Printf.sprintf "[@@bs.set %S]" s 
-  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
-  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
-  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
-  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name                    
-  | Js_module_as_class v
-    -> Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_module_as_var v
-    -> 
-      Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_global v 
-    -> 
-      Printf.sprintf "[@@bs.val] %S " v.name                    
-  | Obj_create _ -> 
-    Printf.sprintf "[@@bs.obj]"
-type t  = 
-  | Bs of arg_kind list  * Ast_core_type.arg_type * ffi
-  | Normal 
-  (* When it's normal, it is handled as normal c functional ffi call *)
-
-
-
-let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_core_type.t) : 
-  arg_type * Ast_core_type.t  = 
-    match Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
-    | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
-      -> 
-      let case, result, row_fields  = 
-        (List.fold_right (fun tag (nullary, acc, row_fields) -> 
-             match nullary, tag with 
-             | (`Nothing | `Null), 
-               Parsetree.Rtag (label, attrs, true,  [])
-               -> 
-               begin match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name, new_attrs  -> 
-                   `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
-                   Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
-
-                 | None, _ -> 
-                   `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
-                   tag :: row_fields
-               end
-             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
-               -> 
-               begin match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name, new_attrs -> 
-                   `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
-                   Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
-                 | None, _ -> 
-                   `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
-                   (tag :: row_fields)
-               end
-             | _ -> Location.raise_errorf ~loc "Not a valid string type"
-           ) row_fields (`Nothing, [], [])) in 
-       (match case with 
-        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
-        | `Null -> NullString result 
-        | `NonNull -> NonNullString result) , 
-       {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
-        ptyp_attributes ;
-       }
-    | (`String, _),  _ -> Location.raise_errorf ~loc "Not a valid string type"
-
-    | (`Ignore, ptyp_attributes), _  -> 
-      (Ignore, {ptyp with ptyp_attributes})
-    | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
-      let _, acc, rev_row_fields = 
-        (List.fold_left 
-           (fun (i,acc, row_fields) rtag -> 
-              match rtag with 
-              | Parsetree.Rtag (label, attrs, true,  [])
-                -> 
-                  begin match Ast_attributes.process_bs_int_as attrs with 
-                  | Some i, new_attrs -> 
-                    i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
-                    Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
-                  | None, _ -> 
-                    i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
-                  end
-
-              | _ -> Location.raise_errorf ~loc "Not a valid string type"
-           ) (0, [],[]) row_fields) in 
-      Int (List.rev acc),
-      {ptyp with 
-       ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
-       ptyp_attributes
-      }
+type error =
+  | Cmj_not_found of string
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                                                        
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
       
-    | (`Int, _), _ -> Location.raise_errorf ~loc "Not a valid string type"
-    | (`Nothing, ptyp_attributes),  ptyp_desc ->
-      begin match ptyp_desc with
-        | Ptyp_constr ({txt = Lident "bool"}, [])
-          -> 
-          Bs_warnings.prerr_warning loc Unsafe_ffi_bool_type;
-          Nothing
-        | Ptyp_constr ({txt = Lident "unit"}, [])
-          -> Unit 
-        | Ptyp_constr ({txt = Lident "array"}, [_])
-          -> Array
-        | Ptyp_variant _ ->
-          Bs_warnings.prerr_warning loc Unsafe_poly_variant_type;
-          Nothing           
-        | _ ->
-          Nothing           
-      end, ptyp
+val error : error -> 'a 
+
+end = struct
+#1 "bs_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let valid_js_char =
-  let a = Array.init 256 (fun i ->
-    let c = Char.chr i in
-    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c = '_' || c = '$'
-  ) in
-  (fun c -> Array.unsafe_get a (Char.code c))
+type error =
+  | Cmj_not_found of string
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                            
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
+      
+exception Error of error
 
-let valid_first_js_char = 
-  let a = Array.init 256 (fun i ->
-    let c = Char.chr i in
-    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$'
-  ) in
-  (fun c -> Array.unsafe_get a (Char.code c))
+let error err = raise (Error err)
 
-(** Approximation could be improved *)
-let valid_ident (s : string) =
-  let len = String.length s in
-  len > 0 && valid_js_char s.[0] && valid_first_js_char s.[0] &&
-  (let module E = struct exception E end in
-   try
-     for i = 1 to len - 1 do
-       if not (valid_js_char (String.unsafe_get s i)) then
-         raise E.E         
-     done ;
-     true     
-   with E.E -> false )  
-  
-let valid_global_name ?loc txt =
-  if not (valid_ident txt) then
-    let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
-    List.iter
-      (fun s ->
-         if not (valid_ident s) then
-           Location.raise_errorf ?loc "Not a valid  name %s"  txt
-      ) v      
+let report_error ppf = function
+  | Cmj_not_found s ->
+    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
+  | Bs_cyclic_depends  str
+    ->
+    Format.fprintf ppf "Cyclic depends : @[%a@]"
+      (Format.pp_print_list ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      str
+  | Bs_duplicated_module (a,b)
+    ->
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
+  | Bs_main_not_exist main
+    ->
+    Format.fprintf ppf "File %s not found " main
 
-let valid_method_name ?loc txt =         
-  if not (valid_ident txt) then
-    Location.raise_errorf ?loc "Not a valid  name %s"  txt
-
-
-
-let check_external_module_name ?loc x = 
-  match x with 
-  | {bundle = ""; _ } | {bind_name = Some ""} -> 
-    Location.raise_errorf ?loc "empty name encountered"
-  | _ -> ()
-let check_external_module_name_opt ?loc x = 
-  match x with 
-  | None -> ()
-  | Some v -> check_external_module_name ?loc v 
-
-
-let check_ffi ?loc ffi = 
-  match ffi with 
-  | Js_global {name} -> valid_global_name ?loc  name
-  | Js_send {name } 
-  | Js_set  name
-  | Js_get name
-    ->  valid_method_name ?loc name
-  | Obj_create _ -> ()
-  | Js_get_index | Js_set_index 
-    -> ()
-
-  | Js_module_as_var external_module_name
-  | Js_module_as_fn {external_module_name; _}
-  | Js_module_as_class external_module_name             
-    -> check_external_module_name external_module_name
-  | Js_new {external_module_name ;  name}
-  | Js_call {external_module_name ;  name ; _}
-    -> 
-    check_external_module_name_opt ?loc external_module_name ;
-    valid_global_name ?loc name     
-
-
-(** 
-   [@@bs.module "react"]
-   [@@bs.module "react"]
-   ---
-   [@@bs.module "@" "react"]
-   [@@bs.module "@" "react"]
-
-   They should have the same module name 
-
-   TODO: we should emit an warning if we bind 
-   two external files to the same module name
-*)
-type bundle_source =
-  [`Nm_payload of string
-  |`Nm_external of string
-  | `Nm_val of string      
-  ]  
-
-let string_of_bundle_source (x : bundle_source) =
-  match x with
-  | `Nm_payload x
-  | `Nm_external x
-  | `Nm_val x -> x   
-type name_source =
-  [ bundle_source  
-  | `Nm_na
-
-  ]
-type st = 
-  { val_name : name_source;
-    external_module_name : external_module_name option;
-    module_as_val : external_module_name option;
-    val_send : name_source ;
-    val_send_pipe : Ast_core_type.t option;    
-    splice : bool ; (* mutable *)
-    set_index : bool; (* mutable *)
-    get_index : bool;
-    new_name : name_source ;
-    call_name : name_source ;
-    set_name : name_source ;
-    get_name : name_source ;
-    mk_obj : bool ;
-
-  }
-
-let init_st = 
-  {
-    val_name = `Nm_na; 
-    external_module_name = None ;
-    module_as_val = None;
-    val_send = `Nm_na;
-    val_send_pipe = None;    
-    splice = false;
-    set_index = false;
-    get_index = false;
-    new_name = `Nm_na;
-    call_name = `Nm_na;
-    set_name = `Nm_na ;
-    get_name = `Nm_na ;
-    mk_obj = false ; 
-
-  }
-
-
-let bs_external = "BS:" ^ Js_config.version
-let bs_external_length = String.length bs_external
-
-let is_bs_external_prefix s = 
-  Ext_string.starts_with s bs_external
-
-let to_string  t = 
-  bs_external ^ Marshal.to_string t []
-let unsafe_from_string s = 
-    Marshal.from_string  s bs_external_length 
-let from_string s : t  = 
-  if is_bs_external_prefix s then 
-    Marshal.from_string  s (String.length bs_external)
-  else Ext_pervasives.failwithf ~loc:__LOC__
-      "compiler version mismatch, please do a clean build" 
-
-let process_external_attributes 
-    no_arguments 
-    (prim_name_or_pval_prim: [< bundle_source ] as 'a)
-    pval_prim
-    prim_attributes =
-  let name_from_payload_or_prim payload : name_source =
-    match Ast_payload.is_single_string payload with
-    | Some  val_name ->  `Nm_payload val_name
-    | None ->  (prim_name_or_pval_prim :> name_source)
-  in
-  List.fold_left 
-    (fun (st, attrs)
-      (({txt ; loc}, payload) as attr : Ast_attributes.attr) 
-      ->
-        if Ext_string.starts_with txt "bs." then
-          begin match txt with 
-            | "bs.val" ->  
-              if no_arguments then
-                {st with val_name = name_from_payload_or_prim payload}
-              else 
-                {st with call_name = name_from_payload_or_prim payload}
-
-            | "bs.module" -> 
-              begin match Ast_payload.assert_strings loc payload with 
-                | [name] ->
-                  {st with external_module_name =
-                             Some {bundle=name; bind_name = None}}
-                | [bundle;bind_name] -> 
-                  {st with external_module_name =
-                             Some {bundle; bind_name = Some bind_name}}
-                | [] ->
-                  { st with
-                    module_as_val = 
-                      Some
-                        { bundle =
-                            string_of_bundle_source
-                              (prim_name_or_pval_prim :> bundle_source) ;
-                          bind_name = Some pval_prim}
-                  }
-                | _  -> Location.raise_errorf ~loc "Illegal attributes"
-              end
-            | "bs.splice" -> {st with splice = true}
-            | "bs.send" -> 
-              { st with val_send = name_from_payload_or_prim payload}
-            | "bs.send.pipe"
-              ->
-              { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}                
-            | "bs.set" -> 
-              {st with set_name = name_from_payload_or_prim payload}
-            | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
-
-            | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
-            | "bs.set_index" -> {st with set_index = true}
-            | "bs.get_index"-> {st with get_index = true}
-            | "bs.obj" -> {st with mk_obj = true}
-            | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
-          end, attrs
-        else (st , attr :: attrs)
+  | Bs_package_not_found package
+    ->
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
+      package package
+  | Bs_invalid_path path
+    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err
+        -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
     )
-    (init_st, []) prim_attributes 
 
 
-let list_of_arrow (ty : Parsetree.core_type) = 
-  let rec aux (ty : Parsetree.core_type) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
-    | Ptyp_poly(_, ty) -> (* should not happen? *)
-      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
-    | return_type -> ty, List.rev acc
-  in aux ty []
 
-(** Note that the passed [type_annotation] is already processed by visitor pattern before 
-*)
-let handle_attributes 
-    (loc : Bs_loc.t)
-    (pval_prim : string ) 
-    (type_annotation : Parsetree.core_type)
-    (prim_attributes : Ast_attributes.t) (prim_name : string)
-  : Ast_core_type.t * string * t * Ast_attributes.t =
-  let prim_name_or_pval_prim =
-    if String.length prim_name = 0 then  `Nm_val pval_prim
-    else  `Nm_external prim_name  (* need check name *)
-  in    
-  let result_type, arg_types_ty =
-    list_of_arrow type_annotation in
-  let result_type_spec, new_result_type  = get_arg_type result_type in
-  let (st, left_attrs) = 
-    process_external_attributes 
-      (arg_types_ty = [])
-      prim_name_or_pval_prim pval_prim prim_attributes in 
+end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-  let splice = st.splice in 
-  let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
-    List.fold_right 
-      (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
-         let spec, new_ty = get_arg_type ty in
-         (if i = 0 && splice  then
-           match spec with 
-           | Array  -> ()
-           | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
-         ({ arg_label = Ast_core_type.label_name label ; 
-            arg_type = spec 
-          } :: arg_type_specs,
-          (label, new_ty,attr,loc) :: arg_types,
-          i + 1)
-      ) arg_types_ty 
-      (match st with
-       | {val_send_pipe = Some obj} ->      
-         let spec, new_ty = get_arg_type obj in 
-         [{ arg_label = Empty ; 
-           arg_type = spec
-          }],
-         ["", new_ty, [], obj.ptyp_loc]
-         ,0
-       | {val_send_pipe = None } -> [],[], 0) in 
+val is_directory_no_exn : string -> bool
+
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-  let ffi = 
-    match st with 
-    | { mk_obj = true;
-        val_name = `Nm_na; 
-        external_module_name = None ;
-        module_as_val = None;
-        val_send = `Nm_na;
-        val_send_pipe = None;    
-        splice = false;
-        new_name = `Nm_na;
-        call_name = `Nm_na;
-        set_name = `Nm_na ;
-        get_name = `Nm_na ;
-        get_index = false ;
-      } ->
-      if String.length prim_name <> 0 then 
-        Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-      Obj_create (List.map (function
-          | {arg_label = (Empty as l) ; arg_type = Unit  }
-            -> l 
-          | {arg_label = Empty ; arg_type = _ }
-            -> Location.raise_errorf ~loc "expect label, optional, or unit here"
-          | {arg_label = (Label _) ; arg_type = (Ignore | Unit) ; }
-            -> Empty
-          | {arg_label = Label name ; arg_type = (Nothing | Array)} -> 
-            Label (Lam_methname.translate ~loc name)            
-          | {arg_label = Label l ; arg_type = (NullString _ | NonNullString _ | Int _ ) }
-            -> Location.raise_errorf ~loc 
-                 "bs.obj label %s does not support such arg type" l
-          | {arg_label = Optional name ; arg_type = (Nothing | Array | Unit | Ignore)} 
-            -> Optional (Lam_methname.translate ~loc name)
-          | {arg_label = Optional l ; arg_type = (NullString _ | NonNullString _ | Int _)} 
-            -> Location.raise_errorf ~loc 
-                 "bs.obj optional %s does not support such arg type" l )
-          arg_type_specs)(* Need fetch label here, for better error message *)
-    | {mk_obj = true; _}
-      ->
-      Location.raise_errorf ~loc "conflict attributes found"                
-    | {set_index = true;
-
-       val_name = `Nm_na; 
-       external_module_name = None ;
-       module_as_val = None;
-       val_send = `Nm_na;
-       val_send_pipe = None;    
-       splice = false;
-       get_index = false;
-       new_name = `Nm_na;
-       call_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       mk_obj = false ; 
-
-      } 
-      ->
-      if String.length prim_name <> 0 then 
-        Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-      if arg_type_specs_length = 3 then 
-          Js_set_index
-      else 
-        Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
-
-    | {set_index = true; _}
-      ->
-      Location.raise_errorf ~loc "conflict attributes found"        
-
-    | {get_index = true;
-
-       val_name = `Nm_na; 
-       external_module_name = None ;
-       module_as_val = None;
-       val_send = `Nm_na;
-       val_send_pipe = None;    
-
-       splice = false;
-       new_name = `Nm_na;
-       call_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       mk_obj = false ; 
-      } ->
-      if String.length prim_name <> 0 then 
-        Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-      if arg_type_specs_length = 2 then 
-          Js_get_index
-      else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
-
-    | {get_index = true; _}
-      -> Location.raise_errorf ~loc "conflict attributes found"        
-    | {module_as_val = Some external_module_name ;
-
-       get_index = false;
-       val_name ;
-       new_name ;
-       (*TODO: a better way to avoid breaking existing code,
-         we need tell the difference from 
-         {[
-           1. [@@bs.val "x"]
-           2. external x : .. "x" [@@bs.val ]
-           3. external x : .. ""  [@@bs.val]    ]}
-                                                *)         
-      external_module_name = None ;
-      val_send = `Nm_na;
-      val_send_pipe = None;    
-      splice ;
-      call_name = `Nm_na;
-      set_name = `Nm_na ;
-      get_name = `Nm_na ;
-      mk_obj = false ;} ->
-   begin match arg_types_ty, new_name, val_name  with         
-    | [], `Nm_na,  _ -> Js_module_as_var external_module_name
-    | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
-    | _, #bundle_source, #bundle_source ->
-      Location.raise_errorf ~loc "conflict attributes found"
-    | _, (`Nm_val _ | `Nm_external _) , `Nm_na
-      -> Js_module_as_class external_module_name
-    | _, `Nm_payload _ , `Nm_na
-      ->
-      Location.raise_errorf ~loc
-        "conflict attributes found: (bs.new should not carry payload here)"
-
-  end
- | {module_as_val = Some _}
-   -> Location.raise_errorf ~loc "conflict attributes found" 
- | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
-    splice; 
-    external_module_name;
-
-    val_name = `Nm_na ;
-    module_as_val = None;
-    val_send = `Nm_na ;
-    val_send_pipe = None;    
-
-    set_index = false;
-    get_index = false;
-    new_name = `Nm_na;
-    set_name = `Nm_na ;
-    get_name = `Nm_na 
-   } -> 
-   Js_call {splice; name; external_module_name}
- | {call_name = #bundle_source } 
-   -> Location.raise_errorf ~loc "conflict attributes found"
-
- | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-    external_module_name;
-
-    call_name = `Nm_na ;
-    module_as_val = None;
-    val_send = `Nm_na ;
-    val_send_pipe = None;    
-    set_index = false;
-    get_index = false;
-    new_name = `Nm_na;
-    set_name = `Nm_na ;
-    get_name = `Nm_na 
-
-   } 
-   -> 
-   Js_global { name; external_module_name}
- | {val_name = #bundle_source }
-   -> Location.raise_errorf ~loc "conflict attributes found"
- | {splice ;
-    external_module_name = (Some _ as external_module_name);
-
-    val_name = `Nm_na ;         
-    call_name = `Nm_na ;
-    module_as_val = None;
-    val_send = `Nm_na ;
-    val_send_pipe = None;             
-    set_index = false;
-    get_index = false;
-    new_name = `Nm_na;
-    set_name = `Nm_na ;
-    get_name = `Nm_na ;
-
-   }
-   ->
-   let name = string_of_bundle_source prim_name_or_pval_prim in
-   if arg_type_specs_length  = 0 then
-     Js_global { name; external_module_name}
-   else  Js_call {splice; name; external_module_name}                     
- | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
-    splice;
-    val_send_pipe = None;
-    val_name = `Nm_na  ;
-    call_name = `Nm_na ;
-    module_as_val = None;
-    set_index = false;
-    get_index = false;
-    new_name = `Nm_na;
-    set_name = `Nm_na ;
-    get_name = `Nm_na ;
-    external_module_name = None ;
-   } -> 
-   if arg_type_specs_length > 0 then 
-       Js_send {splice ; name; pipe = false}
-   else 
-       Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
- | {val_send = #bundle_source} 
-   -> Location.raise_errorf ~loc "conflict attributes found"
-
- | {val_send_pipe = Some typ; 
-    (* splice = (false as splice); *)
-    val_send = `Nm_na;
-    val_name = `Nm_na  ;
-    call_name = `Nm_na ;
-    module_as_val = None;
-    set_index = false;
-    get_index = false;
-    new_name = `Nm_na;
-    set_name = `Nm_na ;
-    get_name = `Nm_na ;
-    external_module_name = None ;
-   } -> 
-   (** can be one argument *)
-   Js_send {splice  ;
-            name = string_of_bundle_source prim_name_or_pval_prim;
-            pipe = true}
-
- | {val_send_pipe = Some _ } 
-   -> Location.raise_errorf ~loc "conflict attributes found"
-
- | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-    external_module_name;
-
-    val_name = `Nm_na  ;
-    call_name = `Nm_na ;
-    module_as_val = None;
-    set_index = false;
-    get_index = false;
-    val_send = `Nm_na ;
-    val_send_pipe = None;             
-    set_name = `Nm_na ;
-    get_name = `Nm_na ;
-    splice 
-   } 
-   -> Js_new {name; external_module_name; splice}
- | {new_name = #bundle_source }
-   -> Location.raise_errorf ~loc "conflict attributes found"
-
- | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-    val_name = `Nm_na  ;
-    call_name = `Nm_na ;
-    module_as_val = None;
-    set_index = false;
-    get_index = false;
-    val_send = `Nm_na ;
-    val_send_pipe = None;             
-    new_name = `Nm_na ;
-    get_name = `Nm_na ;
-    external_module_name = None
-   } 
-   -> 
-   if arg_type_specs_length = 2 then 
-       Js_set name 
-   else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-
- | {set_name = #bundle_source}
-   -> Location.raise_errorf ~loc "conflict attributes found"
-
- | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-    val_name = `Nm_na  ;
-    call_name = `Nm_na ;
-    module_as_val = None;
-    set_index = false;
-    get_index = false;
-    val_send = `Nm_na ;
-    val_send_pipe = None;             
-    new_name = `Nm_na ;
-    set_name = `Nm_na ;
-    external_module_name = None
-   }
-   ->
-   if arg_type_specs_length = 1 then  
-     Js_get name
-   else 
-       Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
- | {get_name = #bundle_source}
-   -> Location.raise_errorf ~loc "conflict attributes found"
- | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
-  begin 
-    check_ffi ~loc ffi;
-    (match ffi, new_result_type with
-     | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
-       ->
-       (* special case: 
-          {[ external f : int -> string -> _ = "" ]}
-       *)
-       let result =
-         Ast_core_type.make_obj ~loc (
-           List.fold_right2  (fun arg label acc ->
-               match arg, label with
-               | (_, ty, _,_), Ast_core_type.Label s
-                 -> (s , [], ty) :: acc                 
-               | (_, ty, _,_), Optional s
-                 ->
-                 begin match (ty : Ast_core_type.t) with
-                   | {ptyp_desc =
-                        Ptyp_constr({txt =
-                                       Ldot (Lident "*predef*", "option") },
-                                    [ty])}
-                     ->                
-                     (s, [], Ast_comb.to_undefined_type loc ty) :: acc
-                   | _ -> assert false                 
-                 end                 
-               | (_, _, _,_), Ast_core_type.Empty -> acc                
-             ) arg_types_ty arg_labels [])  in
-
-       List.fold_right (fun (label,ty,attrs,loc) acc -> 
-           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
-           ) new_arg_types_ty result 
-
-       (* Ast_core_type.replace_result type_annotation result *)
-     | _  ->
-       List.fold_right (fun (label,ty,attrs,loc) acc -> 
-           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
-           ) new_arg_types_ty new_result_type
-    ) ,
-    prim_name,
-    (Bs(arg_type_specs, result_type_spec,  ffi)), left_attrs
-  end
-
-let handle_attributes_as_string 
-    pval_loc
-    pval_prim 
-    (typ : Ast_core_type.t) attrs v = 
-  let pval_type, prim_name, ffi, processed_attrs  = 
-    handle_attributes pval_loc pval_prim typ attrs v  in
-  pval_type, [prim_name; to_string ffi], processed_attrs
-    
-let pval_prim_of_labels labels = 
-  let encoding = 
-    let (arg_kinds, vs) = 
-      List.fold_right 
-        (fun {Asttypes.loc ; txt } (arg_kinds,v)
-          ->
-            let arg_label =  Ast_core_type.Label (Lam_methname.translate ~loc txt) in
-            {arg_type = Nothing ; 
-             arg_label  } :: arg_kinds, arg_label :: v
-        )
-        labels ([],[]) in 
-    to_string @@
-    Bs (arg_kinds , Nothing, Obj_create vs) in 
-  [""; encoding]
-
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
 
 end
 module Binary_ast : sig 
@@ -5261,1787 +1907,6 @@ let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : uni
   output_value oc pt;
   close_out oc 
 
-
-end
-module Binary_cache : sig 
-#1 "binary_cache.mli"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-val write_build_cache : string -> module_info String_map.t -> unit
-
-val read_build_cache : string -> module_info String_map.t
-
-val bsbuild_cache : string
-
-end = struct
-#1 "binary_cache.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-let module_info_magic_number = "BSBUILD20161012"
-
-let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
-  let oc = open_out_bin bsbuild in 
-  output_string oc module_info_magic_number ;
-  output_value oc bs_files ;
-  close_out oc 
-
-let read_build_cache bsbuild : module_info String_map.t = 
-  let ic = open_in bsbuild in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : module_info String_map.t = input_value ic in 
-  close_in ic ;
-  data 
-
-
-let bsbuild_cache = ".bsbuild"
-
-end
-module Bs_exception : sig 
-#1 "bs_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error =
-  | Cmj_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_package_not_found of string                                                        
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-      
-val error : error -> 'a 
-
-end = struct
-#1 "bs_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type error =
-  | Cmj_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_package_not_found of string                            
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-      
-exception Error of error
-
-let error err = raise (Error err)
-
-let report_error ppf = function
-  | Cmj_not_found s ->
-    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
-  | Bs_cyclic_depends  str
-    ->
-    Format.fprintf ppf "Cyclic depends : @[%a@]"
-      (Format.pp_print_list ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      str
-  | Bs_duplicated_module (a,b)
-    ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
-  | Bs_main_not_exist main
-    ->
-    Format.fprintf ppf "File %s not found " main
-
-  | Bs_package_not_found package
-    ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
-      package package
-  | Bs_invalid_path path
-    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
-
-
-
-end
-module Ext_format : sig 
-#1 "ext_format.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Simplified wrapper module for the standard library [Format] module. 
-  *) 
-
-type t = private Format.formatter
-
-val string : t -> string -> unit
-
-val break : t -> unit
-
-val break1 : t -> unit
-
-val space :  t -> unit
-
-val group : t -> int -> (unit -> 'a) -> 'a
-(** [group] will record current indentation 
-    and indent futher
- *)
-
-val vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val paren : t -> (unit -> 'a) -> 'a
-
-val paren_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val bracket_group : t -> int -> (unit -> 'a) -> 'a
-
-val newline : t -> unit
-
-val to_out_channel : out_channel -> t
-
-val flush : t -> unit -> unit
-
-val pp_print_queue :
-  ?pp_sep:(Format.formatter -> unit -> unit) ->
-  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
-
-end = struct
-#1 "ext_format.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-open Format
-
-type t = formatter
-
-let string = pp_print_string
-
-let break = fun fmt -> pp_print_break fmt 0 0
-
-let break1 =
-  fun fmt -> pp_print_break fmt 0 1 
-
-let space  fmt  = 
-  pp_print_break fmt 1 0
-
-let vgroup fmt indent u = 
-  pp_open_vbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-
-let group fmt indent u = 
-  pp_open_hovbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-  
-let paren fmt u = 
-  string fmt "(";
-  let v = u () in
-  string fmt ")";
-  v
-
-let brace fmt u = 
-  string fmt "{";
-  (* break1 fmt ; *)
-  let v = u () in
-  string fmt "}";
-  v 
-
-let bracket fmt u = 
-  string fmt "[";
-  let v = u () in
-  string fmt "]";
-  v 
-
-let paren_group st n action = 
-  group st n (fun _ -> paren st action)
-
-let brace_group st n action = 
-  group st n (fun _ -> brace st action )
-
-let brace_vgroup st n action = 
-  vgroup st n (fun _ -> 
-    string st "{";
-    pp_print_break st 0 2;
-    let v = vgroup st 0 action in
-    pp_print_break st 0 0;
-    string st "}";
-    v
-              )
-let bracket_group st n action = 
-  group st n (fun _ -> bracket st action)
-
-let newline fmt = pp_print_newline fmt ()
-
-let to_out_channel = formatter_of_out_channel
-
-(* let non_breaking_space  fmt = string fmt " " *)
-(* let set_needed_space_function _ _ = () *)
-let flush = pp_print_flush
-
-let list = pp_print_list
-
-let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
-  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
-
-end
-module Ast_extract : sig 
-#1 "ast_extract.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type _ kind =
-  | Ml_kind : Parsetree.structure kind
-  | Mli_kind : Parsetree.signature kind
-
-
-
-
-
-
-module String_set = Depend.StringSet
-
-val read_parse_and_extract : 'a kind -> 'a -> String_set.t
-
-type ('a,'b) t 
-
-val sort_files_by_dependencies :
-  domain:String_set.t -> String_set.t String_map.t -> string Queue.t
-
-
-val sort :
-  ('a -> Parsetree.structure) ->
-  ('b -> Parsetree.signature) ->
-  ('a, 'b) t String_map.t -> string Queue.t  
-
-
-
-(**
-   [build fmt files parse_implementation parse_interface]
-   Given a list of files return an ast table 
-*)
-val collect_ast_map :
-  Format.formatter ->
-  string list ->
-  (Format.formatter -> string -> 'a) ->
-  (Format.formatter -> string -> 'b) ->
-  ('a, 'b) t String_map.t
-
-
-val collect_from_main :
-  ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
-  ?excludes : string list -> 
-  Format.formatter ->
-  (Format.formatter -> string -> 'a) ->
-  (Format.formatter -> string -> 'b) ->
-  ('a -> Parsetree.structure) ->
-  ('b -> Parsetree.signature) ->
-  string -> ('a, 'b) t String_map.t * string Queue.t
-
-val build_queue :
-  Format.formatter ->
-  string Queue.t ->
-  ('b, 'c) t String_map.t ->
-  (Format.formatter -> string -> string -> 'b -> unit) ->
-  (Format.formatter -> string -> string -> 'c -> unit) -> unit
-  
-val handle_queue :
-  Format.formatter ->
-  String_map.key Queue.t ->
-  ('a, 'b) t String_map.t ->
-  (string -> string -> 'a -> unit) ->
-  (string -> string -> 'b  -> unit) ->
-  (string -> string -> string -> 'b -> 'a -> unit) -> unit
-
-
-val build_lazy_queue :
-  Format.formatter ->
-  string Queue.t ->
-  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
-  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
-  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
-
-val handle_depfile : 
-  string option -> string -> unit
-
-end = struct
-#1 "ast_extract.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type module_name = private string
-
-module String_set = Depend.StringSet
-
-type _ kind =
-  | Ml_kind : Parsetree.structure kind
-  | Mli_kind : Parsetree.signature kind
-        
-let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
-  Depend.free_structure_names := String_set.empty;
-  let bound_vars = String_set.empty in
-  List.iter
-    (fun modname  ->
-       Depend.open_module bound_vars (Longident.Lident modname))
-    (!Clflags.open_modules);
-  (match k with
-   | Ml_kind  -> Depend.add_implementation bound_vars ast
-   | Mli_kind  -> Depend.add_signature bound_vars ast  ); 
-  !Depend.free_structure_names
-
-
-type ('a,'b) ast_info =
-  | Ml of
-      string * (* sourcefile *)
-      'a *
-      string (* opref *)      
-  | Mli of string * (* sourcefile *)
-           'b *
-           string (* opref *)
-  | Ml_mli of
-      string * (* sourcefile *)
-      'a *
-      string  * (* opref1 *)
-      string * (* sourcefile *)      
-      'b *
-      string (* opref2*)
-
-type ('a,'b) t =
-  { module_name : string ; ast_info : ('a,'b) ast_info }
-
-
-(* only visit nodes that are currently in the domain *)
-(* https://en.wikipedia.org/wiki/Topological_sorting *)
-(* dfs   *)
-let sort_files_by_dependencies ~domain dependency_graph =
-  let next current =
-    (String_map.find  current dependency_graph) in    
-  let worklist = ref domain in
-  let result = Queue.create () in
-  let rec visit visiting path current =
-    if String_set.mem current visiting then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
-    else if String_set.mem current !worklist then
-      begin
-        next current |>        
-        String_set.iter
-          (fun node ->
-             if  String_map.mem node  dependency_graph then
-               visit (String_set.add current visiting) (current::path) node)
-        ;
-        worklist := String_set.remove  current !worklist;
-        Queue.push current result ;
-      end in        
-  while not (String_set.is_empty !worklist) do 
-    visit String_set.empty []  (String_set.choose !worklist)
-  done;
-  if Js_config.get_diagnose () then
-    Format.fprintf Format.err_formatter
-      "Order: @[%a@]@."    
-      (Ext_format.pp_print_queue
-         ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      result ;       
-  result
-;;
-
-
-
-let sort  project_ml project_mli (ast_table : _ t String_map.t) = 
-  let domain =
-    String_map.fold
-      (fun k _ acc -> String_set.add k acc)
-      ast_table String_set.empty in
-  let h =
-    String_map.map
-      (fun
-        ({ast_info})
-        ->
-          match ast_info with
-          | Ml (_, ast,  _)
-            ->
-            read_parse_and_extract Ml_kind (project_ml ast)            
-          | Mli (_, ast, _)
-            ->
-            read_parse_and_extract Mli_kind (project_mli ast)
-          | Ml_mli (_, impl, _, _, intf, _)
-            ->
-            String_set.union
-              (read_parse_and_extract Ml_kind (project_ml impl))
-              (read_parse_and_extract Mli_kind (project_mli intf))              
-      ) ast_table in    
-  sort_files_by_dependencies  domain h
-
-(** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
-let check_suffix  name  = 
-  if Filename.check_suffix name ".ml"
-  || Filename.check_suffix name ".mlt" then 
-    `Ml,
-    Ext_filename.chop_extension_if_any  name 
-  else if Filename.check_suffix name !Config.interface_suffix then 
-    `Mli,   Ext_filename.chop_extension_if_any  name 
-  else 
-    raise(Arg.Bad("don't know what to do with " ^ name))
-
-
-let collect_ast_map ppf files parse_implementation parse_interface  =
-  List.fold_left
-    (fun (acc : _ t String_map.t)
-      source_file ->
-      match check_suffix source_file with
-      | `Ml, opref ->
-        let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
-          | exception Not_found ->
-            String_map.add module_name
-              {ast_info =
-                 (Ml (source_file, parse_implementation
-                        ppf source_file, opref));
-               module_name ;
-              } acc
-          | {ast_info = (Ml (source_file2, _, _)
-                        | Ml_mli(source_file2, _, _,_,_,_))} ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info =  Mli (source_file2, intf, opref2)}
-            ->
-            String_map.add module_name
-              {ast_info =
-                 Ml_mli (source_file,
-                         parse_implementation ppf source_file,
-                         opref,
-                         source_file2,
-                         intf,
-                         opref2
-                        );
-               module_name} acc
-        end
-      | `Mli, opref ->
-        let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
-          | exception Not_found ->
-            String_map.add module_name
-              {ast_info = (Mli (source_file, parse_interface
-                                              ppf source_file, opref));
-               module_name } acc
-          | {ast_info =
-               (Mli (source_file2, _, _) |
-                Ml_mli(_,_,_,source_file2,_,_)) } ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info = Ml (source_file2, impl, opref2)}
-            ->
-            String_map.add module_name
-              {ast_info =
-                 Ml_mli
-                   (source_file2,
-                    impl,
-                    opref2,
-                    source_file,
-                    parse_interface ppf source_file,
-                    opref
-                   );
-               module_name} acc
-        end
-    ) String_map.empty files
-
-
-let collect_from_main 
-    ?(extra_dirs=[])
-    ?(excludes=[])
-    (ppf : Format.formatter)
-    parse_implementation
-    parse_interface
-    project_impl 
-    project_intf 
-    main_file =
-  let not_excluded  = 
-    match excludes with 
-    | [] -> fun _ -> true
-    | _ -> 
-      fun source_file -> not (List.mem source_file excludes)
-  in 
-  let dirname = Filename.dirname main_file in
-  (** TODO: same filename module detection  *)
-  let files = 
-    Array.fold_left (fun acc source_file ->
-        if (Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli") 
-           && not_excluded source_file
-        then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   
-      (Sys.readdir dirname) in 
-  let files = 
-    List.fold_left (fun acc dir_spec -> 
-        let  dirname, excludes = 
-          match dir_spec with 
-          | `Dir dirname -> dirname, excludes
-          | `Dir_with_excludes (dirname, dir_excludes) ->
-            dirname,
-            Ext_list.flat_map 
-              (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
-              dir_excludes @ excludes
-        in 
-        Array.fold_left (fun acc source_file -> 
-            if (Ext_string.ends_with source_file ".ml" ||
-               Ext_string.ends_with source_file ".mli" )
-               && (* not_excluded source_file *) (not (List.mem source_file excludes))
-            then 
-              (Filename.concat dirname source_file) :: acc else acc
-          ) acc (Sys.readdir dirname))
-      files extra_dirs in
-  let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
-  let visited = Hashtbl.create 31 in
-  let result = Queue.create () in  
-  let next module_name =
-    match String_map.find module_name ast_table with
-    | exception _ -> String_set.empty
-    | {ast_info = Ml (_,  impl, _)} ->
-      read_parse_and_extract Ml_kind (project_impl impl)
-    | {ast_info = Mli (_,  intf,_)} ->
-      read_parse_and_extract Mli_kind (project_intf intf)
-    | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
-      -> 
-      String_set.union
-        (read_parse_and_extract Ml_kind (project_impl impl))
-        (read_parse_and_extract Mli_kind (project_intf intf))
-  in
-  let rec visit visiting path current =
-    if String_set.mem current visiting  then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
-    else
-    if not (Hashtbl.mem visited current)
-    && String_map.mem current ast_table then
-      begin
-        String_set.iter
-          (visit
-             (String_set.add current visiting)
-             (current::path))
-          (next current) ;
-        Queue.push current result;
-        Hashtbl.add visited current ();
-      end in
-  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
-  ast_table, result   
-
-
-let build_queue ppf queue
-    (ast_table : _ t String_map.t)
-    after_parsing_impl
-    after_parsing_sig    
-  =
-  queue
-  |> Queue.iter
-    (fun modname -> 
-      match String_map.find modname ast_table  with
-      | {ast_info = Ml(source_file,ast, opref)}
-        -> 
-        after_parsing_impl ppf source_file 
-          opref ast 
-      | {ast_info = Mli (source_file,ast,opref) ; }  
-        ->
-        after_parsing_sig ppf source_file 
-          opref ast 
-      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
-        -> 
-        after_parsing_sig ppf source_file1 opref1 intf ;
-        after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
-    )
-
-
-let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
-  queue 
-  |> Queue.iter
-    (fun base ->
-       match (String_map.find  base ast_table).ast_info with
-       | exception Not_found -> assert false
-       | Ml (ml_name,  ml_content, _)
-         ->
-         decorate_module_only  base ml_name ml_content
-       | Mli (mli_name , mli_content, _) ->
-         decorate_interface_only base  mli_name mli_content
-       | Ml_mli (ml_name, ml_content, _, mli_name,   mli_content, _)
-         ->
-         decorate_module  base mli_name ml_name mli_content ml_content
-
-    )
-
-
-
-let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
-    after_parsing_impl
-    after_parsing_sig    
-  =
-  queue |> Queue.iter (fun modname -> 
-      match String_map.find modname ast_table  with
-      | {ast_info = Ml(source_file,lazy ast, opref)}
-        -> 
-        after_parsing_impl ppf source_file opref ast 
-      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
-        ->
-        after_parsing_sig ppf source_file opref ast 
-      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
-        -> 
-        after_parsing_sig ppf source_file1 opref1 intf ;
-        after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
-    )
-
-
-let dep_lit = " :"
-let space = " "
-let (//) = Filename.concat
-let length_space = String.length space 
-let handle_depfile oprefix  (fn : string) : unit = 
-  let op_concat s = match oprefix with None -> s | Some v -> v // s in 
-  let data =
-    Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
-  let deps = 
-    match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
-    | Some  input_file -> 
-      let stru  = Binary_ast.read_ast Ml  fn in 
-      let set = read_parse_and_extract Ml_kind stru in 
-      let dependent_file = (input_file ^ Literals.suffix_cmj) ^ dep_lit in
-      let (files, len) = 
-      String_set.fold
-        (fun k ((acc, len) as v) -> 
-           match String_map.find k data with
-           | {ml = Ml s | Re s  } 
-           | {mll = Some s } 
-             -> 
-             let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
-             in (new_file :: acc , len + String.length new_file + length_space)
-           | {mli = Mli s | Rei s } -> 
-             let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
-             (new_file :: acc , len + String.length new_file + length_space)
-           | _ -> assert false
-           | exception Not_found -> v
-        ) set ([],String.length dependent_file)in
-      Ext_string.unsafe_concat_with_length len
-        space
-        (dependent_file :: files)
-    | None -> 
-      begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
-      | Some input_file -> 
-        let stri = Binary_ast.read_ast Mli  fn in 
-        let s = read_parse_and_extract Mli_kind stri in 
-        let dependent_file = (input_file ^ Literals.suffix_cmi) ^ dep_lit in
-        let (files, len) = 
-          String_set.fold
-            (fun k ((acc, len) as v) ->
-               match String_map.find k data with 
-               | { ml = Ml f | Re f  }
-               | { mll = Some f }
-               | { mli = Mli f | Rei f } -> 
-                 let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
-                 (new_file :: acc , len + String.length new_file + length_space)
-               | _ -> assert false
-               | exception Not_found -> v
-            ) s  ([], String.length dependent_file) in 
-        Ext_string.unsafe_concat_with_length len
-          space 
-          (dependent_file :: files) 
-      | None -> 
-        raise (Arg.Bad ("don't know what to do with  " ^ fn))
-      end
-  in 
-  let output = fn ^ Literals.suffix_d in
-  Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
-
-end
-module Ast_lift : sig 
-#1 "ast_lift.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val int : 
-  ?loc:Location.t ->
-  ?attrs:Parsetree.attributes -> int -> Parsetree.expression
-
-end = struct
-#1 "ast_lift.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let int ?loc ?attrs x = 
-  Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
-
-end
-module Ast_pat : sig 
-#1 "ast_pat.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.pattern
-
-val is_unit_cont : yes:'a -> no:'a -> t -> 'a
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]*)
-val arity_of_fun : t -> Parsetree.expression -> int
-
-end = struct
-#1 "ast_pat.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Parsetree.pattern
-
-
-let is_unit_cont ~yes ~no (p : t)  =
-  match p  with
-  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
-    -> yes 
-  | _ -> no
-
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]
-*)
-let arity_of_fun
-    (pat : Parsetree.pattern)
-    (e : Parsetree.expression) =
-  let rec aux (e : Parsetree.expression)  =
-    match e.pexp_desc with
-    | Pexp_fun ("", None, pat, e) ->
-      1 + aux e       
-    | Pexp_fun _
-      -> Location.raise_errorf
-           ~loc:e.pexp_loc "Lable is not allowed in JS object"
-    | _ -> 0 in
-  is_unit_cont ~yes:0 ~no:1 pat + aux e 
-
-end
-module Ast_util : sig 
-#1 "ast_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type args = (string * Parsetree.expression) list
-type loc = Location.t 
-type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-type 'a cxt = loc -> Ast_mapper.mapper -> 'a
-
-(** In general three kinds of ast generation.
-    - convert a curried to type to uncurried 
-    - convert a curried fun to uncurried fun
-    - convert a uncuried application to normal 
-*)
-type uncurry_expression_gen = 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt
-type uncurry_type_gen = 
-  (string -> (* label for error checking *)
-   Parsetree.core_type ->
-   Parsetree.core_type  ->
-   Parsetree.core_type) cxt
-
-(** TODO: the interface is not reusable, it depends on too much context *)
-(** syntax: {[f arg0 arg1 [@bs]]}*)
-val uncurry_fn_apply : 
-  (Parsetree.expression ->
-  args ->
-  Parsetree.expression_desc ) cxt 
-
-(** syntax : {[f## arg0 arg1 ]}*)
-val method_apply : 
-  (Parsetree.expression ->
-  string ->
-  args ->
-  Parsetree.expression_desc) cxt 
-
-(** syntax {[f#@ arg0 arg1 ]}*)
-val property_apply : 
-  (Parsetree.expression ->
-  string ->
-  args ->
-  Parsetree.expression_desc) cxt 
-
-
-(** 
-    [function] can only take one argument, that is the reason we did not adopt it
-    syntax:
-    {[ fun [@bs] pat pat1-> body ]}
-    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
-
-*)
-val to_uncurry_fn : uncurry_expression_gen
-
-
-(** syntax: 
-    {[fun [@bs.this] obj pat pat1 -> body]}    
-*)
-val to_method_callback : uncurry_expression_gen
-
-
-(** syntax : 
-    {[ int -> int -> int [@bs]]}
-*)
-val to_uncurry_type : uncurry_type_gen
-  
-
-(** syntax
-    {[ method : int -> itn -> int ]}
-*)
-val to_method_type : uncurry_type_gen
-
-(** syntax:
-    {[ 'obj -> int -> int [@bs.this] ]}
-*)
-val to_method_callback_type : uncurry_type_gen
-
-
-
-
-
-val record_as_js_object : 
-  (label_exprs ->
-   Parsetree.expression_desc) cxt 
-
-val js_property : 
-  loc ->
-  Parsetree.expression -> string -> Parsetree.expression_desc
-
-val handle_debugger : 
-  loc -> Ast_payload.t -> Parsetree.expression_desc
-
-val handle_raw : 
-  loc -> Ast_payload.t -> Parsetree.expression
-
-
-val handle_raw_structure : 
-  loc -> Ast_payload.t -> Parsetree.structure_item
-
-val ocaml_obj_as_js_object :
-  (Parsetree.pattern ->
-   Parsetree.class_field list ->
-   Parsetree.expression_desc) cxt   
-
-end = struct
-#1 "ast_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper 
-type 'a cxt = Ast_helper.loc -> Ast_mapper.mapper -> 'a
-type loc = Location.t 
-type args = (string * Parsetree.expression) list
-type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-type uncurry_expression_gen = 
-  (Parsetree.pattern ->
-   Parsetree.expression ->
-   Parsetree.expression_desc) cxt
-type uncurry_type_gen = 
-  (string ->
-   Parsetree.core_type ->
-   Parsetree.core_type  ->
-   Parsetree.core_type) cxt
-    
-let uncurry_type_id = 
-  Ast_literal.Lid.js_fn
-
-let method_id  = 
-  Ast_literal.Lid.js_meth
-
-let method_call_back_id  = 
-  Ast_literal.Lid.js_meth_callback
-
-let arity_lit = "Arity_"
-
-let mk_args loc n tys = 
-  Typ.variant ~loc 
-    [ Rtag (arity_lit ^ string_of_int n, [], (n = 0),  tys)] Closed None
-
-let generic_lift txt loc args result  = 
-  let xs =
-    match args with 
-    | [ ] -> [mk_args loc 0   [] ; result ]
-    | [ x ] -> [ mk_args loc 1 [x] ; result ] 
-    | _ -> 
-      [mk_args loc (List.length args ) [Typ.tuple ~loc args] ; result ]
-  in 
-  Typ.constr ~loc {txt ; loc} xs
-
-let lift_curry_type  loc   = 
-  generic_lift   uncurry_type_id loc
-
-let lift_method_type loc  = 
-  generic_lift  method_id loc
-
-let lift_js_method_callback loc
-  = 
-  generic_lift method_call_back_id loc 
-(** Note that currently there is no way to consume [Js.meth_callback]
-    so it is fine to encode it with a freedom, 
-    but we need make it better for error message.
-    - all are encoded as 
-    {[ 
-      type fn =  (`Args_n of _ , 'result ) Js.fn
-      type method = (`Args_n of _, 'result) Js.method
-      type method_callback = (`Args_n of _, 'result) Js.method_callback
-    ]}
-    For [method_callback], the arity is never zero, so both [method] 
-    and  [fn] requires (unit -> 'a) to encode arity zero
-*)
-
-
-
-let arrow = Typ.arrow
-
-
-let js_property loc obj name =
-  Parsetree.Pexp_send
-    ((Exp.apply ~loc
-        (Exp.ident ~loc
-           {loc;
-            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
-        ["",obj]), name)
-
-(* TODO: 
-   have a final checking for property arities 
-     [#=], 
-*)
-
-
-let generic_apply  kind loc 
-    (self : Ast_mapper.mapper) 
-    (obj : Parsetree.expression) 
-    (args : args ) cb   =
-  let obj = self.expr self obj in
-  let args =
-    List.map (fun (label,e) ->
-        if label <> "" then
-          Location.raise_errorf ~loc "label is not allowed here"        ;
-        self.expr self e
-      ) args in
-  let len = List.length args in 
-  let arity, fn, args  = 
-  match args with 
-  | [ {pexp_desc =
-         Pexp_construct ({txt = Lident "()"}, None)}]
-    -> 
-     0, cb loc obj, []
-  | _ -> 
-    len,  cb loc obj, args in
-  if arity < 10 then 
-    let txt = 
-      match kind with 
-      | `Fn | `PropertyFn ->  
-        Longident.Ldot (Ast_literal.Lid.js_unsafe, 
-                        Literals.js_fn_run ^ string_of_int arity)
-      | `Method -> 
-        Longident.Ldot(Ast_literal.Lid.js_unsafe,
-                       Literals.js_method_run ^ string_of_int arity
-                      ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
-  else 
-  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
-  let string_arity = string_of_int arity in
-  let pval_prim, pval_type = 
-    match kind with 
-    | `Fn | `PropertyFn -> 
-      [Literals.js_fn_run; string_arity], 
-      arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
-    | `Method -> 
-      [Literals.js_method_run ; string_arity], 
-      arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
-  in
-  Ast_external.create_local_external loc ~pval_prim ~pval_type 
-    (("", fn) :: List.map (fun x -> "",x) args )
-
-
-let uncurry_fn_apply loc self fn args = 
-  generic_apply `Fn loc self fn args (fun _ obj -> obj )
-
-let property_apply loc self obj name (args : args) 
-  =  generic_apply `PropertyFn loc self obj args 
-    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
-
-let method_apply loc self obj name args = 
-  generic_apply `Method loc self obj args 
-    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
-
-let generic_to_uncurry_type  kind loc (mapper : Ast_mapper.mapper) label
-    (first_arg : Parsetree.core_type) 
-    (typ : Parsetree.core_type)  =
-  if label <> "" then
-    Location.raise_errorf ~loc "label is not allowed";                 
-
-  let rec aux acc (typ : Parsetree.core_type) = 
-    (* in general, 
-       we should collect [typ] in [int -> typ] before transformation, 
-       however: when attributes [bs] and [bs.this] found in typ, 
-       we should stop 
-    *)
-    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
-    | `Nothing, _   -> 
-      begin match typ.ptyp_desc with 
-      | Ptyp_arrow (label, arg, body)
-        -> 
-        if label <> "" then
-          Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
-        aux (mapper.typ mapper arg :: acc) body 
-      | _ -> mapper.typ mapper typ, acc 
-      end
-    | _, _ -> mapper.typ mapper typ, acc  
-  in 
-  let first_arg = mapper.typ mapper first_arg in
-  let result, rev_extra_args = aux  [first_arg] typ in 
-  let args  = List.rev rev_extra_args in 
-  let filter_args args  =  
-    match args with 
-    | [{Parsetree.ptyp_desc = 
-          (Ptyp_constr ({txt = Lident "unit"}, []) 
-          )}]
-      -> []
-    | _ -> args in
-  match kind with 
-  | `Fn ->
-    let args = filter_args args in
-    lift_curry_type loc args result 
-  | `Method -> 
-    let args = filter_args args in
-    lift_method_type loc args result 
-
-  | `Method_callback
-    -> lift_js_method_callback loc args result 
-
-
-let to_uncurry_type  = 
-  generic_to_uncurry_type `Fn
-let to_method_type  =
-  generic_to_uncurry_type  `Method
-let to_method_callback_type  = 
-  generic_to_uncurry_type `Method_callback 
-
-let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body 
-  = 
-  let rec aux acc (body : Parsetree.expression) = 
-    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
-    | `Nothing, _ -> 
-      begin match body.pexp_desc with 
-        | Pexp_fun (label,_, arg, body)
-          -> 
-          if label <> "" then
-            Location.raise_errorf ~loc "label is not allowed";
-          aux (self.pat self arg :: acc) body 
-        | _ -> self.expr self body, acc 
-      end 
-    | _, _ -> self.expr self body, acc  
-  in 
-  let first_arg = self.pat self pat in  
-  let result, rev_extra_args = aux [first_arg] body in 
-  let body = 
-    List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
-      result rev_extra_args in
-  let len = List.length rev_extra_args in 
-  let arity = 
-    match kind with 
-    | `Fn  ->
-      begin match rev_extra_args with 
-        | [ p]
-          ->
-          Ast_pat.is_unit_cont ~yes:0 ~no:len p           
-
-        | _ -> len 
-      end
-    | `Method_callback -> len  in 
-  if arity < 10  then 
-    let txt = 
-      match kind with 
-      | `Fn -> 
-        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.js_fn_mk ^ string_of_int arity)
-      | `Method_callback -> 
-        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_fn_method ^ string_of_int arity) in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
-
-  else 
-    let pval_prim =
-      [ (match kind with 
-            | `Fn -> Literals.js_fn_mk
-            | `Method_callback -> Literals.js_fn_method); 
-        string_of_int arity]  in
-    let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-    let pval_type = arrow ~loc "" fn_type (
-        match kind with 
-        | `Fn -> 
-          lift_curry_type loc args_type result_type
-        | `Method_callback -> 
-          lift_js_method_callback loc args_type result_type
-      ) in
-    Ast_external.local_extern_cont loc ~pval_prim ~pval_type 
-      (fun prim -> Exp.apply ~loc prim ["", body]) 
-
-let to_uncurry_fn   = 
-  generic_to_uncurry_exp `Fn
-let to_method_callback  = 
-  generic_to_uncurry_exp `Method_callback 
-
-
-let handle_debugger loc payload = 
-  if Ast_payload.as_empty_structure payload then
-    Parsetree.Pexp_apply
-      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
-       ["", Ast_literal.val_unit ~loc ()])
-  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-
-
-let handle_raw loc payload = 
-  begin match Ast_payload.as_string_exp payload with 
-    | None ->
-      Location.raise_errorf ~loc
-        "bs.raw can only be applied to a string "
-
-    | Some exp -> 
-      let pexp_desc = 
-        Parsetree.Pexp_apply (
-            Exp.ident {loc; 
-                       txt = 
-                         Ldot (Ast_literal.Lid.js_unsafe, 
-                               Literals.js_pure_expr)},
-            ["",exp]
-          )
-      in
-      { exp with pexp_desc }
-  end
-
-
-
-
-let handle_raw_structure loc payload = 
-  begin match Ast_payload.as_string_exp payload with 
-    | Some exp 
-      -> 
-      let pexp_desc = 
-        Parsetree.Pexp_apply(
-            Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
-            ["",exp]) in 
-      Ast_helper.Str.eval 
-        { exp with pexp_desc }
-
-    | None
-      -> 
-      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-  end
-
-    
-let ocaml_obj_as_js_object
-    loc (mapper : Ast_mapper.mapper)
-    (self_pat : Parsetree.pattern)
-    (clfs : Parsetree.class_field list) =
-  let self_type_lit = "self_type"   in 
-
-  (** Attention: we should avoid type variable conflict for each method  
-      Since the method name is unique, there would be no conflict 
-      OCaml does not allow duplicate instance variable and duplicate methods, 
-      but it does allow duplicates between instance variable and method name, 
-      we should enforce such rules 
-      {[
-        object 
-          val x = 3
-          method x = 3 
-        end [@bs]
-      ]} should not compile with a meaningful error message
-  *)
-
-  let generate_val_method_pair 
-      loc (mapper : Ast_mapper.mapper)
-      val_name  is_mutable = 
-
-    let result = Typ.var ~loc val_name in 
-    result , 
-    ((val_name , [], result ) ::
-     (if is_mutable then 
-        [val_name ^ Literals.setter_suffix,[],
-         to_method_type loc mapper "" result (Ast_literal.type_unit ~loc ()) ]
-      else 
-        []) )
-  in 
-  (* Note mapper is only for API compatible 
-   * TODO: we should check label name to avoid conflict 
-  *)  
-  let self_type loc = Typ.var ~loc self_type_lit in 
-
-  let generate_arg_type loc (mapper  : Ast_mapper.mapper)
-      method_name arity : Ast_core_type.t = 
-    let result = Typ.var ~loc method_name in   
-    if arity = 0 then
-      to_method_type loc mapper "" (Ast_literal.type_unit ~loc ()) result 
-
-    else
-      let tyvars =
-        Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
-      in
-      begin match tyvars with
-        | x :: rest ->
-          let method_rest =
-            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
-              rest result in         
-          to_method_type loc mapper "" x method_rest
-        | _ -> assert false
-      end in          
-
-  let generate_method_type
-      loc
-      (mapper : Ast_mapper.mapper)
-      ?alias_type method_name arity =
-    let result = Typ.var ~loc method_name in   
-
-    let self_type =
-      let v = self_type loc  in
-      match alias_type with 
-      | None -> v 
-      | Some ty -> Typ.alias ~loc ty self_type_lit
-    in  
-    if arity = 0 then
-      to_method_callback_type loc mapper  "" self_type result      
-    else
-      let tyvars =
-        Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
-      in
-      begin match tyvars with
-        | x :: rest ->
-          let method_rest =
-            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
-              rest result in         
-          (to_method_callback_type loc mapper  "" self_type
-             (Typ.arrow ~loc "" x method_rest))
-        | _ -> assert false
-      end in          
-
-
-  (** we need calculate the real object type 
-      and exposed object type, in some cases there are equivalent
-
-      for public object type its [@bs.meth] it does not depend on itself
-      while for label argument it is [@bs.this] which depends internal object
-  *)
-  let internal_label_attr_types, public_label_attr_types  = 
-    List.fold_right
-      (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
-        (label_attr_types, public_label_attr_types) ->
-        match x.pcf_desc with
-        | Pcf_method (
-            label,
-            public_flag,
-            Cfk_concrete
-              (Fresh, e))
-           ->
-           begin match e.pexp_desc with
-             | Pexp_poly
-                 (({pexp_desc = Pexp_fun ("", None, pat, e)} ),
-                  None) ->  
-               let arity = Ast_pat.arity_of_fun pat e in
-               let method_type =
-                 generate_arg_type x.pcf_loc mapper label.txt arity in 
-               ((label.Asttypes.txt, [], method_type) :: label_attr_types),
-               (if public_flag = Public then
-                  (label.Asttypes.txt, [], method_type) :: public_label_attr_types
-                else 
-                  public_label_attr_types)
-               
-             | Pexp_poly( _, Some _)
-               ->
-               Location.raise_errorf ~loc "polymorphic type annotation not supported yet"
-             | Pexp_poly (_, None) ->
-               Location.raise_errorf ~loc
-                 "Unsupported syntax, expect syntax like `method x () = x ` "
-             | _ ->
-               Location.raise_errorf ~loc "Unsupported syntax in js object"               
-           end
-         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
-           let  label_type, label_attr  = 
-             generate_val_method_pair x.pcf_loc mapper label.txt  
-               (mutable_flag = Mutable )
-           in
-           (label_attr @ label_attr_types, public_label_attr_types)
-         | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
-           Location.raise_errorf ~loc "override flag not support currently"
-         | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
-           Location.raise_errorf ~loc "virtual flag not support currently"
-
-         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
-           Location.raise_errorf ~loc "override flag not supported"
-       
-         | Pcf_method (_, _, Cfk_virtual _ )
-           ->
-           Location.raise_errorf ~loc "virtural method not supported"
-           
-         | Pcf_inherit _ 
-         | Pcf_initializer _
-         | Pcf_attribute _
-         | Pcf_extension _
-         | Pcf_constraint _ ->
-           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs ([], []) in
-  let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
-  let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
-  let (labels,  label_types, exprs, _) =
-    List.fold_right
-      (fun (x  : Parsetree.class_field)
-        (labels,
-         label_types,
-         exprs, aliased ) ->
-        match x.pcf_desc with
-        | Pcf_method (
-            label,
-            _public_flag,
-            Cfk_concrete
-              (Fresh, e))
-           ->
-           begin match e.pexp_desc with
-             | Pexp_poly
-                 (({pexp_desc = Pexp_fun ("", None, pat, e)} as f),
-                  None) ->  
-               let arity = Ast_pat.arity_of_fun pat e in
-               let alias_type = 
-                 if aliased then None 
-                 else Some internal_obj_type in
-               let  label_type =
-                 generate_method_type ?alias_type
-                   x.pcf_loc mapper label.txt arity in 
-               (label::labels,
-                label_type::label_types,
-                {f with
-                 pexp_desc =
-                   let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
-                   to_method_callback loc mapper self_pat f
-                } :: exprs, 
-                true
-               )
-             | Pexp_poly( _, Some _)
-               ->
-               Location.raise_errorf ~loc
-                 "polymorphic type annotation not supported yet"
-               
-             | Pexp_poly (_, None) ->
-               Location.raise_errorf
-                 ~loc "Unsupported syntax, expect syntax like `method x () = x ` "
-             | _ ->
-               Location.raise_errorf ~loc "Unsupported syntax in js object"               
-           end
-         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
-           let  label_type, label_attr  = 
-             generate_val_method_pair x.pcf_loc mapper label.txt  
-               (mutable_flag = Mutable )
-           in
-           (label::labels,
-            label_type :: label_types, 
-            (mapper.expr mapper val_exp :: exprs), 
-            aliased 
-           )
-
-         | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
-           Location.raise_errorf ~loc "override flag not support currently"
-         | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
-           Location.raise_errorf ~loc "virtual flag not support currently"
-
-         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
-           Location.raise_errorf ~loc "override flag not supported"
-       
-         | Pcf_method (_, _, Cfk_virtual _ )
-           ->
-           Location.raise_errorf ~loc "virtural method not supported"
-           
-
-         | Pcf_inherit _ 
-         | Pcf_initializer _
-         | Pcf_attribute _
-         | Pcf_extension _
-         | Pcf_constraint _ ->
-           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs  ([], [], [], false) in
-  let pval_type =
-    List.fold_right2
-      (fun label label_type acc ->
-         Typ.arrow
-           ~loc:label.Asttypes.loc
-           label.Asttypes.txt
-           label_type acc           
-      ) labels label_types public_obj_type in
-  Ast_external.local_extern_cont
-    loc
-      ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
-      (fun e ->
-       Exp.apply ~loc e
-         (List.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
-    ~pval_type
-
-
-let record_as_js_object 
-    loc 
-    (self : Ast_mapper.mapper)
-    (label_exprs : label_exprs)
-     : Parsetree.expression_desc = 
-
-  let labels,args, arity =
-    List.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
-        match txt with
-        | Longident.Lident x ->
-          ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
-        | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
-  Ast_external.create_local_external loc 
-    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
-    ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
-    args 
 
 end
 module Bs_ast_iterator : sig 
@@ -7720,6 +2585,110 @@ let default_iterator =
   }
 
 end
+module Bs_warnings : sig 
+#1 "bs_warnings.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+  | Unsafe_poly_variant_type
+
+(* val print_string_warning : Location.t -> string -> unit *)
+
+val prerr_warning : Location.t -> t -> unit
+
+(**It will always warn not relevant to whether {!Js_config.warn_unused_attribute} set or not
+   User should check it first. 
+   The reason is that we will do a global check first, then start warning later
+*)
+val warn_unused_attribute : Location.t -> string -> unit
+
+end = struct
+#1 "bs_warnings.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+
+  | Unsafe_poly_variant_type
+  (* for users write code like this:
+     {[ external f : [`a of int ] -> string = ""]}
+     Here users forget about `[@bs.string]` or `[@bs.int]`
+  *)    
+
+
+
+let to_string t =
+  match t with
+  | Unsafe_ffi_bool_type
+    ->   
+    "You are passing a OCaml bool type into JS, probabaly you want to pass Js.boolean"
+  | Unsafe_poly_variant_type 
+    -> 
+    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+
+let warning_formatter = Format.err_formatter
+
+let print_string_warning loc x = 
+  Location.print warning_formatter loc ; 
+  Format.pp_print_string warning_formatter "Warning: ";
+  Format.pp_print_string warning_formatter x
+
+let prerr_warning loc x =
+  if not (!Js_config.no_warn_ffi_type ) then
+    print_string_warning loc (to_string x) 
+
+let warn_unused_attribute loc txt =
+  print_string_warning loc ("Unused attribute " ^ txt ^ " \n" )
+
+end
 module Bs_ast_invariant
 = struct
 #1 "bs_ast_invariant.ml"
@@ -7770,8 +2739,8 @@ let emit_external_warnings : Bs_ast_iterator .iterator=
   }
 
 end
-module Bs_conditional_initial : sig 
-#1 "bs_conditional_initial.mli"
+module Ext_log : sig 
+#1 "ext_log.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7796,10 +2765,36 @@ module Bs_conditional_initial : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val setup_env : unit -> unit
+
+
+
+
+
+
+
+(** A Poor man's logging utility
+    
+    Example:
+    {[ 
+    err __LOC__ "xx"
+    ]}
+ *)
+
+
+
+type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
+
+
+val err : string -> 'a logging
+val ierr : bool -> string -> 'a logging 
+val warn : string -> 'a logging
+val iwarn : bool -> string -> 'a logging 
+val dwarn : string -> 'a logging 
+val info : string -> 'a logging
+val iinfo : bool -> string -> 'a logging
 
 end = struct
-#1 "bs_conditional_initial.ml"
+#1 "ext_log.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -7825,9 +2820,2371 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let setup_env () = 
-  Lexer.replace_directive_built_in_value "BS" (Dir_bool true);
-  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Js_config.version)
+
+
+
+
+
+
+
+
+type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
+
+let err str f  =
+  Format.fprintf Format.err_formatter ("%s " ^^ f ^^ "@.") str  
+
+let ierr b str f  =
+  if b then 
+    Format.fprintf Format.err_formatter ("%s " ^^ f) str  
+  else
+    Format.ifprintf Format.err_formatter ("%s " ^^ f) str  
+
+let warn str f  =
+  Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
+
+
+
+let iwarn b str f  = 
+  if b then 
+    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  
+  else 
+    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str 
+
+(* TODO: add {[@.]} later for all *)
+let dwarn str f  = 
+  if Js_config.is_same_file () then   
+    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
+  else 
+    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
+
+let info str f  =
+  Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
+
+let iinfo b str f  =
+  if b then 
+    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
+  else
+    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
+
+
+end
+module String_set : sig 
+#1 "string_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Set.S with type elt = string
+
+end = struct
+#1 "string_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Set.Make(String)
+
+end
+module Ext_ident : sig 
+#1 "ext_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A wrapper around [Ident] module in compiler-libs*)
+
+val is_js : Ident.t -> bool
+
+val is_js_object : Ident.t -> bool
+
+(** create identifiers for predefined [js] global variables *)
+val create_js : string -> Ident.t
+
+val create : string -> Ident.t
+
+val create_js_module : string -> Ident.t 
+
+val make_js_object : Ident.t -> unit
+
+val reset : unit -> unit
+
+val gen_js :  ?name:string -> unit -> Ident.t
+
+val make_unused : unit -> Ident.t
+
+val is_unused_ident : Ident.t -> bool 
+
+(**
+   if name is not converted, the reference should be equal
+*)
+val convert : bool -> string -> string
+val property_no_need_convert : string -> bool 
+
+val undefined : Ident.t 
+val is_js_or_global : Ident.t -> bool
+val nil : Ident.t
+
+end = struct
+#1 "ext_ident.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let js_flag = 0b1000 (* check with ocaml compiler *)
+
+let js_module_flag = 0b1_0000 (* javascript external modules *)
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let js_object_flag = 0b10_0000 (* javascript object flags *)
+
+let is_js (i : Ident.t) = 
+  i.flags land js_flag <> 0 
+
+let is_js_or_global (i : Ident.t) = 
+  i.flags land (8 lor 1) <> 0 
+
+let is_js_module (i : Ident.t) =
+  i.flags land js_module_flag <> 0 
+
+let is_js_object (i : Ident.t) = 
+  i.flags land js_object_flag <> 0 
+
+let make_js_object (i : Ident.t) = 
+  i.flags <- i.flags lor js_object_flag 
+      
+(* It's a js function hard coded by js api, so when printing,
+   it should preserve the name 
+ *)
+let create_js (name : string) : Ident.t  = 
+  { name = name; flags = js_flag ; stamp = 0}
+
+let js_module_table = Hashtbl.create 31 
+
+(* This is for a js exeternal module, we can change it when printing
+   for example
+   {[
+   var React$1 = require('react');
+   React$1.render(..)
+   ]}
+
+   Given a name, if duplicated, they should  have the same id
+ *)
+let create_js_module (name : string) : Ident.t = 
+  let name = 
+    String.concat "" @@ List.map (String.capitalize ) @@ 
+    Ext_string.split name '-' in
+  (* TODO: if we do such transformation, we should avoid 
+      collision for example:
+      react-dom 
+      react--dom
+      check collision later
+   *)
+  match Hashtbl.find js_module_table name  with 
+  | exception Not_found -> 
+      let v = Ident.create name in
+      let ans = { v with flags = js_module_flag} in 
+      Hashtbl.add js_module_table name ans;
+      ans
+  | v -> v 
+
+let create = Ident.create
+
+let gen_js ?(name="$js") () = create name 
+
+let reserved_words = 
+  [
+    (* keywork *)
+    "break";
+    "case"; "catch"; "continue";
+    "debugger";"default";"delete";"do";
+    "else";
+    "finally";"for";"function";
+    "if"; "then"; "in";"instanceof";
+    "new";
+    "return";
+    "switch";
+    "this"; "throw"; "try"; "typeof";
+    "var"; "void"; "while"; "with";
+
+    (* reserved in ECMAScript 5 *)
+    "class"; "enum"; "export"; "extends"; "import"; "super";
+
+    "implements";"interface";
+    "let";
+    "package";"private";"protected";"public";
+    "static";
+    "yield";
+
+    (* other *)
+    "null";
+    "true";
+    "false";
+    "NaN";
+
+
+    "undefined";
+    "this";
+
+    (* also reserved in ECMAScript 3 *)
+    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
+    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
+    "synchronized"; 
+    (* "throws";  *)
+    (* seems to be fine, like nodejs [assert.throws] *)
+    "transient"; "volatile";
+
+    (* also reserved in ECMAScript 6 *)
+    "await";
+   
+   "event";
+   "location";
+   "window";
+   "document";
+   "eval";
+   "navigator";
+   (* "self"; *)
+   
+   "Array";
+   "Date";
+   "Math";
+   "JSON";
+   "Object";
+   "RegExp";
+   "String";
+   "Boolean";
+   "Number";
+
+   "Map"; (* es6*)
+   "Set";
+
+   "Infinity";
+   "isFinite";
+   
+   "ActiveXObject";
+   "XMLHttpRequest";
+   "XDomainRequest";
+   
+   "DOMException";
+   "Error";
+   "SyntaxError";
+   "arguments";
+   
+   "decodeURI";
+   "decodeURIComponent";
+   "encodeURI";
+   "encodeURIComponent";
+   "escape";
+   "unescape";
+
+   "isNaN";
+   "parseFloat";
+   "parseInt";
+   
+   (** reserved for commonjs *)   
+   "require";
+   "exports";
+   "module"
+]
+
+let reserved_map = 
+  List.fold_left (fun acc x -> String_set.add x acc) String_set.empty 
+    reserved_words
+
+
+
+
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let convert keyword (name : string) = 
+   if keyword && String_set.mem name reserved_map then "$$" ^ name 
+   else 
+     let module E = struct exception Not_normal_letter of int end in
+     let len = String.length name  in
+     try
+       for i  = 0 to len - 1 do 
+         match String.unsafe_get name i with 
+         | 'a' .. 'z' | 'A' .. 'Z'
+         | '0' .. '9' | '_' | '$' -> ()
+         | _ -> raise (E.Not_normal_letter i)
+       done;
+       name
+     with E.Not_normal_letter i ->
+       String.sub name 0 i ^ 
+       (let buffer = Buffer.create len in 
+        for j = i to  len - 1 do 
+          let c = String.unsafe_get name j in
+          match c with 
+          | '*' -> Buffer.add_string buffer "$star"
+          | '\'' -> Buffer.add_string buffer "$prime"
+          | '!' -> Buffer.add_string buffer "$bang"
+          | '>' -> Buffer.add_string buffer "$great"
+          | '<' -> Buffer.add_string buffer "$less"
+          | '=' -> Buffer.add_string buffer "$eq"
+          | '+' -> Buffer.add_string buffer "$plus"
+          | '-' -> Buffer.add_string buffer "$neg"
+          | '@' -> Buffer.add_string buffer "$at"
+          | '^' -> Buffer.add_string buffer "$caret"
+          | '/' -> Buffer.add_string buffer "$slash"
+          | '|' -> Buffer.add_string buffer "$pipe"
+          | '.' -> Buffer.add_string buffer "$dot"
+          | '%' -> Buffer.add_string buffer "$percent"
+          | '~' -> Buffer.add_string buffer "$tilde"
+          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
+          | _ -> Buffer.add_string buffer "$unknown"
+        done; Buffer.contents buffer)
+
+let property_no_need_convert s = 
+  s == convert false s 
+
+(* It is currently made a persistent ident to avoid fresh ids 
+    which would result in different signature files
+    - other solution: use lazy values
+*)
+let make_unused () = create "_"
+
+let is_unused_ident i = Ident.name i = "_"
+
+let reset () = 
+  begin
+    Hashtbl.clear js_module_table
+  end
+
+let undefined = create_js "undefined"
+let nil = create_js "null"
+
+end
+module Ext_list : sig 
+#1 "ext_list.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [List] module *)
+    
+(** TODO some function are no efficiently implemented. *) 
+
+val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
+
+val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+val exclude_with_fact2 : 
+  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+val same_length : 'a list -> 'b list -> bool
+
+val init : int -> (int -> 'a) -> 'a list
+
+val take : int -> 'a list -> 'a list * 'a list
+val try_take : int -> 'a list -> 'a list * int * 'a list 
+
+val exclude_tail : 'a list -> 'a * 'a list
+
+val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
+
+val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+
+val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
+
+(** for the last element the first element will be passed [true] *)
+
+val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+
+val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
+
+val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
+
+val drop : int -> 'a list -> 'a list 
+
+val for_all_ret : ('a -> bool) -> 'a list -> 'a option
+
+val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
+(** [for_all_opt f l] returns [None] if all return [None],  
+    otherwise returns the first one. 
+ *)
+
+val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+(** same as [List.fold_left]. 
+    Provide an api so that list can be easily swapped by other containers  
+ *)
+
+val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
+
+val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
+val rev_iter : ('a -> unit) -> 'a list -> unit
+
+val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** [f] is applied follow the list order *)
+val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
+
+
+val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+(** [fn] is applied from left to right *)
+val reduce_from_left : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+
+type 'a t = 'a list ref
+
+val create_ref_empty : unit -> 'a t
+
+val ref_top : 'a t -> 'a 
+
+val ref_empty : 'a t -> bool
+
+val ref_push : 'a -> 'a t -> unit
+
+val ref_pop : 'a t -> 'a
+
+val rev_except_last : 'a list -> 'a list * 'a
+
+val sort_via_array :
+  ('a -> 'a -> int) -> 'a list -> 'a list
+
+end = struct
+#1 "ext_list.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let rec filter_map (f: 'a -> 'b option) xs = 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+      begin match f y with 
+      | None -> filter_map f ys
+      | Some z -> z :: filter_map f ys
+      end
+
+let excludes (p : 'a -> bool ) l : bool * 'a list=
+  let excluded = ref false in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := true ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  if !excluded then true, v else false,l
+
+let exclude_with_fact p l =
+  let excluded = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := Some x ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded , if !excluded <> None then v else l 
+
+
+(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
+let exclude_with_fact2 p1 p2 l =
+  let excluded1 = ref None in 
+  let excluded2 = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p1 x then 
+      begin 
+        excluded1 := Some x ;
+        aux accu l
+      end
+    else if p2 x then 
+      begin 
+        excluded2 := Some x ; 
+        aux accu l 
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
+
+
+
+let rec same_length xs ys = 
+  match xs, ys with 
+  | [], [] -> true
+  | _::xs, _::ys -> same_length xs ys 
+  | _, _ -> false 
+
+let  filter_mapi (f: int -> 'a -> 'b option) xs = 
+  let rec aux i xs = 
+    match xs with 
+    | [] -> []
+    | y :: ys -> 
+        begin match f i y with 
+        | None -> aux (i + 1) ys
+        | Some z -> z :: aux (i + 1) ys
+        end in
+  aux 0 xs 
+
+let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f u v with 
+      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2 f us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2"
+
+let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
+  let rec aux i xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f i u v with 
+      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: aux (i + 1) us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2i" in
+  aux 0 xs ys
+
+let rec rev_map_append  f l1 l2 =
+  match l1 with
+  | [] -> l2
+  | a :: l -> rev_map_append f l (f a :: l2)
+
+let flat_map2 f lx ly = 
+  let rec aux acc lx ly = 
+    match lx, ly with 
+    | [], [] 
+      -> List.rev acc
+    | x::xs, y::ys 
+      ->  aux (List.rev_append (f x y) acc) xs ys
+    | _, _ -> invalid_arg "Ext_list.flat_map2" in
+  aux [] lx ly
+        
+let flat_map f lx =
+  let rec aux acc lx =
+    match lx with
+    | [] -> List.rev acc
+    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
+  aux [] lx
+
+let rec map2_last f l1 l2 =
+  match (l1, l2) with
+  | ([], []) -> []
+  | [u], [v] -> [f true u v ]
+  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
+  | (_, _) -> invalid_arg "List.map2_last"
+
+let rec map_last f l1 =
+  match l1 with
+  | [] -> []
+  | [u]-> [f true u ]
+  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
+
+
+let rec fold_right2_last f l1 l2 accu  = 
+  match (l1, l2) with
+  | ([], []) -> accu
+  | [last1], [last2] -> f true  last1 last2 accu
+  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
+  | (_, _) -> invalid_arg "List.fold_right2"
+
+
+let init n f = 
+  Array.to_list (Array.init n f)
+
+let take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  < n then invalid_arg "Ext_list.take"
+  else (Array.to_list (Array.sub arr 0 n ), 
+        Array.to_list (Array.sub arr n (arr_length - n)))
+
+let try_take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  <= n then 
+    l,  arr_length, []
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+
+let exclude_tail (x : 'a list) = 
+  let rec aux acc x = 
+    match x with 
+    | [] -> invalid_arg "Ext_list.exclude_tail"
+    | [ x ] ->  x, List.rev acc
+    | y0::ys -> aux (y0::acc) ys in
+  aux [] x
+
+(* For small list, only need partial equality 
+   {[
+   group (=) [1;2;3;4;3]
+   ;;
+   - : int list list = [[3; 3]; [4]; [2]; [1]]
+   # group (=) [];;
+   - : 'a list list = []
+   ]}
+ *)
+let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
+  match lst with 
+  | [] -> []
+  | x::xs -> 
+      aux cmp x (group cmp xs )
+
+and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
+  match xss with 
+  | [] -> [[x]]
+  | y::ys -> 
+      if cmp x (List.hd y) (* cannot be null*) then
+        (x::y) :: ys 
+      else
+        y :: aux cmp x ys                                 
+  
+let stable_group cmp lst =  group cmp lst |> List.rev 
+
+let rec drop n h = 
+  if n < 0 then invalid_arg "Ext_list.drop"
+  else if n = 0 then h 
+  else if h = [] then invalid_arg "Ext_list.drop"
+  else 
+    drop (n - 1) (List.tl h)
+
+let rec for_all_ret  p = function
+  | [] -> None
+  | a::l -> 
+      if p a 
+      then for_all_ret p l
+      else Some a 
+
+let rec for_all_opt  p = function
+  | [] -> None
+  | a::l -> 
+      match p a with
+      | None -> for_all_opt p l
+      | v -> v 
+
+let fold f l init = 
+  List.fold_left (fun acc i -> f  i init) init l 
+
+let rev_map_acc  acc f l = 
+  let rec rmap_f accu = function
+    | [] -> accu
+    | a::l -> rmap_f (f a :: accu) l
+  in
+  rmap_f acc l
+
+let rec rev_iter f xs =
+    match xs with    
+    | [] -> ()
+    | y :: ys -> 
+      rev_iter f ys ;
+      f y      
+      
+let rec for_all2_no_exn p l1 l2 = 
+  match (l1, l2) with
+  | ([], []) -> true
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
+  | (_, _) -> false
+
+
+let rec find_no_exn p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_no_exn p l
+
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt p l
+
+
+let split_map 
+    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
+  let rec aux bs cs xs =
+    match xs with 
+    | [] -> List.rev bs, List.rev cs 
+    | u::us -> 
+      let b,c =  f u in aux (b::bs) (c ::cs) us in 
+
+  aux [] [] xs 
+
+
+(*
+   {[
+     reduce_from_right (-) [1;2;3];;
+     - : int = 2
+               # reduce_from_right (-) [1;2;3; 4];;
+     - : int = -2
+                # reduce_from_right (-) [1];;
+     - : int = 1
+               # reduce_from_right (-) [1;2;3; 4; 5];;
+     - : int = 3
+   ]} 
+*)
+let reduce_from_right fn lst = 
+  begin match List.rev lst with
+    | last :: rest -> 
+      List.fold_left  (fun x y -> fn y x) last rest 
+    | _ -> invalid_arg "Ext_list.reduce" 
+  end
+let reduce_from_left fn lst = 
+  match lst with 
+  | first :: rest ->  List.fold_left fn first rest 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
+
+
+type 'a t = 'a list ref
+
+let create_ref_empty () = ref []
+
+let ref_top x = 
+  match !x with 
+  | y::_ -> y 
+  | _ -> invalid_arg "Ext_list.ref_top"
+
+let ref_empty x = 
+  match !x with [] -> true | _ -> false 
+
+let ref_push x refs = 
+  refs := x :: !refs
+
+let ref_pop refs = 
+  match !refs with 
+  | [] -> invalid_arg "Ext_list.ref_pop"
+  | x::rest -> 
+    refs := rest ; 
+    x     
+
+let rev_except_last xs =
+  let rec aux acc xs =
+    match xs with
+    | [ ] -> invalid_arg "Ext_list.rev_except_last"
+    | [ x ] -> acc ,x
+    | x :: xs -> aux (x::acc) xs in
+  aux [] xs   
+
+let sort_via_array cmp lst =
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Array.to_list arr
+
+end
+module Ident_map : sig 
+#1 "ident_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Map.S with type key = Ident.t 
+
+val of_list  : (key * 'a) list -> 'a t
+
+val keys : 'a t -> key list
+
+val add_if_not_exist : key -> 'a -> 'a t -> 'a t
+
+val merge_disjoint : 'a t -> 'a t -> 'a t
+
+end = struct
+#1 "ident_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Map with key specialized as [Ident] type, enhanced with some utilities *)
+
+include Map.Make(struct 
+  type t = Ident.t 
+
+  let compare (x : t) (y : t) =
+    (* Can not overflow *)
+    let u = x.stamp - y.stamp in
+    if u = 0 then 
+      let u = String.compare x.name y.name in 
+      if u = 0 then 
+        x.flags - y.flags 
+      else  u 
+    else u 
+end)
+
+let of_list lst = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty lst
+
+let keys map = fold (fun k _ acc -> k::acc  ) map []
+
+(* TODO: have this in stdlib/map to save some time *)
+let add_if_not_exist key v m = 
+  if mem key m then m else add key v m
+
+let merge_disjoint m1 m2 = 
+  merge 
+    (fun k x0 y0 -> 
+       match x0, y0 with 
+         None, None -> None
+       | None, Some v | Some v, None -> Some v
+       | _, _ -> invalid_arg "merge_disjoint: maps are not disjoint")
+    m1 m2
+
+end
+module Ext_format : sig 
+#1 "ext_format.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Simplified wrapper module for the standard library [Format] module. 
+  *) 
+
+type t = private Format.formatter
+
+val string : t -> string -> unit
+
+val break : t -> unit
+
+val break1 : t -> unit
+
+val space :  t -> unit
+
+val group : t -> int -> (unit -> 'a) -> 'a
+(** [group] will record current indentation 
+    and indent futher
+ *)
+
+val vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val paren : t -> (unit -> 'a) -> 'a
+
+val paren_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_group : t -> int -> (unit -> 'a) -> 'a
+
+val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
+
+val bracket_group : t -> int -> (unit -> 'a) -> 'a
+
+val newline : t -> unit
+
+val to_out_channel : out_channel -> t
+
+val flush : t -> unit -> unit
+
+val pp_print_queue :
+  ?pp_sep:(Format.formatter -> unit -> unit) ->
+  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
+
+end = struct
+#1 "ext_format.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+open Format
+
+type t = formatter
+
+let string = pp_print_string
+
+let break = fun fmt -> pp_print_break fmt 0 0
+
+let break1 =
+  fun fmt -> pp_print_break fmt 0 1 
+
+let space  fmt  = 
+  pp_print_break fmt 1 0
+
+let vgroup fmt indent u = 
+  pp_open_vbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+
+let group fmt indent u = 
+  pp_open_hovbox fmt indent; 
+  let v = u () in
+  pp_close_box fmt ();
+  v
+  
+let paren fmt u = 
+  string fmt "(";
+  let v = u () in
+  string fmt ")";
+  v
+
+let brace fmt u = 
+  string fmt "{";
+  (* break1 fmt ; *)
+  let v = u () in
+  string fmt "}";
+  v 
+
+let bracket fmt u = 
+  string fmt "[";
+  let v = u () in
+  string fmt "]";
+  v 
+
+let paren_group st n action = 
+  group st n (fun _ -> paren st action)
+
+let brace_group st n action = 
+  group st n (fun _ -> brace st action )
+
+let brace_vgroup st n action = 
+  vgroup st n (fun _ -> 
+    string st "{";
+    pp_print_break st 0 2;
+    let v = vgroup st 0 action in
+    pp_print_break st 0 0;
+    string st "}";
+    v
+              )
+let bracket_group st n action = 
+  group st n (fun _ -> bracket st action)
+
+let newline fmt = pp_print_newline fmt ()
+
+let to_out_channel = formatter_of_out_channel
+
+(* let non_breaking_space  fmt = string fmt " " *)
+(* let set_needed_space_function _ _ = () *)
+let flush = pp_print_flush
+
+let list = pp_print_list
+
+let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
+  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
+
+end
+module Ident_set : sig 
+#1 "ident_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Set with key specialized as [Ident.t] type
+ *)
+
+(** Original set module enhanced with some utilities, 
+    note that it's incompatible with [Lambda.IdentSet] 
+ *)
+
+include Set.S with type elt = Ident.t
+
+val print : Ext_format.t -> t -> unit
+
+end = struct
+#1 "ident_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+(* TODO: 
+    when we do the union, it would be nice that 
+    we know which [delta] is there
+ *)
+include Set.Make(struct 
+  type t = Ident.t 
+  let compare  = Pervasives.compare (* TODO: fix me *)
+end)
+
+let print ppf v =
+  Ext_format.(brace_vgroup ppf 0 (fun _ ->
+  iter (fun v -> 
+    string ppf  (Printf.sprintf "%s/%d" v.Ident.name v.stamp) ; Ext_format.space ppf  ) v ))
+
+end
+module Js_call_info : sig 
+#1 "js_call_info.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Type for collecting call site information, used in JS IR *) 
+
+type arity = 
+  | Full 
+  | NA 
+
+
+type call_info = 
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na 
+  (* either from [@@bs.val] or not available, 
+     such calls does not follow such rules
+     {[ fun x y -> f x y === f ]} when [f] is an atom     
+  *) 
+
+
+type t = { 
+  call_info : call_info;
+  arity : arity;
+
+}
+
+val dummy : t
+val builtin_runtime_call : t
+
+val ml_full_call : t 
+
+end = struct
+#1 "js_call_info.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type arity = 
+  | Full 
+  | NA 
+
+type call_info = 
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na 
+  (* either from [@@bs.val] or not available, 
+     such calls does not follow such rules
+     {[ fun x y -> (f x y) === f ]} when [f] is an atom     
+
+  *) 
+
+type t = { 
+  call_info : call_info;
+  arity : arity
+}
+
+let dummy = { arity = NA; call_info = Call_na }
+
+let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
+
+let ml_full_call = {arity = Full; call_info = Call_ml}
+
+end
+module Js_closure : sig 
+#1 "js_closure.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Define a type used in JS IR to help convert lexical scope to JS [var] 
+    based scope convention
+ *)
+
+type t = {
+  mutable outer_loop_mutable_values :  Ident_set.t 
+}
+
+val empty : unit -> t
+
+val get_lexical_scope : t -> Ident_set.t
+
+val set_lexical_scope : t -> Ident_set.t -> unit
+
+end = struct
+#1 "js_closure.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type t = {
+  mutable outer_loop_mutable_values :  Ident_set.t ;
+}
+
+let empty () = {
+  outer_loop_mutable_values  = Ident_set.empty
+}
+
+let set_lexical_scope t v = t.outer_loop_mutable_values <- v 
+
+let get_lexical_scope t = t.outer_loop_mutable_values 
+
+end
+module Js_fun_env : sig 
+#1 "js_fun_env.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Define type t used in JS IR to collect some meta data for a function, like its closures, etc 
+  *)
+
+type t 
+
+val empty :  ?immutable_mask:bool array  -> int -> t
+
+val is_tailcalled : t -> bool
+
+val is_empty : t -> bool 
+
+val set_unbounded :  t -> Ident_set.t -> unit
+
+
+
+val set_lexical_scope : t -> Ident_set.t -> unit
+
+val get_lexical_scope : t -> Ident_set.t
+
+val to_string : t -> string
+
+val mark_unused : t -> int -> unit 
+
+val get_unused : t -> int -> bool
+
+val get_mutable_params : Ident.t list -> t -> Ident.t list
+
+val get_unbounded : t -> Ident_set.t
+
+val get_length : t -> int
+
+end = struct
+#1 "js_fun_env.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(* Make it mutable so that we can do
+   in-place change without constructing a new one
+  -- however, it's a design choice -- to be reviewed later
+*)
+
+type immutable_mask = 
+  | All_immutable_and_no_tail_call 
+     (** iff not tailcalled 
+         if tailcalled, in theory, it does not need change params, 
+         for example
+         {[
+         let rec f  (n : int ref) = 
+            if !n > 0 then decr n; print_endline "hi"
+            else  f n
+         ]}
+         in this case, we still create [Immutable_mask], 
+         since the inline behavior is slightly different
+      *)
+  | Immutable_mask of bool array
+
+type t = { 
+  mutable unbounded : Ident_set.t;
+  mutable bound_loop_mutable_values : Ident_set.t; 
+  used_mask : bool array;
+  immutable_mask : immutable_mask; 
+}
+(** Invariant: unused param has to be immutable *)
+
+let empty ?immutable_mask n = { 
+  unbounded =  Ident_set.empty ;
+  used_mask = Array.make n false;
+  immutable_mask = 
+    (match immutable_mask with 
+     | Some x -> Immutable_mask x 
+     | None -> All_immutable_and_no_tail_call
+    );
+  bound_loop_mutable_values =Ident_set.empty;
+}
+
+let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
+
+let mark_unused  t i = 
+  t.used_mask.(i) <- true
+
+let get_unused t i = 
+  t.used_mask.(i)
+
+let get_length t = Array.length t.used_mask
+
+let to_string env =  
+  String.concat "," 
+    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
+       (Ident_set.elements  env.unbounded ))
+
+let get_mutable_params (params : Ident.t list) (x : t ) = 
+  match x.immutable_mask with 
+  | All_immutable_and_no_tail_call -> []
+  | Immutable_mask xs -> 
+      Ext_list.filter_mapi 
+        (fun i p -> if not xs.(i) then Some p else None)  params
+
+
+let get_unbounded t = t.unbounded
+
+let set_unbounded env v = 
+  (* Ext_log.err "%s -- set @." (to_string env); *)
+  (* if Ident_set.is_empty env.bound then *)
+  env.unbounded <- v 
+ (* else assert false *)
+
+let set_lexical_scope env bound_loop_mutable_values = 
+  env.bound_loop_mutable_values <- bound_loop_mutable_values
+
+let get_lexical_scope env =  
+  env.bound_loop_mutable_values
+
+(* TODO:  can be refined if it 
+    only enclose toplevel variables 
+ *)
+let is_empty t = Ident_set.is_empty t.unbounded
+
+end
+module Js_op
+= struct
+#1 "js_op.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+
+(** Define some basic types used in JS IR *)
+
+type binop =
+  | Eq  
+  (* acutally assignment ..
+     TODO: move it into statement, so that all expressions 
+     are side efffect free (except function calls)
+   *)
+
+  | Or
+  | And
+  | EqEqEq
+  | NotEqEq
+  | InstanceOf
+
+  | Lt
+  | Le
+  | Gt
+  | Ge
+
+  | Bor
+  | Bxor
+  | Band
+  | Lsl
+  | Lsr
+  | Asr
+
+  | Plus
+  | Minus
+  | Mul
+  | Div
+  | Mod
+
+(**
+note that we don't need raise [Div_by_zero] in BuckleScript
+
+{[
+let add x y = x + y  (* | 0 *)
+let minus x y = x - y (* | 0 *)
+let mul x y = x * y   (* caml_mul | Math.imul *)
+let div x y = x / y (* caml_div (x/y|0)*)
+let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
+
+let bor x y = x lor y   (* x  | y *)
+let bxor x y = x lxor y (* x ^ y *)
+let band x y = x land y (* x & y *)
+let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
+let ilsl x y = x lsl y (* x << y*)
+let ilsr x y = x lsr y  (* x >>> y | 0 *)
+let iasr  x y = x asr y (* x >> y *)
+]}
+
+
+Note that js treat unsigned shift 0 bits in a special way
+   Unsigned shifts convert their left-hand side to Uint32, 
+   signed shifts convert it to Int32.
+   Shifting by 0 digits returns the converted value.
+   {[
+    function ToUint32(x) {
+        return x >>> 0;
+    }
+    function ToInt32(x) {
+        return x >> 0;
+    }
+   ]}
+   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
+   and [-1 >>> 0 >> 0 ] will be [-1]
+*)
+type int_op = 
+    
+  | Bor
+  | Bxor
+  | Band
+  | Lsl
+  | Lsr
+  | Asr
+
+  | Plus
+      (* for [+], given two numbers 
+         x + y | 0
+       *)
+  | Minus
+      (* x - y | 0 *)
+  | Mul
+      (* *)
+  | Div
+      (* x / y | 0 *)
+  | Mod
+      (* x  % y *)
+
+(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Bitwise_operators
+    {[
+    ~
+    ]}
+    ~0xff -> -256
+    design; make sure each operation type is consistent
+ *)
+type level = 
+  | Log 
+  | Info
+  | Warn
+  | Error
+
+type kind = 
+  | Ml
+  | Runtime 
+  | External of string
+
+type property = Lambda.let_kind = 
+  | Strict
+  | Alias
+  | StrictOpt 
+  | Variable
+
+
+type property_name = (* private *)
+  (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
+  | Key of string
+  | Int_key of int 
+  | Tag 
+  | Length
+
+type 'a access = 
+  | Getter
+  | Setter
+type jsint = Int32.t
+
+type int_or_char = 
+    { i : jsint; 
+      (* we can not use [int] on 32 bit platform, if we dont use 
+          [Int32.t], we need a configuration step          
+      *)
+      c : char option
+    }
+
+ (* literal char *)
+type float_lit = { f :  string }
+type number = 
+  | Float of float_lit 
+  | Int of int_or_char
+  | Uint of int32
+  | Nint of nativeint
+  (* becareful when constant folding +/-, 
+     since we treat it as js nativeint, bitwise operators:
+     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
+     The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
+  *)      
+
+type mutable_flag = 
+  | Mutable
+  | Immutable
+  | NA
+
+(* 
+    {[
+    let rec x = 1 :: y 
+    and y = 1 :: x
+    ]}
+ *)
+type recursive_info = 
+  | SingleRecursive 
+  | NonRecursie
+  | NA
+
+type used_stats = 
+  | Dead_pure 
+        (* only [Dead] should be taken serious, 
+            other status can be converted during
+            inlining
+            -- all exported symbols can not be dead
+            -- once a symbole is called Dead_pure, 
+            it can not be alive anymore, we should avoid iterating it
+            
+          *)
+  | Dead_non_pure 
+      (* we still need iterating it, 
+         just its bindings does not make sense any more *)
+  | Exported (* Once it's exported, shall we change its status anymore? *)
+      (* In general, we should count in one pass, and eliminate code in another 
+         pass, you can not do it in a single pass, however, some simple 
+         dead code can be detected in a single pass
+       *)
+  | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
+  | Used (**)
+  | Scanning_pure
+  | Scanning_non_pure
+  | NA
+
+
+type ident_info = {
+    (* mutable recursive_info : recursive_info; *)
+    mutable used_stats : used_stats;
+  }
+
+type exports = Ident.t list 
+
+type module_id = { id : Ident.t; kind  : kind}
+
+type required_modules = module_id list
+
+
+type tag_info = Lambda.tag_info = 
+  | Blk_constructor of string * int
+  | Blk_tuple
+  | Blk_array
+  | Blk_variant of string 
+  | Blk_record of string array
+  | Blk_module of string list option
+  | Blk_na
+
+type length_object = 
+  | Array 
+  | String
+  | Bytes
+  | Function
+  | Caml_block
+
+type code_info = 
+  | Exp (* of int option *)
+  | Stmt
+(** TODO: define constant - for better constant folding  *)
+(* type constant =  *)
+(*   | Const_int of int *)
+(*   | Const_ *)
+
+end
+module J
+= struct
+#1 "j.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Javascript IR
+  
+    It's a subset of Javascript AST specialized for OCaml lambda backend
+
+    Note it's not exactly the same as Javascript, the AST itself follows lexical
+    convention and [Block] is just a sequence of statements, which means it does 
+    not introduce new scope
+*)
+
+type label = string
+
+and binop = Js_op.binop
+
+and int_op = Js_op.int_op
+ 
+and kind = Js_op.kind
+
+and property = Js_op.property
+
+and number = Js_op.number 
+
+and mutable_flag = Js_op.mutable_flag 
+
+and ident_info = Js_op.ident_info
+
+and exports = Js_op.exports
+
+and tag_info = Js_op.tag_info 
+ 
+and required_modules = Js_op.required_modules
+
+and code_info = Js_op.code_info 
+(** object literal, if key is ident, in this case, it might be renamed by 
+    Google Closure  optimizer,
+    currently we always use quote
+ *)
+and property_name =  Js_op.property_name
+and jsint = Js_op.jsint
+and ident = Ident.t 
+
+and vident = 
+  | Id of ident
+  | Qualified of ident * kind * string option
+    (* Since camldot is only available for toplevel module accessors,
+       we don't need print  `A.length$2`
+       just print `A.length` - it's guarateed to be unique
+       
+       when the third one is None, it means the whole module 
+
+       TODO: 
+       invariant, when [kind] is [Runtime], then we can ignore [ident], 
+       since all [runtime] functions are unique, when do the 
+       pattern match we can ignore the first one for simplicity
+       for example       
+       {[
+         Qualified (_, Runtime, Some "caml_int_compare")         
+       ]}       
+     *)
+
+and exception_ident = ident 
+
+and for_ident = ident 
+
+and for_direction = Asttypes.direction_flag
+
+and property_map = 
+    (property_name * expression) list
+and length_object = Js_op.length_object
+and expression_desc =
+  | Math of string * expression list
+  | Length of expression * length_object
+  | Char_of_int of expression
+  | Char_to_int of expression 
+  | Array_of_size of expression 
+    (* used in [js_create_array] primitive, note having
+       uninitilized array is not as bad as in ocaml, 
+       since GC does not rely on it
+     *)
+  | Array_copy of expression (* shallow copy, like [x.slice] *)
+  | Array_append of expression * expression (* For [caml_array_append]*)
+  (* | Tag_ml_obj of expression *)
+  | String_append of expression * expression 
+
+  | Int_of_boolean of expression 
+  | Anything_to_number of expression
+  | Bool of bool (* js true/false*)
+  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
+     [typeof] is an operator     
+  *)
+  | Typeof of expression
+  | Not of expression (* !v *)
+  | String_of_small_int_array of expression 
+    (* String.fromCharCode.apply(null, args) *)
+    (* Convert JS boolean into OCaml boolean 
+       like [+true], note this ast talks using js
+       terminnology unless explicity stated                       
+     *)
+  | Json_stringify of expression 
+  (* TODO: in the future, it might make sense to group primitivie by type,
+     which makes optimizations easier
+     {[ JSON.stringify(value, replacer[, space]) ]}
+  *)
+  | Anything_to_string of expression
+  (* for debugging utitlites, 
+     TODO:  [Dump] is not necessary with this primitive 
+     Note that the semantics is slightly different from [JSON.stringify]     
+     {[
+       JSON.stringify("x")       
+     ]}
+     {[
+       ""x""       
+     ]}     
+     {[
+       JSON.stringify(undefined)       
+     ]}     
+     {[
+       undefined       
+     ]}
+     {[ '' + undefined
+     ]}     
+     {[ 'undefined'
+     ]}     
+  *)      
+  | Dump of Js_op.level * expression list
+  (* TODO: 
+     add 
+     {[ Assert of bool * expression ]}     
+  *)              
+    (* to support 
+       val log1 : 'a -> unit
+       val log2 : 'a -> 'b -> unit 
+       val log3 : 'a -> 'b -> 'c -> unit 
+     *)
+
+  (* TODO: Add some primitives so that [js inliner] can do a better job *)  
+  | Seq of expression * expression
+  | Cond of expression * expression * expression
+  | Bin of binop * expression * expression
+
+  (* [int_op] will guarantee return [int32] bits 
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
+  (* | Int32_bin of int_op * expression * expression *)
+  | FlatCall of expression * expression 
+    (* f.apply(null,args) -- Fully applied guaranteed 
+       TODO: once we know args's shape --
+       if it's know at compile time, we can turn it into
+       f(args[0], args[1], ... )
+     *)
+  | Bind of expression * expression
+  (* {[ Bind (a,b) ]}
+     is literally
+     {[ a.bind(b) ]}
+  *)
+  | Call of expression * expression list * Js_call_info.t
+    (* Analysze over J expression is hard since, 
+        some primitive  call is translated 
+        into a plain call, it's better to keep them
+    *) 
+  | String_access of expression * expression 
+  | Access of expression * expression 
+    (* Invariant: 
+       The second argument has to be type of [int],
+       This can be constructed either in a static way [E.index] or a dynamic way 
+       [E.access]
+     *)
+  | Dot of expression * string * bool
+    (* The third argument bool indicates whether we should 
+       print it as 
+       a["idd"] -- false
+       or 
+       a.idd  -- true
+       There are several kinds of properties
+       1. OCaml module dot (need to be escaped or not)
+          All exported declarations have to be OCaml identifiers
+       2. Javascript dot (need to be preserved/or using quote)
+     *)
+  | New of expression * expression list option (* TODO: option remove *)
+  | Var of vident
+  | Fun of bool * ident list  * block * Js_fun_env.t
+  (* The first parameter by default is false, 
+     it will be true when it's a method
+  *)
+  | Str of bool * string 
+    (* A string is UTF-8 encoded, the string may contain
+       escape sequences.
+       The first argument is used to mark it is non-pure, please
+       don't optimize it, since it does have side effec, 
+       examples like "use asm;" and our compiler may generate "error;..." 
+       which is better to leave it alone
+     *)
+  | Raw_js_code of string * code_info
+  (* literally raw JS code 
+  *)
+  | Array of expression list * mutable_flag
+  | Caml_block of expression list * mutable_flag * expression * tag_info 
+  (* The third argument is [tag] , forth is [tag_info] *)
+  | Caml_uninitialized_obj of expression * expression
+  (* [tag] and [size] tailed  for [Obj.new_block] *)
+
+  (* For setter, it still return the value of expression, 
+     we can not use 
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined], 
+     you have to use [E.tag] in a safe way     
+  *)
+  | Caml_block_tag of expression
+  | Caml_block_set_tag of expression * expression
+  | Caml_block_set_length of expression * expression
+  (* It will just fetch tag, to make it safe, when creating it, 
+     we need apply "|0", we don't do it in the 
+     last step since "|0" can potentially be optimized
+  *)      
+  | Number of number
+  | Object of property_map
+
+and for_ident_expression = expression (* pure*)
+
+and finish_ident_expression = expression (* pure *)
+(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
+   block can be nested, specified in ES3 
+ *)
+
+(* Delay some units like [primitive] into JS layer ,
+   benefit: better cross module inlining, and smaller IR size?
+ *)
+
+(* 
+  [closure] captured loop mutable values in the outer loop
+
+  check if it contains loop mutable values, happens in nested loop
+  when closured, it's no longer loop mutable value. 
+  which means the outer loop mutable value can not peek into the inner loop
+  {[
+  var i = f ();
+  for(var finish = 32; i < finish; ++i){
+  }
+  ]}
+  when [for_ident_expression] is [None], [var i] has to 
+  be initialized outside, so 
+
+  {[
+  var i = f ()
+  (function (xxx){
+  for(var finish = 32; i < finish; ++i)
+  }(..i))
+  ]}
+  This happens rare it's okay
+
+  this is because [i] has to be initialized outside, if [j] 
+  contains a block side effect
+  TODO: create such example
+*)
+
+(* Since in OCaml, 
+   
+  [for i = 0 to k end do done ]
+  k is only evaluated once , to encode this invariant in JS IR,
+  make sure [ident] is defined in the first b
+
+  TODO: currently we guarantee that [bound] was only 
+  excecuted once, should encode this in AST level
+*)
+
+(* Can be simplified to keep the semantics of OCaml
+   For (var i, e, ...){
+     let  j = ... 
+   }
+
+   if [i] or [j] is captured inside closure
+
+   for (var i , e, ...){
+     (function (){
+     })(i)
+   }
+*)
+
+(* Single return is good for ininling..
+   However, when you do tail-call optmization
+   you loose the expression oriented semantics
+   Block is useful for implementing goto
+   {[
+   xx:{
+   break xx;
+   }
+   ]}
+*)
+
+
+and statement_desc =
+  | Block of block
+  | Variable of variable_declaration
+        (* Function declaration and Variable declaration  *)
+  | Exp of expression
+  | If of expression * block * block option
+  | While of label option *  expression * block 
+        * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
+  | ForRange of for_ident_expression option * finish_ident_expression * 
+        for_ident  *  for_direction * block
+        * Js_closure.t  
+  | Continue of label 
+  | Break (* only used when inline a fucntion *)
+  | Return of return_expression   (* Here we need track back a bit ?, move Return to Function ...
+                              Then we can only have one Return, which is not good *)
+  | Int_switch of expression * int case_clause list * block option 
+  | String_switch of expression * string case_clause list * block option 
+  | Throw of expression
+  | Try of block * (exception_ident * block) option * block option
+  | Debugger
+and return_expression = {
+ (* since in ocaml, it's expression oriented langauge, [return] in
+    general has no jumps, it only happens when we do 
+    tailcall conversion, in that case there is a jump.
+    However, currently  a single [break] is good to cover
+    our compilation strategy 
+
+    Attention: we should not insert [break] arbitrarily, otherwise 
+    it would break the semantics
+    A more robust signature would be 
+    {[ goto : label option ; ]}
+  *)
+  return_value : expression
+}   
+
+and expression = {
+  expression_desc : expression_desc; 
+  comment : string option;
+} 
+
+and statement = { 
+  statement_desc :  statement_desc; 
+  comment : string option;
+}
+
+and variable_declaration = { 
+  ident : ident ;
+  value : expression  option;
+  property : property;
+  ident_info : ident_info;
+}
+
+and 'a case_clause = { 
+  case : 'a ; 
+  body : block * bool ;  (* true means break *)
+}
+
+(* TODO: For efficency: block should not be a list, it should be able to 
+   be concatenated in both ways 
+ *)
+and block =  statement list
+
+and program = {
+  name :  string;
+
+  block : block ;
+  exports : exports ;
+  export_set : Ident_set.t ;
+
+}
+and deps_program = 
+  {
+    program : program ; 
+    modules : required_modules ;
+    side_effect : string option (* None: no, Some reason  *)
+  }
 
 end
 module Ocaml_stdlib_slots
@@ -8953,6 +6310,105 @@ and convert_switch (s : Lambda.lambda_switch) : switch =
   }  
 
 end
+module String_map : sig 
+#1 "string_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.S with type key = string 
+
+val of_list : (string * 'a) list -> 'a t
+
+val find_opt : string -> 'a t -> 'a option
+
+val find_default : string -> 'a -> 'a t -> 'a
+
+val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
+
+end = struct
+#1 "string_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.Make(String)
+
+let of_list (xs : ('a * 'b) list ) = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+let find_opt k m =
+  match find k m with 
+  | exception v -> None
+  | u -> Some u
+
+let find_default k default m =
+  match find k m with 
+  | exception v -> default 
+  | u -> u
+
+let print p_v fmt  m =
+  iter (fun k v -> 
+      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
+    ) m
+
+
+
+end
 module Js_cmj_format : sig 
 #1 "js_cmj_format.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9134,1337 +6590,6 @@ let to_file name (v : t) =
   output_string oc cmj_magic_number;
   output_value oc v;
   close_out oc 
-
-end
-module Config_util : sig 
-#1 "config_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A simple wrapper around [Config] module in compiler-libs, so that the search path
-    is the same
-*)
-
-
-val find : string -> string
-(** [find filename] Input is a file name, output is absolute path *)
-
-
-val find_cmj : string -> Js_cmj_format.t
-
-end = struct
-#1 "config_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-(* ATTENTION: lazy to wait [Config.load_path] populated *)
-let find file =  Misc.find_in_path_uncap !Config.load_path file 
-
-
-
-(* strategy:
-   If not installed, use the distributed [cmj] files, 
-   make sure that the distributed files are platform independent
-*)
-let find_cmj file = 
-  match find file with
-  | f
-    -> 
-    Js_cmj_format.from_file f             
-  | exception Not_found -> 
-    (* ONLY read the stored cmj data in browser environment *)
-
-      Bs_exception.error (Cmj_not_found file)
-        
-
-
-
-end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-
-val reverse_in_place : 'a array -> unit
-
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
-
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
-
-val rfind_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> [ `No_split | `Split of 'a array * 'a array ]
-
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let reverse_in_place a =
-  let aux a i len =
-    if len=0 then ()
-    else
-      for k = 0 to (len-1)/2 do
-        let t = Array.unsafe_get a (i+k) in
-        Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-        Array.unsafe_set a (i+len-1-k) t;
-      done
-  in
-  aux a 0 (Array.length a)
-
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map (f : _ -> _ option) a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let to_list_map f a =
-  let rec tolist i res =
-    if i < 0 then res else
-      let v = Array.unsafe_get a i in
-      tolist (i - 1)
-        (match f v with
-         | Some v -> v :: res
-         | None -> res) in
-  tolist (Array.length a - 1) []
-
-(**
-{[
-# rfind_with_index [|1;2;3|] (=) 2;;
-- : int = 1
-# rfind_with_index [|1;2;3|] (=) 1;;
-- : int = 0
-# rfind_with_index [|1;2;3|] (=) 3;;
-- : int = 2
-# rfind_with_index [|1;2;3|] (=) 4;;
-- : int = -1
-]}
-*)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
-    if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
-  aux (len - 1)
-
-let rfind_and_split arr cmp v = 
-  let i = rfind_with_index arr cmp v in 
-  if  i < 0 then 
-    `No_split 
-  else 
-    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
-
-end
-module Ext_char : sig 
-#1 "ext_char.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Extension to Standard char module, avoid locale sensitivity *)
-
-val escaped : char -> string
-
-end = struct
-#1 "ext_char.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-external string_unsafe_set : string -> int -> char -> unit
-                           = "%string_unsafe_set"
-
-external string_create: int -> string = "caml_create_string"
-
-external unsafe_chr: int -> char = "%identity"
-
-(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
-    backport it here
- *)
-let escaped = function
-  | '\'' -> "\\'"
-  | '\\' -> "\\\\"
-  | '\n' -> "\\n"
-  | '\t' -> "\\t"
-  | '\r' -> "\\r"
-  | '\b' -> "\\b"
-  | ' ' .. '~' as c ->
-      let s = string_create 1 in
-      string_unsafe_set s 0 c;
-      s
-  | c ->
-      let n = Char.code c in
-      let s = string_create 4 in
-      string_unsafe_set s 0 '\\';
-      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
-      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
-      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
-      s
-
-end
-module Ext_hashtbl : sig 
-#1 "ext_hashtbl.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-val of_list : ('a * 'b) list -> ('a, 'b) Hashtbl.t
-
-val of_list2 : 'a list -> 'b list -> ('a, 'b) Hashtbl.t
-
-val add_list : ('a, 'b) Hashtbl.t -> ('a * 'b) list -> unit
-
-val add_list2 :  ('a, 'b) Hashtbl.t -> 'a list -> 'b list -> unit
-
-end = struct
-#1 "ext_hashtbl.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-let of_list kvs = 
-  let map = Hashtbl.create 51 in 
-  List.iter (fun (k, v) -> Hashtbl.add map k v) kvs ; 
-  map
-
-
-let of_list2 ks vs = 
-  let map = Hashtbl.create 51 in 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
-  map
-
-let add_list map kvs =    
-  List.iter (fun (k, v) ->   Hashtbl.add map  k v) kvs 
-
-let add_list2 map ks vs = 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
-
-end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.S with type elt = string
-
-end = struct
-#1 "string_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.Make(String)
-
-end
-module Ext_ident : sig 
-#1 "ext_ident.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A wrapper around [Ident] module in compiler-libs*)
-
-val is_js : Ident.t -> bool
-
-val is_js_object : Ident.t -> bool
-
-(** create identifiers for predefined [js] global variables *)
-val create_js : string -> Ident.t
-
-val create : string -> Ident.t
-
-val create_js_module : string -> Ident.t 
-
-val make_js_object : Ident.t -> unit
-
-val reset : unit -> unit
-
-val gen_js :  ?name:string -> unit -> Ident.t
-
-val make_unused : unit -> Ident.t
-
-val is_unused_ident : Ident.t -> bool 
-
-(**
-   if name is not converted, the reference should be equal
-*)
-val convert : bool -> string -> string
-val property_no_need_convert : string -> bool 
-
-val undefined : Ident.t 
-val is_js_or_global : Ident.t -> bool
-val nil : Ident.t
-
-end = struct
-#1 "ext_ident.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let js_flag = 0b1000 (* check with ocaml compiler *)
-
-let js_module_flag = 0b1_0000 (* javascript external modules *)
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let js_object_flag = 0b10_0000 (* javascript object flags *)
-
-let is_js (i : Ident.t) = 
-  i.flags land js_flag <> 0 
-
-let is_js_or_global (i : Ident.t) = 
-  i.flags land (8 lor 1) <> 0 
-
-let is_js_module (i : Ident.t) =
-  i.flags land js_module_flag <> 0 
-
-let is_js_object (i : Ident.t) = 
-  i.flags land js_object_flag <> 0 
-
-let make_js_object (i : Ident.t) = 
-  i.flags <- i.flags lor js_object_flag 
-      
-(* It's a js function hard coded by js api, so when printing,
-   it should preserve the name 
- *)
-let create_js (name : string) : Ident.t  = 
-  { name = name; flags = js_flag ; stamp = 0}
-
-let js_module_table = Hashtbl.create 31 
-
-(* This is for a js exeternal module, we can change it when printing
-   for example
-   {[
-   var React$1 = require('react');
-   React$1.render(..)
-   ]}
-
-   Given a name, if duplicated, they should  have the same id
- *)
-let create_js_module (name : string) : Ident.t = 
-  let name = 
-    String.concat "" @@ List.map (String.capitalize ) @@ 
-    Ext_string.split name '-' in
-  (* TODO: if we do such transformation, we should avoid 
-      collision for example:
-      react-dom 
-      react--dom
-      check collision later
-   *)
-  match Hashtbl.find js_module_table name  with 
-  | exception Not_found -> 
-      let v = Ident.create name in
-      let ans = { v with flags = js_module_flag} in 
-      Hashtbl.add js_module_table name ans;
-      ans
-  | v -> v 
-
-let create = Ident.create
-
-let gen_js ?(name="$js") () = create name 
-
-let reserved_words = 
-  [
-    (* keywork *)
-    "break";
-    "case"; "catch"; "continue";
-    "debugger";"default";"delete";"do";
-    "else";
-    "finally";"for";"function";
-    "if"; "then"; "in";"instanceof";
-    "new";
-    "return";
-    "switch";
-    "this"; "throw"; "try"; "typeof";
-    "var"; "void"; "while"; "with";
-
-    (* reserved in ECMAScript 5 *)
-    "class"; "enum"; "export"; "extends"; "import"; "super";
-
-    "implements";"interface";
-    "let";
-    "package";"private";"protected";"public";
-    "static";
-    "yield";
-
-    (* other *)
-    "null";
-    "true";
-    "false";
-    "NaN";
-
-
-    "undefined";
-    "this";
-
-    (* also reserved in ECMAScript 3 *)
-    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
-    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
-    "synchronized"; 
-    (* "throws";  *)
-    (* seems to be fine, like nodejs [assert.throws] *)
-    "transient"; "volatile";
-
-    (* also reserved in ECMAScript 6 *)
-    "await";
-   
-   "event";
-   "location";
-   "window";
-   "document";
-   "eval";
-   "navigator";
-   (* "self"; *)
-   
-   "Array";
-   "Date";
-   "Math";
-   "JSON";
-   "Object";
-   "RegExp";
-   "String";
-   "Boolean";
-   "Number";
-
-   "Map"; (* es6*)
-   "Set";
-
-   "Infinity";
-   "isFinite";
-   
-   "ActiveXObject";
-   "XMLHttpRequest";
-   "XDomainRequest";
-   
-   "DOMException";
-   "Error";
-   "SyntaxError";
-   "arguments";
-   
-   "decodeURI";
-   "decodeURIComponent";
-   "encodeURI";
-   "encodeURIComponent";
-   "escape";
-   "unescape";
-
-   "isNaN";
-   "parseFloat";
-   "parseInt";
-   
-   (** reserved for commonjs *)   
-   "require";
-   "exports";
-   "module"
-]
-
-let reserved_map = 
-  List.fold_left (fun acc x -> String_set.add x acc) String_set.empty 
-    reserved_words
-
-
-
-
-
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let convert keyword (name : string) = 
-   if keyword && String_set.mem name reserved_map then "$$" ^ name 
-   else 
-     let module E = struct exception Not_normal_letter of int end in
-     let len = String.length name  in
-     try
-       for i  = 0 to len - 1 do 
-         match String.unsafe_get name i with 
-         | 'a' .. 'z' | 'A' .. 'Z'
-         | '0' .. '9' | '_' | '$' -> ()
-         | _ -> raise (E.Not_normal_letter i)
-       done;
-       name
-     with E.Not_normal_letter i ->
-       String.sub name 0 i ^ 
-       (let buffer = Buffer.create len in 
-        for j = i to  len - 1 do 
-          let c = String.unsafe_get name j in
-          match c with 
-          | '*' -> Buffer.add_string buffer "$star"
-          | '\'' -> Buffer.add_string buffer "$prime"
-          | '!' -> Buffer.add_string buffer "$bang"
-          | '>' -> Buffer.add_string buffer "$great"
-          | '<' -> Buffer.add_string buffer "$less"
-          | '=' -> Buffer.add_string buffer "$eq"
-          | '+' -> Buffer.add_string buffer "$plus"
-          | '-' -> Buffer.add_string buffer "$neg"
-          | '@' -> Buffer.add_string buffer "$at"
-          | '^' -> Buffer.add_string buffer "$caret"
-          | '/' -> Buffer.add_string buffer "$slash"
-          | '|' -> Buffer.add_string buffer "$pipe"
-          | '.' -> Buffer.add_string buffer "$dot"
-          | '%' -> Buffer.add_string buffer "$percent"
-          | '~' -> Buffer.add_string buffer "$tilde"
-          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
-          | _ -> Buffer.add_string buffer "$unknown"
-        done; Buffer.contents buffer)
-
-let property_no_need_convert s = 
-  s == convert false s 
-
-(* It is currently made a persistent ident to avoid fresh ids 
-    which would result in different signature files
-    - other solution: use lazy values
-*)
-let make_unused () = create "_"
-
-let is_unused_ident i = Ident.name i = "_"
-
-let reset () = 
-  begin
-    Hashtbl.clear js_module_table
-  end
-
-let undefined = create_js "undefined"
-let nil = create_js "null"
-
-end
-module Ext_io : sig 
-#1 "ext_io.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val load_file : string -> string
-
-val rev_lines_of_file : string -> string list
-
-val write_file : string -> string -> unit
-
-end = struct
-#1 "ext_io.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(** on 32 bit , there are 16M limitation *)
-let load_file f =
-  Ext_pervasives.finally (open_in f) close_in begin fun ic ->   
-    let n = in_channel_length ic in
-    let s = Bytes.create n in
-    really_input ic s 0 n;
-    Bytes.unsafe_to_string s
-  end
-
-
-let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in file) close_in begin fun chan -> 
-    let rec loop acc = 
-      match input_line chan with
-      | line -> loop (line :: acc)
-      | exception End_of_file -> close_in chan ; acc in
-    loop []
-  end
-
-let write_file f content = 
-  Ext_pervasives.finally (open_out f) close_out begin fun oc ->   
-    output_string oc content
-  end
-
-end
-module Ext_log : sig 
-#1 "ext_log.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A Poor man's logging utility
-    
-    Example:
-    {[ 
-    err __LOC__ "xx"
-    ]}
- *)
-
-
-
-type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
-
-
-val err : string -> 'a logging
-val ierr : bool -> string -> 'a logging 
-val warn : string -> 'a logging
-val iwarn : bool -> string -> 'a logging 
-val dwarn : string -> 'a logging 
-val info : string -> 'a logging
-val iinfo : bool -> string -> 'a logging
-
-end = struct
-#1 "ext_log.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
-
-let err str f  =
-  Format.fprintf Format.err_formatter ("%s " ^^ f ^^ "@.") str  
-
-let ierr b str f  =
-  if b then 
-    Format.fprintf Format.err_formatter ("%s " ^^ f) str  
-  else
-    Format.ifprintf Format.err_formatter ("%s " ^^ f) str  
-
-let warn str f  =
-  Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
-
-
-
-let iwarn b str f  = 
-  if b then 
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  
-  else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str 
-
-(* TODO: add {[@.]} later for all *)
-let dwarn str f  = 
-  if Js_config.is_same_file () then   
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
-  else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
-
-let info str f  =
-  Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-
-let iinfo b str f  =
-  if b then 
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-  else
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
-
-
-end
-module Ext_map : sig 
-#1 "ext_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-module Make(Ord : Map.OrderedType) :  
-sig
-  include Map.S with type key = Ord.t
-  val of_list : (key * 'a) list -> 'a t
-end
-
-
-
-end = struct
-#1 "ext_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-module Make( S : Map.OrderedType) = struct
-  include Map.Make(S)
-  let of_list (xs : ('a * 'b) list ) = 
-    List.fold_left (fun acc (k,v) -> add k v acc) empty xs     
-end
-
-end
-module Ext_marshal : sig 
-#1 "ext_marshal.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [Marshall] module 
- *)
-
-val to_file : string -> 'a -> unit
-
-val from_file : string -> 'a
-
-end = struct
-#1 "ext_marshal.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let to_file filename v = 
-  let chan = open_out_bin filename in
-  Marshal.to_channel chan v  [];
-  close_out chan
-    
-(** [bin] mode for WIN support *)
-let from_file filename = 
-  let chan = open_in_bin filename in 
-  let v = Marshal.from_channel chan in
-  close_in chan; 
-  v 
-  
-
-end
-module Ext_option : sig 
-#1 "ext_option.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Utilities for [option] type *)
-
-val bind : 'a option -> ('a -> 'b) -> 'b option
-
-end = struct
-#1 "ext_option.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let bind v f = 
-  match v with 
-  | None -> None
-  | Some x -> Some (f x )
 
 end
 module Ext_pp : sig 
@@ -10725,99 +6850,6 @@ let indent t n =
 let flush t () = t.flush ()
 
 end
-module Ident_set : sig 
-#1 "ident_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Set with key specialized as [Ident.t] type
- *)
-
-(** Original set module enhanced with some utilities, 
-    note that it's incompatible with [Lambda.IdentSet] 
- *)
-
-include Set.S with type elt = Ident.t
-
-val print : Ext_format.t -> t -> unit
-
-end = struct
-#1 "ident_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-(* TODO: 
-    when we do the union, it would be nice that 
-    we know which [delta] is there
- *)
-include Set.Make(struct 
-  type t = Ident.t 
-  let compare  = Pervasives.compare (* TODO: fix me *)
-end)
-
-let print ppf v =
-  Ext_format.(brace_vgroup ppf 0 (fun _ ->
-  iter (fun v -> 
-    string ppf  (Printf.sprintf "%s/%d" v.Ident.name v.stamp) ; Ext_format.space ppf  ) v ))
-
-end
 module Int_map : sig 
 #1 "int_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11032,1608 +7064,6 @@ let sub_scope (scope : t) ident_collection : t =
 
 
 
-
-end
-module Ext_ref : sig 
-#1 "ext_ref.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** [non_exn_protect ref value f] assusme [f()] 
-    would not raise
-*)
-
-val non_exn_protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-
-val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-(** [non_exn_protect2 refa refb va vb f ]
-    assume [f ()] would not raise
-*)
-val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
-
-end = struct
-#1 "ext_ref.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let non_exn_protect r v body = 
-  let old = !r in
-  r := v;
-  let res = body() in
-  r := old;
-  res
-
-let protect r v body =
-  let old = !r in
-  try
-    r := v;
-    let res = body() in
-    r := old;
-    res
-  with x ->
-    r := old;
-    raise x
-
-let non_exn_protect2 r1 r2 v1 v2 body = 
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  r1 := v1;
-  r2 := v2;
-  let res = body() in
-  r1 := old1;
-  r2 := old2;
-  res
-
-let protect2 r1 r2 v1 v2 body =
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  try
-    r1 := v1;
-    r2 := v2;
-    let res = body() in
-    r1 := old1;
-    r2 := old2;
-    res
-  with x ->
-    r1 := old1;
-    r2 := old2;
-    raise x
-
-let protect_list rvs body = 
-  let olds =  List.map (fun (x,y) -> !x)  rvs in 
-  let () = List.iter (fun (x,y) -> x:=y) rvs in 
-  try 
-    let res = body () in 
-    List.iter2 (fun (x,_) old -> x := old) rvs olds;
-    res 
-  with e -> 
-    List.iter2 (fun (x,_) old -> x := old) rvs olds;
-    raise e 
-
-end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val is_directory_no_exn : string -> bool
-
-end = struct
-#1 "ext_sys.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-end
-module Hash_set : sig 
-#1 "hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a hashset 
-
-val create : ?random: bool -> int -> 'a hashset
-
-val clear : 'a hashset -> unit
-
-val reset : 'a hashset -> unit
-
-val copy : 'a hashset -> 'a hashset
-
-val add : 'a hashset -> 'a  -> unit
-
-val mem : 'a hashset -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a hashset -> unit
-
-val elements : 'a hashset -> 'a list
-
-val length : 'a hashset -> int 
-
-end = struct
-#1 "hash_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Hashtbl 
-
-(* type nonrec t = unit t  *)
-
-type  'a hashset = ('a,unit) Hashtbl.t
-
-let add tbl k  = replace tbl k ()
-(* use [Hashtbl.replace] instead  *)
-
-(* let replace tbl k  = replace tbl k () *)
-let iter f = iter (fun k _ -> f k )
-
-let elements set = 
-  fold  (fun k _ acc ->  k :: acc) set []
-
-end
-module Ident_map : sig 
-#1 "ident_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-include Map.S with type key = Ident.t 
-
-val of_list  : (key * 'a) list -> 'a t
-
-val keys : 'a t -> key list
-
-val add_if_not_exist : key -> 'a -> 'a t -> 'a t
-
-val merge_disjoint : 'a t -> 'a t -> 'a t
-
-end = struct
-#1 "ident_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Map with key specialized as [Ident] type, enhanced with some utilities *)
-
-include Map.Make(struct 
-  type t = Ident.t 
-
-  let compare (x : t) (y : t) =
-    (* Can not overflow *)
-    let u = x.stamp - y.stamp in
-    if u = 0 then 
-      let u = String.compare x.name y.name in 
-      if u = 0 then 
-        x.flags - y.flags 
-      else  u 
-    else u 
-end)
-
-let of_list lst = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty lst
-
-let keys map = fold (fun k _ acc -> k::acc  ) map []
-
-(* TODO: have this in stdlib/map to save some time *)
-let add_if_not_exist key v m = 
-  if mem key m then m else add key v m
-
-let merge_disjoint m1 m2 = 
-  merge 
-    (fun k x0 y0 -> 
-       match x0, y0 with 
-         None, None -> None
-       | None, Some v | Some v, None -> Some v
-       | _, _ -> invalid_arg "merge_disjoint: maps are not disjoint")
-    m1 m2
-
-end
-module Ident_util
-= struct
-#1 "ident_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Utilities for [ident] type *)
-
-let print_identset set = 
-  Lambda.IdentSet.iter (fun x -> Ext_log.err __LOC__ "@[%a@]@." Ident.print x ) set
-
-end
-module Idents_analysis : sig 
-#1 "idents_analysis.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A simple algorithm to calcuate [used] idents given its dependencies and 
-    initial list.
-
-    TODO needs improvement
- *)
-
-val calculate_used_idents :
-    (Ident.t, Ident_set.t) Hashtbl.t -> Ident.t list -> Ident_set.t
-
-end = struct
-#1 "idents_analysis.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-(* 
-    We have a current ident set 
-    (mostly exports and variables held by side effect calls) and there is a data set,
-    for each variable, its dependency 
-    -- 
- *)
-let calculate_used_idents 
-    (ident_free_vars : (Ident.t, Ident_set.t) Hashtbl.t)
-    (initial_idents : Ident.t list) = 
-  let s = Ident_set.of_list initial_idents in
-  let current_ident_sets = ref s in
-  let delta = ref s in
-  while 
-    Ident_set.(
-    delta := 
-      diff (fold (fun  id acc  ->
-
-          if Ext_ident.is_js_or_global id  then
-            acc (* will not pull in dependencies  any more *)             
-          else
-            union acc (
-              begin match Hashtbl.find ident_free_vars id with 
-                | exception Not_found -> 
-                  Ext_log.err __LOC__ "%s/%d when compiling %s" 
-                    id.name id.stamp (Js_config.get_current_file ()); 
-                  assert false 
-                | e -> e 
-              end
-            )
-
-        )  !delta empty)
-        !current_ident_sets;
-     not (is_empty !delta)) do
-    current_ident_sets := Ident_set.(union !current_ident_sets !delta)
-  done;
-  !current_ident_sets
-
-end
-module Js_call_info : sig 
-#1 "js_call_info.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Type for collecting call site information, used in JS IR *) 
-
-type arity = 
-  | Full 
-  | NA 
-
-
-type call_info = 
-  | Call_ml (* called by plain ocaml expression *)
-  | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.val] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> f x y === f ]} when [f] is an atom     
-  *) 
-
-
-type t = { 
-  call_info : call_info;
-  arity : arity;
-
-}
-
-val dummy : t
-val builtin_runtime_call : t
-
-val ml_full_call : t 
-
-end = struct
-#1 "js_call_info.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type arity = 
-  | Full 
-  | NA 
-
-type call_info = 
-  | Call_ml (* called by plain ocaml expression *)
-  | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.val] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> (f x y) === f ]} when [f] is an atom     
-
-  *) 
-
-type t = { 
-  call_info : call_info;
-  arity : arity
-}
-
-let dummy = { arity = NA; call_info = Call_na }
-
-let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
-
-let ml_full_call = {arity = Full; call_info = Call_ml}
-
-end
-module Js_closure : sig 
-#1 "js_closure.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Define a type used in JS IR to help convert lexical scope to JS [var] 
-    based scope convention
- *)
-
-type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t 
-}
-
-val empty : unit -> t
-
-val get_lexical_scope : t -> Ident_set.t
-
-val set_lexical_scope : t -> Ident_set.t -> unit
-
-end = struct
-#1 "js_closure.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t ;
-}
-
-let empty () = {
-  outer_loop_mutable_values  = Ident_set.empty
-}
-
-let set_lexical_scope t v = t.outer_loop_mutable_values <- v 
-
-let get_lexical_scope t = t.outer_loop_mutable_values 
-
-end
-module Js_fun_env : sig 
-#1 "js_fun_env.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Define type t used in JS IR to collect some meta data for a function, like its closures, etc 
-  *)
-
-type t 
-
-val empty :  ?immutable_mask:bool array  -> int -> t
-
-val is_tailcalled : t -> bool
-
-val is_empty : t -> bool 
-
-val set_unbounded :  t -> Ident_set.t -> unit
-
-
-
-val set_lexical_scope : t -> Ident_set.t -> unit
-
-val get_lexical_scope : t -> Ident_set.t
-
-val to_string : t -> string
-
-val mark_unused : t -> int -> unit 
-
-val get_unused : t -> int -> bool
-
-val get_mutable_params : Ident.t list -> t -> Ident.t list
-
-val get_unbounded : t -> Ident_set.t
-
-val get_length : t -> int
-
-end = struct
-#1 "js_fun_env.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(* Make it mutable so that we can do
-   in-place change without constructing a new one
-  -- however, it's a design choice -- to be reviewed later
-*)
-
-type immutable_mask = 
-  | All_immutable_and_no_tail_call 
-     (** iff not tailcalled 
-         if tailcalled, in theory, it does not need change params, 
-         for example
-         {[
-         let rec f  (n : int ref) = 
-            if !n > 0 then decr n; print_endline "hi"
-            else  f n
-         ]}
-         in this case, we still create [Immutable_mask], 
-         since the inline behavior is slightly different
-      *)
-  | Immutable_mask of bool array
-
-type t = { 
-  mutable unbounded : Ident_set.t;
-  mutable bound_loop_mutable_values : Ident_set.t; 
-  used_mask : bool array;
-  immutable_mask : immutable_mask; 
-}
-(** Invariant: unused param has to be immutable *)
-
-let empty ?immutable_mask n = { 
-  unbounded =  Ident_set.empty ;
-  used_mask = Array.make n false;
-  immutable_mask = 
-    (match immutable_mask with 
-     | Some x -> Immutable_mask x 
-     | None -> All_immutable_and_no_tail_call
-    );
-  bound_loop_mutable_values =Ident_set.empty;
-}
-
-let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
-
-let mark_unused  t i = 
-  t.used_mask.(i) <- true
-
-let get_unused t i = 
-  t.used_mask.(i)
-
-let get_length t = Array.length t.used_mask
-
-let to_string env =  
-  String.concat "," 
-    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
-       (Ident_set.elements  env.unbounded ))
-
-let get_mutable_params (params : Ident.t list) (x : t ) = 
-  match x.immutable_mask with 
-  | All_immutable_and_no_tail_call -> []
-  | Immutable_mask xs -> 
-      Ext_list.filter_mapi 
-        (fun i p -> if not xs.(i) then Some p else None)  params
-
-
-let get_unbounded t = t.unbounded
-
-let set_unbounded env v = 
-  (* Ext_log.err "%s -- set @." (to_string env); *)
-  (* if Ident_set.is_empty env.bound then *)
-  env.unbounded <- v 
- (* else assert false *)
-
-let set_lexical_scope env bound_loop_mutable_values = 
-  env.bound_loop_mutable_values <- bound_loop_mutable_values
-
-let get_lexical_scope env =  
-  env.bound_loop_mutable_values
-
-(* TODO:  can be refined if it 
-    only enclose toplevel variables 
- *)
-let is_empty t = Ident_set.is_empty t.unbounded
-
-end
-module Js_op
-= struct
-#1 "js_op.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-(** Define some basic types used in JS IR *)
-
-type binop =
-  | Eq  
-  (* acutally assignment ..
-     TODO: move it into statement, so that all expressions 
-     are side efffect free (except function calls)
-   *)
-
-  | Or
-  | And
-  | EqEqEq
-  | NotEqEq
-  | InstanceOf
-
-  | Lt
-  | Le
-  | Gt
-  | Ge
-
-  | Bor
-  | Bxor
-  | Band
-  | Lsl
-  | Lsr
-  | Asr
-
-  | Plus
-  | Minus
-  | Mul
-  | Div
-  | Mod
-
-(**
-note that we don't need raise [Div_by_zero] in BuckleScript
-
-{[
-let add x y = x + y  (* | 0 *)
-let minus x y = x - y (* | 0 *)
-let mul x y = x * y   (* caml_mul | Math.imul *)
-let div x y = x / y (* caml_div (x/y|0)*)
-let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
-
-let bor x y = x lor y   (* x  | y *)
-let bxor x y = x lxor y (* x ^ y *)
-let band x y = x land y (* x & y *)
-let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
-let ilsl x y = x lsl y (* x << y*)
-let ilsr x y = x lsr y  (* x >>> y | 0 *)
-let iasr  x y = x asr y (* x >> y *)
-]}
-
-
-Note that js treat unsigned shift 0 bits in a special way
-   Unsigned shifts convert their left-hand side to Uint32, 
-   signed shifts convert it to Int32.
-   Shifting by 0 digits returns the converted value.
-   {[
-    function ToUint32(x) {
-        return x >>> 0;
-    }
-    function ToInt32(x) {
-        return x >> 0;
-    }
-   ]}
-   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
-   and [-1 >>> 0 >> 0 ] will be [-1]
-*)
-type int_op = 
-    
-  | Bor
-  | Bxor
-  | Band
-  | Lsl
-  | Lsr
-  | Asr
-
-  | Plus
-      (* for [+], given two numbers 
-         x + y | 0
-       *)
-  | Minus
-      (* x - y | 0 *)
-  | Mul
-      (* *)
-  | Div
-      (* x / y | 0 *)
-  | Mod
-      (* x  % y *)
-
-(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Bitwise_operators
-    {[
-    ~
-    ]}
-    ~0xff -> -256
-    design; make sure each operation type is consistent
- *)
-type level = 
-  | Log 
-  | Info
-  | Warn
-  | Error
-
-type kind = 
-  | Ml
-  | Runtime 
-  | External of string
-
-type property = Lambda.let_kind = 
-  | Strict
-  | Alias
-  | StrictOpt 
-  | Variable
-
-
-type property_name = (* private *)
-  (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
-  | Key of string
-  | Int_key of int 
-  | Tag 
-  | Length
-
-type 'a access = 
-  | Getter
-  | Setter
-type jsint = Int32.t
-
-type int_or_char = 
-    { i : jsint; 
-      (* we can not use [int] on 32 bit platform, if we dont use 
-          [Int32.t], we need a configuration step          
-      *)
-      c : char option
-    }
-
- (* literal char *)
-type float_lit = { f :  string }
-type number = 
-  | Float of float_lit 
-  | Int of int_or_char
-  | Uint of int32
-  | Nint of nativeint
-  (* becareful when constant folding +/-, 
-     since we treat it as js nativeint, bitwise operators:
-     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
-     The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
-  *)      
-
-type mutable_flag = 
-  | Mutable
-  | Immutable
-  | NA
-
-(* 
-    {[
-    let rec x = 1 :: y 
-    and y = 1 :: x
-    ]}
- *)
-type recursive_info = 
-  | SingleRecursive 
-  | NonRecursie
-  | NA
-
-type used_stats = 
-  | Dead_pure 
-        (* only [Dead] should be taken serious, 
-            other status can be converted during
-            inlining
-            -- all exported symbols can not be dead
-            -- once a symbole is called Dead_pure, 
-            it can not be alive anymore, we should avoid iterating it
-            
-          *)
-  | Dead_non_pure 
-      (* we still need iterating it, 
-         just its bindings does not make sense any more *)
-  | Exported (* Once it's exported, shall we change its status anymore? *)
-      (* In general, we should count in one pass, and eliminate code in another 
-         pass, you can not do it in a single pass, however, some simple 
-         dead code can be detected in a single pass
-       *)
-  | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
-  | Used (**)
-  | Scanning_pure
-  | Scanning_non_pure
-  | NA
-
-
-type ident_info = {
-    (* mutable recursive_info : recursive_info; *)
-    mutable used_stats : used_stats;
-  }
-
-type exports = Ident.t list 
-
-type module_id = { id : Ident.t; kind  : kind}
-
-type required_modules = module_id list
-
-
-type tag_info = Lambda.tag_info = 
-  | Blk_constructor of string * int
-  | Blk_tuple
-  | Blk_array
-  | Blk_variant of string 
-  | Blk_record of string array
-  | Blk_module of string list option
-  | Blk_na
-
-type length_object = 
-  | Array 
-  | String
-  | Bytes
-  | Function
-  | Caml_block
-
-type code_info = 
-  | Exp (* of int option *)
-  | Stmt
-(** TODO: define constant - for better constant folding  *)
-(* type constant =  *)
-(*   | Const_int of int *)
-(*   | Const_ *)
-
-end
-module J
-= struct
-#1 "j.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Javascript IR
-  
-    It's a subset of Javascript AST specialized for OCaml lambda backend
-
-    Note it's not exactly the same as Javascript, the AST itself follows lexical
-    convention and [Block] is just a sequence of statements, which means it does 
-    not introduce new scope
-*)
-
-type label = string
-
-and binop = Js_op.binop
-
-and int_op = Js_op.int_op
- 
-and kind = Js_op.kind
-
-and property = Js_op.property
-
-and number = Js_op.number 
-
-and mutable_flag = Js_op.mutable_flag 
-
-and ident_info = Js_op.ident_info
-
-and exports = Js_op.exports
-
-and tag_info = Js_op.tag_info 
- 
-and required_modules = Js_op.required_modules
-
-and code_info = Js_op.code_info 
-(** object literal, if key is ident, in this case, it might be renamed by 
-    Google Closure  optimizer,
-    currently we always use quote
- *)
-and property_name =  Js_op.property_name
-and jsint = Js_op.jsint
-and ident = Ident.t 
-
-and vident = 
-  | Id of ident
-  | Qualified of ident * kind * string option
-    (* Since camldot is only available for toplevel module accessors,
-       we don't need print  `A.length$2`
-       just print `A.length` - it's guarateed to be unique
-       
-       when the third one is None, it means the whole module 
-
-       TODO: 
-       invariant, when [kind] is [Runtime], then we can ignore [ident], 
-       since all [runtime] functions are unique, when do the 
-       pattern match we can ignore the first one for simplicity
-       for example       
-       {[
-         Qualified (_, Runtime, Some "caml_int_compare")         
-       ]}       
-     *)
-
-and exception_ident = ident 
-
-and for_ident = ident 
-
-and for_direction = Asttypes.direction_flag
-
-and property_map = 
-    (property_name * expression) list
-and length_object = Js_op.length_object
-and expression_desc =
-  | Math of string * expression list
-  | Length of expression * length_object
-  | Char_of_int of expression
-  | Char_to_int of expression 
-  | Array_of_size of expression 
-    (* used in [js_create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
-  | Array_copy of expression (* shallow copy, like [x.slice] *)
-  | Array_append of expression * expression (* For [caml_array_append]*)
-  (* | Tag_ml_obj of expression *)
-  | String_append of expression * expression 
-
-  | Int_of_boolean of expression 
-  | Anything_to_number of expression
-  | Bool of bool (* js true/false*)
-  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
-     [typeof] is an operator     
-  *)
-  | Typeof of expression
-  | Not of expression (* !v *)
-  | String_of_small_int_array of expression 
-    (* String.fromCharCode.apply(null, args) *)
-    (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-  | Json_stringify of expression 
-  (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
-  | Anything_to_string of expression
-  (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)      
-  | Dump of Js_op.level * expression list
-  (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)              
-    (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
-
-  (* TODO: Add some primitives so that [js inliner] can do a better job *)  
-  | Seq of expression * expression
-  | Cond of expression * expression * expression
-  | Bin of binop * expression * expression
-
-  (* [int_op] will guarantee return [int32] bits 
-     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
-  (* | Int32_bin of int_op * expression * expression *)
-  | FlatCall of expression * expression 
-    (* f.apply(null,args) -- Fully applied guaranteed 
-       TODO: once we know args's shape --
-       if it's know at compile time, we can turn it into
-       f(args[0], args[1], ... )
-     *)
-  | Bind of expression * expression
-  (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
-  | Call of expression * expression list * Js_call_info.t
-    (* Analysze over J expression is hard since, 
-        some primitive  call is translated 
-        into a plain call, it's better to keep them
-    *) 
-  | String_access of expression * expression 
-  | Access of expression * expression 
-    (* Invariant: 
-       The second argument has to be type of [int],
-       This can be constructed either in a static way [E.index] or a dynamic way 
-       [E.access]
-     *)
-  | Dot of expression * string * bool
-    (* The third argument bool indicates whether we should 
-       print it as 
-       a["idd"] -- false
-       or 
-       a.idd  -- true
-       There are several kinds of properties
-       1. OCaml module dot (need to be escaped or not)
-          All exported declarations have to be OCaml identifiers
-       2. Javascript dot (need to be preserved/or using quote)
-     *)
-  | New of expression * expression list option (* TODO: option remove *)
-  | Var of vident
-  | Fun of bool * ident list  * block * Js_fun_env.t
-  (* The first parameter by default is false, 
-     it will be true when it's a method
-  *)
-  | Str of bool * string 
-    (* A string is UTF-8 encoded, the string may contain
-       escape sequences.
-       The first argument is used to mark it is non-pure, please
-       don't optimize it, since it does have side effec, 
-       examples like "use asm;" and our compiler may generate "error;..." 
-       which is better to leave it alone
-     *)
-  | Raw_js_code of string * code_info
-  (* literally raw JS code 
-  *)
-  | Array of expression list * mutable_flag
-  | Caml_block of expression list * mutable_flag * expression * tag_info 
-  (* The third argument is [tag] , forth is [tag_info] *)
-  | Caml_uninitialized_obj of expression * expression
-  (* [tag] and [size] tailed  for [Obj.new_block] *)
-
-  (* For setter, it still return the value of expression, 
-     we can not use 
-     {[
-       type 'a access = Get | Set of 'a
-     ]}
-     in another module, since it will break our code generator
-     [Caml_block_tag] can return [undefined], 
-     you have to use [E.tag] in a safe way     
-  *)
-  | Caml_block_tag of expression
-  | Caml_block_set_tag of expression * expression
-  | Caml_block_set_length of expression * expression
-  (* It will just fetch tag, to make it safe, when creating it, 
-     we need apply "|0", we don't do it in the 
-     last step since "|0" can potentially be optimized
-  *)      
-  | Number of number
-  | Object of property_map
-
-and for_ident_expression = expression (* pure*)
-
-and finish_ident_expression = expression (* pure *)
-(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
-   block can be nested, specified in ES3 
- *)
-
-(* Delay some units like [primitive] into JS layer ,
-   benefit: better cross module inlining, and smaller IR size?
- *)
-
-(* 
-  [closure] captured loop mutable values in the outer loop
-
-  check if it contains loop mutable values, happens in nested loop
-  when closured, it's no longer loop mutable value. 
-  which means the outer loop mutable value can not peek into the inner loop
-  {[
-  var i = f ();
-  for(var finish = 32; i < finish; ++i){
-  }
-  ]}
-  when [for_ident_expression] is [None], [var i] has to 
-  be initialized outside, so 
-
-  {[
-  var i = f ()
-  (function (xxx){
-  for(var finish = 32; i < finish; ++i)
-  }(..i))
-  ]}
-  This happens rare it's okay
-
-  this is because [i] has to be initialized outside, if [j] 
-  contains a block side effect
-  TODO: create such example
-*)
-
-(* Since in OCaml, 
-   
-  [for i = 0 to k end do done ]
-  k is only evaluated once , to encode this invariant in JS IR,
-  make sure [ident] is defined in the first b
-
-  TODO: currently we guarantee that [bound] was only 
-  excecuted once, should encode this in AST level
-*)
-
-(* Can be simplified to keep the semantics of OCaml
-   For (var i, e, ...){
-     let  j = ... 
-   }
-
-   if [i] or [j] is captured inside closure
-
-   for (var i , e, ...){
-     (function (){
-     })(i)
-   }
-*)
-
-(* Single return is good for ininling..
-   However, when you do tail-call optmization
-   you loose the expression oriented semantics
-   Block is useful for implementing goto
-   {[
-   xx:{
-   break xx;
-   }
-   ]}
-*)
-
-
-and statement_desc =
-  | Block of block
-  | Variable of variable_declaration
-        (* Function declaration and Variable declaration  *)
-  | Exp of expression
-  | If of expression * block * block option
-  | While of label option *  expression * block 
-        * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
-  | ForRange of for_ident_expression option * finish_ident_expression * 
-        for_ident  *  for_direction * block
-        * Js_closure.t  
-  | Continue of label 
-  | Break (* only used when inline a fucntion *)
-  | Return of return_expression   (* Here we need track back a bit ?, move Return to Function ...
-                              Then we can only have one Return, which is not good *)
-  | Int_switch of expression * int case_clause list * block option 
-  | String_switch of expression * string case_clause list * block option 
-  | Throw of expression
-  | Try of block * (exception_ident * block) option * block option
-  | Debugger
-and return_expression = {
- (* since in ocaml, it's expression oriented langauge, [return] in
-    general has no jumps, it only happens when we do 
-    tailcall conversion, in that case there is a jump.
-    However, currently  a single [break] is good to cover
-    our compilation strategy 
-
-    Attention: we should not insert [break] arbitrarily, otherwise 
-    it would break the semantics
-    A more robust signature would be 
-    {[ goto : label option ; ]}
-  *)
-  return_value : expression
-}   
-
-and expression = {
-  expression_desc : expression_desc; 
-  comment : string option;
-} 
-
-and statement = { 
-  statement_desc :  statement_desc; 
-  comment : string option;
-}
-
-and variable_declaration = { 
-  ident : ident ;
-  value : expression  option;
-  property : property;
-  ident_info : ident_info;
-}
-
-and 'a case_clause = { 
-  case : 'a ; 
-  body : block * bool ;  (* true means break *)
-}
-
-(* TODO: For efficency: block should not be a list, it should be able to 
-   be concatenated in both ways 
- *)
-and block =  statement list
-
-and program = {
-  name :  string;
-
-  block : block ;
-  exports : exports ;
-  export_set : Ident_set.t ;
-
-}
-and deps_program = 
-  {
-    program : program ; 
-    modules : required_modules ;
-    side_effect : string option (* None: no, Some reason  *)
-  }
 
 end
 module Js_fold
@@ -15287,8 +9717,8 @@ let not_implemented ?comment (s : string) =
     } []
 
 end
-module Js_arr : sig 
-#1 "js_arr.mli"
+module Js_number : sig 
+#1 "js_number.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15319,12 +9749,16 @@ module Js_arr : sig
 
 
 
-val set_array : J.expression -> J.expression -> J.expression -> J.expression
+type t  = float 
 
-val ref_array : J.expression -> J.expression -> J.expression
+
+val to_string : t -> string
+
+
+val caml_float_literal_to_js_string : string -> string
 
 end = struct
-#1 "js_arr.ml"
+#1 "js_number.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15354,13 +9788,284 @@ end = struct
 
 
 
-module E = Js_exp_make
- 
-let set_array  e e0 e1 = 
-  E.assign (E.access e e0)  e1
+type t = float 
 
-let ref_array  e e0 = 
-  E.access  e  e0
+
+(* http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.3 
+   http://caml.inria.fr/pub/docs/manual-ocaml/lex.html
+   {[
+     float-literal ::= [-](0...9){0...9|_}[.{0...9|_}][(e|E)][(e|E)[+|-](0...9){0...9|_}]     
+   ]}   
+   In ocaml, the interpretation of floating-point literals that
+   fall outside the range of representable floating-point values is undefined.
+   Also, (_) are accepted   
+
+   see https://github.com/ocaml/ocaml/pull/268 that ocaml will have HEXADECIMAL notation 
+   support in 4.3
+
+   The Hex part is quite different   
+ *)
+
+
+
+let to_string v =
+  if v = infinity
+  then "Infinity"
+  else if v = neg_infinity
+  then "-Infinity"
+  else if v <> v
+  then "NaN"
+  else
+    let vint = (int_of_float v)
+    (* TODO: check if 32-bits will loose some precision *)               
+    in
+    if float_of_int  vint = v
+    then
+      string_of_int vint
+    else
+      let s1 = Printf.sprintf "%.12g" v in
+      if v = float_of_string s1
+      then s1
+      else
+        let s2 = Printf.sprintf "%.15g" v in
+        if v = float_of_string s2
+        then s2
+        else  Printf.sprintf "%.18g" v
+
+
+
+let caml_float_literal_to_js_string v = 
+  let len = String.length v in
+  if len >= 2 && 
+    v.[0] = '0' &&
+    (v.[1] = 'x' || v.[1] = 'X') then  
+    assert false 
+   (* TODO: catchup when upgraded to 4.3 
+      it does not make sense too much since js dos not 
+      support it natively
+    *)    
+  else    
+
+    let rec aux buf i = 
+      if i >= len then buf
+      else 
+        let x = v.[i] in
+        if x = '_' then
+          aux buf (i + 1)
+        else if   x  = '.' && i = len - 1  then
+          buf
+        else 
+          begin
+            Buffer.add_char buf x ;
+            aux buf ( i + 1) 
+          end in
+    Buffer.contents (aux  (Buffer.create len) 0)
+
+
+end
+module Config_util : sig 
+#1 "config_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A simple wrapper around [Config] module in compiler-libs, so that the search path
+    is the same
+*)
+
+
+val find : string -> string
+(** [find filename] Input is a file name, output is absolute path *)
+
+
+val find_cmj : string -> Js_cmj_format.t
+
+end = struct
+#1 "config_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+(* ATTENTION: lazy to wait [Config.load_path] populated *)
+let find file =  Misc.find_in_path_uncap !Config.load_path file 
+
+
+
+(* strategy:
+   If not installed, use the distributed [cmj] files, 
+   make sure that the distributed files are platform independent
+*)
+let find_cmj file = 
+  match find file with
+  | f
+    -> 
+    Js_cmj_format.from_file f             
+  | exception Not_found -> 
+    (* ONLY read the stored cmj data in browser environment *)
+
+      Bs_exception.error (Cmj_not_found file)
+        
+
+
+
+end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
+
+type   'a hashset 
+
+val create : ?random: bool -> int -> 'a hashset
+
+val clear : 'a hashset -> unit
+
+val reset : 'a hashset -> unit
+
+val copy : 'a hashset -> 'a hashset
+
+val add : 'a hashset -> 'a  -> unit
+
+val mem : 'a hashset -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a hashset -> unit
+
+val elements : 'a hashset -> 'a list
+
+val length : 'a hashset -> int 
+
+end = struct
+#1 "hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Hashtbl 
+
+(* type nonrec t = unit t  *)
+
+type  'a hashset = ('a,unit) Hashtbl.t
+
+let add tbl k  = replace tbl k ()
+(* use [Hashtbl.replace] instead  *)
+
+(* let replace tbl k  = replace tbl k () *)
+let iter f = iter (fun k _ -> f k )
+
+let elements set = 
+  fold  (fun k _ acc ->  k :: acc) set []
 
 end
 module Lam_module_ident : sig 
@@ -18200,366 +12905,6 @@ let debugger : t =
   { statement_desc = J.Debugger ; 
     comment = None 
   }
-
-end
-module Js_ast_util : sig 
-#1 "js_ast_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(** Simple expression, 
-    no computation involved so that  it is okay to be duplicated
-*)
-val is_simple_expression : J.expression -> bool 
-
-
-
-val named_expression : 
-  J.expression -> (J.statement * Ident.t) option
-
-end = struct
-#1 "js_ast_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-module E = Js_exp_make 
-
-module S = Js_stmt_make  
-
-let rec is_simple_expression (e : J.expression) = 
-  match e.expression_desc with  
-  | Var _ 
-  | Bool _ 
-  | Str _ 
-  | Number _ -> true
-  | Dot (e, _, _) -> is_simple_expression e 
-  | _ -> false 
-
-let rec named_expression (e : J.expression)
-  :  (J.statement  * Ident.t) option = 
-  if is_simple_expression e then 
-    None 
-  else 
-    let obj = Ext_ident.create Literals.tmp in
-    let obj_code = 
-      S.define
-        ~kind:Strict obj e in 
-
-    Some (obj_code, obj)
-
-end
-module Js_cmj_datasets : sig 
-#1 "js_cmj_datasets.mli"
-val data_sets : Js_cmj_format.t Lazy.t String_map.t
-
-end = struct
-#1 "js_cmj_datasets.ml"
-(* -*-mode:fundamental-*- *)
-let data_sets = String_map.of_list [
-  ("arg.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\025\000\000\000\137\000\000\001\218\000\000\001\188\176\208\208\208\208@#Bad\160\176@@@@@A$Help\160\004\003@@B%align\160\176A\160\160B\144\160\176\001\004\145%*opt*@\160\176\001\004\148(speclist@@@@@\208\208@'current\160\176A@@@@A%parse\160\176@\160\160C\144\160\176\001\004i!l@\160\176\001\004j!f@\160\176\001\004k#msg@@@@@@BC*parse_argv\160\176A\160\160E\144\160\176\001\004a\004 @\160\176\001\004d$argv@\160\176\001\004e(speclist@\160\176\001\004f'anonfun@\160\176\001\004g&errmsg@@@@@\208\208@2parse_argv_dynamic\160\176A\160\160E\144\160\176\001\0043\0046@\160\176\001\0046$argv@\160\176\001\0047(speclist@\160\176\001\0048'anonfun@\160\176\001\0049&errmsg@@@@@@A-parse_dynamic\160\176@\160\160C\144\160\176\001\004o!l@\160\176\001\004p!f@\160\176\001\004q#msg@@@@@\208@%usage\160\176@\160\160B\144\160\176\001\004/(speclist@\160\176\001\0040&errmsg@@@@@\208@,usage_string\160\176A\160\160B\144\160\176\001\004+(speclist@\160\176\001\004,&errmsg@@@@@@ABCD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003s\000\000\001\022\000\000\003\144\000\000\003r\176\208\208\208@&append\160\176@\160\160B\144\160\176\001\004\012\"a1@\160\176\001\004\r\"a2@@@@@\208@$blit\160\176@\160\160E\144\160\176\001\004\026\"a1@\160\176\001\004\027$ofs1@\160\176\001\004\028\"a2@\160\176\001\004\029$ofs2@\160\176\001\004\030#len@@@@@@AB&concat\160@\144\147\192A@\160\176\001\004\159$prim@@\150\176\153\2081caml_array_concatAA @\160\144\004\n@\176\192&_none_A@\000\255\004\002A\208\208@$copy\160\176@\160\160A\144\160\176\001\004\t!a@@@@@@A-create_matrix\160\176@\160\160C\144\160\176\001\004\002\"sx@\160\176\001\004\003\"sy@\160\176\001\004\004$init@@@@@\208\208@)fast_sort\160\176@\160\160B\144\160\176\001\004w#cmp@\160\176\001\004x!a@@@@@@A$fill\160\176A\160\160D\144\160\176\001\004\020!a@\160\176\001\004\021#ofs@\160\176\001\004\022#len@\160\176\001\004\023!v@@@@@\208@)fold_left\160\176@\160\160C\144\160\176\001\004F!f@\160\176\001\004G!x@\160\176\001\004H!a@@@@@\208@*fold_right\160\176@\160\160C\144\160\176\001\004L!f@\160\176\001\004M!a@\160\176\001\004N!x@@@@@@ABCDE$init\160\176@\160\160B\144\160\176\001\003\253!l@\160\176\001\003\254!f@@@@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004 !f@\160\176\001\004!!a@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\004*!f@\160\176\001\004+!a@@@@@@AB+make_matrix\160\004v@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004$!f@\160\176\001\004%!a@@@@@\208@$mapi\160\176@\160\160B\144\160\176\001\004.!f@\160\176\001\004/!a@@@@@@AB'of_list\160\176@\160\160A\144\160\176\001\004?!l@@@@@\208@$sort\160\176A\160\160B\144\160\176\001\004S#cmp@\160\176\001\004T!a@@@@@\208@+stable_sort\160\004\154@@ABC#sub\160\176@\160\160C\144\160\176\001\004\016!a@\160\176\001\004\017#ofs@\160\176\001\004\018#len@@@@@\208@'to_list\160\176@\160\160A\144\160\176\001\0044!a@@@@@@ADEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("arrayLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\0034\000\000\001\005\000\000\003V\000\000\003<\176\208\208\208@&append\160\176@\160\160B\144\160\176\001\004\012\"a1@\160\176\001\004\r\"a2@@@@@\208@$blit\160\176@\160\160E\144\160\176\001\004\026\"a1@\160\176\001\004\027$ofs1@\160\176\001\004\028\"a2@\160\176\001\004\029$ofs2@\160\176\001\004\030#len@@@@@@AB&concat\160@@\208\208@$copy\160\176@\160\160A\144\160\176\001\004\t!a@@@@@@A-create_matrix\160\176@\160\160C\144\160\176\001\004\002\"sx@\160\176\001\004\003\"sy@\160\176\001\004\004$init@@@@@\208\208@)fast_sort\160\176@\160\160B\144\160\176\001\004w#cmp@\160\176\001\004x!a@@@@@@A$fill\160\176A\160\160D\144\160\176\001\004\020!a@\160\176\001\004\021#ofs@\160\176\001\004\022#len@\160\176\001\004\023!v@@@@@\208@)fold_left\160\176@\160\160C\144\160\176\001\004F!f@\160\176\001\004G!x@\160\176\001\004H!a@@@@@\208@*fold_right\160\176@\160\160C\144\160\176\001\004L!f@\160\176\001\004M!a@\160\176\001\004N!x@@@@@@ABCDE$init\160\176@\160\160B\144\160\176\001\003\253!l@\160\176\001\003\254!f@@@@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004 !f@\160\176\001\004!!a@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\004*!f@\160\176\001\004+!a@@@@@@AB+make_matrix\160\004v@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004$!f@\160\176\001\004%!a@@@@@\208@$mapi\160\176@\160\160B\144\160\176\001\004.!f@\160\176\001\004/!a@@@@@@AB'of_list\160\176@\160\160A\144\160\176\001\004?!l@@@@@\208@$sort\160\176A\160\160B\144\160\176\001\004S#cmp@\160\176\001\004T!a@@@@@\208@+stable_sort\160\004\154@@ABC#sub\160\176@\160\160C\144\160\176\001\004\016!a@\160\176\001\004\017#ofs@\160\176\001\004\018#len@@@@@\208@'to_list\160\176@\160\160A\144\160\176\001\0044!a@@@@@@ADEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bigarray.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\242\000\000\001\r\000\000\003\127\000\000\003>\176\208\208\208\208\208\208@&Array1\160@@@A&Array2\160@@\208@&Array3\160@@@AB(Genarray\160@@\208@2array1_of_genarray\160\176@\160\160A\144\160\176\001\004\214!a@@@@@\208@2array2_of_genarray\160\176@\160\160A\144\160\176\001\004\216!a@@@@@\208@2array3_of_genarray\160\176@\160\160A\144\160\176\001\004\218!a@@@@@@ABCD(c_layout\160@\144\145\161@\144(C_layout\208\208@$char\160@\144\145\161L\144$Char@A)complex32\160@\144\145\161J\144)Complex32\208@)complex64\160@\144\145\161K\144)Complex64@ABE'float32\160@\144\145\161@\144'Float32\208@'float64\160@\144\145\161A\144'Float64\208\208@.fortran_layout\160@\144\145\161A\144.Fortran_layout@A#int\160@\144\145\161H\144#Int@BCF,int16_signed\160@\144\145\161D\144,Int16_signed\208\208@.int16_unsigned\160@\144\145\161E\144.Int16_unsigned\208@%int32\160@\144\145\161F\144%Int32\208@%int64\160@\144\145\161G\144%Int64@ABC+int8_signed\160@\144\145\161B\144+Int8_signed\208\208@-int8_unsigned\160@\144\145\161C\144-Int8_unsigned@A)nativeint\160@\144\145\161I\144)Nativeint\208\208@'reshape\160@\144\147\192B@\160\176\001\004\239$prim@\160\176\001\004\238\004\003@@\150\176\153\208/caml_ba_reshapeBA @\160\144\004\012\160\144\004\011@\176\192&_none_A@\000\255\004\002A@A)reshape_1\160\176@\160\160B\144\160\176\001\004\221!a@\160\176\001\004\222$dim1@@@@\144\147\192B@\004\t\150\176\153\004\028\160\144\004\r\160\150\176\158B\160\144\004\016@\176\192+bigarray.ml\001\001\b\001)\168\001)\201\192\004\002\001\001\b\001)\168\001)\209@@\176\192\004\004\001\001\b\001)\168\001)\191\004\003@\208@)reshape_2\160\176@\160\160C\144\160\176\001\004\224!a@\160\176\001\004\225$dim1@\160\176\001\004\226$dim2@@@@@\208@)reshape_3\160\176@\160\160D\144\160\176\001\004\228!a@\160\176\001\004\229$dim1@\160\176\001\004\230$dim2@\160\176\001\004\231$dim3@@@@@@ABCDEG\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("buffer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\177\000\000\001!\000\000\003\179\000\000\003\149\176\208\208\208\208\208@*add_buffer\160\176A\160\160B\144\160\176\001\004/!b@\160\176\001\0040\"bs@@@@@@A)add_bytes\160\176A\160\160B\144\160\176\001\004,!b@\160\176\001\004-!s@@@@@\208@+add_channel\160\176A\160\160C\144\160\176\001\0042!b@\160\176\001\0043\"ic@\160\176\001\0044#len@@@@@@AB(add_char\160\176A\160\160B\144\160\176\001\004\024!b@\160\176\001\004\025!c@@@@@\208\208@*add_string\160\176A\160\160B\144\160\176\001\004'!b@\160\176\001\004(!s@@@@@@A,add_subbytes\160\176A\160\160D\144\160\176\001\004\"!b@\160\176\001\004#!s@\160\176\001\004$&offset@\160\176\001\004%#len@@@@@\208\208@.add_substitute\160\176@\160\160C\144\160\176\001\004R!b@\160\176\001\004S!f@\160\176\001\004T!s@@@@@@A-add_substring\160\176A\160\160D\144\160\176\001\004\028!b@\160\176\001\004\029!s@\160\176\001\004\030&offset@\160\176\001\004\031#len@@@@@@BCD$blit\160\176@\160\160E\144\160\176\001\004\003#src@\160\176\001\004\004&srcoff@\160\176\001\004\005#dst@\160\176\001\004\006&dstoff@\160\176\001\004\007#len@@@@@\208\208@%clear\160\176A\160\160A\144\160\176\001\004\014!b@@@@\144\147\192A@\004\006\150\176\181A@\144(position\160\144\004\012\160\145\144\144@@\176\192)buffer.mlu\001\007g\001\007u\192\004\002u\001\007g\001\007\132@@A(contents\160\176A\160\160A\144\160\176\001\003\251!b@@@@@@BE&create\160\176A\160\160A\144\160\176\001\003\246!n@@@@@\208\208\208@&length\160\176@\160\160A\144\160\176\001\004\012!b@@@@\144\147\192A@\004\006\150\176\164A\144\0040\160\144\004\011@\176\192\004+s\001\007L\001\007[\192\004,s\001\007L\001\007e@@A#nth\160\176A\160\160B\144\160\176\001\004\t!b@\160\176\001\004\n#ofs@@@@@\208\208@-output_buffer\160\176@\160\160B\144\160\176\001\0046\"oc@\160\176\001\0047!b@@@@@@A%reset\160\176A\160\160A\144\160\176\001\004\016!b@@@@@@BC#sub\160\176A\160\160C\144\160\176\001\003\255!b@\160\176\001\004\000#ofs@\160\176\001\004\001#len@@@@@\208@(to_bytes\160\176@\160\160A\144\160\176\001\003\253!b@@@@@@ADF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bytes.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\005\248\000\000\001\227\000\000\0066\000\000\006\003\176\208\208\208\208\208@$blit\160\176@\160\160E\144\160\176\001\004&\"s1@\160\176\001\004'$ofs1@\160\176\001\004(\"s2@\160\176\001\004)$ofs2@\160\176\001\004*#len@@@@@@A+blit_string\160\176@\160\160E\144\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208\208@*capitalize\160\176@\160\160A\144\160\176\001\004q!s@@@@@@A#cat\160\176@\160\160B\144\160\176\001\004E\"s1@\160\176\001\004F\"s2@@@@@\208@'compare\160\176@\160\160B\144\160\176\001\004\154!x@\160\176\001\004\155!y@@@@\144\147\192B@\004\t\150\176\153\208,caml_compareBA @\160\144\004\016\160\144\004\015@\176\192(bytes.ml\001\001\005\001\029\136\001\029\164\192\004\002\001\001\005\001\029\136\001\029\186@@ABC&concat\160\176@\160\160B\144\160\176\001\004:#sep@\160\176\001\004;!l@@@@@\208@(contains\160\176A\160\160B\144\160\176\001\004\146!s@\160\176\001\004\147!c@@@@@\208\208@-contains_from\160\176A\160\160C\144\160\176\001\004\141!s@\160\176\001\004\142!i@\160\176\001\004\143!c@@@@@@A$copy\160\176@\160\160A\144\160\176\001\004\007!s@@@@@@BCD%empty\160\176@@@@\208\208@'escaped\160\176@\160\160A\144\160\176\001\004S!s@@@@@@A&extend\160\176@\160\160C\144\160\176\001\004\024!s@\160\176\001\004\025$left@\160\176\001\004\026%right@@@@@\208@$fill\160\176@\160\160D\144\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\144\160\176\001\004z!s@\160\176\001\004{!c@@@@@\208@*index_from\160\176@\160\160C\144\160\176\001\004}!s@\160\176\001\004~!i@\160\176\001\004\127!c@@@@@@ABCDE$init\160\176@\160\160B\144\160\176\001\004\001!n@\160\176\001\004\002!f@@@@@\208\208\208@$iter\160\176A\160\160B\144\160\176\001\0042!f@\160\176\001\0043!a@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\0046!f@\160\176\001\0047!a@@@@@\208@)lowercase\160\176@\160\160A\144\160\176\001\004k!s@@@@@@ABC$make\160\176@\160\160B\144\160\176\001\003\253!n@\160\176\001\003\254!c@@@@@\208@#map\160\176@\160\160B\144\160\176\001\004]!f@\160\176\001\004^!s@@@@@\208@$mapi\160\176@\160\160B\144\160\176\001\004c!f@\160\176\001\004d!s@@@@@@ABD)of_string\160\176@\160\160A\144\160\176\001\004\r!s@@@@@\208\208\208\208@.rcontains_from\160\176A\160\160C\144\160\176\001\004\149!s@\160\176\001\004\150!i@\160\176\001\004\151!c@@@@@@A&rindex\160\176@\160\160B\144\160\176\001\004\134!s@\160\176\001\004\135!c@@@@@\208@+rindex_from\160\176@\160\160C\144\160\176\001\004\137!s@\160\176\001\004\138!i@\160\176\001\004\139!c@@@@@@AB#sub\160\176@\160\160C\144\160\176\001\004\015!s@\160\176\001\004\016#ofs@\160\176\001\004\017#len@@@@@\208@*sub_string\160\176A\160\160C\144\160\176\001\004\020!b@\160\176\001\004\021#ofs@\160\176\001\004\022#len@@@@@@AC)to_string\160\176A\160\160A\144\160\176\001\004\011!b@@@@@\208\208@$trim\160\176@\160\160A\144\160\176\001\004N!s@@@@@@A,uncapitalize\160\176@\160\160A\144\160\176\001\004s!s@@@@@\208\208\208@0unsafe_of_string\160@\144\147\192A@\160\176\001\004\156$prim@@\150\176A\160\144\004\006@\176\192&_none_A@\000\255\004\002A@A0unsafe_to_string\160@\144\147\192A@\160\176\001\004\157\004\015@@\150\176@\160\144\004\005@\004\014@B)uppercase\160\176@\160\160A\144\160\176\001\004i!s@@@@@@CDEFG@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bytesLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\208\000\000\001\137\000\000\005\017\000\000\004\233\176\208\208\208\208@$blit\160\176@\160\160E\144\160\176\001\004&\"s1@\160\176\001\004'$ofs1@\160\176\001\004(\"s2@\160\176\001\004)$ofs2@\160\176\001\004*#len@@@@@\208@*capitalize\160\176@\160\160A\144\160\176\001\004q!s@@@@@\208@'compare\160\176@\160\160B\144\160\176\001\004\154!x@\160\176\001\004\155!y@@@@@@ABC&concat\160\176@\160\160B\144\160\176\001\004:#sep@\160\176\001\004;!l@@@@@\208\208@(contains\160\176A\160\160B\144\160\176\001\004\146!s@\160\176\001\004\147!c@@@@@\208@-contains_from\160\176A\160\160C\144\160\176\001\004\141!s@\160\176\001\004\142!i@\160\176\001\004\143!c@@@@@@AB$copy\160\176@\160\160A\144\160\176\001\004\007!s@@@@@@CD%empty\160\176@@@@\208\208@'escaped\160\176@\160\160A\144\160\176\001\004S!s@@@@@@A$fill\160\176@\160\160D\144\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\144\160\176\001\004z!s@\160\176\001\004{!c@@@@@\208@*index_from\160\176@\160\160C\144\160\176\001\004}!s@\160\176\001\004~!i@\160\176\001\004\127!c@@@@@@ABCE$init\160\176@\160\160B\144\160\176\001\004\001!n@\160\176\001\004\002!f@@@@@\208\208\208@$iter\160\176A\160\160B\144\160\176\001\0042!f@\160\176\001\0043!a@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\0046!f@\160\176\001\0047!a@@@@@\208@)lowercase\160\176@\160\160A\144\160\176\001\004k!s@@@@@@ABC$make\160\176@\160\160B\144\160\176\001\003\253!n@\160\176\001\003\254!c@@@@@\208@#map\160\176@\160\160B\144\160\176\001\004]!f@\160\176\001\004^!s@@@@@\208@$mapi\160\176@\160\160B\144\160\176\001\004c!f@\160\176\001\004d!s@@@@@@ABD)of_string\160\176@\160\160A\144\160\176\001\004\r!s@@@@@\208\208\208\208@.rcontains_from\160\176A\160\160C\144\160\176\001\004\149!s@\160\176\001\004\150!i@\160\176\001\004\151!c@@@@@@A&rindex\160\176@\160\160B\144\160\176\001\004\134!s@\160\176\001\004\135!c@@@@@\208@+rindex_from\160\176@\160\160C\144\160\176\001\004\137!s@\160\176\001\004\138!i@\160\176\001\004\139!c@@@@@@AB#sub\160\176@\160\160C\144\160\176\001\004\015!s@\160\176\001\004\016#ofs@\160\176\001\004\017#len@@@@@\208@*sub_string\160\176A\160\160C\144\160\176\001\004\020!b@\160\176\001\004\021#ofs@\160\176\001\004\022#len@@@@@@AC)to_string\160\176A\160\160A\144\160\176\001\004\011!b@@@@@\208\208@$trim\160\176@\160\160A\144\160\176\001\004N!s@@@@@@A,uncapitalize\160\176@\160\160A\144\160\176\001\004s!s@@@@@\208\208\208@0unsafe_of_string\160@@@A0unsafe_to_string\160@@@B)uppercase\160\176@\160\160A\144\160\176\001\004i!s@@@@@@CDEFG@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("callback.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\242\000\000\0008\000\000\000\193\000\000\000\180\176\208@(register\160\176@\160\160B\144\160\176\001\003\242$name@\160\176\001\003\243!v@@@@\144\147\192B@\004\t\150\176\153\2089caml_register_named_valueBA @\160\144\004\016\160\144\004\015@\176\192+callback.mlT\001\004K\001\004M\192\004\002T\001\004K\001\004s@\208@2register_exception\160\176@\160\160B\144\160\176\001\003\245$name@\160\176\001\003\246#exn@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("camlinternalFormat.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\005z\000\000\001R\000\000\004\149\000\000\004M\176\208\208\208@/add_in_char_set\160\176A\160\160B\144\160\176\001\003\243(char_set@\160\176\001\003\244!c@@@@@\208@*bufput_acc\160\176A\160\160B\144\160\176\002\000\000\245\012!b@\160\176\002\000\000\245\r#acc@@@@@\208@-char_of_iconv\160\176A\160\160A\144\160\176\001\004v%iconv@@@@@@ABC/create_char_set\160\176@\160\160A\144\160\176\002\000\001)b%param@@@@\144\147\192A@\004\006\146\192\150\176\164@\145$make\160\150\176\144\176@%BytesA@\176\192&_none_A@\000\255\004\002A@\004\003\160\145\144\144`\160\145\144\145@@\176\1925camlinternalFormat.mlI\001\001\007\001\001 \192\004\002I\001\001\007\001\0014@A\208\208@1fmt_ebb_of_string\160\176@\160\160B\144\160\176\002\000\000\249[/legacy_behavior@\160\176\002\000\000\249\\#str@@@@@@A6format_of_string_fmtty\160\176@\160\160B\144\160\176\002\000\001&Z#str@\160\176\002\000\001&[%fmtty@@@@@\208\208@7format_of_string_format\160\176@\160\160B\144\160\176\002\000\001&`#str@\160\176\002\000\001&f\004G@@@@@@A/freeze_char_set\160\176A\160\160A\144\160\176\001\003\249(char_set@@@@\144\147\192A@\004\006\146\192\150\176\164E\145)to_string\160\150\176\144\176@%BytesA@\004O@\004O\160\144\004\020@\176\192\004FS\001\002^\001\002`\192\004GS\001\002^\001\002x@A@BCD.is_in_char_set\160\176A\160\160B\144\160\176\001\003\255(char_set@\160\176\001\004\000!c@@@@@\208\208@+make_printf\160\176@\160\160D\144\160\176\002\000\000\243i!k@\160\176\002\000\000\243j!o@\160\176\002\000\000\243k#acc@\160\176\002\000\000\243l#fmt@@@@@\208\208@2open_box_of_string\160\176A\160\160A\144\160\176\002\000\000\245?#str@@@@@@A*output_acc\160\176@\160\160B\144\160\176\002\000\000\244\245!o@\160\176\002\000\000\244\246#acc@@@@@@BC>param_format_of_ignored_format\160\176A\160\160B\144\160\176\001\004\022#ign@\160\176\001\004\023#fmt@@@@@\208\208\208\208@&recast\160\176@\160\160B\144\160\176\002\000\000\243 #fmt@\160\176\002\000\000\243!%fmtty@@@@@@A,rev_char_set\160\176A\160\160A\144\160\176\001\003\251(char_set@@@@@\208@-string_of_fmt\160\176A\160\160A\144\160\176\001\t@#fmt@@@@@@AB/string_of_fmtty\160\176A\160\160A\144\160\176\002\000\000\243Y%fmtty@@@@@\208@8string_of_formatting_gen\160\176@\160\160A\144\160\176\001\004\215.formatting_gen@@@@@@AC8string_of_formatting_lit\160\176@\160\160A\144\160\176\001\004\203.formatting_lit@@@@@\208\208@*strput_acc\160\176A\160\160B\144\160\176\002\000\000\245#!b@\160\176\002\000\000\245$#acc@@@@@@A$symm\160\176A\160\160A\144\160\176\002\000\001)9\004\253@@@@@\208\208@%trans\160\176A\160\160B\144\160\176\002\000\000\170R#ty1@\160\176\002\000\000\170S#ty2@@@A@@A+type_format\160\176@\160\160B\144\160\176\002\000\000\179\135#fmt@\160\176\002\000\000\179\136%fmtty@@@@@@BCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("camlinternalFormatBasics.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\201\000\000\0001\000\000\000\168\000\000\000\155\176\208\208@*concat_fmt\160\176@\160\160B\144\160\176\001\005=$fmt1@\160\176\001\005>$fmt2@@@@@@A,concat_fmtty\160\176@\160\160B\144\160\176\001\004\227&fmtty1@\160\176\001\004\228&fmtty2@@@@@\208@)erase_rel\160\176A\160\160A\144\160\176\001\005\171%param@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("camlinternalLazy.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\234\000\000\0009\000\000\000\199\000\000\000\187\176\208\208@)Undefined\160\176@@@@\208@%force\160\176@\160\160A\144\160\176\001\003\252#lzv@@@@@@AB0force_lazy_block\160\176@\160\160A\144\160\176\001\003\243#blk@@@@@\208\208@)force_val\160\176@\160\160A\144\160\176\001\004\000#lzv@@@@@@A4force_val_lazy_block\160\176@\160\160A\144\160\176\001\003\248#blk@@@@@@BC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("camlinternalMod.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\163\000\000\000*\000\000\000\139\000\000\000\131\176\208@(init_mod\160\176A\160\160B\144\160\176\001\003\247#loc@\160\176\001\003\248%shape@@@@@\208@*update_mod\160\176A\160\160C\144\160\176\001\004\006%shape@\160\176\001\004\007!o@\160\176\001\004\b!n@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("camlinternalOO.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\006\180\000\000\001\156\000\000\005\184\000\000\005J\176\208\208\208\208\208\208@/add_initializer\160\176A\160\160B\144\160\176\001\004\200%table@\160\176\001\004\201!f@@@@@@A$copy\160\176@\160\160A\144\160\176\001\003\242!o@@@@\144\147\192A@\004\006\150\176\153\208.caml_set_oo_idA@ @\160\150\176\153\208,caml_obj_dupAA @\160\144\004\020@\176\1921camlinternalOO.mlW\001\004\004\001\004\023\192\004\002W\001\004\004\001\004-@@\176\192\004\004X\001\0042\001\0044\192\004\005X\001\0042\001\004<@@B-create_object\160\176@\160\160A\144\160\176\001\004\239%table@@@@@\208\208\208@\t\"create_object_and_run_initializers\160\176@\160\160B\144\160\176\001\005\003%obj_0@\160\176\001\005\004%table@@@@@@A1create_object_opt\160\176@\160\160B\144\160\176\001\004\242%obj_0@\160\176\001\004\243%table@@@@@@B,create_table\160\176@\160\160A\144\160\176\001\004\203.public_methods@@@@@\208@+dummy_class\160\176A\160\160A\144\160\176\001\004\236#loc@@@@@@ACD+dummy_table\160\176A@@@\208\208@*get_method\160\176@\160\160B\144\160\176\001\004\135%table@\160\176\001\004\136%label@@@@@@A0get_method_label\160\176@\160\160B\144\160\176\001\004|%table@\160\176\001\004}$name@@@@@\208@1get_method_labels\160\176@\160\160B\144\160\176\001\004\128%table@\160\176\001\004\129%names@@@@@@ABE,get_variable\160\176@\160\160B\144\160\176\001\004\194%table@\160\176\001\004\195$name@@@@@\208\208@-get_variables\160\176@\160\160B\144\160\176\001\004\197%table@\160\176\001\004\198%names@@@@@\208@(inherits\160\176@\160\160F\144\160\176\001\004\212#cla@\160\176\001\004\213$vals@\160\176\001\004\214*virt_meths@\160\176\001\004\215+concr_meths@\160\176\001\006\003%param@\160\176\001\004\218#top@@@@@@AB*init_class\160\176A\160\160A\144\160\176\001\004\210%table@@@@@\208\208\208@-lookup_tables\160\176@\160\160B\144\160\176\001\005#$root@\160\176\001\005$$keys@@@@@@A*make_class\160\176A\160\160B\144\160\176\001\004\222)pub_meths@\160\176\001\004\223*class_init@@@@@\208@0make_class_store\160\176A\160\160C\144\160\176\001\004\230)pub_meths@\160\176\001\004\231*class_init@\160\176\001\004\232*init_table@@@@@@AB&narrow\160\176A\160\160D\144\160\176\001\004\140%table@\160\176\001\004\141$vars@\160\176\001\004\142*virt_meths@\160\176\001\004\143+concr_meths@@@@@@CDF*new_method\160\176@\160\160A\144\160\176\001\004y%table@@@@@\208\208\208@5new_methods_variables\160\176@\160\160C\144\160\176\001\004\184%table@\160\176\001\004\185%meths@\160\176\001\004\186$vals@@@@@@A,new_variable\160\176@\160\160B\144\160\176\001\004\178%table@\160\176\001\004\179$name@@@@@\208@&params\160\004\203@@AB3public_method_label\160\176@\160\160A\144\160\176\001\004\012!s@@@@@\208\208@0run_initializers\160\176@\160\160B\144\160\176\001\004\250#obj@\160\176\001\004\251%table@@@@@\208@4run_initializers_opt\160\176@\160\160C\144\160\176\001\004\254%obj_0@\160\176\001\004\255#obj@\160\176\001\005\000%table@@@@@@AB*set_method\160\176A\160\160C\144\160\176\001\004\131%table@\160\176\001\004\132%label@\160\176\001\004\133'element@@@@@\208@+set_methods\160\176A\160\160B\144\160\176\001\005\240%table@\160\176\001\005\241'methods@@@@@\208\208@%stats\160\176A\160\160A\144\160\176\001\005\251%param@@@@@@A%widen\160\176A\160\160A\144\160\176\001\004\162%table@@@@@@BCDEG@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("char.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\017\000\000\000O\000\000\001\003\000\000\000\250\176\208\208@#chr\160\176@\160\160A\144\160\176\001\003\243!n@@@@@\208@'compare\160\176A\160\160B\144\160\176\001\004\003\"c1@\160\176\001\004\004\"c2@@@@\144\147\192B@\004\t\150\176I\160\144\004\012\160\144\004\011@\176\192'char.ml\000C\001\b\153\001\b\173\192\004\002\000C\001\b\153\001\b\190@@AB'escaped\160\176A\160\160A\144\160\176\001\003\248!c@@@@@\208@)lowercase\160\176@\160\160A\144\160\176\001\003\254!c@@@@@\208@)uppercase\160\176@\160\160A\144\160\176\001\004\000!c@@@@@@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("complex.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\027\000\000\000\190\000\000\002g\000\000\002]\176\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\003\247!x@\160\176\001\003\248!y@@@@@\208@#arg\160\176@\160\160A\144\160\176\001\004\021!x@@@@@@AB$conj\160\176A\160\160A\144\160\176\001\003\255!x@@@@@\208@#div\160\176A\160\160B\144\160\176\001\004\004!x@\160\176\001\004\005!y@@@@@\208@#exp\160\176A\160\160A\144\160\176\001\004!!x@@@@@@ABC!i\160@@\208\208\208@#inv\160\176A\160\160A\144\160\176\001\004\011!x@@@@@\208@#log\160\176A\160\160A\144\160\176\001\004$!x@@@@@@AB#mul\160\176A\160\160B\144\160\176\001\004\001!x@\160\176\001\004\002!y@@@@@@C#neg\160\176A\160\160A\144\160\176\001\003\253!x@@@@@\208\208@$norm\160\176@\160\160A\144\160\176\001\004\015!x@@@@@@A%norm2\160\176A\160\160A\144\160\176\001\004\r!x@@@@@@BDE#one\160@@\208\208\208@%polar\160\176A\160\160B\144\160\176\001\004\023!n@\160\176\001\004\024!a@@@@@\208@#pow\160\176A\160\160B\144\160\176\001\004&!x@\160\176\001\004'!y@@@@@@AB$sqrt\160\176A\160\160A\144\160\176\001\004\026!x@@@@@@C#sub\160\176A\160\160B\144\160\176\001\003\250!x@\160\176\001\003\251!y@@@@@\208@$zero\160@@@ADF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("digest.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002=\000\000\000\174\000\000\0025\000\000\002\029\176\208\208\208@%bytes\160\176@\160\160A\144\160\176\001\003\247!b@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004J!x@\160\176\001\004K!y@@@@@@B$file\160\176@\160\160A\144\160\176\001\004\001(filename@@@@@\208\208\208\208@(from_hex\160\176A\160\160A\144\160\176\001\004\018!s@@@@@@A%input\160\176A\160\160A\144\160\176\001\004\t$chan@@@@\144\147\192A@\004\006\146\192\150\176\164\000D\1453really_input_string\160\150\176\144\176@*PervasivesA@\176\192&_none_A@\000\255\004\002A@\004\003\160\144\004\023\160\145\144\144P@\004\tA@B&output\160\176@\160\160B\144\160\176\001\004\006$chan@\160\176\001\004\007&digest@@@@\144\147\192B@\004\t\146\192\150\176\164p\145-output_string\160\150\176\144\004%@\004#@\004#\160\144\004\021\160\144\004\020@\004'A@C&string\160\176@\160\160A\144\160\176\001\003\245#str@@@@@\208\208@(subbytes\160\176@\160\160C\144\160\176\001\003\253!b@\160\176\001\003\254#ofs@\160\176\001\003\255#len@@@@@@A)substring\160\176@\160\160C\144\160\176\001\003\249#str@\160\176\001\003\250#ofs@\160\176\001\003\251#len@@@@@\208@&to_hex\160\176A\160\160A\144\160\176\001\004\r!d@@@@@@ABDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("filename.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002Y\000\000\000\134\000\000\001\237\000\000\001\196\176\208\208\208\208@(basename\160@@@A,check_suffix\160@@\208@.chop_extension\160\176@\160\160A\144\160\176\001\004h$name@@@@@@AB+chop_suffix\160\176@\160\160B\144\160\176\001\004d$name@\160\176\001\004e$suff@@@@@\208@&concat\160\176A\160\160B\144\160\176\001\004`'dirname@\160\176\001\004a(filename@@@@@@AC0current_dir_name\160@@\208\208\208@'dir_sep\160@@@A'dirname\160@@\208\208@1get_temp_dir_name\160\176@\160\160A\144\160\176\001\004\160%param@@@@@@A+is_implicit\160@@@BC+is_relative\160@@\208\208@.open_temp_file\160\176A\160\160D\144\160\176\001\004\141%*opt*@\160\176\001\004\144\004\003@\160\176\001\004\147&prefix@\160\176\001\004\148&suffix@@@@@@A/parent_dir_name\160@@\208\208\208@%quote\160@@@A1set_temp_dir_name\160\176A\160\160A\144\160\176\001\004\128!s@@@@@\208@-temp_dir_name\160@@@AB)temp_file\160\176@\160\160C\144\160\176\001\004\131\004$@\160\176\001\004\134&prefix@\160\176\001\004\135&suffix@@@@@@CDEF\144%match\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("format.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\023v\000\000\005\157\000\000\020\"\000\000\018\231\176\208\208\208\208\208\208\208@(asprintf\160\176@\160\160A\144\160\176\001\006V%param@@@@@\208@'bprintf\160\176@\160\160B\144\160\176\001\006N!b@\160\176\001\006T\004\r@@@@@@AB)close_box\160\176A\160\160A\144\160\176\001\007k%param@@@@@\208@)close_tag\160\176A\160\160A\144\160\176\001\007i\004\n@@@@@@AC*close_tbox\160\176A\160\160A\144\160\176\001\007X\004\018@@@@@\208\208@'eprintf\160\176@\160\160A\144\160\176\001\006;#fmt@@@@@@A-err_formatter\160\176@@@@\208@3flush_str_formatter\160\176@\160\160A\144\160\176\001\006\171\004>@@@@@@ABD-force_newline\160\176@\160\160A\144\160\176\001\007]\0041@@@@@\208\208\208\208@3formatter_of_buffer\160\176@\160\160A\144\160\176\001\005\149!b@@@@@@A8formatter_of_out_channel\160\176@\160\160A\144\160\176\001\005\147\"oc@@@@@\208@'fprintf\160\176@\160\160B\144\160\176\001\0063#ppf@\160\176\001\0064#fmt@@@@@\208@\t\"get_all_formatter_output_functions\160\176A\160\160A\144\160\176\001\007@\004]@@@@@@ABC1get_ellipsis_text\160\176@\160\160A\144\160\176\001\007K\004e@@@@@\208\208@;get_formatter_out_functions\160\176A\160\160A\144\160\176\001\007H\004o@@@@@@A>get_formatter_output_functions\160\176A\160\160A\144\160\176\001\007E\004w@@@@@\208@;get_formatter_tag_functions\160\176A\160\160A\144\160\176\001\007>\004\128@@@@@@ABD*get_margin\160\176@\160\160A\144\160\176\001\007R\004\136@@@@@\208\208@-get_mark_tags\160\176@\160\160A\144\160\176\001\007:\004\146@@@@@@A-get_max_boxes\160\176@\160\160A\144\160\176\001\007N\004\154@@@@@@BEF.get_max_indent\160\176@\160\160A\144\160\176\001\007P\004\162@@@@@\208\208\208\208@.get_print_tags\160\176@\160\160A\144\160\176\001\007<\004\174@@@@@@A(ifprintf\160\176@\160\160B\144\160\176\001\0066#ppf@\160\176\001\0067#fmt@@@@@\208\208@)ikfprintf\160\176@\160\160C\144\160\176\001\006/!k@\160\176\001\0060!x@\160\176\001\006]\004\223@@@@@@A(kfprintf\160\176@\160\160C\144\160\176\001\006)!k@\160\176\001\006*!o@\160\176\001\006a\004\237@@@@@\208\208@'kprintf\160\176@\160\160B\144\160\176\001\006=!k@\160\176\001\006X\004\250@@@@@@A(ksprintf\160\004\011@@BCD.make_formatter\160\176@\160\160B\144\160\176\001\005\143&output@\160\176\001\005\144%flush@@@@@\208\208@(open_box\160\176@\160\160A\144\160\176\001\007l\004\253@@@@@@A)open_hbox\160\176@\160\160A\144\160\176\001\007p\005\001\005@@@@@\208@+open_hovbox\160\176@\160\160A\144\160\176\001\007m\005\001\014@@@@@@ABE*open_hvbox\160\176@\160\160A\144\160\176\001\007n\005\001\022@@@@@\208\208\208\208@(open_tag\160\176A\160\160A\144\160\176\001\007j\005\001\"@@@@@@A)open_tbox\160\176@\160\160A\144\160\176\001\007Y\005\001*@@@@@@B)open_vbox\160\176@\160\160A\144\160\176\001\007o\005\0012@@@@@\208\208@.over_max_boxes\160\176A\160\160A\144\160\176\001\007M\005\001<@@@@@@A,pp_close_box\160\176A\160\160B\144\160\176\001\004\198%state@\160\176\001\006\218\005\001\\@@@@@\208@,pp_close_tag\160\176A\160\160B\144\160\176\001\004\203%state@\160\176\001\006\213\005\001h@@@@@\208@-pp_close_tbox\160\176A\160\160B\144\160\176\001\005\"%state@\160\176\001\006\199\005\001t@@@@@@ABCD0pp_force_newline\160\176@\160\160B\144\160\176\001\005\018%state@\160\176\001\006\204\005\001\127@@@@@\208\208\208\208@\t%pp_get_all_formatter_output_functions\160\176A\160\160B\144\160\176\001\005v%state@\160\176\001\006\181\005\001\142@@@@@@A4pp_get_ellipsis_text\160\176@\160\160B\144\160\176\001\005I%state@\160\176\001\006\188\005\001\153@@@@\144\147\192B@\004\b\150\176\164O\144+pp_ellipsis\160\144\004\014@\176\192)format.ml\001\003\020\001c\190\001c\226\192\004\002\001\003\020\001c\190\001c\243@\208@>pp_get_formatter_out_functions\160\176A\160\160B\144\160\176\001\005h%state@\160\176\001\006\183\005\001\179@@@@@@AB\t!pp_get_formatter_output_functions\160\176A\160\160B\144\160\176\001\005n%state@\160\176\001\006\182\005\001\190@@@@@\208\208@>pp_get_formatter_tag_functions\160\176A\160\160B\144\160\176\001\004\220%state@\160\176\001\006\209\005\001\203@@@@@@A-pp_get_margin\160\176@\160\160B\144\160\176\001\005[%state@\160\176\001\006\186\005\001\214@@@@\144\147\192B@\004\b\150\176\164E\144)pp_margin\160\144\004\014@\176\192\004=\001\003=\001h\172\001h\201\192\004>\001\003=\001h\172\001h\216@@BC0pp_get_mark_tags\160\176@\160\160B\144\160\176\001\004\215%state@\160\176\001\006\211\005\001\238@@@@\144\147\192B@\004\b\150\176\164U\144,pp_mark_tags\160\144\004\014@\176\192\004U\001\002;\001J\244\001K\020\192\004V\001\002;\001J\244\001K&@\208\208\208@0pp_get_max_boxes\160\176@\160\160B\144\160\176\001\005B%state@\160\176\001\006\190\005\002\t@@@@\144\147\192B@\004\b\150\176\164N\144,pp_max_boxes\160\144\004\014@\176\192\004p\001\003\014\001b\241\001c\017\192\004q\001\003\014\001b\241\001c#@@A1pp_get_max_indent\160\176@\160\160B\144\160\176\001\005T%state@\160\176\001\006\187\005\002!@@@@\144\147\192B@\004\b\150\176\164G\144-pp_max_indent\160\144\004\014@\176\192\004\136\001\003*\001e\252\001f\029\192\004\137\001\003*\001e\252\001f0@@B1pp_get_print_tags\160\176@\160\160B\144\160\176\001\004\213%state@\160\176\001\006\212\005\0029@@@@\144\147\192B@\004\b\150\176\164T\144-pp_print_tags\160\144\004\014@\176\192\004\160\001\002:\001J\189\001J\222\192\004\161\001\002:\001J\189\001J\241@\208@+pp_open_box\160\176@\160\160B\144\160\176\001\005\011%state@\160\176\001\005\012&indent@@@@@@ACDEFG,pp_open_hbox\160\176@\160\160B\144\160\176\001\005\004%state@\160\176\001\006\207\005\002^@@@@@\208\208\208\208@.pp_open_hovbox\160\176@\160\160B\144\160\176\001\005\t%state@\160\176\001\005\n&indent@@@@@@A-pp_open_hvbox\160\176@\160\160B\144\160\176\001\005\007%state@\160\176\001\005\b&indent@@@@@\208@+pp_open_tag\160\176A\160\160B\144\160\176\001\004\200%state@\160\176\001\004\201(tag_name@@@@@\208@,pp_open_tbox\160\176@\160\160B\144\160\176\001\005\031%state@\160\176\001\006\200\005\002\147@@@@@@ABC,pp_open_vbox\160\176@\160\160B\144\160\176\001\005\005%state@\160\176\001\005\006&indent@@@@@\208\208@1pp_over_max_boxes\160\176A\160\160B\144\160\176\001\005D%state@\160\176\001\006\189\005\002\172@@@@@@A+pp_print_as\160\176@\160\160C\144\160\176\001\004\237%state@\160\176\001\004\238%isize@\160\176\001\004\239!s@@@@@\208@-pp_print_bool\160\176@\160\160B\144\160\176\001\004\250%state@\160\176\001\004\251!b@@@@@\208@.pp_print_break\160\176A\160\160C\144\160\176\001\005\022%state@\160\176\001\005\023%width@\160\176\001\005\024&offset@@@@@@ABCD-pp_print_char\160\176@\160\160B\144\160\176\001\004\253%state@\160\176\001\004\254!c@@@@@\208\208\208\208@,pp_print_cut\160\176A\160\160B\144\160\176\001\005\029%state@\160\176\001\006\201\005\002\243@@@@@@A.pp_print_float\160\176@\160\160B\144\160\176\001\004\247%state@\160\176\001\004\248!f@@@@@\208@.pp_print_flush\160\176@\160\160B\144\160\176\001\005\016%state@\160\176\001\006\205\005\003\011@@@@@\208@3pp_print_if_newline\160\176@\160\160B\144\160\176\001\005\020%state@\160\176\001\006\203\005\003\023@@@@@@ABC,pp_print_int\160\176@\160\160B\144\160\176\001\004\244%state@\160\176\001\004\245!i@@@@@\208\208\208\208@-pp_print_list\160\176@\160\160D\144\160\176\001\005/%*opt*@\160\176\001\0052$pp_v@\160\176\001\0053#ppf@\160\176\001\006\194%param@@@@@@A0pp_print_newline\160\176@\160\160B\144\160\176\001\005\015%state@\160\176\001\006\206\005\003D@@@@@@B.pp_print_space\160\176A\160\160B\144\160\176\001\005\028%state@\160\176\001\006\202\005\003O@@@@@@C/pp_print_string\160\176@\160\160B\144\160\176\001\004\241%state@\160\176\001\004\242!s@@@@@\208@,pp_print_tab\160\176A\160\160B\144\160\176\001\005*%state@\160\176\001\006\198\005\003g@@@@@@ADE/pp_print_tbreak\160\176A\160\160C\144\160\176\001\005%%state@\160\176\001\005&%width@\160\176\001\005'&offset@@@@@\208\208\208\208@-pp_print_text\160\176A\160\160B\144\160\176\001\0058#ppf@\160\176\001\0059!s@@@@@\208@\t%pp_set_all_formatter_output_functions\160\176A\160\160E\144\160\176\001\005p%state@\160\176\001\005q!f@\160\176\001\005r!g@\160\176\001\005s!h@\160\176\001\005t!i@@@@@@AB4pp_set_ellipsis_text\160\176A\160\160B\144\160\176\001\005G%state@\160\176\001\005H!s@@@@\144\147\192B@\004\t\150\176\181OA\144\005\002\015\160\144\004\014\160\144\004\r@\176\192\005\002\016\001\003\019\001c\132\001c\167\192\005\002\017\001\003\019\001c\132\001c\189@@C<pp_set_formatter_out_channel\160\176A\160\160B\144\160\176\001\005~%state@\160\176\001\005\127\"os@@@@@\208\208\208@>pp_set_formatter_out_functions\160\176A\160\160B\144\160\176\001\005b%state@\160\176\001\006\185\005\003\208@@@@@@A\t!pp_set_formatter_output_functions\160\176A\160\160C\144\160\176\001\005j%state@\160\176\001\005k!f@\160\176\001\005l!g@@@@@\208@>pp_set_formatter_tag_functions\160\176A\160\160B\144\160\176\001\004\222%state@\160\176\001\006\208\005\003\235@@@@@@AB-pp_set_margin\160\176@\160\160B\144\160\176\001\005V%state@\160\176\001\005W!n@@@@@@CD0pp_set_mark_tags\160\176A\160\160B\144\160\176\001\004\210%state@\160\176\001\004\211!b@@@@\144\147\192B@\004\t\150\176\181U@\144\005\002\021\160\144\004\014\160\144\004\r@\176\192\005\002k\001\0029\001J\132\001J\163\192\005\002l\001\0029\001J\132\001J\186@\208\208\208@0pp_set_max_boxes\160\176A\160\160B\144\160\176\001\005?%state@\160\176\001\005@!n@@@@@@A1pp_set_max_indent\160\176@\160\160B\144\160\176\001\005Q%state@\160\176\001\005R!n@@@@@@B1pp_set_print_tags\160\176A\160\160B\144\160\176\001\004\207%state@\160\176\001\004\208!b@@@@\144\147\192B@\004\t\150\176\181T@\144\005\001\255\160\144\004\014\160\144\004\r@\176\192\005\002\160\001\0028\001JI\001Ji\192\005\002\161\001\0028\001JI\001J\129@\208@*pp_set_tab\160\176@\160\160B\144\160\176\001\005,%state@\160\176\001\006\197\005\004R@@@@@\208@+pp_set_tags\160\176A\160\160B\144\160\176\001\004\217%state@\160\176\001\004\218!b@@@@@@ABCEFGH(print_as\160\176@\160\160B\144\160\176\001\007g\005\004R@\160\176\001\007h\005\004T@@@@@\208\208\208@*print_bool\160\176@\160\160A\144\160\176\001\007b\005\004_@@@@@\208@+print_break\160\176A\160\160B\144\160\176\001\007`\005\004h@\160\176\001\007a\005\004j@@@@@@AB*print_char\160\176@\160\160A\144\160\176\001\007c\005\004r@@@@@\208\208@)print_cut\160\176A\160\160A\144\160\176\001\007_\005\004|@@@@@@A+print_float\160\176@\160\160A\144\160\176\001\007d\005\004\132@@@@@\208@+print_flush\160\176@\160\160A\144\160\176\001\007\\\005\004\141@@@@@\208@0print_if_newline\160\176@\160\160A\144\160\176\001\007Z\005\004\150@@@@@@ABCD)print_int\160\176@\160\160A\144\160\176\001\007e\005\004\158@@@@@\208\208\208\208\208@-print_newline\160\176@\160\160A\144\160\176\001\007[\005\004\171@@@@@@A+print_space\160\176A\160\160A\144\160\176\001\007^\005\004\179@@@@@@B,print_string\160\176@\160\160A\144\160\176\001\007f\005\004\187@@@@@\208@)print_tab\160\176A\160\160A\144\160\176\001\007T\005\004\196@@@@@@AC,print_tbreak\160\176A\160\160B\144\160\176\001\007V\005\004\204@\160\176\001\007W\005\004\206@@@@@\208\208\208@&printf\160\176@\160\160A\144\160\176\001\0069#fmt@@@@@\208@\t\"set_all_formatter_output_functions\160\176A\160\160D\144\160\176\001\007A\005\004\227@\160\176\001\007B\005\004\229@\160\176\001\007C\005\004\231@\160\176\001\007D\005\004\233@@@@@@AB1set_ellipsis_text\160\176A\160\160A\144\160\176\001\007L\005\004\241@@@@@@C9set_formatter_out_channel\160\176A\160\160A\144\160\176\001\007J\005\004\249@@@@@\208\208@;set_formatter_out_functions\160\176A\160\160A\144\160\176\001\007I\005\005\003@@@@@@A>set_formatter_output_functions\160\176A\160\160B\144\160\176\001\007F\005\005\011@\160\176\001\007G\005\005\r@@@@@\208@;set_formatter_tag_functions\160\176A\160\160A\144\160\176\001\007?\005\005\022@@@@@@ABDE*set_margin\160\176@\160\160A\144\160\176\001\007S\005\005\030@@@@@\208\208\208@-set_mark_tags\160\176A\160\160A\144\160\176\001\007;\005\005)@@@@@@A-set_max_boxes\160\176A\160\160A\144\160\176\001\007O\005\0051@@@@@@B.set_max_indent\160\176@\160\160A\144\160\176\001\007Q\005\0059@@@@@\208\208@.set_print_tags\160\176A\160\160A\144\160\176\001\007=\005\005C@@@@@@A'set_tab\160\176@\160\160A\144\160\176\001\007U\005\005K@@@@@\208\208@(set_tags\160\176A\160\160A\144\160\176\001\0079\005\005U@@@@@\208@'sprintf\160\176@\160\160A\144\160\176\001\006D#fmt@@@@@@AB-std_formatter\160\176@@@@\208@&stdbuf\160\176A@@@\208@-str_formatter\160\176@@@@@ABCDEFGI\144*blank_line\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("gc.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\173\000\000\000m\000\000\001w\000\000\001`\176\208\208@/allocated_bytes\160\176A\160\160A\144\160\176\001\004+%param@@@@@\208@,create_alarm\160\176@\160\160A\144\160\176\001\004#!f@@@@@\208@,delete_alarm\160\176A\160\160A\144\160\176\001\004&!a@@@@\144\147\192A@\004\006\150\176\181@@@\160\144\004\n\160\145\161@\144%false@\176\192%gc.ml\000d\001\rw\001\r\140\192\004\002\000d\001\rw\001\r\150@@ABC(finalise\160@\144\147\192B@\160\176\001\004)$prim@\160\176\001\004(\004\003@@\150\176\153\2083caml_final_registerBA @\160\144\004\012\160\144\004\011@\176\192&_none_A@\000\255\004\002A\208\208@0finalise_release\160@\144\147\192A@\160\176\001\004'\004\025@@\150\176\153\2082caml_final_releaseAA\004\022@\160\144\004\b@\004\019@A*print_stat\160\176@\160\160A\144\160\176\001\004\020!c@@@@@@BD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("genlex.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\130\000\000\000\031\000\000\000e\000\000\000]\176\208@*make_lexer\160\176A\160\160A\144\160\176\001\004\001(keywords@@\160\160A\144\160\176\001\004v%input@@@@@@A\144'Hashtbl\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("hashtbl.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\137\000\000\001\021\000\000\003\150\000\000\003r\176\208\208\208\208@$Make\160\176A\160\160A\144\160\176\001\005\022!H@@@@@\208@*MakeSeeded\160\176A\160\160A\144\160\176\001\004\191!H@@@@@@AB#add\160\176A\160\160C\144\160\176\001\0049!h@\160\176\001\004:#key@\160\176\001\004;$info@@@@@@C%clear\160\176A\160\160A\144\160\176\001\004\030!h@@@@@\208@$copy\160\176A\160\160A\144\160\176\001\004%!h@@@@@@AD&create\160\176A\160\160B\144\160\176\001\004\023%*opt*@\160\176\001\004\026,initial_size@@@@@\208\208\208\208@$find\160\176@\160\160B\144\160\176\001\004L!h@\160\176\001\004M#key@@@@@@A(find_all\160\176@\160\160B\144\160\176\001\004X!h@\160\176\001\004Y#key@@@@@@B$fold\160\176@\160\160C\144\160\176\001\004y!f@\160\176\001\004z!h@\160\176\001\004{$init@@@@@\208\208@$hash\160\176@\160\160A\144\160\176\001\003\243!x@@@@@\208@*hash_param\160\176@\160\160C\144\160\176\001\003\245\"n1@\160\176\001\003\246\"n2@\160\176\001\003\247!x@@@@@@AB$iter\160\176A\160\160B\144\160\176\001\004p!f@\160\176\001\004q!h@@@@@\208@&length\160\176@\160\160A\144\160\176\001\004'!h@@@@\144\147\192A@\004\006\150\176\164@\144$size\160\144\004\012@\176\192*hashtbl.ml\000T\001\011O\001\011^\192\004\002\000T\001\011O\001\011d@@ACD#mem\160\176A\160\160B\144\160\176\001\004i!h@\160\176\001\004j#key@@@@@\208\208\208@)randomize\160\176A\160\160A\144\160\176\001\005\171%param@@@@@@A&remove\160\176A\160\160B\144\160\176\001\004?!h@\160\176\001\004@#key@@@@@\208@'replace\160\176A\160\160C\144\160\176\001\004_!h@\160\176\001\004`#key@\160\176\001\004a$info@@@@@@AB%reset\160\176A\160\160A\144\160\176\001\004\"!h@@@@@\208\208@+seeded_hash\160\176@\160\160B\144\160\176\001\003\249$seed@\160\176\001\003\250!x@@@@@\208@1seeded_hash_param\160@@@AB%stats\160\176A\160\160A\144\160\176\001\004\142!h@@@@@@CDEF\1442randomized_default\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("int32.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002^\000\000\000\175\000\000\002>\000\000\002,\176\208\208\208@#abs\160\176@\160\160A\144\160\176\001\004\n!n@@@@@\208\208@'compare\160\176@\160\160B\144\160\176\001\004\021!x@\160\176\001\004\022!y@@@@\144\147\192B@\004\t\150\176\153\2082caml_int32_compareB@ @\160\144\004\016\160\144\004\015@\176\192(int32.mlt\001\t+\001\tG\192\004\002t\001\t+\001\t]@@A&lognot\160\176A\160\160A\144\160\176\001\004\014!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\031A\160\144\004\n\160\145\144\148\018_i\000\255\255\255\255@\176\192\004\026k\001\bZ\001\bi\192\004\027k\001\bZ\001\bw@@BC'max_int\160@@\208\208@'min_int\160@@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\144\160\176\001\004\b!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\025A\160\144\004\n\160\145\144\148\018_i\000\000\000\000\001@\176\192\004?g\001\007\231\001\007\244\192\004@g\001\007\231\001\007\252@@A$succ\160\176A\160\160A\144\160\176\001\004\006!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\024A\160\144\004\n\160\145\144\148\018_i\000\000\000\000\001@\176\192\004Xf\001\007\209\001\007\222\192\004Yf\001\007\209\001\007\230@\208\208@)to_string\160\176@\160\160A\144\160\176\001\004\017!n@@@@\144\147\192A@\004\006\150\176\153\2081caml_int32_formatBA @\160\145\144\162\"%d@\160\144\004\018@\176\192\004vn\001\b\187\001\b\205\192\004wn\001\b\187\001\b\218@@A$zero\160@@@BCE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("int64.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002j\000\000\000\175\000\000\002A\000\000\002,\176\208\208\208@#abs\160\176@\160\160A\144\160\176\001\004\012!n@@@@@\208\208@'compare\160\176@\160\160B\144\160\176\001\004\025!x@\160\176\001\004\026!y@@@@\144\147\192B@\004\t\150\176\153\2082caml_int64_compareB@ @\160\144\004\016\160\144\004\015@\176\192(int64.mly\001\n0\001\nL\192\004\002y\001\n0\001\nb@@A&lognot\160\176A\160\160A\144\160\176\001\004\016!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\031B\160\144\004\n\160\145\144\149\018_j\000\255\255\255\255\255\255\255\255@\176\192\004\026m\001\b\212\001\b\227\192\004\027m\001\b\212\001\b\241@@BC'max_int\160@@\208\208@'min_int\160@@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\144\160\176\001\004\n!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\025B\160\144\004\n\160\145\144\149\018_j\000\000\000\000\000\000\000\000\001@\176\192\004?i\001\bQ\001\b^\192\004@i\001\bQ\001\bf@@A$succ\160\176A\160\160A\144\160\176\001\004\b!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\024B\160\144\004\n\160\145\144\149\018_j\000\000\000\000\000\000\000\000\001@\176\192\004Xh\001\b;\001\bH\192\004Yh\001\b;\001\bP@\208\208@)to_string\160\176@\160\160A\144\160\176\001\004\019!n@@@@\144\147\192A@\004\006\150\176\153\2081caml_int64_formatBA @\160\145\144\162\"%d@\160\144\004\018@\176\192\004vp\001\t5\001\tG\192\004wp\001\t5\001\tT@@A$zero\160@@@BCE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("lazy.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\143\000\000\000f\000\000\001b\000\000\001O\176\208\208\208@)Undefined\160\176@@@@@A)force_val\160\176@\160\160A\144\160\176\001\004\000#lzv@@@@@\208@(from_fun\160\176@\160\160A\144\160\176\001\003\246!f@@@@@@AB(from_val\160\176@\160\160A\144\160\176\001\003\249!v@@@@@\208\208@&is_val\160\176A\160\160A\144\160\176\001\003\252!l@@@@\144\147\192A@\004\006\150\176\154A\160\150\176\153\208,caml_obj_tagAA @\160\144\004\017@\176\192'lazy.ml\000I\001\n\031\001\n9\192\004\002\000I\001\n\031\001\nM@\160\150\176\164D\145(lazy_tag\160\150\176\144\176@#ObjA@\176\192&_none_A@\000\255\004\002A@\004\003@\176\004\019\192\004\019\000I\001\n\031\001\n]@@A-lazy_from_fun\160\004A@\208@-lazy_from_val\160\004;@\208@+lazy_is_val\160\0043@@ABCD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("lexing.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\155\000\000\0012\000\000\004\017\000\000\003\225\176\208\208\208@)dummy_pos\160@@\208\208@&engine\160\176@\160\160C\144\160\176\001\004\018#tbl@\160\176\001\004\019%state@\160\176\001\004\020#buf@@@@@@A+flush_input\160\176A\160\160A\144\160\176\001\004S\"lb@@@@@@BC,from_channel\160\176A\160\160A\144\160\176\001\004+\"ic@@@@@\208@-from_function\160\176A\160\160A\144\160\176\001\004)!f@@@@@@AD+from_string\160\176A\160\160A\144\160\176\001\004/!s@@@@@\208\208\208@&lexeme\160\176A\160\160A\144\160\176\001\0042&lexbuf@@@@@@A+lexeme_char\160\176A\160\160B\144\160\176\001\004E&lexbuf@\160\176\001\004F!i@@@@@\208@*lexeme_end\160\176@\160\160A\144\160\176\001\004J&lexbuf@@@@\144\147\192A@\004\006\150\176\164C\144(pos_cnum\160\150\176\164K\144*lex_curr_p\160\144\004\018@\176\192)lexing.ml\001\000\209\001\026\\\001\026t\192\004\002\001\000\209\001\026\\\001\026\133@@\176\004\004\192\004\004\001\000\209\001\026\\\001\026\142@\208@,lexeme_end_p\160\176@\160\160A\144\160\176\001\004N&lexbuf@@@@\144\147\192A@\004\006\150\176\164K\144\004\026\160\144\004\011@\176\192\004\025\001\000\212\001\026\195\001\026\221\192\004\026\001\000\212\001\026\195\001\026\238@@ABC,lexeme_start\160\176@\160\160A\144\160\176\001\004H&lexbuf@@@@\144\147\192A@\004\006\150\176\164C\144\0045\160\150\176\164J\144+lex_start_p\160\144\004\017@\176\192\0044\001\000\208\001\026$\001\026>\192\0045\001\000\208\001\026$\001\026P@@\176\004\003\192\0047\001\000\208\001\026$\001\026Y@\208\208@.lexeme_start_p\160\176@\160\160A\144\160\176\001\004L&lexbuf@@@@\144\147\192A@\004\006\150\176\164J\144\004\026\160\144\004\011@\176\192\004M\001\000\211\001\026\146\001\026\174\192\004N\001\000\211\001\026\146\001\026\192@\208@*new_engine\160\176@\160\160C\144\160\176\001\004\023#tbl@\160\176\001\004\024%state@\160\176\001\004\025#buf@@@@@@AB(new_line\160\176A\160\160A\144\160\176\001\004P&lexbuf@@@@@\208\208@*sub_lexeme\160\176A\160\160C\144\160\176\001\0045&lexbuf@\160\176\001\0046\"i1@\160\176\001\0047\"i2@@@@@@A/sub_lexeme_char\160\176A\160\160B\144\160\176\001\004?&lexbuf@\160\176\001\004@!i@@@@\144\147\192B@\004\t\150\176b\160\150\176\164A\144*lex_buffer\160\144\004\018@\176\192\004\147\001\000\196\001\025\"\001\025K\192\004\148\001\000\196\001\025\"\001\025\\@\160\144\004\020@\176\192\004\152\001\000\196\001\025\"\001\025A\192\004\153\001\000\196\001\025\"\001\025^@\208\208@3sub_lexeme_char_opt\160\176A\160\160B\144\160\176\001\004B&lexbuf@\160\176\001\004C!i@@@@@@A.sub_lexeme_opt\160\176A\160\160C\144\160\176\001\004:&lexbuf@\160\176\001\004;\"i1@\160\176\001\004<\"i2@@@@@@BCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("list.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\006\199\000\000\002&\000\000\007\025\000\000\006\232\176\208\208\208\208\208\208@&append\160\176@\160\160B\144\160\176\001\004\132\"l1@\160\176\001\004\133\"l2@@@@@@A%assoc\160\176@\160\160B\144\160\176\001\004\141!x@\160\176\001\005\154%param@@@@@\208@$assq\160\176@\160\160B\144\160\176\001\004\146!x@\160\176\001\005\152\004\r@@@@@\208@'combine\160\176A\160\160B\144\160\176\001\004\198\"l1@\160\176\001\004\199\"l2@@@@@@ABC&concat\160\176@\160\160A\144\160\176\001\005\188\004\"@@@@@\208@&exists\160\176A\160\160B\144\160\176\001\004q!p@\160\176\001\005\164\004.@@@@@@AD'exists2\160\176A\160\160C\144\160\176\001\004}!p@\160\176\001\004~\"l1@\160\176\001\004\127\"l2@@@@@\208\208\208\208@)fast_sort\160\176@\160\160B\144\160\176\001\004\220#cmp@\160\176\001\004\221!l@@@@@@A&filter\160\176@\160\160A\144\160\176\001\004\177!p@@\160\160A\144\160\176\001\005\194%param@@@@@@B$find\160\176@\160\160B\144\160\176\001\004\173!p@\160\176\001\005\145\004g@@@@@\208@(find_all\160\004\027@@AC'flatten\160\004P@\208@)fold_left\160\176@\160\160C\144\160\176\001\0042!f@\160\176\001\0043$accu@\160\176\001\0044!l@@@@@\208@*fold_left2\160\176@\160\160D\144\160\176\001\004[!f@\160\176\001\004\\$accu@\160\176\001\004]\"l1@\160\176\001\004^\"l2@@@@@@ABDE*fold_right\160\176@\160\160C\144\160\176\001\0048!f@\160\176\001\0049!l@\160\176\001\004:$accu@@@@@\208\208@+fold_right2\160\176@\160\160D\144\160\176\001\004d!f@\160\176\001\004e\"l1@\160\176\001\004f\"l2@\160\176\001\004g$accu@@@@@\208@'for_all\160\176A\160\160B\144\160\176\001\004m!p@\160\176\001\005\165\004\190@@@@@\208@(for_all2\160\176A\160\160C\144\160\176\001\004u!p@\160\176\001\004v\"l1@\160\176\001\004w\"l2@@@@@@ABC\"hd\160\176@\160\160A\144\160\176\001\005\192\004\214@@@@@\208@$iter\160\176@\160\160B\144\160\176\001\004&!f@\160\176\001\005\184\004\226@@@@@\208\208@%iter2\160\176A\160\160C\144\160\176\001\004S!f@\160\176\001\004T\"l1@\160\176\001\004U\"l2@@@@@@A%iteri\160\176@\160\160B\144\160\176\001\004/!f@\160\176\001\0040!l@@@@@@BCDF&length\160\176@\160\160A\144\160\176\001\003\245!l@@@@@\208\208\208@#map\160\176A\160\160B\144\160\176\001\004\017!f@\160\176\001\005\187\005\001\022@@@@@\208@$map2\160\176A\160\160C\144\160\176\001\004>!f@\160\176\001\004?\"l1@\160\176\001\004@\"l2@@@@@@AB$mapi\160\176A\160\160B\144\160\176\001\004\028!f@\160\176\001\004\029!l@@@@@\208\208\208@#mem\160\176A\160\160B\144\160\176\001\004\133!x@\160\176\001\005\157\005\001@@@@@@@A)mem_assoc\160\176A\160\160B\144\160\176\001\004\151!x@\160\176\001\005\150\005\001K@@@@@\208\208@(mem_assq\160\176A\160\160B\144\160\176\001\004\156!x@\160\176\001\005\148\005\001X@@@@@@A$memq\160\176A\160\160B\144\160\176\001\004\137!x@\160\176\001\005\156\005\001c@@@@@\208@%merge\160\176@\160\160C\144\160\176\001\004\205#cmp@\160\176\001\004\206\"l1@\160\176\001\004\207\"l2@@@@@@ABC#nth\160\176@\160\160B\144\160\176\001\003\253!l@\160\176\001\003\254!n@@@@@\208@)partition\160\176@\160\160B\144\160\176\001\004\184!p@\160\176\001\004\185!l@@@@@\208@,remove_assoc\160\176@\160\160B\144\160\176\001\004\161!x@\160\176\001\005\147\005\001\152@@@@@\208@+remove_assq\160\176@\160\160B\144\160\176\001\004\167!x@\160\176\001\005\146\005\001\164@@@@@@ABCDE#rev\160\176@\160\160A\144\160\176\001\004\011!l@@@@@\208\208\208@*rev_append\160\176@\160\160B\144\160\176\001\004\006\"l1@\160\176\001\004\007\"l2@@@@@@A'rev_map\160\176@\160\160B\144\160\176\001\004\031!f@\160\176\001\004 !l@@@@@@B(rev_map2\160\176@\160\160C\144\160\176\001\004G!f@\160\176\001\004H\"l1@\160\176\001\004I\"l2@@@@@\208\208@$sort\160\005\001\152@\208@)sort_uniq\160\176@\160\160B\144\160\176\001\005\020#cmp@\160\176\001\005\021!l@@@@@@AB%split\160\176A\160\160A\144\160\176\001\005\140\005\001\240@@@@@\208\208@+stable_sort\160\005\001\177@@A\"tl\160\176@\160\160A\144\160\176\001\005\191\005\001\252@@@@@@BCDFG@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("listLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\006\157\000\000\002\025\000\000\006\238\000\000\006\190\176\208\208\208\208\208\208@&append\160\176@\160\160B\144\160\176\001\004\132\"l1@\160\176\001\004\133\"l2@@@@@@A%assoc\160\176@\160\160B\144\160\176\001\004\141!x@\160\176\001\005\154%param@@@@@\208@$assq\160\176@\160\160B\144\160\176\001\004\146!x@\160\176\001\005\152\004\r@@@@@\208@'combine\160\176A\160\160B\144\160\176\001\004\198\"l1@\160\176\001\004\199\"l2@@@@@@ABC&concat\160\176@\160\160A\144\160\176\001\005\188\004\"@@@@@\208@&exists\160\176A\160\160B\144\160\176\001\004q!p@\160\176\001\005\164\004.@@@@@@AD'exists2\160\176A\160\160C\144\160\176\001\004}!p@\160\176\001\004~\"l1@\160\176\001\004\127\"l2@@@@@\208\208\208\208@)fast_sort\160\176@\160\160B\144\160\176\001\004\220#cmp@\160\176\001\004\221!l@@@@@@A&filter\160\176@\160\160A\144\160\176\001\004\177!p@@\160\160A\144\160\176\001\005\194%param@@@@@@B$find\160\176@\160\160B\144\160\176\001\004\173!p@\160\176\001\005\145\004g@@@@@\208@(find_all\160\004\027@@AC'flatten\160\004P@\208@)fold_left\160\176@\160\160C\144\160\176\001\0042!f@\160\176\001\0043$accu@\160\176\001\0044!l@@@@@\208@*fold_left2\160\176@\160\160D\144\160\176\001\004[!f@\160\176\001\004\\$accu@\160\176\001\004]\"l1@\160\176\001\004^\"l2@@@@@@ABDE*fold_right\160\176@\160\160C\144\160\176\001\0048!f@\160\176\001\0049!l@\160\176\001\004:$accu@@@@@\208\208@+fold_right2\160\176@\160\160D\144\160\176\001\004d!f@\160\176\001\004e\"l1@\160\176\001\004f\"l2@\160\176\001\004g$accu@@@@@\208@'for_all\160\176A\160\160B\144\160\176\001\004m!p@\160\176\001\005\165\004\190@@@@@\208@(for_all2\160\176A\160\160C\144\160\176\001\004u!p@\160\176\001\004v\"l1@\160\176\001\004w\"l2@@@@@@ABC\"hd\160\176@\160\160A\144\160\176\001\005\192\004\214@@@@@\208@$iter\160\176@\160\160B\144\160\176\001\004&!f@\160\176\001\005\184\004\226@@@@@\208\208@%iter2\160\176A\160\160C\144\160\176\001\004S!f@\160\176\001\004T\"l1@\160\176\001\004U\"l2@@@@@@A%iteri\160\176@\160\160B\144\160\176\001\004/!f@\160\176\001\0040!l@@@@@@BCDF&length\160\176@\160\160A\144\160\176\001\003\245!l@@@@@\208\208\208@#map\160\176A\160\160B\144\160\176\001\004\017!f@\160\176\001\005\187\005\001\022@@@@@\208@$map2\160\176A\160\160C\144\160\176\001\004>!f@\160\176\001\004?\"l1@\160\176\001\004@\"l2@@@@@@AB$mapi\160\176A\160\160B\144\160\176\001\004\028!f@\160\176\001\004\029!l@@@@@\208\208\208@#mem\160\176A\160\160B\144\160\176\001\004\133!x@\160\176\001\005\157\005\001@@@@@@@A)mem_assoc\160\176A\160\160B\144\160\176\001\004\151!x@\160\176\001\005\150\005\001K@@@@@\208\208@(mem_assq\160\176A\160\160B\144\160\176\001\004\156!x@\160\176\001\005\148\005\001X@@@@@@A$memq\160\176A\160\160B\144\160\176\001\004\137!x@\160\176\001\005\156\005\001c@@@@@\208@%merge\160\176@\160\160C\144\160\176\001\004\205#cmp@\160\176\001\004\206\"l1@\160\176\001\004\207\"l2@@@@@@ABC#nth\160\176@\160\160B\144\160\176\001\003\253!l@\160\176\001\003\254!n@@@@@\208@)partition\160\176@\160\160B\144\160\176\001\004\184!p@\160\176\001\004\185!l@@@@@\208@,remove_assoc\160\176@\160\160B\144\160\176\001\004\161!x@\160\176\001\005\147\005\001\152@@@@@\208@+remove_assq\160\176@\160\160B\144\160\176\001\004\167!x@\160\176\001\005\146\005\001\164@@@@@@ABCDE#rev\160\176@\160\160A\144\160\176\001\004\011!l@@@@@\208\208@*rev_append\160\176@\160\160B\144\160\176\001\004\006\"l1@\160\176\001\004\007\"l2@@@@@@A'rev_map\160\176@\160\160B\144\160\176\001\004\031!f@\160\176\001\004 !l@@@@@\208\208@(rev_map2\160\176@\160\160C\144\160\176\001\004G!f@\160\176\001\004H\"l1@\160\176\001\004I\"l2@@@@@\208@$sort\160\005\001\152@@AB%split\160\176A\160\160A\144\160\176\001\005\140\005\001\227@@@@@\208\208@+stable_sort\160\005\001\164@@A\"tl\160\176@\160\160A\144\160\176\001\005\191\005\001\239@@@@@@BCDFG@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("map.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\0002\193\000\000\r\131\000\000-\021\000\000,\199\176\208@$Make\160\176A\160\160A\144\160\176\001\004\014#Ord@@@@\144\147\192A@\160\176\001\005\128&funarg@@\196B\176\001\005\222&height@\147\192A@\160\176\001\005\223%param@@\188\144\004\004\150\176\164D@\160\004\005@\176\192&map.ml}\001\t\001\001\t\t\192\004\002}\001\t\001\001\t\024@\145\144\144@\196B\176\001\005\229&create@\147\192D@\160\176\001\005\230!l@\160\176\001\005\231!x@\160\176\001\005\232!d@\160\176\001\005\233!r@@\196@\176\001\005\234\"hl@\146\192\144\004+\160\144\004\019@\176\192\004 \000@\001\t8\001\tG\192\004!\000@\001\t8\001\tO@A\196@\176\001\005\235\"hr@\146\192\004\011\160\144\004\020@\176\192\004*\000@\001\t8\001\tY\192\004+\000@\001\t8\001\ta@A\150\176\179@\160$NodeA@\160\004\020\160\144\004%\160\144\004$\160\004\015\160\188\150\176\154E\160\144\004&\160\144\004\029@\176\192\004A\000A\001\te\001\t\128\192\004B\000A\001\te\001\t\136@\150\176H\160\004\t\160\145\144\144A@\176\192\004K\000A\001\te\001\t\142\192\004L\000A\001\te\001\t\148@\150\176H\160\004\017\160\145\144\144A@\176\192\004U\000A\001\te\001\t\154\192\004V\000A\001\te\001\t\160@@\176\192\004X\000A\001\te\001\tk\192\004Y\000A\001\te\001\t\162@\196B\176\001\005\236)singleton@\147\192B@\160\176\001\005\237!x@\160\176\001\005\238!d@@\150\176\179@\160\0049A@\160\145\161@\144%Empty\160\144\004\016\160\144\004\015\160\145\161@\144\004\t\160\145\144\144A@\176\192\004{\000C\001\t\164\001\t\188\192\004|\000C\001\t\164\001\t\215@\196B\176\001\005\239#bal@\147\192D@\160\176\001\005\240!l@\160\176\001\005\241!x@\160\176\001\005\242!d@\160\176\001\005\243!r@@\196B\176\001\005\244\"hl@\188\144\004\016\150\176\164D@\160\004\005@\176\192\004\152\000F\001\t\239\001\n\024\192\004\153\000F\001\t\239\001\n'@\145\144\144@\196B\176\001\005\250\"hr@\188\144\004\022\150\176\164D@\160\004\005@\176\192\004\167\000G\001\n0\001\nY\192\004\168\000G\001\n0\001\nh@\145\144\144@\188\150\176\154C\160\144\004#\160\150\176H\160\144\004\025\160\145\144\144B@\176\192\004\188\000H\001\nq\001\n\127\192\004\189\000H\001\nq\001\n\133@@\176\192\004\191\000H\001\nq\001\nz\004\003@\188\004/\196A\176\001\006\001\"lr@\150\176\164C@\160\0046@\176\192\004\201\000K\001\n\207\001\n\217\192\004\202\000K\001\n\207\001\n\240@\196A\176\001\006\002\"ld@\150\176\164B@\160\004@@\004\n\196A\176\001\006\003\"lv@\150\176\164A@\160\004G@\004\017\196A\176\001\006\004\"ll@\150\176\164@@\160\004N@\004\024\188\150\176\154E\160\146\192\004\203\160\144\004\015@\176\192\004\234\000L\001\n\244\001\011\003\192\004\235\000L\001\n\244\001\011\012@A\160\146\192\004\211\160\144\004/@\176\192\004\242\000L\001\n\244\001\011\016\192\004\243\000L\001\n\244\001\011\025@A@\176\004\011\004\002@\146\192\144\004\241\160\004\017\160\144\004(\160\144\0041\160\146\192\004\t\160\004\017\160\144\004}\160\144\004|\160\004e@\176\192\005\001\007\000M\001\011\031\001\011=\192\005\001\b\000M\001\011\031\001\011N@A@\176\192\005\001\n\000M\001\011\031\001\011-\004\003@A\188\004\028\146\192\004\023\160\146\192\004\026\160\004*\160\004\025\160\004\024\160\150\176\164@@\160\004)@\176\192\005\001\026\000Q\001\011\177\001\011\193\192\005\001\027\000Q\001\011\177\001\011\220@@\176\192\005\001\029\000R\001\011\223\001\011\248\192\005\001\030\000R\001\011\223\001\012\r@A\160\150\176\164A@\160\0044@\004\011\160\150\176\164B@\160\0049@\004\016\160\146\192\0045\160\150\176\164C@\160\004A@\004\024\160\0040\160\004/\160\004\147@\176\192\005\0015\000R\001\011\223\001\012\022\192\005\0016\000R\001\011\223\001\012(@A@\176\192\005\0018\000R\001\011\223\001\011\241\004\003@A\150\176C\160\150\176\179@B@\160\150\176\146\176R0Invalid_argumentC@\176\192&_none_A@\000\255\004\002A\160\145\144\162'Map.bal@@\176\192-pervasives.ml_\001\005.\001\005G\192\004\002_\001\005.\001\005[@@\176\192\004\004_\001\005.\001\005B\004\003@\150\176C\160\150\176\004\026\160\150\176\004\025@\004\022\160\145\144\162'Map.bal@@\004\019@\004\015\188\150\176\154C\160\004\175\160\150\176H\160\004\184\160\145\144\144B@\176\192\005\001n\000T\001\0129\001\012P\192\005\001o\000T\001\0129\001\012V@@\176\192\005\001q\000T\001\0129\001\012K\004\003@\188\004\210\196A\176\001\006\011\"rr@\150\176\164C@\160\004\217@\176\192\005\001{\000W\001\012\160\001\012\170\192\005\001|\000W\001\012\160\001\012\193@\196A\176\001\006\012\"rd@\150\176\164B@\160\004\227@\004\n\196A\176\001\006\r\"rv@\150\176\164A@\160\004\234@\004\017\196A\176\001\006\014\"rl@\150\176\164@@\160\004\241@\004\024\188\150\176\154E\160\146\192\005\001}\160\144\004'@\176\192\005\001\156\000X\001\012\197\001\012\212\192\005\001\157\000X\001\012\197\001\012\221@A\160\146\192\005\001\133\160\144\004\023@\176\192\005\001\164\000X\001\012\197\001\012\225\192\005\001\165\000X\001\012\197\001\012\234@A@\176\004\011\004\002@\146\192\004\178\160\146\192\004\181\160\005\001\027\160\004\172\160\004\171\160\004\014@\176\192\005\001\177\000Y\001\012\240\001\r\005\192\005\001\178\000Y\001\012\240\001\r\022@A\160\144\0040\160\144\0049\160\004\030@\176\192\005\001\185\000Y\001\012\240\001\012\254\192\005\001\186\000Y\001\012\240\001\r\031@A\188\004\026\146\192\004\199\160\146\192\004\202\160\005\0010\160\004\193\160\004\192\160\150\176\164@@\160\004'@\176\192\005\001\202\000]\001\r\130\001\r\146\192\005\001\203\000]\001\r\130\001\r\173@@\176\192\005\001\205\000^\001\r\177\001\r\202\192\005\001\206\000^\001\r\177\001\r\220@A\160\150\176\164A@\160\0042@\004\011\160\150\176\164B@\160\0047@\004\016\160\146\192\004\229\160\150\176\164C@\160\004?@\004\024\160\004.\160\004-\160\004J@\176\192\005\001\229\000^\001\r\177\001\r\229\192\005\001\230\000^\001\r\177\001\r\250@A@\176\192\005\001\232\000^\001\r\177\001\r\195\004\003@A\150\176C\160\150\176\004\176\160\150\176\004\175@\004\172\160\145\144\162'Map.bal@@\004\169@\004\165\150\176C\160\150\176\004\189\160\150\176\004\188@\004\185\160\145\144\162'Map.bal@@\004\182@\004\178\150\176\179@\160\005\001\215A@\160\005\001v\160\005\001\007\160\005\001\006\160\005\001j\160\188\150\176\154E\160\005\001`\160\005\001\\@\176\192\005\002\019\000a\001\014\026\001\0147\192\005\002\020\000a\001\014\026\001\014?@\150\176H\160\005\001g\160\145\144\144A@\176\192\005\002\029\000a\001\014\026\001\014E\192\005\002\030\000a\001\014\026\001\014K@\150\176H\160\005\001l\160\145\144\144A@\176\192\005\002'\000a\001\014\026\001\014Q\192\005\002(\000a\001\014\026\001\014W@@\176\192\005\002*\000a\001\014\026\001\014\"\192\005\002+\000a\001\014\026\001\014Y@\196B\176\001\006\021(is_empty@\147\192A@\160\176\001\006\022\005\002;@@\188\144\004\003\145\161@\144%false\145\161A\144$true\165\160\160\176\001\006\023#add@\147\192C@\160\176\001\006\024!x@\160\176\001\006\025$data@\160\176\001\006\026\005\002T@@\188\144\004\003\196A\176\001\006\028!r@\150\176\164C@\160\004\b@\176\192\005\002V\000j\001\015\006\001\015\014\192\005\002W\000j\001\015\006\001\015!@\196A\176\001\006\029!d@\150\176\164B@\160\004\018@\004\n\196A\176\001\006\030!v@\150\176\164A@\160\004\025@\004\017\196A\176\001\006\031!l@\150\176\164@@\160\004 @\004\024\196@\176\001\006 !c@\146\192\150\176\164@\145'compare\160\144\005\002\138@\176\192&_none_A@\000\255\004\002A\160\144\0049\160\144\004 @\176\192\005\002\129\000k\001\015%\001\0157\192\005\002\130\000k\001\015%\001\015F@@\188\150\176\154@\160\144\004\027\160\145\144\144@@\176\192\005\002\142\000l\001\015J\001\015W\192\005\002\143\000l\001\015J\001\015\\@\150\176\179@\160\005\002dA@\160\144\004/\160\004\026\160\144\004Q\160\144\004L\160\150\176\164D@\160\004S@\004K@\176\192\005\002\161\000m\001\015b\001\015n\192\005\002\162\000m\001\015b\001\015\132@\188\150\176\154B\160\004 \160\145\144\144@@\176\192\005\002\173\000n\001\015\133\001\015\151\192\005\002\174\000n\001\015\133\001\015\156@\146\192\144\005\0024\160\146\192\144\004v\160\004:\160\004 \160\004$@\176\192\005\002\186\000o\001\015\162\001\015\178\192\005\002\187\000o\001\015\162\001\015\192@A\160\004>\160\144\004f\160\004&@\176\192\005\002\193\000o\001\015\162\001\015\174\192\005\002\194\000o\001\015\162\001\015\198@A\146\192\004\020\160\0041\160\004H\160\004\n\160\146\192\004\022\160\004O\160\0045\160\0044@\176\192\005\002\207\000q\001\015\214\001\015\236\192\005\002\208\000q\001\015\214\001\015\250@A@\176\192\005\002\210\000q\001\015\214\001\015\226\004\003@A\150\176\179@\160\005\002\167A@\160\145\161@\144\005\002n\160\004_\160\004E\160\145\161@\144\005\002t\160\145\144\144A@\176\192\005\002\230\000i\001\014\221\001\014\231\192\005\002\231\000i\001\014\221\001\015\005@@\165\160\160\176\001\006!$find@\147\192B@\160\176\001\006\"!x@\160\176\001\006#\005\002\252@@\188\144\004\003\196@\176\001\006)!c@\146\192\150\176\164@\145'compare\160\004\137@\004\136\160\144\004\019\160\150\176\164A@\160\004\019@\176\192\005\003\t\000v\001\016E\001\016M\192\005\003\n\000v\001\016E\001\016`@@\176\192\005\003\012\000w\001\016d\001\016v\192\005\003\r\000w\001\016d\001\016\133@@\188\150\176\154@\160\144\004\029\160\145\144\144@@\176\192\005\003\025\000x\001\016\137\001\016\150\192\005\003\026\000x\001\016\137\001\016\155@\150\176\164B@\160\004*@\004\023\146\192\144\0047\160\004!\160\188\150\176\154B\160\004\022\160\145\144\144@@\176\192\005\003.\000y\001\016\163\001\016\189\192\005\003/\000y\001\016\163\001\016\194@\150\176\164@@\160\004?@\004,\150\176\164C@\160\004C@\0040@\176\192\005\0039\000y\001\016\163\001\016\178\192\005\003:\000y\001\016\163\001\016\209@A\150\176C\160\150\176\146\176T)Not_foundC@\004\202@\176\192\005\003D\000u\001\016+\001\0165\192\005\003E\000u\001\016+\001\016D@@\165\160\160\176\001\006*#mem@\147\192B@\160\176\001\006+!x@\160\176\001\006,\005\003Z@@\188\144\004\003\196@\176\001\0062!c@\146\192\150\176\164@\145'compare\160\004\231@\004\230\160\144\004\019\160\150\176\164A@\160\004\019@\176\192\005\003g\000~\001\017\017\001\017\025\192\005\003h\000~\001\017\017\001\017,@@\176\192\005\003j\000\127\001\0170\001\017B\192\005\003k\000\127\001\0170\001\017Q@@\150\176E\160\150\176\154@\160\144\004\031\160\145\144\144@@\176\192\005\003y\001\000\128\001\017U\001\017_\192\005\003z\001\000\128\001\017U\001\017d@\160\146\192\144\0046\160\004 \160\188\150\176\154B\160\004\019\160\145\144\144@@\176\192\005\003\139\001\000\128\001\017U\001\017r\192\005\003\140\001\000\128\001\017U\001\017w@\150\176\164@@\160\004>@\004+\150\176\164C@\160\004B@\004/@\176\192\005\003\150\001\000\128\001\017U\001\017h\192\005\003\151\001\000\128\001\017U\001\017\134@A@\176\004 \004\002@\145\161@\144\005\001d@\165\160\160\176\001\0063+min_binding@\147\192A@\160\176\001\0064\005\003\173@@\188\144\004\003\196A\176\001\0065!l@\150\176\164@@\160\004\b@\176\192\005\003\175\001\000\133\001\017\246\001\017\254\192\005\003\176\001\000\133\001\017\246\001\018\017@\188\144\004\011\146\192\144\004\023\160\004\005@\176\192\005\003\184\001\000\133\001\017\246\001\018\021\192\005\003\185\001\000\133\001\017\246\001\018\"@A\150\176\179@@@\160\150\176\164A@\160\004\028@\004\020\160\150\176\164B@\160\004!@\004\025@\176\192\005\003\200\001\000\132\001\017\204\001\017\239\192\005\003\201\001\000\132\001\017\204\001\017\245@\150\176C\160\150\176\146\004\143@\005\001W@\176\192\005\003\209\001\000\131\001\017\171\001\017\188\192\005\003\210\001\000\131\001\017\171\001\017\203@@\165\160\160\176\001\006>+max_binding@\147\192A@\160\176\001\006?\005\003\228@@\188\144\004\003\196A\176\001\006@!r@\150\176\164C@\160\004\b@\176\192\005\003\230\001\000\138\001\018\146\001\018\154\192\005\003\231\001\000\138\001\018\146\001\018\173@\188\144\004\011\146\192\144\004\023\160\004\005@\176\192\005\003\239\001\000\138\001\018\146\001\018\177\192\005\003\240\001\000\138\001\018\146\001\018\190@A\150\176\179@@@\160\150\176\164A@\160\004\028@\004\020\160\150\176\164B@\160\004!@\004\025@\176\192\005\003\255\001\000\137\001\018h\001\018\139\192\005\004\000\001\000\137\001\018h\001\018\145@\150\176C\160\150\176\146\004\198@\005\001\142@\176\192\005\004\b\001\000\136\001\018G\001\018X\192\005\004\t\001\000\136\001\018G\001\018g@@\165\160\160\176\001\006I2remove_min_binding@\147\192A@\160\176\001\006J\005\004\027@@\188\144\004\003\196A\176\001\006K!l@\150\176\164@@\160\004\b@\176\192\005\004\029\001\000\143\001\019A\001\019I\192\005\004\030\001\000\143\001\019A\001\019\\@\188\144\004\011\146\192\005\001r\160\146\192\144\004\026\160\004\b@\176\192\005\004)\001\000\143\001\019A\001\019d\192\005\004*\001\000\143\001\019A\001\019z@A\160\150\176\164A@\160\004\028@\004\020\160\150\176\164B@\160\004!@\004\025\160\150\176\164C@\160\004&@\004\030@\176\192\005\004;\001\000\143\001\019A\001\019`\192\005\004<\001\000\143\001\019A\001\019\128@A\150\176\164C@\160\004-@\004%\150\176C\160\150\176\005\003\b\160\150\176\005\003\007@\005\003\004\160\145\144\1622Map.remove_min_elt@@\005\003\001@\005\002\253@\196B\176\001\006T%merge@\147\192B@\160\176\001\006U\"t1@\160\176\001\006V\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006Y%match@\146\192\004\173\160\144\004\r@\176\192\005\004e\001\000\150\001\019\244\001\020\011\192\005\004f\001\000\150\001\019\244\001\020\025@A\146\192\005\001\184\160\144\004\023\160\150\176\164@@\160\144\004\019@\005\001\248\160\150\176\164A@\160\004\006@\005\001\253\160\146\192\004S\160\004\023@\176\192\005\004{\001\000\151\001\020\029\001\0202\192\005\004|\001\000\151\001\020\029\001\020I@A@\176\192\005\004~\001\000\151\001\020\029\001\020'\004\003@A\144\004,\144\004*\165\160\160\176\001\006\\&remove@\147\192B@\160\176\001\006]!x@\160\176\001\006^\005\004\149@@\188\144\004\003\196A\176\001\006`!r@\150\176\164C@\160\004\b@\176\192\005\004\151\001\000\156\001\020\140\001\020\148\192\005\004\152\001\000\156\001\020\140\001\020\167@\196A\176\001\006a!d@\150\176\164B@\160\004\018@\004\n\196A\176\001\006b!v@\150\176\164A@\160\004\025@\004\017\196A\176\001\006c!l@\150\176\164@@\160\004 @\004\024\196@\176\001\006d!c@\146\192\150\176\164@\145'compare\160\005\002A@\005\002@\160\144\0042\160\144\004\028@\176\192\005\004\190\001\000\157\001\020\171\001\020\189\192\005\004\191\001\000\157\001\020\171\001\020\204@@\188\150\176\154@\160\144\004\023\160\145\144\144@@\176\192\005\004\203\001\000\158\001\020\208\001\020\221\192\005\004\204\001\000\158\001\020\208\001\020\226@\146\192\144\004\129\160\144\004*\160\144\004D@\176\192\005\004\213\001\000\159\001\020\232\001\020\244\192\005\004\214\001\000\159\001\020\232\001\020\253@A\188\150\176\154B\160\004\023\160\145\144\144@@\176\192\005\004\225\001\000\160\001\020\254\001\021\016\192\005\004\226\001\000\160\001\020\254\001\021\021@\146\192\005\0024\160\146\192\144\004e\160\0040\160\004\026@\176\192\005\004\236\001\000\161\001\021\027\001\021+\192\005\004\237\001\000\161\001\021\027\001\0217@A\160\0043\160\144\004W\160\004\031@\176\192\005\004\243\001\000\161\001\021\027\001\021'\192\005\004\244\001\000\161\001\021\027\001\021=@A\146\192\005\002F\160\004'\160\004=\160\004\n\160\146\192\004\021\160\004D\160\004,@\176\192\005\005\000\001\000\163\001\021M\001\021c\192\005\005\001\001\000\163\001\021M\001\021o@A@\176\192\005\005\003\001\000\163\001\021M\001\021Y\004\003@A\145\161@\144\005\004\154@\165\160\160\176\001\006e$iter@\147\192B@\160\176\001\006f!f@\160\176\001\006g\005\005\027@@\188\144\004\003\173\146\192\144\004\015\160\144\004\012\160\150\176\164@@\160\004\012@\176\192\005\005!\001\000\167\001\021\163\001\021\171\192\005\005\"\001\000\167\001\021\163\001\021\190@@\176\192\005\005$\001\000\168\001\021\194\001\021\204\192\005\005%\001\000\168\001\021\194\001\021\212@A\173\146\192\004\015\160\150\176\164A@\160\004\026@\004\014\160\150\176\164B@\160\004\031@\004\019@\176\192\005\0054\001\000\168\001\021\194\001\021\214\192\005\0055\001\000\168\001\021\194\001\021\219@@\146\192\004 \160\004\031\160\150\176\164C@\160\004*@\004\030@\176\192\005\005?\001\000\168\001\021\194\001\021\221\192\005\005@\001\000\168\001\021\194\001\021\229@A\145\161@\144\"()@\165\160\160\176\001\006m#map@\147\192B@\160\176\001\006n!f@\160\176\001\006o\005\005Y@@\188\144\004\003\196@\176\001\006u\"l'@\146\192\144\004\017\160\144\004\014\160\150\176\164@@\160\004\014@\176\192\005\005a\001\000\173\001\022%\001\022-\192\005\005b\001\000\173\001\022%\001\022@@@\176\192\005\005d\001\000\174\001\022D\001\022W\192\005\005e\001\000\174\001\022D\001\022^@A\196@\176\001\006v\"d'@\146\192\004\017\160\150\176\164B@\160\004\030@\004\016@\176\192\005\005q\001\000\175\001\022b\001\022u\192\005\005r\001\000\175\001\022b\001\022x@@\196@\176\001\006w\"r'@\146\192\004 \160\004\031\160\150\176\164C@\160\004,@\004\030@\176\192\005\005\127\001\000\176\001\022|\001\022\143\192\005\005\128\001\000\176\001\022|\001\022\150@A\150\176\179@\160\005\005UA@\160\144\0043\160\150\176\164A@\160\004:@\004,\160\144\004'\160\144\004\028\160\150\176\164D@\160\004C@\0045@\176\192\005\005\150\001\000\177\001\022\154\001\022\164\192\005\005\151\001\000\177\001\022\154\001\022\186@\145\161@\144\005\005.@\165\160\160\176\001\006x$mapi@\147\192B@\160\176\001\006y!f@\160\176\001\006z\005\005\175@@\188\144\004\003\196A\176\001\006~!v@\150\176\164A@\160\004\b@\176\192\005\005\177\001\000\182\001\022\251\001\023\003\192\005\005\178\001\000\182\001\022\251\001\023\022@\196@\176\001\006\128\"l'@\146\192\144\004\027\160\144\004\024\160\150\176\164@@\160\004\024@\004\016@\176\192\005\005\193\001\000\183\001\023\026\001\023-\192\005\005\194\001\000\183\001\023\026\001\0235@A\196@\176\001\006\129\"d'@\146\192\004\014\160\144\004 \160\150\176\164B@\160\004'@\004\031@\176\192\005\005\208\001\000\184\001\0239\001\023L\192\005\005\209\001\000\184\001\0239\001\023Q@@\196@\176\001\006\130\"r'@\146\192\004\031\160\004\030\160\150\176\164C@\160\0045@\004-@\176\192\005\005\222\001\000\185\001\023U\001\023h\192\005\005\223\001\000\185\001\023U\001\023p@A\150\176\179@\160\005\005\180A@\160\144\0042\160\004\030\160\144\004%\160\144\004\024\160\150\176\164D@\160\004H@\004@@\176\192\005\005\241\001\000\186\001\023t\001\023~\192\005\005\242\001\000\186\001\023t\001\023\148@\145\161@\144\005\005\137@\165\160\160\176\001\006\131$fold@\147\192C@\160\176\001\006\132!f@\160\176\001\006\133!m@\160\176\001\006\134$accu@@\188\144\004\007\146\192\144\004\018\160\144\004\015\160\150\176\164C@\160\004\011@\176\192\005\006\019\001\000\191\001\023\219\001\023\227\192\005\006\020\001\000\191\001\023\219\001\023\246@\160\146\192\004\012\160\150\176\164A@\160\004\022@\004\011\160\150\176\164B@\160\004\027@\004\016\160\146\192\004\027\160\004\026\160\150\176\164@@\160\004$@\004\025\160\144\004)@\176\192\005\006.\001\000\192\001\023\250\001\024\020\192\005\006/\001\000\192\001\023\250\001\024#@A@\176\192\005\0061\001\000\192\001\023\250\001\024\r\192\005\0062\001\000\192\001\023\250\001\024$@@@\176\192\005\0064\001\000\192\001\023\250\001\024\004\004\003@A\004\t@\165\160\160\176\001\006\140'for_all@\147\192B@\160\176\001\006\141!p@\160\176\001\006\142\005\006I@@\188\144\004\003\150\176D\160\146\192\144\004\012\160\150\176\164A@\160\004\012@\176\192\005\006O\001\000\196\001\024]\001\024e\192\005\006P\001\000\196\001\024]\001\024x@\160\150\176\164B@\160\004\020@\004\b@\176\192\005\006W\001\000\196\001\024]\001\024|\192\005\006X\001\000\196\001\024]\001\024\129@@\160\150\176D\160\146\192\144\004(\160\004\025\160\150\176\164@@\160\004$@\004\024@\176\192\005\006g\001\000\196\001\024]\001\024\133\192\005\006h\001\000\196\001\024]\001\024\144@A\160\146\192\004\r\160\004%\160\150\176\164C@\160\0040@\004$@\176\192\005\006s\001\000\196\001\024]\001\024\148\192\005\006t\001\000\196\001\024]\001\024\159@A@\176\004\015\004\002@@\176\004 \004\003@\145\161A\144\005\004>@\165\160\160\176\001\006\148&exists@\147\192B@\160\176\001\006\149!p@\160\176\001\006\150\005\006\142@@\188\144\004\003\150\176E\160\146\192\144\004\012\160\150\176\164A@\160\004\012@\176\192\005\006\148\001\000\200\001\024\216\001\024\224\192\005\006\149\001\000\200\001\024\216\001\024\243@\160\150\176\164B@\160\004\020@\004\b@\176\192\005\006\156\001\000\200\001\024\216\001\024\247\192\005\006\157\001\000\200\001\024\216\001\024\252@@\160\150\176E\160\146\192\144\004(\160\004\025\160\150\176\164@@\160\004$@\004\024@\176\192\005\006\172\001\000\200\001\024\216\001\025\000\192\005\006\173\001\000\200\001\024\216\001\025\n@A\160\146\192\004\r\160\004%\160\150\176\164C@\160\0040@\004$@\176\192\005\006\184\001\000\200\001\024\216\001\025\014\192\005\006\185\001\000\200\001\024\216\001\025\024@A@\176\004\015\004\002@@\176\004 \004\003@\145\161@\144\005\004\135@\165\160\160\176\001\006\156/add_min_binding@\147\192C@\160\176\001\006\157!k@\160\176\001\006\158!v@\160\176\001\006\159\005\006\214@@\188\144\004\003\146\192\005\004!\160\146\192\144\004\020\160\144\004\017\160\144\004\016\160\150\176\164@@\160\004\016@\176\192\005\006\224\001\000\212\001\026\167\001\026\175\192\005\006\225\001\000\212\001\026\167\001\026\195@@\176\192\005\006\227\001\000\213\001\026\199\001\026\211\192\005\006\228\001\000\213\001\026\199\001\026\234@A\160\150\176\164A@\160\004\027@\004\011\160\150\176\164B@\160\004 @\004\016\160\150\176\164C@\160\004%@\004\021@\176\192\005\006\245\001\000\213\001\026\199\001\026\207\192\005\006\246\001\000\213\001\026\199\001\026\240@A\146\192\144\005\006\159\160\004$\160\004#@\176\192\005\006\253\001\000\211\001\026\136\001\026\153\192\005\006\254\001\000\211\001\026\136\001\026\166@A@\165\160\160\176\001\006\165/add_max_binding@\147\192C@\160\176\001\006\166!k@\160\176\001\006\167!v@\160\176\001\006\168\005\007\022@@\188\144\004\003\146\192\005\004a\160\150\176\164@@\160\004\b@\176\192\005\007\024\001\000\217\001\027<\001\027D\192\005\007\025\001\000\217\001\027<\001\027X@\160\150\176\164A@\160\004\016@\004\b\160\150\176\164B@\160\004\021@\004\r\160\146\192\144\004&\160\144\004#\160\144\004\"\160\150\176\164C@\160\004\"@\004\026@\176\192\005\0072\001\000\218\001\027\\\001\027n\192\005\0073\001\000\218\001\027\\\001\027\133@A@\176\192\005\0075\001\000\218\001\027\\\001\027d\004\003@A\146\192\004?\160\004\016\160\004\015@\176\192\005\007;\001\000\216\001\027\029\001\027.\192\005\007<\001\000\216\001\027\029\001\027;@A@\165\160\160\176\001\006\174$join@\147\192D@\160\176\001\006\175!l@\160\176\001\006\176!v@\160\176\001\006\177!d@\160\176\001\006\178!r@@\188\144\004\r\188\144\004\006\196A\176\001\006\181\"rh@\150\176\164D@\160\004\b@\176\192\005\007\\\001\000\227\001\028|\001\028\159\192\005\007]\001\000\227\001\028|\001\028\183@\196A\176\001\006\186\"lh@\150\176\164D@\160\004\020@\176\192\005\007f\001\000\227\001\028|\001\028\133\192\005\007g\001\000\227\001\028|\001\028\157@\188\150\176\154C\160\144\004\015\160\150\176H\160\144\004\030\160\145\144\144B@\176\192\005\007x\001\000\228\001\028\188\001\028\206\192\005\007y\001\000\228\001\028\188\001\028\212@@\176\192\005\007{\001\000\228\001\028\188\001\028\201\004\003@\146\192\005\004\205\160\150\176\164@@\160\0042@\004\030\160\150\176\164A@\160\0047@\004#\160\150\176\164B@\160\004<@\004(\160\146\192\144\004Q\160\150\176\164C@\160\004E@\0041\160\144\004P\160\144\004O\160\144\004N@\176\192\005\007\157\001\000\228\001\028\188\001\028\231\192\005\007\158\001\000\228\001\028\188\001\028\246@A@\176\192\005\007\160\001\000\228\001\028\188\001\028\218\004\003@A\188\150\176\154C\160\0044\160\150\176H\160\004=\160\145\144\144B@\176\192\005\007\175\001\000\229\001\028\252\001\029\014\192\005\007\176\001\000\229\001\028\252\001\029\020@@\176\192\005\007\178\001\000\229\001\028\252\001\029\t\004\003@\146\192\005\005\004\160\146\192\004(\160\144\004u\160\004$\160\004#\160\150\176\164@@\160\004n@\004f@\176\192\005\007\194\001\000\229\001\028\252\001\029\030\192\005\007\195\001\000\229\001\028\252\001\029-@A\160\150\176\164A@\160\004v@\004n\160\150\176\164B@\160\004{@\004s\160\150\176\164C@\160\004\128@\004x@\176\192\005\007\212\001\000\229\001\028\252\001\029\026\192\005\007\213\001\000\229\001\028\252\001\0296@A\146\192\005\006\225\160\004 \160\004C\160\004B\160\004A@\176\192\005\007\221\001\000\230\001\029<\001\029F\192\005\007\222\001\000\230\001\029<\001\029T@A\146\192\004\186\160\004K\160\004J\160\004+@\176\192\005\007\229\001\000\226\001\028P\001\028f\192\005\007\230\001\000\226\001\028P\001\028{@A\146\192\005\001\020\160\004S\160\004R\160\004Q@\176\192\005\007\237\001\000\225\001\028$\001\028:\192\005\007\238\001\000\225\001\028$\001\028O@A@\196B\176\001\006\191&concat@\147\192B@\160\176\001\006\192\"t1@\160\176\001\006\193\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006\196\005\003\161@\146\192\005\004M\160\144\004\012@\176\192\005\b\005\001\000\241\001\030_\001\030v\192\005\b\006\001\000\241\001\030_\001\030\132@A\146\192\004y\160\144\004\022\160\150\176\164@@\160\144\004\018@\005\005\152\160\150\176\164A@\160\004\006@\005\005\157\160\146\192\005\003\243\160\004\023@\176\192\005\b\027\001\000\242\001\030\136\001\030\158\192\005\b\028\001\000\242\001\030\136\001\030\181@A@\176\192\005\b\030\001\000\242\001\030\136\001\030\146\004\003@A\144\004+\144\004)\196B\176\001\006\199.concat_or_join@\147\192D@\160\176\001\006\200\"t1@\160\176\001\006\201!v@\160\176\001\006\202!d@\160\176\001\006\203\"t2@@\188\144\004\007\146\192\004\166\160\144\004\017\160\144\004\016\160\150\176\164@@\160\004\012@\176\192\005\b@\001\000\246\001\030\237\001\030\245\192\005\bA\001\000\246\001\030\237\001\030\251@\160\144\004\020@\176\192\005\bE\001\000\246\001\030\237\001\030\255\192\005\bF\001\000\246\001\030\237\001\031\r@A\146\192\144\004Z\160\004\020\160\004\t@\176\192\005\bM\001\000\247\001\031\014\001\031\030\192\005\bN\001\000\247\001\031\014\001\031*@A\165\160\160\176\001\006\205%split@\147\192B@\160\176\001\006\206!x@\160\176\001\006\207\005\bc@@\188\144\004\003\196A\176\001\006\209!r@\150\176\164C@\160\004\b@\176\192\005\be\001\000\252\001\031{\001\031\131\192\005\bf\001\000\252\001\031{\001\031\150@\196A\176\001\006\210!d@\150\176\164B@\160\004\018@\004\n\196A\176\001\006\211!v@\150\176\164A@\160\004\025@\004\017\196A\176\001\006\212!l@\150\176\164@@\160\004 @\004\024\196@\176\001\006\213!c@\146\192\150\176\164@\145'compare\160\005\006\015@\005\006\014\160\144\0042\160\144\004\028@\176\192\005\b\140\001\000\253\001\031\154\001\031\172\192\005\b\141\001\000\253\001\031\154\001\031\187@@\188\150\176\154@\160\144\004\023\160\145\144\144@@\176\192\005\b\153\001\000\254\001\031\191\001\031\204\192\005\b\154\001\000\254\001\031\191\001\031\209@\150\176\179@@@\160\144\004*\160\150\176\179@\160$SomeA@\160\144\004@@\176\192\005\b\169\001\000\254\001\031\191\001\031\219\192\005\b\170\001\000\254\001\031\191\001\031\225@\160\144\004O@\176\192\005\b\174\001\000\254\001\031\191\001\031\215\192\005\b\175\001\000\254\001\031\191\001\031\229@\188\150\176\154B\160\004\"\160\145\144\144@@\176\192\005\b\186\001\000\255\001\031\230\001\031\248\192\005\b\187\001\000\255\001\031\230\001\031\253@\196@\176\001\006\214\005\004_@\146\192\144\004o\160\004:\160\004$@\176\192\005\b\196\001\001\000\001 \003\001 $\192\005\b\197\001\001\000\001 \003\001 -@A\150\176\179@@@\160\150\176\164@@\160\144\004\018@\005\006V\160\150\176\164A@\160\004\006@\005\006[\160\146\192\005\001G\160\150\176\164B@\160\004\014@\005\006c\160\004S\160\0047\160\0043@\176\192\005\b\224\001\001\000\001 \003\001 <\192\005\b\225\001\001\000\001 \003\001 I@A@\176\192\005\b\227\001\001\000\001 \003\001 1\192\005\b\228\001\001\000\001 \003\001 J@\196@\176\001\006\218\005\004\136@\146\192\004)\160\004b\160\004?@\176\192\005\b\236\001\001\002\001 Z\001 {\192\005\b\237\001\001\002\001 Z\001 \132@A\150\176\179@@@\160\146\192\005\001d\160\004V\160\004l\160\004P\160\150\176\164@@\160\144\004\023@\005\006\132@\176\192\005\b\254\001\001\002\001 Z\001 \137\192\005\b\255\001\001\002\001 Z\001 \150@A\160\150\176\164A@\160\004\t@\005\006\140\160\150\176\164B@\160\004\014@\005\006\145@\176\192\005\t\011\001\001\002\001 Z\001 \136\192\005\t\012\001\001\002\001 Z\001 \161@\145\178@@\160\161@\144\005\b\165\160\161@\144$None\160\161@\144\005\b\172@@\165\160\160\176\001\006\222%merge@\147\192C@\160\176\001\006\223!f@\160\176\001\006\224\"s1@\160\176\001\006\225\"s2@@\186\188\144\004\b\196A\176\001\006\231\"v1@\150\176\164A@\160\004\b@\176\192\005\t4\001\001\007\001 \249\001!\002\192\005\t5\001\001\007\001 \249\001!\027@\188\150\176\154E\160\150\176\164D@\160\004\020@\004\012\160\146\192\005\t&\160\144\004\029@\176\192\005\tE\001\001\007\001 \249\001!+\192\005\tF\001\001\007\001 \249\001!4@A@\176\192\005\tH\001\001\007\001 \249\001!%\004\003@\196@\176\001\006\233\005\004\236@\146\192\004\141\160\144\004\"\160\004\r@\176\192\005\tQ\001\001\b\001!8\001!U\192\005\tR\001\001\b\001!8\001!`@A\146\192\144\005\0014\160\146\192\144\004>\160\144\004;\160\150\176\164@@\160\0046@\004.\160\150\176\164@@\160\144\004\029@\005\006\238@\176\192\005\th\001\001\t\001!d\001!}\192\005\ti\001\001\t\001!d\001!\140@A\160\004\029\160\146\192\004\019\160\004!\160\150\176\179@\160\004\207A@\160\150\176\164B@\160\004N@\004F@\176\192\005\tz\001\001\t\001!d\001!\150\192\005\t{\001\001\t\001!d\001!\159@\160\150\176\164A@\160\004\027@\005\007\b@\176\192\005\t\130\001\001\t\001!d\001!\144\192\005\t\131\001\001\t\001!d\001!\163@@\160\146\192\004.\160\004-\160\150\176\164C@\160\004b@\004Z\160\150\176\164B@\160\004,@\005\007\025@\176\192\005\t\147\001\001\t\001!d\001!\164\192\005\t\148\001\001\t\001!d\001!\179@A@\176\192\005\t\150\001\001\t\001!d\001!n\004\003@A\169T@\188\144\004s\169T@\145\161@\144\005\t1\160T@\188\004\007\196A\176\001\006\240\"v2@\150\176\164A@\160\004\014@\176\192\005\t\168\001\001\n\001!\180\001!\192\192\005\t\169\001\001\n\001!\180\001!\217@\196@\176\001\006\242\005\005M@\146\192\004\238\160\144\004\015\160\144\004\142@\176\192\005\t\179\001\001\011\001!\222\001!\251\192\005\t\180\001\001\011\001!\222\001\"\006@A\146\192\004b\160\146\192\004a\160\004`\160\150\176\164@@\160\144\004\022@\005\007H\160\150\176\164@@\160\004-@\004\031@\176\192\005\t\199\001\001\012\001\"\n\001\"#\192\005\t\200\001\001\012\001\"\n\001\"2@A\160\004\027\160\146\192\004r\160\004\031\160\150\176\164A@\160\004\019@\005\007Z\160\150\176\179@\160\005\0013A@\160\150\176\164B@\160\004D@\0046@\176\192\005\t\222\001\001\012\001\"\n\001\"?\192\005\t\223\001\001\012\001\"\n\001\"H@@\176\192\005\t\225\001\001\012\001\"\n\001\"6\192\005\t\226\001\001\012\001\"\n\001\"I@@\160\146\192\004\141\160\004\140\160\150\176\164B@\160\004,@\005\007s\160\150\176\164C@\160\004X@\004J@\176\192\005\t\242\001\001\012\001\"\n\001\"J\192\005\t\243\001\001\012\001\"\n\001\"Y@A@\176\192\005\t\245\001\001\012\001\"\n\001\"\020\004\003@A\150\176C\160\150\176\179@B@\160\150\176\146\176Z.Assert_failureC@\005\007\137\160\145\178@B\160\144\162\005\n\007@\160\144\144\001\001\014\160\144\144J@@\176\192\005\n\015\001\001\014\001\"g\001\"q\192\005\n\016\001\001\014\001\"g\001\"}@@\004\003@\165\160\160\176\001\006\246&filter@\147\192B@\160\176\001\006\247!p@\160\176\001\006\248\005\n%@@\188\144\004\003\196A\176\001\006\251!d@\150\176\164B@\160\004\b@\176\192\005\n'\001\001\018\001\"\182\001\"\190\192\005\n(\001\001\018\001\"\182\001\"\209@\196A\176\001\006\252!v@\150\176\164A@\160\004\018@\004\n\196@\176\001\006\254\"l'@\146\192\144\004\"\160\144\004\031\160\150\176\164@@\160\004\031@\004\023@\176\192\005\n>\001\001\020\001#\018\001#%\192\005\n?\001\001\020\001#\018\001#/@A\196@\176\001\006\255#pvd@\146\192\004\014\160\144\004\029\160\144\004)@\176\192\005\nJ\001\001\021\001#3\001#G\192\005\nK\001\001\021\001#3\001#L@@\196@\176\001\007\000\"r'@\146\192\004\028\160\004\027\160\150\176\164C@\160\0049@\0041@\176\192\005\nX\001\001\022\001#P\001#c\192\005\nY\001\001\022\001#P\001#m@A\188\144\004\027\146\192\005\002\206\160\144\004/\160\004\027\160\004\026\160\144\004\023@\176\192\005\ne\001\001\023\001#q\001#\135\192\005\nf\001\001\023\001#q\001#\149@A\146\192\005\002 \160\004\011\160\004\b@\176\192\005\nl\001\001\023\001#q\001#\155\192\005\nm\001\001\023\001#q\001#\167@A\145\161@\144\005\n\004@\165\160\160\176\001\007\001)partition@\147\192B@\160\176\001\007\002!p@\160\176\001\007\003\005\n\133@@\188\144\004\003\196A\176\001\007\006!d@\150\176\164B@\160\004\b@\176\192\005\n\135\001\001\027\001#\236\001#\244\192\005\n\136\001\001\027\001#\236\001$\007@\196A\176\001\007\007!v@\150\176\164A@\160\004\018@\004\n\196@\176\001\007\t\005\0063@\146\192\144\004!\160\144\004\030\160\150\176\164@@\160\004\030@\004\022@\176\192\005\n\157\001\001\029\001$H\001$a\192\005\n\158\001\001\029\001$H\001$n@A\196A\176\001\007\n\"lf@\150\176\164A@\160\144\004\022@\005\b.\196A\176\001\007\011\"lt@\150\176\164@@\160\004\b@\005\b5\196@\176\001\007\012#pvd@\146\192\004\029\160\144\004+\160\144\0047@\176\192\005\n\184\001\001\030\001$r\001$\134\192\005\n\185\001\001\030\001$r\001$\139@@\196@\176\001\007\r\005\006]@\146\192\004*\160\004)\160\150\176\164C@\160\004F@\004>@\176\192\005\n\197\001\001\031\001$\143\001$\168\192\005\n\198\001\001\031\001$\143\001$\181@A\196A\176\001\007\014\"rf@\150\176\164A@\160\144\004\020@\005\bV\196A\176\001\007\015\"rt@\150\176\164@@\160\004\b@\005\b]\188\144\004)\150\176\179@@@\160\146\192\005\003N\160\144\0048\160\004-\160\004,\160\144\004\020@\176\192\005\n\229\001\001!\001$\202\001$\218\192\005\n\230\001\001!\001$\202\001$\232@A\160\146\192\005\002\161\160\144\004L\160\144\004&@\176\192\005\n\239\001\001!\001$\202\001$\234\192\005\n\240\001\001!\001$\202\001$\246@A@\176\192\005\n\242\001\001!\001$\202\001$\217\192\005\n\243\001\001!\001$\202\001$\247@\150\176\179@@@\160\146\192\005\002\177\160\004\028\160\004\025@\176\192\005\n\253\001\001\"\001$\248\001%\b\192\005\n\254\001\001\"\001$\248\001%\020@A\160\146\192\005\003r\160\004\024\160\004P\160\004O\160\004\025@\176\192\005\011\007\001\001\"\001$\248\001%\022\192\005\011\b\001\001\"\001$\248\001%$@A@\176\192\005\011\n\001\001\"\001$\248\001%\007\192\005\011\011\001\001\"\001$\248\001%%@\145\178@@\160\161@\144\005\n\164\160\161@\144\005\n\167@@\165\160\160\176\001\007\016)cons_enum@\147\192B@\160\176\001\007\017!m@\160\176\001\007\018!e@@\188\144\004\007\146\192\144\004\015\160\150\176\164@@\160\004\t@\176\192\005\011,\001\001)\001%\179\001%\187\192\005\011-\001\001)\001%\179\001%\206@\160\150\176\179@\160$MoreA@\160\150\176\164A@\160\004\023@\004\014\160\150\176\164B@\160\004\028@\004\019\160\150\176\164C@\160\004!@\004\024\160\144\004&@\176\192\005\011F\001\001)\001%\179\001%\222\192\005\011G\001\001)\001%\179\001%\240@@\176\192\005\011I\001\001)\001%\179\001%\210\004\003@A\004\006@\196B\176\001\007\024'compare@\147\192C@\160\176\001\007\025#cmp@\160\176\001\007\026\"m1@\160\176\001\007\027\"m2@@\165\160\160\176\001\007\028+compare_aux@\147\192B@\160\176\001\007\029\"e1@\160\176\001\007\030\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\007)!c@\146\192\150\176\164@\145'compare\160\005\b\252@\005\b\251\160\150\176\164@@\160\004\019@\176\192\005\011z\001\0011\001&\154\001&\165\192\005\011{\001\0011\001&\154\001&\185@\160\150\176\164@@\160\004\025@\176\192\005\011\130\001\0011\001&\154\001&\187\192\005\011\131\001\0011\001&\154\001&\207@@\176\192\005\011\133\001\0012\001&\212\001&\232\192\005\011\134\001\0012\001&\212\001&\249@@\188\150\176\154A\160\144\004#\160\145\144\144@@\176\192\005\011\146\001\0013\001&\253\001'\012\192\005\011\147\001\0013\001&\253\001'\018@\004\b\196@\176\001\007*!c@\146\192\144\004J\160\150\176\164A@\160\0049@\004&\160\150\176\164A@\160\004<@\004#@\176\192\005\011\165\001\0014\001'\031\001'3\192\005\011\166\001\0014\001'\031\001'<@@\188\150\176\154A\160\144\004\024\160\145\144\144@@\176\192\005\011\178\001\0015\001'@\001'O\192\005\011\179\001\0015\001'@\001'U@\004\b\146\192\144\004\\\160\146\192\004\149\160\150\176\164B@\160\004Y@\004F\160\150\176\164C@\160\004^@\004K@\176\192\005\011\197\001\0016\001'b\001'z\192\005\011\198\001\0016\001'b\001'\139@A\160\146\192\004\165\160\150\176\164B@\160\004g@\004N\160\150\176\164C@\160\004l@\004S@\176\192\005\011\213\001\0016\001'b\001'\140\192\005\011\214\001\0016\001'b\001'\157@A@\176\192\005\011\216\001\0016\001'b\001'n\004\003@A\145\144\144A\188\004u\145\144\144\000\255\145\144\144@@\146\192\004/\160\146\192\004\195\160\144\004\151\160\145\161@\144#End@\176\192\005\011\240\001\0017\001'\158\001'\179\192\005\011\241\001\0017\001'\158\001'\197@A\160\146\192\004\208\160\144\004\161\160\145\161@\144\004\r@\176\192\005\011\252\001\0017\001'\158\001'\198\192\005\011\253\001\0017\001'\158\001'\216@A@\176\192\005\011\255\001\0017\001'\158\001'\167\004\003@A\196B\176\001\007+%equal@\147\192C@\160\176\001\007,#cmp@\160\176\001\007-\"m1@\160\176\001\007.\"m2@@\165\160\160\176\001\007/)equal_aux@\147\192B@\160\176\001\0070\"e1@\160\176\001\0071\"e2@@\188\144\004\007\188\144\004\006\150\176D\160\150\176\154@\160\146\192\150\176\164@\145'compare\160\005\t\182@\005\t\181\160\150\176\164@@\160\004\023@\176\192\005\0124\001\001?\001(\136\001(\147\192\005\0125\001\001?\001(\136\001(\167@\160\150\176\164@@\160\004\029@\176\192\005\012<\001\001?\001(\136\001(\169\192\005\012=\001\001?\001(\136\001(\189@@\176\192\005\012?\001\001@\001(\194\001(\206\192\005\012@\001\001@\001(\194\001(\223@@\160\145\144\144@@\176\004\007\192\005\012F\001\001@\001(\194\001(\227@\160\150\176D\160\146\192\144\004H\160\150\176\164A@\160\0047@\004 \160\150\176\164A@\160\004:@\004\029@\176\192\005\012Y\001\001@\001(\194\001(\231\192\005\012Z\001\001@\001(\194\001(\240@@\160\146\192\144\004N\160\146\192\005\001=\160\150\176\164B@\160\004K@\0044\160\150\176\164C@\160\004P@\0049@\176\192\005\012m\001\001A\001(\244\001)\n\192\005\012n\001\001A\001(\244\001)\027@A\160\146\192\005\001M\160\150\176\164B@\160\004Y@\004<\160\150\176\164C@\160\004^@\004A@\176\192\005\012}\001\001A\001(\244\001)\028\192\005\012~\001\001A\001(\244\001)-@A@\176\192\005\012\128\001\001A\001(\244\001)\000\004\003@A@\176\004)\004\004@@\176\004D\004\005@\145\161@\144\005\nN\188\004i\145\161@\144\005\nR\145\161A\144\005\nQ@\146\192\0041\160\146\192\005\001m\160\144\004\139\160\145\161@\144\004\170@\176\192\005\012\153\001\001B\001).\001)A\192\005\012\154\001\001B\001).\001)S@A\160\146\192\005\001y\160\144\004\148\160\145\161@\144\004\182@\176\192\005\012\165\001\001B\001).\001)T\192\005\012\166\001\001B\001).\001)f@A@\176\192\005\012\168\001\001B\001).\001)7\004\003@A\165\160\160\176\001\007<(cardinal@\147\192A@\160\176\001\007=\005\012\186@@\188\144\004\003\150\176H\160\150\176H\160\146\192\144\004\017\160\150\176\164@@\160\004\015@\176\192\005\012\195\001\001F\001)\155\001)\163\192\005\012\196\001\001F\001)\155\001)\182@@\176\192\005\012\198\001\001F\001)\155\001)\186\192\005\012\199\001\001F\001)\155\001)\196@A\160\145\144\144A@\176\004\007\192\005\012\205\001\001F\001)\155\001)\200@\160\146\192\004\021\160\150\176\164C@\160\004#@\004\020@\176\192\005\012\215\001\001F\001)\155\001)\203\192\005\012\216\001\001F\001)\155\001)\213@A@\176\004\020\004\002@\145\144\144@@\165\160\160\176\001\007C,bindings_aux@\147\192B@\160\176\001\007D$accu@\160\176\001\007E\005\012\241@@\188\144\004\003\146\192\144\004\014\160\150\176\179@\160\"::A@\160\150\176\179@@@\160\150\176\164A@\160\004\019@\176\192\005\012\254\001\001J\001*\022\001*\030\192\005\012\255\001\001J\001*\022\001*1@\160\150\176\164B@\160\004\027@\004\b@\176\192\005\r\006\001\001J\001*\022\001*C\192\005\r\007\001\001J\001*\022\001*I@\160\146\192\004\030\160\144\004(\160\150\176\164C@\160\004(@\004\021@\176\192\005\r\019\001\001J\001*\022\001*M\192\005\r\020\001\001J\001*\022\001*`@A@\176\192\005\r\022\001\001J\001*\022\001*B\192\005\r\023\001\001J\001*\022\001*a@\160\150\176\164@@\160\0043@\004 @\176\192\005\r\030\001\001J\001*\022\001*5\192\005\r\031\001\001J\001*\022\001*c@A\004\020@\196B\176\001\007K(bindings@\147\192A@\160\176\001\007L!s@@\146\192\004=\160\145\161@\144\"[]\160\144\004\011@\176\192\005\r2\001\001M\001*z\001*\128\192\005\r3\001\001M\001*z\001*\145@A\150\176\179@B@\160\145\161@\144\005\012\206\160\144\005\011\016\160\005\t\192\160\005\n\138\160\005\006G\160\005\bY\160\005\003\233\160\144\005\001\249\160\144\005\001E\160\005\b/\160\005\007>\160\005\006\234\160\005\006\166\160\005\003\022\160\005\002\184\160\004\145\160\144\004.\160\005\t\155\160\005\te\160\144\005\t\180\160\005\004\148\160\005\n4\160\005\007\254\160\005\007\159@\005\n\222@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("marshal.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\255\000\000\000\133\000\000\001\197\000\000\001\172\176\208\208\208\208@)data_size\160\176@\160\160B\144\160\176\001\004\003$buff@\160\176\001\004\004#ofs@@@@@@A*from_bytes\160\176@\160\160B\144\160\176\001\004\t$buff@\160\176\001\004\n#ofs@@@@@@B,from_channel\160@\144\147\192A@\160\176\001\004\015$prim@@\150\176\153\2080caml_input_valueAA @\160\144\004\n@\176\192&_none_A@\000\255\004\002A\208@+from_string\160\176@\160\160B\144\160\176\001\004\r$buff@\160\176\001\004\014#ofs@@@@@\208@+header_size\160@@@ABC)to_buffer\160\176@\160\160E\144\160\176\001\003\249$buff@\160\176\001\003\250#ofs@\160\176\001\003\251#len@\160\176\001\003\252!v@\160\176\001\003\253%flags@@@@@\208@*to_channel\160@\144\147\192C@\160\176\001\004\018\0049@\160\176\001\004\017\004;@\160\176\001\004\016\004=@@\150\176\153\2081caml_output_valueCA\004<@\160\144\004\012\160\144\004\012\160\144\004\012@\004?\208@*total_size\160\176A\160\160B\144\160\176\001\004\006$buff@\160\176\001\004\007#ofs@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("moreLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000k\000\000\000\024\000\000\000Q\000\000\000K\176\208@'Hashtbl\160@@\208@#Map\160@@\208@#Set\160@@@ABC\144'Hashtbl\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("nativeint.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002|\000\000\000\179\000\000\002Q\000\000\002;\176\208\208\208@#abs\160\176@\160\160A\144\160\176\001\004\n!n@@@@@\208\208@'compare\160\176@\160\160B\144\160\176\001\004\022!x@\160\176\001\004\023!y@@@@\144\147\192B@\004\t\150\176\153\2086caml_nativeint_compareB@ @\160\144\004\016\160\144\004\015@\176\192,nativeint.mlu\001\n)\001\nE\192\004\002u\001\n)\001\n[@@A&lognot\160\176A\160\160A\144\160\176\001\004\015!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\031@\160\144\004\n\160\145\144\150\018_n\000\001\255\255\255\255@\176\192\004\026l\001\tE\001\tT\192\004\027l\001\tE\001\tb@@BC'max_int\160\176A@@@\208\208@'min_int\160\004\005@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\144\160\176\001\004\b!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\025@\160\144\004\n\160\145\144\150\018_n\000\001\000\000\000\001@\176\192\004@g\001\b\169\001\b\182\192\004Ag\001\b\169\001\b\190@\208@$size\160@@@AB$succ\160\176A\160\160A\144\160\176\001\004\006!n@@@@\144\147\192A@\004\006\150\176\b\000\000\004\024@\160\144\004\n\160\145\144\150\018_n\000\001\000\000\000\001@\176\192\004\\f\001\b\147\001\b\160\192\004]f\001\b\147\001\b\168@\208\208@)to_string\160\176@\160\160A\144\160\176\001\004\018!n@@@@\144\147\192A@\004\006\150\176\153\2085caml_nativeint_formatBA @\160\145\144\162\"%d@\160\144\004\018@\176\192\004zo\001\t\174\001\t\192\192\004{o\001\t\174\001\t\205@@A$zero\160@@@BCE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003j\000\000\000\194\000\000\002\200\000\000\002\153\176\208\208\208\208@,abstract_tag\160@@@A+closure_tag\160@@\208\208@*custom_tag\160@@@A0double_array_tag\160@@@BC,double_field\160\176A\160\160B\144\160\176\001\003\252!x@\160\176\001\003\253!i@@@@\144\147\192B@\004\t\150\176\b\000\000\004\018C\160\144\004\r\160\144\004\012@\176\192&obj.ml\\\001\005\130\001\005\153\192\004\002\\\001\005\130\001\005\186@\208\208@*double_tag\160@@\208@,extension_id\160\176A\160\160A\144\160\176\001\004%!x@@@@@@AB.extension_name\160\176A\160\160A\144\160\176\001\004\"!x@@@@@\208\208@.extension_slot\160\176@\160\160A\144\160\176\001\004(!x@@@@@@A)final_tag\160@@@BCD\t\"first_non_constant_constructor_tag\160@@\208\208\208\208@+forward_tag\160@@@A)infix_tag\160@@\208@'int_tag\160@@@AB\t!last_non_constant_constructor_tag\160@@@C(lazy_tag\160@@\208\208\208\208@'marshal\160\176@\160\160A\144\160\176\001\004\007#obj@@@@\144\147\192A@\004\006\150\176\153\208;caml_output_value_to_stringBA @\160\144\004\r\160\145\161@\144\"[]@\176\192\004Vd\001\006\239\001\006\241\192\004Wd\001\006\239\001\007\b@@A+no_scan_tag\160@@@B*object_tag\160@@\208@/out_of_heap_tag\160@@@AC0set_double_field\160\176A\160\160C\144\160\176\001\003\255!x@\160\176\001\004\000!i@\160\176\001\004\001!v@@@@\144\147\192C@\004\012\150\176\b\000\000\004\019C\160\144\004\016\160\144\004\015\160\144\004\014@\176\192\004{]\001\005\187\001\005\216\192\004|]\001\005\187\001\005\251@\208@*string_tag\160@@\208@-unaligned_tag\160@@\208@)unmarshal\160\176A\160\160B\144\160\176\001\004\t#str@\160\176\001\004\n#pos@@@@@@ABCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("oo.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\152\000\000\000$\000\000\000|\000\000\000t\176\208@$copy\160\176@\160\160A\144\160\176\001\003\242!o@@@@@\208@*new_method\160\176@\160\160A\144\160\176\001\004\012!s@@@@@\208@3public_method_label\160\004\n@@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("parsing.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\193\000\000\000\185\000\000\002\131\000\000\002^\176\208\208\208\208@+Parse_error\160\176@@@@\208@&YYexit\160\004\004@@AB,clear_parser\160\176A\160\160A\144\160\176\001\004g%param@@@@@\208@4is_current_lookahead\160\176@\160\160A\144\160\176\001\004Y#tok@@@@@\208@+parse_error\160\176A\160\160A\144\160\176\001\004[#msg@@@@\144\147\192A@\004\006\145\161@\144\"()@ABC(peek_val\160\176A\160\160B\144\160\176\001\004F#env@\160\176\001\004G!n@@@@@\208@'rhs_end\160\176@\160\160A\144\160\176\001\004W!n@@@@@\208@+rhs_end_pos\160\176A\160\160A\144\160\176\001\004Q!n@@@@@@ABD)rhs_start\160\176@\160\160A\144\160\176\001\004U!n@@@@@\208\208@-rhs_start_pos\160\176A\160\160A\144\160\176\001\004O!n@@@@@\208@)set_trace\160@\144\147\192A@\160\176\001\004\\$prim@@\150\176\153\2085caml_set_parser_traceAA @\160\144\004\n@\176\192&_none_A@\000\255\004\002A@AB*symbol_end\160\176@\160\160A\144\160\176\001\004]\004l@@@@@\208\208@.symbol_end_pos\160\176A\160\160A\144\160\176\001\004_\004v@@@@@@A,symbol_start\160\176@\160\160A\144\160\176\001\004^\004~@@@@@\208@0symbol_start_pos\160\176@\160\160A\144\160\176\001\004`\004\135@@@@@\208@'yyparse\160\176@\160\160D\144\160\176\001\0040&tables@\160\176\001\0041%start@\160\176\001\0042%lexer@\160\176\001\0043&lexbuf@@@@@@ABCDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("pervasives.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\016\169\000\000\004`\000\000\015&\000\000\014n\176\208\208\208\208\208\208@!@\160\176@\160\160B\144\160\176\001\004\132\"l1@\160\176\001\004\133\"l2@@@@@@A$Exit\160\176@@@@\208\208@)LargeFile\160@@@A!^\160\176A\160\160B\144\160\176\001\004_\"s1@\160\176\001\004`\"s2@@@@@\208@\"^^\160\176A\160\160B\144\160\176\001\005]%param@\160\176\001\005^%param@@@@@@ABC#abs\160\176@\160\160A\144\160\176\001\004\026!x@@@@@\208\208\208@'at_exit\160\176A\160\160A\144\160\176\001\0056!f@@@@@@A.bool_of_string\160\176A\160\160A\144\160\176\001\005q\004\030@@@@@@B+char_of_int\160\176@\160\160A\144\160\176\001\004g!n@@@@@\208\208@(close_in\160@\144\147\192A@\160\176\001\005E$prim@@\150\176\153\2085caml_ml_close_channelAA @\160\144\004\n@\176\192&_none_A@\000\255\004\002A\208@.close_in_noerr\160\176@\160\160A\144\160\176\001\005\000\"ic@@@@@@AB)close_out\160\176@\160\160A\144\160\176\001\004\198\"oc@@@@\144\147\192A@\004\006\173\150\176\153\208-caml_ml_flushAA\004\"@\160\144\004\r@\176\192-pervasives.ml\001\001E\001-H\001-[\192\004\002\001\001E\001-H\001-c@\150\176\153\2085caml_ml_close_channelAA\004-@\160\144\004\024@\176\192\004\011\001\001E\001-H\001-e\192\004\012\001\001E\001-H\001-y@\208@/close_out_noerr\160\176@\160\160A\144\160\176\001\004\200\"oc@@@@@\208@*do_at_exit\160\176@\160\160A\144\160\176\001\005[\004{@@@@@@ABCDE-epsilon_float\160@@\208\208\208\208@$exit\160\176@\160\160A\144\160\176\001\005:'retcode@@@@@@A(failwith\160\176A\160\160A\144\160\176\001\003\238!s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\004i\160\144\004\019@\176\192\004J^\001\005\012\001\005\"\192\004K^\001\005\012\001\005-@@\176\192\004M^\001\005\012\001\005\029\004\003@@B%flush\160@\144\147\192A@\160\176\001\005Z\004\128@@\150\176\153\004]\160\144\004\006@\004|\208@)flush_all\160\176@\160\160A\144\160\176\001\005k\004\190@@@@@\208@1in_channel_length\160@\144\147\192A@\160\176\001\005F\004\150@@\150\176\153\2084caml_ml_channel_sizeAA\004\149@\160\144\004\b@\004\148@ABC(infinity\160@@\208\208@%input\160\176@\160\160D\144\160\176\001\004\213\"ic@\160\176\001\004\214!s@\160\176\001\004\215#ofs@\160\176\001\004\216#len@@@@@\208\208@0input_binary_int\160@\144\147\192A@\160\176\001\005K\004\188@@\150\176\153\2081caml_ml_input_intAA\004\187@\160\144\004\b@\004\186@A*input_byte\160@\144\147\192A@\160\176\001\005L\004\202@@\150\176\153\2082caml_ml_input_charAA\004\201@\160\144\004\b@\004\200@BC*input_char\160@\144\147\192A@\160\176\001\005M\004\216@@\150\176\153\2082caml_ml_input_charAA\004\215@\160\144\004\b@\004\214\208@*input_line\160\176A\160\160A\144\160\176\001\004\234$chan@@@@@\208@+input_value\160@\144\147\192A@\160\176\001\005J\004\241@@\150\176\153\2080caml_input_valueAA\004\240@\160\144\004\b@\004\239@ABDEF+invalid_arg\160\176A\160\160A\144\160\176\001\003\240!s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176R0Invalid_argumentC@\005\001\007\160\144\004\019@\176\192\004\232_\001\005.\001\005G\192\004\233_\001\005.\001\005[@@\176\192\004\235_\001\005.\001\005B\004\003@\208\208\208@$lnot\160\176A\160\160A\144\160\176\001\004\031!x@@@@\144\147\192A@\004\006\150\176O\160\144\004\t\160\145\144\144\000\255@\176\192\005\001\004\000^\001\r\"\001\r/\192\005\001\005\000^\001\r\"\001\r:@@A#max\160\176@\160\160B\144\160\176\001\004\007!x@\160\176\001\004\b!y@@@@@\208\208@)max_float\160@@@A'max_int\160@@@BC#min\160\176@\160\160B\144\160\176\001\004\004!x@\160\176\001\004\005!y@@@@@\208\208@)min_float\160@@@A'min_int\160\176A@@@\208@#nan\160@@@ABDG,neg_infinity\160@@\208\208\208\208\208\208@'open_in\160\176@\160\160A\144\160\176\001\004\207$name@@@@@\208@+open_in_bin\160\176@\160\160A\144\160\176\001\004\209$name@@@@@\208@+open_in_gen\160\176@\160\160C\144\160\176\001\004\203$mode@\160\176\001\004\204$perm@\160\176\001\004\205$name@@@@@@ABC(open_out\160\176@\160\160A\144\160\176\001\004\159$name@@@@@\208@,open_out_bin\160\176@\160\160A\144\160\176\001\004\161$name@@@@@@AD,open_out_gen\160\176@\160\160C\144\160\176\001\004\155$mode@\160\176\001\004\156$perm@\160\176\001\004\157$name@@@@@\208\208\208@2out_channel_length\160@\144\147\192A@\160\176\001\005P\005\001\176@@\150\176\153\2084caml_ml_channel_sizeAA\005\001\175@\160\144\004\b@\005\001\174@A&output\160\176@\160\160D\144\160\176\001\004\178\"oc@\160\176\001\004\179!s@\160\176\001\004\180#ofs@\160\176\001\004\181#len@@@@@\208@1output_binary_int\160@\144\147\192B@\160\176\001\005U\005\001\209@\160\176\001\005T\005\001\211@@\150\176\153\2082caml_ml_output_intBA\005\001\210@\160\144\004\n\160\144\004\n@\005\001\211@AB+output_byte\160@\144\147\192B@\160\176\001\005W\005\001\227@\160\176\001\005V\005\001\229@@\150\176\153\2083caml_ml_output_charBA\005\001\228@\160\144\004\n\160\144\004\n@\005\001\229\208@,output_bytes\160\176@\160\160B\144\160\176\001\004\172\"oc@\160\176\001\004\173!s@@@@@@ACE+output_char\160@\144\147\192B@\160\176\001\005Y\005\002\002@\160\176\001\005X\005\002\004@@\150\176\153\2083caml_ml_output_charBA\005\002\003@\160\144\004\n\160\144\004\n@\005\002\004\208\208@-output_string\160\176@\160\160B\144\160\176\001\004\175\"oc@\160\176\001\004\176!s@@@@@@A0output_substring\160\176@\160\160D\144\160\176\001\004\183\"oc@\160\176\001\004\184!s@\160\176\001\004\185#ofs@\160\176\001\004\186#len@@@@@\208\208@,output_value\160\176@\160\160B\144\160\176\001\004\191$chan@\160\176\001\004\192!v@@@@\144\147\192B@\004\t\150\176\153\2081caml_output_valueCA\005\002=@\160\144\004\015\160\144\004\014\160\145\161@\144\"[]@\176\192\005\002\"\001\001?\001+\253\001,\023\192\005\002#\001\001?\001+\253\001,3@\208@&pos_in\160@\144\147\192A@\160\176\001\005G\005\002W@@\150\176\153\208.caml_ml_pos_inAA\005\002V@\160\144\004\b@\005\002U@AB'pos_out\160@\144\147\192A@\160\176\001\005Q\005\002e@@\150\176\153\208/caml_ml_pos_outAA\005\002d@\160\144\004\b@\005\002c\208@+prerr_bytes\160\176@\160\160A\144\160\176\001\005\020!s@@@@@@ACDF*prerr_char\160\176@\160\160A\144\160\176\001\005\016!c@@@@@\208\208\208@-prerr_endline\160\176@\160\160A\144\160\176\001\005\026!s@@@@@@A+prerr_float\160\176@\160\160A\144\160\176\001\005\024!f@@@@@@B)prerr_int\160\176@\160\160A\144\160\176\001\005\022!i@@@@@\208\208\208@-prerr_newline\160\176@\160\160A\144\160\176\001\005c\005\002\216@@@@@@A,prerr_string\160\176@\160\160A\144\160\176\001\005\018!s@@@@@\208@+print_bytes\160\176@\160\160A\144\160\176\001\005\007!s@@@@@@AB*print_char\160\176@\160\160A\144\160\176\001\005\003!c@@@@@\208\208@-print_endline\160\176@\160\160A\144\160\176\001\005\r!s@@@@@@A+print_float\160\176@\160\160A\144\160\176\001\005\011!f@@@@@@BCDG)print_int\160\176@\160\160A\144\160\176\001\005\t!i@@@@@\208\208\208\208@-print_newline\160\176@\160\160A\144\160\176\001\005d\005\003\029@@@@@@A,print_string\160\176@\160\160A\144\160\176\001\005\005!s@@@@@\208\208@*read_float\160\176@\160\160A\144\160\176\001\005`\005\0030@@@@@@A(read_int\160\176@\160\160A\144\160\176\001\005a\005\0038@@@@@@BC)read_line\160\176A\160\160A\144\160\176\001\005b\005\003@@@@@@\208\208@,really_input\160\176@\160\160D\144\160\176\001\004\224\"ic@\160\176\001\004\225!s@\160\176\001\004\226#ofs@\160\176\001\004\227#len@@@@@\208@3really_input_string\160\176A\160\160B\144\160\176\001\004\229\"ic@\160\176\001\004\230#len@@@@@\208@'seek_in\160@\144\147\192B@\160\176\001\005I\005\0039@\160\176\001\005H\005\003;@@\150\176\153\208/caml_ml_seek_inBA\005\003:@\160\144\004\n\160\144\004\n@\005\003;@ABC(seek_out\160@\144\147\192B@\160\176\001\005S\005\003K@\160\176\001\005R\005\003M@@\150\176\153\2080caml_ml_seek_outBA\005\003L@\160\144\004\n\160\144\004\n@\005\003M\208\208\208@2set_binary_mode_in\160@\144\147\192B@\160\176\001\005D\005\003`@\160\176\001\005C\005\003b@@\150\176\153\2087caml_ml_set_binary_modeBA\005\003a@\160\144\004\n\160\144\004\n@\005\003b@A3set_binary_mode_out\160@\144\147\192B@\160\176\001\005O\005\003r@\160\176\001\005N\005\003t@@\150\176\153\2087caml_ml_set_binary_modeBA\005\003s@\160\144\004\n\160\144\004\n@\005\003t@B&stderr\160\005\003\204@@CDE%stdin\160\005\003\206@\208\208@&stdout\160\005\003\210@@A.string_of_bool\160\176A\160\160A\144\160\176\001\004u!b@@@@\144\147\192A@\004\006\188\144\004\007\145\144\162$true@\145\144\162%false@\208\208@/string_of_float\160\176@\160\160A\144\160\176\001\004\129!f@@@@@\208@0string_of_format\160\176@\160\160A\144\160\176\001\005_\005\003\223@@@@\144\147\192A@\004\005\150\176\164A@\160\144\004\t@\176\192\005\003\141\001\001\208\001@\221\001@\242\192\005\003\142\001\001\208\001@\221\001A\005@@AB-string_of_int\160\176@\160\160A\144\160\176\001\004x!n@@@@\144\147\192A@\004\006\150\176\153\208/caml_format_intBA\005\003\197@\160\145\144\162\"%d@\160\144\004\017@\176\192\005\003\168\001\000\222\001 \228\001 \230\192\005\003\169\001\000\222\001 \228\001 \247@\208\208@3unsafe_really_input\160\176@\160\160D\144\160\176\001\004\218\"ic@\160\176\001\004\219!s@\160\176\001\004\220#ofs@\160\176\001\004\221#len@@@@@@A1valid_float_lexem\160\176@\160\160A\144\160\176\001\004|!s@@@@@@BCDFHI@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("printexc.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\211\000\000\001\017\000\000\003\222\000\000\003\146\176\208\208\208\208\208@$Slot\160@@@A/backtrace_slots\160\176A\160\160A\144\160\176\001\004J-raw_backtrace@@@@@@B0backtrace_status\160@\144\147\192A@\160\176\001\004{$prim@@\150\176\153\2085caml_backtrace_statusAA @\160\144\004\n@\176\192&_none_A@\000\255\004\002A@C%catch\160\176@\160\160B\144\160\176\001\004\018#fct@\160\176\001\004\019#arg@@@@@\208\208@:convert_raw_backtrace_slot\160@\144\147\192A@\160\176\001\004x\004!@@\150\176\153\208?caml_convert_raw_backtrace_slotAA\004 @\160\144\004\b@\004\031\208@+exn_slot_id\160\176A\160\160A\144\160\176\001\004c!x@@@@@\208@-exn_slot_name\160\176A\160\160A\144\160\176\001\004f!x@@@@@@ABC-get_backtrace\160\176A\160\160A\144\160\176\001\004\133%param@@@@@\208\208@-get_callstack\160@\144\147\192A@\160\176\001\004y\004N@@\150\176\153\208:caml_get_current_callstackAA\004M@\160\144\004\b@\004L@A1get_raw_backtrace\160@\144\147\192A@\160\176\001\004z\004\\@@\150\176\153\208\t caml_get_exception_raw_backtraceAA\004[@\160\144\004\b@\004Z\208@6get_raw_backtrace_slot\160\176A\160\160B\144\160\176\001\004W$bckt@\160\176\001\004X!i@@@@\144\147\192B@\004\t\150\176\b\000\000\004\018@\160\144\004\r\160\144\004\012@\176\192+printexc.ml\001\000\209\001\026\222\001\027\002\192\004\002\001\000\209\001\026\222\001\027\018@@ABDE%print\160\176@\160\160B\144\160\176\001\004\014#fct@\160\176\001\004\015#arg@@@@@\208\208\208@/print_backtrace\160\176@\160\160A\144\160\176\001\0042'outchan@@@@@@A3print_raw_backtrace\160\176@\160\160B\144\160\176\001\004/'outchan@\160\176\001\0040-raw_backtrace@@@@@\208\208@4raw_backtrace_length\160\176A\160\160A\144\160\176\001\004U$bckt@@@@\144\147\192A@\004\006\150\176\159@\160\144\004\n@\176\192\004;\001\000\208\001\026\172\001\026\204\192\004<\001\000\208\001\026\172\001\026\221@@A7raw_backtrace_to_string\160\176A\160\160A\144\160\176\001\004:-raw_backtrace@@@@@@BC0record_backtrace\160@\144\147\192A@\160\176\001\004|\004\200@@\150\176\153\2085caml_record_backtraceAA\004\199@\160\144\004\b@\004\198\208\208@0register_printer\160\176A\160\160A\144\160\176\001\004]\"fn@@@@@\208@>set_uncaught_exception_handler\160\176A\160\160A\144\160\176\001\004j\"fn@@@@@@AB)to_string\160\176@\160\160A\144\160\176\001\003\253!x@@@@@@CDF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("printf.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\228\000\000\000\143\000\000\001\218\000\000\001\202\176\208\208\208@'bprintf\160\176@\160\160B\144\160\176\001\004\005!b@\160\176\001\004\006#fmt@@@@@@A'eprintf\160\176@\160\160A\144\160\176\001\004\r#fmt@@@@@@B'fprintf\160\176@\160\160B\144\160\176\001\004\002\"oc@\160\176\001\004\003#fmt@@@@@\208\208\208@(ifprintf\160\176@\160\160B\144\160\176\001\004\b\"oc@\160\176\001\004\t#fmt@@@@@@A)ikfprintf\160\176@\160\160C\144\160\176\001\003\253!k@\160\176\001\003\254\"oc@\160\176\001\004\030%param@@@@@\208@(kbprintf\160\176@\160\160C\144\160\176\001\003\247!k@\160\176\001\003\248!b@\160\176\001\004!\004\016@@@@@@AB(kfprintf\160\176@\160\160C\144\160\176\001\003\241!k@\160\176\001\003\242!o@\160\176\001\004#\004\030@@@@@\208\208\208@'kprintf\160\176@\160\160B\144\160\176\001\004\015!k@\160\176\001\004\024\004,@@@@@@A(ksprintf\160\004\011@@B&printf\160\176@\160\160A\144\160\176\001\004\011#fmt@@@@@\208@'sprintf\160\176@\160\160A\144\160\176\001\004\021#fmt@@@@@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("queue.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\142\000\000\000\208\000\000\002\168\000\000\002\146\176\208\208\208@%Empty\160\176@@@@@A#add\160\176A\160\160B\144\160\176\001\003\251!x@\160\176\001\003\252!q@@@@@\208@%clear\160\176A\160\160A\144\160\176\001\003\249!q@@@@@\208@$copy\160\176A\160\160A\144\160\176\001\004\011!q@@@@@@ABC&create\160\176A\160\160A\144\160\176\001\0042%param@@@@\144\147\192A@\004\006\150\176\179@\146\160&length$tailA\160\145\144\144@\160\145\161@\144$None@\176\192(queue.mlm\001\b\014\001\b\030\192\004\002p\001\bF\001\bG@\208\208\208\208@$fold\160\176@\160\160C\144\160\176\001\004\029!f@\160\176\001\004\030$accu@\160\176\001\004\031!q@@@@@@A(is_empty\160\176A\160\160A\144\160\176\001\004\019!q@@@@\144\147\192A@\004\006\150\176\154@\160\150\176\164@\144\0046\160\144\004\015@\176\192\004-\000}\001\r\005\001\r\007\192\004.\000}\001\r\005\001\r\015@\160\145\144\144@@\176\004\007\192\0044\000}\001\r\005\001\r\019@\208\208@$iter\160\176@\160\160B\144\160\176\001\004\023!f@\160\176\001\004\024!q@@@@@@A&length\160\176@\160\160A\144\160\176\001\004\021!q@@@@\144\147\192A@\004\006\150\176\164@\144\004_\160\144\004\011@\176\192\004V\001\000\128\001\r$\001\r&\192\004W\001\000\128\001\r$\001\r.@@BC$peek\160\176@\160\160A\144\160\176\001\004\003!q@@@@@\208@#pop\160\176@\160\160A\144\160\176\001\004\006!q@@@@@@AD$push\160\004\168@\208@$take\160\004\012@\208@#top\160\004\025@\208@(transfer\160\176A\160\160B\144\160\176\001\004&\"q1@\160\176\001\004'\"q2@@@@@@ABCEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("random.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\202\000\000\000\133\000\000\001\200\000\000\001\176\176\208\208\208\208@%State\160@@@A$bits\160\176@\160\160A\144\160\176\001\004X%param@@@@@\208@$bool\160\176A\160\160A\144\160\176\001\004W\004\n@@@@@@AB%float\160\176A\160\160A\144\160\176\001\004K%scale@@@@@\208@)full_init\160\176A\160\160A\144\160\176\001\004N$seed@@@@@\208@)get_state\160\176@\160\160A\144\160\176\001\004U\004&@@@@@@ABC$init\160\176A\160\160A\144\160\176\001\004P$seed@@@@@\208\208@#int\160\176@\160\160A\144\160\176\001\004C%bound@@@@@@A%int32\160\176@\160\160A\144\160\176\001\004E%bound@@@@@\208\208\208@%int64\160\176@\160\160A\144\160\176\001\004I%bound@@@@@@A)nativeint\160\176@\160\160A\144\160\176\001\004G%bound@@@@@@B)self_init\160\176A\160\160A\144\160\176\001\004V\004`@@@@@\208@)set_state\160\176A\160\160A\144\160\176\001\004T!s@@@@@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("scanf.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002]\000\000\000\174\000\000\002B\000\000\002)\176\208\208\208@,Scan_failure\160\176@@@@@A(Scanning\160@@\208@&bscanf\160\176@\160\160B\144\160\176\001\018U\"ib@\160\176\001\018V#fmt@@@@@\208@-bscanf_format\160\176@\160\160C\144\160\176\001\018`\"ib@\160\176\001\018a&format@\160\176\001\018b!f@@@@@\208@2format_from_string\160\176@\160\160B\144\160\176\001\018q!s@\160\176\001\018r#fmt@@@@@@ABCD&fscanf\160\176@\160\160B\144\160\176\001\018X\"ic@\160\176\001\018Y#fmt@@@@@\208\208\208@'kfscanf\160\176@\160\160C\144\160\176\001\018Q\"ic@\160\176\001\018R\"ef@\160\176\001\018S#fmt@@@@@@A&kscanf\160\176@\160\160C\144\160\176\001\0187\"ib@\160\176\001\0188\"ef@\160\176\001\018z%param@@@@@\208@'ksscanf\160\176@\160\160C\144\160\176\001\018M!s@\160\176\001\018N\"ef@\160\176\001\018O#fmt@@@@@@AB%scanf\160\176@\160\160A\144\160\176\001\018^#fmt@@@@@\208@&sscanf\160\176@\160\160B\144\160\176\001\018[!s@\160\176\001\018\\#fmt@@@@@\208@-sscanf_format\160\176@\160\160C\144\160\176\001\018g!s@\160\176\001\018h&format@\160\176\001\018i!f@@@@@\208@)unescaped\160\176@\160\160A\144\160\176\001\018u!s@@@@@@ABCDE\144%stdin\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("set.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000:\031\000\000\015@\000\0003\003\000\0002\177\176\208@$Make\160\176A\160\160A\144\160\176\001\004\016#Ord@@@@\144\147\192A@\160\176\001\005[&funarg@@\196B\176\001\005\217&height@\147\192A@\160\176\001\005\218%param@@\188\144\004\004\150\176\164C@\160\004\005@\176\192&set.ml\000@\001\bk\001\bs\192\004\002\000@\001\bk\001\b\131@\145\144\144@\196B\176\001\005\223&create@\147\192C@\160\176\001\005\224!l@\160\176\001\005\225!v@\160\176\001\005\226!r@@\196B\176\001\005\227\"hl@\188\144\004\r\150\176\164C@\160\004\005@\176\192\004\030\000H\001\t\158\001\t\199\192\004\031\000H\001\t\158\001\t\212@\145\144\144@\196B\176\001\005\232\"hr@\188\144\004\022\150\176\164C@\160\004\005@\176\192\004-\000I\001\t\221\001\n\006\192\004.\000I\001\t\221\001\n\019@\145\144\144@\150\176\179@\160$NodeA@\160\004 \160\144\004+\160\004\020\160\188\150\176\154E\160\144\004-\160\144\004 @\176\192\004E\000J\001\n\028\001\n4\192\004F\000J\001\n\028\001\n<@\150\176H\160\004\t\160\145\144\144A@\176\192\004O\000J\001\n\028\001\nB\192\004P\000J\001\n\028\001\nH@\150\176H\160\004\017\160\145\144\144A@\176\192\004Y\000J\001\n\028\001\nN\192\004Z\000J\001\n\028\001\nT@@\176\192\004\\\000J\001\n\028\001\n\"\192\004]\000J\001\n\028\001\nV@\196B\176\001\005\237#bal@\147\192C@\160\176\001\005\238!l@\160\176\001\005\239!v@\160\176\001\005\240!r@@\196B\176\001\005\241\"hl@\188\144\004\r\150\176\164C@\160\004\005@\176\192\004v\000R\001\011r\001\011\155\192\004w\000R\001\011r\001\011\168@\145\144\144@\196B\176\001\005\246\"hr@\188\144\004\022\150\176\164C@\160\004\005@\176\192\004\133\000S\001\011\177\001\011\218\192\004\134\000S\001\011\177\001\011\231@\145\144\144@\188\150\176\154C\160\144\004#\160\150\176H\160\144\004\025\160\145\144\144B@\176\192\004\154\000T\001\011\240\001\011\254\192\004\155\000T\001\011\240\001\012\004@@\176\192\004\157\000T\001\011\240\001\011\249\004\003@\188\004/\196A\176\001\005\252\"lr@\150\176\164B@\160\0046@\176\192\004\167\000W\001\012N\001\012X\192\004\168\000W\001\012N\001\012k@\196A\176\001\005\253\"lv@\150\176\164A@\160\004@@\004\n\196A\176\001\005\254\"ll@\150\176\164@@\160\004G@\004\017\188\150\176\154E\160\146\192\144\004\205\160\144\004\016@\176\192\004\194\000X\001\012o\001\012~\192\004\195\000X\001\012o\001\012\135@A\160\146\192\004\t\160\144\004)@\176\192\004\202\000X\001\012o\001\012\139\192\004\203\000X\001\012o\001\012\148@A@\176\004\011\004\002@\146\192\144\004\201\160\004\017\160\144\004)\160\146\192\004\007\160\004\015\160\144\004r\160\004[@\176\192\004\219\000Y\001\012\154\001\012\181\192\004\220\000Y\001\012\154\001\012\196@A@\176\192\004\222\000Y\001\012\154\001\012\168\004\003@A\188\004\024\146\192\004\019\160\146\192\004\022\160\004&\160\004\021\160\150\176\164@@\160\004$@\176\192\004\237\000]\001\r'\001\r7\192\004\238\000]\001\r'\001\rM@@\176\192\004\240\000^\001\rP\001\ri\192\004\241\000^\001\rP\001\r{@A\160\150\176\164A@\160\004/@\004\011\160\146\192\004+\160\150\176\164B@\160\0047@\004\019\160\004(\160\004\130@\176\192\005\001\002\000^\001\rP\001\r\128\192\005\001\003\000^\001\rP\001\r\144@A@\176\192\005\001\005\000^\001\rP\001\rb\004\003@A\150\176C\160\150\176\179@B@\160\150\176\146\176R0Invalid_argumentC@\176\192&_none_A@\000\255\004\002A\160\145\144\162'Set.bal@@\176\192-pervasives.ml_\001\005.\001\005G\192\004\002_\001\005.\001\005[@@\176\192\004\004_\001\005.\001\005B\004\003@\150\176C\160\150\176\004\026\160\150\176\004\025@\004\022\160\145\144\162'Set.bal@@\004\019@\004\015\188\150\176\154C\160\004\158\160\150\176H\160\004\167\160\145\144\144B@\176\192\005\001;\000`\001\r\161\001\r\184\192\005\001<\000`\001\r\161\001\r\190@@\176\192\005\001>\000`\001\r\161\001\r\179\004\003@\188\004\193\196A\176\001\006\004\"rr@\150\176\164B@\160\004\200@\176\192\005\001H\000c\001\014\b\001\014\018\192\005\001I\000c\001\014\b\001\014%@\196A\176\001\006\005\"rv@\150\176\164A@\160\004\210@\004\n\196A\176\001\006\006\"rl@\150\176\164@@\160\004\217@\004\017\188\150\176\154E\160\146\192\004\161\160\144\004 @\176\192\005\001b\000d\001\014)\001\0148\192\005\001c\000d\001\014)\001\014A@A\160\146\192\004\169\160\144\004\023@\176\192\005\001j\000d\001\014)\001\014E\192\005\001k\000d\001\014)\001\014N@A@\176\004\011\004\002@\146\192\004\160\160\146\192\004\163\160\005\001\003\160\004\156\160\004\r@\176\192\005\001v\000e\001\014T\001\014i\192\005\001w\000e\001\014T\001\014x@A\160\144\004/\160\004\027@\176\192\005\001|\000e\001\014T\001\014b\192\005\001}\000e\001\014T\001\014~@A\188\004\023\146\192\004\178\160\146\192\004\181\160\005\001\021\160\004\174\160\150\176\164@@\160\004#@\176\192\005\001\140\000i\001\014\225\001\014\241\192\005\001\141\000i\001\014\225\001\015\007@@\176\192\005\001\143\000j\001\015\011\001\015$\192\005\001\144\000j\001\015\011\001\0154@A\160\150\176\164A@\160\004.@\004\011\160\146\192\004\202\160\150\176\164B@\160\0046@\004\019\160\004&\160\004@@\176\192\005\001\161\000j\001\015\011\001\0159\192\005\001\162\000j\001\015\011\001\015K@A@\176\192\005\001\164\000j\001\015\011\001\015\029\004\003@A\150\176C\160\150\176\004\159\160\150\176\004\158@\004\155\160\145\144\162'Set.bal@@\004\152@\004\148\150\176C\160\150\176\004\172\160\150\176\004\171@\004\168\160\145\144\162'Set.bal@@\004\165@\004\161\150\176\179@\160\005\001\141A@\160\005\001T\160\004\237\160\005\001G\160\188\150\176\154E\160\005\001=\160\005\0019@\176\192\005\001\206\000m\001\015k\001\015\133\192\005\001\207\000m\001\015k\001\015\141@\150\176H\160\005\001D\160\145\144\144A@\176\192\005\001\216\000m\001\015k\001\015\147\192\005\001\217\000m\001\015k\001\015\153@\150\176H\160\005\001I\160\145\144\144A@\176\192\005\001\226\000m\001\015k\001\015\159\192\005\001\227\000m\001\015k\001\015\165@@\176\192\005\001\229\000m\001\015k\001\015s\192\005\001\230\000m\001\015k\001\015\167@\165\160\160\176\001\006\011#add@\147\192B@\160\176\001\006\012!x@\160\176\001\006\r!t@@\188\144\004\004\196A\176\001\006\015!r@\150\176\164B@\160\004\b@\176\192\005\001\254\000s\001\016\020\001\016\028\192\005\001\255\000s\001\016\020\001\016,@\196A\176\001\006\016!v@\150\176\164A@\160\004\018@\004\n\196A\176\001\006\017!l@\150\176\164@@\160\004\025@\004\017\196@\176\001\006\018!c@\146\192\150\176\164@\145'compare\160\144\005\002+@\176\192&_none_A@\000\255\004\002A\160\144\0040\160\144\004 @\176\192\005\002\"\000t\001\0165\001\016G\192\005\002#\000t\001\0165\001\016V@@\188\150\176\154@\160\144\004\027\160\145\144\144@@\176\192\005\002/\000u\001\016Z\001\016g\192\005\0020\000u\001\016Z\001\016l@\004<\188\150\176\154B\160\004\r\160\145\144\144@@\176\192\005\002;\000v\001\016y\001\016\134\192\005\002<\000v\001\016y\001\016\139@\146\192\144\005\001\225\160\146\192\144\004Z\160\004'\160\144\004?@\176\192\005\002H\000v\001\016y\001\016\149\192\005\002I\000v\001\016y\001\016\158@A\160\004+\160\144\004V@\176\192\005\002N\000v\001\016y\001\016\145\192\005\002O\000v\001\016y\001\016\162@A\146\192\004\019\160\004\r\160\0044\160\146\192\004\020\160\004:\160\004\r@\176\192\005\002Z\000v\001\016y\001\016\176\192\005\002[\000v\001\016y\001\016\185@A@\176\192\005\002]\000v\001\016y\001\016\168\004\003@A\150\176\179@\160\005\002,A@\160\145\161@\144%Empty\160\004J\160\145\161@\144\004\006\160\145\144\144A@\176\192\005\002q\000r\001\015\234\001\015\251\192\005\002r\000r\001\015\234\001\016\019@@\196B\176\001\006\019)singleton@\147\192A@\160\176\001\006\020!x@@\150\176\179@\160\005\002IA@\160\145\161@\144\004\029\160\144\004\012\160\145\161@\144\004#\160\145\144\144A@\176\192\005\002\142\000x\001\016\187\001\016\209\192\005\002\143\000x\001\016\187\001\016\233@\165\160\160\176\001\006\021/add_min_element@\147\192B@\160\176\001\006\022!v@\160\176\001\006\023\005\002\164@@\188\144\004\003\146\192\004a\160\146\192\144\004\017\160\144\004\014\160\150\176\164@@\160\004\014@\176\192\005\002\172\001\000\131\001\018{\001\018\131\192\005\002\173\001\000\131\001\018{\001\018\148@@\176\192\005\002\175\001\000\132\001\018\152\001\018\164\192\005\002\176\001\000\132\001\018\152\001\018\185@A\160\150\176\164A@\160\004\025@\004\011\160\150\176\164B@\160\004\030@\004\016@\176\192\005\002\188\001\000\132\001\018\152\001\018\160\192\005\002\189\001\000\132\001\018\152\001\018\189@A\146\192\144\004M\160\004\029@\176\192\005\002\195\001\000\130\001\018^\001\018o\192\005\002\196\001\000\130\001\018^\001\018z@A@\165\160\160\176\001\006\028/add_max_element@\147\192B@\160\176\001\006\029!v@\160\176\001\006\030\005\002\217@@\188\144\004\003\146\192\004\150\160\150\176\164@@\160\004\b@\176\192\005\002\219\001\000\136\001\019\005\001\019\r\192\005\002\220\001\000\136\001\019\005\001\019\030@\160\150\176\164A@\160\004\016@\004\b\160\146\192\144\004\030\160\144\004\027\160\150\176\164B@\160\004\027@\004\019@\176\192\005\002\238\001\000\137\001\019\"\001\0192\192\005\002\239\001\000\137\001\019\"\001\019G@A@\176\192\005\002\241\001\000\137\001\019\"\001\019*\004\003@A\146\192\0044\160\004\014@\176\192\005\002\246\001\000\135\001\018\232\001\018\249\192\005\002\247\001\000\135\001\018\232\001\019\004@A@\165\160\160\176\001\006#$join@\147\192C@\160\176\001\006$!l@\160\176\001\006%!v@\160\176\001\006&!r@@\188\144\004\n\188\144\004\006\196A\176\001\006)\"rh@\150\176\164C@\160\004\b@\176\192\005\003\020\001\000\146\001\0208\001\020W\192\005\003\021\001\000\146\001\0208\001\020k@\196A\176\001\006-\"lh@\150\176\164C@\160\004\020@\176\192\005\003\030\001\000\146\001\0208\001\020A\192\005\003\031\001\000\146\001\0208\001\020U@\188\150\176\154C\160\144\004\015\160\150\176H\160\144\004\030\160\145\144\144B@\176\192\005\0030\001\000\147\001\020p\001\020\130\192\005\0031\001\000\147\001\020p\001\020\136@@\176\192\005\0033\001\000\147\001\020p\001\020}\004\003@\146\192\004\247\160\150\176\164@@\160\0042@\004\030\160\150\176\164A@\160\0047@\004#\160\146\192\144\004I\160\150\176\164B@\160\004@@\004,\160\144\004H\160\144\004G@\176\192\005\003N\001\000\147\001\020p\001\020\152\192\005\003O\001\000\147\001\020p\001\020\165@A@\176\192\005\003Q\001\000\147\001\020p\001\020\142\004\003@A\188\150\176\154C\160\004-\160\150\176H\160\0046\160\145\144\144B@\176\192\005\003`\001\000\148\001\020\171\001\020\189\192\005\003a\001\000\148\001\020\171\001\020\195@@\176\192\005\003c\001\000\148\001\020\171\001\020\184\004\003@\146\192\005\001'\160\146\192\004&\160\144\004k\160\004\"\160\150\176\164@@\160\004f@\004^@\176\192\005\003r\001\000\148\001\020\171\001\020\205\192\005\003s\001\000\148\001\020\171\001\020\218@A\160\150\176\164A@\160\004n@\004f\160\150\176\164B@\160\004s@\004k@\176\192\005\003\127\001\000\148\001\020\171\001\020\201\192\005\003\128\001\000\148\001\020\171\001\020\224@A\146\192\005\002\180\160\004\026\160\004;\160\004:@\176\192\005\003\135\001\000\149\001\020\230\001\020\240\192\005\003\136\001\000\149\001\020\230\001\020\252@A\146\192\004\166\160\004B\160\004#@\176\192\005\003\142\001\000\145\001\020\014\001\020$\192\005\003\143\001\000\145\001\020\014\001\0207@A\146\192\004\239\160\004I\160\004H@\176\192\005\003\149\001\000\144\001\019\228\001\019\250\192\005\003\150\001\000\144\001\019\228\001\020\r@A@\165\160\160\176\001\0061'min_elt@\147\192A@\160\176\001\0062\005\003\168@@\188\144\004\003\196A\176\001\0063!l@\150\176\164@@\160\004\b@\176\192\005\003\170\001\000\156\001\021\146\001\021\154\192\005\003\171\001\000\156\001\021\146\001\021\170@\188\144\004\011\146\192\144\004\023\160\004\005@\176\192\005\003\179\001\000\156\001\021\146\001\021\174\192\005\003\180\001\000\156\001\021\146\001\021\183@A\150\176\164A@\160\004\024@\004\016\150\176C\160\150\176\146\176T)Not_foundC@\005\001\167@\176\192\005\003\194\001\000\154\001\021O\001\021`\192\005\003\195\001\000\154\001\021O\001\021o@@\165\160\160\176\001\0069'max_elt@\147\192A@\160\176\001\006:\005\003\213@@\188\144\004\003\196A\176\001\006;!r@\150\176\164B@\160\004\b@\176\192\005\003\215\001\000\161\001\022\027\001\022#\192\005\003\216\001\000\161\001\022\027\001\0223@\188\144\004\011\146\192\144\004\023\160\004\005@\176\192\005\003\224\001\000\161\001\022\027\001\0227\192\005\003\225\001\000\161\001\022\027\001\022@@A\150\176\164A@\160\004\024@\004\016\150\176C\160\150\176\146\004-@\005\001\210@\176\192\005\003\237\001\000\159\001\021\216\001\021\233\192\005\003\238\001\000\159\001\021\216\001\021\248@@\165\160\160\176\001\006B.remove_min_elt@\147\192A@\160\176\001\006C\005\004\000@@\188\144\004\003\196A\176\001\006D!l@\150\176\164@@\160\004\b@\176\192\005\004\002\001\000\168\001\022\244\001\022\252\192\005\004\003\001\000\168\001\022\244\001\023\012@\188\144\004\011\146\192\005\001\201\160\146\192\144\004\026\160\004\b@\176\192\005\004\014\001\000\168\001\022\244\001\023\020\192\005\004\015\001\000\168\001\022\244\001\023&@A\160\150\176\164A@\160\004\028@\004\020\160\150\176\164B@\160\004!@\004\025@\176\192\005\004\027\001\000\168\001\022\244\001\023\016\192\005\004\028\001\000\168\001\022\244\001\023*@A\150\176\164B@\160\004(@\004 \150\176C\160\150\176\005\003\027\160\150\176\005\003\026@\005\003\023\160\145\144\1622Set.remove_min_elt@@\005\003\020@\005\003\016@\196B\176\001\006K%merge@\147\192B@\160\176\001\006L\"t1@\160\176\001\006M\"t2@@\188\144\004\007\188\144\004\006\146\192\005\002\000\160\144\004\r\160\146\192\004\148\160\144\004\015@\176\192\005\004G\001\000\178\001\024\030\001\0247\192\005\004H\001\000\178\001\024\030\001\024C@A\160\146\192\004A\160\004\b@\176\192\005\004N\001\000\178\001\024\030\001\024D\192\005\004O\001\000\178\001\024\030\001\024W@A@\176\192\005\004Q\001\000\178\001\024\030\001\0240\004\003@A\144\004\031\144\004\029\196B\176\001\006P&concat@\147\192B@\160\176\001\006Q\"t1@\160\176\001\006R\"t2@@\188\144\004\007\188\144\004\006\146\192\005\001\"\160\144\004\r\160\146\192\004\186\160\144\004\015@\176\192\005\004m\001\000\188\001\025P\001\025j\192\005\004n\001\000\188\001\025P\001\025v@A\160\146\192\004g\160\004\b@\176\192\005\004t\001\000\188\001\025P\001\025w\192\005\004u\001\000\188\001\025P\001\025\138@A@\176\192\005\004w\001\000\188\001\025P\001\025b\004\003@A\144\004\031\144\004\029\165\160\160\176\001\006U%split@\147\192B@\160\176\001\006V!x@\160\176\001\006W\005\004\142@@\188\144\004\003\196A\176\001\006Y!r@\150\176\164B@\160\004\b@\176\192\005\004\144\001\000\199\001\027\005\001\027\r\192\005\004\145\001\000\199\001\027\005\001\027\029@\196A\176\001\006Z!v@\150\176\164A@\160\004\018@\004\n\196A\176\001\006[!l@\150\176\164@@\160\004\025@\004\017\196@\176\001\006\\!c@\146\192\150\176\164@\145'compare\160\005\002\146@\005\002\145\160\144\004+\160\144\004\028@\176\192\005\004\176\001\000\200\001\027!\001\0273\192\005\004\177\001\000\200\001\027!\001\027B@@\188\150\176\154@\160\144\004\023\160\145\144\144@@\176\192\005\004\189\001\000\201\001\027F\001\027S\192\005\004\190\001\000\201\001\027F\001\027X@\150\176\179@@@\160\144\004*\160\145\161A\144$true\160\144\004B@\176\192\005\004\204\001\000\201\001\027F\001\027^\192\005\004\205\001\000\201\001\027F\001\027j@\188\150\176\154B\160\004\028\160\145\144\144@@\176\192\005\004\216\001\000\202\001\027k\001\027}\192\005\004\217\001\000\202\001\027k\001\027\130@\196@\176\001\006]%match@\146\192\144\004c\160\0045\160\004\031@\176\192\005\004\227\001\000\203\001\027\136\001\027\169\192\005\004\228\001\000\203\001\027\136\001\027\178@A\150\176\179@@@\160\150\176\164@@\160\144\004\019@\005\002\212\160\150\176\164A@\160\004\006@\005\002\217\160\146\192\005\001\179\160\150\176\164B@\160\004\014@\005\002\225\160\004N\160\0043@\176\192\005\004\254\001\000\203\001\027\136\001\027\193\192\005\004\255\001\000\203\001\027\136\001\027\204@A@\176\192\005\005\001\001\000\203\001\027\136\001\027\182\192\005\005\002\001\000\203\001\027\136\001\027\205@\196@\176\001\006a\004)@\146\192\004(\160\004\\\160\004?@\176\192\005\005\n\001\000\205\001\027\221\001\027\254\192\005\005\011\001\000\205\001\027\221\001\028\007@A\150\176\179@@@\160\146\192\005\001\207\160\004P\160\004f\160\150\176\164@@\160\144\004\022@\005\003\000@\176\192\005\005\027\001\000\205\001\027\221\001\028\012\192\005\005\028\001\000\205\001\027\221\001\028\023@A\160\150\176\164A@\160\004\t@\005\003\b\160\150\176\164B@\160\004\014@\005\003\r@\176\192\005\005(\001\000\205\001\027\221\001\028\011\192\005\005)\001\000\205\001\027\221\001\028\"@\145\178@@\160\161@\144\005\002\201\160\161@\144%false\160\161@\144\005\002\208@@\196B\176\001\006f(is_empty@\147\192A@\160\176\001\006g\005\005E@@\188\144\004\003\145\161@\144\004\016\145\161A\144\004}\165\160\160\176\001\006h#mem@\147\192B@\160\176\001\006i!x@\160\176\001\006j\005\005Y@@\188\144\004\003\196@\176\001\006o!c@\146\192\150\176\164@\145'compare\160\005\003E@\005\003D\160\144\004\019\160\150\176\164A@\160\004\019@\176\192\005\005f\001\000\215\001\028\215\001\028\223\192\005\005g\001\000\215\001\028\215\001\028\239@@\176\192\005\005i\001\000\216\001\028\243\001\029\005\192\005\005j\001\000\216\001\028\243\001\029\020@@\150\176E\160\150\176\154@\160\144\004\031\160\145\144\144@@\176\192\005\005x\001\000\217\001\029\024\001\029\"\192\005\005y\001\000\217\001\029\024\001\029'@\160\146\192\144\0046\160\004 \160\188\150\176\154B\160\004\019\160\145\144\144@@\176\192\005\005\138\001\000\217\001\029\024\001\0295\192\005\005\139\001\000\217\001\029\024\001\029:@\150\176\164@@\160\004>@\004+\150\176\164B@\160\004B@\004/@\176\192\005\005\149\001\000\217\001\029\024\001\029+\192\005\005\150\001\000\217\001\029\024\001\029I@A@\176\004 \004\002@\145\161@\144\004i@\165\160\160\176\001\006p&remove@\147\192B@\160\176\001\006q!x@\160\176\001\006r\005\005\175@@\188\144\004\003\196A\176\001\006t!r@\150\176\164B@\160\004\b@\176\192\005\005\177\001\000\221\001\029\130\001\029\138\192\005\005\178\001\000\221\001\029\130\001\029\154@\196A\176\001\006u!v@\150\176\164A@\160\004\018@\004\n\196A\176\001\006v!l@\150\176\164@@\160\004\025@\004\017\196@\176\001\006w!c@\146\192\150\176\164@\145'compare\160\005\003\179@\005\003\178\160\144\004+\160\144\004\028@\176\192\005\005\209\001\000\222\001\029\158\001\029\176\192\005\005\210\001\000\222\001\029\158\001\029\191@@\188\150\176\154@\160\144\004\023\160\145\144\144@@\176\192\005\005\222\001\000\223\001\029\195\001\029\208\192\005\005\223\001\000\223\001\029\195\001\029\213@\146\192\144\005\001\180\160\144\004*\160\144\004=@\176\192\005\005\232\001\000\223\001\029\195\001\029\219\192\005\005\233\001\000\223\001\029\195\001\029\228@A\188\150\176\154B\160\004\023\160\145\144\144@@\176\192\005\005\244\001\000\224\001\029\234\001\029\247\192\005\005\245\001\000\224\001\029\234\001\029\252@\146\192\005\003\185\160\146\192\144\004^\160\0040\160\004\026@\176\192\005\005\255\001\000\224\001\029\234\001\030\006\192\005\006\000\001\000\224\001\029\234\001\030\018@A\160\0043\160\004\029@\176\192\005\006\004\001\000\224\001\029\234\001\030\002\192\005\006\005\001\000\224\001\029\234\001\030\022@A\146\192\005\003\201\160\004%\160\004;\160\146\192\004\018\160\004A\160\004)@\176\192\005\006\016\001\000\224\001\029\234\001\030$\192\005\006\017\001\000\224\001\029\234\001\0300@A@\176\192\005\006\019\001\000\224\001\029\234\001\030\028\004\003@A\145\161@\144\005\003\177@\165\160\160\176\001\006x%union@\147\192B@\160\176\001\006y\"s1@\160\176\001\006z\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006}\"h2@\150\176\164C@\160\004\b@\176\192\005\0060\001\000\230\001\030\154\001\030\185\192\005\0061\001\000\230\001\030\154\001\030\205@\196A\176\001\006\127\"v2@\150\176\164A@\160\004\018@\004\n\196A\176\001\006\129\"h1@\150\176\164C@\160\004\027@\176\192\005\006A\001\000\230\001\030\154\001\030\163\192\005\006B\001\000\230\001\030\154\001\030\183@\196A\176\001\006\131\"v1@\150\176\164A@\160\004%@\004\n\188\150\176\154E\160\144\004\022\160\144\004)@\176\192\005\006S\001\000\231\001\030\210\001\030\223\192\005\006T\001\000\231\001\030\210\001\030\231@\188\150\176\154@\160\004\t\160\145\144\144A@\176\192\005\006_\001\000\232\001\030\237\001\030\252\192\005\006`\001\000\232\001\030\237\001\031\002@\146\192\005\004 \160\144\0042\160\144\004H@\176\192\005\006h\001\000\232\001\030\237\001\031\b\192\005\006i\001\000\232\001\030\237\001\031\017@A\196@\176\001\006\133\005\001\144@\146\192\005\001\143\160\144\004,\160\144\004P@\176\192\005\006s\001\000\233\001\031\029\001\031=\192\005\006t\001\000\233\001\031\029\001\031H@A\146\192\005\0034\160\146\192\144\004a\160\150\176\164@@\160\004[@\004@\160\150\176\164@@\160\144\004\027@\005\004l@\176\192\005\006\135\001\000\234\001\031L\001\031_\192\005\006\136\001\000\234\001\031L\001\031l@A\160\004\027\160\146\192\004\019\160\150\176\164B@\160\004m@\004R\160\150\176\164B@\160\004\018@\005\004}@\176\192\005\006\152\001\000\234\001\031L\001\031p\192\005\006\153\001\000\234\001\031L\001\031}@A@\176\192\005\006\155\001\000\234\001\031L\001\031Z\004\003@A\188\150\176\154@\160\004R\160\145\144\144A@\176\192\005\006\166\001\000\237\001\031\157\001\031\172\192\005\006\167\001\000\237\001\031\157\001\031\178@\146\192\005\004g\160\004<\160\004;@\176\192\005\006\173\001\000\237\001\031\157\001\031\184\192\005\006\174\001\000\237\001\031\157\001\031\193@A\196@\176\001\006\137\005\001\213@\146\192\005\001\212\160\004P\160\004O@\176\192\005\006\182\001\000\238\001\031\205\001\031\237\192\005\006\183\001\000\238\001\031\205\001\031\248@A\146\192\005\003w\160\146\192\004C\160\150\176\164@@\160\144\004\019@\005\004\169\160\150\176\164@@\160\004\161@\004\153@\176\192\005\006\201\001\000\239\001\031\252\001 \015\192\005\006\202\001\000\239\001\031\252\001 \028@A\160\004h\160\146\192\004U\160\150\176\164B@\160\004\018@\005\004\186\160\150\176\164B@\160\004\178@\004\170@\176\192\005\006\218\001\000\239\001\031\252\001  \192\005\006\219\001\000\239\001\031\252\001 -@A@\176\192\005\006\221\001\000\239\001\031\252\001 \n\004\003@A\144\004\192\144\004\190@\165\160\160\176\001\006\141%inter@\147\192B@\160\176\001\006\142\"s1@\160\176\001\006\143\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\150\"r1@\150\176\164B@\160\004\n@\176\192\005\006\249\001\000\246\001 \173\001 \182\192\005\006\250\001\000\246\001 \173\001 \201@\196A\176\001\006\151\"v1@\150\176\164A@\160\004\020@\004\n\196A\176\001\006\152\"l1@\150\176\164@@\160\004\027@\004\017\196@\176\001\006\153\005\002/@\146\192\005\002.\160\144\004\019\160\144\004&@\176\192\005\007\018\001\000\247\001 \210\001 \226\192\005\007\019\001\000\247\001 \210\001 \237@A\196A\176\001\006\155\"l2@\150\176\164@@\160\144\004\018@\005\005\002\188\150\176\154A\160\150\176\164A@\160\004\n@\005\005\011\160\145\144\144@@\005\005\015\146\192\005\003\232\160\146\192\144\004L\160\144\004.\160\144\004\030@\176\192\005\0074\001\000\251\001!a\001!t\192\005\0075\001\000\251\001!a\001!\129@A\160\004)\160\146\192\004\012\160\144\004J\160\150\176\164B@\160\004&@\005\005'@\176\192\005\007B\001\000\251\001!a\001!\133\192\005\007C\001\000\251\001!a\001!\146@A@\176\192\005\007E\001\000\251\001!a\001!o\004\003@A\146\192\144\005\002\244\160\146\192\004\030\160\004\029\160\144\004:@\176\192\005\007P\001\000\249\001!\018\001!'\192\005\007Q\001\000\249\001!\018\001!4@A\160\146\192\004'\160\004\027\160\150\176\164B@\160\004@@\005\005A@\176\192\005\007\\\001\000\249\001!\018\001!5\192\005\007]\001\000\249\001!\018\001!B@A@\176\192\005\007_\001\000\249\001!\018\001! \004\003@A\145\161@\144\005\004\253\145\161@\144\005\005\000@\165\160\160\176\001\006\159$diff@\147\192B@\160\176\001\006\160\"s1@\160\176\001\006\161\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\167\"r1@\150\176\164B@\160\004\n@\176\192\005\007\127\001\001\001\001!\254\001\"\007\192\005\007\128\001\001\001\001!\254\001\"\026@\196A\176\001\006\168\"v1@\150\176\164A@\160\004\020@\004\n\196A\176\001\006\169\"l1@\150\176\164@@\160\004\027@\004\017\196@\176\001\006\170\005\002\181@\146\192\005\002\180\160\144\004\019\160\144\004&@\176\192\005\007\152\001\001\002\001\"#\001\"3\192\005\007\153\001\001\002\001\"#\001\">@A\196A\176\001\006\172\"l2@\150\176\164@@\160\144\004\018@\005\005\136\188\150\176\154A\160\150\176\164A@\160\004\n@\005\005\145\160\145\144\144@@\005\005\149\146\192\004i\160\146\192\144\004L\160\144\004.\160\144\004\030@\176\192\005\007\186\001\001\006\001\"\177\001\"\198\192\005\007\187\001\001\006\001\"\177\001\"\210@A\160\146\192\004\011\160\144\004I\160\150\176\164B@\160\004%@\005\005\172@\176\192\005\007\199\001\001\006\001\"\177\001\"\211\192\005\007\200\001\001\006\001\"\177\001\"\223@A@\176\192\005\007\202\001\001\006\001\"\177\001\"\191\004\003@A\146\192\005\004\138\160\146\192\004\028\160\004\027\160\144\0048@\176\192\005\007\212\001\001\004\001\"c\001\"v\192\005\007\213\001\001\004\001\"c\001\"\130@A\160\004C\160\146\192\004&\160\004\027\160\150\176\164B@\160\004?@\005\005\198@\176\192\005\007\225\001\001\004\001\"c\001\"\134\192\005\007\226\001\001\004\001\"c\001\"\146@A@\176\192\005\007\228\001\001\004\001\"c\001\"q\004\003@A\144\004x\145\161@\144\005\005\131@\165\160\160\176\001\006\176)cons_enum@\147\192B@\160\176\001\006\177!s@\160\176\001\006\178!e@@\188\144\004\007\146\192\144\004\015\160\150\176\164@@\160\004\t@\176\192\005\b\001\001\001\r\001#_\001#g\192\005\b\002\001\001\r\001#_\001#w@\160\150\176\179@\160$MoreA@\160\150\176\164A@\160\004\023@\004\014\160\150\176\164B@\160\004\028@\004\019\160\144\004!@\176\192\005\b\022\001\001\r\001#_\001#\135\192\005\b\023\001\001\r\001#_\001#\150@@\176\192\005\b\025\001\001\r\001#_\001#{\004\003@A\004\006@\165\160\160\176\001\006\183+compare_aux@\147\192B@\160\176\001\006\184\"e1@\160\176\001\006\185\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\006\194!c@\146\192\150\176\164@\145'compare\160\005\006\029@\005\006\028\160\150\176\164@@\160\004\019@\176\192\005\b<\001\001\020\001$\026\001$#\192\005\b=\001\001\020\001$\026\001$3@\160\150\176\164@@\160\004\025@\176\192\005\bD\001\001\020\001$\026\001$5\192\005\bE\001\001\020\001$\026\001$E@@\176\192\005\bG\001\001\021\001$J\001$\\\192\005\bH\001\001\021\001$J\001$m@@\188\150\176\154A\160\144\004#\160\145\144\144@@\176\192\005\bT\001\001\022\001$q\001$~\192\005\bU\001\001\022\001$q\001$\132@\004\b\146\192\144\004<\160\146\192\004b\160\150\176\164A@\160\0049@\004&\160\150\176\164B@\160\004>@\004+@\176\192\005\bg\001\001\024\001$\150\001$\177\192\005\bh\001\001\024\001$\150\001$\194@A\160\146\192\004r\160\150\176\164A@\160\004G@\004.\160\150\176\164B@\160\004L@\0043@\176\192\005\bw\001\001\024\001$\150\001$\195\192\005\bx\001\001\024\001$\150\001$\212@A@\176\192\005\bz\001\001\024\001$\150\001$\165\004\003@A\145\144\144A\188\004U\145\144\144\000\255\145\144\144@@\196B\176\001\006\195'compare@\147\192B@\160\176\001\006\196\"s1@\160\176\001\006\197\"s2@@\146\192\004:\160\146\192\004\155\160\144\004\012\160\145\161@\144#End@\176\192\005\b\157\001\001\027\001$\238\001%\000\192\005\b\158\001\001\027\001$\238\001%\018@A\160\146\192\004\168\160\144\004\022\160\145\161@\144\004\r@\176\192\005\b\169\001\001\027\001$\238\001%\019\192\005\b\170\001\001\027\001$\238\001%%@A@\176\192\005\b\172\001\001\027\001$\238\001$\244\004\003@A\196B\176\001\006\198%equal@\147\192B@\160\176\001\006\199\"s1@\160\176\001\006\200\"s2@@\150\176\154@\160\146\192\144\0049\160\144\004\014\160\144\004\r@\176\192\005\b\196\001\001\030\001%=\001%C\192\005\b\197\001\001\030\001%=\001%P@A\160\145\144\144@@\176\004\007\192\005\b\203\001\001\030\001%=\001%T@\165\160\160\176\001\006\201&subset@\147\192B@\160\176\001\006\202\"s1@\160\176\001\006\203\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\208\"r2@\150\176\164B@\160\004\b@\176\192\005\b\229\001\001&\001%\210\001%\241\192\005\b\230\001\001&\001%\210\001&\005@\196A\176\001\006\210\"l2@\150\176\164@@\160\004\018@\004\n\196A\176\001\006\212\"r1@\150\176\164B@\160\004\027@\176\192\005\b\246\001\001&\001%\210\001%\218\192\005\b\247\001\001&\001%\210\001%\238@\196A\176\001\006\213\"v1@\150\176\164A@\160\004%@\004\n\196A\176\001\006\214\"l1@\150\176\164@@\160\004,@\004\017\196@\176\001\006\215!c@\146\192\150\176\164@\145'compare\160\005\006\248@\005\006\247\160\144\004\026\160\150\176\164A@\160\004<@\0044@\176\192\005\t\025\001\001'\001&\016\001&\"\192\005\t\026\001\001'\001&\016\001&3@@\188\150\176\154@\160\144\004\026\160\145\144\144@@\176\192\005\t&\001\001(\001&7\001&D\192\005\t'\001\001(\001&7\001&I@\150\176D\160\146\192\144\004_\160\144\0040\160\144\004J@\176\192\005\t3\001\001)\001&O\001&[\192\005\t4\001\001)\001&O\001&g@A\160\146\192\004\011\160\144\004K\160\144\004^@\176\192\005\t=\001\001)\001&O\001&k\192\005\t>\001\001)\001&O\001&w@A@\176\004\r\004\002@\188\150\176\154B\160\004%\160\145\144\144@@\176\192\005\tJ\001\001*\001&x\001&\138\192\005\tK\001\001*\001&x\001&\143@\150\176D\160\146\192\004$\160\150\176\179@\160\005\t A@\160\004(\160\004F\160\145\161@\144\005\006\246\160\145\144\144@@\176\192\005\ta\001\001+\001&\149\001&\168\192\005\tb\001\001+\001&\149\001&\193@\160\0043@\176\192\005\te\001\001+\001&\149\001&\161\192\005\tf\001\001+\001&\149\001&\196@A\160\146\192\004=\160\0042\160\144\004\150@\176\192\005\tn\001\001+\001&\149\001&\200\192\005\to\001\001+\001&\149\001&\212@A@\176\004\012\004\002@\150\176D\160\146\192\004I\160\150\176\179@\160\005\tEA@\160\145\161@\144\005\007\025\160\004n\160\004H\160\145\144\144@@\176\192\005\t\134\001\001-\001&\228\001&\247\192\005\t\135\001\001-\001&\228\001'\016@\160\004N@\176\192\005\t\138\001\001-\001&\228\001&\240\192\005\t\139\001\001-\001&\228\001'\019@A\160\146\192\004b\160\004a\160\144\004\187@\176\192\005\t\147\001\001-\001&\228\001'\023\192\005\t\148\001\001-\001&\228\001'#@A@\176\004\012\004\002@\145\161@\144\005\004g\145\161A\144\005\004\212@\165\160\160\176\001\006\216$iter@\147\192B@\160\176\001\006\217!f@\160\176\001\006\218\005\t\176@@\188\144\004\003\173\146\192\144\004\015\160\144\004\012\160\150\176\164@@\160\004\012@\176\192\005\t\182\001\0011\001'W\001'_\192\005\t\183\001\0011\001'W\001'o@@\176\192\005\t\185\001\0011\001'W\001's\192\005\t\186\001\0011\001'W\001'{@A\173\146\192\004\015\160\150\176\164A@\160\004\026@\004\014@\176\192\005\t\196\001\0011\001'W\001'}\192\005\t\197\001\0011\001'W\001'\128@@\146\192\004\027\160\004\026\160\150\176\164B@\160\004%@\004\025@\176\192\005\t\207\001\0011\001'W\001'\130\192\005\t\208\001\0011\001'W\001'\138@A\145\161@\144\"()@\165\160\160\176\001\006\223$fold@\147\192C@\160\176\001\006\224!f@\160\176\001\006\225!s@\160\176\001\006\226$accu@@\188\144\004\007\146\192\144\004\018\160\144\004\015\160\150\176\164B@\160\004\011@\176\192\005\t\242\001\0016\001'\209\001'\217\192\005\t\243\001\0016\001'\209\001'\233@\160\146\192\004\012\160\150\176\164A@\160\004\022@\004\011\160\146\192\004\022\160\004\021\160\150\176\164@@\160\004\031@\004\020\160\144\004$@\176\192\005\n\b\001\0016\001'\209\001'\251\192\005\n\t\001\0016\001'\209\001(\n@A@\176\192\005\n\011\001\0016\001'\209\001'\246\192\005\n\012\001\0016\001'\209\001(\011@@@\176\192\005\n\014\001\0016\001'\209\001'\237\004\003@A\004\t@\165\160\160\176\001\006\231'for_all@\147\192B@\160\176\001\006\232!p@\160\176\001\006\233\005\n#@@\188\144\004\003\150\176D\160\146\192\144\004\012\160\150\176\164A@\160\004\012@\176\192\005\n)\001\001:\001(D\001(L\192\005\n*\001\001:\001(D\001(\\@@\176\192\005\n,\001\001:\001(D\001(`\192\005\n-\001\001:\001(D\001(c@@\160\150\176D\160\146\192\144\004#\160\004\020\160\150\176\164@@\160\004\031@\004\019@\176\192\005\n<\001\001:\001(D\001(g\192\005\n=\001\001:\001(D\001(r@A\160\146\192\004\r\160\004 \160\150\176\164B@\160\004+@\004\031@\176\192\005\nH\001\001:\001(D\001(v\192\005\nI\001\001:\001(D\001(\129@A@\176\004\015\004\002@@\176\004 \004\003@\145\161A\144\005\005\135@\165\160\160\176\001\006\238&exists@\147\192B@\160\176\001\006\239!p@\160\176\001\006\240\005\nc@@\188\144\004\003\150\176E\160\146\192\144\004\012\160\150\176\164A@\160\004\012@\176\192\005\ni\001\001>\001(\186\001(\194\192\005\nj\001\001>\001(\186\001(\210@@\176\192\005\nl\001\001>\001(\186\001(\214\192\005\nm\001\001>\001(\186\001(\217@@\160\150\176E\160\146\192\144\004#\160\004\020\160\150\176\164@@\160\004\031@\004\019@\176\192\005\n|\001\001>\001(\186\001(\221\192\005\n}\001\001>\001(\186\001(\231@A\160\146\192\004\r\160\004 \160\150\176\164B@\160\004+@\004\031@\176\192\005\n\136\001\001>\001(\186\001(\235\192\005\n\137\001\001>\001(\186\001(\245@A@\176\004\015\004\002@@\176\004 \004\003@\145\161@\144\005\005]@\165\160\160\176\001\006\245&filter@\147\192B@\160\176\001\006\246!p@\160\176\001\006\247\005\n\163@@\188\144\004\003\196A\176\001\006\250!v@\150\176\164A@\160\004\b@\176\192\005\n\165\001\001B\001).\001)6\192\005\n\166\001\001B\001).\001)F@\196@\176\001\006\252\"l'@\146\192\144\004\027\160\144\004\024\160\150\176\164@@\160\004\024@\004\016@\176\192\005\n\181\001\001D\001)\135\001)\154\192\005\n\182\001\001D\001)\135\001)\164@A\196@\176\001\006\253\"pv@\146\192\004\014\160\144\004 @\176\192\005\n\191\001\001E\001)\168\001)\187\192\005\n\192\001\001E\001)\168\001)\190@@\196@\176\001\006\254\"r'@\146\192\004\026\160\004\025\160\150\176\164B@\160\0040@\004(@\176\192\005\n\205\001\001F\001)\194\001)\213\192\005\n\206\001\001F\001)\194\001)\223@A\188\144\004\025\146\192\005\007\144\160\144\004-\160\004\025\160\144\004\022@\176\192\005\n\217\001\001G\001)\227\001)\248\192\005\n\218\001\001G\001)\227\001*\004@A\146\192\005\003\149\160\004\n\160\004\b@\176\192\005\n\224\001\001G\001)\227\001*\n\192\005\n\225\001\001G\001)\227\001*\022@A\145\161@\144\005\b\127@\165\160\160\176\001\006\255)partition@\147\192B@\160\176\001\007\000!p@\160\176\001\007\001\005\n\249@@\188\144\004\003\196A\176\001\007\004!v@\150\176\164A@\160\004\b@\176\192\005\n\251\001\001K\001*[\001*c\192\005\n\252\001\001K\001*[\001*s@\196@\176\001\007\006\005\006#@\146\192\144\004\026\160\144\004\023\160\150\176\164@@\160\004\023@\004\015@\176\192\005\011\n\001\001M\001*\180\001*\205\192\005\011\011\001\001M\001*\180\001*\218@A\196A\176\001\007\007\"lf@\150\176\164A@\160\144\004\022@\005\b\250\196A\176\001\007\b\"lt@\150\176\164@@\160\004\b@\005\t\001\196@\176\001\007\t\"pv@\146\192\004\029\160\144\004.@\176\192\005\011#\001\001N\001*\222\001*\241\192\005\011$\001\001N\001*\222\001*\244@@\196@\176\001\007\n\005\006K@\146\192\004(\160\004'\160\150\176\164B@\160\004=@\0045@\176\192\005\0110\001\001O\001*\248\001+\017\192\005\0111\001\001O\001*\248\001+\030@A\196A\176\001\007\011\"rf@\150\176\164A@\160\144\004\020@\005\t \196A\176\001\007\012\"rt@\150\176\164@@\160\004\b@\005\t'\188\144\004'\150\176\179@@@\160\146\192\005\b\006\160\144\0046\160\004+\160\144\004\019@\176\192\005\011O\001\001Q\001+2\001+B\192\005\011P\001\001Q\001+2\001+N@A\160\146\192\005\004\012\160\144\004I\160\144\004%@\176\192\005\011Y\001\001Q\001+2\001+P\192\005\011Z\001\001Q\001+2\001+\\@A@\176\192\005\011\\\001\001Q\001+2\001+A\192\005\011]\001\001Q\001+2\001+]@\150\176\179@@@\160\146\192\005\004\028\160\004\027\160\004\025@\176\192\005\011g\001\001R\001+^\001+n\192\005\011h\001\001R\001+^\001+z@A\160\146\192\005\b)\160\004\024\160\004M\160\004\024@\176\192\005\011p\001\001R\001+^\001+|\192\005\011q\001\001R\001+^\001+\136@A@\176\192\005\011s\001\001R\001+^\001+m\192\005\011t\001\001R\001+^\001+\137@\145\178@@\160\161@\144\005\t\020\160\161@\144\005\t\023@@\165\160\160\176\001\007\r(cardinal@\147\192A@\160\176\001\007\014\005\011\142@@\188\144\004\003\150\176H\160\150\176H\160\146\192\144\004\017\160\150\176\164@@\160\004\015@\176\192\005\011\151\001\001V\001+\190\001+\198\192\005\011\152\001\001V\001+\190\001+\214@@\176\192\005\011\154\001\001V\001+\190\001+\218\192\005\011\155\001\001V\001+\190\001+\228@A\160\145\144\144A@\176\004\007\192\005\011\161\001\001V\001+\190\001+\232@\160\146\192\004\021\160\150\176\164B@\160\004#@\004\020@\176\192\005\011\171\001\001V\001+\190\001+\235\192\005\011\172\001\001V\001+\190\001+\245@A@\176\004\020\004\002@\145\144\144@@\165\160\160\176\001\007\019,elements_aux@\147\192B@\160\176\001\007\020$accu@\160\176\001\007\021\005\011\197@@\188\144\004\003\146\192\144\004\014\160\150\176\179@\160\"::A@\160\150\176\164A@\160\004\015@\176\192\005\011\206\001\001Z\001,6\001,>\192\005\011\207\001\001Z\001,6\001,N@\160\146\192\004\018\160\144\004\028\160\150\176\164B@\160\004\028@\004\r@\176\192\005\011\219\001\001Z\001,6\001,e\192\005\011\220\001\001Z\001,6\001,x@A@\176\192\005\011\222\001\001Z\001,6\001,_\192\005\011\223\001\001Z\001,6\001,y@\160\150\176\164@@\160\004'@\004\024@\176\192\005\011\230\001\001Z\001,6\001,R\192\005\011\231\001\001Z\001,6\001,{@A\004\020@\196B\176\001\007\026(elements@\147\192A@\160\176\001\007\027!s@@\146\192\0041\160\145\161@\144\"[]\160\144\004\011@\176\192\005\011\250\001\001]\001,\146\001,\152\192\005\011\251\001\001]\001,\146\001,\169@A\165\160\160\176\001\007\029$find@\147\192B@\160\176\001\007\030!x@\160\176\001\007\031\005\012\016@@\188\144\004\003\196A\176\001\007\"!v@\150\176\164A@\160\004\b@\176\192\005\012\018\001\001c\001-\004\001-\012\192\005\012\019\001\001c\001-\004\001-\028@\196@\176\001\007$!c@\146\192\150\176\164@\145'compare\160\005\n\006@\005\n\005\160\144\004\029\160\144\004\024@\176\192\005\012$\001\001d\001- \001-2\192\005\012%\001\001d\001- \001-A@@\188\150\176\154@\160\144\004\023\160\145\144\144@@\176\192\005\0121\001\001e\001-E\001-R\192\005\0122\001\001e\001-E\001-W@\004\017\146\192\144\0047\160\004\023\160\188\150\176\154B\160\004\018\160\145\144\144@@\176\192\005\012B\001\001f\001-_\001-y\192\005\012C\001\001f\001-_\001-~@\150\176\164@@\160\004?@\0047\150\176\164B@\160\004C@\004;@\176\192\005\012M\001\001f\001-_\001-n\192\005\012N\001\001f\001-_\001-\141@A\150\176C\160\150\176\146\005\b\150@\005\n;@\176\192\005\012V\001\001b\001,\227\001,\244\192\005\012W\001\001b\001,\227\001-\003@@\196B\176\001\007%.of_sorted_list@\147\192A@\160\176\001\007&!l@@\165\160\160\176\001\007'#sub@\147\192B@\160\176\001\007(!n@\160\176\001\007)!l@@\186\188\150\176e\160\145\144\144C\160\144\004\015@\005\n]\169F@\167\144\004\018\208D\160\160@\150\176\179@@@\160\145\161@\144\005\n\030\160\144\004\027@\176\192\005\012\135\001\001k\001-\218\001-\236\192\005\012\136\001\001k\001-\218\001-\244@\160\160A\188\144\004\"\150\176\179@@@\160\150\176\179@\160\005\012_A@\160\145\161@\144\005\n3\160\150\176\164@@\160\004\018@\176\192\005\012\159\001\001l\001-\245\001.\002\192\005\012\160\001\001l\001-\245\001.\t@\160\145\161@\144\005\n?\160\145\144\144A@\176\192\005\012\170\001\001l\001-\245\001.\r\192\005\012\171\001\001l\001-\245\001.'@\160\150\176\164A@\160\004%@\004\019@\176\004\b\192\005\012\178\001\001l\001-\245\001.*@\169F@\160\160B\188\004+\196A\176\001\007/\005\007\221@\150\176\164A@\160\0041@\176\192\005\012\190\001\001m\001.+\001.8\192\005\012\191\001\001m\001.+\001.E@\188\144\004\n\150\176\179@@@\160\150\176\179@\160\005\012\148A@\160\150\176\179@\160\005\012\153A@\160\145\161@\144\005\nm\160\150\176\164@@\160\004L@\004\027\160\145\161@\144\005\nv\160\145\144\144A@\176\192\005\012\225\001\001m\001.+\001.O\192\005\012\226\001\001m\001.+\001.h@\160\150\176\164@@\160\004'@\176\192\005\012\233\001\001m\001.+\001.>\004+@\160\145\161@\144\005\n\136\160\145\144\144B@\176\192\005\012\243\001\001m\001.+\001.I\192\005\012\244\001\001m\001.+\001.w@\160\150\176\164A@\160\0049@\004\018@\176\004\b\192\005\012\251\001\001m\001.+\001.z@\169F@\169F@\160\160C\188\004u\196A\176\001\0073\005\b'@\150\176\164A@\160\004{@\176\192\005\r\b\001\001n\001.{\001.\136\192\005\r\t\001\001n\001.{\001.\155@\188\144\004\n\196A\176\001\0074\005\b2@\150\176\164A@\160\004\007@\176\192\005\r\019\001\001n\001.{\001.\142\004\011@\188\144\004\t\150\176\179@@@\160\150\176\179@\160\005\012\232A@\160\150\176\179@\160\005\012\237A@\160\145\161@\144\005\n\193\160\150\176\164@@\160\004\160@\004%\160\145\161@\144\005\n\202\160\145\144\144A@\176\192\005\r5\001\001o\001.\159\001.\177\192\005\r6\001\001o\001.\159\001.\202@\160\150\176\164@@\160\0041@\004*\160\150\176\179@\160\005\r\011A@\160\145\161@\144\005\n\223\160\150\176\164@@\160\0045@\176\192\005\rK\001\001n\001.{\001.\148\004C@\160\145\161@\144\005\n\234\160\145\144\144A@\176\192\005\rU\001\001o\001.\159\001.\208\192\005\rV\001\001o\001.\159\001.\233@\160\145\144\144B@\176\192\005\r\\\001\001o\001.\159\001.\171\192\005\r]\001\001o\001.\159\001.\237@\160\150\176\164A@\160\004N@\004\025@\176\004\b\192\005\rd\001\001o\001.\159\001.\239@\169F@\169F@\169F@@@@@\160F@\196B\176\001\007;\"nl@\150\176K\160\144\005\001\b\160\145\144\144B@\176\192\005\ru\001\001q\001/\002\001/\021\192\005\rv\001\001q\001/\002\001/\026@\196@\176\001\007<\005\b\157@\146\192\144\005\001\025\160\144\004\020\160\144\005\001\021@\176\192\005\r\129\001\001r\001/\030\001/6\192\005\r\130\001\001r\001/\030\001/>@A\196A\176\001\007=!l@\150\176\164A@\160\144\004\019@\005\011q\188\144\004\t\196@\176\001\007A\005\b\179@\146\192\004\022\160\150\176I\160\150\176I\160\144\005\0011\160\004\029@\176\192\005\r\155\001\001v\001/\144\001/\176\192\005\r\156\001\001v\001/\144\001/\182@\160\145\144\144A@\176\192\005\r\162\001\001v\001/\144\001/\175\192\005\r\163\001\001v\001/\144\001/\187@\160\150\176\164A@\160\004\029@\176\192\005\r\170\001\001u\001/x\001/\132\192\005\r\171\001\001u\001/x\001/\140@@\176\192\005\r\173\001\001v\001/\144\001/\171\192\005\r\174\001\001v\001/\144\001/\189@A\150\176\179@@@\160\146\192\005\012\230\160\150\176\164@@\160\0040@\005\011\160\160\150\176\164@@\160\0043@\004\022\160\150\176\164@@\160\144\0047@\005\011\171@\176\192\005\r\198\001\001w\001/\193\001/\205\192\005\r\199\001\001w\001/\193\001/\226@A\160\150\176\164A@\160\004\t@\005\011\179@\176\004\b\192\005\r\206\001\001w\001/\193\001/\229@\150\176C\160\150\176\179@B@\160\150\176\146\176Z.Assert_failureC@\005\011\193\160\145\178@B\160\144\162\005\r\224@\160\144\144\001\001t\160\144\144R@@\176\192\005\r\232\001\001t\001/Y\001/k\192\005\r\233\001\001t\001/Y\001/w@@\004\003@\150\176\164@@\160\146\192\004u\160\146\192\150\176\164@\145&length\160\150\176\144\176@$ListA@\005\011\228@\005\011\228\160\144\005\001\162@\176\192\005\014\001\001\001y\001/\239\001/\254\192\005\014\002\001\001y\001/\239\0010\r@A\160\004\005@\176\192\005\014\005\001\001y\001/\239\001/\249\192\005\014\006\001\001y\001/\239\0010\016@A@\176\192\005\014\b\001\001y\001/\239\001/\245\004\003@\196B\176\001\007D'of_list@\147\192A@\160\176\001\007E!l@@\188\144\004\004\196A\176\001\007F\005\t9@\150\176\164A@\160\004\007@\176\192\005\014\026\001\001\130\0011\015\0011\023\192\005\014\027\001\001\130\0011\015\0011+@\196A\176\001\007G\"x0@\150\176\164@@\160\004\017@\004\n\188\144\004\017\196A\176\001\007H\005\tK@\150\176\164A@\160\004\007@\176\192\005\014,\001\001\130\0011\015\0011\028\004\018A\196A\176\001\007I\"x1@\150\176\164@@\160\004\016@\004\t\188\144\004\016\196A\176\001\007J\005\t\\@\150\176\164A@\160\004\007@\176\192\005\014=\001\001\130\0011\015\0011 \004#A\196A\176\001\007K\"x2@\150\176\164@@\160\004\016@\004\t\188\144\004\016\196A\176\001\007L\005\tm@\150\176\164A@\160\004\007@\176\192\005\014N\001\001\130\0011\015\0011$\0044A\196A\176\001\007M\"x3@\150\176\164@@\160\004\016@\004\t\188\144\004\016\188\150\176\164A@\160\004\006@\176\192\005\014^\001\001\130\0011\015\0011(\004DA\146\192\144\005\002\t\160\146\192\150\176\164j\145)sort_uniq\160\150\176\144\176@$ListA@\005\012V@\005\012V\160\150\176\164@\145'compare\160\005\012^@\005\012]\160\004f@\176\192\005\014y\001\001\131\0011`\0011|\192\005\014z\001\001\131\0011`\0011\154@A@\176\192\005\014|\001\001\131\0011`\0011m\004\003@A\146\192\005\012<\160\150\176\164@@\160\004-@\004'\160\146\192\005\012D\160\144\0049\160\146\192\005\012I\160\144\004O\160\146\192\005\012N\160\144\004e\160\146\192\005\011\214\160\144\004{@\176\192\005\014\153\001\001\130\0011\015\0011N\192\005\014\154\001\001\130\0011\015\0011\\@A@\176\192\005\014\156\001\001\130\0011\015\0011F\192\005\014\157\001\001\130\0011\015\0011]@A@\176\192\005\014\159\001\001\130\0011\015\0011>\192\005\014\160\001\001\130\0011\015\0011^@A@\176\192\005\014\162\001\001\130\0011\015\00116\192\005\014\163\001\001\130\0011\015\0011_@A@\176\192\005\014\165\001\001\130\0011\015\0011/\004\003@A\146\192\005\012e\160\144\004Z\160\146\192\005\012j\160\144\004p\160\146\192\005\012o\160\144\004\134\160\146\192\005\011\247\160\144\004\156@\176\192\005\014\186\001\001\129\0010\203\0010\254\192\005\014\187\001\001\129\0010\203\0011\012@A@\176\192\005\014\189\001\001\129\0010\203\0010\246\192\005\014\190\001\001\129\0010\203\0011\r@A@\176\192\005\014\192\001\001\129\0010\203\0010\238\192\005\014\193\001\001\129\0010\203\0011\014@A@\176\192\005\014\195\001\001\129\0010\203\0010\231\004\003@A\146\192\005\012\131\160\144\004\137\160\146\192\005\012\136\160\144\004\159\160\146\192\005\012\016\160\144\004\181@\176\192\005\014\211\001\001\128\0010\148\0010\187\192\005\014\212\001\001\128\0010\148\0010\201@A@\176\192\005\014\214\001\001\128\0010\148\0010\179\192\005\014\215\001\001\128\0010\148\0010\202@A@\176\192\005\014\217\001\001\128\0010\148\0010\172\004\003@A\146\192\005\012\153\160\144\004\176\160\146\192\005\012!\160\144\004\198@\176\192\005\014\228\001\001\127\0010j\0010\133\192\005\014\229\001\001\127\0010j\0010\147@A@\176\192\005\014\231\001\001\127\0010j\0010~\004\003@A\146\192\005\012*\160\144\004\207@\176\192\005\014\237\001\001~\0010M\0010]\192\005\014\238\001\001~\0010M\0010i@A\145\161@\144\005\012\140\150\176\179@B@\160\004\007\160\144\005\t\193\160\005\t|\160\005\012\183\160\005\012;\160\005\t\001\160\005\b\131\160\005\007\208\160\005\007K\160\005\006B\160\144\005\006T\160\005\005\214\160\005\005W\160\005\005\028\160\005\004\210\160\005\004\147\160\005\004\\\160\005\004\b\160\005\003z\160\144\005\003#\160\005\011]\160\005\0111\160\144\005\011v\160\005\n2\160\005\002\221\160\144\005\001\n@\005\012\250@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("sort.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\194\000\000\0007\000\000\000\179\000\000\000\170\176\208\208@%array\160\176A\160\160B\144\160\176\001\004\014#cmp@\160\176\001\004\015#arr@@@@@@A$list\160\176@\160\160B\144\160\176\001\003\249%order@\160\176\001\003\250!l@@@@@\208@%merge\160\176@\160\160C\144\160\176\001\003\241%order@\160\176\001\003\242\"l1@\160\176\001\003\243\"l2@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("stack.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\025\000\000\000\252\000\000\0033\000\000\003 \176\208\208@%Empty\160\176@@@@\208@%clear\160\176A\160\160A\144\160\176\001\003\245!s@@@@\144\147\192A@\004\006\150\176\181@A\144!c\160\144\004\012\160\145\161@\144\"[]@\176\192(stack.mlT\001\003\203\001\003\217\192\004\002T\001\003\203\001\003\226@\208@$copy\160\176A\160\160A\144\160\176\001\003\247!s@@@@\144\147\192A@\004\006\150\176\179@\146\144\004\030A\160\150\176\164@\144\004#\160\144\004\017@\176\192\004\029V\001\003\228\001\003\247\192\004\030V\001\003\228\001\003\250@@\176\192\004 V\001\003\228\001\003\241\192\004!V\001\003\228\001\003\252@@ABC&create\160\176A\160\160A\144\160\176\001\004\015%param@@@@\144\147\192A@\004\006\150\176\179@\146\144\004<A\160\145\161@\144\0049@\176\192\0048R\001\003\175\001\003\191\192\0049R\001\003\175\001\003\201@\208\208\208@(is_empty\160\176A\160\160A\144\160\176\001\004\003!s@@@@\144\147\192A@\004\006\150\176\154@\160\150\176\164@\144\004Z\160\144\004\015@\176\192\004Td\001\004\186\001\004\204\192\004Ud\001\004\186\001\004\207@\160\145\161@\144\004\\@\176\192\004[d\001\004\186\001\004\203\192\004\\d\001\004\186\001\004\213@\208@$iter\160\176@\160\160B\144\160\176\001\004\007!f@\160\176\001\004\b!s@@@@\144\147\192B@\004\t\146\192\150\176\164I\145$iter\160\150\176\144\176@$ListA@\176\192&_none_A@\000\255\004\002A@\004\003\160\144\004\026\160\150\176\164@\144\004\141\160\144\004\030@\176\192\004\135h\001\004\247\001\005\018\192\004\136h\001\004\247\001\005\021@@\176\192\004\138h\001\004\247\001\005\006\004\003@A@AB&length\160\176@\160\160A\144\160\176\001\004\005!s@@@@\144\147\192A@\004\006\146\192\150\176\164@\145&length\160\150\176\144\176@$ListA@\004*@\004*\160\150\176\164@\144\004\178\160\144\004\025@\176\192\004\172f\001\004\215\001\004\242\192\004\173f\001\004\215\001\004\245@@\176\192\004\175f\001\004\215\001\004\230\004\003@A\208@#pop\160\176@\160\160A\144\160\176\001\003\252!s@@@@@@AC$push\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!s@@@@@\208@#top\160\176@\160\160A\144\160\176\001\004\000!s@@@@@@ADE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("stdLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000~\000\000\000\"\000\000\000m\000\000\000e\176\208\208@%Array\160@\144\145\161@A@A%Bytes\160@\144\145\004\005\208@$List\160@\144\145\004\n\208@&String\160@\144\145\004\015@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("std_exit.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000B\000\000\000\015\000\000\000.\000\000\000*\176@\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("stream.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\248\000\000\000\251\000\000\003A\000\000\003#\176\208\208\208\208@%Error\160\176@@@@@A'Failure\160\004\003@\208\208@%count\160@\144\147\192A@\160\176\001\004m$prim@@\150\176\164@@\160\144\004\007@\176\192&_none_A@\000\255\004\002A\208@$dump\160\176@\160\160B\144\160\176\001\004e!f@\160\176\001\004f!s@@@@@@AB%empty\160\176A\160\160A\144\160\176\001\004:!s@@@@@@CD$from\160\176A\160\160A\144\160\176\001\004A!f@@@@@\208@$iapp\160\176A\160\160B\144\160\176\001\004Q!i@\160\176\001\004R!s@@@@@\208@%icons\160\176A\160\160B\144\160\176\001\004T!i@\160\176\001\004U!s@@@@@\208@%ising\160\176A\160\160A\144\160\176\001\004W!i@@@@@@ABCE$iter\160\176@\160\160B\144\160\176\001\004<!f@\160\176\001\004=$strm@@@@@\208\208\208\208@$junk\160\176@\160\160A\144\160\176\001\004%!s@@@@@@A$lapp\160\176A\160\160B\144\160\176\001\004Y!f@\160\176\001\004Z!s@@@@@\208@%lcons\160\176A\160\160B\144\160\176\001\004\\!f@\160\176\001\004]!s@@@@@\208@%lsing\160\176A\160\160A\144\160\176\001\004_!f@@@@@@ABC$next\160\176@\160\160A\144\160\176\001\0047!s@@@@@\208@%npeek\160\176@\160\160B\144\160\176\001\0041!n@\160\176\001\0042!s@@@@@@AD(of_bytes\160\176A\160\160A\144\160\176\001\004K!s@@@@@\208\208@*of_channel\160\176A\160\160A\144\160\176\001\004O\"ic@@@@@@A'of_list\160\176A\160\160A\144\160\176\001\004C!l@@@@@\208\208@)of_string\160\176A\160\160A\144\160\176\001\004G!s@@@@@@A$peek\160\176@\160\160A\144\160\176\001\004\027!s@@@@@\208@&sempty\160@@\208@%slazy\160\176A\160\160A\144\160\176\001\004b!f@@@@@@ABCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\nt\000\000\003\024\000\000\n\029\000\000\t\231\176\208\208\208\208@$blit\160\176@\160\160E\144\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\144\160\176\001\004E!s@@@@\144\147\192A@\004\006\146\192\150\176\164`\1450unsafe_to_string\160\150\176\144\176@%BytesA@\176\192&_none_A@\000\255\004\002A@\004\003\160\146\192\150\176\164]\145*capitalize\160\150\176\144\004\017@\004\015@\004\015\160\146\192\150\176\164a\1450unsafe_of_string\160\150\176\144\004\029@\004\027@\004\027\160\144\004/@\176\192)string.ml\000x\001\014X\001\014g\192\004\002\000x\001\014X\001\014n@@@\176\192\004\004\000x\001\014X\001\014Z\004\003@A@\176\004\002\192\004\006\000x\001\014X\001\014u@@\208@'compare\160\176@\160\160B\144\160\176\001\004J!x@\160\176\001\004K!y@@@@\144\147\192B@\004\t\150\176\153\2083caml_string_compareB@ @\160\144\004\016\160\144\004\015@\176\192\004\"\000~\001\014\189\001\014\217\192\004#\000~\001\014\189\001\014\239@@ABC&concat\160\176A\160\160B\144\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\144\160\176\001\0046!s@\160\176\001\0047!c@@@@\144\147\192B@\004\t\146\192\150\176\164X\145(contains\160\150\176\144\004k@\004i@\004i\160\146\192\150\176\004Z\160\150\176\004W@\004q@\004q\160\144\004\029@\176\192\004V\000n\001\r^\001\rk\192\004W\000n\001\r^\001\rr@@\160\144\004\031@\176\192\004[\000n\001\r^\001\r`\192\004\\\000n\001\r^\001\rt@A\208@-contains_from\160\176A\160\160C\144\160\176\001\0049!s@\160\176\001\004:!i@\160\176\001\004;!c@@@@@@ABD$copy\160\176@\160\160A\144\160\176\001\004\002!s@@@@\144\147\192A@\004\006\146\192\150\176\004\164\160\150\176\004\161@\004\158@\004\158\160\146\192\150\176\164C\145$copy\160\150\176\144\004\172@\004\170@\004\170\160\146\192\150\176\004\155\160\150\176\004\152@\004\178@\004\178\160\144\004\"@\176\192\004\151e\001\006\173\001\006\182\192\004\152e\001\006\173\001\006\189@@@\176\192\004\154e\001\006\173\001\006\175\004\003@A@\176\004\002\192\004\156e\001\006\173\001\006\196@@\208\208@'escaped\160\176@\160\160A\144\160\176\001\004$!s@@@@@@A$fill\160\176@\160\160D\144\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\144\160\176\001\004(!s@\160\176\001\004)!c@@@@\144\147\192B@\004\t\146\192\150\176\164T\145%index\160\150\176\144\004\245@\004\243@\004\243\160\146\192\150\176\004\228\160\150\176\004\225@\004\251@\004\251\160\144\004\029@\176\192\004\224\000f\001\012\172\001\012\182\192\004\225\000f\001\012\172\001\012\189@@\160\144\004\031@\176\192\004\229\000f\001\012\172\001\012\174\192\004\230\000f\001\012\172\001\012\191@A\208@*index_from\160\176@\160\160C\144\160\176\001\004.!s@\160\176\001\004/!i@\160\176\001\0040!c@@@@@@ABCE$init\160\176@\160\160B\144\160\176\001\003\255!n@\160\176\001\004\000!f@@@@\144\147\192B@\004\t\146\192\150\176\005\0011\160\150\176\005\001.@\005\001+@\005\001+\160\146\192\150\176\164A\145$init\160\150\176\144\005\0019@\005\0017@\005\0017\160\144\004\029\160\144\004\028@\176\192\005\001\030c\001\006\140\001\006\142\192\005\001\031c\001\006\140\001\006\152@A@\176\004\003\192\005\001!c\001\006\140\001\006\159@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004\021!f@\160\176\001\004\022!s@@@@\144\147\192B@\004\t\146\192\150\176\164N\145$iter\160\150\176\144\005\001^@\005\001\\@\005\001\\\160\144\004\021\160\146\192\150\176\005\001O\160\150\176\005\001L@\005\001f@\005\001f\160\144\004\028@\176\192\005\001K\000@\001\tU\001\t`\192\005\001L\000@\001\tU\001\tg@@@\176\192\005\001N\000@\001\tU\001\tW\004\003@A\208@%iteri\160\176A\160\160B\144\160\176\001\004\024!f@\160\176\001\004\025!s@@@@\144\147\192B@\004\t\146\192\150\176\164O\145%iteri\160\150\176\144\005\001\138@\005\001\136@\005\001\136\160\144\004\021\160\146\192\150\176\005\001{\160\150\176\005\001x@\005\001\146@\005\001\146\160\144\004\028@\176\192\005\001w\000B\001\tx\001\t\132\192\005\001x\000B\001\tx\001\t\139@@@\176\192\005\001z\000B\001\tx\001\tz\004\003@A\208@)lowercase\160\176@\160\160A\144\160\176\001\004C!s@@@@\144\147\192A@\004\006\146\192\150\176\005\001\179\160\150\176\005\001\176@\005\001\173@\005\001\173\160\146\192\150\176\164\\\145)lowercase\160\150\176\144\005\001\187@\005\001\185@\005\001\185\160\146\192\150\176\005\001\170\160\150\176\005\001\167@\005\001\193@\005\001\193\160\144\004\"@\176\192\005\001\166\000v\001\014(\001\0146\192\005\001\167\000v\001\014(\001\014=@@@\176\192\005\001\169\000v\001\014(\001\014*\004\003@A@\176\004\002\192\005\001\171\000v\001\014(\001\014D@@@ABC$make\160\176@\160\160B\144\160\176\001\003\252!n@\160\176\001\003\253!c@@@@\144\147\192B@\004\t\146\192\150\176\005\001\230\160\150\176\005\001\227@\005\001\224@\005\001\224\160\146\192\150\176\164@\145$make\160\150\176\144\005\001\238@\005\001\236@\005\001\236\160\144\004\029\160\144\004\028@\176\192\005\001\211a\001\006i\001\006k\192\005\001\212a\001\006i\001\006u@A@\176\004\003\192\005\001\214a\001\006i\001\006|@@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\144\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\144\160\176\001\004=!s@\160\176\001\004>!i@\160\176\001\004?!c@@@@@@A&rindex\160\176@\160\160B\144\160\176\001\004+!s@\160\176\001\004,!c@@@@\144\147\192B@\004\t\146\192\150\176\164U\145&rindex\160\150\176\144\005\002=@\005\002;@\005\002;\160\146\192\150\176\005\002,\160\150\176\005\002)@\005\002C@\005\002C\160\144\004\029@\176\192\005\002(\000h\001\012\209\001\012\220\192\005\002)\000h\001\012\209\001\012\227@@\160\144\004\031@\176\192\005\002-\000h\001\012\209\001\012\211\192\005\002.\000h\001\012\209\001\012\229@A\208@+rindex_from\160\176@\160\160C\144\160\176\001\0042!s@\160\176\001\0043!i@\160\176\001\0044!c@@@@@@ABC#sub\160\176@\160\160C\144\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\144\160\176\001\004\"!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\144\160\176\001\004G!s@@@@\144\147\192A@\004\006\146\192\150\176\005\002\145\160\150\176\005\002\142@\005\002\139@\005\002\139\160\146\192\150\176\164^\145,uncapitalize\160\150\176\144\005\002\153@\005\002\151@\005\002\151\160\146\192\150\176\005\002\136\160\150\176\005\002\133@\005\002\159@\005\002\159\160\144\004\"@\176\192\005\002\132\000z\001\014\139\001\014\156\192\005\002\133\000z\001\014\139\001\014\163@@@\176\192\005\002\135\000z\001\014\139\001\014\141\004\003@A@\176\004\002\192\005\002\137\000z\001\014\139\001\014\170@@@A)uppercase\160\176@\160\160A\144\160\176\001\004A!s@@@@\144\147\192A@\004\006\146\192\150\176\005\002\193\160\150\176\005\002\190@\005\002\187@\005\002\187\160\146\192\150\176\164[\145)uppercase\160\150\176\144\005\002\201@\005\002\199@\005\002\199\160\146\192\150\176\005\002\184\160\150\176\005\002\181@\005\002\207@\005\002\207\160\144\004\"@\176\192\005\002\180\000t\001\r\249\001\014\007\192\005\002\181\000t\001\r\249\001\014\014@@@\176\192\005\002\183\000t\001\r\249\001\r\251\004\003@A@\176\004\002\192\005\002\185\000t\001\r\249\001\014\021@@@BCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("stringLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\030\000\000\001[\000\000\004k\000\000\004K\176\208\208\208\208@$blit\160\176@\160\160E\144\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\144\160\176\001\004E!s@@@@@\208@'compare\160\176@\160\160B\144\160\176\001\004J!x@\160\176\001\004K!y@@@@@@ABC&concat\160\176A\160\160B\144\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\144\160\176\001\0046!s@\160\176\001\0047!c@@@@@\208@-contains_from\160\176A\160\160C\144\160\176\001\0049!s@\160\176\001\004:!i@\160\176\001\004;!c@@@@@@ABD$copy\160\176@\160\160A\144\160\176\001\004\002!s@@@@@\208\208@'escaped\160\176@\160\160A\144\160\176\001\004$!s@@@@@@A$fill\160\176@\160\160D\144\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\144\160\176\001\004(!s@\160\176\001\004)!c@@@@@\208@*index_from\160\176@\160\160C\144\160\176\001\004.!s@\160\176\001\004/!i@\160\176\001\0040!c@@@@@@ABCE$init\160\176@\160\160B\144\160\176\001\003\255!n@\160\176\001\004\000!f@@@@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004\021!f@\160\176\001\004\022!s@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\004\024!f@\160\176\001\004\025!s@@@@@\208@)lowercase\160\176@\160\160A\144\160\176\001\004C!s@@@@@@ABC$make\160\176@\160\160B\144\160\176\001\003\252!n@\160\176\001\003\253!c@@@@@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\144\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\144\160\176\001\004=!s@\160\176\001\004>!i@\160\176\001\004?!c@@@@@@A&rindex\160\176@\160\160B\144\160\176\001\004+!s@\160\176\001\004,!c@@@@@\208@+rindex_from\160\176@\160\160C\144\160\176\001\0042!s@\160\176\001\0043!i@\160\176\001\0044!c@@@@@@ABC#sub\160\176@\160\160C\144\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\144\160\176\001\004\"!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\144\160\176\001\004G!s@@@@@@A)uppercase\160\176@\160\160A\144\160\176\001\004A!s@@@@@@BCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\001\000\000\000\165\000\000\002{\000\000\002H\176\208\208\208\208\208@%Break\160\176@@@@@A$argv\160@@\208\208@*big_endian\160\176A@@@\208@+catch_break\160\176A\160\160A\144\160\176\001\004-\"on@@@@@@AB&cygwin\160\004\r@@CD/executable_name\160@@\208\208@+interactive\160\004\019@@A%is_js\160\004\028@\208\208@0max_array_length\160\004\025@@A1max_string_length\160\004\027@\208@-ocaml_version\160@@@ABCE'os_type\160@@\208\208\208@*set_signal\160\176A\160\160B\144\160\176\001\004\020'sig_num@\160\176\001\004\021'sig_beh@@@@\144\147\192B@\004\t\173\150\176\153\208;caml_install_signal_handlerBA @\160\144\004\017\160\144\004\016@\176\192&sys.ml|\001\n$\001\nK\192\004\002|\001\n$\001\nc@\145\161@\144\"()@A'sigabrt\160@@@B'sigalrm\160@@\208\208@'sigchld\160@@\208@'sigcont\160@@@AB&sigfpe\160@@\208@&sighup\160@@@ACDF&sigill\160@@\208\208\208\208@&sigint\160@@@A'sigkill\160@@\208@'sigpipe\160@@\208@'sigprof\160@@@ABC'sigquit\160@@\208@'sigsegv\160@@\208@'sigstop\160@@@ABD'sigterm\160@@\208\208\208@'sigtstp\160@@\208@'sigttin\160@@\208@'sigttou\160@@@ABC'sigusr1\160@@\208@'sigusr2\160@@\208@)sigvtalrm\160@@@ABD$unix\160\004\132@\208@%win32\160\004\135@\208@)word_size\160@@@ABEFG@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("unix.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000'M\000\000\t\240\000\000\"4\000\000 \139\176\208\208\208\208\208\208\208@)LargeFile\160@@@A*Unix_error\160\176@@@@\208@&accept\160@\144\147\192A@\160\176\001\007 $prim@@\150\176\153\208+unix_acceptAA @\160\144\004\n@\176\192&_none_A@\000\255\004\002A@AB&access\160@\144\147\192B@\160\176\001\007k\004\019@\160\176\001\007j\004\021@@\150\176\153\208+unix_accessBA\004\020@\160\144\004\n\160\144\004\n@\004\021\208\208@%alarm\160@\144\147\192A@\160\176\001\007@\004'@@\150\176\153\208*unix_alarmAA\004&@\160\144\004\b@\004%\208@$bind\160@\144\147\192B@\160\176\001\007\031\0046@\160\176\001\007\030\0048@@\150\176\153\208)unix_bindBA\0047@\160\144\004\n\160\144\004\n@\0048@AB%chdir\160@\144\147\192A@\160\176\001\007_\004H@@\150\176\153\208*unix_chdirAA\004G@\160\144\004\b@\004F@CD%chmod\160@\144\147\192B@\160\176\001\007v\004V@\160\176\001\007u\004X@@\150\176\153\208*unix_chmodBA\004W@\160\144\004\n\160\144\004\n@\004X\208\208@%chown\160@\144\147\192C@\160\176\001\007r\004j@\160\176\001\007q\004l@\160\176\001\007p\004n@@\150\176\153\208*unix_chownCA\004m@\160\144\004\012\160\144\004\012\160\144\004\012@\004p\208@&chroot\160@\144\147\192A@\160\176\001\007]\004\129@@\150\176\153\208+unix_chrootAA\004\128@\160\144\004\b@\004\127@AB3clear_close_on_exec\160@\144\147\192A@\160\176\001\007c\004\143@@\150\176\153\2088unix_clear_close_on_execAA\004\142@\160\144\004\b@\004\141\208@.clear_nonblock\160@\144\147\192A@\160\176\001\007e\004\158@@\150\176\153\2083unix_clear_nonblockAA\004\157@\160\144\004\b@\004\156@ACE%close\160@\144\147\192A@\160\176\001\007\149\004\172@@\150\176\153\208*unix_closeAA\004\171@\160\144\004\b@\004\170\208\208\208\208@-close_process\160\176@\160\160A\144\160\176\001\007\186%param@@@@@\208@2close_process_full\160\176@\160\160A\144\160\176\001\007\182\004\n@@@@@@AB0close_process_in\160\176@\160\160A\144\160\176\001\006\226&inchan@@@@@\208\208@1close_process_out\160\176@\160\160A\144\160\176\001\006\229'outchan@@@@@@A(closedir\160@\144\147\192A@\160\176\001\007Y\004\228@@\150\176\153\208-unix_closedirAA\004\227@\160\144\004\b@\004\226\208@'connect\160@\144\147\192B@\160\176\001\007\029\004\243@\160\176\001\007\028\004\245@@\150\176\153\208,unix_connectBA\004\244@\160\144\004\n\160\144\004\n@\004\245@ABC.create_process\160\176@\160\160E\144\160\176\001\006m#cmd@\160\176\001\006n$args@\160\176\001\006o)new_stdin@\160\176\001\006p*new_stdout@\160\176\001\006q*new_stderr@@@@@\208\208@2create_process_env\160\176@\160\160F\144\160\176\001\006t#cmd@\160\176\001\006u$args@\160\176\001\006v#env@\160\176\001\006w)new_stdin@\160\176\001\006x*new_stdout@\160\176\001\006y*new_stderr@@@@@@A3descr_of_in_channel\160@\144\147\192A@\160\176\001\007\146\005\0014@@\150\176\153\2087caml_channel_descriptorAA\005\0013@\160\144\004\b@\005\0012@BD4descr_of_out_channel\160@\144\147\192A@\160\176\001\007\145\005\001B@@\150\176\153\2087caml_channel_descriptorAA\005\001A@\160\144\004\b@\005\001@\208\208\208@2domain_of_sockaddr\160\176A\160\160A\144\160\176\001\007\254\004\149@@@@@@A#dup\160@\144\147\192A@\160\176\001\007i\005\001[@@\150\176\153\208(unix_dupAA\005\001Z@\160\144\004\b@\005\001Y\208@$dup2\160@\144\147\192B@\160\176\001\007h\005\001j@\160\176\001\007g\005\001l@@\150\176\153\208)unix_dup2BA\005\001k@\160\144\004\n\160\144\004\n@\005\001l@AB+environment\160@\144\147\192A@\160\176\001\007\173\005\001|@@\150\176\153\2080unix_environmentAA\005\001{@\160\144\004\b@\005\001z\208@-error_message\160@\144\147\192A@\160\176\001\007\174\005\001\139@@\150\176\153\2082unix_error_messageAA\005\001\138@\160\144\004\b@\005\001\137\208\208@0establish_server\160\176A\160\160B\144\160\176\001\006\249*server_fun@\160\176\001\006\250(sockaddr@@@@@@A%execv\160@\144\147\192B@\160\176\001\007\169\005\001\167@\160\176\001\007\168\005\001\169@@\150\176\153\208*unix_execvBA\005\001\168@\160\144\004\n\160\144\004\n@\005\001\169@BCDEF&execve\160@\144\147\192C@\160\176\001\007\167\005\001\185@\160\176\001\007\166\005\001\187@\160\176\001\007\165\005\001\189@@\150\176\153\208+unix_execveCA\005\001\188@\160\144\004\012\160\144\004\012\160\144\004\012@\005\001\191\208\208\208@&execvp\160@\144\147\192B@\160\176\001\007\164\005\001\210@\160\176\001\007\163\005\001\212@@\150\176\153\208+unix_execvpBA\005\001\211@\160\144\004\n\160\144\004\n@\005\001\212@A'execvpe\160@\144\147\192C@\160\176\001\007\162\005\001\228@\160\176\001\007\161\005\001\230@\160\176\001\007\160\005\001\232@@\150\176\153\208,unix_execvpeCA\005\001\231@\160\144\004\012\160\144\004\012\160\144\004\012@\005\001\234\208@&fchmod\160@\144\147\192B@\160\176\001\007t\005\001\251@\160\176\001\007s\005\001\253@@\150\176\153\208+unix_fchmodBA\005\001\252@\160\144\004\n\160\144\004\n@\005\001\253\208@&fchown\160@\144\147\192C@\160\176\001\007o\005\002\014@\160\176\001\007n\005\002\016@\160\176\001\007m\005\002\018@@\150\176\153\208+unix_fchownCA\005\002\017@\160\144\004\012\160\144\004\012\160\144\004\012@\005\002\020@ABC$fork\160@\144\147\192A@\160\176\001\007\159\005\002$@@\150\176\153\208)unix_forkAA\005\002#@\160\144\004\b@\005\002\"\208\208@%fstat\160@\144\147\192A@\160\176\001\007\135\005\0024@@\150\176\153\208*unix_fstatAA\005\0023@\160\144\004\b@\005\0022@A)ftruncate\160@\144\147\192B@\160\176\001\007\139\005\002B@\160\176\001\007\138\005\002D@@\150\176\153\208.unix_ftruncateBA\005\002C@\160\144\004\n\160\144\004\n@\005\002D\208\208@+getaddrinfo\160\176@\160\160C\144\160\176\001\006\006$node@\160\176\001\006\007'service@\160\176\001\006\b$opts@@@@@@A&getcwd\160@\144\147\192A@\160\176\001\007^\005\002e@@\150\176\153\208+unix_getcwdAA\005\002d@\160\144\004\b@\005\002c\208@'getegid\160@\144\147\192A@\160\176\001\0073\005\002t@@\150\176\153\208,unix_getegidAA\005\002s@\160\144\004\b@\005\002r@ABCDG&getenv\160@\144\147\192A@\160\176\001\007\172\005\002\130@@\150\176\153\208/caml_sys_getenvAA\005\002\129@\160\144\004\b@\005\002\128\208\208\208\208\208\208\208@'geteuid\160@\144\147\192A@\160\176\001\0076\005\002\151@@\150\176\153\208,unix_geteuidAA\005\002\150@\160\144\004\b@\005\002\149@A&getgid\160@\144\147\192A@\160\176\001\0074\005\002\165@@\150\176\153\208+unix_getgidAA\005\002\164@\160\144\004\b@\005\002\163\208\208@(getgrgid\160@\144\147\192A@\160\176\001\007)\005\002\181@@\150\176\153\208-unix_getgrgidAA\005\002\180@\160\144\004\b@\005\002\179@A(getgrnam\160@\144\147\192A@\160\176\001\007+\005\002\195@@\150\176\153\208-unix_getgrnamAA\005\002\194@\160\144\004\b@\005\002\193@BC)getgroups\160@\144\147\192A@\160\176\001\0071\005\002\209@@\150\176\153\208.unix_getgroupsAA\005\002\208@\160\144\004\b@\005\002\207\208\208\208\208@-gethostbyaddr\160@\144\147\192A@\160\176\001\007\019\005\002\227@@\150\176\153\2082unix_gethostbyaddrAA\005\002\226@\160\144\004\b@\005\002\225@A-gethostbyname\160@\144\147\192A@\160\176\001\007\020\005\002\241@@\150\176\153\2082unix_gethostbynameAA\005\002\240@\160\144\004\b@\005\002\239@B+gethostname\160@\144\147\192A@\160\176\001\007\021\005\002\255@@\150\176\153\2080unix_gethostnameAA\005\002\254@\160\144\004\b@\005\002\253@C)getitimer\160@\144\147\192A@\160\176\001\007:\005\003\r@@\150\176\153\208.unix_getitimerAA\005\003\012@\160\144\004\b@\005\003\011\208@(getlogin\160@\144\147\192A@\160\176\001\007-\005\003\028@@\150\176\153\208-unix_getloginAA\005\003\027@\160\144\004\b@\005\003\026\208\208@+getnameinfo\160\176@\160\160B\144\160\176\001\006\029$addr@\160\176\001\006\030$opts@@@@@@A+getpeername\160@\144\147\192A@\160\176\001\007\022\005\0038@@\150\176\153\2080unix_getpeernameAA\005\0037@\160\144\004\b@\005\0036@BCDE&getpid\160@\144\147\192A@\160\176\001\007\155\005\003F@@\150\176\153\208+unix_getpidAA\005\003E@\160\144\004\b@\005\003D\208\208\208@'getppid\160@\144\147\192A@\160\176\001\007\154\005\003W@@\150\176\153\208,unix_getppidAA\005\003V@\160\144\004\b@\005\003U\208@.getprotobyname\160@\144\147\192A@\160\176\001\007\018\005\003f@@\150\176\153\2083unix_getprotobynameAA\005\003e@\160\144\004\b@\005\003d\208@0getprotobynumber\160@\144\147\192A@\160\176\001\007\017\005\003u@@\150\176\153\2085unix_getprotobynumberAA\005\003t@\160\144\004\b@\005\003s@ABC(getpwnam\160@\144\147\192A@\160\176\001\007,\005\003\131@@\150\176\153\208-unix_getpwnamAA\005\003\130@\160\144\004\b@\005\003\129\208@(getpwuid\160@\144\147\192A@\160\176\001\007*\005\003\146@@\150\176\153\208-unix_getpwuidAA\005\003\145@\160\144\004\b@\005\003\144\208@-getservbyname\160@\144\147\192B@\160\176\001\007\016\005\003\161@\160\176\001\007\015\005\003\163@@\150\176\153\2082unix_getservbynameBA\005\003\162@\160\144\004\n\160\144\004\n@\005\003\163\208@-getservbyport\160@\144\147\192B@\160\176\001\007\014\005\003\180@\160\176\001\007\r\005\003\182@@\150\176\153\2082unix_getservbyportBA\005\003\181@\160\144\004\n\160\144\004\n@\005\003\182@ABCD+getsockname\160@\144\147\192A@\160\176\001\007\023\005\003\198@@\150\176\153\2080unix_getsocknameAA\005\003\197@\160\144\004\b@\005\003\196\208\208@*getsockopt\160\176@\160\160B\144\160\176\001\005\176\"fd@\160\176\001\005\177#opt@@@@@\208@0getsockopt_error\160\176@\160\160A\144\160\176\001\005\204\"fd@@@@@@AB0getsockopt_float\160\176@\160\160B\144\160\176\001\005\197\"fd@\160\176\001\005\198#opt@@@@@\208@.getsockopt_int\160\176@\160\160B\144\160\176\001\005\183\"fd@\160\176\001\005\184#opt@@@@@\208@1getsockopt_optint\160\176@\160\160B\144\160\176\001\005\190\"fd@\160\176\001\005\191#opt@@@@@@ABCEF,gettimeofday\160@\144\147\192A@\160\176\001\007D\005\004\018@@\150\176\153\2081unix_gettimeofdayAA\005\004\017@\160\144\004\b@\005\004\016\208\208\208@&getuid\160@\144\147\192A@\160\176\001\0077\005\004#@@\150\176\153\208+unix_getuidAA\005\004\"@\160\144\004\b@\005\004!@A&gmtime\160@\144\147\192A@\160\176\001\007C\005\0041@@\150\176\153\208+unix_gmtimeAA\005\0040@\160\144\004\b@\005\004/@B1handle_unix_error\160\176@\160\160B\144\160\176\001\004>!f@\160\176\001\004?#arg@@@@@\208\208\208@3in_channel_of_descr\160@\144\147\192A@\160\176\001\007\148\005\004N@@\150\176\153\208:caml_ml_open_descriptor_inAA\005\004M@\160\144\004\b@\005\004L@A.inet6_addr_any\160\176@@@@\208\208@3inet6_addr_loopback\160\176@@@@@A-inet_addr_any\160\005\004h@\208@2inet_addr_loopback\160\005\004k@@ABC3inet_addr_of_string\160@\144\147\192A@\160\176\001\007(\005\004i@@\150\176\153\2088unix_inet_addr_of_stringAA\005\004h@\160\144\004\b@\005\004g\208@*initgroups\160@\144\147\192B@\160\176\001\007/\005\004x@\160\176\001\007.\005\004z@@\150\176\153\208/unix_initgroupsBA\005\004y@\160\144\004\n\160\144\004\n@\005\004z@ADEG&isatty\160@\144\147\192A@\160\176\001\007\134\005\004\138@@\150\176\153\208+unix_isattyAA\005\004\137@\160\144\004\b@\005\004\136\208\208\208\208@$kill\160@\144\147\192B@\160\176\001\007K\005\004\156@\160\176\001\007J\005\004\158@@\150\176\153\208)unix_killBA\005\004\157@\160\144\004\n\160\144\004\n@\005\004\158@A$link\160@\144\147\192B@\160\176\001\007x\005\004\174@\160\176\001\007w\005\004\176@@\150\176\153\208)unix_linkBA\005\004\175@\160\144\004\n\160\144\004\n@\005\004\176\208\208\208@&listen\160@\144\147\192B@\160\176\001\007\027\005\004\195@\160\176\001\007\026\005\004\197@@\150\176\153\208+unix_listenBA\005\004\196@\160\144\004\n\160\144\004\n@\005\004\197@A)localtime\160@\144\147\192A@\160\176\001\007B\005\004\213@@\150\176\153\208.unix_localtimeAA\005\004\212@\160\144\004\b@\005\004\211@B%lockf\160@\144\147\192C@\160\176\001\007N\005\004\227@\160\176\001\007M\005\004\229@\160\176\001\007L\005\004\231@@\150\176\153\208*unix_lockfCA\005\004\230@\160\144\004\012\160\144\004\012\160\144\004\012@\005\004\233@CD%lseek\160@\144\147\192C@\160\176\001\007\144\005\004\249@\160\176\001\007\143\005\004\251@\160\176\001\007\142\005\004\253@@\150\176\153\208*unix_lseekCA\005\004\252@\160\144\004\012\160\144\004\012\160\144\004\012@\005\004\255\208\208@%lstat\160@\144\147\192A@\160\176\001\007\136\005\005\017@@\150\176\153\208*unix_lstatAA\005\005\016@\160\144\004\b@\005\005\015@A%mkdir\160@\144\147\192B@\160\176\001\007b\005\005\031@\160\176\001\007a\005\005!@@\150\176\153\208*unix_mkdirBA\005\005 @\160\144\004\n\160\144\004\n@\005\005!\208@&mkfifo\160@\144\147\192B@\160\176\001\007W\005\0052@\160\176\001\007V\005\0054@@\150\176\153\208+unix_mkfifoBA\005\0053@\160\144\004\n\160\144\004\n@\005\0054\208@&mktime\160@\144\147\192A@\160\176\001\007A\005\005E@@\150\176\153\208+unix_mktimeAA\005\005D@\160\144\004\b@\005\005C@ABCE$nice\160@\144\147\192A@\160\176\001\007\153\005\005S@@\150\176\153\208)unix_niceAA\005\005R@\160\144\004\b@\005\005Q\208\208\208\208@/open_connection\160\176A\160\160A\144\160\176\001\006\241(sockaddr@@@@@@A,open_process\160\176A\160\160A\144\160\176\001\006\188#cmd@@@@@\208@1open_process_full\160\176A\160\160B\144\160\176\001\006\208#cmd@\160\176\001\006\209#env@@@@@@AB/open_process_in\160\176@\160\160A\144\160\176\001\006\176#cmd@@@@@\208\208@0open_process_out\160\176@\160\160A\144\160\176\001\006\182#cmd@@@@@@A'opendir\160@\144\147\192A@\160\176\001\007\\\005\005\152@@\150\176\153\208,unix_opendirAA\005\005\151@\160\144\004\b@\005\005\150@BC(openfile\160@\144\147\192C@\160\176\001\007\152\005\005\166@\160\176\001\007\151\005\005\168@\160\176\001\007\150\005\005\170@@\150\176\153\208)unix_openCA\005\005\169@\160\144\004\012\160\144\004\012\160\144\004\012@\005\005\172\208@4out_channel_of_descr\160@\144\147\192A@\160\176\001\007\147\005\005\189@@\150\176\153\208;caml_ml_open_descriptor_outAA\005\005\188@\160\144\004\b@\005\005\187\208\208@%pause\160\176@\160\160A\144\160\176\001\b\007\005\005\015@@@@\144\147\192A@\004\005\150\176\153\208/unix_sigsuspendAA\005\005\208@\160\150\176\153\2080unix_sigprocmaskBA\005\005\214@\160\145\161A\144)SIG_BLOCK\160\145\161@\144\"[]@\176\192'unix.ml\001\001\149\001/\151\001/\164\192\004\002\001\001\149\001/\151\001/\188@@\176\192\004\004\001\001\149\001/\151\001/\192\192\004\005\001\001\149\001/\151\001/\207@@A$pipe\160@\144\147\192A@\160\176\001\007X\005\005\244@@\150\176\153\208)unix_pipeAA\005\005\243@\160\144\004\b@\005\005\242@BCDFH&putenv\160@\144\147\192B@\160\176\001\007\171\005\006\002@\160\176\001\007\170\005\006\004@@\150\176\153\208+unix_putenvBA\005\006\003@\160\144\004\n\160\144\004\n@\005\006\004\208\208\208\208\208@$read\160\176@\160\160D\144\160\176\001\004q\"fd@\160\176\001\004r#buf@\160\176\001\004s#ofs@\160\176\001\004t#len@@@@@@A'readdir\160@\144\147\192A@\160\176\001\007[\005\006+@@\150\176\153\208,unix_readdirAA\005\006*@\160\144\004\b@\005\006)\208@(readlink\160@\144\147\192A@\160\176\001\007S\005\006:@@\150\176\153\208-unix_readlinkAA\005\0069@\160\144\004\b@\005\0068\208@$recv\160\176@\160\160E\144\160\176\001\005a\"fd@\160\176\001\005b#buf@\160\176\001\005c#ofs@\160\176\001\005d#len@\160\176\001\005e%flags@@@@@\208@(recvfrom\160\176@\160\160E\144\160\176\001\005g\"fd@\160\176\001\005h#buf@\160\176\001\005i#ofs@\160\176\001\005j#len@\160\176\001\005k%flags@@@@@@ABCD&rename\160@\144\147\192B@\160\176\001\007z\005\006t@\160\176\001\007y\005\006v@@\150\176\153\208+unix_renameBA\005\006u@\160\144\004\n\160\144\004\n@\005\006v\208\208\208@)rewinddir\160@\144\147\192A@\160\176\001\007Z\005\006\137@@\150\176\153\208.unix_rewinddirAA\005\006\136@\160\144\004\b@\005\006\135@A%rmdir\160@\144\147\192A@\160\176\001\007`\005\006\151@@\150\176\153\208*unix_rmdirAA\005\006\150@\160\144\004\b@\005\006\149\208@&select\160@@@AB$send\160\176@\160\160E\144\160\176\001\005m\"fd@\160\176\001\005n#buf@\160\176\001\005o#ofs@\160\176\001\005p#len@\160\176\001\005q%flags@@@@@\208@.send_substring\160\176@\160\160E\144\160\176\001\005z\"fd@\160\176\001\005{#buf@\160\176\001\005|#ofs@\160\176\001\005}#len@\160\176\001\005~%flags@@@@@\208@&sendto\160\176@\160\160F\144\160\176\001\005s\"fd@\160\176\001\005t#buf@\160\176\001\005u#ofs@\160\176\001\005v#len@\160\176\001\005w%flags@\160\176\001\005x$addr@@@@@\208@0sendto_substring\160\176@\160\160F\144\160\176\001\005\128\"fd@\160\176\001\005\129#buf@\160\176\001\005\130#ofs@\160\176\001\005\131#len@\160\176\001\005\132%flags@\160\176\001\005\133$addr@@@@@@ABCDE1set_close_on_exec\160@\144\147\192A@\160\176\001\007d\005\007\005@@\150\176\153\2086unix_set_close_on_execAA\005\007\004@\160\144\004\b@\005\007\003\208\208\208\208\208@,set_nonblock\160@\144\147\192A@\160\176\001\007f\005\007\024@@\150\176\153\2081unix_set_nonblockAA\005\007\023@\160\144\004\b@\005\007\022@A&setgid\160@\144\147\192A@\160\176\001\0072\005\007&@@\150\176\153\208+unix_setgidAA\005\007%@\160\144\004\b@\005\007$\208@)setgroups\160@\144\147\192A@\160\176\001\0070\005\0075@@\150\176\153\208.unix_setgroupsAA\005\0074@\160\144\004\b@\005\0073@AB)setitimer\160@\144\147\192B@\160\176\001\0079\005\007C@\160\176\001\0078\005\007E@@\150\176\153\208.unix_setitimerBA\005\007D@\160\144\004\n\160\144\004\n@\005\007E\208\208@&setsid\160@\144\147\192A@\160\176\001\007\001\005\007W@@\150\176\153\208+unix_setsidAA\005\007V@\160\144\004\b@\005\007U@A*setsockopt\160\176@\160\160C\144\160\176\001\005\179\"fd@\160\176\001\005\180#opt@\160\176\001\005\181!v@@@@@\208\208@0setsockopt_float\160\176@\160\160C\144\160\176\001\005\200\"fd@\160\176\001\005\201#opt@\160\176\001\005\202!v@@@@@@A.setsockopt_int\160\176@\160\160C\144\160\176\001\005\186\"fd@\160\176\001\005\187#opt@\160\176\001\005\188!v@@@@@\208@1setsockopt_optint\160\176@\160\160C\144\160\176\001\005\193\"fd@\160\176\001\005\194#opt@\160\176\001\005\195!v@@@@@@ABCD&setuid\160@\144\147\192A@\160\176\001\0075\005\007\164@@\150\176\153\208+unix_setuidAA\005\007\163@\160\144\004\b@\005\007\162\208\208@(shutdown\160@\144\147\192B@\160\176\001\007\025\005\007\180@\160\176\001\007\024\005\007\182@@\150\176\153\208-unix_shutdownBA\005\007\181@\160\144\004\n\160\144\004\n@\005\007\182\208@3shutdown_connection\160\176@\160\160A\144\160\176\001\006\245&inchan@@@@\144\147\192A@\004\006\150\176\153\004\022\160\150\176\153\005\006\156\160\144\004\014@\176\192\005\001\239\001\004#\001{2\001{=\192\005\001\240\001\004#\001{2\001{Y@\160\145\161A\144-SHUTDOWN_SEND@\176\192\005\001\247\001\004#\001{2\001{4\192\005\001\248\001\004#\001{2\001{g@@AB*sigpending\160@\144\147\192A@\160\176\001\007G\005\007\231@@\150\176\153\208/unix_sigpendingAA\005\007\230@\160\144\004\b@\005\007\229\208@+sigprocmask\160@\144\147\192B@\160\176\001\007I\005\007\246@\160\176\001\007H\005\007\248@@\150\176\153\005\002!\160\144\004\b\160\144\004\b@\005\007\246\208@*sigsuspend\160@\144\147\192A@\160\176\001\007F\005\b\007@@\150\176\153\005\0026\160\144\004\006@\005\b\003@ABCE,single_write\160\176@\160\160D\144\160\176\001\004{\"fd@\160\176\001\004|#buf@\160\176\001\004}#ofs@\160\176\001\004~#len@@@@@\208\208\208@6single_write_substring\160\176@\160\160D\144\160\176\001\004\133\"fd@\160\176\001\004\134#buf@\160\176\001\004\135#ofs@\160\176\001\004\136#len@@@@@@A%sleep\160@\144\147\192A@\160\176\001\007?\005\b:@@\150\176\153\208*unix_sleepAA\005\b9@\160\144\004\b@\005\b8\208@&socket\160@\144\147\192C@\160\176\001\007&\005\bI@\160\176\001\007%\005\bK@\160\176\001\007$\005\bM@@\150\176\153\208+unix_socketCA\005\bL@\160\144\004\012\160\144\004\012\160\144\004\012@\005\bO\208@*socketpair\160@\144\147\192C@\160\176\001\007#\005\b`@\160\176\001\007\"\005\bb@\160\176\001\007!\005\bd@@\150\176\153\208/unix_socketpairCA\005\bc@\160\144\004\012\160\144\004\012\160\144\004\012@\005\bf@ABC$stat\160@\144\147\192A@\160\176\001\007\137\005\bv@@\150\176\153\208)unix_statAA\005\bu@\160\144\004\b@\005\bt\208@&stderr\160@@@ADFG%stdin\160@@\208\208\208@&stdout\160@@\208\208@3string_of_inet_addr\160@\144\147\192A@\160\176\001\007'\005\b\144@@\150\176\153\2088unix_string_of_inet_addrAA\005\b\143@\160\144\004\b@\005\b\142@A'symlink\160@\144\147\192B@\160\176\001\007U\005\b\158@\160\176\001\007T\005\b\160@@\150\176\153\208,unix_symlinkBA\005\b\159@\160\144\004\n\160\144\004\n@\005\b\160@BC&system\160\176@\160\160A\144\160\176\001\006]#cmd@@@@@\208\208@'tcdrain\160@\144\147\192A@\160\176\001\007\006\005\b\187@@\150\176\153\208,unix_tcdrainAA\005\b\186@\160\144\004\b@\005\b\185\208\208@&tcflow\160@\144\147\192B@\160\176\001\007\003\005\b\203@\160\176\001\007\002\005\b\205@@\150\176\153\208+unix_tcflowBA\005\b\204@\160\144\004\n\160\144\004\n@\005\b\205@A'tcflush\160@\144\147\192B@\160\176\001\007\005\005\b\221@\160\176\001\007\004\005\b\223@@\150\176\153\208,unix_tcflushBA\005\b\222@\160\144\004\n\160\144\004\n@\005\b\223@BC)tcgetattr\160@\144\147\192A@\160\176\001\007\012\005\b\239@@\150\176\153\208.unix_tcgetattrAA\005\b\238@\160\144\004\b@\005\b\237\208\208\208@+tcsendbreak\160@\144\147\192B@\160\176\001\007\b\005\t\000@\160\176\001\007\007\005\t\002@@\150\176\153\2080unix_tcsendbreakBA\005\t\001@\160\144\004\n\160\144\004\n@\005\t\002@A)tcsetattr\160@\144\147\192C@\160\176\001\007\011\005\t\018@\160\176\001\007\n\005\t\020@\160\176\001\007\t\005\t\022@@\150\176\153\208.unix_tcsetattrCA\005\t\021@\160\144\004\012\160\144\004\012\160\144\004\012@\005\t\024@B$time\160@\144\147\192A@\160\176\001\007E\005\t(@@\150\176\153\208)unix_timeAA\005\t'@\160\144\004\b@\005\t&\208@%times\160@\144\147\192A@\160\176\001\007>\005\t7@@\150\176\153\208*unix_timesAA\005\t6@\160\144\004\b@\005\t5@ACDE(truncate\160@\144\147\192B@\160\176\001\007\141\005\tE@\160\176\001\007\140\005\tG@@\150\176\153\208-unix_truncateBA\005\tF@\160\144\004\n\160\144\004\n@\005\tG\208\208\208@%umask\160@\144\147\192A@\160\176\001\007l\005\tZ@@\150\176\153\208*unix_umaskAA\005\tY@\160\144\004\b@\005\tX@A&unlink\160@\144\147\192A@\160\176\001\007{\005\th@@\150\176\153\208+unix_unlinkAA\005\tg@\160\144\004\b@\005\tf\208@&utimes\160@\144\147\192C@\160\176\001\007=\005\tw@\160\176\001\007<\005\ty@\160\176\001\007;\005\t{@@\150\176\153\208+unix_utimesCA\005\tz@\160\144\004\012\160\144\004\012\160\144\004\012@\005\t}@AB$wait\160@\144\147\192A@\160\176\001\007\158\005\t\141@@\150\176\153\208)unix_waitAA\005\t\140@\160\144\004\b@\005\t\139\208@'waitpid\160@\144\147\192B@\160\176\001\007\157\005\t\156@\160\176\001\007\156\005\t\158@@\150\176\153\208,unix_waitpidBA\005\t\157@\160\144\004\n\160\144\004\n@\005\t\158\208@%write\160\176@\160\160D\144\160\176\001\004v\"fd@\160\176\001\004w#buf@\160\176\001\004x#ofs@\160\176\001\004y#len@@@@@\208@/write_substring\160\176@\160\160D\144\160\176\001\004\128\"fd@\160\176\001\004\129#buf@\160\176\001\004\130#ofs@\160\176\001\004\131#len@@@@@@ABCDFHIJ\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("unixLabels.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\016?\000\000\003\201\000\000\014\t\000\000\r\022\176\208\208\208\208\208\208\208@)LargeFile\160@@@A*Unix_error\160\176@@@@\208@&accept\160@@@AB&access\160@@\208\208@%alarm\160@@\208@$bind\160@@@AB%chdir\160@@@CD%chmod\160@@\208\208@%chown\160@@\208@&chroot\160@@@AB3clear_close_on_exec\160@@\208@.clear_nonblock\160@@@ACE%close\160@@\208\208\208\208@-close_process\160\176@\160\160A\144\160\176\001\007\186%param@@@@@\208@2close_process_full\160\176@\160\160A\144\160\176\001\007\182\004\n@@@@@@AB0close_process_in\160\176@\160\160A\144\160\176\001\006\226&inchan@@@@@\208\208@1close_process_out\160\176@\160\160A\144\160\176\001\006\229'outchan@@@@@@A(closedir\160@@\208@'connect\160@@@ABC.create_process\160\176@\160\160E\144\160\176\001\006m#cmd@\160\176\001\006n$args@\160\176\001\006o)new_stdin@\160\176\001\006p*new_stdout@\160\176\001\006q*new_stderr@@@@@\208\208@2create_process_env\160\176@\160\160F\144\160\176\001\006t#cmd@\160\176\001\006u$args@\160\176\001\006v#env@\160\176\001\006w)new_stdin@\160\176\001\006x*new_stdout@\160\176\001\006y*new_stderr@@@@@@A3descr_of_in_channel\160@@@BD4descr_of_out_channel\160@@\208\208\208@2domain_of_sockaddr\160\176A\160\160A\144\160\176\001\007\254\004a@@@@@@A#dup\160@@\208@$dup2\160@@@AB+environment\160@@\208@-error_message\160@@\208\208@0establish_server\160\176A\160\160B\144\160\176\001\006\249*server_fun@\160\176\001\006\250(sockaddr@@@@@@A%execv\160@@@BCDEF&execve\160@@\208\208\208@&execvp\160@@@A'execvpe\160@@\208@&fchmod\160@@\208@&fchown\160@@@ABC$fork\160@@\208\208@%fstat\160@@@A)ftruncate\160@@\208\208@+getaddrinfo\160\176@\160\160C\144\160\176\001\006\006$node@\160\176\001\006\007'service@\160\176\001\006\b$opts@@@@@@A&getcwd\160@@\208@'getegid\160@@@ABCDG&getenv\160@@\208\208\208\208\208\208\208@'geteuid\160@@@A&getgid\160@@\208\208@(getgrgid\160@@@A(getgrnam\160@@@BC)getgroups\160@@\208\208\208\208@-gethostbyaddr\160@@@A-gethostbyname\160@@@B+gethostname\160@@@C)getitimer\160@@\208@(getlogin\160@@\208\208@+getnameinfo\160\176@\160\160B\144\160\176\001\006\029$addr@\160\176\001\006\030$opts@@@@@@A+getpeername\160@@@BCDE&getpid\160@@\208\208\208@'getppid\160@@\208@.getprotobyname\160@@\208@0getprotobynumber\160@@@ABC(getpwnam\160@@\208@(getpwuid\160@@\208@-getservbyname\160@@\208@-getservbyport\160@@@ABCD+getsockname\160@@\208\208@*getsockopt\160\176@\160\160B\144\160\176\001\005\176\"fd@\160\176\001\005\177#opt@@@@@\208@0getsockopt_error\160\176@\160\160A\144\160\176\001\005\204\"fd@@@@@@AB0getsockopt_float\160\176@\160\160B\144\160\176\001\005\197\"fd@\160\176\001\005\198#opt@@@@@\208@.getsockopt_int\160\176@\160\160B\144\160\176\001\005\183\"fd@\160\176\001\005\184#opt@@@@@\208@1getsockopt_optint\160\176@\160\160B\144\160\176\001\005\190\"fd@\160\176\001\005\191#opt@@@@@@ABCEF,gettimeofday\160@@\208\208\208@&getuid\160@@@A&gmtime\160@@@B1handle_unix_error\160\176@\160\160B\144\160\176\001\004>!f@\160\176\001\004?#arg@@@@@\208\208\208@3in_channel_of_descr\160@@@A.inet6_addr_any\160\176@@@@\208\208@3inet6_addr_loopback\160\176@@@@@A-inet_addr_any\160\005\001\131@\208@2inet_addr_loopback\160\005\001\134@@ABC3inet_addr_of_string\160@@\208@*initgroups\160@@@ADEG&isatty\160@@\208\208\208\208@$kill\160@@@A$link\160@@\208\208\208@&listen\160@@@A)localtime\160@@@B%lockf\160@@@CD%lseek\160@@\208\208@%lstat\160@@@A%mkdir\160@@\208@&mkfifo\160@@\208@&mktime\160@@@ABCE$nice\160@@\208\208\208\208@/open_connection\160\176A\160\160A\144\160\176\001\006\241(sockaddr@@@@@@A,open_process\160\176A\160\160A\144\160\176\001\006\188#cmd@@@@@\208@1open_process_full\160\176A\160\160B\144\160\176\001\006\208#cmd@\160\176\001\006\209#env@@@@@@AB/open_process_in\160\176@\160\160A\144\160\176\001\006\176#cmd@@@@@\208\208@0open_process_out\160\176@\160\160A\144\160\176\001\006\182#cmd@@@@@@A'opendir\160@@@BC(openfile\160@@\208@4out_channel_of_descr\160@@\208\208@%pause\160\176@\160\160A\144\160\176\001\b\007\005\001\203@@@@@@A$pipe\160@@@BCDFH&putenv\160@@\208\208\208\208\208@$read\160\176@\160\160D\144\160\176\001\004q\"fd@\160\176\001\004r#buf@\160\176\001\004s#ofs@\160\176\001\004t#len@@@@@@A'readdir\160@@\208@(readlink\160@@\208@$recv\160\176@\160\160E\144\160\176\001\005a\"fd@\160\176\001\005b#buf@\160\176\001\005c#ofs@\160\176\001\005d#len@\160\176\001\005e%flags@@@@@\208@(recvfrom\160\176@\160\160E\144\160\176\001\005g\"fd@\160\176\001\005h#buf@\160\176\001\005i#ofs@\160\176\001\005j#len@\160\176\001\005k%flags@@@@@@ABCD&rename\160@@\208\208\208@)rewinddir\160@@@A%rmdir\160@@\208@&select\160@@@AB$send\160\176@\160\160E\144\160\176\001\005m\"fd@\160\176\001\005n#buf@\160\176\001\005o#ofs@\160\176\001\005p#len@\160\176\001\005q%flags@@@@@\208@.send_substring\160\176@\160\160E\144\160\176\001\005z\"fd@\160\176\001\005{#buf@\160\176\001\005|#ofs@\160\176\001\005}#len@\160\176\001\005~%flags@@@@@\208@&sendto\160\176@\160\160F\144\160\176\001\005s\"fd@\160\176\001\005t#buf@\160\176\001\005u#ofs@\160\176\001\005v#len@\160\176\001\005w%flags@\160\176\001\005x$addr@@@@@\208@0sendto_substring\160\176@\160\160F\144\160\176\001\005\128\"fd@\160\176\001\005\129#buf@\160\176\001\005\130#ofs@\160\176\001\005\131#len@\160\176\001\005\132%flags@\160\176\001\005\133$addr@@@@@@ABCDE1set_close_on_exec\160@@\208\208\208\208\208@,set_nonblock\160@@@A&setgid\160@@\208@)setgroups\160@@@AB)setitimer\160@@\208\208@&setsid\160@@@A*setsockopt\160\176@\160\160C\144\160\176\001\005\179\"fd@\160\176\001\005\180#opt@\160\176\001\005\181!v@@@@@\208\208@0setsockopt_float\160\176@\160\160C\144\160\176\001\005\200\"fd@\160\176\001\005\201#opt@\160\176\001\005\202!v@@@@@@A.setsockopt_int\160\176@\160\160C\144\160\176\001\005\186\"fd@\160\176\001\005\187#opt@\160\176\001\005\188!v@@@@@\208@1setsockopt_optint\160\176@\160\160C\144\160\176\001\005\193\"fd@\160\176\001\005\194#opt@\160\176\001\005\195!v@@@@@@ABCD&setuid\160@@\208\208@(shutdown\160@@\208@3shutdown_connection\160\176@\160\160A\144\160\176\001\006\245&inchan@@@@@@AB*sigpending\160@@\208@+sigprocmask\160@@\208@*sigsuspend\160@@@ABCE,single_write\160\176@\160\160D\144\160\176\001\004{\"fd@\160\176\001\004|#buf@\160\176\001\004}#ofs@\160\176\001\004~#len@@@@@\208\208\208@6single_write_substring\160\176@\160\160D\144\160\176\001\004\133\"fd@\160\176\001\004\134#buf@\160\176\001\004\135#ofs@\160\176\001\004\136#len@@@@@@A%sleep\160@@\208@&socket\160@@\208@*socketpair\160@@@ABC$stat\160@@\208@&stderr\160@@@ADFG%stdin\160@@\208\208\208@&stdout\160@@\208\208@3string_of_inet_addr\160@@@A'symlink\160@@@BC&system\160\176@\160\160A\144\160\176\001\006]#cmd@@@@@\208\208@'tcdrain\160@@\208\208@&tcflow\160@@@A'tcflush\160@@@BC)tcgetattr\160@@\208\208\208@+tcsendbreak\160@@@A)tcsetattr\160@@@B$time\160@@\208@%times\160@@@ACDE(truncate\160@@\208\208\208@%umask\160@@@A&unlink\160@@\208@&utimes\160@@@AB$wait\160@@\208@'waitpid\160@@\208@%write\160\176@\160\160D\144\160\176\001\004v\"fd@\160\176\001\004w#buf@\160\176\001\004x#ofs@\160\176\001\004y#len@@@@@\208@/write_substring\160\176@\160\160D\144\160\176\001\004\128\"fd@\160\176\001\004\129#buf@\160\176\001\004\130#ofs@\160\176\001\004\131#len@@@@@@ABCDFHIJ\144$Unix\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("weak.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002h\000\000\000\176\000\000\002H\000\000\0020\176\208\208\208\208\208@$Make\160\176A\160\160A\144\160\176\001\0044!H@@@@@@A$blit\160@@@B%check\160@\144\147\192B@\160\176\001\004\249$prim@\160\176\001\004\248\004\003@@\150\176\153\208/caml_weak_checkBA @\160\144\004\012\160\144\004\011@\176\192&_none_A@\000\255\004\002A@C&create\160@\144\147\192A@\160\176\001\005\001\004\023@@\150\176\153\2080caml_weak_createAA\004\020@\160\144\004\b@\004\017\208@$fill\160\176A\160\160D\144\160\176\001\003\250\"ar@\160\176\001\003\251#ofs@\160\176\001\003\252#len@\160\176\001\003\253!x@@@@@@AD#get\160@\144\147\192B@\160\176\001\004\253\0048@\160\176\001\004\252\004:@@\150\176\153\208-caml_weak_getBA\0047@\160\144\004\n\160\144\004\n@\0046\208\208@(get_copy\160@\144\147\192B@\160\176\001\004\251\004L@\160\176\001\004\250\004N@@\150\176\153\2082caml_weak_get_copyBA\004K@\160\144\004\n\160\144\004\n@\004J@A&length\160\176A\160\160A\144\160\176\001\003\243!x@@@@\144\147\192A@\004\006\150\176I\160\150\176\159@\160\144\004\r@\176\192'weak.mlT\001\003\217\001\003\232\192\004\002T\001\003\217\001\003\252@\160\145\144\144A@\176\004\b\192\004\bT\001\003\217\001\004\000@\208@#set\160@\144\147\192C@\160\176\001\005\000\004}@\160\176\001\004\255\004\127@\160\176\001\004\254\004\129@@\150\176\153\208-caml_weak_setCA\004~@\160\144\004\012\160\144\004\012\160\144\004\012@\004\127@ABE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("block.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\177\000\000\000-\000\000\000\148\000\000\000\140\176\208@\"__\160\176@\160\160B\144\160\176\001\003\241#tag@\160\176\001\003\242%block@@@@\144\147\192B@\004\t\173\150\176\153\2080caml_obj_set_tagBA @\160\144\004\014\160\144\004\019@\176\192(block.mla\001\005\147\001\005\149\192\004\002a\001\005\147\001\005\170@\144\004\021@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bs_obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bs_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001#\000\000\000J\000\000\000\248\000\000\000\234\176\208\208\208@/caml_array_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A1caml_array_concat\160\176@\160\160A\144\160\176\001\004\t!l@@@@@@B.caml_array_sub\160\176@\160\160C\144\160\176\001\003\244!x@\160\176\001\003\245&offset@\160\176\001\003\246#len@@@@@\208@.caml_make_vect\160\176@\160\160B\144\160\176\001\004\020#len@\160\176\001\004\021$init@@@@@@AC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_backtrace.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\029\000\000\0005\000\000\000\197\000\000\000\178\176\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\003\241%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\176\192&_none_A@\000\255\004\002A\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@\176\1921caml_backtrace.mla\001\005\149\001\005\162\192\004\002a\001\005\149\001\005\217@@\176\192\004\004a\001\005\149\001\005\153\192\004\005a\001\005\149\001\005\158@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002@\000\000\000\143\000\000\001\242\000\000\001\215\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\249!x@\160\176\001\003\250!y@@@@\144\147\192B@\004\t\150\176\179@\160\"::A@\160\144\004\015\160\144\004\014@\176\192-caml_basic.mlm\001\006^\001\006m\192\004\002m\001\006^\001\006s@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\003\252!x@@@@\144\147\192A@\004\006\188\144\004\007\150\176\153\208%false@A\t(BS:1.2.1\132\149\166\190\000\000\000\012\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160%false@@@\176\192\004\025r\001\006\190\001\006\199\192\004\026r\001\006\190\001\006\208@\150\176\153\208$true@A\t'BS:1.2.1\132\149\166\190\000\000\000\011\000\000\000\004\000\000\000\012\000\000\000\011\176@B\145\160$true@@@\176\192\004\"q\001\006\171\001\006\181\192\004#q\001\006\171\001\006\189@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\147\192A@\004\006\188\144\004\007\150\176\153\004 @\176\192\0046c\001\005\139\001\005\148\192\0047c\001\005\139\001\005\157@\150\176\153\004\029@\176\192\004<b\001\005u\001\005\129\192\004=b\001\005u\001\005\137@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\147\192A@\004\006\150\176\179@\160$SomeA@\160\144\004\012@\176\192\004Z^\001\0051\001\005>\192\004[^\001\0051\001\005D@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_builtin_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\0017\000\000\0001\000\000\000\210\000\000\000\185\176\208\208\208\208@.assert_failure\160@@@A0division_by_zero\160@@@B+end_of_file\160@@\208@'failure\160@@@AC0invalid_argument\160@@\208\208\208@-match_failure\160@@@A)not_found\160@@@B-out_of_memory\160@@\208\208@.stack_overflow\160@@\208@.sys_blocked_io\160@@@AB)sys_error\160@@\208@:undefined_recursive_module\160@@@ACDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_bytes.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000c\000\000\000\026\000\000\000S\000\000\000O\176\208@#get\160\176A\160\160B\144\160\176\001\003\241!s@\160\176\001\003\242!i@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\166\000\000\000+\000\000\000\144\000\000\000\135\176\208@.caml_set_oo_id\160\176@\160\160A\144\160\176\001\003\242!b@@@@@\208\208@&create\160\176@\160\160A\144\160\176\001\003\245#str@@@@@@A&get_id\160\176@\160\160A\144\160\176\001\003\247%param@@@@@@BC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_float.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\236\000\000\000h\000\000\001\131\000\000\001e\176\208\208\208\208@3caml_classify_float\160\176A\160\160A\144\160\176\001\004\022!x@@@@@@A3caml_copysign_float\160\176@\160\160B\144\160\176\001\004#!x@\160\176\001\004$!y@@@@@\208\208@0caml_expm1_float\160\176@\160\160A\144\160\176\001\004(!x@@@@@@A2caml_float_compare\160\176A\160\160B\144\160\176\001\004 !x@\160\176\001\004!!y@@@@@@BC0caml_frexp_float\160\176@@@@\208\208@0caml_hypot_float\160\004\005@@A8caml_int32_bits_of_float\160\176@\160\160A\144\160\176\001\004\019!x@@@@@@BD8caml_int32_float_of_bits\160\176@\160\160A\144\160\176\001\004\003!x@@@@@\208\208@0caml_ldexp_float\160\004\027@\208@0caml_log10_float\160\004\030@@AB/caml_modf_float\160\176A\160\160A\144\160\176\001\004\024!x@@@@@@CE\1440caml_ldexp_float\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_format.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001\214\000\000\000`\000\000\001e\000\000\001F\176\208\208\208@4caml_float_of_string\160\176@\160\160A\144\160\176\001\004\166!s@@@@@@A1caml_format_float\160\176@\160\160B\144\160\176\001\004\150#fmt@\160\176\001\004\151!x@@@@@@B/caml_format_int\160\176@\160\160B\144\160\176\001\004h#fmt@\160\176\001\004i!i@@@@@\208\208@1caml_int32_format\160\004\014@\208@4caml_int32_of_string\160\176@\160\160A\144\160\176\001\004\011!s@@@@@@AB1caml_int64_format\160\176@\160\160B\144\160\176\001\004l#fmt@\160\176\001\004m!x@@@@@\208\208\208@4caml_int64_of_string\160\176@\160\160A\144\160\176\001\004\029!s@@@@@@A2caml_int_of_string\160\004!@@B5caml_nativeint_format\160\0044@\208@8caml_nativeint_of_string\160\004&@@ACDE\144/float_of_string\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_gc.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\155\000\000\000\191\000\000\002s\000\000\002W\176\208\208\208\208@3caml_final_register\160\176A\160\160B\144\160\176\001\003\254%param@\160\176\001\003\255%param@@@@\144\147\192B@\004\t\145\161@\144\"()\208@2caml_final_release\160\176A\160\160A\144\160\176\001\003\253\004\017@@@@\144\147\192A@\004\005\145\161@\144\004\016@AB2caml_gc_compaction\160\176A\160\160A\144\160\176\001\004\000\004\031@@@@\144\147\192A@\004\005\145\161@\144\004\030@C0caml_gc_counters\160\176A\160\160A\144\160\176\001\004\b\004-@@@@\144\147\192A@\004\005\145\178@@\160\144\147\"0.\160\144\147\"0.\160\144\147\"0.@\208@2caml_gc_full_major\160\176A\160\160A\144\160\176\001\004\001\004G@@@@\144\147\192A@\004\005\145\161@\144\004F@AD+caml_gc_get\160\176A\160\160A\144\160\176\001\004\006\004U@@@@@\208\208\208\208@-caml_gc_major\160\176A\160\160A\144\160\176\001\004\002\004a@@@@\144\147\192A@\004\005\145\161@\144\004`@A3caml_gc_major_slice\160\176A\160\160A\144\160\176\001\004\003\004o@@@@\144\147\192A@\004\005\145\144\144@@B-caml_gc_minor\160\176A\160\160A\144\160\176\001\004\004\004}@@@@\144\147\192A@\004\005\145\161@\144\004|@C2caml_gc_quick_stat\160\176@\160\160A\144\160\176\001\004\t\004\139@@@@@\208\208@+caml_gc_set\160\176A\160\160A\144\160\176\001\004\005\004\149@@@@\144\147\192A@\004\005\145\161@\144\004\148@A,caml_gc_stat\160\176@\160\160A\144\160\176\001\004\n\004\163@@@@@@BDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_hash.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\135\000\000\000 \000\000\000j\000\000\000b\176\208@)caml_hash\160\176A\160\160D\144\160\176\001\004\r%count@\160\176\001\004\014&_limit@\160\176\001\004\015$seed@\160\176\001\004\016#obj@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_int32.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\255\000\000\000D\000\000\000\233\000\000\000\219\176\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\247!x@@@@@\208@0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\249!x@@@@@\208@4caml_nativeint_bswap\160\004\n@@ABC#div\160\176A\160\160B\144\160\176\001\003\241!x@\160\176\001\003\242!y@@@@@\208\208@$imul\160\176@@@@@A$mod_\160\176A\160\160B\144\160\176\001\003\244!x@\160\176\001\003\245!y@@@@@@BD\144$imul\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_int64.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\231\000\000\001\132\000\000\005\n\000\000\004\220\176\208\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\004\227%param@\160\176\001\004\228%param@@@@@@A$asr_\160\176@\160\160B\144\160\176\001\004*!x@\160\176\001\004+'numBits@@@@@\208\208\208@-bits_of_float\160\176A\160\160A\144\160\176\001\004\170!x@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004w$self@\160\176\001\004x%other@@@@@\208@,discard_sign\160\176A\160\160A\144\160\176\001\004\133!x@@@@@@AB#div\160\176@\160\160B\144\160\176\001\004`$self@\160\176\001\004a%other@@@@@\208\208@'div_mod\160\176A\160\160B\144\160\176\001\004s$self@\160\176\001\004t%other@@@@@@A\"eq\160\176A\160\160B\144\160\176\001\004\019!x@\160\176\001\004\020!y@@@@@\208@-float_of_bits\160\176@\160\160A\144\160\176\001\004\153!x@@@@@@ABCD\"ge\160\176A\160\160B\144\160\176\001\004\206\004j@\160\176\001\004\207\004i@@@@@\208\208\208@%get64\160\176A\160\160B\144\160\176\001\004\176!s@\160\176\001\004\177!i@@@@@@A\"gt\160\176A\160\160B\144\160\176\001\004R!x@\160\176\001\004S!y@@@@@@B'is_zero\160\176A\160\160A\144\160\176\001\004\221\004\140@@@@@\208@\"le\160\176A\160\160B\144\160\176\001\004U!x@\160\176\001\004V!y@@@@@@ACE$lsl_\160\176@\160\160B\144\160\176\001\004\031!x@\160\176\001\004 'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\144\160\176\001\004$!x@\160\176\001\004%'numBits@@@@@\208@\"lt\160\176A\160\160B\144\160\176\001\004O!x@\160\176\001\004P!y@@@@@@AB'max_int\160@@@CF'min_int\160@@\208\208\208\208\208@$mod_\160\176A\160\160B\144\160\176\001\004p$self@\160\176\001\004q%other@@@@@@A#mul\160\176@\160\160B\144\160\176\001\004.$this@\160\176\001\004/%other@@@@@@B#neg\160\176@\160\160A\144\160\176\001\004\024!x@@@@@\208@#neq\160\176A\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@@@AC#not\160\176A\160\160A\144\160\176\001\004\226\004\255@@@@@\208\208@(of_float\160\176@\160\160A\144\160\176\001\004^!x@@@@@@A(of_int32\160\176A\160\160A\144\160\176\001\004{\"lo@@@@@@BD#one\160@@\208\208\208@#sub\160\176A\160\160B\144\160\176\001\004\026!x@\160\176\001\004\027!y@@@@@@A$swap\160\176A\160\160A\144\160\176\001\004\208\005\001,@@@@@\208@(to_float\160\176@\160\160A\144\160\176\001\004\205\005\0015@@@@@\208@&to_hex\160\176@\160\160A\144\160\176\001\004\127!x@@@@@@ABC(to_int32\160\176A\160\160A\144\160\176\001\004}!x@@@@\144\147\192A@\004\006\150\176\b\000\000\004\030@\160\150\176\164A\144\"lo\160\144\004\016@\176\192-caml_int64.ml\001\001u\001'\194\001'\227\192\004\002\001\001u\001'\194\001'\231@\160\145\144\150\018_n\000\001\000\000\000\000@\176\192\004\t\001\001u\001'\194\001'\211\192\004\n\001\001u\001'\194\001'\235@\208@$zero\160@@@ADEG\144.two_ptr_32_dbl\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_io.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004\131\000\000\001\002\000\000\003\156\000\000\003b\176\208\208\208\208@!^\160\176@\160\160B\144\160\176\001\004+$prim@\160\176\001\004*\004\003@@@@\144\147\192B@\004\b\150\176\153\2080js_string_appendBA @\160\144\004\015\160\144\004\014@\176\192*caml_io.ml`\001\005$\001\005.\192\004\002`\001\005$\001\005>@@A-caml_ml_flush\160\176A\160\160A\144\160\176\001\004\001\"oc@@@@@\208@-caml_ml_input\160\176A\160\160D\144\160\176\001\004\014\"ic@\160\176\001\004\015%bytes@\160\176\001\004\016&offset@\160\176\001\004\017#len@@@A\144\147\192D@\004\015\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\176\192&_none_A@\000\255\004\002A\160\145\144\162\t caml_ml_input ic not implemented@@\176\192\0047\000m\001\014i\001\014t\192\0048\000m\001\014i\001\014\159@@\176\192\004:\000m\001\014i\001\014k\192\004;\000m\001\014i\001\014p@\208@2caml_ml_input_char\160\176A\160\160A\144\160\176\001\004\019\"ic@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004'@\004%\160\145\144\162\t!caml_ml_input_char not implemnted@@\176\192\004Y\000p\001\014\212\001\014\223\192\004Z\000p\001\014\212\001\015\n@@\176\192\004\\\000p\001\014\212\001\014\214\192\004]\000p\001\014\212\001\014\219@@ABC:caml_ml_open_descriptor_in\160\176A\160\160A\144\160\176\001\003\253!i@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004H@\004F\160\145\144\162\t*caml_ml_open_descriptor_in not implemented@@\176\192\004z\000@\001\bZ\001\bb\192\004{\000@\001\bZ\001\b\152@@\176\192\004}\000@\001\bZ\001\b\\\004\003@\208\208@;caml_ml_open_descriptor_out\160\176A\160\160A\144\160\176\001\003\255!i@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004j@\004h\160\145\144\162\t+caml_ml_open_descriptor_out not implemented@@\176\192\004\156\000B\001\b\215\001\b\223\192\004\157\000B\001\b\215\001\t\022@@\176\192\004\159\000B\001\b\215\001\b\217\004\003@\208@9caml_ml_out_channels_list\160\176A\160\160A\144\160\176\001\004#%param@@@@@@AB.caml_ml_output\160\176A\160\160D\144\160\176\001\004\004\"oc@\160\176\001\004\005#str@\160\176\001\004\006&offset@\160\176\001\004\007#len@@@@@\208\208@3caml_ml_output_char\160\176A\160\160B\144\160\176\001\004\011\"oc@\160\176\001\004\012$char@@@@@@A/node_std_output\160\176@@@@@BCD&stderr\160\176A@@@\208@%stdin\160\004\007@\208@&stdout\160\004\007@@ABE\144%stdin\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002'\000\000\000g\000\000\001~\000\000\001W\176\208\208@/caml_lex_engine\160@\144\147\192C@\160\176\001\003\248$prim@\160\176\001\003\247\004\003@\160\176\001\003\246\004\005@@\150\176\153\2081$$caml_lex_engineCA\tABS:1.2.1\132\149\166\190\000\000\000%\000\000\000\n\000\000\000\"\000\000\000 \176\160\160B@\160\160B@\160\160B@@B\149\1761$$caml_lex_engine@@@\160\144\004\014\160\144\004\r\160\144\004\r@\176\192&_none_A@\000\255\004\002A\208@3caml_new_lex_engine\160@\144\147\192C@\160\176\001\003\245\004\028@\160\176\001\003\244\004\030@\160\176\001\003\243\004 @@\150\176\153\2085$$caml_new_lex_engineCA\tEBS:1.2.1\132\149\166\190\000\000\000)\000\000\000\n\000\000\000#\000\000\000 \176\160\160B@\160\160B@\160\160B@@B\149\1765$$caml_new_lex_engine@@@\160\144\004\r\160\144\004\r\160\144\004\r@\004\027@AB$fail\160\176A\160\160A\144\160\176\001\003\249%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\0043\160\145\144\1623lexing: empty token@@\176\192-caml_lexer.mld\001\005|\001\005\144\192\004\002d\001\005|\001\005\175@@\176\192\004\004d\001\005|\001\005\138\004\003@@C\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_md5.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000}\000\000\000\029\000\000\000`\000\000\000Y\176\208@/caml_md5_string\160\176@\160\160C\144\160\176\001\004/!s@\160\176\001\0040%start@\160\176\001\0041#len@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_module.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\163\000\000\000*\000\000\000\139\000\000\000\131\176\208@(init_mod\160\176A\160\160B\144\160\176\001\003\242#loc@\160\176\001\003\243%shape@@@@@\208@*update_mod\160\176A\160\160C\144\160\176\001\004\001%shape@\160\176\001\004\002!o@\160\176\001\004\003!n@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\204\000\000\000\181\000\000\002y\000\000\002V\176\208\208\208\208@,caml_compare\160\176@\160\160B\144\160\176\001\004\014!a@\160\176\001\004\015!b@@@@@@A*caml_equal\160\176@\160\160B\144\160\176\001\004&!a@\160\176\001\004'!b@@@@@\208@1caml_greaterequal\160\176A\160\160B\144\160\176\001\0046!a@\160\176\001\0047!b@@@@@\208@0caml_greaterthan\160\176A\160\160B\144\160\176\001\0049!a@\160\176\001\004:!b@@@@@@ABC2caml_int32_compare\160\176A\160\160B\144\160\176\001\004\002!x@\160\176\001\004\003!y@@@@@\208@0caml_int_compare\160\004\r@@AD6caml_lazy_make_forward\160\176A\160\160A\144\160\176\001\003\251!x@@@@\144\147\192A@\004\006\150\176\179\001\000\250B@\160\144\004\n@\176\192+caml_obj.ml\000c\001\011\131\001\011\167\192\004\002\000c\001\011\131\001\011\168@\208\208\208\208@.caml_lessequal\160\176A\160\160B\144\160\176\001\004<!a@\160\176\001\004=!b@@@@@@A-caml_lessthan\160\176A\160\160B\144\160\176\001\004?!a@\160\176\001\004@!b@@@@@@B6caml_nativeint_compare\160\004@@\208@-caml_notequal\160\176A\160\160B\144\160\176\001\0041!a@\160\176\001\0042!b@@@@@@AC,caml_obj_dup\160\176@\160\160A\144\160\176\001\003\241!x@@@@@\208@1caml_obj_truncate\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247(new_size@@@@@\208@1caml_update_dummy\160\176@\160\160B\144\160\176\001\003\253!x@\160\176\001\003\254!y@@@@@@ABDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_oo.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\136\000\000\000\029\000\000\000b\000\000\000Z\176\208@6caml_get_public_method\160\176A\160\160C\144\160\176\001\003\243#obj@\160\176\001\003\244#tag@\160\176\001\003\245'cacheid@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\251\000\000\000&\000\000\000\151\000\000\000\129\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\147\192A@\160\176\001\003\242$prim@@\150\176\153\2087$$caml_set_parser_traceAA\t?BS:1.2.1\132\149\166\190\000\000\000#\000\000\000\006\000\000\000\023\000\000\000\020\176\160\160B@@B\149\1767$$caml_set_parser_trace@@@\160\144\004\n@\176\192&_none_A@\000\255\004\002A@AB\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_primitive.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_queue.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\001T\000\000\000e\000\000\001E\000\000\0017\176\208@&create\160\176A\160\160A\144\160\176\001\004\006%param@@@@\144\147\192A@\004\006\150\176\179@\146\160&length$tailA\160\145\144\144@\160\145\161@\144$None@\176\192-caml_queue.mln\001\bC\001\bS\192\004\002q\001\b{\001\b|@\208\208@(is_empty\160\176A\160\160A\144\160\176\001\004\003!q@@@@\144\147\192A@\004\006\150\176\154@\160\150\176\164@\144\004%\160\144\004\015@\176\192\004\028\000S\001\n\186\001\n\188\192\004\029\000S\001\n\186\001\n\196@\160\145\144\144@@\176\004\007\192\004#\000S\001\n\186\001\n\200@@A$push\160\176A\160\160B\144\160\176\001\003\248!x@\160\176\001\003\249!q@@@@@\208@*unsafe_pop\160\176@\160\160A\144\160\176\001\003\255!q@@@@@@ABC@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003\129\000\000\000\216\000\000\002\243\000\000\002\199\176\208\208\208@/bytes_of_string\160\176@\160\160A\144\160\176\001\004(!s@@@@@@A/bytes_to_string\160\176@\160\160A\144\160\176\001\0047!a@@@@@\208\208\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\030\"s1@\160\176\001\004\031\"i1@\160\176\001\004 \"s2@\160\176\001\004!\"i2@\160\176\001\004\"#len@@@@@@A0caml_blit_string\160\176A\160\160E\144\160\176\001\004\007\"s1@\160\176\001\004\b\"i1@\160\176\001\004\t\"s2@\160\176\001\004\n\"i2@\160\176\001\004\011#len@@@@@@B2caml_create_string\160\176@\160\160A\144\160\176\001\003\252#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\004\001!s@\160\176\001\004\002!i@\160\176\001\004\003!l@\160\176\001\004\004!c@@@@@@ACD1caml_is_printable\160\176A\160\160A\144\160\176\001\004>!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\254\"s1@\160\176\001\003\255\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\249!s@\160\176\001\003\250!i@@@@@\208\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\004A!s@\160\176\001\004B!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\004D!s@\160\176\001\004E!i@@@@@@AB9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\0049%chars@@@@@\208\208@#get\160\176A\160\160B\144\160\176\001\004G!s@\160\176\001\004H!i@@@@@@A1js_string_of_char\160\176@\160\160A\144\160\176\001\004L$prim@@@@\144\147\192A@\004\006\150\176\153\2083String.fromCharCodeAA\t;BS:1.2.1\132\149\166\190\000\000\000\031\000\000\000\006\000\000\000\022\000\000\000\020\176\160\160B@@B\149\1763String.fromCharCode@@@\160\144\004\r@\176\192.caml_string.mll\001\007o\001\007\135\192\004\002l\001\007o\001\007\152@@BCDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\003G\000\000\000\179\000\000\002\136\000\000\002V\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\147\192A@\004\006\150\176C\160\150\176\146\176T)Not_foundC@\176\192&_none_A@\000\255\004\002A@\176\192+caml_sys.ml]\001\005!\001\005?\192\004\002]\001\005!\001\005N@\208\208@4caml_sys_file_exists\160\176A\160\160A\144\160\176\001\003\251\"_s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\176S'FailureC@\004!\160\145\144\162\t$caml_sys_file_exists not implemented@@\176\192\004#\000M\001\t\170\001\t\181\192\004$\000M\001\t\170\001\t\227@@\176\192\004&\000M\001\t\170\001\t\172\192\004'\000M\001\t\170\001\t\177@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\004@@@@@\144\147\192A@\004\005\145\144\162!/@@BC/caml_sys_getenv\160@\144\147\192A@\160\176\001\003\252$prim@@\150\176\153\2081$$caml_sys_getenvAA\t9BS:1.2.1\132\149\166\190\000\000\000\029\000\000\000\006\000\000\000\022\000\000\000\020\176\160\160B@@B\149\1761$$caml_sys_getenv@@@\160\144\004\n@\004K\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\249\"_s@@@A\144\147\192A@\004\006\150\176C\160\150\176\179@B@\160\150\176\146\004E@\004d\160\145\144\162\t%caml_sys_is_directory not implemented@@\176\192\004f\000J\001\tO\001\tZ\192\004g\000J\001\tO\001\t\137@@\176\192\004i\000J\001\tO\001\tQ\192\004j\000J\001\tO\001\tV@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004\131@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004\140@@@@\144\147\192A@\004\005\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004\154@@@@@@CD\144 \144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_utils.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000X\000\000\000\019\000\000\000?\000\000\0009\176\208@&repeat\160\176@@@@@A\144&repeat\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("caml_weak.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\002\011\000\000\000\137\000\000\001\206\000\000\001\185\176\208\208\208\208@.caml_weak_blit\160\176A\160\160E\144\160\176\001\004\025\"a1@\160\176\001\004\026\"i1@\160\176\001\004\027\"a2@\160\176\001\004\028\"i2@\160\176\001\004\029#len@@@@@@A/caml_weak_check\160\176A\160\160B\144\160\176\001\004\000\"xs@\160\176\001\004\001!i@@@@@@B0caml_weak_create\160\176@\160\160A\144\160\176\001\003\242!n@@@@\144\147\192A@\004\006\150\176\153\208/js_create_arrayAA @\160\144\004\r@\176\192,caml_weak.mla\001\005`\001\005b\192\004\002a\001\005`\001\005\128@@C-caml_weak_get\160\176@\160\160B\144\160\176\001\003\249\"xs@\160\176\001\003\250!i@@@@\144\147\192B@\004\t\150\176\153\208+js_from_defAA @\160\150\176\b\000\000\004\016@\160\144\004\020\160\144\004\019@\176\192\004!i\001\006\t\001\006\031\192\004\"i\001\006\t\001\006%@@\176\192\004$i\001\006\t\001\006\011\004\003@\208\208@2caml_weak_get_copy\160\176A\160\160B\144\160\176\001\003\252\"xs@\160\176\001\003\253!i@@@@@@A-caml_weak_set\160\176A\160\160C\144\160\176\001\003\244\"xs@\160\176\001\003\245!i@\160\176\001\003\246!v@@@@@@BD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("curry.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\b\186\000\000\002\225\000\000\t\014\000\000\b\230\176\208\208\208\208\208@\"_1\160\176@\160\160B\144\160\176\001\004\014!o@\160\176\001\004\015\"a0@@@@@@A\"_2\160\176@\160\160C\144\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@@@@@\208@\"_3\160\176@\160\160D\144\160\176\001\0044!o@\160\176\001\0045\"a0@\160\176\001\0046\"a1@\160\176\001\0047\"a2@@@@@@AB\"_4\160\176@\160\160E\144\160\176\001\004M!o@\160\176\001\004N\"a0@\160\176\001\004O\"a1@\160\176\001\004P\"a2@\160\176\001\004Q\"a3@@@@@\208\208@\"_5\160\176@\160\160F\144\160\176\001\004j!o@\160\176\001\004k\"a0@\160\176\001\004l\"a1@\160\176\001\004m\"a2@\160\176\001\004n\"a3@\160\176\001\004o\"a4@@@@@@A\"_6\160\176@\160\160G\144\160\176\001\004\139!o@\160\176\001\004\140\"a0@\160\176\001\004\141\"a1@\160\176\001\004\142\"a2@\160\176\001\004\143\"a3@\160\176\001\004\144\"a4@\160\176\001\004\145\"a5@@@@@\208@\"_7\160\176@\160\160H\144\160\176\001\004\176!o@\160\176\001\004\177\"a0@\160\176\001\004\178\"a1@\160\176\001\004\179\"a2@\160\176\001\004\180\"a3@\160\176\001\004\181\"a4@\160\176\001\004\182\"a5@\160\176\001\004\183\"a6@@@@@\208@\"_8\160\176@\160\160I\144\160\176\001\004\217!o@\160\176\001\004\218\"a0@\160\176\001\004\219\"a1@\160\176\001\004\220\"a2@\160\176\001\004\221\"a3@\160\176\001\004\222\"a4@\160\176\001\004\223\"a5@\160\176\001\004\224\"a6@\160\176\001\004\225\"a7@@@@@@ABCD#__1\160\176@\160\160A\144\160\176\001\004\022!o@@@@@\208\208\208@#__2\160\176@\160\160A\144\160\176\001\004)!o@@@@@@A#__3\160\176@\160\160A\144\160\176\001\004@!o@@@@@\208@#__4\160\176@\160\160A\144\160\176\001\004[!o@@@@@@AB#__5\160\176@\160\160A\144\160\176\001\004z!o@@@@@\208@#__6\160\176@\160\160A\144\160\176\001\004\157!o@@@@@\208@#__7\160\176@\160\160A\144\160\176\001\004\196!o@@@@@\208@#__8\160\176@\160\160A\144\160\176\001\004\239!o@@@@@@ABCDE#app\160\176@\160\160B\144\160\176\001\003\244!f@\160\176\001\003\245$args@@@@@\208\208\208\208@'curry_1\160\176@\160\160C\144\160\176\001\004\n!o@\160\176\001\004\011\"a0@\160\176\001\004\012%arity@@@@@@A'curry_2\160\176@\160\160D\144\160\176\001\004\026!o@\160\176\001\004\027\"a0@\160\176\001\004\028\"a1@\160\176\001\004\029%arity@@@@@\208@'curry_3\160\176@\160\160E\144\160\176\001\004.!o@\160\176\001\004/\"a0@\160\176\001\0040\"a1@\160\176\001\0041\"a2@\160\176\001\0042%arity@@@@@@AB'curry_4\160\176@\160\160F\144\160\176\001\004F!o@\160\176\001\004G\"a0@\160\176\001\004H\"a1@\160\176\001\004I\"a2@\160\176\001\004J\"a3@\160\176\001\004K%arity@@@@@\208\208@'curry_5\160\176@\160\160G\144\160\176\001\004b!o@\160\176\001\004c\"a0@\160\176\001\004d\"a1@\160\176\001\004e\"a2@\160\176\001\004f\"a3@\160\176\001\004g\"a4@\160\176\001\004h%arity@@@@@@A'curry_6\160\176@\160\160H\144\160\176\001\004\130!o@\160\176\001\004\131\"a0@\160\176\001\004\132\"a1@\160\176\001\004\133\"a2@\160\176\001\004\134\"a3@\160\176\001\004\135\"a4@\160\176\001\004\136\"a5@\160\176\001\004\137%arity@@@@@\208@'curry_7\160\176@\160\160I\144\160\176\001\004\166!o@\160\176\001\004\167\"a0@\160\176\001\004\168\"a1@\160\176\001\004\169\"a2@\160\176\001\004\170\"a3@\160\176\001\004\171\"a4@\160\176\001\004\172\"a5@\160\176\001\004\173\"a6@\160\176\001\004\174%arity@@@@@\208@'curry_8\160\176@\160\160J\144\160\176\001\004\206!o@\160\176\001\004\207\"a0@\160\176\001\004\208\"a1@\160\176\001\004\209\"a2@\160\176\001\004\210\"a3@\160\176\001\004\211\"a4@\160\176\001\004\212\"a5@\160\176\001\004\213\"a6@\160\176\001\004\214\"a7@\160\176\001\004\215%arity@@@@@@ABCD\"js\160\176@\160\160D\144\160\176\001\003\252%label@\160\176\001\003\253'cacheid@\160\176\001\003\254#obj@\160\176\001\003\255$args@@@@@\208\208\208@#js1\160\176@\160\160C\144\160\176\001\004\018%label@\160\176\001\004\019'cacheid@\160\176\001\004\020\"a0@@@@@@A#js2\160\176@\160\160D\144\160\176\001\004$%label@\160\176\001\004%'cacheid@\160\176\001\004&\"a0@\160\176\001\004'\"a1@@@@@\208@#js3\160\176@\160\160E\144\160\176\001\004:%label@\160\176\001\004;'cacheid@\160\176\001\004<\"a0@\160\176\001\004=\"a1@\160\176\001\004>\"a2@@@@@@AB#js4\160\176@\160\160F\144\160\176\001\004T%label@\160\176\001\004U'cacheid@\160\176\001\004V\"a0@\160\176\001\004W\"a1@\160\176\001\004X\"a2@\160\176\001\004Y\"a3@@@@@\208\208@#js5\160\176@\160\160G\144\160\176\001\004r%label@\160\176\001\004s'cacheid@\160\176\001\004t\"a0@\160\176\001\004u\"a1@\160\176\001\004v\"a2@\160\176\001\004w\"a3@\160\176\001\004x\"a4@@@@@@A#js6\160\176@\160\160H\144\160\176\001\004\148%label@\160\176\001\004\149'cacheid@\160\176\001\004\150\"a0@\160\176\001\004\151\"a1@\160\176\001\004\152\"a2@\160\176\001\004\153\"a3@\160\176\001\004\154\"a4@\160\176\001\004\155\"a5@@@@@\208@#js7\160\176@\160\160I\144\160\176\001\004\186%label@\160\176\001\004\187'cacheid@\160\176\001\004\188\"a0@\160\176\001\004\189\"a1@\160\176\001\004\190\"a2@\160\176\001\004\191\"a3@\160\176\001\004\192\"a4@\160\176\001\004\193\"a5@\160\176\001\004\194\"a6@@@@@\208@#js8\160\176@\160\160J\144\160\176\001\004\228%label@\160\176\001\004\229'cacheid@\160\176\001\004\230\"a0@\160\176\001\004\231\"a1@\160\176\001\004\232\"a2@\160\176\001\004\233\"a3@\160\176\001\004\234\"a4@\160\176\001\004\235\"a5@\160\176\001\004\236\"a6@\160\176\001\004\237\"a7@@@@@@ABCDEF@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\222\000\000\000@\000\000\000\206\000\000\000\193\176\208\208\208@%Array\160@\144\145\161@A@A$Dict\160@\144\145\004\005\208@$Json\160@\144\145\004\n@AB$Null\160@\144\145\004\014\208\208@.Null_undefined\160@\144\145\004\020\208\208@#Obj\160@\144\145\004\026@A\"Re\160@\144\145\004\030@BC&String\160@\144\145\004\"\208\208@%Types\160@\144\145\004(@A)Undefined\160@\144\145\004,@BDE@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_float.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_int.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_int64.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_nativeint.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_null.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000d\000\000\000\026\000\000\000T\000\000\000O\176\208@$bind\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247!f@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_primitive.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\179\000\000\000+\000\000\000\148\000\000\000\138\176\208\208@4js_from_nullable_def\160\176A\160\160A\144\160\176\001\003\243!x@@@@@@A/js_is_nil_undef\160\176A\160\160A\144\160\176\001\003\241!x@@@@@\208@*option_get\160\176@\160\160A\144\160\176\001\003\245!x@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_undefined.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000d\000\000\000\026\000\000\000T\000\000\000O\176\208@$bind\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247!f@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_unsafe.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("typed_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000{\000\000\000\022\000\000\000S\000\000\000J\176\208\208\208@-Float32_array\160@@@A-Float64_array\160@@@B+Int32_array\160@@@C@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bs.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000`\000\000\000\024\000\000\000L\000\000\000G\176\208@#Dyn\160@\144\145\161@A\208@'Dyn_lib\160@\144\145\004\006@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bs_dyn.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\004c\000\000\001\015\000\000\003\177\000\000\003w\176\208\208\208\208@.array_to_value\160\176A\160\160A\144\160\176\001\004\029!k@@@@@@A-bool_to_value\160\176A@@@\208@-char_to_value\160\004\004@@AB.float_to_value\160\004\006@\208@.int32_to_value\160\004\t@@AC.int64_to_value\160\004\011@\208\208\208@,int_to_value\160\004\016@\208@-list_to_value\160\176A\160\160A\144\160\176\001\004 !k@@@@@@AB2nativeint_to_value\160\004\028@\208\208@/option_to_value\160\176A\160\160A\144\160\176\001\004W!k@@@@@@A/record_to_value\160\176A\160\160B\144\160\176\001\004#&labels@\160\176\001\004$!v@@@@\144\147\192B@\004\t\150\176\179L\160&RecordN@\160\144\004\015\160\144\004\014@\176\192)bs_dyn.ml\000c\001\011}\001\011\127\192\004\002\000c\001\011}\001\011\144@\208\208@/shape_of_record\160\176@\160\160A\144\160\176\001\004[&labels@@@@\144\147\192A@\004\006\144\004\006@A0shape_of_variant\160\176A\160\160B\144\160\176\001\004],constructors@\160\176\001\004^'arities@@@@\144\147\192B@\004\t\150\176\179@\146\160,constructors'arities@\160\144\004\017\160\144\004\016@\176\192\004-\001\000\143\001\015\180\001\015\182\192\004.\001\000\143\001\015\180\001\015\206@@BCD/string_to_value\160\004q@\208\208@0tuple_2_to_value\160\176A\160\160B\144\160\176\001\004*\"k0@\160\176\001\004+\"k1@@@@@@A0tuple_3_to_value\160\176A\160\160C\144\160\176\001\004/\"k0@\160\176\001\0040\"k1@\160\176\001\0041\"k2@@@@@\208\208@0tuple_4_to_value\160\176A\160\160D\144\160\176\001\0046\"k0@\160\176\001\0047\"k1@\160\176\001\0048\"k2@\160\176\001\0049\"k3@@@@@@A0tuple_5_to_value\160\176A\160\160E\144\160\176\001\004?\"k0@\160\176\001\004@\"k1@\160\176\001\004A\"k2@\160\176\001\004B\"k3@\160\176\001\004C\"k4@@@@@\208\208@0tuple_6_to_value\160\176A\160\160F\144\160\176\001\004J\"k0@\160\176\001\004K\"k1@\160\176\001\004L\"k2@\160\176\001\004M\"k3@\160\176\001\004N\"k4@\160\176\001\004O\"k5@@@@@@A0variant_to_value\160\176A\160\160C\144\160\176\001\004&&labels@\160\176\001\004'#tag@\160\176\001\004(\"vs@@@@\144\147\192C@\004\012\150\176\179M\160'VariantN@\160\144\004\018\160\144\004\017\160\144\004\016@\176\192\004\175\000f\001\011\184\001\011\186\192\004\176\000f\001\011\184\001\011\210@@BCDEF\144.int32_to_value\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("bs_dyn_lib.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000a\000\000\000\023\000\000\000L\000\000\000G\176\208@)to_string\160\176A\160\160A\144\160\176\001\003\241!v@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_dict.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_json.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\133\000\000\000$\000\000\000v\000\000\000p\176\208@*reify_type\160\176A\160\160A\144\160\176\001\003\250!x@@@@@\208@$test\160\176@\160\160B\144\160\176\001\003\253!x@\160\176\001\003\254!v@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_null_undefined.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000d\000\000\000\026\000\000\000T\000\000\000O\176\208@$bind\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247!f@@@@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_re.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("js_types.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\133\000\000\000$\000\000\000v\000\000\000p\176\208@*reify_type\160\176A\160\160A\144\160\176\001\004\000!x@@@@@\208@$test\160\176@\160\160B\144\160\176\001\004\003!x@\160\176\001\004\004!v@@@@@@AB@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("node.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000\191\000\000\0006\000\000\000\175\000\000\000\164\176\208\208\208@&Buffer\160@\144\145\161@A\208@-Child_process\160@\144\145\004\006@AB\"Fs\160@\144\145\004\n\208@&Module\160@\144\145\004\015@AC$Path\160@\144\145\004\019\208@'Process\160@\144\145\004\024\208@$test\160\176A\160\160A\144\160\176\001\004\000!x@@@@@@ABD@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("node_buffer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("node_child_process.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("node_fs.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000M\000\000\000\016\000\000\0006\000\000\0001\176\208@%Watch\160@@@A@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("node_module.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("node_path.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  ("node_process.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160510\132\149\166\190\000\000\000A\000\000\000\r\000\000\000*\000\000\000&\176@@\144\160+bs-platform\160\160\0025d\024\161)lib/amdjs\160\160\002/B\193`(lib/goog\160\160\002\219\182\195k&lib/js@"));
-  
-]
-end
-module Js_number : sig 
-#1 "js_number.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-type t  = float 
-
-
-val to_string : t -> string
-
-
-val caml_float_literal_to_js_string : string -> string
-
-end = struct
-#1 "js_number.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-type t = float 
-
-
-(* http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.3 
-   http://caml.inria.fr/pub/docs/manual-ocaml/lex.html
-   {[
-     float-literal ::= [-](0...9){0...9|_}[.{0...9|_}][(e|E)][(e|E)[+|-](0...9){0...9|_}]     
-   ]}   
-   In ocaml, the interpretation of floating-point literals that
-   fall outside the range of representable floating-point values is undefined.
-   Also, (_) are accepted   
-
-   see https://github.com/ocaml/ocaml/pull/268 that ocaml will have HEXADECIMAL notation 
-   support in 4.3
-
-   The Hex part is quite different   
- *)
-
-
-
-let to_string v =
-  if v = infinity
-  then "Infinity"
-  else if v = neg_infinity
-  then "-Infinity"
-  else if v <> v
-  then "NaN"
-  else
-    let vint = (int_of_float v)
-    (* TODO: check if 32-bits will loose some precision *)               
-    in
-    if float_of_int  vint = v
-    then
-      string_of_int vint
-    else
-      let s1 = Printf.sprintf "%.12g" v in
-      if v = float_of_string s1
-      then s1
-      else
-        let s2 = Printf.sprintf "%.15g" v in
-        if v = float_of_string s2
-        then s2
-        else  Printf.sprintf "%.18g" v
-
-
-
-let caml_float_literal_to_js_string v = 
-  let len = String.length v in
-  if len >= 2 && 
-    v.[0] = '0' &&
-    (v.[1] = 'x' || v.[1] = 'X') then  
-    assert false 
-   (* TODO: catchup when upgraded to 4.3 
-      it does not make sense too much since js dos not 
-      support it natively
-    *)    
-  else    
-
-    let rec aux buf i = 
-      if i >= len then buf
-      else 
-        let x = v.[i] in
-        if x = '_' then
-          aux buf (i + 1)
-        else if   x  = '.' && i = len - 1  then
-          buf
-        else 
-          begin
-            Buffer.add_char buf x ;
-            aux buf ( i + 1) 
-          end in
-    Buffer.contents (aux  (Buffer.create len) 0)
-
 
 end
 module Type_int_to_string
@@ -23538,6 +17883,176 @@ let shake_program (program : J.program) =
   {program with block = shake_block program.block program.export_set}
 
 end
+module Js_arr : sig 
+#1 "js_arr.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+val set_array : J.expression -> J.expression -> J.expression -> J.expression
+
+val ref_array : J.expression -> J.expression -> J.expression
+
+end = struct
+#1 "js_arr.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+module E = Js_exp_make
+ 
+let set_array  e e0 e1 = 
+  E.assign (E.access e e0)  e1
+
+let ref_array  e e0 = 
+  E.access  e  e0
+
+end
+module Js_ast_util : sig 
+#1 "js_ast_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** Simple expression, 
+    no computation involved so that  it is okay to be duplicated
+*)
+val is_simple_expression : J.expression -> bool 
+
+
+
+val named_expression : 
+  J.expression -> (J.statement * Ident.t) option
+
+end = struct
+#1 "js_ast_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+module E = Js_exp_make 
+
+module S = Js_stmt_make  
+
+let rec is_simple_expression (e : J.expression) = 
+  match e.expression_desc with  
+  | Var _ 
+  | Bool _ 
+  | Str _ 
+  | Number _ -> true
+  | Dot (e, _, _) -> is_simple_expression e 
+  | _ -> false 
+
+let rec named_expression (e : J.expression)
+  :  (J.statement  * Ident.t) option = 
+  if is_simple_expression e then 
+    None 
+  else 
+    let obj = Ext_ident.create Literals.tmp in
+    let obj_code = 
+      S.define
+        ~kind:Strict obj e in 
+
+    Some (obj_code, obj)
+
+end
 module Js_of_lam_array : sig 
 #1 "js_of_lam_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23756,6 +18271,95 @@ let field field_info  e i =
 *)    
 let copy  = E.array_copy
 
+
+end
+module Ext_hashtbl : sig 
+#1 "ext_hashtbl.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+val of_list : ('a * 'b) list -> ('a, 'b) Hashtbl.t
+
+val of_list2 : 'a list -> 'b list -> ('a, 'b) Hashtbl.t
+
+val add_list : ('a, 'b) Hashtbl.t -> ('a * 'b) list -> unit
+
+val add_list2 :  ('a, 'b) Hashtbl.t -> 'a list -> 'b list -> unit
+
+end = struct
+#1 "ext_hashtbl.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+let of_list kvs = 
+  let map = Hashtbl.create 51 in 
+  List.iter (fun (k, v) -> Hashtbl.add map k v) kvs ; 
+  map
+
+
+let of_list2 ks vs = 
+  let map = Hashtbl.create 51 in 
+  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
+  map
+
+let add_list map kvs =    
+  List.iter (fun (k, v) ->   Hashtbl.add map  k v) kvs 
+
+let add_list2 map ks vs = 
+  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
 
 end
 module Lam_beta_reduce_util : sig 
@@ -25444,6 +20048,2122 @@ let set_double_field field_info e  i e0 =
     | Fld_record_set s -> 
       E.index ~comment:s e i in 
   E.assign v  e0
+
+
+end
+module Ast_literal : sig 
+#1 "ast_literal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+module Lid : sig
+  type t = Longident.t 
+  val val_unit : t 
+  val type_unit : t 
+  val js_fn : t 
+  val js_meth : t 
+  val js_meth_callback : t 
+  val js_obj : t 
+
+  val ignore_id : t 
+  val js_null : t 
+  val js_undefined : t
+  val js_null_undefined : t 
+  val js_re_id : t 
+  val js_unsafe : t 
+end
+
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+val val_unit : expression_lit
+
+val type_unit : core_type_lit
+
+val type_string : core_type_lit
+
+val type_any : core_type_lit
+
+val pat_unit : pattern_lit
+
+end = struct
+#1 "ast_literal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+
+module Lid = struct 
+  type t = Longident.t 
+  let val_unit : t = Lident "()"
+  let type_unit : t = Lident "unit"
+  let type_string : t = Lident "string"
+  (* TODO should be renamed in to {!Js.fn} *)
+  (* TODO should be moved into {!Js.t} Later *)
+  let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let js_meth = Longident.Ldot (Lident "Js", "meth")
+  let js_meth_callback = Longident.Ldot (Lident "Js", "meth_callback")
+  let js_obj = Longident.Ldot (Lident "Js", "t") 
+  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+  let js_null  = Longident.Ldot (Lident "Js", "null")
+  let js_undefined = Longident.Ldot (Lident "Js", "undefined")
+  let js_null_undefined = Longident.Ldot (Lident "Js", "null_undefined")
+  let js_re_id = Longident.Ldot (Lident "Js_re", "t")
+  let js_unsafe = Longident.Lident "Js_unsafe"
+end
+
+module No_loc = struct 
+  let loc = Location.none
+  let val_unit = 
+    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+  let type_unit =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+  let type_string =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+  let type_any = Ast_helper.Typ.any ()
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
+end 
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+let val_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.val_unit
+  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
+
+
+let type_unit ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_unit
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+
+let type_string ?loc () = 
+  match loc with 
+  | None -> No_loc.type_string 
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_any ?loc () = 
+  match loc with 
+  | None -> No_loc.type_any
+  | Some loc -> Ast_helper.Typ.any ~loc ()
+
+let pat_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.pat_unit
+  | Some loc -> 
+    Pat.construct ~loc {txt = Lid.val_unit; loc} None
+
+end
+module Ast_comb : sig 
+#1 "ast_comb.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val exp_apply_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+
+val fun_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+
+val arrow_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression
+
+
+val tuple_type_pair : 
+  ?loc:Ast_helper.loc ->
+  [< `Make | `Run ] ->
+  int -> Parsetree.core_type * Parsetree.core_type list * Parsetree.core_type
+
+val to_js_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type
+
+
+(** TODO: make it work for browser too *)
+val to_undefined_type :
+  Location.t -> Parsetree.core_type -> Parsetree.core_type  
+
+val to_js_re_type : Location.t -> Parsetree.core_type
+
+end = struct
+#1 "ast_comb.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+open Ast_helper 
+
+let exp_apply_no_label ?loc ?attrs a b = 
+  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+
+let fun_no_label ?loc ?attrs  pat body = 
+  Exp.fun_ ?loc ?attrs "" None pat body
+
+let arrow_no_label ?loc ?attrs b c = 
+  Typ.arrow ?loc ?attrs "" b c 
+
+let discard_exp_as_unit loc e = 
+  exp_apply_no_label ~loc     
+    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
+    [Exp.constraint_ ~loc e 
+       (Ast_literal.type_unit ~loc ())]
+
+
+let tuple_type_pair ?loc kind arity = 
+  let prefix  = "a" in
+  if arity = 0 then 
+    let ty = Typ.var ?loc ( prefix ^ "0") in 
+    match kind with 
+    | `Run -> ty,  [], ty 
+    | `Make -> 
+      (Typ.arrow "" ?loc
+         (Ast_literal.type_unit ?loc ())
+         ty ,
+       [], ty)
+  else
+    let number = arity + 1 in
+    let tys = Ext_list.init number (fun i -> 
+        Typ.var ?loc (prefix ^ string_of_int (number - i - 1))
+      )  in
+    match tys with 
+    | result :: rest -> 
+      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
+      List.rev rest , result
+    | [] -> assert false
+    
+    
+
+let js_obj_type_id  = 
+  Ast_literal.Lid.js_obj 
+
+let re_id  = 
+  Ast_literal.Lid.js_re_id 
+
+let to_js_type loc  x  = 
+  Typ.constr ~loc {txt = js_obj_type_id; loc} [x]
+
+let to_js_re_type loc  =
+  Typ.constr ~loc { txt = re_id ; loc} []
+    
+let to_undefined_type loc x =
+  Typ.constr ~loc
+    {txt = Ast_literal.Lid.js_undefined ; loc}
+    [x]  
+
+
+end
+module Ast_core_type : sig 
+#1 "ast_core_type.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+
+
+
+val replace_result : t -> t -> t
+
+val is_unit : t -> bool 
+val is_array : t -> bool 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty
+type arg_type = 
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Array 
+  | Unit
+  | Nothing
+  | Ignore
+
+(** for 
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)
+val label_name : string -> arg_label
+
+
+
+
+
+(** return a function type 
+    [from_labels ~loc tyvars labels]
+    example output:
+    {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
+*)
+val from_labels :
+  loc:Location.t -> int ->  string Asttypes.loc list -> t
+
+val make_obj :
+  loc:Location.t ->
+  (string * Parsetree.attributes * t) list ->
+  t
+
+end = struct
+#1 "ast_core_type.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.core_type 
+type arg_label =
+  | Label of string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+
+type arg_type = 
+  | NullString of (int * string) list 
+  | NonNullString of (int * string) list 
+  | Int of (int * int ) list 
+  | Array 
+  | Unit
+  | Nothing
+  | Ignore
+
+open Ast_helper
+
+let replace_result ty result = 
+  let rec aux (ty : Parsetree.core_type) = 
+    match ty with 
+    | { ptyp_desc = 
+          Ptyp_arrow (label,t1,t2)
+      } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
+    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+      ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
+    | _ -> result in 
+  aux ty 
+
+let is_unit (ty : t ) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "unit"}, []) -> true
+  | _ -> false 
+
+let is_array (ty : t) = 
+  match ty.ptyp_desc with 
+  | Ptyp_constr({txt =Lident "array"}, [_]) -> true
+  | _ -> false 
+
+let is_optional l =
+  String.length l > 0 && l.[0] = '?'
+
+let label_name l : arg_label =
+  if l = "" then Empty else 
+  if is_optional l 
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Label l
+
+
+(* Note that OCaml type checker will not allow arbitrary 
+   name as type variables, for example:
+   {[
+     '_x'_
+   ]}
+   will be recognized as a invalid program
+*)
+let from_labels ~loc arity labels 
+  : t =
+  let tyvars = 
+    ((Ext_list.init arity (fun i ->      
+           Typ.var ~loc ("a" ^ string_of_int i)))) in
+  let result_type =
+    Ast_comb.to_js_type loc  
+      (Typ.object_ ~loc
+         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
+  in 
+  List.fold_right2 
+    (fun {Asttypes.loc ; txt = label }
+      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+
+
+let make_obj ~loc xs =
+  Ast_comb.to_js_type loc @@
+  Ast_helper.Typ.object_  ~loc xs   Closed
+
+end
+module Ast_payload : sig 
+#1 "ast_payload.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(** A utility module used when destructuring parsetree attributes, used for 
+    compiling FFI attributes and built-in ppx  *)
+
+type t = Parsetree.payload
+type lid = Longident.t Asttypes.loc
+type label_expr = lid  * Parsetree.expression
+type action = 
+   lid * Parsetree.expression option 
+
+val is_single_string : t -> string option
+val is_single_int : t -> int option 
+
+val as_string_exp : t -> Parsetree.expression option
+val as_core_type : Location.t -> t -> Parsetree.core_type    
+val as_empty_structure :  t -> bool 
+val as_ident : t -> lid option
+val raw_string_payload : Location.t -> string -> t 
+val assert_strings :
+  Location.t -> t -> string list  
+
+(** as a record or empty 
+    it will accept 
+    {[ [@@@bs.config ]]}
+    or 
+    {[ [@@@bs.config { property  .. } ]]}    
+*)
+val as_record_and_process : 
+  Location.t ->
+  t -> action list 
+
+val assert_bool_lit : Parsetree.expression -> bool
+
+val empty : t 
+
+val table_dispatch : 
+  (Parsetree.expression option  -> 'a) String_map.t -> action -> 'a
+
+end = struct
+#1 "ast_payload.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.payload
+
+let is_single_string (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (name,_));
+           _},_);
+      _}] -> Some name
+  | _  -> None
+
+let is_single_int (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_int name);
+           _},_);
+      _}] -> Some name
+  | _  -> None
+
+let as_string_exp (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (_,_));
+           _} as e ,_);
+      _}] -> Some e
+  | _  -> None
+
+let as_core_type loc x =
+  match  x with
+  | Parsetree.PTyp x -> x
+  | _ -> Location.raise_errorf ~loc "except a core type"
+           
+let as_ident (x : t ) =
+  match x with
+  | PStr [
+      {pstr_desc =
+         Pstr_eval (
+           {
+             pexp_desc =
+               Pexp_ident ident 
+                 
+           } , _)
+      }
+    ] -> Some ident
+  | _ -> None
+open Ast_helper
+
+let raw_string_payload loc (s : string) : t =
+  PStr [ Str.eval ~loc (Exp.constant ~loc (Const_string (s,None)  ))]
+    
+let as_empty_structure (x : t ) = 
+  match x with 
+  | PStr ([]) -> true
+  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
+
+type lid = Longident.t Asttypes.loc
+type label_expr = lid  * Parsetree.expression
+type action = 
+   lid * Parsetree.expression option 
+
+
+let as_record_and_process 
+    loc
+    x 
+  = 
+  match  x with 
+  | Parsetree.PStr 
+      [ {pstr_desc = Pstr_eval
+             ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
+         _
+        }]
+    -> 
+    begin match with_obj with
+    | None ->
+      List.map
+        (fun (x,y) -> 
+           match (x,y) with 
+           | ({Asttypes.txt = Longident.Lident name; loc} ) , 
+             ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
+             when name2 = name -> 
+              (x, None)
+           | _ ->  (x, Some y))
+        label_exprs
+    | Some _ -> 
+      Location.raise_errorf ~loc "with is not supported"
+    end
+  | Parsetree.PStr [] -> []
+  | _ -> 
+    Location.raise_errorf ~loc "this is not a valid record config"
+
+
+
+let assert_strings loc (x : t) : string list
+   = 
+  let module M = struct exception Not_str end  in 
+  match x with 
+  | PStr [ {pstr_desc =  
+              Pstr_eval (
+                {pexp_desc = 
+                   Pexp_tuple strs;
+                 _},_);
+            pstr_loc = loc ;            
+            _}] ->
+    (try 
+        strs |> List.map (fun e ->
+           match (e : Parsetree.expression) with
+           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
+             name
+           | _ -> raise M.Not_str)
+     with M.Not_str ->
+       Location.raise_errorf ~loc "expect string tuple list"
+    )
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (name,_));
+           _},_);
+      _}] ->  [name] 
+  | PStr [] ->  []
+  | PStr _                
+  | PTyp _ | PPat _ ->
+    Location.raise_errorf ~loc "expect string tuple list"
+let assert_bool_lit  (e : Parsetree.expression) = 
+  match e.pexp_desc with
+  | Pexp_construct ({txt = Lident "true" }, None)
+    -> true
+  | Pexp_construct ({txt = Lident "false" }, None)
+    -> false 
+  | _ ->
+    Location.raise_errorf ~loc:e.pexp_loc "expect `true` or `false` in this field"
+
+
+let empty : t = Parsetree.PStr []
+
+
+
+let table_dispatch table (action : action)
+     = 
+  match action with 
+  | {txt = Lident name; loc  }, y -> 
+    begin match String_map.find name table with 
+      | fn -> fn y
+      | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
+    end
+  | { loc ; }, _  -> 
+    Location.raise_errorf ~loc "invalid label for config"
+
+end
+module Ast_attributes : sig 
+#1 "ast_attributes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type attr =  Parsetree.attribute
+type t =  attr list 
+
+type ('a,'b) st = 
+  { get : 'a option ; 
+    set : 'b option }
+
+val process_method_attributes_rev : 
+  t ->
+  (bool * bool , [`Get | `No_get ]) st * t 
+
+val process_attributes_rev : 
+  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
+
+val process_bs : 
+  t -> [ `Nothing | `Has] * t 
+
+val process_external : t -> bool 
+
+type derive_attr = {
+  explict_nonrec : bool;
+  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+}
+val process_bs_string_int : 
+  t -> [`Nothing | `String | `Int | `Ignore]  * t 
+
+val process_bs_string_as :
+  t -> string option * t 
+val process_bs_int_as : 
+  t -> int option * t 
+
+
+val process_derive_type : 
+  t -> derive_attr * t 
+
+
+
+val bs : attr 
+val bs_this : attr
+val bs_method : attr
+
+
+
+end = struct
+#1 "ast_attributes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type attr =  Parsetree.attribute
+type t =  attr list 
+
+type ('a,'b) st = 
+  { get : 'a option ; 
+    set : 'b option }
+
+
+let process_method_attributes_rev (attrs : t) = 
+  List.fold_left (fun (st,acc) (({txt ; loc}, payload) as attr : attr) -> 
+
+      match txt  with 
+      | "bs.get" (* [@@bs.get{null; undefined}]*)
+        -> 
+        let result = 
+          List.fold_left 
+          (fun 
+            (null, undefined)
+            (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+            if txt = Lident "null" then 
+              (match opt_expr with 
+              | None -> true
+              | Some e -> 
+                Ast_payload.assert_bool_lit e), undefined
+
+            else if txt = Lident "undefined" then 
+              null, 
+              (match opt_expr with
+               | None ->  true
+               | Some e -> 
+                 Ast_payload.assert_bool_lit e)
+
+            else Location.raise_errorf ~loc "unsupported predicates"
+          ) (false, false) (Ast_payload.as_record_and_process loc payload)  in 
+
+        ({st with get = Some result}, acc  )
+
+      | "bs.set"
+        -> 
+        let result = 
+          List.fold_left 
+          (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+            if txt = Lident "no_get" then 
+              match opt_expr with 
+              | None -> `No_get 
+              | Some e -> 
+                if Ast_payload.assert_bool_lit e then 
+                  `No_get
+                else `Get
+            else Location.raise_errorf ~loc "unsupported predicates"
+          ) `Get (Ast_payload.as_record_and_process loc payload)  in 
+        (* properties -- void 
+              [@@bs.set{only}]
+           *)
+        {st with set = Some result }, acc
+      | _ -> 
+        (st, attr::acc  )
+    ) ( {get = None ; set = None}, []) attrs
+
+
+let process_attributes_rev (attrs : t) = 
+  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
+      match txt, st  with 
+      | "bs", (`Nothing | `Uncurry) 
+        -> 
+        `Uncurry, acc
+      | "bs.this", (`Nothing | `Meth_callback)
+        ->  `Meth_callback, acc
+      | "bs.meth",  (`Nothing | `Method)
+        -> `Method, acc
+      | "bs", _
+      | "bs.this", _
+        -> Location.raise_errorf 
+             ~loc
+             "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
+      | _ , _ -> 
+        st, attr::acc 
+    ) ( `Nothing, []) attrs
+
+let process_bs attrs = 
+  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) -> 
+      match txt, st  with 
+      | "bs", _
+        -> 
+        `Has, acc
+      | _ , _ -> 
+        st, attr::acc 
+    ) ( `Nothing, []) attrs
+
+let process_external attrs = 
+  List.exists (fun (({txt; }, _)  : attr) -> 
+      if Ext_string.starts_with txt "bs." then true 
+      else false
+    ) attrs
+
+
+type derive_attr = {
+  explict_nonrec : bool;
+  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+}
+
+let process_derive_type attrs =
+  List.fold_left 
+    (fun (st, acc) 
+      (({txt ; loc}, payload  as attr): attr)  ->
+      match  st, txt  with
+      |  {bs_deriving = `Nothing}, "bs.deriving"
+        ->
+        {st with
+         bs_deriving = `Has_deriving 
+             (Ast_payload.as_record_and_process loc payload)}, acc 
+      | {bs_deriving = `Has_deriving _}, "bs.deriving"
+        -> 
+        Location.raise_errorf ~loc "duplicated bs.deriving attribute"
+      | _ , _ ->
+        let st = 
+          if txt = "nonrec" then 
+            { st with explict_nonrec = true }
+          else st in 
+        st, attr::acc
+    ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
+
+
+
+let process_bs_string_int attrs = 
+  List.fold_left 
+    (fun (st,attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
+      match  txt, st  with
+      | "bs.string", (`Nothing | `String)
+        -> `String, attrs
+      | "bs.int", (`Nothing | `Int)
+        ->  `Int, attrs
+      | "bs.ignore", (`Nothing | `Ignore)
+        -> `Ignore, attrs
+      | "bs.int", _
+      | "bs.string", _
+      | "bs.ignore", _
+        -> 
+        Location.raise_errorf ~loc "conflict attributes "
+      | _ , _ -> st, (attr :: attrs )
+    ) (`Nothing, []) attrs
+
+let process_bs_string_as  attrs = 
+  List.fold_left 
+    (fun (st, attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
+      match  txt, st  with
+      | "bs.as", None
+        ->
+        begin match Ast_payload.is_single_string payload with 
+          | None -> 
+            Location.raise_errorf ~loc "expect string literal "
+          | Some  _ as v->  (v, attrs)  
+        end
+      | "bs.as",  _ 
+        -> 
+          Location.raise_errorf ~loc "duplicated bs.as "
+      | _ , _ -> (st, attr::attrs) 
+    ) (None, []) attrs
+
+let process_bs_int_as  attrs = 
+  List.fold_left 
+    (fun (st, attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
+      match  txt, st  with
+      | "bs.as", None
+        ->
+        begin match Ast_payload.is_single_int payload with 
+          | None -> 
+            Location.raise_errorf ~loc "expect int literal "
+          | Some  _ as v->  (v, attrs)  
+        end
+      | "bs.as",  _ 
+        -> 
+          Location.raise_errorf ~loc "duplicated bs.as "
+      | _ , _ -> (st, attr::attrs) 
+    ) (None, []) attrs
+
+
+let bs : attr
+  =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
+let bs_this : attr
+  =  {txt = "bs.this" ; loc = Location.none}, Ast_payload.empty
+
+let bs_method : attr 
+  =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
+
+
+
+end
+module Bs_loc : sig 
+#1 "bs_loc.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+val is_ghost : t -> bool
+val merge : t -> t -> t 
+val none : t 
+
+
+end = struct
+#1 "bs_loc.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+let is_ghost x = x.loc_ghost
+
+let merge (l: t) (r : t) = 
+  if is_ghost l then r 
+  else if is_ghost r then l 
+  else match l,r with 
+  | {loc_start ; }, {loc_end; _} (* TODO: improve*)
+    -> 
+    {loc_start ;loc_end; loc_ghost = false}
+
+let none = Location.none
+
+end
+module Lam_methname : sig 
+#1 "lam_methname.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val translate : ?loc:Location.t -> string -> string
+
+end = struct
+#1 "lam_methname.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let translate ?loc name =
+  let i = Ext_string.rfind ~sub:"_" name  in
+  if name.[0] = '_' then
+    if i <= 0 then
+      let len = (String.length name - 1) in
+      if len = 0 then
+        Location.raise_errorf ?loc "invalid label %s" name
+      else String.sub name 1 len
+    else
+      let len = (i - 1) in
+      if len = 0 then
+        Location.raise_errorf ?loc "invalid label %s" name 
+      else
+        String.sub name 1 len
+  else if i > 0 then
+    String.sub name 0 i
+  else name
+
+end
+module Ast_external_attributes : sig 
+#1 "ast_external_attributes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type external_module_name = 
+  { bundle : string ; 
+    bind_name : string option
+  }
+
+type js_call = { 
+  name : string;
+  external_module_name : external_module_name option;
+  splice : bool 
+}
+type pipe = bool 
+type js_send = { 
+  name : string ;
+  splice : bool ; 
+  pipe : pipe   
+} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+type js_global_val = {
+  name : string ; 
+  external_module_name : external_module_name option
+  }
+
+type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
+  splice : bool ;
+}
+
+type arg_type = Ast_core_type.arg_type
+  
+type arg_label = Ast_core_type.arg_label 
+
+type arg_kind = 
+  {
+    arg_type : arg_type;
+    arg_label : arg_label
+  }
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
+type ffi = 
+  | Obj_create of arg_label list
+  | Js_global of js_global_val 
+  | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of js_module_as_fn
+  | Js_module_as_class of external_module_name       
+  | Js_call of js_call
+  | Js_send of js_send
+  | Js_new of js_new_val
+  | Js_set of string
+  | Js_get of string
+  | Js_get_index
+  | Js_set_index
+
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
+type t  = 
+  | Bs of arg_kind list  * arg_type *   ffi
+  | Normal 
+
+
+
+
+
+(**
+   return value is of [pval_type, pval_prim]
+*)    
+val handle_attributes_as_string : 
+  Bs_loc.t ->
+  string  ->
+  Ast_core_type.t ->
+  Ast_attributes.t -> 
+  string   ->
+  Ast_core_type.t * string list * Ast_attributes.t
+
+
+val bs_external : string 
+val to_string : t -> string 
+val from_string : string -> t 
+val unsafe_from_string : string -> t 
+val is_bs_external_prefix : string -> bool
+
+
+
+val pval_prim_of_labels : string Asttypes.loc list -> string list
+
+val name_of_ffi : ffi -> string
+
+end = struct
+#1 "ast_external_attributes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type external_module_name = 
+  { bundle : string ; 
+    bind_name : string option
+  }
+
+type pipe = bool 
+type js_call = { 
+  name : string;
+  external_module_name : external_module_name option;
+  splice : bool 
+}
+
+type js_send = { 
+  name : string ;
+  splice : bool ; 
+  pipe : pipe   
+} (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+
+type js_global_val = {
+  name : string ; 
+  external_module_name : external_module_name option
+  }
+
+type js_new_val = {
+  name : string ; 
+  external_module_name : external_module_name option;
+  splice : bool ;
+}
+
+type js_module_as_fn = 
+  { external_module_name : external_module_name;
+    splice : bool 
+  }
+
+type arg_type = Ast_core_type.arg_type
+type arg_label = Ast_core_type.arg_label
+
+type arg_kind = 
+  {
+    arg_type : arg_type;
+    arg_label : arg_label
+  }
+
+
+type ffi = 
+  | Obj_create of arg_label list
+  | Js_global of js_global_val 
+  | Js_module_as_var of  external_module_name
+  | Js_module_as_fn of js_module_as_fn
+  | Js_module_as_class of external_module_name             
+  | Js_call of js_call 
+  | Js_send of js_send
+  | Js_new of js_new_val
+  | Js_set of string
+  | Js_get of string
+  | Js_get_index
+  | Js_set_index
+
+let name_of_ffi ffi =
+  match ffi with 
+  | Js_get_index -> "[@@bs.get_index]"
+  | Js_set_index -> "[@@bs.set_index]"
+  | Js_get s -> Printf.sprintf "[@@bs.get %S]" s 
+  | Js_set s -> Printf.sprintf "[@@bs.set %S]" s 
+  | Js_call v  -> Printf.sprintf "[@@bs.val %S]" v.name
+  | Js_send v  -> Printf.sprintf "[@@bs.send %S]" v.name
+  | Js_module_as_fn v  -> Printf.sprintf "[@@bs.val %S]" v.external_module_name.bundle
+  | Js_new v  -> Printf.sprintf "[@@bs.new %S]" v.name                    
+  | Js_module_as_class v
+    -> Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_module_as_var v
+    -> 
+      Printf.sprintf "[@@bs.module] %S " v.bundle
+  | Js_global v 
+    -> 
+      Printf.sprintf "[@@bs.val] %S " v.name                    
+  | Obj_create _ -> 
+    Printf.sprintf "[@@bs.obj]"
+type t  = 
+  | Bs of arg_kind list  * Ast_core_type.arg_type * ffi
+  | Normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
+
+
+
+let get_arg_type ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_core_type.t) : 
+  arg_type * Ast_core_type.t  = 
+    match Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
+    | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
+      -> 
+      let case, result, row_fields  = 
+        (List.fold_right (fun tag (nullary, acc, row_fields) -> 
+             match nullary, tag with 
+             | (`Nothing | `Null), 
+               Parsetree.Rtag (label, attrs, true,  [])
+               -> 
+               begin match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name, new_attrs  -> 
+                   `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
+                   Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
+
+                 | None, _ -> 
+                   `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
+                   tag :: row_fields
+               end
+             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
+               -> 
+               begin match Ast_attributes.process_bs_string_as attrs with 
+                 | Some name, new_attrs -> 
+                   `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
+                   Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
+                 | None, _ -> 
+                   `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
+                   (tag :: row_fields)
+               end
+             | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) row_fields (`Nothing, [], [])) in 
+       (match case with 
+        | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
+        | `Null -> NullString result 
+        | `NonNull -> NonNullString result) , 
+       {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
+        ptyp_attributes ;
+       }
+    | (`String, _),  _ -> Location.raise_errorf ~loc "Not a valid string type"
+
+    | (`Ignore, ptyp_attributes), _  -> 
+      (Ignore, {ptyp with ptyp_attributes})
+    | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
+      let _, acc, rev_row_fields = 
+        (List.fold_left 
+           (fun (i,acc, row_fields) rtag -> 
+              match rtag with 
+              | Parsetree.Rtag (label, attrs, true,  [])
+                -> 
+                  begin match Ast_attributes.process_bs_int_as attrs with 
+                  | Some i, new_attrs -> 
+                    i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
+                    Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
+                  | None, _ -> 
+                    i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
+                  end
+
+              | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           ) (0, [],[]) row_fields) in 
+      Int (List.rev acc),
+      {ptyp with 
+       ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
+       ptyp_attributes
+      }
+      
+    | (`Int, _), _ -> Location.raise_errorf ~loc "Not a valid string type"
+    | (`Nothing, ptyp_attributes),  ptyp_desc ->
+      begin match ptyp_desc with
+        | Ptyp_constr ({txt = Lident "bool"}, [])
+          -> 
+          Bs_warnings.prerr_warning loc Unsafe_ffi_bool_type;
+          Nothing
+        | Ptyp_constr ({txt = Lident "unit"}, [])
+          -> Unit 
+        | Ptyp_constr ({txt = Lident "array"}, [_])
+          -> Array
+        | Ptyp_variant _ ->
+          Bs_warnings.prerr_warning loc Unsafe_poly_variant_type;
+          Nothing           
+        | _ ->
+          Nothing           
+      end, ptyp
+
+
+let valid_js_char =
+  let a = Array.init 256 (fun i ->
+    let c = Char.chr i in
+    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c = '_' || c = '$'
+  ) in
+  (fun c -> Array.unsafe_get a (Char.code c))
+
+let valid_first_js_char = 
+  let a = Array.init 256 (fun i ->
+    let c = Char.chr i in
+    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || c = '$'
+  ) in
+  (fun c -> Array.unsafe_get a (Char.code c))
+
+(** Approximation could be improved *)
+let valid_ident (s : string) =
+  let len = String.length s in
+  len > 0 && valid_js_char s.[0] && valid_first_js_char s.[0] &&
+  (let module E = struct exception E end in
+   try
+     for i = 1 to len - 1 do
+       if not (valid_js_char (String.unsafe_get s i)) then
+         raise E.E         
+     done ;
+     true     
+   with E.E -> false )  
+  
+let valid_global_name ?loc txt =
+  if not (valid_ident txt) then
+    let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
+    List.iter
+      (fun s ->
+         if not (valid_ident s) then
+           Location.raise_errorf ?loc "Not a valid  name %s"  txt
+      ) v      
+
+let valid_method_name ?loc txt =         
+  if not (valid_ident txt) then
+    Location.raise_errorf ?loc "Not a valid  name %s"  txt
+
+
+
+let check_external_module_name ?loc x = 
+  match x with 
+  | {bundle = ""; _ } | {bind_name = Some ""} -> 
+    Location.raise_errorf ?loc "empty name encountered"
+  | _ -> ()
+let check_external_module_name_opt ?loc x = 
+  match x with 
+  | None -> ()
+  | Some v -> check_external_module_name ?loc v 
+
+
+let check_ffi ?loc ffi = 
+  match ffi with 
+  | Js_global {name} -> valid_global_name ?loc  name
+  | Js_send {name } 
+  | Js_set  name
+  | Js_get name
+    ->  valid_method_name ?loc name
+  | Obj_create _ -> ()
+  | Js_get_index | Js_set_index 
+    -> ()
+
+  | Js_module_as_var external_module_name
+  | Js_module_as_fn {external_module_name; _}
+  | Js_module_as_class external_module_name             
+    -> check_external_module_name external_module_name
+  | Js_new {external_module_name ;  name}
+  | Js_call {external_module_name ;  name ; _}
+    -> 
+    check_external_module_name_opt ?loc external_module_name ;
+    valid_global_name ?loc name     
+
+
+(** 
+   [@@bs.module "react"]
+   [@@bs.module "react"]
+   ---
+   [@@bs.module "@" "react"]
+   [@@bs.module "@" "react"]
+
+   They should have the same module name 
+
+   TODO: we should emit an warning if we bind 
+   two external files to the same module name
+*)
+type bundle_source =
+  [`Nm_payload of string
+  |`Nm_external of string
+  | `Nm_val of string      
+  ]  
+
+let string_of_bundle_source (x : bundle_source) =
+  match x with
+  | `Nm_payload x
+  | `Nm_external x
+  | `Nm_val x -> x   
+type name_source =
+  [ bundle_source  
+  | `Nm_na
+
+  ]
+type st = 
+  { val_name : name_source;
+    external_module_name : external_module_name option;
+    module_as_val : external_module_name option;
+    val_send : name_source ;
+    val_send_pipe : Ast_core_type.t option;    
+    splice : bool ; (* mutable *)
+    set_index : bool; (* mutable *)
+    get_index : bool;
+    new_name : name_source ;
+    call_name : name_source ;
+    set_name : name_source ;
+    get_name : name_source ;
+    mk_obj : bool ;
+
+  }
+
+let init_st = 
+  {
+    val_name = `Nm_na; 
+    external_module_name = None ;
+    module_as_val = None;
+    val_send = `Nm_na;
+    val_send_pipe = None;    
+    splice = false;
+    set_index = false;
+    get_index = false;
+    new_name = `Nm_na;
+    call_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+    mk_obj = false ; 
+
+  }
+
+
+let bs_external = "BS:" ^ Js_config.version
+let bs_external_length = String.length bs_external
+
+let is_bs_external_prefix s = 
+  Ext_string.starts_with s bs_external
+
+let to_string  t = 
+  bs_external ^ Marshal.to_string t []
+let unsafe_from_string s = 
+    Marshal.from_string  s bs_external_length 
+let from_string s : t  = 
+  if is_bs_external_prefix s then 
+    Marshal.from_string  s (String.length bs_external)
+  else Ext_pervasives.failwithf ~loc:__LOC__
+      "compiler version mismatch, please do a clean build" 
+
+let process_external_attributes 
+    no_arguments 
+    (prim_name_or_pval_prim: [< bundle_source ] as 'a)
+    pval_prim
+    prim_attributes =
+  let name_from_payload_or_prim payload : name_source =
+    match Ast_payload.is_single_string payload with
+    | Some  val_name ->  `Nm_payload val_name
+    | None ->  (prim_name_or_pval_prim :> name_source)
+  in
+  List.fold_left 
+    (fun (st, attrs)
+      (({txt ; loc}, payload) as attr : Ast_attributes.attr) 
+      ->
+        if Ext_string.starts_with txt "bs." then
+          begin match txt with 
+            | "bs.val" ->  
+              if no_arguments then
+                {st with val_name = name_from_payload_or_prim payload}
+              else 
+                {st with call_name = name_from_payload_or_prim payload}
+
+            | "bs.module" -> 
+              begin match Ast_payload.assert_strings loc payload with 
+                | [name] ->
+                  {st with external_module_name =
+                             Some {bundle=name; bind_name = None}}
+                | [bundle;bind_name] -> 
+                  {st with external_module_name =
+                             Some {bundle; bind_name = Some bind_name}}
+                | [] ->
+                  { st with
+                    module_as_val = 
+                      Some
+                        { bundle =
+                            string_of_bundle_source
+                              (prim_name_or_pval_prim :> bundle_source) ;
+                          bind_name = Some pval_prim}
+                  }
+                | _  -> Location.raise_errorf ~loc "Illegal attributes"
+              end
+            | "bs.splice" -> {st with splice = true}
+            | "bs.send" -> 
+              { st with val_send = name_from_payload_or_prim payload}
+            | "bs.send.pipe"
+              ->
+              { st with val_send_pipe = Some (Ast_payload.as_core_type loc payload)}                
+            | "bs.set" -> 
+              {st with set_name = name_from_payload_or_prim payload}
+            | "bs.get" -> {st with get_name = name_from_payload_or_prim payload}
+
+            | "bs.new" -> {st with new_name = name_from_payload_or_prim payload}
+            | "bs.set_index" -> {st with set_index = true}
+            | "bs.get_index"-> {st with get_index = true}
+            | "bs.obj" -> {st with mk_obj = true}
+            | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
+          end, attrs
+        else (st , attr :: attrs)
+    )
+    (init_st, []) prim_attributes 
+
+
+let list_of_arrow (ty : Parsetree.core_type) = 
+  let rec aux (ty : Parsetree.core_type) acc = 
+    match ty.ptyp_desc with 
+    | Ptyp_arrow(label,t1,t2) -> 
+      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+    | Ptyp_poly(_, ty) -> (* should not happen? *)
+      Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
+    | return_type -> ty, List.rev acc
+  in aux ty []
+
+(** Note that the passed [type_annotation] is already processed by visitor pattern before 
+*)
+let handle_attributes 
+    (loc : Bs_loc.t)
+    (pval_prim : string ) 
+    (type_annotation : Parsetree.core_type)
+    (prim_attributes : Ast_attributes.t) (prim_name : string)
+  : Ast_core_type.t * string * t * Ast_attributes.t =
+  let prim_name_or_pval_prim =
+    if String.length prim_name = 0 then  `Nm_val pval_prim
+    else  `Nm_external prim_name  (* need check name *)
+  in    
+  let result_type, arg_types_ty =
+    list_of_arrow type_annotation in
+  let result_type_spec, new_result_type  = get_arg_type result_type in
+  let (st, left_attrs) = 
+    process_external_attributes 
+      (arg_types_ty = [])
+      prim_name_or_pval_prim pval_prim prim_attributes in 
+
+  let splice = st.splice in 
+  let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
+    List.fold_right 
+      (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
+         let spec, new_ty = get_arg_type ty in
+         (if i = 0 && splice  then
+           match spec with 
+           | Array  -> ()
+           | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
+         ({ arg_label = Ast_core_type.label_name label ; 
+            arg_type = spec 
+          } :: arg_type_specs,
+          (label, new_ty,attr,loc) :: arg_types,
+          i + 1)
+      ) arg_types_ty 
+      (match st with
+       | {val_send_pipe = Some obj} ->      
+         let spec, new_ty = get_arg_type obj in 
+         [{ arg_label = Empty ; 
+           arg_type = spec
+          }],
+         ["", new_ty, [], obj.ptyp_loc]
+         ,0
+       | {val_send_pipe = None } -> [],[], 0) in 
+
+
+  let ffi = 
+    match st with 
+    | { mk_obj = true;
+        val_name = `Nm_na; 
+        external_module_name = None ;
+        module_as_val = None;
+        val_send = `Nm_na;
+        val_send_pipe = None;    
+        splice = false;
+        new_name = `Nm_na;
+        call_name = `Nm_na;
+        set_name = `Nm_na ;
+        get_name = `Nm_na ;
+        get_index = false ;
+      } ->
+      if String.length prim_name <> 0 then 
+        Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+      Obj_create (List.map (function
+          | {arg_label = (Empty as l) ; arg_type = Unit  }
+            -> l 
+          | {arg_label = Empty ; arg_type = _ }
+            -> Location.raise_errorf ~loc "expect label, optional, or unit here"
+          | {arg_label = (Label _) ; arg_type = (Ignore | Unit) ; }
+            -> Empty
+          | {arg_label = Label name ; arg_type = (Nothing | Array)} -> 
+            Label (Lam_methname.translate ~loc name)            
+          | {arg_label = Label l ; arg_type = (NullString _ | NonNullString _ | Int _ ) }
+            -> Location.raise_errorf ~loc 
+                 "bs.obj label %s does not support such arg type" l
+          | {arg_label = Optional name ; arg_type = (Nothing | Array | Unit | Ignore)} 
+            -> Optional (Lam_methname.translate ~loc name)
+          | {arg_label = Optional l ; arg_type = (NullString _ | NonNullString _ | Int _)} 
+            -> Location.raise_errorf ~loc 
+                 "bs.obj optional %s does not support such arg type" l )
+          arg_type_specs)(* Need fetch label here, for better error message *)
+    | {mk_obj = true; _}
+      ->
+      Location.raise_errorf ~loc "conflict attributes found"                
+    | {set_index = true;
+
+       val_name = `Nm_na; 
+       external_module_name = None ;
+       module_as_val = None;
+       val_send = `Nm_na;
+       val_send_pipe = None;    
+       splice = false;
+       get_index = false;
+       new_name = `Nm_na;
+       call_name = `Nm_na;
+       set_name = `Nm_na ;
+       get_name = `Nm_na ;
+       mk_obj = false ; 
+
+      } 
+      ->
+      if String.length prim_name <> 0 then 
+        Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+      if arg_type_specs_length = 3 then 
+          Js_set_index
+      else 
+        Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+
+    | {set_index = true; _}
+      ->
+      Location.raise_errorf ~loc "conflict attributes found"        
+
+    | {get_index = true;
+
+       val_name = `Nm_na; 
+       external_module_name = None ;
+       module_as_val = None;
+       val_send = `Nm_na;
+       val_send_pipe = None;    
+
+       splice = false;
+       new_name = `Nm_na;
+       call_name = `Nm_na;
+       set_name = `Nm_na ;
+       get_name = `Nm_na ;
+       mk_obj = false ; 
+      } ->
+      if String.length prim_name <> 0 then 
+        Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+      if arg_type_specs_length = 2 then 
+          Js_get_index
+      else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
+
+    | {get_index = true; _}
+      -> Location.raise_errorf ~loc "conflict attributes found"        
+    | {module_as_val = Some external_module_name ;
+
+       get_index = false;
+       val_name ;
+       new_name ;
+       (*TODO: a better way to avoid breaking existing code,
+         we need tell the difference from 
+         {[
+           1. [@@bs.val "x"]
+           2. external x : .. "x" [@@bs.val ]
+           3. external x : .. ""  [@@bs.val]    ]}
+                                                *)         
+      external_module_name = None ;
+      val_send = `Nm_na;
+      val_send_pipe = None;    
+      splice ;
+      call_name = `Nm_na;
+      set_name = `Nm_na ;
+      get_name = `Nm_na ;
+      mk_obj = false ;} ->
+   begin match arg_types_ty, new_name, val_name  with         
+    | [], `Nm_na,  _ -> Js_module_as_var external_module_name
+    | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
+    | _, #bundle_source, #bundle_source ->
+      Location.raise_errorf ~loc "conflict attributes found"
+    | _, (`Nm_val _ | `Nm_external _) , `Nm_na
+      -> Js_module_as_class external_module_name
+    | _, `Nm_payload _ , `Nm_na
+      ->
+      Location.raise_errorf ~loc
+        "conflict attributes found: (bs.new should not carry payload here)"
+
+  end
+ | {module_as_val = Some _}
+   -> Location.raise_errorf ~loc "conflict attributes found" 
+ | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+    splice; 
+    external_module_name;
+
+    val_name = `Nm_na ;
+    module_as_val = None;
+    val_send = `Nm_na ;
+    val_send_pipe = None;    
+
+    set_index = false;
+    get_index = false;
+    new_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na 
+   } -> 
+   Js_call {splice; name; external_module_name}
+ | {call_name = #bundle_source } 
+   -> Location.raise_errorf ~loc "conflict attributes found"
+
+ | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+    external_module_name;
+
+    call_name = `Nm_na ;
+    module_as_val = None;
+    val_send = `Nm_na ;
+    val_send_pipe = None;    
+    set_index = false;
+    get_index = false;
+    new_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na 
+
+   } 
+   -> 
+   Js_global { name; external_module_name}
+ | {val_name = #bundle_source }
+   -> Location.raise_errorf ~loc "conflict attributes found"
+ | {splice ;
+    external_module_name = (Some _ as external_module_name);
+
+    val_name = `Nm_na ;         
+    call_name = `Nm_na ;
+    module_as_val = None;
+    val_send = `Nm_na ;
+    val_send_pipe = None;             
+    set_index = false;
+    get_index = false;
+    new_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+
+   }
+   ->
+   let name = string_of_bundle_source prim_name_or_pval_prim in
+   if arg_type_specs_length  = 0 then
+     Js_global { name; external_module_name}
+   else  Js_call {splice; name; external_module_name}                     
+ | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
+    splice;
+    val_send_pipe = None;
+    val_name = `Nm_na  ;
+    call_name = `Nm_na ;
+    module_as_val = None;
+    set_index = false;
+    get_index = false;
+    new_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+    external_module_name = None ;
+   } -> 
+   if arg_type_specs_length > 0 then 
+       Js_send {splice ; name; pipe = false}
+   else 
+       Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+ | {val_send = #bundle_source} 
+   -> Location.raise_errorf ~loc "conflict attributes found"
+
+ | {val_send_pipe = Some typ; 
+    (* splice = (false as splice); *)
+    val_send = `Nm_na;
+    val_name = `Nm_na  ;
+    call_name = `Nm_na ;
+    module_as_val = None;
+    set_index = false;
+    get_index = false;
+    new_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+    external_module_name = None ;
+   } -> 
+   (** can be one argument *)
+   Js_send {splice  ;
+            name = string_of_bundle_source prim_name_or_pval_prim;
+            pipe = true}
+
+ | {val_send_pipe = Some _ } 
+   -> Location.raise_errorf ~loc "conflict attributes found"
+
+ | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+    external_module_name;
+
+    val_name = `Nm_na  ;
+    call_name = `Nm_na ;
+    module_as_val = None;
+    set_index = false;
+    get_index = false;
+    val_send = `Nm_na ;
+    val_send_pipe = None;             
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+    splice 
+   } 
+   -> Js_new {name; external_module_name; splice}
+ | {new_name = #bundle_source }
+   -> Location.raise_errorf ~loc "conflict attributes found"
+
+ | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+
+    val_name = `Nm_na  ;
+    call_name = `Nm_na ;
+    module_as_val = None;
+    set_index = false;
+    get_index = false;
+    val_send = `Nm_na ;
+    val_send_pipe = None;             
+    new_name = `Nm_na ;
+    get_name = `Nm_na ;
+    external_module_name = None
+   } 
+   -> 
+   if arg_type_specs_length = 2 then 
+       Js_set name 
+   else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+
+ | {set_name = #bundle_source}
+   -> Location.raise_errorf ~loc "conflict attributes found"
+
+ | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+
+    val_name = `Nm_na  ;
+    call_name = `Nm_na ;
+    module_as_val = None;
+    set_index = false;
+    get_index = false;
+    val_send = `Nm_na ;
+    val_send_pipe = None;             
+    new_name = `Nm_na ;
+    set_name = `Nm_na ;
+    external_module_name = None
+   }
+   ->
+   if arg_type_specs_length = 1 then  
+     Js_get name
+   else 
+       Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+ | {get_name = #bundle_source}
+   -> Location.raise_errorf ~loc "conflict attributes found"
+ | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
+  begin 
+    check_ffi ~loc ffi;
+    (match ffi, new_result_type with
+     | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
+       ->
+       (* special case: 
+          {[ external f : int -> string -> _ = "" ]}
+       *)
+       let result =
+         Ast_core_type.make_obj ~loc (
+           List.fold_right2  (fun arg label acc ->
+               match arg, label with
+               | (_, ty, _,_), Ast_core_type.Label s
+                 -> (s , [], ty) :: acc                 
+               | (_, ty, _,_), Optional s
+                 ->
+                 begin match (ty : Ast_core_type.t) with
+                   | {ptyp_desc =
+                        Ptyp_constr({txt =
+                                       Ldot (Lident "*predef*", "option") },
+                                    [ty])}
+                     ->                
+                     (s, [], Ast_comb.to_undefined_type loc ty) :: acc
+                   | _ -> assert false                 
+                 end                 
+               | (_, _, _,_), Ast_core_type.Empty -> acc                
+             ) arg_types_ty arg_labels [])  in
+
+       List.fold_right (fun (label,ty,attrs,loc) acc -> 
+           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
+           ) new_arg_types_ty result 
+
+       (* Ast_core_type.replace_result type_annotation result *)
+     | _  ->
+       List.fold_right (fun (label,ty,attrs,loc) acc -> 
+           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
+           ) new_arg_types_ty new_result_type
+    ) ,
+    prim_name,
+    (Bs(arg_type_specs, result_type_spec,  ffi)), left_attrs
+  end
+
+let handle_attributes_as_string 
+    pval_loc
+    pval_prim 
+    (typ : Ast_core_type.t) attrs v = 
+  let pval_type, prim_name, ffi, processed_attrs  = 
+    handle_attributes pval_loc pval_prim typ attrs v  in
+  pval_type, [prim_name; to_string ffi], processed_attrs
+    
+let pval_prim_of_labels labels = 
+  let encoding = 
+    let (arg_kinds, vs) = 
+      List.fold_right 
+        (fun {Asttypes.loc ; txt } (arg_kinds,v)
+          ->
+            let arg_label =  Ast_core_type.Label (Lam_methname.translate ~loc txt) in
+            {arg_type = Nothing ; 
+             arg_label  } :: arg_kinds, arg_label :: v
+        )
+        labels ([],[]) in 
+    to_string @@
+    Bs (arg_kinds , Nothing, Obj_create vs) in 
+  [""; encoding]
 
 
 end
@@ -29828,6 +26548,121 @@ and
   end
 
 end
+module Idents_analysis : sig 
+#1 "idents_analysis.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A simple algorithm to calcuate [used] idents given its dependencies and 
+    initial list.
+
+    TODO needs improvement
+ *)
+
+val calculate_used_idents :
+    (Ident.t, Ident_set.t) Hashtbl.t -> Ident.t list -> Ident_set.t
+
+end = struct
+#1 "idents_analysis.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+
+(* 
+    We have a current ident set 
+    (mostly exports and variables held by side effect calls) and there is a data set,
+    for each variable, its dependency 
+    -- 
+ *)
+let calculate_used_idents 
+    (ident_free_vars : (Ident.t, Ident_set.t) Hashtbl.t)
+    (initial_idents : Ident.t list) = 
+  let s = Ident_set.of_list initial_idents in
+  let current_ident_sets = ref s in
+  let delta = ref s in
+  while 
+    Ident_set.(
+    delta := 
+      diff (fold (fun  id acc  ->
+
+          if Ext_ident.is_js_or_global id  then
+            acc (* will not pull in dependencies  any more *)             
+          else
+            union acc (
+              begin match Hashtbl.find ident_free_vars id with 
+                | exception Not_found -> 
+                  Ext_log.err __LOC__ "%s/%d when compiling %s" 
+                    id.name id.stamp (Js_config.get_current_file ()); 
+                  assert false 
+                | e -> e 
+              end
+            )
+
+        )  !delta empty)
+        !current_ident_sets;
+     not (is_empty !delta)) do
+    current_ident_sets := Ident_set.(union !current_ident_sets !delta)
+  done;
+  !current_ident_sets
+
+end
 module Lam_group : sig 
 #1 "lam_group.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -32362,6 +29197,82 @@ let simplify_alias
   simpl lam
 
 end
+module Ext_option : sig 
+#1 "ext_option.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for [option] type *)
+
+val bind : 'a option -> ('a -> 'b) -> 'b option
+
+end = struct
+#1 "ext_option.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let bind v f = 
+  match v with 
+  | None -> None
+  | Some x -> Some (f x )
+
+end
 module Lam_stats_export : sig 
 #1 "lam_stats_export.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -33111,6 +30022,1663 @@ let lambda_as_module
 
     However, use filename instead of {!Env.current_unit} is more honest, since node-js module system is coupled with the file name 
 *)
+
+end
+module Ast_signature : sig 
+#1 "ast_signature.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type item = Parsetree.signature_item
+type t = item list 
+val fuse : ?loc:Ast_helper.loc -> item -> t -> item
+
+end = struct
+#1 "ast_signature.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type item = Parsetree.signature_item
+type t = item list 
+
+open Ast_helper
+let fuse ?(loc=Location.none) (item : item) (t : t) : item = 
+  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc (item::t)))
+
+end
+module Ast_structure : sig 
+#1 "ast_structure.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type item = Parsetree.structure_item
+
+type t = item list 
+
+val fuse : ?loc:Ast_helper.loc -> item -> t -> item
+
+val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
+
+end = struct
+#1 "ast_structure.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type item = Parsetree.structure_item
+
+type t = item list 
+
+open Ast_helper
+
+let fuse ?(loc=Location.none) (item : item ) (t : t) : item = 
+  Str.include_ ~loc 
+    (Incl.mk ~loc (Mod.structure ~loc (item :: t) ))
+
+let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) = 
+  Str.include_ ~loc
+    (Incl.mk ~loc 
+       (Mod.constraint_ ~loc (Mod.structure ~loc stru) (Mty.signature ~loc sign)))
+
+end
+module Ast_derive : sig 
+#1 "ast_derive.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val type_deriving_structure: 
+  Parsetree.type_declaration ->
+  Ast_payload.action list ->
+  bool -> 
+  Ast_structure.t
+val type_deriving_signature: 
+  Parsetree.type_declaration ->
+  Ast_payload.action list -> 
+  bool -> 
+  Ast_signature.t
+
+type gen = {
+  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
+  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
+  expression_gen : (Parsetree.core_type -> Parsetree.expression) ; 
+}
+
+val derive_table: (Parsetree.expression option -> gen) String_map.t
+
+end = struct
+#1 "ast_derive.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+let not_supported loc = 
+  Location.raise_errorf ~loc "not supported in deriving"
+
+let current_name_set : string list ref = ref []
+
+let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) = 
+  match tdcl with 
+  | {ptype_name = {txt ; loc};
+     ptype_params ;
+    } -> Typ.constr {txt = Lident txt ; loc} (List.map fst ptype_params)
+let loc = Location.none 
+
+let (+>) = Typ.arrow ""
+
+type lid = Longident.t Asttypes.loc
+
+
+let record_to_value = "record_to_value"
+let variant_to_value = "variant_to_value"
+let shape = "shape"
+let js_dyn = "Bs_dyn"
+let value = "value"
+let record_shape = "record_shape"
+let to_value = "_to_value"
+let to_value_ = "_to_value_"
+let shape_of_variant = "shape_of_variant"
+let shape_of_record = "shape_of_record"
+let option_to_value = "option_to_value"
+(**
+   {[Ptyp_constr of Longident.t loc * core_type list ]}
+   ['u M.t]
+*)
+
+
+let bs_attrs = [Ast_attributes.bs]
+
+(** template for 
+    {[fun (value : t) -> 
+      match value with 
+        cases 
+    ]}
+*)
+let js_dyn_value_type () =
+  Typ.constr {txt = Longident.Ldot ((Lident  js_dyn), value) ; loc} []
+let get_js_dyn_record_shape_type () = 
+  Typ.constr {txt = Ldot (Lident js_dyn, record_shape); loc} []
+let js_dyn_shape_of_variant () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, shape_of_variant); loc}
+let js_dyn_shape_of_record () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, shape_of_record); loc}
+
+let js_dyn_to_value_type ty  = 
+  Typ.arrow "" ty  (js_dyn_value_type ())
+let js_dyn_to_value_uncurry_type ty = 
+  Typ.arrow "" ~attrs:bs_attrs ty (js_dyn_value_type ())
+
+let js_dyn_variant_to_value () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, variant_to_value); loc}
+
+let js_dyn_option_to_value () = 
+  Exp.ident {txt = Ldot (Lident js_dyn, option_to_value); loc}
+
+let js_dyn_tuple_to_value i = 
+  Exp.ident {txt = Ldot (
+      Lident js_dyn,
+      "tuple_" ^ string_of_int i ^ "_to_value"); loc}
+
+
+let lift_string_list_to_array (labels : string list) = 
+  Exp.array
+    (List.map (fun s -> Exp.constant (Const_string (s, None)))
+       labels)
+let lift_int i = Exp.constant (Const_int i)
+let lift_int_list_to_array (labels : int list) = 
+  Exp.array (List.map lift_int labels)
+
+let bs_apply1 f v = 
+  Exp.apply f ["",v] ~attrs:bs_attrs
+
+
+
+(** [M.t]-> [M.t_to_value ] *)
+
+let fn_of_lid  suffix (x : lid) : lid = 
+  match x with
+  | { txt = Lident name} 
+    -> { x with  txt = Lident (name ^ suffix )}
+  | { txt = Ldot (v,name)} 
+    -> {x with txt = Ldot (v,  name ^ suffix )}
+  | { txt = Lapply _} -> not_supported x.loc 
+
+let rec exp_of_core_type prefix 
+    ({ptyp_loc = loc} as x : Parsetree.core_type)
+  : Parsetree.expression = 
+  match x.ptyp_desc with 
+  | Ptyp_constr (
+      {txt = 
+         Lident (
+           "int" 
+         | "int32" 
+         | "int64" 
+         | "nativeint"
+         | "bool"
+         | "float"
+         | "char"
+         | "string" 
+           as name );
+       loc }, ([] as params))
+  | Ptyp_constr (
+      {txt = 
+         Lident (
+           "option" 
+         | "list" 
+         | "array" 
+           as name );
+       loc }, ([_] as params))
+    -> exp_of_core_type prefix 
+         {x with 
+          ptyp_desc =
+            Ptyp_constr ({txt =  Ldot(Lident js_dyn,name);loc}, params)}
+  | Ptyp_constr ({txt ; loc} as lid, []) -> 
+    Exp.ident (fn_of_lid prefix lid)       
+  | Ptyp_constr (lid, params)
+    -> 
+    Exp.apply (Exp.ident (fn_of_lid prefix lid))
+      (List.map (fun x -> "",exp_of_core_type prefix x ) params) 
+  | Ptyp_tuple lst -> 
+    begin match lst with 
+    | [x] -> exp_of_core_type prefix x 
+    | [] -> assert false 
+    | _ -> 
+      let len = List.length lst in 
+      if len > 6 then 
+        Location.raise_errorf ~loc "tuple arity > 6 not supported yet"
+      else 
+        let fn = js_dyn_tuple_to_value len in 
+        let args = List.map (fun x -> "", exp_of_core_type prefix x) lst in 
+        Exp.apply fn args 
+    end
+
+
+  | _ -> assert false
+
+let mk_fun (typ : Parsetree.core_type) 
+    (value : string) body
+  : Parsetree.expression = 
+  Exp.fun_ 
+    "" None
+    (Pat.constraint_ (Pat.var {txt = value ; loc}) typ)
+    body
+
+let destruct_label_declarations
+    (arg_name : string)
+    (labels : Parsetree.label_declaration list) : 
+  (Parsetree.core_type * Parsetree.expression) list * string list 
+  =
+  List.fold_right
+    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
+      (core_type_exps, labels) -> 
+      ((pld_type, 
+        Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
+          {txt = Lident txt ; loc}) :: core_type_exps),
+      txt :: labels 
+    ) labels ([], [])
+
+
+(** return an expression node of array type *)
+let exp_of_core_type_exprs 
+    (core_type_exprs : (Parsetree.core_type * Parsetree.expression) list) 
+  : Parsetree.expression  = 
+    Exp.array 
+      (List.fold_right (fun (core_type, exp) acc -> 
+           bs_apply1
+             (exp_of_core_type to_value  core_type) exp
+
+           (* depends on [core_type] is in recursive name set or not ,
+              if not, then uncurried application, otherwise, since 
+              the uncurried version is not in scope yet, we 
+              have to use the curried version
+              the complexity is necessary
+              think about such scenario:
+              {[
+                type nonrec t = A of t (* t_to_value *)
+                and u = t (* t_to_value_ *)
+              ]}
+           *)
+           :: acc 
+       ) core_type_exprs [])
+
+let destruct_constructor_declaration 
+    ({pcd_name = {txt ;loc}; pcd_args} : Parsetree.constructor_declaration)  = 
+  let last_i, core_type_exprs, pats = 
+    List.fold_left (fun (i,core_type_exps, pats) core_type -> 
+      let  txt = "a" ^ string_of_int i  in
+      (i+1, (core_type, Exp.ident {txt = Lident txt  ;loc}) :: core_type_exps, 
+       Pat.var {txt ; loc} :: pats )
+    ) (0, [], []) pcd_args in 
+  let core_type_exprs, pats  = List.rev core_type_exprs, List.rev pats in
+  Pat.construct {txt = Lident txt ; loc}
+    (if last_i = 0 then 
+       None
+     else if last_i = 1 then 
+       Some (List.hd pats) 
+     else
+       Some (Pat.tuple pats)  ), core_type_exprs
+
+
+let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) = 
+    Exp.function_ 
+      (List.mapi (fun i ctdcl -> 
+           let pat, core_type_exprs = destruct_constructor_declaration ctdcl in 
+           Exp.case pat 
+             (Exp.apply 
+                (js_dyn_variant_to_value ())
+                [("", Exp.ident {txt = Lident shape ; loc});
+                 ("", lift_int i);
+                 ("", exp_of_core_type_exprs core_type_exprs);
+                ]
+             )) ctdcls
+      )
+let record args = 
+  Exp.apply 
+    (Exp.ident {txt = Ldot (Lident js_dyn, record_to_value ); loc})
+    ["", Exp.ident {txt = Lident shape ; loc};
+     ("",  args)
+    ]      
+
+
+let fun_1 name = 
+  Exp.fun_ "" None ~attrs:bs_attrs 
+    (Pat.var {txt = "x"; loc})
+    (Exp.apply (Exp.ident name)
+       ["",(Exp.ident {txt = Lident "x"; loc})])
+
+let record_exp  name core_type  labels : Ast_structure.t = 
+  let arg_name : string = "args" in
+  let core_type_exprs, labels = 
+    destruct_label_declarations arg_name labels in
+
+  [Str.value Nonrecursive @@ 
+   [Vb.mk 
+     (Pat.var {txt = shape;  loc}) 
+     (Exp.apply (js_dyn_shape_of_record ())
+        ["", (lift_string_list_to_array labels)]
+     ) ];
+   Str.value Nonrecursive @@ 
+   [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc })
+     (mk_fun core_type arg_name 
+        (record (exp_of_core_type_exprs core_type_exprs))
+     )];
+   Str.value Nonrecursive @@
+   [Vb.mk (Pat.var {txt = name ^ to_value; loc})
+      ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
+   ]        
+  ]
+
+
+
+    
+
+
+type gen = {
+  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
+  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
+  expression_gen : (Parsetree.core_type -> Parsetree.expression) ; 
+}
+let derive_table = 
+  String_map.of_list 
+    ["dynval",
+     begin fun (x : Parsetree.expression option) -> 
+       match x with 
+       | Some {pexp_loc = loc} 
+         -> Location.raise_errorf ~loc "such configuration is not supported"
+       | None -> 
+         { structure_gen = 
+             begin  fun (tdcl  : Parsetree.type_declaration) explict_nonrec -> 
+               let core_type = core_type_of_type_declaration tdcl in 
+               let name = tdcl.ptype_name.txt in
+               let loc = tdcl.ptype_loc in 
+               let signatures = 
+                 [Sig.value ~loc 
+                    (Val.mk {txt =  name ^ to_value  ; loc}
+                       (js_dyn_to_value_uncurry_type core_type))
+                 ] in
+               let constraint_ strs = 
+                 [Ast_structure.constraint_  ~loc strs signatures] in
+               match tdcl with 
+               | {ptype_params = [];
+                  ptype_kind  = Ptype_variant cd;
+                  ptype_loc = loc;
+                 } -> 
+                 if explict_nonrec then 
+                   let names, arities = 
+                     List.fold_right 
+                       (fun (ctdcl : Parsetree.constructor_declaration) 
+                         (names,arities) -> 
+                         ctdcl.pcd_name.txt :: names, 
+                         List.length ctdcl.pcd_args :: arities
+                       ) cd ([],[]) in 
+                   constraint_ 
+                     [
+                       Str.value Nonrecursive @@ 
+                       [Vb.mk (Pat.var {txt = shape ; loc})
+                          (      Exp.apply (js_dyn_shape_of_variant ())
+                                   [ "", (lift_string_list_to_array names);
+                                     "", (lift_int_list_to_array arities )
+                                   ])];
+                       Str.value Nonrecursive @@ 
+                       [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc})
+                          (case_of_ctdcl cd)
+                       ];
+                       Str.value Nonrecursive @@
+                       [Vb.mk (Pat.var {txt = name ^ to_value; loc})
+                          ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
+                       ]        
+                     ]
+                 else 
+                   []
+               | {ptype_params = []; 
+                  ptype_kind = Ptype_abstract; 
+                  ptype_manifest = Some x 
+                 } -> (** case {[ type t = int ]}*)
+                 constraint_ 
+                   [
+                     Str.value Nonrecursive @@ 
+                     [Vb.mk (Pat.var {txt = name ^ to_value  ; loc})
+                        (exp_of_core_type to_value x)
+                     ]
+                   ]
+
+               |{ptype_params = [];
+                 ptype_kind  = Ptype_record labels;
+                 ptype_loc = loc;
+                } -> 
+                 if explict_nonrec then constraint_ (record_exp name core_type labels) 
+                 else []
+
+               | _ -> 
+                 []
+             end; 
+           expression_gen =  begin fun core_type -> 
+               exp_of_core_type to_value core_type
+             end;
+           signature_gen = begin fun 
+             (tdcl : Parsetree.type_declaration)
+             (explict_nonrec : bool) -> 
+             let core_type = core_type_of_type_declaration tdcl in 
+             let name = tdcl.ptype_name.txt in
+             let loc = tdcl.ptype_loc in 
+             [Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
+                                (js_dyn_to_value_uncurry_type core_type))
+             ]
+           end
+
+         }
+     end]
+
+let type_deriving_structure 
+    (tdcl  : Parsetree.type_declaration)
+    (actions :  Ast_payload.action list ) 
+    (explict_nonrec : bool )
+  : Ast_structure.t = 
+  Ext_list.flat_map
+    (fun action -> 
+       (Ast_payload.table_dispatch derive_table action).structure_gen 
+         tdcl explict_nonrec) actions
+
+let type_deriving_signature
+    (tdcl  : Parsetree.type_declaration)
+    (actions :  Ast_payload.action list ) 
+    (explict_nonrec : bool )
+  : Ast_signature.t = 
+  Ext_list.flat_map
+    (fun action -> 
+       (Ast_payload.table_dispatch derive_table action).signature_gen
+         tdcl explict_nonrec) actions
+
+end
+module Ast_external : sig 
+#1 "ast_external.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val create_local_external : Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (string * Parsetree.expression) list -> Parsetree.expression_desc
+
+val local_extern_cont : 
+  Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
+
+end = struct
+#1 "ast_external.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let create_local_external loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+let local_extern_cont loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     (cb : Parsetree.expression -> 'a) 
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                 loc};
+         pexp_attributes = [] ;
+         pexp_loc = loc}
+)
+
+end
+module Ast_pat : sig 
+#1 "ast_pat.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.pattern
+
+val is_unit_cont : yes:'a -> no:'a -> t -> 'a
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]*)
+val arity_of_fun : t -> Parsetree.expression -> int
+
+end = struct
+#1 "ast_pat.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Parsetree.pattern
+
+
+let is_unit_cont ~yes ~no (p : t)  =
+  match p  with
+  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
+    -> yes 
+  | _ -> no
+
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]
+*)
+let arity_of_fun
+    (pat : Parsetree.pattern)
+    (e : Parsetree.expression) =
+  let rec aux (e : Parsetree.expression)  =
+    match e.pexp_desc with
+    | Pexp_fun ("", None, pat, e) ->
+      1 + aux e       
+    | Pexp_fun _
+      -> Location.raise_errorf
+           ~loc:e.pexp_loc "Lable is not allowed in JS object"
+    | _ -> 0 in
+  is_unit_cont ~yes:0 ~no:1 pat + aux e 
+
+end
+module Ast_util : sig 
+#1 "ast_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type args = (string * Parsetree.expression) list
+type loc = Location.t 
+type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
+type 'a cxt = loc -> Ast_mapper.mapper -> 'a
+
+(** In general three kinds of ast generation.
+    - convert a curried to type to uncurried 
+    - convert a curried fun to uncurried fun
+    - convert a uncuried application to normal 
+*)
+type uncurry_expression_gen = 
+  (Parsetree.pattern ->
+   Parsetree.expression ->
+   Parsetree.expression_desc) cxt
+type uncurry_type_gen = 
+  (string -> (* label for error checking *)
+   Parsetree.core_type ->
+   Parsetree.core_type  ->
+   Parsetree.core_type) cxt
+
+(** TODO: the interface is not reusable, it depends on too much context *)
+(** syntax: {[f arg0 arg1 [@bs]]}*)
+val uncurry_fn_apply : 
+  (Parsetree.expression ->
+  args ->
+  Parsetree.expression_desc ) cxt 
+
+(** syntax : {[f## arg0 arg1 ]}*)
+val method_apply : 
+  (Parsetree.expression ->
+  string ->
+  args ->
+  Parsetree.expression_desc) cxt 
+
+(** syntax {[f#@ arg0 arg1 ]}*)
+val property_apply : 
+  (Parsetree.expression ->
+  string ->
+  args ->
+  Parsetree.expression_desc) cxt 
+
+
+(** 
+    [function] can only take one argument, that is the reason we did not adopt it
+    syntax:
+    {[ fun [@bs] pat pat1-> body ]}
+    [to_uncurry_fn (fun pat -> (fun pat1 -> ...  body))]
+
+*)
+val to_uncurry_fn : uncurry_expression_gen
+
+
+(** syntax: 
+    {[fun [@bs.this] obj pat pat1 -> body]}    
+*)
+val to_method_callback : uncurry_expression_gen
+
+
+(** syntax : 
+    {[ int -> int -> int [@bs]]}
+*)
+val to_uncurry_type : uncurry_type_gen
+  
+
+(** syntax
+    {[ method : int -> itn -> int ]}
+*)
+val to_method_type : uncurry_type_gen
+
+(** syntax:
+    {[ 'obj -> int -> int [@bs.this] ]}
+*)
+val to_method_callback_type : uncurry_type_gen
+
+
+
+
+
+val record_as_js_object : 
+  (label_exprs ->
+   Parsetree.expression_desc) cxt 
+
+val js_property : 
+  loc ->
+  Parsetree.expression -> string -> Parsetree.expression_desc
+
+val handle_debugger : 
+  loc -> Ast_payload.t -> Parsetree.expression_desc
+
+val handle_raw : 
+  loc -> Ast_payload.t -> Parsetree.expression
+
+
+val handle_raw_structure : 
+  loc -> Ast_payload.t -> Parsetree.structure_item
+
+val ocaml_obj_as_js_object :
+  (Parsetree.pattern ->
+   Parsetree.class_field list ->
+   Parsetree.expression_desc) cxt   
+
+end = struct
+#1 "ast_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper 
+type 'a cxt = Ast_helper.loc -> Ast_mapper.mapper -> 'a
+type loc = Location.t 
+type args = (string * Parsetree.expression) list
+type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
+type uncurry_expression_gen = 
+  (Parsetree.pattern ->
+   Parsetree.expression ->
+   Parsetree.expression_desc) cxt
+type uncurry_type_gen = 
+  (string ->
+   Parsetree.core_type ->
+   Parsetree.core_type  ->
+   Parsetree.core_type) cxt
+    
+let uncurry_type_id = 
+  Ast_literal.Lid.js_fn
+
+let method_id  = 
+  Ast_literal.Lid.js_meth
+
+let method_call_back_id  = 
+  Ast_literal.Lid.js_meth_callback
+
+let arity_lit = "Arity_"
+
+let mk_args loc n tys = 
+  Typ.variant ~loc 
+    [ Rtag (arity_lit ^ string_of_int n, [], (n = 0),  tys)] Closed None
+
+let generic_lift txt loc args result  = 
+  let xs =
+    match args with 
+    | [ ] -> [mk_args loc 0   [] ; result ]
+    | [ x ] -> [ mk_args loc 1 [x] ; result ] 
+    | _ -> 
+      [mk_args loc (List.length args ) [Typ.tuple ~loc args] ; result ]
+  in 
+  Typ.constr ~loc {txt ; loc} xs
+
+let lift_curry_type  loc   = 
+  generic_lift   uncurry_type_id loc
+
+let lift_method_type loc  = 
+  generic_lift  method_id loc
+
+let lift_js_method_callback loc
+  = 
+  generic_lift method_call_back_id loc 
+(** Note that currently there is no way to consume [Js.meth_callback]
+    so it is fine to encode it with a freedom, 
+    but we need make it better for error message.
+    - all are encoded as 
+    {[ 
+      type fn =  (`Args_n of _ , 'result ) Js.fn
+      type method = (`Args_n of _, 'result) Js.method
+      type method_callback = (`Args_n of _, 'result) Js.method_callback
+    ]}
+    For [method_callback], the arity is never zero, so both [method] 
+    and  [fn] requires (unit -> 'a) to encode arity zero
+*)
+
+
+
+let arrow = Typ.arrow
+
+
+let js_property loc obj name =
+  Parsetree.Pexp_send
+    ((Exp.apply ~loc
+        (Exp.ident ~loc
+           {loc;
+            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.js_unsafe_downgrade)})
+        ["",obj]), name)
+
+(* TODO: 
+   have a final checking for property arities 
+     [#=], 
+*)
+
+
+let generic_apply  kind loc 
+    (self : Ast_mapper.mapper) 
+    (obj : Parsetree.expression) 
+    (args : args ) cb   =
+  let obj = self.expr self obj in
+  let args =
+    List.map (fun (label,e) ->
+        if label <> "" then
+          Location.raise_errorf ~loc "label is not allowed here"        ;
+        self.expr self e
+      ) args in
+  let len = List.length args in 
+  let arity, fn, args  = 
+  match args with 
+  | [ {pexp_desc =
+         Pexp_construct ({txt = Lident "()"}, None)}]
+    -> 
+     0, cb loc obj, []
+  | _ -> 
+    len,  cb loc obj, args in
+  if arity < 10 then 
+    let txt = 
+      match kind with 
+      | `Fn | `PropertyFn ->  
+        Longident.Ldot (Ast_literal.Lid.js_unsafe, 
+                        Literals.js_fn_run ^ string_of_int arity)
+      | `Method -> 
+        Longident.Ldot(Ast_literal.Lid.js_unsafe,
+                       Literals.js_method_run ^ string_of_int arity
+                      ) in 
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
+  else 
+  let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
+  let string_arity = string_of_int arity in
+  let pval_prim, pval_type = 
+    match kind with 
+    | `Fn | `PropertyFn -> 
+      [Literals.js_fn_run; string_arity], 
+      arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
+    | `Method -> 
+      [Literals.js_method_run ; string_arity], 
+      arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
+  in
+  Ast_external.create_local_external loc ~pval_prim ~pval_type 
+    (("", fn) :: List.map (fun x -> "",x) args )
+
+
+let uncurry_fn_apply loc self fn args = 
+  generic_apply `Fn loc self fn args (fun _ obj -> obj )
+
+let property_apply loc self obj name (args : args) 
+  =  generic_apply `PropertyFn loc self obj args 
+    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
+
+let method_apply loc self obj name args = 
+  generic_apply `Method loc self obj args 
+    (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
+
+let generic_to_uncurry_type  kind loc (mapper : Ast_mapper.mapper) label
+    (first_arg : Parsetree.core_type) 
+    (typ : Parsetree.core_type)  =
+  if label <> "" then
+    Location.raise_errorf ~loc "label is not allowed";                 
+
+  let rec aux acc (typ : Parsetree.core_type) = 
+    (* in general, 
+       we should collect [typ] in [int -> typ] before transformation, 
+       however: when attributes [bs] and [bs.this] found in typ, 
+       we should stop 
+    *)
+    match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
+    | `Nothing, _   -> 
+      begin match typ.ptyp_desc with 
+      | Ptyp_arrow (label, arg, body)
+        -> 
+        if label <> "" then
+          Location.raise_errorf ~loc:typ.ptyp_loc "label is not allowed";
+        aux (mapper.typ mapper arg :: acc) body 
+      | _ -> mapper.typ mapper typ, acc 
+      end
+    | _, _ -> mapper.typ mapper typ, acc  
+  in 
+  let first_arg = mapper.typ mapper first_arg in
+  let result, rev_extra_args = aux  [first_arg] typ in 
+  let args  = List.rev rev_extra_args in 
+  let filter_args args  =  
+    match args with 
+    | [{Parsetree.ptyp_desc = 
+          (Ptyp_constr ({txt = Lident "unit"}, []) 
+          )}]
+      -> []
+    | _ -> args in
+  match kind with 
+  | `Fn ->
+    let args = filter_args args in
+    lift_curry_type loc args result 
+  | `Method -> 
+    let args = filter_args args in
+    lift_method_type loc args result 
+
+  | `Method_callback
+    -> lift_js_method_callback loc args result 
+
+
+let to_uncurry_type  = 
+  generic_to_uncurry_type `Fn
+let to_method_type  =
+  generic_to_uncurry_type  `Method
+let to_method_callback_type  = 
+  generic_to_uncurry_type `Method_callback 
+
+let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body 
+  = 
+  let rec aux acc (body : Parsetree.expression) = 
+    match Ast_attributes.process_attributes_rev body.pexp_attributes with 
+    | `Nothing, _ -> 
+      begin match body.pexp_desc with 
+        | Pexp_fun (label,_, arg, body)
+          -> 
+          if label <> "" then
+            Location.raise_errorf ~loc "label is not allowed";
+          aux (self.pat self arg :: acc) body 
+        | _ -> self.expr self body, acc 
+      end 
+    | _, _ -> self.expr self body, acc  
+  in 
+  let first_arg = self.pat self pat in  
+  let result, rev_extra_args = aux [first_arg] body in 
+  let body = 
+    List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
+      result rev_extra_args in
+  let len = List.length rev_extra_args in 
+  let arity = 
+    match kind with 
+    | `Fn  ->
+      begin match rev_extra_args with 
+        | [ p]
+          ->
+          Ast_pat.is_unit_cont ~yes:0 ~no:len p           
+
+        | _ -> len 
+      end
+    | `Method_callback -> len  in 
+  if arity < 10  then 
+    let txt = 
+      match kind with 
+      | `Fn -> 
+        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.js_fn_mk ^ string_of_int arity)
+      | `Method_callback -> 
+        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_fn_method ^ string_of_int arity) in
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
+
+  else 
+    let pval_prim =
+      [ (match kind with 
+            | `Fn -> Literals.js_fn_mk
+            | `Method_callback -> Literals.js_fn_method); 
+        string_of_int arity]  in
+    let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
+    let pval_type = arrow ~loc "" fn_type (
+        match kind with 
+        | `Fn -> 
+          lift_curry_type loc args_type result_type
+        | `Method_callback -> 
+          lift_js_method_callback loc args_type result_type
+      ) in
+    Ast_external.local_extern_cont loc ~pval_prim ~pval_type 
+      (fun prim -> Exp.apply ~loc prim ["", body]) 
+
+let to_uncurry_fn   = 
+  generic_to_uncurry_exp `Fn
+let to_method_callback  = 
+  generic_to_uncurry_exp `Method_callback 
+
+
+let handle_debugger loc payload = 
+  if Ast_payload.as_empty_structure payload then
+    Parsetree.Pexp_apply
+      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.js_debugger ); loc}, 
+       ["", Ast_literal.val_unit ~loc ()])
+  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+
+
+let handle_raw loc payload = 
+  begin match Ast_payload.as_string_exp payload with 
+    | None ->
+      Location.raise_errorf ~loc
+        "bs.raw can only be applied to a string "
+
+    | Some exp -> 
+      let pexp_desc = 
+        Parsetree.Pexp_apply (
+            Exp.ident {loc; 
+                       txt = 
+                         Ldot (Ast_literal.Lid.js_unsafe, 
+                               Literals.js_pure_expr)},
+            ["",exp]
+          )
+      in
+      { exp with pexp_desc }
+  end
+
+
+
+
+let handle_raw_structure loc payload = 
+  begin match Ast_payload.as_string_exp payload with 
+    | Some exp 
+      -> 
+      let pexp_desc = 
+        Parsetree.Pexp_apply(
+            Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.js_pure_stmt); loc},
+            ["",exp]) in 
+      Ast_helper.Str.eval 
+        { exp with pexp_desc }
+
+    | None
+      -> 
+      Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  end
+
+    
+let ocaml_obj_as_js_object
+    loc (mapper : Ast_mapper.mapper)
+    (self_pat : Parsetree.pattern)
+    (clfs : Parsetree.class_field list) =
+  let self_type_lit = "self_type"   in 
+
+  (** Attention: we should avoid type variable conflict for each method  
+      Since the method name is unique, there would be no conflict 
+      OCaml does not allow duplicate instance variable and duplicate methods, 
+      but it does allow duplicates between instance variable and method name, 
+      we should enforce such rules 
+      {[
+        object 
+          val x = 3
+          method x = 3 
+        end [@bs]
+      ]} should not compile with a meaningful error message
+  *)
+
+  let generate_val_method_pair 
+      loc (mapper : Ast_mapper.mapper)
+      val_name  is_mutable = 
+
+    let result = Typ.var ~loc val_name in 
+    result , 
+    ((val_name , [], result ) ::
+     (if is_mutable then 
+        [val_name ^ Literals.setter_suffix,[],
+         to_method_type loc mapper "" result (Ast_literal.type_unit ~loc ()) ]
+      else 
+        []) )
+  in 
+  (* Note mapper is only for API compatible 
+   * TODO: we should check label name to avoid conflict 
+  *)  
+  let self_type loc = Typ.var ~loc self_type_lit in 
+
+  let generate_arg_type loc (mapper  : Ast_mapper.mapper)
+      method_name arity : Ast_core_type.t = 
+    let result = Typ.var ~loc method_name in   
+    if arity = 0 then
+      to_method_type loc mapper "" (Ast_literal.type_unit ~loc ()) result 
+
+    else
+      let tyvars =
+        Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
+      in
+      begin match tyvars with
+        | x :: rest ->
+          let method_rest =
+            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+              rest result in         
+          to_method_type loc mapper "" x method_rest
+        | _ -> assert false
+      end in          
+
+  let generate_method_type
+      loc
+      (mapper : Ast_mapper.mapper)
+      ?alias_type method_name arity =
+    let result = Typ.var ~loc method_name in   
+
+    let self_type =
+      let v = self_type loc  in
+      match alias_type with 
+      | None -> v 
+      | Some ty -> Typ.alias ~loc ty self_type_lit
+    in  
+    if arity = 0 then
+      to_method_callback_type loc mapper  "" self_type result      
+    else
+      let tyvars =
+        Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
+      in
+      begin match tyvars with
+        | x :: rest ->
+          let method_rest =
+            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+              rest result in         
+          (to_method_callback_type loc mapper  "" self_type
+             (Typ.arrow ~loc "" x method_rest))
+        | _ -> assert false
+      end in          
+
+
+  (** we need calculate the real object type 
+      and exposed object type, in some cases there are equivalent
+
+      for public object type its [@bs.meth] it does not depend on itself
+      while for label argument it is [@bs.this] which depends internal object
+  *)
+  let internal_label_attr_types, public_label_attr_types  = 
+    List.fold_right
+      (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
+        (label_attr_types, public_label_attr_types) ->
+        match x.pcf_desc with
+        | Pcf_method (
+            label,
+            public_flag,
+            Cfk_concrete
+              (Fresh, e))
+           ->
+           begin match e.pexp_desc with
+             | Pexp_poly
+                 (({pexp_desc = Pexp_fun ("", None, pat, e)} ),
+                  None) ->  
+               let arity = Ast_pat.arity_of_fun pat e in
+               let method_type =
+                 generate_arg_type x.pcf_loc mapper label.txt arity in 
+               ((label.Asttypes.txt, [], method_type) :: label_attr_types),
+               (if public_flag = Public then
+                  (label.Asttypes.txt, [], method_type) :: public_label_attr_types
+                else 
+                  public_label_attr_types)
+               
+             | Pexp_poly( _, Some _)
+               ->
+               Location.raise_errorf ~loc "polymorphic type annotation not supported yet"
+             | Pexp_poly (_, None) ->
+               Location.raise_errorf ~loc
+                 "Unsupported syntax, expect syntax like `method x () = x ` "
+             | _ ->
+               Location.raise_errorf ~loc "Unsupported syntax in js object"               
+           end
+         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
+           let  label_type, label_attr  = 
+             generate_val_method_pair x.pcf_loc mapper label.txt  
+               (mutable_flag = Mutable )
+           in
+           (label_attr @ label_attr_types, public_label_attr_types)
+         | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
+           Location.raise_errorf ~loc "override flag not support currently"
+         | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
+           Location.raise_errorf ~loc "virtual flag not support currently"
+
+         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
+           Location.raise_errorf ~loc "override flag not supported"
+       
+         | Pcf_method (_, _, Cfk_virtual _ )
+           ->
+           Location.raise_errorf ~loc "virtural method not supported"
+           
+         | Pcf_inherit _ 
+         | Pcf_initializer _
+         | Pcf_attribute _
+         | Pcf_extension _
+         | Pcf_constraint _ ->
+           Location.raise_errorf ~loc "Only method support currently"
+      ) clfs ([], []) in
+  let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
+  let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
+  let (labels,  label_types, exprs, _) =
+    List.fold_right
+      (fun (x  : Parsetree.class_field)
+        (labels,
+         label_types,
+         exprs, aliased ) ->
+        match x.pcf_desc with
+        | Pcf_method (
+            label,
+            _public_flag,
+            Cfk_concrete
+              (Fresh, e))
+           ->
+           begin match e.pexp_desc with
+             | Pexp_poly
+                 (({pexp_desc = Pexp_fun ("", None, pat, e)} as f),
+                  None) ->  
+               let arity = Ast_pat.arity_of_fun pat e in
+               let alias_type = 
+                 if aliased then None 
+                 else Some internal_obj_type in
+               let  label_type =
+                 generate_method_type ?alias_type
+                   x.pcf_loc mapper label.txt arity in 
+               (label::labels,
+                label_type::label_types,
+                {f with
+                 pexp_desc =
+                   let f = Ast_pat.is_unit_cont pat ~yes:e ~no:f in                       
+                   to_method_callback loc mapper self_pat f
+                } :: exprs, 
+                true
+               )
+             | Pexp_poly( _, Some _)
+               ->
+               Location.raise_errorf ~loc
+                 "polymorphic type annotation not supported yet"
+               
+             | Pexp_poly (_, None) ->
+               Location.raise_errorf
+                 ~loc "Unsupported syntax, expect syntax like `method x () = x ` "
+             | _ ->
+               Location.raise_errorf ~loc "Unsupported syntax in js object"               
+           end
+         | Pcf_val (label, mutable_flag, Cfk_concrete(Fresh, val_exp)) ->
+           let  label_type, label_attr  = 
+             generate_val_method_pair x.pcf_loc mapper label.txt  
+               (mutable_flag = Mutable )
+           in
+           (label::labels,
+            label_type :: label_types, 
+            (mapper.expr mapper val_exp :: exprs), 
+            aliased 
+           )
+
+         | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
+           Location.raise_errorf ~loc "override flag not support currently"
+         | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
+           Location.raise_errorf ~loc "virtual flag not support currently"
+
+         | Pcf_method (_, _, Cfk_concrete(Override, _) ) -> 
+           Location.raise_errorf ~loc "override flag not supported"
+       
+         | Pcf_method (_, _, Cfk_virtual _ )
+           ->
+           Location.raise_errorf ~loc "virtural method not supported"
+           
+
+         | Pcf_inherit _ 
+         | Pcf_initializer _
+         | Pcf_attribute _
+         | Pcf_extension _
+         | Pcf_constraint _ ->
+           Location.raise_errorf ~loc "Only method support currently"
+      ) clfs  ([], [], [], false) in
+  let pval_type =
+    List.fold_right2
+      (fun label label_type acc ->
+         Typ.arrow
+           ~loc:label.Asttypes.loc
+           label.Asttypes.txt
+           label_type acc           
+      ) labels label_types public_obj_type in
+  Ast_external.local_extern_cont
+    loc
+      ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+      (fun e ->
+       Exp.apply ~loc e
+         (List.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
+    ~pval_type
+
+
+let record_as_js_object 
+    loc 
+    (self : Ast_mapper.mapper)
+    (label_exprs : label_exprs)
+     : Parsetree.expression_desc = 
+
+  let labels,args, arity =
+    List.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
+        match txt with
+        | Longident.Lident x ->
+          ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
+        | Ldot _ | Lapply _ ->  
+          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
+  Ast_external.create_local_external loc 
+    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+    ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
+    args 
+
+end
+module Ext_ref : sig 
+#1 "ext_ref.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [non_exn_protect ref value f] assusme [f()] 
+    would not raise
+*)
+
+val non_exn_protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+
+val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
+
+(** [non_exn_protect2 refa refb va vb f ]
+    assume [f ()] would not raise
+*)
+val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
+
+val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
+
+end = struct
+#1 "ext_ref.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let non_exn_protect r v body = 
+  let old = !r in
+  r := v;
+  let res = body() in
+  r := old;
+  res
+
+let protect r v body =
+  let old = !r in
+  try
+    r := v;
+    let res = body() in
+    r := old;
+    res
+  with x ->
+    r := old;
+    raise x
+
+let non_exn_protect2 r1 r2 v1 v2 body = 
+  let old1 = !r1 in
+  let old2 = !r2 in  
+  r1 := v1;
+  r2 := v2;
+  let res = body() in
+  r1 := old1;
+  r2 := old2;
+  res
+
+let protect2 r1 r2 v1 v2 body =
+  let old1 = !r1 in
+  let old2 = !r2 in  
+  try
+    r1 := v1;
+    r2 := v2;
+    let res = body() in
+    r1 := old1;
+    r2 := old2;
+    res
+  with x ->
+    r1 := old1;
+    r2 := old2;
+    raise x
+
+let protect_list rvs body = 
+  let olds =  List.map (fun (x,y) -> !x)  rvs in 
+  let () = List.iter (fun (x,y) -> x:=y) rvs in 
+  try 
+    let res = body () in 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    res 
+  with e -> 
+    List.iter2 (fun (x,_) old -> x := old) rvs olds;
+    raise e 
 
 end
 module Ppx_entry : sig 
@@ -34161,6 +32729,629 @@ let implementation ppf sourcefile outputprefix =
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
   |> after_parsing_impl ppf sourcefile outputprefix 
+
+end
+module Binary_cache : sig 
+#1 "binary_cache.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
+
+val write_build_cache : string -> module_info String_map.t -> unit
+
+val read_build_cache : string -> module_info String_map.t
+
+val bsbuild_cache : string
+
+end = struct
+#1 "binary_cache.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
+
+let module_info_magic_number = "BSBUILD20161012"
+
+let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
+  let oc = open_out_bin bsbuild in 
+  output_string oc module_info_magic_number ;
+  output_value oc bs_files ;
+  close_out oc 
+
+let read_build_cache bsbuild : module_info String_map.t = 
+  let ic = open_in bsbuild in 
+  let buffer = really_input_string ic (String.length module_info_magic_number) in
+  assert(buffer = module_info_magic_number); 
+  let data : module_info String_map.t = input_value ic in 
+  close_in ic ;
+  data 
+
+
+let bsbuild_cache = ".bsbuild"
+
+end
+module Ast_extract : sig 
+#1 "ast_extract.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+type _ kind =
+  | Ml_kind : Parsetree.structure kind
+  | Mli_kind : Parsetree.signature kind
+
+
+
+
+
+
+module String_set = Depend.StringSet
+
+val read_parse_and_extract : 'a kind -> 'a -> String_set.t
+
+type ('a,'b) t 
+
+val sort_files_by_dependencies :
+  domain:String_set.t -> String_set.t String_map.t -> string Queue.t
+
+
+val sort :
+  ('a -> Parsetree.structure) ->
+  ('b -> Parsetree.signature) ->
+  ('a, 'b) t String_map.t -> string Queue.t  
+
+
+
+(**
+   [build fmt files parse_implementation parse_interface]
+   Given a list of files return an ast table 
+*)
+val collect_ast_map :
+  Format.formatter ->
+  string list ->
+  (Format.formatter -> string -> 'a) ->
+  (Format.formatter -> string -> 'b) ->
+  ('a, 'b) t String_map.t
+
+
+val collect_from_main :
+  ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
+  ?excludes : string list -> 
+  Format.formatter ->
+  (Format.formatter -> string -> 'a) ->
+  (Format.formatter -> string -> 'b) ->
+  ('a -> Parsetree.structure) ->
+  ('b -> Parsetree.signature) ->
+  string -> ('a, 'b) t String_map.t * string Queue.t
+
+val build_queue :
+  Format.formatter ->
+  string Queue.t ->
+  ('b, 'c) t String_map.t ->
+  (Format.formatter -> string -> string -> 'b -> unit) ->
+  (Format.formatter -> string -> string -> 'c -> unit) -> unit
+  
+val handle_queue :
+  Format.formatter ->
+  String_map.key Queue.t ->
+  ('a, 'b) t String_map.t ->
+  (string -> string -> 'a -> unit) ->
+  (string -> string -> 'b  -> unit) ->
+  (string -> string -> string -> 'b -> 'a -> unit) -> unit
+
+
+val build_lazy_queue :
+  Format.formatter ->
+  string Queue.t ->
+  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
+  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
+  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
+
+val handle_depfile : 
+  string option -> string -> unit
+
+end = struct
+#1 "ast_extract.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type module_name = private string
+
+module String_set = Depend.StringSet
+
+type _ kind =
+  | Ml_kind : Parsetree.structure kind
+  | Mli_kind : Parsetree.signature kind
+        
+let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
+  Depend.free_structure_names := String_set.empty;
+  let bound_vars = String_set.empty in
+  List.iter
+    (fun modname  ->
+       Depend.open_module bound_vars (Longident.Lident modname))
+    (!Clflags.open_modules);
+  (match k with
+   | Ml_kind  -> Depend.add_implementation bound_vars ast
+   | Mli_kind  -> Depend.add_signature bound_vars ast  ); 
+  !Depend.free_structure_names
+
+
+type ('a,'b) ast_info =
+  | Ml of
+      string * (* sourcefile *)
+      'a *
+      string (* opref *)      
+  | Mli of string * (* sourcefile *)
+           'b *
+           string (* opref *)
+  | Ml_mli of
+      string * (* sourcefile *)
+      'a *
+      string  * (* opref1 *)
+      string * (* sourcefile *)      
+      'b *
+      string (* opref2*)
+
+type ('a,'b) t =
+  { module_name : string ; ast_info : ('a,'b) ast_info }
+
+
+(* only visit nodes that are currently in the domain *)
+(* https://en.wikipedia.org/wiki/Topological_sorting *)
+(* dfs   *)
+let sort_files_by_dependencies ~domain dependency_graph =
+  let next current =
+    (String_map.find  current dependency_graph) in    
+  let worklist = ref domain in
+  let result = Queue.create () in
+  let rec visit visiting path current =
+    if String_set.mem current visiting then
+      Bs_exception.error (Bs_cyclic_depends (current::path))
+    else if String_set.mem current !worklist then
+      begin
+        next current |>        
+        String_set.iter
+          (fun node ->
+             if  String_map.mem node  dependency_graph then
+               visit (String_set.add current visiting) (current::path) node)
+        ;
+        worklist := String_set.remove  current !worklist;
+        Queue.push current result ;
+      end in        
+  while not (String_set.is_empty !worklist) do 
+    visit String_set.empty []  (String_set.choose !worklist)
+  done;
+  if Js_config.get_diagnose () then
+    Format.fprintf Format.err_formatter
+      "Order: @[%a@]@."    
+      (Ext_format.pp_print_queue
+         ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      result ;       
+  result
+;;
+
+
+
+let sort  project_ml project_mli (ast_table : _ t String_map.t) = 
+  let domain =
+    String_map.fold
+      (fun k _ acc -> String_set.add k acc)
+      ast_table String_set.empty in
+  let h =
+    String_map.map
+      (fun
+        ({ast_info})
+        ->
+          match ast_info with
+          | Ml (_, ast,  _)
+            ->
+            read_parse_and_extract Ml_kind (project_ml ast)            
+          | Mli (_, ast, _)
+            ->
+            read_parse_and_extract Mli_kind (project_mli ast)
+          | Ml_mli (_, impl, _, _, intf, _)
+            ->
+            String_set.union
+              (read_parse_and_extract Ml_kind (project_ml impl))
+              (read_parse_and_extract Mli_kind (project_mli intf))              
+      ) ast_table in    
+  sort_files_by_dependencies  domain h
+
+(** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
+let check_suffix  name  = 
+  if Filename.check_suffix name ".ml"
+  || Filename.check_suffix name ".mlt" then 
+    `Ml,
+    Ext_filename.chop_extension_if_any  name 
+  else if Filename.check_suffix name !Config.interface_suffix then 
+    `Mli,   Ext_filename.chop_extension_if_any  name 
+  else 
+    raise(Arg.Bad("don't know what to do with " ^ name))
+
+
+let collect_ast_map ppf files parse_implementation parse_interface  =
+  List.fold_left
+    (fun (acc : _ t String_map.t)
+      source_file ->
+      match check_suffix source_file with
+      | `Ml, opref ->
+        let module_name = Ext_filename.module_name_of_file source_file in
+        begin match String_map.find module_name acc with
+          | exception Not_found ->
+            String_map.add module_name
+              {ast_info =
+                 (Ml (source_file, parse_implementation
+                        ppf source_file, opref));
+               module_name ;
+              } acc
+          | {ast_info = (Ml (source_file2, _, _)
+                        | Ml_mli(source_file2, _, _,_,_,_))} ->
+            Bs_exception.error
+              (Bs_duplicated_module (source_file, source_file2))
+          | {ast_info =  Mli (source_file2, intf, opref2)}
+            ->
+            String_map.add module_name
+              {ast_info =
+                 Ml_mli (source_file,
+                         parse_implementation ppf source_file,
+                         opref,
+                         source_file2,
+                         intf,
+                         opref2
+                        );
+               module_name} acc
+        end
+      | `Mli, opref ->
+        let module_name = Ext_filename.module_name_of_file source_file in
+        begin match String_map.find module_name acc with
+          | exception Not_found ->
+            String_map.add module_name
+              {ast_info = (Mli (source_file, parse_interface
+                                              ppf source_file, opref));
+               module_name } acc
+          | {ast_info =
+               (Mli (source_file2, _, _) |
+                Ml_mli(_,_,_,source_file2,_,_)) } ->
+            Bs_exception.error
+              (Bs_duplicated_module (source_file, source_file2))
+          | {ast_info = Ml (source_file2, impl, opref2)}
+            ->
+            String_map.add module_name
+              {ast_info =
+                 Ml_mli
+                   (source_file2,
+                    impl,
+                    opref2,
+                    source_file,
+                    parse_interface ppf source_file,
+                    opref
+                   );
+               module_name} acc
+        end
+    ) String_map.empty files
+
+
+let collect_from_main 
+    ?(extra_dirs=[])
+    ?(excludes=[])
+    (ppf : Format.formatter)
+    parse_implementation
+    parse_interface
+    project_impl 
+    project_intf 
+    main_file =
+  let not_excluded  = 
+    match excludes with 
+    | [] -> fun _ -> true
+    | _ -> 
+      fun source_file -> not (List.mem source_file excludes)
+  in 
+  let dirname = Filename.dirname main_file in
+  (** TODO: same filename module detection  *)
+  let files = 
+    Array.fold_left (fun acc source_file ->
+        if (Ext_string.ends_with source_file ".ml" ||
+            Ext_string.ends_with source_file ".mli") 
+           && not_excluded source_file
+        then 
+          (Filename.concat dirname source_file) :: acc else acc ) []   
+      (Sys.readdir dirname) in 
+  let files = 
+    List.fold_left (fun acc dir_spec -> 
+        let  dirname, excludes = 
+          match dir_spec with 
+          | `Dir dirname -> dirname, excludes
+          | `Dir_with_excludes (dirname, dir_excludes) ->
+            dirname,
+            Ext_list.flat_map 
+              (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
+              dir_excludes @ excludes
+        in 
+        Array.fold_left (fun acc source_file -> 
+            if (Ext_string.ends_with source_file ".ml" ||
+               Ext_string.ends_with source_file ".mli" )
+               && (* not_excluded source_file *) (not (List.mem source_file excludes))
+            then 
+              (Filename.concat dirname source_file) :: acc else acc
+          ) acc (Sys.readdir dirname))
+      files extra_dirs in
+  let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
+  let visited = Hashtbl.create 31 in
+  let result = Queue.create () in  
+  let next module_name =
+    match String_map.find module_name ast_table with
+    | exception _ -> String_set.empty
+    | {ast_info = Ml (_,  impl, _)} ->
+      read_parse_and_extract Ml_kind (project_impl impl)
+    | {ast_info = Mli (_,  intf,_)} ->
+      read_parse_and_extract Mli_kind (project_intf intf)
+    | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
+      -> 
+      String_set.union
+        (read_parse_and_extract Ml_kind (project_impl impl))
+        (read_parse_and_extract Mli_kind (project_intf intf))
+  in
+  let rec visit visiting path current =
+    if String_set.mem current visiting  then
+      Bs_exception.error (Bs_cyclic_depends (current::path))
+    else
+    if not (Hashtbl.mem visited current)
+    && String_map.mem current ast_table then
+      begin
+        String_set.iter
+          (visit
+             (String_set.add current visiting)
+             (current::path))
+          (next current) ;
+        Queue.push current result;
+        Hashtbl.add visited current ();
+      end in
+  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+  ast_table, result   
+
+
+let build_queue ppf queue
+    (ast_table : _ t String_map.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue
+  |> Queue.iter
+    (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file 
+          opref ast 
+      | {ast_info = Mli (source_file,ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file 
+          opref ast 
+      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
+
+
+let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
+  queue 
+  |> Queue.iter
+    (fun base ->
+       match (String_map.find  base ast_table).ast_info with
+       | exception Not_found -> assert false
+       | Ml (ml_name,  ml_content, _)
+         ->
+         decorate_module_only  base ml_name ml_content
+       | Mli (mli_name , mli_content, _) ->
+         decorate_interface_only base  mli_name mli_content
+       | Ml_mli (ml_name, ml_content, _, mli_name,   mli_content, _)
+         ->
+         decorate_module  base mli_name ml_name mli_content ml_content
+
+    )
+
+
+
+let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
+    after_parsing_impl
+    after_parsing_sig    
+  =
+  queue |> Queue.iter (fun modname -> 
+      match String_map.find modname ast_table  with
+      | {ast_info = Ml(source_file,lazy ast, opref)}
+        -> 
+        after_parsing_impl ppf source_file opref ast 
+      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
+        ->
+        after_parsing_sig ppf source_file opref ast 
+      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
+        -> 
+        after_parsing_sig ppf source_file1 opref1 intf ;
+        after_parsing_impl ppf source_file2 opref2 impl
+      | exception Not_found -> assert false 
+    )
+
+
+let dep_lit = " :"
+let space = " "
+let (//) = Filename.concat
+let length_space = String.length space 
+let handle_depfile oprefix  (fn : string) : unit = 
+  let op_concat s = match oprefix with None -> s | Some v -> v // s in 
+  let data =
+    Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
+  let deps = 
+    match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
+    | Some  input_file -> 
+      let stru  = Binary_ast.read_ast Ml  fn in 
+      let set = read_parse_and_extract Ml_kind stru in 
+      let dependent_file = (input_file ^ Literals.suffix_cmj) ^ dep_lit in
+      let (files, len) = 
+      String_set.fold
+        (fun k ((acc, len) as v) -> 
+           match String_map.find k data with
+           | {ml = Ml s | Re s  } 
+           | {mll = Some s } 
+             -> 
+             let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
+             in (new_file :: acc , len + String.length new_file + length_space)
+           | {mli = Mli s | Rei s } -> 
+             let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+             (new_file :: acc , len + String.length new_file + length_space)
+           | _ -> assert false
+           | exception Not_found -> v
+        ) set ([],String.length dependent_file)in
+      Ext_string.unsafe_concat_with_length len
+        space
+        (dependent_file :: files)
+    | None -> 
+      begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
+      | Some input_file -> 
+        let stri = Binary_ast.read_ast Mli  fn in 
+        let s = read_parse_and_extract Mli_kind stri in 
+        let dependent_file = (input_file ^ Literals.suffix_cmi) ^ dep_lit in
+        let (files, len) = 
+          String_set.fold
+            (fun k ((acc, len) as v) ->
+               match String_map.find k data with 
+               | { ml = Ml f | Re f  }
+               | { mll = Some f }
+               | { mli = Mli f | Rei f } -> 
+                 let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                 (new_file :: acc , len + String.length new_file + length_space)
+               | _ -> assert false
+               | exception Not_found -> v
+            ) s  ([], String.length dependent_file) in 
+        Ext_string.unsafe_concat_with_length len
+          space 
+          (dependent_file :: files) 
+      | None -> 
+        raise (Arg.Bad ("don't know what to do with  " ^ fn))
+      end
+  in 
+  let output = fn ^ Literals.suffix_d in
+  Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
 
 end
 module Ocaml_batch_compile : sig 

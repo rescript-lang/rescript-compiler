@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,52 +17,32 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type js_array =  
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and t = 
+type action = 
   [
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of string 
-  | `Arr of js_array
-  | `Obj of t String_map.t 
+    `skip
+  | `print of (out_channel -> int -> unit)
   ]
 
-val parse_json : Lexing.lexbuf -> t 
-val parse_json_from_string : string -> t 
-val parse_json_from_chan : in_channel -> t 
-val parse_json_from_file  : string -> t
 
-type path = string list 
-type status = 
-  | No_path
-  | Found of t 
-  | Wrong_type of path 
+type interval = {
+  loc_start : Lexing.position ; 
+  loc_end : Lexing.position ; 
+  action : action 
+}
+
+val process_wholes : 
+  interval list ->
+  int -> ?line_directive:string -> in_channel -> out_channel -> unit
+
+val cpp_process_file : 
+  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit
 
 
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Flo of (string -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  ]
-
-val test:
-  ?fail:(unit -> unit) ->
-  string -> callback -> t String_map.t -> t String_map.t
-
-val query : path -> t ->  status
+(** Assume that there is no overlapp *)
+val interval_compare : 
+  interval -> interval -> int
