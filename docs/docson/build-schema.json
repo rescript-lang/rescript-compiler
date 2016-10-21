@@ -20,6 +20,12 @@
                   }
               }  
             } 
+        },
+        "stringArray" : {
+            "type" : "array",
+            "items": {
+                "type" : "string"
+            }
         }
     },
     "title": "BuckleScript build configuration",
@@ -27,7 +33,7 @@
     "properties" : {
         "version" : {
             "type" : "string",
-            "description": "The semantic version of the ocaml library"
+            "description": "The semantic version of the OCaml library"
         },
         "name" : {
             "type" : "string",
@@ -40,6 +46,13 @@
                     "type": "string",
                     "description": "the path to bsdep"
                 },
+                "ppx-flags" : {
+                    "$ref" : "#/definitions/stringArray",
+                    "description": "ppx flags"
+                },
+                "bsc-flags" : {
+                    "$ref" : "#/definitions/stringArray"
+                },
                 "bsbuild": {
                     "type": "string",
                     "description": "the path to bsbuild"
@@ -48,29 +61,31 @@
                     "type": "string",
                     "description": "the path to bsc"
                 },
-                "external-includes": {
+                "refmt" : {
+                    "type" : "string",
+                    "description": "the path to refmt" 
+                },
+                "bs-external-includes": {
+                    "$ref": "#/definitions/stringArray",
                     "type": "array",
                     "items": {
                         "type": "array"
                     },
                     "description": "external include directories, which will be applied -I to all compilation units, it is not needed in most cases"
                 },
-                "bs-lib-dir" : {
-                    "type" : "string",
+                "bs-lib-dir": {
+                    "type": "string",
                     "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/buckle "
                 },
-                "ocaml-dependencies" : {
-                    "type" : "array",
-                    "items" : {
-                        "type" : "string"
+                "bs-dependencies": {
+                    "type" : "object",
+                    "additionalProperties": {
+                     "type" : "string"   
                     },
-                    "description": "the ocaml dependencies available on npm"
+                    "description": "the ocaml (via BuckleScript) dependencies available on npm"
                 },
-                "copy-or-symlink": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
+                "bs-copy-or-symlink": {
+                    "$ref" : "#/definitions/stringArray",
                     "description" : "the resource files, the use case is in test build, we need keep the same relative path between code and resources"
                 },
                 "sources" : {
@@ -82,8 +97,6 @@
             }            
         }
     },
-    "items": {
-        "$ref": "#/definitions/Product"
-    }
+    "required": ["version", "name", "ocaml-config"]
 }
 
