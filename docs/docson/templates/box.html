@@ -1,0 +1,157 @@
+{{!
+ Copyright 2013 Laurent Bovet (laurent.bovet@windmaster.ch)
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+}}
+{{#scope this}}
+ <div class="box">
+    <div class="box-header box-{{__boxId}}">
+        <div class="box-title" ref="{{__ref}}">
+            {{#name this}}<div class="box-name {{#if root}}title{{/if}}">{{__name}}</div>{{/name}}
+            <div class="box-description desc">{{desc this}}</div>
+            <div class="end"></div>
+        </div>
+    </div>
+     <div class="source-button button" title="Source">{}</div>
+    <div class="box-body">
+        <div class="expand-button button" title="Expand all">+</div>
+        {{#sub this}}
+        <div class="signature">
+            <div class="signature-header">
+                <div class="signature-type">
+                    {{#primitive this}}
+                        {{signature this null this}}
+                    {{/primitive}}
+                    {{#equals type "array"}}
+                        {{signature this "array" items}}
+                    {{/equals}}
+                    {{#if allOf}}
+                        {{signature this "all of" allOf}}
+                    {{/if}}
+                    {{#if anyOf}}
+                        {{signature this "any of" anyOf}}
+                    {{/if}}
+                    {{#if oneOf}}
+                        {{signature this "one of" oneOf}}
+                    {{/if}}
+                    {{#if not}}
+                        {{signature this "not" not}}
+                    {{/if}}
+                </div>
+            </div>
+            <div class="signature-box-container">
+                {{#boxes}}
+                <div class="box-container" boxid="{{__boxId}}">
+                    {{schema this}}
+                </div>
+                {{/boxes}}
+            </div>
+        </div>
+        {{/sub}}
+        {{#if properties}}
+            {{#each properties}}
+            <div class="signature">
+                <div class="signature-header">
+                    <div class="property-name {{#contains ../required @key}}required{{/contains}}">{{@key}}</div>
+                    <div class="signature-type">
+                        {{#main this}}
+                            {{signature this null this}}
+                        {{/main}}
+                        {{#equals type "array"}}
+                            {{signature this "array" items}}
+                        {{/equals}}
+                        {{#if allOf}}
+                            {{signature this "all of" allOf}}
+                        {{/if}}
+                        {{#if anyOf}}
+                            {{signature this "any of" anyOf}}
+                        {{/if}}
+                        {{#if oneOf}}
+                            {{signature this "one of" oneOf}}
+                        {{/if}}
+                        {{#if additionalProperties}}
+                            {{signature this "map" additionalProperties}}
+                        {{/if}}
+                        {{#if not}}
+                            {{signature this "not" not}}
+                        {{/if}}
+                    </div>
+                    <div class="signature-description desc">{{desc this}}</div>
+                </div>
+                <div class="signature-box-container">
+                {{#boxes}}
+                    <div class="box-container" boxid="{{__boxId}}">
+                        {{schema this}}
+                    </div>
+                {{/boxes}}
+                </div>
+            </div>
+            {{/each}}
+        {{/if}}
+
+        {{#if patternProperties}}
+            {{#each patternProperties}}
+            <div class="signature">
+                <div class="signature-header">
+                    <div class="property-name type-pattern">{{@key}}</div>
+                    <div class="signature-type">
+                        {{#main this}}
+                        {{signature this null this}}
+                        {{/main}}
+                        {{#equals type "array"}}
+                        {{signature this "array" items}}
+                        {{/equals}}
+                        {{#if allOf}}
+                        {{signature this "all of" allOf}}
+                        {{/if}}
+                        {{#if anyOf}}
+                        {{signature this "any of" anyOf}}
+                        {{/if}}
+                        {{#if oneOf}}
+                        {{signature this "one of" oneOf}}
+                        {{/if}}
+                        {{#if not}}
+                        {{signature this "not" not}}
+                        {{/if}}
+                    </div>
+                    <div class="signature-description desc">{{desc this}}</div>
+                </div>
+                <div class="signature-box-container">
+                    {{#boxes}}
+                    <div class="box-container" boxid="{{__boxId}}">
+                        {{schema this}}
+                    </div>
+                    {{/boxes}}
+                </div>
+            </div>
+            {{/each}}
+        {{/if}}
+
+        {{#if additionalProperties}}
+        <div class="signature">
+            <div class="signature-header">
+                <div class="property-name type-pattern">additional</div>
+                <div class="signature-type">
+                    {{schema ../additionalProperties}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+    <div class="source">
+        <pre class="json-schema">
+{{source this}}</pre>
+    </div>
+</div>
+<div class="end"/>
+{{/scope}}
