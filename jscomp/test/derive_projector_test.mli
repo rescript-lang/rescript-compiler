@@ -19,8 +19,11 @@ type d =
   | Hei
 and u = 
   | Hei
+and h = {d : d ; h : h list}
+
 and e = { d : d }
 [@@bs.deriving {ffi}]
 
 
 val v : d
+val h : d list 

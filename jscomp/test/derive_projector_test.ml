@@ -19,7 +19,9 @@ type d =
   | Hei (* two hei derived, however, this hei is not accessible any more *)
 and u = 
   | Hei
+and h = {d : d ; h : h list}
 and e = { d : d }
+
 [@@bs.deriving {ffi}]
 
 
