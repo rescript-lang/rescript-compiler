@@ -35,6 +35,8 @@ include Map.S with type key = string
 
 val of_list : (string * 'a) list -> 'a t
 
+val add_list : (string * 'b) list -> 'b t -> 'b t
+
 val find_opt : string -> 'a t -> 'a option
 
 val find_default : string -> 'a -> 'a t -> 'a
@@ -78,6 +80,10 @@ include Map.Make(String)
 
 let of_list (xs : ('a * 'b) list ) = 
   List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+let add_list (xs : ('a * 'b) list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
 
 let find_opt k m =
   match find k m with 
@@ -1832,6 +1838,8 @@ val rev_except_last : 'a list -> 'a list * 'a
 val sort_via_array :
   ('a -> 'a -> int) -> 'a list -> 'a list
 
+val last : 'a list -> 'a
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2187,6 +2195,12 @@ let sort_via_array cmp lst =
   let arr = Array.of_list lst  in
   Array.sort cmp arr;
   Array.to_list arr
+
+let rec last xs =
+  match xs with 
+  | [x] -> x 
+  | _ :: tl -> last tl 
+  | [] -> invalid_arg "Ext_list.last"
 
 end
 module Json_lexer : sig 

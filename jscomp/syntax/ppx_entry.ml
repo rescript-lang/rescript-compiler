@@ -62,6 +62,9 @@ open Ast_helper
 let record_as_js_object = ref false (* otherwise has an attribute *)
 let no_export = ref false 
 
+let () = 
+  Ast_derive_dyn.init  ();
+  Ast_derive_projector.init ()
 
 let reset () = 
   record_as_js_object := false ;
@@ -330,15 +333,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 (fun () -> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
             end
-        | Pexp_extension({txt ; loc}, PTyp typ) 
+        | Pexp_extension({txt ; loc} as lid, PTyp typ) 
           when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
           self.expr self @@ 
-          (Ast_payload.table_dispatch 
-            Ast_derive.derive_table 
-            ({loc ;
-              txt =
-                Lident 
-                  (Ext_string.tail_from txt (String.length Literals.bs_deriving_dot))}, None)).expression_gen typ
+            Ast_derive.dispatch_extension lid typ
             
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
@@ -518,18 +516,28 @@ let rec unsafe_mapper : Ast_mapper.mapper =
       );
     signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
-      | Psig_type [{ptype_attributes} as tdcl] -> 
-        begin match Ast_attributes.process_derive_type ptype_attributes with 
+      | Psig_type (_ :: _ as tdcls) -> 
+        begin match Ast_attributes.process_derive_type 
+                      (Ext_list.last tdcls).ptype_attributes  with 
         | {bs_deriving = `Has_deriving actions; explict_nonrec}, ptype_attributes
           -> Ast_signature.fuse 
                {sigi with 
-                psig_desc = Psig_type [self.type_declaration self {tdcl with ptype_attributes}]
+                psig_desc = Psig_type
+                    (
+                      Ext_list.map_last (fun last tdcl -> 
+                          if last then 
+                            self.type_declaration self {tdcl with ptype_attributes}
+                          else 
+                            self.type_declaration self tdcl                            
+                        ) tdcls
+                    )
                }
                (self.signature 
                   self @@ 
-                Ast_derive.type_deriving_signature tdcl actions explict_nonrec)
+                Ast_derive.type_deriving_signature tdcls actions explict_nonrec)
         | {bs_deriving = `Nothing }, _ -> 
-          {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] } 
+          Ast_mapper.default_mapper.signature_item self sigi 
+
         end
       | Psig_value
           ({pval_attributes; 
@@ -567,8 +575,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
-        | Pstr_type [ {ptype_attributes} as tdcl ]-> 
-          begin match Ast_attributes.process_derive_type ptype_attributes with 
+        | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
+          begin match Ast_attributes.process_derive_type 
+                        ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = `Has_deriving actions;
              explict_nonrec 
             }, ptype_attributes -> 
@@ -576,14 +585,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               {str with 
                pstr_desc =
                  Pstr_type 
-                   [ self.type_declaration self {tdcl with ptype_attributes}]}
+                    (Ext_list.map_last (fun last tdcl -> 
+                         if last then 
+                           self.type_declaration self {tdcl with ptype_attributes}
+                         else 
+                           self.type_declaration self tdcl) tdcls)
+                   }
               (self.structure self @@ Ast_derive.type_deriving_structure
-                 tdcl actions explict_nonrec )
+                 tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
-            {str with 
-             pstr_desc = 
-               Pstr_type
-                 [ self.type_declaration self tdcl]}
+            Ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 
             ({pval_attributes; 
@@ -653,7 +664,7 @@ let rewrite_signature :
         | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
           -> 
           begin 
-            Ast_payload.as_record_and_process loc payload 
+            Ast_payload.as_config_record_and_process loc payload 
             |> List.iter (Ast_payload.table_dispatch signature_config_table) ; 
             unsafe_mapper.signature unsafe_mapper rest
           end
@@ -669,7 +680,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
           -> 
           begin 
-            Ast_payload.as_record_and_process loc payload 
+            Ast_payload.as_config_record_and_process loc payload 
             |> List.iter (Ast_payload.table_dispatch structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
             if !no_export then

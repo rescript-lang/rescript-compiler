@@ -116,3 +116,5 @@ val rev_except_last : 'a list -> 'a list * 'a
 
 val sort_via_array :
   ('a -> 'a -> int) -> 'a list -> 'a list
+
+val last : 'a list -> 'a

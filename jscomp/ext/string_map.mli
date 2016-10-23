@@ -33,6 +33,8 @@ include Map.S with type key = string
 
 val of_list : (string * 'a) list -> 'a t
 
+val add_list : (string * 'b) list -> 'b t -> 'b t
+
 val find_opt : string -> 'a t -> 'a option
 
 val find_default : string -> 'a -> 'a t -> 'a

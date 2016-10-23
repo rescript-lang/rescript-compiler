@@ -22,26 +22,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+open Ast_helper
 
-type gen = {
-  structure_gen : Parsetree.type_declaration list -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
-}
+let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) = 
+  match tdcl with 
+  | {ptype_name = {txt ; loc};
+     ptype_params ;
+    } -> Typ.constr {txt = Lident txt ; loc} (List.map fst ptype_params)
 
-val type_deriving_structure: 
-  Parsetree.type_declaration list  ->
-  Ast_payload.action list ->
-  bool -> 
-  Ast_structure.t
-val type_deriving_signature: 
-  Parsetree.type_declaration list ->
-  Ast_payload.action list -> 
-  bool -> 
-  Ast_signature.t
+let lift_string_list_to_array (labels : string list) = 
+  Exp.array
+    (List.map (fun s -> Exp.constant (Const_string (s, None)))
+       labels)
+
+let lift_int i = Exp.constant (Const_int i)
+let lift_int_list_to_array (labels : int list) = 
+  Exp.array (List.map lift_int labels)
 
 
-val dispatch_extension : 
-  string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
+let mk_fun ~loc (typ : Parsetree.core_type) 
+    (value : string) body
+  : Parsetree.expression = 
+  Exp.fun_ 
+    "" None
+    (Pat.constraint_ (Pat.var {txt = value ; loc}) typ)
+    body
 
-val update : string -> (Parsetree.expression option -> gen) -> unit
+let destruct_label_declarations ~loc
+    (arg_name : string)
+    (labels : Parsetree.label_declaration list) : 
+  (Parsetree.core_type * Parsetree.expression) list * string list 
+  =
+  List.fold_right
+    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
+      (core_type_exps, labels) -> 
+      ((pld_type, 
+        Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
+          {txt = Lident txt ; loc}) :: core_type_exps),
+      txt :: labels 
+    ) labels ([], [])

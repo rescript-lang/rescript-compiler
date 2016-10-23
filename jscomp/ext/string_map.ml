@@ -34,6 +34,10 @@ include Map.Make(String)
 let of_list (xs : ('a * 'b) list ) = 
   List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
 
+let add_list (xs : ('a * 'b) list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
+
 let find_opt k m =
   match find k m with 
   | exception v -> None

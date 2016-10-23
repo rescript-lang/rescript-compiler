@@ -7,6 +7,7 @@ class_setter_getter.cmi :
 config2_test.cmi : ../runtime/js.cmj
 const_block_test.cmi :
 demo_int_map.cmi :
+derive_projector_test.cmi :
 ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
 ext_sys.cmi :
 float_record.cmi :
@@ -179,6 +180,8 @@ demo_pipe.cmj : ../runtime/js.cmj
 demo_pipe.cmx : ../runtime/js.cmx
 derive_dyntype.cmj : ../others/bs_dyn.cmi
 derive_dyntype.cmx : ../others/bs_dyn.cmx
+derive_projector_test.cmj : derive_projector_test.cmi
+derive_projector_test.cmx : derive_projector_test.cmi
 derive_type_test.cmj :
 derive_type_test.cmx :
 digest_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
@@ -1045,6 +1048,8 @@ demo_pipe.cmo : ../runtime/js.cmo
 demo_pipe.cmj : ../runtime/js.cmj
 derive_dyntype.cmo : ../others/bs_dyn.cmi
 derive_dyntype.cmj : ../others/bs_dyn.cmj
+derive_projector_test.cmo : derive_projector_test.cmi
+derive_projector_test.cmj : derive_projector_test.cmi
 derive_type_test.cmo :
 derive_type_test.cmj :
 digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
