@@ -88,18 +88,23 @@ let as_empty_structure (x : t ) =
   | PStr ([]) -> true
   | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
 
-type lid = Longident.t Asttypes.loc
+type lid = string Asttypes.loc
 type label_expr = lid  * Parsetree.expression
+
 type action = 
    lid * Parsetree.expression option 
+(** None means punning is hit 
+    {[ { x } ]}
+    otherwise it comes with a payload 
+    {[ { x = exp }]}
+*)
 
-
-let as_record_and_process 
+let as_config_record_and_process 
     loc
-    x 
+    (x : Parsetree.payload) 
   = 
   match  x with 
-  | Parsetree.PStr 
+  | PStr 
       [ {pstr_desc = Pstr_eval
              ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
          _
@@ -113,8 +118,13 @@ let as_record_and_process
            | ({Asttypes.txt = Longident.Lident name; loc} ) , 
              ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
              when name2 = name -> 
-              (x, None)
-           | _ ->  (x, Some y))
+              ({Asttypes.txt = name ; loc}, None)
+           | ({Asttypes.txt = Longident.Lident name; loc} ), y 
+             -> 
+             ({Asttypes.txt = name ; loc}, Some y)
+           | _ -> 
+             Location.raise_errorf ~loc "Qualified label is not allood"
+        )
         label_exprs
     | Some _ -> 
       Location.raise_errorf ~loc "with is not supported"
@@ -174,10 +184,8 @@ let empty : t = Parsetree.PStr []
 let table_dispatch table (action : action)
      = 
   match action with 
-  | {txt = Lident name; loc  }, y -> 
+  | {txt =  name; loc  }, y -> 
     begin match String_map.find name table with 
       | fn -> fn y
       | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
-  | { loc ; }, _  -> 
-    Location.raise_errorf ~loc "invalid label for config"

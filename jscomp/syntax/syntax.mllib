@@ -8,6 +8,7 @@ ast_attributes
 ast_external
 ast_structure
 ast_derive
+ast_derive_dyn
 ast_signature
 ast_core_type
 ast_external_attributes

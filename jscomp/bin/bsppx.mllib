@@ -17,11 +17,11 @@ ext/ext_list
 syntax/ast_comb
 syntax/ast_signature
 syntax/ast_structure
+ext/literals
 syntax/ast_derive
 syntax/ast_core_type
 common/bs_loc
 ext/ext_pervasives
-ext/literals
 ext/ext_filename
 common/js_config
 common/bs_warnings

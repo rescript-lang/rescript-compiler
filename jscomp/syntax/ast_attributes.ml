@@ -41,13 +41,13 @@ let process_method_attributes_rev (attrs : t) =
           (fun 
             (null, undefined)
             (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt = Lident "null" then 
+            if txt =  "null" then 
               (match opt_expr with 
               | None -> true
               | Some e -> 
                 Ast_payload.assert_bool_lit e), undefined
 
-            else if txt = Lident "undefined" then 
+            else if txt = "undefined" then 
               null, 
               (match opt_expr with
                | None ->  true
@@ -55,7 +55,7 @@ let process_method_attributes_rev (attrs : t) =
                  Ast_payload.assert_bool_lit e)
 
             else Location.raise_errorf ~loc "unsupported predicates"
-          ) (false, false) (Ast_payload.as_record_and_process loc payload)  in 
+          ) (false, false) (Ast_payload.as_config_record_and_process loc payload)  in 
 
         ({st with get = Some result}, acc  )
 
@@ -64,7 +64,7 @@ let process_method_attributes_rev (attrs : t) =
         let result = 
           List.fold_left 
           (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt = Lident "no_get" then 
+            if txt =  "no_get" then 
               match opt_expr with 
               | None -> `No_get 
               | Some e -> 
@@ -72,7 +72,7 @@ let process_method_attributes_rev (attrs : t) =
                   `No_get
                 else `Get
             else Location.raise_errorf ~loc "unsupported predicates"
-          ) `Get (Ast_payload.as_record_and_process loc payload)  in 
+          ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
            *)
@@ -132,7 +132,7 @@ let process_derive_type attrs =
         ->
         {st with
          bs_deriving = `Has_deriving 
-             (Ast_payload.as_record_and_process loc payload)}, acc 
+             (Ast_payload.as_config_record_and_process loc payload)}, acc 
       | {bs_deriving = `Has_deriving _}, "bs.deriving"
         -> 
         Location.raise_errorf ~loc "duplicated bs.deriving attribute"

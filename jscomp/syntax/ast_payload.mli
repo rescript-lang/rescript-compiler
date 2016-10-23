@@ -28,7 +28,7 @@
     compiling FFI attributes and built-in ppx  *)
 
 type t = Parsetree.payload
-type lid = Longident.t Asttypes.loc
+type lid = string Asttypes.loc
 type label_expr = lid  * Parsetree.expression
 type action = 
    lid * Parsetree.expression option 
@@ -39,7 +39,7 @@ val is_single_int : t -> int option
 val as_string_exp : t -> Parsetree.expression option
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 val as_empty_structure :  t -> bool 
-val as_ident : t -> lid option
+val as_ident : t -> Longident.t Asttypes.loc option
 val raw_string_payload : Location.t -> string -> t 
 val assert_strings :
   Location.t -> t -> string list  
@@ -49,8 +49,16 @@ val assert_strings :
     {[ [@@@bs.config ]]}
     or 
     {[ [@@@bs.config { property  .. } ]]}    
+    Note that we only 
+    {[
+      { flat_property}
+    ]}
+    below  is not allowed 
+    {[
+      {M.flat_property}
+    ]}
 *)
-val as_record_and_process : 
+val as_config_record_and_process : 
   Location.t ->
   t -> action list 
 

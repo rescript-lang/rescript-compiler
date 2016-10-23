@@ -35,6 +35,8 @@ include Map.S with type key = string
 
 val of_list : (string * 'a) list -> 'a t
 
+val add_list : (string * 'b) list -> 'b t -> 'b t
+
 val find_opt : string -> 'a t -> 'a option
 
 val find_default : string -> 'a -> 'a t -> 'a
@@ -78,6 +80,10 @@ include Map.Make(String)
 
 let of_list (xs : ('a * 'b) list ) = 
   List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+let add_list (xs : ('a * 'b) list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
 
 let find_opt k m =
   match find k m with 

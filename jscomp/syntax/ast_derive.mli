@@ -22,6 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+type gen = {
+  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
+  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
+  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
+}
+
 val type_deriving_structure: 
   Parsetree.type_declaration ->
   Ast_payload.action list ->
@@ -33,10 +40,8 @@ val type_deriving_signature:
   bool -> 
   Ast_signature.t
 
-type gen = {
-  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) ; 
-}
 
-val derive_table: (Parsetree.expression option -> gen) String_map.t
+val dispatch_extension : 
+  string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
+
+val update : string -> (Parsetree.expression option -> gen) -> unit
