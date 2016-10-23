@@ -30795,7 +30795,7 @@ let init () =
                       ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                           Parsetree.constructor_declaration)
                       -> (* TODO: add type annotations *)
-                        let little_con_name = String.lowercase con_name  in
+                        let little_con_name = String.uncapitalize con_name  in
                         let arity = List.length pcd_args in 
                         if arity = 0 then 
                           Str.value Nonrecursive 
@@ -30871,7 +30871,7 @@ let init () =
                              Parsetree.constructor_declaration)
                       -> 
                         Sig.value 
-                          (Val.mk {loc ; txt = (String.lowercase con_name)}
+                          (Val.mk {loc ; txt = (String.uncapitalize con_name)}
                              
                            (List.fold_right 
                               (fun x acc -> Typ.arrow "" x acc) 

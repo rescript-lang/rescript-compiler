@@ -14,12 +14,14 @@ and 'a c = {
 type d = 
   | D_empty
   | D_int of int 
-  | D_tuple of int * string 
+  | D_tuple of int * string
+  | NewContent of string
   | D_tweak of (int * string)
   | Hei
 and u = 
   | Hei
-and h = {d : d ; h : h list}
+and h = {d : d ; h : h list; u_X : int}
+
 
 and e = { d : d }
 [@@bs.deriving {ffi}]
