@@ -513,18 +513,28 @@ let rec unsafe_mapper : Ast_mapper.mapper =
       );
     signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
-      | Psig_type [{ptype_attributes} as tdcl] -> 
-        begin match Ast_attributes.process_derive_type ptype_attributes with 
+      | Psig_type (_ :: _ as tdcls) -> 
+        begin match Ast_attributes.process_derive_type 
+                      (Ext_list.last tdcls).ptype_attributes  with 
         | {bs_deriving = `Has_deriving actions; explict_nonrec}, ptype_attributes
           -> Ast_signature.fuse 
                {sigi with 
-                psig_desc = Psig_type [self.type_declaration self {tdcl with ptype_attributes}]
+                psig_desc = Psig_type
+                    (
+                      Ext_list.map_last (fun last tdcl -> 
+                          if last then 
+                            self.type_declaration self {tdcl with ptype_attributes}
+                          else 
+                            self.type_declaration self tdcl                            
+                        ) tdcls
+                    )
                }
                (self.signature 
                   self @@ 
-                Ast_derive.type_deriving_signature tdcl actions explict_nonrec)
+                Ast_derive.type_deriving_signature tdcls actions explict_nonrec)
         | {bs_deriving = `Nothing }, _ -> 
-          {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] } 
+          Ast_mapper.default_mapper.signature_item self sigi 
+          (* {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] }  *)
         end
       | Psig_value
           ({pval_attributes; 
@@ -562,8 +572,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
-        | Pstr_type [ {ptype_attributes} as tdcl ]-> 
-          begin match Ast_attributes.process_derive_type ptype_attributes with 
+        | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
+          begin match Ast_attributes.process_derive_type 
+                        ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = `Has_deriving actions;
              explict_nonrec 
             }, ptype_attributes -> 
@@ -571,14 +582,20 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               {str with 
                pstr_desc =
                  Pstr_type 
-                   [ self.type_declaration self {tdcl with ptype_attributes}]}
+                    (Ext_list.map_last (fun last tdcl -> 
+                         if last then 
+                           self.type_declaration self {tdcl with ptype_attributes}
+                         else 
+                           self.type_declaration self tdcl) tdcls)
+                   }
               (self.structure self @@ Ast_derive.type_deriving_structure
-                 tdcl actions explict_nonrec )
+                 tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
-            {str with 
-             pstr_desc = 
-               Pstr_type
-                 [ self.type_declaration self tdcl]}
+            Ast_mapper.default_mapper.structure_item self str
+            (* {str with  *)
+            (*  pstr_desc =  *)
+            (*    Pstr_type *)
+            (*      [ self.type_declaration self tdcl]} *)
           end
         | Pstr_primitive 
             ({pval_attributes; 

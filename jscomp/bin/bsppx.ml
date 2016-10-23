@@ -5449,6 +5449,8 @@ val rev_except_last : 'a list -> 'a list * 'a
 val sort_via_array :
   ('a -> 'a -> int) -> 'a list -> 'a list
 
+val last : 'a list -> 'a
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5804,6 +5806,12 @@ let sort_via_array cmp lst =
   let arr = Array.of_list lst  in
   Array.sort cmp arr;
   Array.to_list arr
+
+let rec last xs =
+  match xs with 
+  | [x] -> x 
+  | _ :: tl -> last tl 
+  | [] -> invalid_arg "Ext_list.last"
 
 end
 module Ast_comb : sig 
@@ -6313,18 +6321,18 @@ module Ast_derive : sig
 
 
 type gen = {
-  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
+  structure_gen : Parsetree.type_declaration list -> bool -> Ast_structure.t ;
+  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
 val type_deriving_structure: 
-  Parsetree.type_declaration ->
+  Parsetree.type_declaration list  ->
   Ast_payload.action list ->
   bool -> 
   Ast_structure.t
 val type_deriving_signature: 
-  Parsetree.type_declaration ->
+  Parsetree.type_declaration list ->
   Ast_payload.action list -> 
   bool -> 
   Ast_signature.t
@@ -6363,8 +6371,8 @@ end = struct
 
 
 type gen = {
-  structure_gen : Parsetree.type_declaration -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration -> bool -> Ast_signature.t ; 
+  structure_gen : Parsetree.type_declaration list  -> bool -> Ast_structure.t ;
+  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
@@ -6384,24 +6392,24 @@ let update key value =
 
 
 let type_deriving_structure 
-    (tdcl  : Parsetree.type_declaration)
+    tdcls 
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_structure.t = 
   Ext_list.flat_map
     (fun action -> 
        (Ast_payload.table_dispatch !derive_table action).structure_gen 
-         tdcl explict_nonrec) actions
+         tdcls explict_nonrec) actions
 
 let type_deriving_signature
-    (tdcl  : Parsetree.type_declaration)
+    tdcls
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_signature.t = 
   Ext_list.flat_map
     (fun action -> 
        (Ast_payload.table_dispatch !derive_table action).signature_gen
-         tdcl explict_nonrec) actions
+         tdcls explict_nonrec) actions
 
 let dispatch_extension ({Asttypes.txt ; loc}) typ =
   let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
@@ -11703,18 +11711,28 @@ let rec unsafe_mapper : Ast_mapper.mapper =
       );
     signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
-      | Psig_type [{ptype_attributes} as tdcl] -> 
-        begin match Ast_attributes.process_derive_type ptype_attributes with 
+      | Psig_type (_ :: _ as tdcls) -> 
+        begin match Ast_attributes.process_derive_type 
+                      (Ext_list.last tdcls).ptype_attributes  with 
         | {bs_deriving = `Has_deriving actions; explict_nonrec}, ptype_attributes
           -> Ast_signature.fuse 
                {sigi with 
-                psig_desc = Psig_type [self.type_declaration self {tdcl with ptype_attributes}]
+                psig_desc = Psig_type
+                    (
+                      Ext_list.map_last (fun last tdcl -> 
+                          if last then 
+                            self.type_declaration self {tdcl with ptype_attributes}
+                          else 
+                            self.type_declaration self tdcl                            
+                        ) tdcls
+                    )
                }
                (self.signature 
                   self @@ 
-                Ast_derive.type_deriving_signature tdcl actions explict_nonrec)
+                Ast_derive.type_deriving_signature tdcls actions explict_nonrec)
         | {bs_deriving = `Nothing }, _ -> 
-          {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] } 
+          Ast_mapper.default_mapper.signature_item self sigi 
+          (* {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] }  *)
         end
       | Psig_value
           ({pval_attributes; 
@@ -11752,8 +11770,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
-        | Pstr_type [ {ptype_attributes} as tdcl ]-> 
-          begin match Ast_attributes.process_derive_type ptype_attributes with 
+        | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
+          begin match Ast_attributes.process_derive_type 
+                        ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = `Has_deriving actions;
              explict_nonrec 
             }, ptype_attributes -> 
@@ -11761,14 +11780,20 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               {str with 
                pstr_desc =
                  Pstr_type 
-                   [ self.type_declaration self {tdcl with ptype_attributes}]}
+                    (Ext_list.map_last (fun last tdcl -> 
+                         if last then 
+                           self.type_declaration self {tdcl with ptype_attributes}
+                         else 
+                           self.type_declaration self tdcl) tdcls)
+                   }
               (self.structure self @@ Ast_derive.type_deriving_structure
-                 tdcl actions explict_nonrec )
+                 tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
-            {str with 
-             pstr_desc = 
-               Pstr_type
-                 [ self.type_declaration self tdcl]}
+            Ast_mapper.default_mapper.structure_item self str
+            (* {str with  *)
+            (*  pstr_desc =  *)
+            (*    Pstr_type *)
+            (*      [ self.type_declaration self tdcl]} *)
           end
         | Pstr_primitive 
             ({pval_attributes; 

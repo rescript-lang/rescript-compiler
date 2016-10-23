@@ -10,3 +10,9 @@ and 'a c = {
   c_x : int 
 }
 [@@bs.deriving {projector}]
+
+type d = 
+  | Int of int 
+
+and e = { d : d }
+[@@bs.deriving {projector}]

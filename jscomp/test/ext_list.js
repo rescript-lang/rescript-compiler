@@ -931,6 +931,29 @@ function sort_via_array(cmp, lst) {
   return $$Array.to_list(arr);
 }
 
+function last(_xs) {
+  while(true) {
+    var xs = _xs;
+    if (xs) {
+      var tl = xs[1];
+      if (tl) {
+        _xs = tl;
+        continue ;
+        
+      }
+      else {
+        return xs[0];
+      }
+    }
+    else {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Ext_list.last"
+          ];
+    }
+  };
+}
+
 exports.filter_map         = filter_map;
 exports.excludes           = excludes;
 exports.exclude_with_fact  = exclude_with_fact;
@@ -971,4 +994,5 @@ exports.ref_push           = ref_push;
 exports.ref_pop            = ref_pop;
 exports.rev_except_last    = rev_except_last;
 exports.sort_via_array     = sort_via_array;
+exports.last               = last;
 /* No side effect */

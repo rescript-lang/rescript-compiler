@@ -29,11 +29,6 @@ let not_supported loc =
 
 let current_name_set : string list ref = ref []
 
-let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) = 
-  match tdcl with 
-  | {ptype_name = {txt ; loc};
-     ptype_params ;
-    } -> Typ.constr {txt = Lident txt ; loc} (List.map fst ptype_params)
 let loc = Location.none 
 
 let (+>) = Typ.arrow ""
@@ -91,14 +86,6 @@ let js_dyn_tuple_to_value i =
       Lident js_dyn,
       "tuple_" ^ string_of_int i ^ "_to_value"); loc}
 
-
-let lift_string_list_to_array (labels : string list) = 
-  Exp.array
-    (List.map (fun s -> Exp.constant (Const_string (s, None)))
-       labels)
-let lift_int i = Exp.constant (Const_int i)
-let lift_int_list_to_array (labels : int list) = 
-  Exp.array (List.map lift_int labels)
 
 let bs_apply1 f v = 
   Exp.apply f ["",v] ~attrs:bs_attrs
@@ -167,27 +154,6 @@ let rec exp_of_core_type prefix
 
   | _ -> assert false
 
-let mk_fun (typ : Parsetree.core_type) 
-    (value : string) body
-  : Parsetree.expression = 
-  Exp.fun_ 
-    "" None
-    (Pat.constraint_ (Pat.var {txt = value ; loc}) typ)
-    body
-
-let destruct_label_declarations
-    (arg_name : string)
-    (labels : Parsetree.label_declaration list) : 
-  (Parsetree.core_type * Parsetree.expression) list * string list 
-  =
-  List.fold_right
-    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
-      (core_type_exps, labels) -> 
-      ((pld_type, 
-        Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
-          {txt = Lident txt ; loc}) :: core_type_exps),
-      txt :: labels 
-    ) labels ([], [])
 
 
 (** return an expression node of array type *)
@@ -239,7 +205,7 @@ let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) =
              (Exp.apply 
                 (js_dyn_variant_to_value ())
                 [("", Exp.ident {txt = Lident shape ; loc});
-                 ("", lift_int i);
+                 ("", Ast_derive_util.lift_int i);
                  ("", exp_of_core_type_exprs core_type_exprs);
                 ]
              )) ctdcls
@@ -261,19 +227,19 @@ let fun_1 name =
 let record_exp  name core_type  labels : Ast_structure.t = 
   let arg_name : string = "args" in
   let core_type_exprs, labels = 
-    destruct_label_declarations arg_name labels in
+    Ast_derive_util.destruct_label_declarations ~loc arg_name labels in
 
   [Str.value Nonrecursive @@ 
    [Vb.mk 
      (Pat.var {txt = shape;  loc}) 
      (Exp.apply (js_dyn_shape_of_record ())
-        ["", (lift_string_list_to_array labels)]
+        ["", (Ast_derive_util.lift_string_list_to_array labels)]
      ) ];
    Str.value Nonrecursive @@ 
    [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc })
-     (mk_fun core_type arg_name 
-        (record (exp_of_core_type_exprs core_type_exprs))
-     )];
+      (Ast_derive_util.mk_fun ~loc core_type arg_name 
+         (record (exp_of_core_type_exprs core_type_exprs))
+      )];
    Str.value Nonrecursive @@
    [Vb.mk (Pat.var {txt = name ^ to_value; loc})
       ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
@@ -284,91 +250,100 @@ let record_exp  name core_type  labels : Ast_structure.t =
 
 let ()  =
   Ast_derive.update 
-  "dynval"
-     begin fun (x : Parsetree.expression option) -> 
-       match x with 
-       | Some {pexp_loc = loc} 
-         -> Location.raise_errorf ~loc "such configuration is not supported"
-       | None -> 
-         {Ast_derive.structure_gen = 
-             begin  fun (tdcl  : Parsetree.type_declaration) explict_nonrec -> 
-               let core_type = core_type_of_type_declaration tdcl in 
-               let name = tdcl.ptype_name.txt in
-               let loc = tdcl.ptype_loc in 
-               let signatures = 
-                 [Sig.value ~loc 
-                    (Val.mk {txt =  name ^ to_value  ; loc}
-                       (js_dyn_to_value_uncurry_type core_type))
-                 ] in
-               let constraint_ strs = 
-                 [Ast_structure.constraint_  ~loc strs signatures] in
-               match tdcl with 
-               | {ptype_params = [];
-                  ptype_kind  = Ptype_variant cd;
-                  ptype_loc = loc;
-                 } -> 
-                 if explict_nonrec then 
-                   let names, arities = 
-                     List.fold_right 
-                       (fun (ctdcl : Parsetree.constructor_declaration) 
-                         (names,arities) -> 
-                         ctdcl.pcd_name.txt :: names, 
-                         List.length ctdcl.pcd_args :: arities
-                       ) cd ([],[]) in 
-                   constraint_ 
-                     [
-                       Str.value Nonrecursive @@ 
-                       [Vb.mk (Pat.var {txt = shape ; loc})
-                          (      Exp.apply (js_dyn_shape_of_variant ())
-                                   [ "", (lift_string_list_to_array names);
-                                     "", (lift_int_list_to_array arities )
-                                   ])];
-                       Str.value Nonrecursive @@ 
-                       [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc})
-                          (case_of_ctdcl cd)
-                       ];
-                       Str.value Nonrecursive @@
-                       [Vb.mk (Pat.var {txt = name ^ to_value; loc})
-                          ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
-                       ]        
-                     ]
-                 else 
-                   []
-               | {ptype_params = []; 
-                  ptype_kind = Ptype_abstract; 
-                  ptype_manifest = Some x 
-                 } -> (** case {[ type t = int ]}*)
-                 constraint_ 
-                   [
-                     Str.value Nonrecursive @@ 
-                     [Vb.mk (Pat.var {txt = name ^ to_value  ; loc})
-                        (exp_of_core_type to_value x)
-                     ]
-                   ]
+    "dynval"
+    begin fun (x : Parsetree.expression option) -> 
+      match x with 
+      | Some {pexp_loc = loc} 
+        -> Location.raise_errorf ~loc "such configuration is not supported"
+      | None -> 
+        {Ast_derive.structure_gen = 
+           begin  fun (tdcl  : Parsetree.type_declaration list) explict_nonrec ->
+             begin match tdcl with 
+               | [tdcl] -> 
+                 let core_type = Ast_derive_util.core_type_of_type_declaration  tdcl in 
+                 let name = tdcl.ptype_name.txt in
+                 let loc = tdcl.ptype_loc in 
+                 let signatures = 
+                   [Sig.value ~loc 
+                      (Val.mk {txt =  name ^ to_value  ; loc}
+                         (js_dyn_to_value_uncurry_type core_type))
+                   ] in
+                 let constraint_ strs = 
+                   [Ast_structure.constraint_  ~loc strs signatures] in
+                 begin match tdcl with 
+                   | {ptype_params = [];
+                      ptype_kind  = Ptype_variant cd;
+                      ptype_loc = loc;
+                     } -> 
+                     if explict_nonrec then 
+                       let names, arities = 
+                         List.fold_right 
+                           (fun (ctdcl : Parsetree.constructor_declaration) 
+                             (names,arities) -> 
+                             ctdcl.pcd_name.txt :: names, 
+                             List.length ctdcl.pcd_args :: arities
+                           ) cd ([],[]) in 
+                       constraint_ 
+                         [
+                           Str.value Nonrecursive @@ 
+                           [Vb.mk (Pat.var {txt = shape ; loc})
+                              (      Exp.apply (js_dyn_shape_of_variant ())
+                                       [ "", (Ast_derive_util.lift_string_list_to_array names);
+                                         "", (Ast_derive_util.lift_int_list_to_array arities )
+                                       ])];
+                           Str.value Nonrecursive @@ 
+                           [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc})
+                              (case_of_ctdcl cd)
+                           ];
+                           Str.value Nonrecursive @@
+                           [Vb.mk (Pat.var {txt = name ^ to_value; loc})
+                              ( fun_1 { txt = Lident (name ^ to_value_) ;loc})
+                           ]        
+                         ]
+                     else 
+                       []
+                   | {ptype_params = []; 
+                      ptype_kind = Ptype_abstract; 
+                      ptype_manifest = Some x 
+                     } -> (** case {[ type t = int ]}*)
+                     constraint_ 
+                       [
+                         Str.value Nonrecursive @@ 
+                         [Vb.mk (Pat.var {txt = name ^ to_value  ; loc})
+                            (exp_of_core_type to_value x)
+                         ]
+                       ]
 
-               |{ptype_params = [];
-                 ptype_kind  = Ptype_record labels;
-                 ptype_loc = loc;
-                } -> 
-                 if explict_nonrec then constraint_ (record_exp name core_type labels) 
-                 else []
+                   |{ptype_params = [];
+                     ptype_kind  = Ptype_record labels;
+                     ptype_loc = loc;
+                    } -> 
+                     if explict_nonrec then constraint_ (record_exp name core_type labels) 
+                     else []
 
-               | _ -> 
-                 []
-             end; 
+                   | _ -> 
+                     []
+                 end
+               | _ -> []
+              end
+            end
+              ; 
            expression_gen =  Some begin fun core_type -> 
                exp_of_core_type to_value core_type
              end;
-           signature_gen = begin fun 
-             (tdcl : Parsetree.type_declaration)
-             (explict_nonrec : bool) -> 
-             let core_type = core_type_of_type_declaration tdcl in 
-             let name = tdcl.ptype_name.txt in
-             let loc = tdcl.ptype_loc in 
-             [Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
-                                (js_dyn_to_value_uncurry_type core_type))
-             ]
-           end
+           signature_gen = 
+             begin fun 
+               (tdcls : Parsetree.type_declaration list)
+               (explict_nonrec : bool) -> 
+               let handle_tdcl tdcl = 
+                 let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
+                 let name = tdcl.ptype_name.txt in
+                 let loc = tdcl.ptype_loc in 
+                 Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
+                                   (js_dyn_to_value_uncurry_type core_type)) in 
+               List.map handle_tdcl tdcls 
+
+             end
 
          }
      end

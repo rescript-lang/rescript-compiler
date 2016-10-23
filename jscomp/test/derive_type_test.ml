@@ -28,9 +28,9 @@ let value_of_h : h Bs_dyn.to_value =
 *)
 
 type u = int 
-    [@@bs.deriving {dynval ; dyntype } ]
+    (* [@@bs.deriving {dynval ; dyntype } ] *)
 and v = u 
-    [@@bs.deriving {dynval ; dyntype } ]
+    (* [@@bs.deriving {dynval ; dyntype } ] *)
 
 let x = 3 
 
