@@ -1,7 +1,7 @@
 open Ast_helper
 
 
-let () =
+let init () =
   Ast_derive.update 
     "ffi" 
     begin fun (x : Parsetree.expression option) ->

@@ -248,7 +248,7 @@ let record_exp  name core_type  labels : Ast_structure.t =
 
 
 
-let ()  =
+let init ()  =
   Ast_derive.update 
     "dynval"
     begin fun (x : Parsetree.expression option) -> 

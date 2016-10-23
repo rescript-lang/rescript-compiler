@@ -107,6 +107,9 @@ ext/ext_option
 syntax/ast_signature
 syntax/ast_structure
 syntax/ast_derive
+syntax/ast_derive_util
+syntax/ast_derive_dyn
+syntax/ast_derive_projector
 syntax/ast_external
 syntax/ast_pat
 syntax/ast_util

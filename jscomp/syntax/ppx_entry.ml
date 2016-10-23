@@ -62,6 +62,9 @@ open Ast_helper
 let record_as_js_object = ref false (* otherwise has an attribute *)
 let no_export = ref false 
 
+let () = 
+  Ast_derive_dyn.init  ();
+  Ast_derive_projector.init ()
 
 let reset () = 
   record_as_js_object := false ;

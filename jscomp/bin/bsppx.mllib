@@ -19,6 +19,9 @@ syntax/ast_signature
 syntax/ast_structure
 ext/literals
 syntax/ast_derive
+syntax/ast_derive_util
+syntax/ast_derive_dyn
+syntax/ast_derive_projector
 syntax/ast_core_type
 common/bs_loc
 ext/ext_pervasives
