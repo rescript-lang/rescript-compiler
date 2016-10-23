@@ -93012,7 +93012,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Ast_derive.type_deriving_signature tdcls actions explict_nonrec)
         | {bs_deriving = `Nothing }, _ -> 
           Ast_mapper.default_mapper.signature_item self sigi 
-          (* {sigi with psig_desc = Psig_type [ self.type_declaration self tdcl] }  *)
+
         end
       | Psig_value
           ({pval_attributes; 
@@ -93070,10 +93070,6 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                  tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
             Ast_mapper.default_mapper.structure_item self str
-            (* {str with  *)
-            (*  pstr_desc =  *)
-            (*    Pstr_type *)
-            (*      [ self.type_declaration self tdcl]} *)
           end
         | Pstr_primitive 
             ({pval_attributes; 

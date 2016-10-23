@@ -11,26 +11,16 @@ and 'a c = {
 }
 [@@bs.deriving {ffi}]
 
-type d =
+type d = 
   | D_empty
   | D_int of int 
   | D_tuple of int * string 
   | D_tweak of (int * string)
-  | Hei (* two hei derived, however, this hei is not accessible any more *)
+  | Hei
 and u = 
   | Hei
 and e = { d : d }
 [@@bs.deriving {ffi}]
 
 
-
-let v = d  @@ { d = d_int  3 }
-
-
-let h = [
-  d_empty ; 
-  d_int 3 ; 
-  d_tuple 3 "hgo";
-  d_tweak (3,"hgo")
-]
-
+val v : d
