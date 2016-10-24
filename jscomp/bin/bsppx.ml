@@ -6856,7 +6856,7 @@ open Ast_helper
 
 let init () =
   Ast_derive.update 
-    "ffi" 
+    "accessors" 
     begin fun (x : Parsetree.expression option) ->
        match x with 
        | Some {pexp_loc = loc} 

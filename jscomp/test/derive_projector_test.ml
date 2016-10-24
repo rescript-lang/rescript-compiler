@@ -1,7 +1,7 @@
 
 type a =  
   { u_x : int}
-[@@bs.deriving { ffi }]
+[@@bs.deriving { accessors }]
 
 type 'a b = {
   b_x  : int
@@ -9,7 +9,7 @@ type 'a b = {
 and 'a c = {
   c_x : int 
 }
-[@@bs.deriving {ffi}]
+[@@bs.deriving {accessors}]
 
 type d =
   | D_empty
@@ -23,7 +23,7 @@ and u =
 and h = {d : d ; h : h list; u_X : int}
 and e = { d : d }
 
-[@@bs.deriving {ffi}]
+[@@bs.deriving {accessors}]
 
 
 
