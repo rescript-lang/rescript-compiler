@@ -7546,6 +7546,8 @@ val chop_extension_if_any : string -> string
 
 val absolute_path : string -> string
 
+val module_name_of_file_if_any : string -> string
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7766,6 +7768,11 @@ let replace_backward_slash (x : string)=
 let module_name_of_file file =
     String.capitalize 
       (Filename.chop_extension @@ Filename.basename file)  
+
+let module_name_of_file_if_any file = 
+    String.capitalize 
+      (chop_extension_if_any @@ Filename.basename file)  
+
 
 (** For win32 or case insensitve OS 
     [".cmj"] is the same as [".CMJ"]
@@ -8134,7 +8141,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.2.1"
+let version = "1.2.2"
 let current_file = ref ""
 let debug_file = ref ""
 

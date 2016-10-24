@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,16 +17,56 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type + 'a t = 'a Js.null
-external to_opt : 'a t -> 'a option = "js_from_nullable"
-external return : 'a -> 'a t  = "%identity"
-external test : 'a t -> bool = "js_is_nil"
-external empty : 'a t = "null" [@@bs.val]
 
 
-val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
-val iter : 'a t -> ('a -> unit [@bs]) -> unit
+
+
+module Rules : sig
+  type t  
+  val define : command:string ->
+  ?depfile:string ->
+  ?description:string ->
+  string -> t 
+
+  val build_ast : t
+  val build_ast_from_reason_impl : t 
+  val build_ast_from_reason_intf : t 
+  val build_deps : t 
+  val reload : t 
+  val copy_resources : t
+  val build_ml_from_mll : t 
+  val build_cmj_only : t
+  val build_cmj_cmi : t 
+  val build_cmi : t
+end
+
+
+(** output should always be marked explicitly,
+   otherwise the build system can not figure out clearly
+   however, for the command we don't need pass `-o`
+*)
+val output_build :
+  ?order_only_deps:string list ->
+  ?implicit_deps:string list ->
+  ?outputs:string list ->
+  ?inputs:string list ->
+  output:string ->
+  input:string ->
+  rule:Rules.t -> out_channel -> unit
+
+
+val phony  :
+  ?order_only_deps:string list ->
+  inputs:string list -> output:string -> out_channel -> unit
+
+val output_kvs : (string * string) list -> out_channel -> unit
+
+val handle_module_info : 
+  string ->
+  out_channel ->
+  Binary_cache.module_info ->
+  string list * string list -> string list * string list

@@ -33,3 +33,7 @@ let bind x f =
   | None -> empty
   | Some x -> return (f  x [@bs])
     
+let iter x f =
+  match to_opt  x with 
+  | None -> ()
+  | Some x -> f x [@bs]

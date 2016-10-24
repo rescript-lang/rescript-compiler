@@ -2793,969 +2793,6 @@ let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : uni
 
 
 end
-module String_map : sig 
-#1 "string_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.S with type key = string 
-
-val of_list : (string * 'a) list -> 'a t
-
-val add_list : (string * 'b) list -> 'b t -> 'b t
-
-val find_opt : string -> 'a t -> 'a option
-
-val find_default : string -> 'a -> 'a t -> 'a
-
-val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
-
-end = struct
-#1 "string_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.Make(String)
-
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
-
-let add_list (xs : ('a * 'b) list ) init = 
-  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
-
-
-let find_opt k m =
-  match find k m with 
-  | exception v -> None
-  | u -> Some u
-
-let find_default k default m =
-  match find k m with 
-  | exception v -> default 
-  | u -> u
-
-let print p_v fmt  m =
-  iter (fun k v -> 
-      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
-    ) m
-
-
-
-end
-module Binary_cache : sig 
-#1 "binary_cache.mli"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-val write_build_cache : string -> module_info String_map.t -> unit
-
-val read_build_cache : string -> module_info String_map.t
-
-val bsbuild_cache : string
-
-end = struct
-#1 "binary_cache.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-let module_info_magic_number = "BSBUILD20161012"
-
-let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
-  let oc = open_out_bin bsbuild in 
-  output_string oc module_info_magic_number ;
-  output_value oc bs_files ;
-  close_out oc 
-
-let read_build_cache bsbuild : module_info String_map.t = 
-  let ic = open_in bsbuild in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : module_info String_map.t = input_value ic in 
-  close_in ic ;
-  data 
-
-
-let bsbuild_cache = ".bsbuild"
-
-end
-module Bs_exception : sig 
-#1 "bs_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error =
-  | Cmj_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_package_not_found of string                                                        
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-      
-val error : error -> 'a 
-
-end = struct
-#1 "bs_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type error =
-  | Cmj_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_package_not_found of string                            
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-      
-exception Error of error
-
-let error err = raise (Error err)
-
-let report_error ppf = function
-  | Cmj_not_found s ->
-    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
-  | Bs_cyclic_depends  str
-    ->
-    Format.fprintf ppf "Cyclic depends : @[%a@]"
-      (Format.pp_print_list ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      str
-  | Bs_duplicated_module (a,b)
-    ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
-  | Bs_main_not_exist main
-    ->
-    Format.fprintf ppf "File %s not found " main
-
-  | Bs_package_not_found package
-    ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
-      package package
-  | Bs_invalid_path path
-    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
-
-
-
-end
-module Clflags : sig 
-#1 "clflags.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-val objfiles : string list ref
-val ccobjs : string list ref
-val dllibs : string list ref
-val compile_only : bool ref
-val output_name : string option ref
-val include_dirs : string list ref
-val no_std_include : bool ref
-val print_types : bool ref
-val make_archive : bool ref
-val debug : bool ref
-val fast : bool ref
-val link_everything : bool ref
-val custom_runtime : bool ref
-val no_check_prims : bool ref
-val bytecode_compatible_32 : bool ref
-val output_c_object : bool ref
-val output_complete_object : bool ref
-val all_ccopts : string list ref
-val classic : bool ref
-val nopervasives : bool ref
-val open_modules : string list ref
-val preprocessor : string option ref
-val all_ppx : string list ref
-val annotations : bool ref
-val binary_annotations : bool ref
-val use_threads : bool ref
-val use_vmthreads : bool ref
-val noassert : bool ref
-val verbose : bool ref
-val noprompt : bool ref
-val nopromptcont : bool ref
-val init_file : string option ref
-val noinit : bool ref
-val use_prims : string ref
-val use_runtime : string ref
-val principal : bool ref
-val real_paths : bool ref
-val recursive_types : bool ref
-val strict_sequence : bool ref
-val strict_formats : bool ref
-val applicative_functors : bool ref
-val make_runtime : bool ref
-val gprofile : bool ref
-val c_compiler : string option ref
-val no_auto_link : bool ref
-val dllpaths : string list ref
-val make_package : bool ref
-val for_package : string option ref
-val error_size : int ref
-val float_const_prop : bool ref
-val transparent_modules : bool ref
-val dump_source : bool ref
-val dump_parsetree : bool ref
-val dump_typedtree : bool ref
-val dump_rawlambda : bool ref
-val dump_lambda : bool ref
-val dump_clambda : bool ref
-val dump_instr : bool ref
-val keep_asm_file : bool ref
-val optimize_for_speed : bool ref
-val dump_cmm : bool ref
-val dump_selection : bool ref
-val dump_cse : bool ref
-val dump_live : bool ref
-val dump_spill : bool ref
-val dump_split : bool ref
-val dump_interf : bool ref
-val dump_prefer : bool ref
-val dump_regalloc : bool ref
-val dump_reload : bool ref
-val dump_scheduling : bool ref
-val dump_linear : bool ref
-val keep_startup_file : bool ref
-val dump_combine : bool ref
-val native_code : bool ref
-val inline_threshold : int ref
-val dont_write_files : bool ref
-val std_include_flag : string -> string
-val std_include_dir : unit -> string list
-val shared : bool ref
-val dlcode : bool ref
-val runtime_variant : string ref
-val force_slash : bool ref
-val keep_docs : bool ref
-val keep_locs : bool ref
-val unsafe_string : bool ref
-val opaque : bool ref
-
- 
-val no_implicit_current_dir : bool ref
-val assume_no_mli : bool ref 
-
-
-end = struct
-#1 "clflags.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Command-line parameters *)
-
-let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
-and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
-and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
-
-let compile_only = ref false            (* -c *)
-and output_name = ref (None : string option) (* -o *)
-and include_dirs = ref ([] : string list)(* -I *)
-and no_std_include = ref false          (* -nostdlib *)
-and print_types = ref false             (* -i *)
-and make_archive = ref false            (* -a *)
-and debug = ref false                   (* -g *)
-and fast = ref false                    (* -unsafe *)
-and link_everything = ref false         (* -linkall *)
-and custom_runtime = ref false          (* -custom *)
-and no_check_prims = ref false          (* -no-check-prims *)
-and bytecode_compatible_32 = ref false  (* -compat-32 *)
-and output_c_object = ref false         (* -output-obj *)
-and output_complete_object = ref false  (* -output-complete-obj *)
-and all_ccopts = ref ([] : string list)     (* -ccopt *)
-and classic = ref false                 (* -nolabels *)
-and nopervasives = ref false            (* -nopervasives *)
-and preprocessor = ref(None : string option) (* -pp *)
-and all_ppx = ref ([] : string list)        (* -ppx *)
-let annotations = ref false             (* -annot *)
-let binary_annotations = ref false      (* -annot *)
-and use_threads = ref false             (* -thread *)
-and use_vmthreads = ref false           (* -vmthread *)
-and noassert = ref false                (* -noassert *)
-and verbose = ref false                 (* -verbose *)
-and noprompt = ref false                (* -noprompt *)
-and nopromptcont = ref false            (* -nopromptcont *)
-and init_file = ref (None : string option)   (* -init *)
-and noinit = ref false                  (* -noinit *)
-and open_modules = ref []               (* -open *)
-and use_prims = ref ""                  (* -use-prims ... *)
-and use_runtime = ref ""                (* -use-runtime ... *)
-and principal = ref false               (* -principal *)
-and real_paths = ref true               (* -short-paths *)
-and recursive_types = ref false         (* -rectypes *)
-and strict_sequence = ref false         (* -strict-sequence *)
-and strict_formats = ref false          (* -strict-formats *)
-and applicative_functors = ref true     (* -no-app-funct *)
-and make_runtime = ref false            (* -make-runtime *)
-and gprofile = ref false                (* -p *)
-and c_compiler = ref (None: string option) (* -cc *)
-and no_auto_link = ref false            (* -noautolink *)
-and dllpaths = ref ([] : string list)   (* -dllpath *)
-and make_package = ref false            (* -pack *)
-and for_package = ref (None: string option) (* -for-pack *)
-and error_size = ref 500                (* -error-size *)
-and float_const_prop = ref true         (* -no-float-const-prop *)
-and transparent_modules = ref false     (* -trans-mod *)
-let dump_source = ref false             (* -dsource *)
-let dump_parsetree = ref false          (* -dparsetree *)
-and dump_typedtree = ref false          (* -dtypedtree *)
-and dump_rawlambda = ref false          (* -drawlambda *)
-and dump_lambda = ref false             (* -dlambda *)
-and dump_clambda = ref false            (* -dclambda *)
-and dump_instr = ref false              (* -dinstr *)
-
-let keep_asm_file = ref false           (* -S *)
-let optimize_for_speed = ref true       (* -compact *)
-and opaque = ref false                  (* -opaque *)
-
-and dump_cmm = ref false                (* -dcmm *)
-let dump_selection = ref false          (* -dsel *)
-let dump_cse = ref false                (* -dcse *)
-let dump_live = ref false               (* -dlive *)
-let dump_spill = ref false              (* -dspill *)
-let dump_split = ref false              (* -dsplit *)
-let dump_interf = ref false             (* -dinterf *)
-let dump_prefer = ref false             (* -dprefer *)
-let dump_regalloc = ref false           (* -dalloc *)
-let dump_reload = ref false             (* -dreload *)
-let dump_scheduling = ref false         (* -dscheduling *)
-let dump_linear = ref false             (* -dlinear *)
-let keep_startup_file = ref false       (* -dstartup *)
-let dump_combine = ref false            (* -dcombine *)
-let native_code = ref false             (* set to true under ocamlopt *)
-let inline_threshold = ref 10
-let force_slash = ref false             (* for ocamldep *)
-
-let dont_write_files = ref false        (* set to true under ocamldoc *)
-
-let std_include_flag prefix =
-  if !no_std_include then ""
-  else (prefix ^ (Filename.quote Config.standard_library))
-;;
-
-let std_include_dir () =
-  if !no_std_include then [] else [Config.standard_library]
-;;
-
-let shared = ref false (* -shared *)
-let dlcode = ref true (* not -nodynlink *)
-
-let runtime_variant = ref "";;      (* -runtime-variant *)
-
-let keep_docs = ref false              (* -keep-docs *)
-let keep_locs = ref false              (* -keep-locs *)
-let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
-
- 
-let no_implicit_current_dir = ref false
-let assume_no_mli = ref false 
-
-
-end
-module Depend : sig 
-#1 "depend.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(** Module dependencies. *)
-
-module StringSet : Set.S with type elt = string
-
-val free_structure_names : StringSet.t ref
-
-val open_module : StringSet.t -> Longident.t -> unit
-
-val add_use_file : StringSet.t -> Parsetree.toplevel_phrase list -> unit
-
-val add_signature : StringSet.t -> Parsetree.signature -> unit
-
-val add_implementation : StringSet.t -> Parsetree.structure -> unit
-
-end = struct
-#1 "depend.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Asttypes
-open Location
-open Longident
-open Parsetree
-
-module StringSet = Set.Make(struct type t = string let compare = compare end)
-
-(* Collect free module identifiers in the a.s.t. *)
-
-let free_structure_names = ref StringSet.empty
-
-let rec add_path bv = function
-  | Lident s ->
-      if not (StringSet.mem s bv)
-      then free_structure_names := StringSet.add s !free_structure_names
-  | Ldot(l, _s) -> add_path bv l
-  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
-
-let open_module bv lid = add_path bv lid
-
-let add bv lid =
-  match lid.txt with
-    Ldot(l, _s) -> add_path bv l
-  | _ -> ()
-
-let addmodule bv lid = add_path bv lid.txt
-
-let rec add_type bv ty =
-  match ty.ptyp_desc with
-    Ptyp_any -> ()
-  | Ptyp_var _ -> ()
-  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
-  | Ptyp_tuple tl -> List.iter (add_type bv) tl
-  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_object (fl, _) -> List.iter (fun (_, _, t) -> add_type bv t) fl
-  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_alias(t, _) -> add_type bv t
-  | Ptyp_variant(fl, _, _) ->
-      List.iter
-        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
-          | Rinherit sty -> add_type bv sty)
-        fl
-  | Ptyp_poly(_, t) -> add_type bv t
-  | Ptyp_package pt -> add_package_type bv pt
-  | Ptyp_extension _ -> ()
-
-and add_package_type bv (lid, l) =
-  add bv lid;
-  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
-
-let add_opt add_fn bv = function
-    None -> ()
-  | Some x -> add_fn bv x
-
-let add_constructor_decl bv pcd =
-  List.iter (add_type bv) pcd.pcd_args; Misc.may (add_type bv) pcd.pcd_res
-
-let add_type_declaration bv td =
-  List.iter
-    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
-    td.ptype_cstrs;
-  add_opt add_type bv td.ptype_manifest;
-  let add_tkind = function
-    Ptype_abstract -> ()
-  | Ptype_variant cstrs ->
-      List.iter (add_constructor_decl bv) cstrs
-  | Ptype_record lbls ->
-      List.iter (fun pld -> add_type bv pld.pld_type) lbls
-  | Ptype_open -> () in
-  add_tkind td.ptype_kind
-
-let add_extension_constructor bv ext =
-  match ext.pext_kind with
-      Pext_decl(args, rty) ->
-        List.iter (add_type bv) args; Misc.may (add_type bv) rty
-    | Pext_rebind lid -> add bv lid
-
-let add_type_extension bv te =
-  add bv te.ptyext_path;
-  List.iter (add_extension_constructor bv) te.ptyext_constructors
-
-let rec add_class_type bv cty =
-  match cty.pcty_desc with
-    Pcty_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
-      add_type bv ty;
-      List.iter (add_class_type_field bv) fieldl
-  | Pcty_arrow(_, ty1, cty2) ->
-      add_type bv ty1; add_class_type bv cty2
-  | Pcty_extension _ -> ()
-
-and add_class_type_field bv pctf =
-  match pctf.pctf_desc with
-    Pctf_inherit cty -> add_class_type bv cty
-  | Pctf_val(_, _, _, ty) -> add_type bv ty
-  | Pctf_method(_, _, _, ty) -> add_type bv ty
-  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pctf_attribute _ -> ()
-  | Pctf_extension _ -> ()
-
-let add_class_description bv infos =
-  add_class_type bv infos.pci_expr
-
-let add_class_type_declaration = add_class_description
-
-let pattern_bv = ref StringSet.empty
-
-let rec add_pattern bv pat =
-  match pat.ppat_desc with
-    Ppat_any -> ()
-  | Ppat_var _ -> ()
-  | Ppat_alias(p, _) -> add_pattern bv p
-  | Ppat_interval _
-  | Ppat_constant _ -> ()
-  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
-  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
-  | Ppat_record(pl, _) ->
-      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
-  | Ppat_array pl -> List.iter (add_pattern bv) pl
-  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
-  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
-  | Ppat_variant(_, op) -> add_opt add_pattern bv op
-  | Ppat_type li -> add bv li
-  | Ppat_lazy p -> add_pattern bv p
-  | Ppat_unpack id -> pattern_bv := StringSet.add id.txt !pattern_bv
-  | Ppat_exception p -> add_pattern bv p
-  | Ppat_extension _ -> ()
-
-let add_pattern bv pat =
-  pattern_bv := bv;
-  add_pattern bv pat;
-  !pattern_bv
-
-let rec add_expr bv exp =
-  match exp.pexp_desc with
-    Pexp_ident l -> add bv l
-  | Pexp_constant _ -> ()
-  | Pexp_let(rf, pel, e) ->
-      let bv = add_bindings rf bv pel in add_expr bv e
-  | Pexp_fun (_, opte, p, e) ->
-      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
-  | Pexp_function pel ->
-      add_cases bv pel
-  | Pexp_apply(e, el) ->
-      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
-  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_tuple el -> List.iter (add_expr bv) el
-  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
-  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
-  | Pexp_record(lblel, opte) ->
-      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
-      add_opt add_expr bv opte
-  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
-  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
-  | Pexp_array el -> List.iter (add_expr bv) el
-  | Pexp_ifthenelse(e1, e2, opte3) ->
-      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
-  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_for( _, e1, e2, _, e3) ->
-      add_expr bv e1; add_expr bv e2; add_expr bv e3
-  | Pexp_coerce(e1, oty2, ty3) ->
-      add_expr bv e1;
-      add_opt add_type bv oty2;
-      add_type bv ty3
-  | Pexp_constraint(e1, ty2) ->
-      add_expr bv e1;
-      add_type bv ty2
-  | Pexp_send(e, _m) -> add_expr bv e
-  | Pexp_new li -> add bv li
-  | Pexp_setinstvar(_v, e) -> add_expr bv e
-  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
-  | Pexp_letmodule(id, m, e) ->
-      add_module bv m; add_expr (StringSet.add id.txt bv) e
-  | Pexp_assert (e) -> add_expr bv e
-  | Pexp_lazy (e) -> add_expr bv e
-  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
-  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pexp_newtype (_, e) -> add_expr bv e
-  | Pexp_pack m -> add_module bv m
-  | Pexp_open (_ovf, m, e) -> open_module bv m.txt; add_expr bv e
-  | Pexp_extension _ -> ()
-
-and add_cases bv cases =
-  List.iter (add_case bv) cases
-
-and add_case bv {pc_lhs; pc_guard; pc_rhs} =
-  let bv = add_pattern bv pc_lhs in
-  add_opt add_expr bv pc_guard;
-  add_expr bv pc_rhs
-
-and add_bindings recf bv pel =
-  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
-  let bv = if recf = Recursive then bv' else bv in
-  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
-  bv'
-
-and add_modtype bv mty =
-  match mty.pmty_desc with
-    Pmty_ident l -> add bv l
-  | Pmty_alias l -> addmodule bv l
-  | Pmty_signature s -> add_signature bv s
-  | Pmty_functor(id, mty1, mty2) ->
-      Misc.may (add_modtype bv) mty1;
-      add_modtype (StringSet.add id.txt bv) mty2
-  | Pmty_with(mty, cstrl) ->
-      add_modtype bv mty;
-      List.iter
-        (function
-          | Pwith_type (_, td) -> add_type_declaration bv td
-          | Pwith_module (_, lid) -> addmodule bv lid
-          | Pwith_typesubst td -> add_type_declaration bv td
-          | Pwith_modsubst (_, lid) -> addmodule bv lid
-        )
-        cstrl
-  | Pmty_typeof m -> add_module bv m
-  | Pmty_extension _ -> ()
-
-and add_signature bv = function
-    [] -> ()
-  | item :: rem -> add_signature (add_sig_item bv item) rem
-
-and add_sig_item bv item =
-  match item.psig_desc with
-    Psig_value vd ->
-      add_type bv vd.pval_type; bv
-  | Psig_type dcls ->
-      List.iter (add_type_declaration bv) dcls; bv
-  | Psig_typext te ->
-      add_type_extension bv te; bv
-  | Psig_exception pext ->
-      add_extension_constructor bv pext; bv
-  | Psig_module pmd ->
-      add_modtype bv pmd.pmd_type; StringSet.add pmd.pmd_name.txt bv
-  | Psig_recmodule decls ->
-      let bv' =
-        List.fold_right StringSet.add
-                        (List.map (fun pmd -> pmd.pmd_name.txt) decls) bv
-      in
-      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
-      bv'
-  | Psig_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      bv
-  | Psig_open od ->
-      open_module bv od.popen_lid.txt; bv
-  | Psig_include incl ->
-      add_modtype bv incl.pincl_mod; bv
-  | Psig_class cdl ->
-      List.iter (add_class_description bv) cdl; bv
-  | Psig_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; bv
-  | Psig_attribute _ | Psig_extension _ ->
-      bv
-
-and add_module bv modl =
-  match modl.pmod_desc with
-    Pmod_ident l -> addmodule bv l
-  | Pmod_structure s -> ignore (add_structure bv s)
-  | Pmod_functor(id, mty, modl) ->
-      Misc.may (add_modtype bv) mty;
-      add_module (StringSet.add id.txt bv) modl
-  | Pmod_apply(mod1, mod2) ->
-      add_module bv mod1; add_module bv mod2
-  | Pmod_constraint(modl, mty) ->
-      add_module bv modl; add_modtype bv mty
-  | Pmod_unpack(e) ->
-      add_expr bv e
-  | Pmod_extension _ ->
-      ()
-
-and add_structure bv item_list =
-  List.fold_left add_struct_item bv item_list
-
-and add_struct_item bv item =
-  match item.pstr_desc with
-    Pstr_eval (e, _attrs) ->
-      add_expr bv e; bv
-  | Pstr_value(rf, pel) ->
-      let bv = add_bindings rf bv pel in bv
-  | Pstr_primitive vd ->
-      add_type bv vd.pval_type; bv
-  | Pstr_type dcls ->
-      List.iter (add_type_declaration bv) dcls; bv
-  | Pstr_typext te ->
-      add_type_extension bv te;
-      bv
-  | Pstr_exception pext ->
-      add_extension_constructor bv pext; bv
-  | Pstr_module x ->
-      add_module bv x.pmb_expr; StringSet.add x.pmb_name.txt bv
-  | Pstr_recmodule bindings ->
-      let bv' =
-        List.fold_right StringSet.add
-          (List.map (fun x -> x.pmb_name.txt) bindings) bv in
-      List.iter
-        (fun x -> add_module bv' x.pmb_expr)
-        bindings;
-      bv'
-  | Pstr_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      bv
-  | Pstr_open od ->
-      open_module bv od.popen_lid.txt; bv
-  | Pstr_class cdl ->
-      List.iter (add_class_declaration bv) cdl; bv
-  | Pstr_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; bv
-  | Pstr_include incl ->
-      add_module bv incl.pincl_mod; bv
-  | Pstr_attribute _ | Pstr_extension _ ->
-      bv
-
-and add_use_file bv top_phrs =
-  ignore (List.fold_left add_top_phrase bv top_phrs)
-
-and add_implementation bv l =
-  ignore (add_structure bv l)
-
-and add_top_phrase bv = function
-  | Ptop_def str -> add_structure bv str
-  | Ptop_dir (_, _) -> bv
-
-and add_class_expr bv ce =
-  match ce.pcl_desc with
-    Pcl_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pcl_fun(_, opte, pat, ce) ->
-      add_opt add_expr bv opte;
-      let bv = add_pattern bv pat in add_class_expr bv ce
-  | Pcl_apply(ce, exprl) ->
-      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
-  | Pcl_let(rf, pel, ce) ->
-      let bv = add_bindings rf bv pel in add_class_expr bv ce
-  | Pcl_constraint(ce, ct) ->
-      add_class_expr bv ce; add_class_type bv ct
-  | Pcl_extension _ -> ()
-
-and add_class_field bv pcf =
-  match pcf.pcf_desc with
-    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
-  | Pcf_val(_, _, Cfk_concrete (_, e))
-  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
-  | Pcf_val(_, _, Cfk_virtual ty)
-  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
-  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pcf_initializer e -> add_expr bv e
-  | Pcf_attribute _ | Pcf_extension _ -> ()
-
-and add_class_declaration bv decl =
-  add_class_expr bv decl.pci_expr
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4697,6 +3734,8 @@ val chop_extension_if_any : string -> string
 
 val absolute_path : string -> string
 
+val module_name_of_file_if_any : string -> string
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4918,11 +3957,1046 @@ let module_name_of_file file =
     String.capitalize 
       (Filename.chop_extension @@ Filename.basename file)  
 
+let module_name_of_file_if_any file = 
+    String.capitalize 
+      (chop_extension_if_any @@ Filename.basename file)  
+
+
 (** For win32 or case insensitve OS 
     [".cmj"] is the same as [".CMJ"]
   *)
 (* let has_exact_suffix_then_chop fname suf =  *)
   
+
+end
+module String_map : sig 
+#1 "string_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.S with type key = string 
+
+val of_list : (string * 'a) list -> 'a t
+
+val add_list : (string * 'b) list -> 'b t -> 'b t
+
+val find_opt : string -> 'a t -> 'a option
+
+val find_default : string -> 'a -> 'a t -> 'a
+
+val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
+
+end = struct
+#1 "string_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.Make(String)
+
+let of_list (xs : ('a * 'b) list ) = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+let add_list (xs : ('a * 'b) list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
+
+let find_opt k m =
+  match find k m with 
+  | exception v -> None
+  | u -> Some u
+
+let find_default k default m =
+  match find k m with 
+  | exception v -> default 
+  | u -> u
+
+let print p_v fmt  m =
+  iter (fun k v -> 
+      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
+    ) m
+
+
+
+end
+module Binary_cache : sig 
+#1 "binary_cache.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
+
+type t = module_info String_map.t 
+val write_build_cache : string -> t -> unit
+
+val read_build_cache : string -> t
+
+val bsbuild_cache : string
+
+val simple_concat : string -> string -> string
+
+
+
+(** if not added, it is guaranteed the reference equality will 
+    be held
+*)
+val map_update : ?dir:string -> t -> string -> t
+
+end = struct
+#1 "binary_cache.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type ml_kind =
+  | Ml of string 
+  | Re of string 
+  | Ml_empty
+type mli_kind = 
+  | Mli of string 
+  | Rei of string
+  | Mli_empty
+
+type module_info = 
+  {
+    mli : mli_kind ; 
+    ml : ml_kind ; 
+    mll : string option 
+  }
+
+type t = module_info String_map.t 
+
+let module_info_magic_number = "BSBUILD20161012"
+
+let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
+  let oc = open_out_bin bsbuild in 
+  output_string oc module_info_magic_number ;
+  output_value oc bs_files ;
+  close_out oc 
+
+let read_build_cache bsbuild : module_info String_map.t = 
+  let ic = open_in bsbuild in 
+  let buffer = really_input_string ic (String.length module_info_magic_number) in
+  assert(buffer = module_info_magic_number); 
+  let data : module_info String_map.t = input_value ic in 
+  close_in ic ;
+  data 
+
+
+let bsbuild_cache = ".bsbuild"
+
+
+(* TODO check duplication *)
+let module_info_of_ml exist ml : module_info =
+  match exist with 
+  | None -> { ml  = Ml ml ; mli = Mli_empty ; mll = None }
+  | Some x -> { x with ml = Ml ml}
+
+let module_info_of_re exist ml : module_info =
+  match exist with 
+  | None -> { ml  = Re ml ; mli = Mli_empty ; mll = None }
+  | Some x -> { x with ml = Re ml} 
+
+let module_info_of_mli exist mli : module_info = 
+  match exist with 
+  | None -> { mli  = Mli mli ; ml = Ml_empty ; mll = None }
+  | Some x -> { x with mli = Mli mli} 
+
+let module_info_of_rei exist mli : module_info = 
+  match exist with 
+  | None -> { mli  = Rei mli ; ml = Ml_empty ; mll = None }
+  | Some x -> { x with mli = Rei mli} 
+
+let module_info_of_mll exist mll : module_info = 
+  match exist with 
+  | None -> { mll  = Some mll ; ml = Ml_empty ; mli = Mli_empty }
+  | Some x -> { x with mll = Some mll} 
+
+let simple_concat (x : string)  y =
+  if x = Filename.current_dir_name then y else 
+  if y = Filename.current_dir_name then x else 
+    Filename.concat x y
+
+let map_update ?dir (map : t)  name : t  = 
+  let prefix   = 
+    match dir with
+    | None -> fun x ->  x
+    | Some v -> fun x ->  simple_concat v x in
+  let module_name = Ext_filename.module_name_of_file_if_any name in 
+  let handle name v cb =
+    String_map.add module_name
+      (cb v (prefix name ) ) map 
+  in 
+  let aux v name = 
+    if Filename.check_suffix name ".ml" then handle name  v  module_info_of_ml  else
+    if Filename.check_suffix name ".mll" then handle name  v  module_info_of_mll  else 
+    if Filename.check_suffix name ".mli" then handle name  v  module_info_of_mli else 
+    if Filename.check_suffix name ".re" then handle name v module_info_of_re else 
+    if Filename.check_suffix name ".rei" then handle name v module_info_of_rei else 
+      map    in 
+  match String_map.find module_name map with 
+  | exception Not_found 
+    -> aux None name 
+  | v -> 
+    aux (Some v ) name
+
+end
+module Bs_exception : sig 
+#1 "bs_exception.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error =
+  | Cmj_not_found of string
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                                                        
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
+      
+val error : error -> 'a 
+
+end = struct
+#1 "bs_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type error =
+  | Cmj_not_found of string
+  | Bs_cyclic_depends of string  list
+  | Bs_duplicated_module of string * string
+  | Bs_package_not_found of string                            
+  | Bs_main_not_exist of string 
+  | Bs_invalid_path of string
+      
+exception Error of error
+
+let error err = raise (Error err)
+
+let report_error ppf = function
+  | Cmj_not_found s ->
+    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
+  | Bs_cyclic_depends  str
+    ->
+    Format.fprintf ppf "Cyclic depends : @[%a@]"
+      (Format.pp_print_list ~pp_sep:Format.pp_print_space
+         Format.pp_print_string)
+      str
+  | Bs_duplicated_module (a,b)
+    ->
+    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
+  | Bs_main_not_exist main
+    ->
+    Format.fprintf ppf "File %s not found " main
+
+  | Bs_package_not_found package
+    ->
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
+      package package
+  | Bs_invalid_path path
+    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err
+        -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
+
+
+
+end
+module Clflags : sig 
+#1 "clflags.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+val objfiles : string list ref
+val ccobjs : string list ref
+val dllibs : string list ref
+val compile_only : bool ref
+val output_name : string option ref
+val include_dirs : string list ref
+val no_std_include : bool ref
+val print_types : bool ref
+val make_archive : bool ref
+val debug : bool ref
+val fast : bool ref
+val link_everything : bool ref
+val custom_runtime : bool ref
+val no_check_prims : bool ref
+val bytecode_compatible_32 : bool ref
+val output_c_object : bool ref
+val output_complete_object : bool ref
+val all_ccopts : string list ref
+val classic : bool ref
+val nopervasives : bool ref
+val open_modules : string list ref
+val preprocessor : string option ref
+val all_ppx : string list ref
+val annotations : bool ref
+val binary_annotations : bool ref
+val use_threads : bool ref
+val use_vmthreads : bool ref
+val noassert : bool ref
+val verbose : bool ref
+val noprompt : bool ref
+val nopromptcont : bool ref
+val init_file : string option ref
+val noinit : bool ref
+val use_prims : string ref
+val use_runtime : string ref
+val principal : bool ref
+val real_paths : bool ref
+val recursive_types : bool ref
+val strict_sequence : bool ref
+val strict_formats : bool ref
+val applicative_functors : bool ref
+val make_runtime : bool ref
+val gprofile : bool ref
+val c_compiler : string option ref
+val no_auto_link : bool ref
+val dllpaths : string list ref
+val make_package : bool ref
+val for_package : string option ref
+val error_size : int ref
+val float_const_prop : bool ref
+val transparent_modules : bool ref
+val dump_source : bool ref
+val dump_parsetree : bool ref
+val dump_typedtree : bool ref
+val dump_rawlambda : bool ref
+val dump_lambda : bool ref
+val dump_clambda : bool ref
+val dump_instr : bool ref
+val keep_asm_file : bool ref
+val optimize_for_speed : bool ref
+val dump_cmm : bool ref
+val dump_selection : bool ref
+val dump_cse : bool ref
+val dump_live : bool ref
+val dump_spill : bool ref
+val dump_split : bool ref
+val dump_interf : bool ref
+val dump_prefer : bool ref
+val dump_regalloc : bool ref
+val dump_reload : bool ref
+val dump_scheduling : bool ref
+val dump_linear : bool ref
+val keep_startup_file : bool ref
+val dump_combine : bool ref
+val native_code : bool ref
+val inline_threshold : int ref
+val dont_write_files : bool ref
+val std_include_flag : string -> string
+val std_include_dir : unit -> string list
+val shared : bool ref
+val dlcode : bool ref
+val runtime_variant : string ref
+val force_slash : bool ref
+val keep_docs : bool ref
+val keep_locs : bool ref
+val unsafe_string : bool ref
+val opaque : bool ref
+
+ 
+val no_implicit_current_dir : bool ref
+val assume_no_mli : bool ref 
+
+
+end = struct
+#1 "clflags.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Command-line parameters *)
+
+let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
+and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
+and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
+
+let compile_only = ref false            (* -c *)
+and output_name = ref (None : string option) (* -o *)
+and include_dirs = ref ([] : string list)(* -I *)
+and no_std_include = ref false          (* -nostdlib *)
+and print_types = ref false             (* -i *)
+and make_archive = ref false            (* -a *)
+and debug = ref false                   (* -g *)
+and fast = ref false                    (* -unsafe *)
+and link_everything = ref false         (* -linkall *)
+and custom_runtime = ref false          (* -custom *)
+and no_check_prims = ref false          (* -no-check-prims *)
+and bytecode_compatible_32 = ref false  (* -compat-32 *)
+and output_c_object = ref false         (* -output-obj *)
+and output_complete_object = ref false  (* -output-complete-obj *)
+and all_ccopts = ref ([] : string list)     (* -ccopt *)
+and classic = ref false                 (* -nolabels *)
+and nopervasives = ref false            (* -nopervasives *)
+and preprocessor = ref(None : string option) (* -pp *)
+and all_ppx = ref ([] : string list)        (* -ppx *)
+let annotations = ref false             (* -annot *)
+let binary_annotations = ref false      (* -annot *)
+and use_threads = ref false             (* -thread *)
+and use_vmthreads = ref false           (* -vmthread *)
+and noassert = ref false                (* -noassert *)
+and verbose = ref false                 (* -verbose *)
+and noprompt = ref false                (* -noprompt *)
+and nopromptcont = ref false            (* -nopromptcont *)
+and init_file = ref (None : string option)   (* -init *)
+and noinit = ref false                  (* -noinit *)
+and open_modules = ref []               (* -open *)
+and use_prims = ref ""                  (* -use-prims ... *)
+and use_runtime = ref ""                (* -use-runtime ... *)
+and principal = ref false               (* -principal *)
+and real_paths = ref true               (* -short-paths *)
+and recursive_types = ref false         (* -rectypes *)
+and strict_sequence = ref false         (* -strict-sequence *)
+and strict_formats = ref false          (* -strict-formats *)
+and applicative_functors = ref true     (* -no-app-funct *)
+and make_runtime = ref false            (* -make-runtime *)
+and gprofile = ref false                (* -p *)
+and c_compiler = ref (None: string option) (* -cc *)
+and no_auto_link = ref false            (* -noautolink *)
+and dllpaths = ref ([] : string list)   (* -dllpath *)
+and make_package = ref false            (* -pack *)
+and for_package = ref (None: string option) (* -for-pack *)
+and error_size = ref 500                (* -error-size *)
+and float_const_prop = ref true         (* -no-float-const-prop *)
+and transparent_modules = ref false     (* -trans-mod *)
+let dump_source = ref false             (* -dsource *)
+let dump_parsetree = ref false          (* -dparsetree *)
+and dump_typedtree = ref false          (* -dtypedtree *)
+and dump_rawlambda = ref false          (* -drawlambda *)
+and dump_lambda = ref false             (* -dlambda *)
+and dump_clambda = ref false            (* -dclambda *)
+and dump_instr = ref false              (* -dinstr *)
+
+let keep_asm_file = ref false           (* -S *)
+let optimize_for_speed = ref true       (* -compact *)
+and opaque = ref false                  (* -opaque *)
+
+and dump_cmm = ref false                (* -dcmm *)
+let dump_selection = ref false          (* -dsel *)
+let dump_cse = ref false                (* -dcse *)
+let dump_live = ref false               (* -dlive *)
+let dump_spill = ref false              (* -dspill *)
+let dump_split = ref false              (* -dsplit *)
+let dump_interf = ref false             (* -dinterf *)
+let dump_prefer = ref false             (* -dprefer *)
+let dump_regalloc = ref false           (* -dalloc *)
+let dump_reload = ref false             (* -dreload *)
+let dump_scheduling = ref false         (* -dscheduling *)
+let dump_linear = ref false             (* -dlinear *)
+let keep_startup_file = ref false       (* -dstartup *)
+let dump_combine = ref false            (* -dcombine *)
+let native_code = ref false             (* set to true under ocamlopt *)
+let inline_threshold = ref 10
+let force_slash = ref false             (* for ocamldep *)
+
+let dont_write_files = ref false        (* set to true under ocamldoc *)
+
+let std_include_flag prefix =
+  if !no_std_include then ""
+  else (prefix ^ (Filename.quote Config.standard_library))
+;;
+
+let std_include_dir () =
+  if !no_std_include then [] else [Config.standard_library]
+;;
+
+let shared = ref false (* -shared *)
+let dlcode = ref true (* not -nodynlink *)
+
+let runtime_variant = ref "";;      (* -runtime-variant *)
+
+let keep_docs = ref false              (* -keep-docs *)
+let keep_locs = ref false              (* -keep-locs *)
+let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+ 
+let no_implicit_current_dir = ref false
+let assume_no_mli = ref false 
+
+
+end
+module Depend : sig 
+#1 "depend.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Module dependencies. *)
+
+module StringSet : Set.S with type elt = string
+
+val free_structure_names : StringSet.t ref
+
+val open_module : StringSet.t -> Longident.t -> unit
+
+val add_use_file : StringSet.t -> Parsetree.toplevel_phrase list -> unit
+
+val add_signature : StringSet.t -> Parsetree.signature -> unit
+
+val add_implementation : StringSet.t -> Parsetree.structure -> unit
+
+end = struct
+#1 "depend.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Asttypes
+open Location
+open Longident
+open Parsetree
+
+module StringSet = Set.Make(struct type t = string let compare = compare end)
+
+(* Collect free module identifiers in the a.s.t. *)
+
+let free_structure_names = ref StringSet.empty
+
+let rec add_path bv = function
+  | Lident s ->
+      if not (StringSet.mem s bv)
+      then free_structure_names := StringSet.add s !free_structure_names
+  | Ldot(l, _s) -> add_path bv l
+  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
+
+let open_module bv lid = add_path bv lid
+
+let add bv lid =
+  match lid.txt with
+    Ldot(l, _s) -> add_path bv l
+  | _ -> ()
+
+let addmodule bv lid = add_path bv lid.txt
+
+let rec add_type bv ty =
+  match ty.ptyp_desc with
+    Ptyp_any -> ()
+  | Ptyp_var _ -> ()
+  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
+  | Ptyp_tuple tl -> List.iter (add_type bv) tl
+  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_object (fl, _) -> List.iter (fun (_, _, t) -> add_type bv t) fl
+  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_alias(t, _) -> add_type bv t
+  | Ptyp_variant(fl, _, _) ->
+      List.iter
+        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
+          | Rinherit sty -> add_type bv sty)
+        fl
+  | Ptyp_poly(_, t) -> add_type bv t
+  | Ptyp_package pt -> add_package_type bv pt
+  | Ptyp_extension _ -> ()
+
+and add_package_type bv (lid, l) =
+  add bv lid;
+  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
+
+let add_opt add_fn bv = function
+    None -> ()
+  | Some x -> add_fn bv x
+
+let add_constructor_decl bv pcd =
+  List.iter (add_type bv) pcd.pcd_args; Misc.may (add_type bv) pcd.pcd_res
+
+let add_type_declaration bv td =
+  List.iter
+    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
+    td.ptype_cstrs;
+  add_opt add_type bv td.ptype_manifest;
+  let add_tkind = function
+    Ptype_abstract -> ()
+  | Ptype_variant cstrs ->
+      List.iter (add_constructor_decl bv) cstrs
+  | Ptype_record lbls ->
+      List.iter (fun pld -> add_type bv pld.pld_type) lbls
+  | Ptype_open -> () in
+  add_tkind td.ptype_kind
+
+let add_extension_constructor bv ext =
+  match ext.pext_kind with
+      Pext_decl(args, rty) ->
+        List.iter (add_type bv) args; Misc.may (add_type bv) rty
+    | Pext_rebind lid -> add bv lid
+
+let add_type_extension bv te =
+  add bv te.ptyext_path;
+  List.iter (add_extension_constructor bv) te.ptyext_constructors
+
+let rec add_class_type bv cty =
+  match cty.pcty_desc with
+    Pcty_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
+      add_type bv ty;
+      List.iter (add_class_type_field bv) fieldl
+  | Pcty_arrow(_, ty1, cty2) ->
+      add_type bv ty1; add_class_type bv cty2
+  | Pcty_extension _ -> ()
+
+and add_class_type_field bv pctf =
+  match pctf.pctf_desc with
+    Pctf_inherit cty -> add_class_type bv cty
+  | Pctf_val(_, _, _, ty) -> add_type bv ty
+  | Pctf_method(_, _, _, ty) -> add_type bv ty
+  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pctf_attribute _ -> ()
+  | Pctf_extension _ -> ()
+
+let add_class_description bv infos =
+  add_class_type bv infos.pci_expr
+
+let add_class_type_declaration = add_class_description
+
+let pattern_bv = ref StringSet.empty
+
+let rec add_pattern bv pat =
+  match pat.ppat_desc with
+    Ppat_any -> ()
+  | Ppat_var _ -> ()
+  | Ppat_alias(p, _) -> add_pattern bv p
+  | Ppat_interval _
+  | Ppat_constant _ -> ()
+  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
+  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
+  | Ppat_record(pl, _) ->
+      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
+  | Ppat_array pl -> List.iter (add_pattern bv) pl
+  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
+  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
+  | Ppat_variant(_, op) -> add_opt add_pattern bv op
+  | Ppat_type li -> add bv li
+  | Ppat_lazy p -> add_pattern bv p
+  | Ppat_unpack id -> pattern_bv := StringSet.add id.txt !pattern_bv
+  | Ppat_exception p -> add_pattern bv p
+  | Ppat_extension _ -> ()
+
+let add_pattern bv pat =
+  pattern_bv := bv;
+  add_pattern bv pat;
+  !pattern_bv
+
+let rec add_expr bv exp =
+  match exp.pexp_desc with
+    Pexp_ident l -> add bv l
+  | Pexp_constant _ -> ()
+  | Pexp_let(rf, pel, e) ->
+      let bv = add_bindings rf bv pel in add_expr bv e
+  | Pexp_fun (_, opte, p, e) ->
+      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
+  | Pexp_function pel ->
+      add_cases bv pel
+  | Pexp_apply(e, el) ->
+      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
+  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_tuple el -> List.iter (add_expr bv) el
+  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
+  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
+  | Pexp_record(lblel, opte) ->
+      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
+      add_opt add_expr bv opte
+  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
+  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
+  | Pexp_array el -> List.iter (add_expr bv) el
+  | Pexp_ifthenelse(e1, e2, opte3) ->
+      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
+  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_for( _, e1, e2, _, e3) ->
+      add_expr bv e1; add_expr bv e2; add_expr bv e3
+  | Pexp_coerce(e1, oty2, ty3) ->
+      add_expr bv e1;
+      add_opt add_type bv oty2;
+      add_type bv ty3
+  | Pexp_constraint(e1, ty2) ->
+      add_expr bv e1;
+      add_type bv ty2
+  | Pexp_send(e, _m) -> add_expr bv e
+  | Pexp_new li -> add bv li
+  | Pexp_setinstvar(_v, e) -> add_expr bv e
+  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
+  | Pexp_letmodule(id, m, e) ->
+      add_module bv m; add_expr (StringSet.add id.txt bv) e
+  | Pexp_assert (e) -> add_expr bv e
+  | Pexp_lazy (e) -> add_expr bv e
+  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
+  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pexp_newtype (_, e) -> add_expr bv e
+  | Pexp_pack m -> add_module bv m
+  | Pexp_open (_ovf, m, e) -> open_module bv m.txt; add_expr bv e
+  | Pexp_extension _ -> ()
+
+and add_cases bv cases =
+  List.iter (add_case bv) cases
+
+and add_case bv {pc_lhs; pc_guard; pc_rhs} =
+  let bv = add_pattern bv pc_lhs in
+  add_opt add_expr bv pc_guard;
+  add_expr bv pc_rhs
+
+and add_bindings recf bv pel =
+  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
+  let bv = if recf = Recursive then bv' else bv in
+  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
+  bv'
+
+and add_modtype bv mty =
+  match mty.pmty_desc with
+    Pmty_ident l -> add bv l
+  | Pmty_alias l -> addmodule bv l
+  | Pmty_signature s -> add_signature bv s
+  | Pmty_functor(id, mty1, mty2) ->
+      Misc.may (add_modtype bv) mty1;
+      add_modtype (StringSet.add id.txt bv) mty2
+  | Pmty_with(mty, cstrl) ->
+      add_modtype bv mty;
+      List.iter
+        (function
+          | Pwith_type (_, td) -> add_type_declaration bv td
+          | Pwith_module (_, lid) -> addmodule bv lid
+          | Pwith_typesubst td -> add_type_declaration bv td
+          | Pwith_modsubst (_, lid) -> addmodule bv lid
+        )
+        cstrl
+  | Pmty_typeof m -> add_module bv m
+  | Pmty_extension _ -> ()
+
+and add_signature bv = function
+    [] -> ()
+  | item :: rem -> add_signature (add_sig_item bv item) rem
+
+and add_sig_item bv item =
+  match item.psig_desc with
+    Psig_value vd ->
+      add_type bv vd.pval_type; bv
+  | Psig_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Psig_typext te ->
+      add_type_extension bv te; bv
+  | Psig_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Psig_module pmd ->
+      add_modtype bv pmd.pmd_type; StringSet.add pmd.pmd_name.txt bv
+  | Psig_recmodule decls ->
+      let bv' =
+        List.fold_right StringSet.add
+                        (List.map (fun pmd -> pmd.pmd_name.txt) decls) bv
+      in
+      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
+      bv'
+  | Psig_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Psig_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Psig_include incl ->
+      add_modtype bv incl.pincl_mod; bv
+  | Psig_class cdl ->
+      List.iter (add_class_description bv) cdl; bv
+  | Psig_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Psig_attribute _ | Psig_extension _ ->
+      bv
+
+and add_module bv modl =
+  match modl.pmod_desc with
+    Pmod_ident l -> addmodule bv l
+  | Pmod_structure s -> ignore (add_structure bv s)
+  | Pmod_functor(id, mty, modl) ->
+      Misc.may (add_modtype bv) mty;
+      add_module (StringSet.add id.txt bv) modl
+  | Pmod_apply(mod1, mod2) ->
+      add_module bv mod1; add_module bv mod2
+  | Pmod_constraint(modl, mty) ->
+      add_module bv modl; add_modtype bv mty
+  | Pmod_unpack(e) ->
+      add_expr bv e
+  | Pmod_extension _ ->
+      ()
+
+and add_structure bv item_list =
+  List.fold_left add_struct_item bv item_list
+
+and add_struct_item bv item =
+  match item.pstr_desc with
+    Pstr_eval (e, _attrs) ->
+      add_expr bv e; bv
+  | Pstr_value(rf, pel) ->
+      let bv = add_bindings rf bv pel in bv
+  | Pstr_primitive vd ->
+      add_type bv vd.pval_type; bv
+  | Pstr_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Pstr_typext te ->
+      add_type_extension bv te;
+      bv
+  | Pstr_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Pstr_module x ->
+      add_module bv x.pmb_expr; StringSet.add x.pmb_name.txt bv
+  | Pstr_recmodule bindings ->
+      let bv' =
+        List.fold_right StringSet.add
+          (List.map (fun x -> x.pmb_name.txt) bindings) bv in
+      List.iter
+        (fun x -> add_module bv' x.pmb_expr)
+        bindings;
+      bv'
+  | Pstr_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Pstr_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Pstr_class cdl ->
+      List.iter (add_class_declaration bv) cdl; bv
+  | Pstr_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Pstr_include incl ->
+      add_module bv incl.pincl_mod; bv
+  | Pstr_attribute _ | Pstr_extension _ ->
+      bv
+
+and add_use_file bv top_phrs =
+  ignore (List.fold_left add_top_phrase bv top_phrs)
+
+and add_implementation bv l =
+  ignore (add_structure bv l)
+
+and add_top_phrase bv = function
+  | Ptop_def str -> add_structure bv str
+  | Ptop_dir (_, _) -> bv
+
+and add_class_expr bv ce =
+  match ce.pcl_desc with
+    Pcl_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pcl_fun(_, opte, pat, ce) ->
+      add_opt add_expr bv opte;
+      let bv = add_pattern bv pat in add_class_expr bv ce
+  | Pcl_apply(ce, exprl) ->
+      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
+  | Pcl_let(rf, pel, ce) ->
+      let bv = add_bindings rf bv pel in add_class_expr bv ce
+  | Pcl_constraint(ce, ct) ->
+      add_class_expr bv ce; add_class_type bv ct
+  | Pcl_extension _ -> ()
+
+and add_class_field bv pcf =
+  match pcf.pcf_desc with
+    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
+  | Pcf_val(_, _, Cfk_concrete (_, e))
+  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
+  | Pcf_val(_, _, Cfk_virtual ty)
+  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
+  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pcf_initializer e -> add_expr bv e
+  | Pcf_attribute _ | Pcf_extension _ -> ()
+
+and add_class_declaration bv decl =
+  add_class_expr bv decl.pci_expr
 
 end
 module Ext_format : sig 
@@ -5954,7 +6028,7 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.2.1"
+let version = "1.2.2"
 let current_file = ref ""
 let debug_file = ref ""
 

@@ -59,7 +59,7 @@ ocaml_src
 *.exe
 
 # for npm publish
-!bin/bsc
+!bin/bsc.exe
 !bin/bsppx
 !bin/ocaml
 !bin/ocamldep
@@ -79,5 +79,9 @@ ocaml_src
 #ninja
 .ninja_log
 .ninja_deps
+.bsdeps
+.bs_dir_cache
 *.d
 .bsbuild
+jscomp/bin/bsb
+jscomp/bin/bsc

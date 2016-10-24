@@ -69,3 +69,5 @@ val module_name_of_file : string -> string
 val chop_extension_if_any : string -> string
 
 val absolute_path : string -> string
+
+val module_name_of_file_if_any : string -> string

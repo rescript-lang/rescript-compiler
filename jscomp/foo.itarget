@@ -11,8 +11,13 @@ js_generate_require.cmx
 js_pack.cmx
 js_cmi_datasets.cmx
 
-
-json_lexer.cmx
+bs_dep_infos.cmx
+bs_dir.cmx
+bs_json.cmx
 sexp_lexer.cmx
 sexp_eval.cmx
-bsbuild_main.cmx
+bsb_main.cmx
+bs_json.cmx
+bs_ninja.cmx
+bs_build_ui.cmx
+bs_build_schemas.cmx
