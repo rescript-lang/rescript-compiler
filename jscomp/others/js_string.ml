@@ -81,3 +81,5 @@ external toLocaleLowerCase :  t = "" [@@bs.send.pipe: t]
 external toUpperCase :  t = "" [@@bs.send.pipe: t]
 external toLocaleUpperCase :  t = "" [@@bs.send.pipe: t]
 external trim :  t = "" [@@bs.send.pipe: t]
+
+external startsWith : t -> Js.boolean = "" [@@bs.send.pipe:t]
