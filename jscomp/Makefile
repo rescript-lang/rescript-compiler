@@ -127,8 +127,7 @@ release:snapshot
 ## we reuse the compiler-libs
 world:
 	@echo "Making compiler"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
-	$(MAKE) -C bin -j 4 bspack.exe bsdep.exe bsppx.exe bspp.exe bsbuild.exe
+	$(MAKE) -C bin -j 6 all
 	@echo "Making compiler finished"
 	$(MAKE) libs
 

@@ -4,7 +4,6 @@
     "ocaml-config" : 
     {
         "bsdep" : "jscomp/bin/bsdep.exe",
-        "bsbuild" : "jscomp/bin/bsbuild.exe",
         "bsc" : "jscomp/bin/bsc.exe",
         "bs-external-includes" : [
             "jscomp/runtime", 
