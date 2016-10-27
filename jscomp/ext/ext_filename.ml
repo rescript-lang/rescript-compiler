@@ -217,6 +217,11 @@ let module_name_of_file file =
     String.capitalize 
       (Filename.chop_extension @@ Filename.basename file)  
 
+let module_name_of_file_if_any file = 
+    String.capitalize 
+      (chop_extension_if_any @@ Filename.basename file)  
+
+
 (** For win32 or case insensitve OS 
     [".cmj"] is the same as [".CMJ"]
   *)

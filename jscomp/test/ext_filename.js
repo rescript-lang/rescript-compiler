@@ -300,23 +300,29 @@ function module_name_of_file(file) {
   return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
 }
 
+function module_name_of_file_if_any(file) {
+  var s = chop_extension_if_any(Curry._1(Filename.basename, file));
+  return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
+}
+
 var $slash$slash = Filename.concat;
 
-exports.node_sep               = node_sep;
-exports.node_parent            = node_parent;
-exports.node_current           = node_current;
-exports.cwd                    = cwd;
-exports.$slash$slash           = $slash$slash;
-exports.combine                = combine;
-exports.path_as_directory      = path_as_directory;
-exports.absolute_path          = absolute_path;
-exports.chop_extension         = chop_extension;
-exports.chop_extension_if_any  = chop_extension_if_any;
-exports.relative_path          = relative_path;
-exports.os_path_separator_char = os_path_separator_char;
-exports.node_relative_path     = node_relative_path;
-exports.find_package_json_dir  = find_package_json_dir;
-exports.package_dir            = package_dir;
-exports.replace_backward_slash = replace_backward_slash;
-exports.module_name_of_file    = module_name_of_file;
+exports.node_sep                   = node_sep;
+exports.node_parent                = node_parent;
+exports.node_current               = node_current;
+exports.cwd                        = cwd;
+exports.$slash$slash               = $slash$slash;
+exports.combine                    = combine;
+exports.path_as_directory          = path_as_directory;
+exports.absolute_path              = absolute_path;
+exports.chop_extension             = chop_extension;
+exports.chop_extension_if_any      = chop_extension_if_any;
+exports.relative_path              = relative_path;
+exports.os_path_separator_char     = os_path_separator_char;
+exports.node_relative_path         = node_relative_path;
+exports.find_package_json_dir      = find_package_json_dir;
+exports.package_dir                = package_dir;
+exports.replace_backward_slash     = replace_backward_slash;
+exports.module_name_of_file        = module_name_of_file;
+exports.module_name_of_file_if_any = module_name_of_file_if_any;
 /* Filename Not a pure module */

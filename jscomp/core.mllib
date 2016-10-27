@@ -6,15 +6,12 @@ ident_util
 idents_analysis
 config_util
 bs_conditional_initial
-
 ocaml_options
 ocaml_batch_compile
 ocaml_parse
-
 lam
 lam_iter
 lam_print
-
 lam_compile_env
 lam_dispatch_primitive
 lam_stats
@@ -34,7 +31,6 @@ lam_compile_global
 lam_compile_primitive
 lam_beta_reduce
 lam_beta_reduce_util 
-
 lam_compile_external_call
 lam_compile_group
 lam_inline_util
@@ -43,12 +39,8 @@ lam_module_ident
 lam_dce
 lam_analysis
 lam_group
-
-
-
 j
 js_ast_util
-
 js_arr
 js_program_loader
 js_output
@@ -62,7 +54,6 @@ js_pass_flatten_and_mark_dead
 js_pass_scope
 js_call_info
 js_pass_debug
-
 js_of_lam_option
 js_of_lam_float_record
 js_of_lam_record
@@ -87,6 +78,4 @@ js_exp_make
 js_stmt_make
 js_cmj_datasets
 js_main
-
-
 lam_exit_code

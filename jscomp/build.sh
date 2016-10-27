@@ -10,7 +10,7 @@ export npm_package_name=bs-platform
 
 
 ## Only make sense for dev 
-make js_map.ml js_fold.ml sexp_lexer.ml json_lexer.ml 2>> build.compile
+make -j4 js_map.ml js_fold.ml sexp_lexer.ml bs_json.ml 2>> build.compile
 # lam_map.ml lam_fold.ml
 ## Disable it when make a release 
 

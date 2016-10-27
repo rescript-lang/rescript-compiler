@@ -32,3 +32,4 @@ external empty : 'a t = "undefined" [@@bs.val]
     ambiguous and [to_opt] depends on {!Js_primitive}
 *)
 val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
+val iter : 'a t -> ('a -> unit [@bs]) -> unit

@@ -23,7 +23,7 @@ js_fold.ml:js_fold.mlp j.ml
 sexp_lexer.ml: sexp_lexer.gen.mll
 	@echo "Regenerating sexp_lexer.ml"
 	$(OCAMLLEX) $< -o $@
-json_lexer.ml: json_lexer.gen.mll
+bs_json.ml: bs_json.gen.mll
 	@echo "Regenerating sexp_lexer.ml"
 	$(OCAMLLEX) $< -o $@ || (rm $@ && exit 2)
 
@@ -69,7 +69,7 @@ snapshot3:./bin/bspack.exe
 snapshot4:./bin/bspack.exe 
 	BS_OCAMLDEP=true $< -bs-log-mllib bin/bsdep.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I depends -I .  -bs-main ../ocaml/tools/ocamldep.ml -o bin/bsdep.ml
 snapshot5:./bin/bspack.exe 
-	$< -bs-log-mllib bin/bsbuild.mllib -I common -I ext -I syntax -I depends -bs-main ./bsbuild_main.ml -o bin/bsbuild.ml
+	$< -bs-log-mllib bin/bsb.mllib -I common -I ext -I syntax -I depends -bs-main ./bsb_main.ml -o bin/bsb.ml
 snapshot6:./bin/bspack.exe 
 	BS_MIN_LEX_DEPS=true $< -bs-log-mllib bin/bspp.mllib   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -bs-main bspp_main.ml -o bin/bspp.ml
 
@@ -121,20 +121,11 @@ releasebuild:
 release:snapshot
 	$(MAKE) releasebuild
 
-## this target is 
-## shared with our bundled compiler
-## in this condition, `Config_whole_compiler.ml` is not configured
-## we reuse the compiler-libs
+
 world:
 	@echo "Making compiler"
-	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc.exe
-	$(MAKE) -C bin -j 4 bspack.exe bsdep.exe bsppx.exe bspp.exe bsbuild.exe
+	$(MAKE) -C bin -j 6 all
 	@echo "Making compiler finished"
-	$(MAKE) libs
-
-dist-world:
-	@echo "Making compiler"
-	$(MAKE) -C bin -j5  all
 	$(MAKE) libs
 
 
@@ -155,7 +146,7 @@ DEST_BIN=../bin
 install:
 	@echo "copy exe"
 	mkdir -p $(DEST_BIN) $(DEST)
-	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe ./bin/bspp.exe ./bin/bsbuild.exe  $(DEST_BIN)
+	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe ./bin/bspp.exe ./bin/bsb  $(DEST_BIN)
 	@echo "copy stdlib"
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \

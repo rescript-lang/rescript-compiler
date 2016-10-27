@@ -15,6 +15,9 @@
     "should-equal": "^1.0.0",
     "uglify-js": "^2.6.1"
   },
+  "bin": {
+    "bsb" : "./bin/bsb"
+  },
   "exportedEnvVars": {
     "PATH": {
       "global": true,
@@ -32,7 +35,7 @@
     "postinstall": "node scripts/config.js"
   },
   "name": "bs-platform",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
   "repository": {
     "type": "git",

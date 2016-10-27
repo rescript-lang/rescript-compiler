@@ -1,10 +1,10 @@
 
-[@@@bs.config{no_export}]
+(* [@@@bs.config{no_export}] *)
 module Fs = Node.Fs
 
 
-let _ = 
-  Js.Undefined.bind [%node __dirname] (fun [@bs] dir -> 
+let clean () = 
+  Js.Undefined.iter [%node __dirname] (fun [@bs] dir -> 
       let bin_dir = Node.Path.join [|dir ; ".."; "bin"|] in 
       let files = Fs.readdirSync bin_dir in 
       Js.log ("cleaning now", files);
@@ -18,7 +18,7 @@ let _ =
               Fs.unlinkSync p 
             with _ -> Js.log ("removing", p, "failure")
         );
-      Js.undefined
+
     )
 
 

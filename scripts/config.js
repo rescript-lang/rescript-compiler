@@ -98,36 +98,77 @@ function getConfigOutput(){
 }
 
 
-var config_map = getConfigOutput()
-console.log('config_map',config_map)
 
-if(config_map && config_map.version.indexOf('4.02.3') >= 0 ){
-    //
-    if (is_windows){
-        process.env.WIN32='1'
-    }
-    var whole_compiler_config = path.join(jscomp, 'bin', 'config_whole_compiler.ml' )
-    var content = fs.readFileSync(whole_compiler_config,'utf8')
-    var generated =  content.replace(/%%(\w+)%%/g,
-        function(_whole,p0){
-            if(p0 === "LIBDIR"){
-              //Escape
-              var origin_path = path.join(working_dir,'lib','ocaml')
-              return JSON.stringify(origin_path).slice(1,-1)
+
+function patch_config(config_map){
+    var whole_compiler_config = path.join(jscomp, 'bin', 'config_whole_compiler.ml')
+    var content = fs.readFileSync(whole_compiler_config, 'utf8')
+    var generated = content.replace(/%%(\w+)%%/g,
+        function (_whole, p0) {
+            if (p0 === "LIBDIR") {
+                //Escape
+                var origin_path = path.join(working_dir, 'lib', 'ocaml')
+                return JSON.stringify(origin_path).slice(1, -1)
             }
-            else{
+            else {
                 return config_map[map[p0]]
             }
         })
 
     fs.writeFileSync(whole_compiler_config, generated, 'utf8')
-    var working_config = {cwd : jscomp , stdio : [0,1,2]}
+}
+
+/*
+function install_built_in_compiler(){
+    var env = process.env;
+    env.BS_RELEASE_BUILD = 1; 
+    // env.OCAMLPARAM='_,bin-annot=1'
+    var ocaml_build_dir; 
+    if(env.BS_TRAVIS_CI){
+        ocaml_build_dir = path.join(__dirname,'..','ocaml')
+        child_process.execSync('git submodule update --init --recursive')
+        
+    }else{
+        ocaml_build_dir = path.join(__dirname,'..','ocaml_src')
+        ocaml_tar = path.join(__dirname,'..','ocaml.tar.gz') 
+        if(fs.existsSync(ocaml_tar)){
+            console.log('ocaml.tar.gz already exists')
+            child_process.execSync("rm -rf " + ocaml_build_dir + " && mkdir -p " + ocaml_build_dir + )
+        }
+    }
+}
+*/
+
+
+var config_map = getConfigOutput()
+console.log('config_map',config_map)
+var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
+
+if(config_map && config_map.version.indexOf('4.02.3') >= 0 ){
+    patch_config(config_map);
+    if (is_windows) {
+        process.env.WIN32 = '1'
+    }
+    
     console.log("Build the compiler and runtime .. ")
-    child_process.execSync("make dist-world", working_config)
+    child_process.execSync("make world", working_config)
     console.log("Installing")
     child_process.execSync('make VERBOSE=true install', working_config)
 
+
 }else{
     // No compiler existed
-    child_process.execSync(path.join(__dirname,'postinstall.sh'))
+    child_process.execSync(path.join(__dirname,'buildocaml.sh'))
+    process.env.PATH = path.join(__dirname,'..','bin') + path.delimiter + process.env.PATH
+    console.log('configure again with local ocaml installed')
+    config_map = getConfigOutput()
+    console.log('config_map', config_map)
+    patch_config(config_map)
+    if(process.env.BS_TRAVIS_CI){
+        child_process.execSync("make travis-world-test", working_config)
+    } else {
+        child_process.execSync("make world", working_config)
+    }
+    var clean = require('./clean.js')
+    clean.clean()
 }

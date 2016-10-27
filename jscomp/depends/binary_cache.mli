@@ -39,8 +39,18 @@ type module_info =
     mll : string option 
   }
 
-val write_build_cache : string -> module_info String_map.t -> unit
+type t = module_info String_map.t 
+val write_build_cache : string -> t -> unit
 
-val read_build_cache : string -> module_info String_map.t
+val read_build_cache : string -> t
 
 val bsbuild_cache : string
+
+val simple_concat : string -> string -> string
+
+
+
+(** if not added, it is guaranteed the reference equality will 
+    be held
+*)
+val map_update : ?dir:string -> t -> string -> t
