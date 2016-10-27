@@ -501,10 +501,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_installation">Installation</a>
 <ul class="sectlevel2">
-<li><a href="#_install_from_npm_registries">Install from NPM registries</a></li>
-<li><a href="#_install_from_source_with_npm_package_manager">Install from source with npm package manager</a></li>
-<li><a href="#_install_with_em_minimal_em_dependencies">Install with <em>minimal</em> dependencies</a></li>
-<li><a href="#_introduction_to_ocaml_ecosystem_opam">Introduction to OCaml ecosystem: OPAM</a></li>
+<li><a href="#_windows_installation">Windows Installation</a></li>
+<li><a href="#_minimal_installation_from_npm">Minimal installation from NPM</a></li>
+<li><a href="#__strong_recommended_strong_installation_with_opam"><strong>Recommended</strong> installation with OPAM</a></li>
+<li><a href="#_install_from_source">Install from source</a>
+<ul class="sectlevel3">
+<li><a href="#_using_npm">using NPM</a></li>
+<li><a href="#_minimal_dependencies">Minimal dependencies</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_get_started">Get Started</a>
@@ -829,6 +834,11 @@ runtime libraries are only needed when user actually call it.</p>
 <div class="sect1">
 <h2 id="_installation"><a class="anchor" href="#_installation"></a>Installation</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Below is a list of different ways to install BuckleScript:</p>
+</div>
+<div class="sect2">
+<h3 id="_windows_installation"><a class="anchor" href="#_windows_installation"></a>Windows Installation</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -854,8 +864,9 @@ make sure that <code>ocamlopt</code> is in <code>PATH</code>.</p>
 </tr>
 </table>
 </div>
+</div>
 <div class="sect2">
-<h3 id="_install_from_npm_registries"><a class="anchor" href="#_install_from_npm_registries"></a>Install from NPM registries</h3>
+<h3 id="_minimal_installation_from_npm"><a class="anchor" href="#_minimal_installation_from_npm"></a>Minimal installation from NPM</h3>
 <div class="ulist">
 <div class="title">Prerequisites</div>
 <ul>
@@ -889,7 +900,33 @@ is installed, run the following command:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_install_from_source_with_npm_package_manager"><a class="anchor" href="#_install_from_source_with_npm_package_manager"></a>Install from source with npm package manager</h3>
+<h3 id="__strong_recommended_strong_installation_with_opam"><a class="anchor" href="#__strong_recommended_strong_installation_with_opam"></a><strong>Recommended</strong> installation with OPAM</h3>
+<div class="paragraph">
+<p>When working with OCaml we also recommend using <a href="https://opam.ocaml.org">opam</a>
+package manager to install OCaml toolchains, available
+<a href="https://opam.ocaml.org/doc/Install.html">here</a>. You will benefit from the
+existing OCaml ecosystem.</p>
+</div>
+<div class="paragraph">
+<p>Once you have <code>opam</code> installed, ask <code>opam</code> to switch to using our
+version of the compiler:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">opam update
+opam switch 4.02.3+buckle-master
+<span class="tok-nb">eval</span> <span class="tok-sb">`</span>opam config env<span class="tok-sb">`</span>
+npm install bs-platform</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that using this approach, user can also install other OCaml tools easily.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_install_from_source"><a class="anchor" href="#_install_from_source"></a>Install from source</h3>
+<div class="sect3">
+<h4 id="_using_npm"><a class="anchor" href="#_using_npm"></a>using NPM</h4>
 <div class="olist arabic">
 <div class="title">Prerequisites:</div>
 <ol class="arabic">
@@ -910,8 +947,8 @@ npm install</code></pre>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_install_with_em_minimal_em_dependencies"><a class="anchor" href="#_install_with_em_minimal_em_dependencies"></a>Install with <em>minimal</em> dependencies</h3>
+<div class="sect3">
+<h4 id="_minimal_dependencies"><a class="anchor" href="#_minimal_dependencies"></a>Minimal dependencies</h4>
 <div class="olist arabic">
 <div class="title">Prerequisites:</div>
 <ol class="arabic">
@@ -971,25 +1008,6 @@ The built compiler is not <em>relocatable</em> out of box, please don&#8217;t mo
 </td>
 </tr>
 </table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_introduction_to_ocaml_ecosystem_opam"><a class="anchor" href="#_introduction_to_ocaml_ecosystem_opam"></a>Introduction to OCaml ecosystem: OPAM</h3>
-<div class="paragraph">
-<p>When working with OCaml we also recommend using <a href="https://opam.ocaml.org">opam</a>
-package manager to install OCaml tools, available
-<a href="https://opam.ocaml.org/doc/Install.html">here</a>. You will benefit from the
-existing OCaml ecosystem.</p>
-</div>
-<div class="paragraph">
-<p>Once you have <code>opam</code> installed, ask <code>opam</code> to switch to using our
-version of the compiler:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="sh">opam update
-opam switch 4.02.3
-<span class="tok-nb">eval</span> <span class="tok-sb">`</span>opam config env<span class="tok-sb">`</span></code></pre>
 </div>
 </div>
 </div>

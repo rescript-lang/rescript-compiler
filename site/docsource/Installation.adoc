@@ -1,5 +1,8 @@
 ## Installation
 
+Below is a list of different ways to install BuckleScript:
+
+### Windows Installation
 
 [NOTE]
 .WINDOWS prerequisite
@@ -15,8 +18,7 @@ After installation, BuckleScript does not rely on Cygwin anymore.
 ============
 
 
-### Install from NPM registries
-
+### Minimal installation from NPM
 
 .Prerequisites
 * Standard C toolchain
@@ -41,7 +43,30 @@ or install it globally
 npm install -g bs-platform
 ------------
 
-### Install from source with npm package manager
+
+### *Recommended* installation with OPAM
+
+When working with OCaml we also recommend using https://opam.ocaml.org[opam]
+package manager to install OCaml toolchains, available
+https://opam.ocaml.org/doc/Install.html[here]. You will benefit from the
+existing OCaml ecosystem.
+
+Once you have `opam` installed, ask `opam` to switch to using our
+version of the compiler:
+
+[source,sh]
+---------------------------
+opam update
+opam switch 4.02.3+buckle-master
+eval `opam config env`
+npm install bs-platform
+---------------------------
+
+Note that using this approach, user can also install other OCaml tools easily.
+
+### Install from source
+
+#### using NPM
 
 .Prerequisites:
 
@@ -56,7 +81,7 @@ cd bucklescript
 npm install
 -----
 
-### Install with _minimal_ dependencies
+#### Minimal dependencies
 
 .Prerequisites:
 
@@ -106,20 +131,3 @@ pointing to the stdlib, e.g. `BSC_LIB=/path/to/jscomp/stdlib` for ease
 of use.
 
 WARNING: The built compiler is not _relocatable_ out of box, please don't move it around unless you know what you are doing
-
-### Introduction to OCaml ecosystem: OPAM
-
-When working with OCaml we also recommend using https://opam.ocaml.org[opam]
-package manager to install OCaml tools, available
-https://opam.ocaml.org/doc/Install.html[here]. You will benefit from the
-existing OCaml ecosystem.
-
-Once you have `opam` installed, ask `opam` to switch to using our
-version of the compiler:
-
-[source,sh]
----------------------------
-opam update
-opam switch 4.02.3
-eval `opam config env`
----------------------------
