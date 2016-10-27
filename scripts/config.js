@@ -117,19 +117,7 @@ function patch_config(config_map){
 
     fs.writeFileSync(whole_compiler_config, generated, 'utf8')
 }
-function install_bsc() {
 
-
-    if (is_windows) {
-        process.env.WIN32 = '1'
-    }
-    var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
-    console.log("Build the compiler and runtime .. ")
-    child_process.execSync("make dist-world", working_config)
-    console.log("Installing")
-    child_process.execSync('make VERBOSE=true install', working_config)
-
-}
 /*
 function install_built_in_compiler(){
     var env = process.env;
@@ -154,10 +142,20 @@ function install_built_in_compiler(){
 
 var config_map = getConfigOutput()
 console.log('config_map',config_map)
+var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
 
 if(config_map && config_map.version.indexOf('4.02.3') >= 0 ){
     patch_config(config_map);
-    install_bsc()
+    if (is_windows) {
+        process.env.WIN32 = '1'
+    }
+    
+    console.log("Build the compiler and runtime .. ")
+    child_process.execSync("make world", working_config)
+    console.log("Installing")
+    child_process.execSync('make VERBOSE=true install', working_config)
+
+
 }else{
     // No compiler existed
     child_process.execSync(path.join(__dirname,'buildocaml.sh'))
@@ -166,5 +164,11 @@ if(config_map && config_map.version.indexOf('4.02.3') >= 0 ){
     config_map = getConfigOutput()
     console.log('config_map', config_map)
     patch_config(config_map)
-    child_process.execSync(path.join(__dirname,'postinstall.sh'))
+    if(process.env.BS_TRAVIS_CI){
+        child_process.execSync("make travis-world-test", working_config)
+    } else {
+        child_process.execSync("make world", working_config)
+    }
+    var clean = require('./clean.js')
+    clean.clean()
 }

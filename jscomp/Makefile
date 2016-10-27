@@ -121,19 +121,11 @@ releasebuild:
 release:snapshot
 	$(MAKE) releasebuild
 
-## this target is 
-## shared with our bundled compiler
-## in this condition, `Config_whole_compiler.ml` is not configured
-## we reuse the compiler-libs
+
 world:
 	@echo "Making compiler"
 	$(MAKE) -C bin -j 6 all
 	@echo "Making compiler finished"
-	$(MAKE) libs
-
-dist-world:
-	@echo "Making compiler"
-	$(MAKE) -C bin -j5  all
 	$(MAKE) libs
 
 
