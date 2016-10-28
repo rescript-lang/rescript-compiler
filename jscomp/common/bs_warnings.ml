@@ -49,7 +49,8 @@ let warning_formatter = Format.err_formatter
 let print_string_warning loc x = 
   Location.print warning_formatter loc ; 
   Format.pp_print_string warning_formatter "Warning: ";
-  Format.pp_print_string warning_formatter x
+  Format.pp_print_string warning_formatter x;
+  Format.pp_print_string warning_formatter "\n"
 
 let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then

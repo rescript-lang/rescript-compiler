@@ -1,1580 +1,11 @@
 module Config = Config_whole_compiler
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let with_file_as_chan filename f = 
-  finally (open_out filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-
-let rec dump r =
-  if Obj.is_int r then
-    string_of_int (Obj.magic r : int)
-  else (* Block. *)
-    let rec get_fields acc = function
-      | 0 -> acc
-      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
-    in
-    let rec is_list r =
-      if Obj.is_int r then
-        r = Obj.repr 0 (* [] *)
-      else
-        let s = Obj.size r and t = Obj.tag r in
-        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
-    in
-    let rec get_list r =
-      if Obj.is_int r then
-        []
-      else
-        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
-        h :: t
-    in
-    let opaque name =
-      (* XXX In future, print the address of value 'r'.  Not possible
-       * in pure OCaml at the moment.  *)
-      "<" ^ name ^ ">"
-    in
-    let s = Obj.size r and t = Obj.tag r in
-    (* From the tag, determine the type of block. *)
-    match t with
-    | _ when is_list r ->
-      let fields = get_list r in
-      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
-    | 0 ->
-      let fields = get_fields [] s in
-      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.lazy_tag ->
-      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
-         * clear if very large constructed values could have the same
-         * tag. XXX *)
-      opaque "lazy"
-    | x when x = Obj.closure_tag ->
-      opaque "closure"
-    | x when x = Obj.object_tag ->
-      let fields = get_fields [] s in
-      let _clasz, id, slots =
-        match fields with
-        | h::h'::t -> h, h', t
-        | _ -> assert false
-      in
-      (* No information on decoding the class (first field).  So just print
-         * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
-    | x when x = Obj.infix_tag ->
-      opaque "infix"
-    | x when x = Obj.forward_tag ->
-      opaque "forward"
-    | x when x < Obj.no_scan_tag ->
-      let fields = get_fields [] s in
-      "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.string_tag ->
-      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
-      string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
-      opaque "abstract"
-    | x when x = Obj.custom_tag ->
-      opaque "custom"
-    | x when x = Obj.custom_tag ->
-      opaque "final"
-    | x when x = Obj.double_array_tag ->
-      "[|"^
-      String.concat ";"
-        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
-      "|]"
-    | _ ->
-      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
-
-let dump v = dump (Obj.repr v)
-
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
-
-end
-module Ext_bytes : sig 
-#1 "ext_bytes.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
-
-val escaped : bytes -> bytes
-
-end = struct
-#1 "ext_bytes.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
-
-let escaped s =
-  let n = ref 0 in
-  for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
-    let s' = Bytes.create !n in
-    n := 0;
-    for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
-      | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
-      | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
-      | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
-      | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
-      | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
-      incr n
-    done;
-    s'
-  end
-
-end
-module Ext_string : sig 
-#1 "ext_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [String] module, avoid locale sensitivity *) 
-
-
-val trim : string -> string 
-
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
-
-val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
-
-val starts_with : string -> string -> bool
-
-(**
-   return [-1] when not found, the returned index is useful 
-   see [ends_with_then_chop]
-*)
-val ends_with_index : string -> string -> int
-
-val ends_with : string -> string -> bool
-
-(**
-   {[
-     ends_with_then_chop "a.cmj" ".cmj"
-     "a"
-   ]}
-   This is useful in controlled or file case sensitve system
-*)
-val ends_with_then_chop : string -> string -> string option
-
-
-val escaped : string -> string
-
-val for_all : (char -> bool) -> string -> bool
-
-val is_empty : string -> bool
-
-val repeat : int -> string -> string 
-
-val equal : string -> string -> bool
-
-val find : ?start:int -> sub:string -> string -> int
-
-val rfind : sub:string -> string -> int
-
-val tail_from : string -> int -> string
-
-val digits_of_str : string -> offset:int -> int -> int
-
-val starts_with_and_number : string -> offset:int -> string -> int
-
-val unsafe_concat_with_length : int -> string -> string list -> string
-
-end = struct
-#1 "ext_string.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let split_by ?(keep_empty=false) is_delim str =
-  let len = String.length str in
-  let rec loop acc last_pos pos =
-    if pos = -1 then
-      if last_pos = 0 && not keep_empty then
-        (*
-           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
-        *)
-        acc
-      else 
-        String.sub str 0 last_pos :: acc
-    else
-      if is_delim str.[pos] then
-        let new_len = (last_pos - pos - 1) in
-        if new_len <> 0 || keep_empty then 
-          let v = String.sub str (pos + 1) new_len in
-          loop ( v :: acc)
-            pos (pos - 1)
-        else loop acc pos (pos - 1)
-    else loop acc last_pos (pos - 1)
-  in
-  loop [] len (len - 1)
-
-let trim s = 
-  let i = ref 0  in
-  let j = String.length s in 
-  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
-    incr i;
-  done;
-  let k = ref (j - 1)  in 
-  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
-    decr k ;
-  done;
-  String.sub s !i (!k - !i + 1)
-
-let split ?keep_empty  str on = 
-  if str = "" then [] else 
-  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
-
-let starts_with s beg = 
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-   beg_len <=  s_len &&
-  (let i = ref 0 in
-    while !i <  beg_len 
-          && String.unsafe_get s !i =
-             String.unsafe_get beg !i do 
-      incr i 
-    done;
-    !i = beg_len
-  )
-
-
-
-let ends_with_index s beg = 
-  let s_finish = String.length s - 1 in
-  let s_beg = String.length beg - 1 in
-  if s_beg > s_finish then -1
-  else
-    let rec aux j k = 
-      if k < 0 then (j + 1)
-      else if String.unsafe_get s j = String.unsafe_get beg k then 
-        aux (j - 1) (k - 1)
-      else  -1 in 
-    aux s_finish s_beg
-
-let ends_with s beg = ends_with_index s beg >= 0 
-
-
-let ends_with_then_chop s beg = 
-  let i =  ends_with_index s beg in 
-  if i >= 0 then Some (String.sub s 0 i) 
-  else None
-
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
-
-
-let for_all (p : char -> bool) s = 
-  let len = String.length s in
-  let rec aux i = 
-    if i >= len then true 
-    else  p (String.unsafe_get s i) && aux (i + 1)
-  in aux 0 
-
-let is_empty s = String.length s = 0
-
-
-let repeat n s  =
-  let len = String.length s in
-  let res = Bytes.create(n * len) in
-  for i = 0 to pred n do
-    String.blit s 0 res (i * len) len
-  done;
-  Bytes.to_string res
-
-let equal (x : string) y  = x = y
-
-
-
-let _is_sub ~sub i s j ~len =
-  let rec check k =
-    if k = len
-    then true
-    else 
-      String.unsafe_get sub (i+k) = 
-      String.unsafe_get s (j+k) && check (k+1)
-  in
-  j+len <= String.length s && check 0
-
-
-
-let find ?(start=0) ~sub s =
-  let n = String.length sub in
-  let i = ref start in
-  let module M = struct exception Exit end  in
-  try
-    while !i + n <= String.length s do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
-      incr i
-    done;
-    -1
-  with M.Exit ->
-    !i
-
-
-let rfind ~sub s =
-  let n = String.length sub in
-  let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
-  try
-    while !i >= 0 do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
-      decr i
-    done;
-    -1
-  with M.Exit ->
-    !i
-
-let tail_from s x = 
-  let len = String.length s  in 
-  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
-  else String.sub s x (len - x)
-
-
-(**
-   {[ 
-     digits_of_str "11_js" 2 == 11     
-   ]}
-*)
-let digits_of_str s ~offset x = 
-  let rec aux i acc s x  = 
-    if i >= x then acc 
-    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
-  aux 0 0 s x 
-
-
-
-(*
-   {[
-     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
-     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
-     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
-     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
-     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
-     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
-   ]}
-*)
-let starts_with_and_number s ~offset beg =
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-  let finish_delim = offset + beg_len in 
-
-   if finish_delim >  s_len  then -1 
-   else 
-     let i = ref offset  in
-      while !i <  finish_delim
-            && String.unsafe_get s !i =
-               String.unsafe_get beg (!i - offset) do 
-        incr i 
-      done;
-      if !i = finish_delim then 
-        digits_of_str ~offset:finish_delim s 2 
-      else 
-        -1 
-
-let equal (x : string) y  = x = y
-
-let unsafe_concat_with_length len sep l =
-  match l with 
-  | [] -> ""
-  | hd :: tl -> (* num is positive *)
-  let r = Bytes.create len in
-  let hd_len = String.length hd in 
-  let sep_len = String.length sep in 
-  String.unsafe_blit hd 0 r 0 hd_len;
-  let pos = ref hd_len in
-  List.iter
-    (fun s ->
-       let s_len = String.length s in
-       String.unsafe_blit sep 0 r !pos sep_len;
-       pos := !pos +  sep_len;
-       String.unsafe_blit s 0 r !pos s_len;
-       pos := !pos + s_len)
-    tl;
-  Bytes.unsafe_to_string r
-
-end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string  
-
-val suffix_cmj : string
-val suffix_cmi : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mliast : string
-val suffix_mll : string
-val suffix_d : string
-val suffix_mlastd : string
-val suffix_mliastd : string
-
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
-
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-
-
-let suffix_cmj = ".cmj"
-let suffix_cmi = ".cmi"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mlast = ".mlast"
-let suffix_mliast = ".mliast"
-let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
-
-
-
-end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-type t = 
-  [ `File of string 
-  | `Dir of string ]
-
-val combine : string -> string -> string 
-val path_as_directory : string -> string
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
- *)
-
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
- *)
-
-val node_relative_path : t -> [`File of string] -> string
-
-val chop_extension : ?loc:string -> string -> string
-
-
-
-
-
-
-val cwd : string Lazy.t
-val package_dir : string Lazy.t
-
-val replace_backward_slash : string -> string
-
-val module_name_of_file : string -> string
-
-val chop_extension_if_any : string -> string
-
-val absolute_path : string -> string
-
-val module_name_of_file_if_any : string -> string
-
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Used when produce node compatible paths *)
-let node_sep = "/"
-let node_parent = ".."
-let node_current = "."
-
-type t = 
-  [ `File of string 
-  | `Dir of string ]
-
-let cwd = lazy (Sys.getcwd ())
-
-let (//) = Filename.concat 
-
-let combine path1 path2 =
-  if path1 = "" then
-    path2
-  else if path2 = "" then path1
-  else 
-  if Filename.is_relative path2 then
-     path1// path2 
-  else
-    path2
-
-(* Note that [.//] is the same as [./] *)
-let path_as_directory x =
-  if x = "" then x
-  else
-  if Ext_string.ends_with x  Filename.dir_sep then
-    x 
-  else 
-    x ^ Filename.dir_sep
-
-let absolute_path s = 
-  let process s = 
-    let s = 
-      if Filename.is_relative s then
-        Lazy.force cwd // s 
-      else s in
-    (* Now simplify . and .. components *)
-    let rec aux s =
-      let base,dir  = Filename.basename s, Filename.dirname s  in
-      if dir = s then dir
-      else if base = Filename.current_dir_name then aux dir
-      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
-      else aux dir // base
-    in aux s  in 
-  process s 
-
-
-let chop_extension ?(loc="") name =
-  try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
-
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
-
-
-
-(** example
-    {[
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-    ]}
-
-    The other way
-    {[
-    
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-    ]}
-    {[
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
-    ]}
-    {[
-    /a/b
-    /c/d
-    ]}
- *)
-let relative_path file_or_dir_1 file_or_dir_2 = 
-  let sep_char = Filename.dir_sep.[0] in
-  let relevant_dir1 = 
-    (match file_or_dir_1 with 
-    | `Dir x -> x 
-    | `File file1 ->  Filename.dirname file1) in
-  let relevant_dir2 = 
-    (match file_or_dir_2 with 
-    |`Dir x -> x 
-    |`File file2 -> Filename.dirname file2 ) in
-  let dir1 = Ext_string.split relevant_dir1 sep_char   in
-  let dir2 = Ext_string.split relevant_dir2 sep_char  in
-  let rec go (dir1 : string list) (dir2 : string list) = 
-    match dir1, dir2 with 
-    | x::xs , y :: ys when x = y
-      -> go xs ys 
-    | _, _
-      -> 
-        List.map (fun _ -> node_parent) dir2 @ dir1 
-  in
-  match go dir1 dir2 with
-  | (x :: _ ) as ys when x = node_parent -> 
-      String.concat node_sep ys
-  | ys -> 
-      String.concat node_sep  @@ node_current :: ys
-
-
-
-
-
-let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
-
-(** path2: a/b 
-    path1: a 
-    result:  ./b 
-    TODO: [Filename.concat] with care
-
-    [file1] is currently compilation file 
-    [file2] is the dependency
- *)
-let node_relative_path (file1 : t) 
-    (`File file2 as dep_file : [`File of string]) = 
-  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
-  let len = String.length file2 in 
-  if v >= 0 then
-    let rec skip  i =       
-      if i >= len then
-        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
-      else 
-        (* https://en.wikipedia.org/wiki/Path_(computing))
-           most path separator are a single char 
-        *)
-        let curr_char = String.unsafe_get file2 i  in 
-        if curr_char = os_path_separator_char || curr_char = '.' then 
-          skip (i + 1) 
-        else i
-        (*
-          TODO: we need do more than this suppose user 
-          input can be
-           {[
-           "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
-           ]}
-           This seems weird though
-        *)
-    in 
-    Ext_string.tail_from file2
-      (skip (v + Literals.node_modules_length)) 
-  else 
-    relative_path 
-      (  match dep_file with 
-         | `File x -> `File (absolute_path x)
-         | `Dir x -> `Dir (absolute_path x))
-
-       (match file1 with 
-         | `File x -> `File (absolute_path x)
-         | `Dir x -> `Dir(absolute_path x))
-     ^ node_sep ^
-    chop_extension_if_any (Filename.basename file2)
-
-
-
-
-
-let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-            "package.json not found from %s" cwd
-  in
-  aux cwd 
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-let replace_backward_slash (x : string)= 
-  String.map (function 
-    |'\\'-> '/'
-    | x -> x) x  
-
-let module_name_of_file file =
-    String.capitalize 
-      (Filename.chop_extension @@ Filename.basename file)  
-
-let module_name_of_file_if_any file = 
-    String.capitalize 
-      (chop_extension_if_any @@ Filename.basename file)  
-
-
-(** For win32 or case insensitve OS 
-    [".cmj"] is the same as [".CMJ"]
-  *)
-(* let has_exact_suffix_then_chop fname suf =  *)
-  
-
-end
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type module_system = 
-  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
-
-
-type package_info = 
- (module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty 
-  | NonBrowser of (package_name * package_info  list)
-
-
-
-val cmj_ext : string 
-
-
-(* val is_browser : unit -> bool  *)
-(* val set_browser : unit -> unit *)
-
-
-val get_ext : unit -> string
-
-(** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : module_system -> string -> string
-
-
-(** used by command line option *)
-val set_npm_package_path : string -> unit 
-val get_packages_info : unit -> packages_info
-
-type info_query = 
-  [ `Empty 
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound 
-  ]
-
-val query_package_infos : 
-  packages_info ->
-  module_system ->
-  info_query
-
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-val get_current_package_name_and_path : 
-  module_system -> info_query
-
-
-val set_package_name : string -> unit 
-val get_package_name : unit -> string option
-
-(** corss module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** generate tds option *)
-val default_gen_tds : bool ref
-
-(** options for builtion ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-val no_warn_ffi_type : bool ref 
-val no_warn_unused_bs_attribute : bool ref 
-
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-(* It will imply [-noassert] be set too, note from the implmentation point of view, 
-   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
-   [if (3<>2) then assert false]
- *)
-val no_any_assert : bool ref 
-val set_no_any_assert : unit -> unit
-val get_no_any_assert : unit -> bool 
-
-
-val block : string
-val int32 : string
-val gc : string 
-val backtrace : string
+module Bs_version : sig 
+#1 "bs_version.mli"
 val version : string
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string
-val bytes : string  
-val float : string 
-val curry : string 
-(* val bigarray : string *)
-(* val unix : string *)
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
-val js_primitive : string
-val module_ : string
-
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-val get_module_name : unit -> string
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-val is_windows : bool 
-
-val better_errors : bool ref
-val sort_imports : bool ref 
-val dump_js : bool ref
-val syntax_only  : bool ref
-val binary_ast : bool ref
 
 end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-type env =
-  | NodeJS
-  | AmdJS
-  | Goog (* of string option *)
-
-
-
-type path = string
-type module_system =
-  [ `NodeJS | `AmdJS | `Goog ]
-type package_info =
- ( module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty (* No set *)
-  | NonBrowser of (package_name * package_info  list)
-(** we don't force people to use package *)
-
-
-
-let ext = ref ".js"
-let cmj_ext = ".cmj"
-
-
-
-let get_ext () = !ext
-
-
-let packages_info : packages_info ref = ref Empty
-
-
-let get_package_name () =
-  match !packages_info with
-  | Empty  -> None
-  | NonBrowser(n,_) -> Some n
-
-let no_version_header = ref false
-
-let set_package_name name =
-  match !packages_info with
-  | Empty -> packages_info := NonBrowser(name,  [])
-  |  _ ->
-    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
-
-
-let set_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match package_name with
-         | "commonjs" -> `NodeJS
-         | "amdjs" -> `AmdJS
-         | "goog" -> `Goog
-         | _ ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        `NodeJS, path
-      | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs))
-   (** Browser is not set via command line only for internal use *)
-
-
-
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-let get_packages_info () = !packages_info
-
-type info_query =
-  [ `Empty
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound ]
-let query_package_infos package_infos module_system =
-  match package_infos with
-  | Empty -> `Empty
-  | NonBrowser (name, []) -> `Package_script name
-  | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> k = module_system) paths with
-      | (_, x) -> `Found (name, x)
-      | exception _ -> `NotFound
-    end
-
-let get_current_package_name_and_path   module_system =
-  query_package_infos !packages_info module_system
-
-
-(* for a single pass compilation, [output_dir]
-   can be cached
-*)
-let get_output_dir module_system filename =
-  match !packages_info with
-  | Empty | NonBrowser (_, [])->
-    if Filename.is_relative filename then
-      Lazy.force Ext_filename.cwd //
-      Filename.dirname filename
-    else
-      Filename.dirname filename
-  | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> k = module_system) modules with
-      | (_, _path) -> Lazy.force Ext_filename.package_dir // _path
-      |  exception _ -> assert false
-    end
-
-
-
-
-let default_gen_tds = ref false
-
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unused_bs_attribute = ref false
-
-
-let builtin_exceptions = "Caml_builtin_exceptions"
-let exceptions = "Caml_exceptions"
-let io = "Caml_io"
-let sys = "Caml_sys"
-let lexer = "Caml_lexer"
-let parser = "Caml_parser"
-let obj_runtime = "Caml_obj"
-let array = "Caml_array"
-let format = "Caml_format"
-let string = "Caml_string"
-let bytes = "Caml_bytes"
-let float = "Caml_float"
-let hash = "Caml_hash"
-let oo = "Caml_oo"
-let curry = "Curry"
-let int64 = "Caml_int64"
-let md5 = "Caml_md5"
-let weak = "Caml_weak"
-let backtrace = "Caml_backtrace"
-let gc = "Caml_gc"
-let int32 = "Caml_int32"
-let block = "Block"
-let js_primitive = "Js_primitive"
-let module_ = "Caml_module"
-let version = "1.2.2"
-let current_file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
-let get_module_name () =
-  Filename.chop_extension
-    (Filename.basename (String.uncapitalize !current_file))
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-let no_any_assert = ref false
-
-let set_no_any_assert () = no_any_assert := true
-let get_no_any_assert () = !no_any_assert
-
-let better_errors = ref false
-let sort_imports = ref false
-let dump_js = ref false
-
-let is_windows =
-  match Sys.os_type with
-  | "Win32"
-  | "Cygwin"-> true
-  | _ -> false
-
-let syntax_only = ref false
-let binary_ast = ref false
+#1 "bs_version.ml"
+let version = "1.2.3"
 
 end
 module Terminfo : sig 
@@ -21394,7 +19825,7 @@ end = struct
 
 let setup_env () = 
   Lexer.replace_directive_built_in_value "BS" (Dir_bool true);
-  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Js_config.version)
+  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Bs_version.version)
 
 end
 module Bs_exception : sig 
@@ -21490,7 +19921,7 @@ let report_error ppf = function
 
   | Bs_package_not_found package
     ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
       package package
   | Bs_invalid_path path
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
@@ -21503,6 +19934,316 @@ let () =
     )
 
 
+
+end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val is_directory_no_exn : string -> bool
+
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
+
+end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+val suffix_cmj : string
+val suffix_cmi : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mliast : string
+val suffix_mll : string
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+val suffix_js : string
+
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+let suffix_cmj = ".cmj"
+let suffix_cmi = ".cmi"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mlast = ".mlast"
+let suffix_mliast = ".mliast"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
+let suffix_js = ".js"
+
+
+end
+module Bs_pkg : sig 
+#1 "bs_pkg.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val resolve_bs_package : cwd:string -> string -> string
+
+end = struct
+#1 "bs_pkg.ml"
+
+let (//) = Filename.concat
+
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
+*)
+let  resolve_bs_package ~cwd name = 
+  let sub_path = name // "lib" // "ocaml" in
+  let rec aux origin cwd name = 
+    let destdir =  cwd // Literals.node_modules // sub_path in 
+    if Ext_sys.is_directory_no_exn destdir then destdir
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux origin   cwd' name
+      else 
+        try 
+          let destdir = 
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // Literals.node_modules // sub_path in
+          if Ext_sys.is_directory_no_exn destdir
+          then destdir
+          else
+            Bs_exception.error (Bs_package_not_found name)
+        with 
+          Not_found ->
+          Bs_exception.error (Bs_package_not_found name)          
+  in
+  aux cwd cwd name
 
 end
 module Compenv : sig 
@@ -21851,8 +20592,8 @@ let get_objfiles () =
   List.rev (!last_objfiles @ !objfiles @ !first_objfiles)
 
 end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21877,10 +20618,45 @@ module Ext_sys : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val is_directory_no_exn : string -> bool
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+val dump : 'a -> string 
+
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
 
 end = struct
-#1 "ext_sys.ml"
+#1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21906,8 +20682,1323 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let with_file_as_chan filename f = 
+  finally (open_out filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+
+let rec dump r =
+  if Obj.is_int r then
+    string_of_int (Obj.magic r : int)
+  else (* Block. *)
+    let rec get_fields acc = function
+      | 0 -> acc
+      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
+    in
+    let rec is_list r =
+      if Obj.is_int r then
+        r = Obj.repr 0 (* [] *)
+      else
+        let s = Obj.size r and t = Obj.tag r in
+        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
+    in
+    let rec get_list r =
+      if Obj.is_int r then
+        []
+      else
+        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
+        h :: t
+    in
+    let opaque name =
+      (* XXX In future, print the address of value 'r'.  Not possible
+       * in pure OCaml at the moment.  *)
+      "<" ^ name ^ ">"
+    in
+    let s = Obj.size r and t = Obj.tag r in
+    (* From the tag, determine the type of block. *)
+    match t with
+    | _ when is_list r ->
+      let fields = get_list r in
+      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+    | 0 ->
+      let fields = get_fields [] s in
+      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.lazy_tag ->
+      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
+         * clear if very large constructed values could have the same
+         * tag. XXX *)
+      opaque "lazy"
+    | x when x = Obj.closure_tag ->
+      opaque "closure"
+    | x when x = Obj.object_tag ->
+      let fields = get_fields [] s in
+      let _clasz, id, slots =
+        match fields with
+        | h::h'::t -> h, h', t
+        | _ -> assert false
+      in
+      (* No information on decoding the class (first field).  So just print
+         * out the ID and the slots. *)
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+    | x when x = Obj.infix_tag ->
+      opaque "infix"
+    | x when x = Obj.forward_tag ->
+      opaque "forward"
+    | x when x < Obj.no_scan_tag ->
+      let fields = get_fields [] s in
+      "Tag" ^ string_of_int t ^
+      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.string_tag ->
+      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
+    | x when x = Obj.double_tag ->
+      string_of_float (Obj.magic r : float)
+    | x when x = Obj.abstract_tag ->
+      opaque "abstract"
+    | x when x = Obj.custom_tag ->
+      opaque "custom"
+    | x when x = Obj.custom_tag ->
+      opaque "final"
+    | x when x = Obj.double_array_tag ->
+      "[|"^
+      String.concat ";"
+        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
+      "|]"
+    | _ ->
+      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
+
+let dump v = dump (Obj.repr v)
+
+external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+
+end
+module Ext_bytes : sig 
+#1 "ext_bytes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
+
+val escaped : bytes -> bytes
+
+end = struct
+#1 "ext_bytes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+external char_code: char -> int = "%identity"
+external char_chr: int -> char = "%identity"
+
+let escaped s =
+  let n = ref 0 in
+  for i = 0 to Bytes.length s - 1 do
+    n := !n +
+      (match Bytes.unsafe_get s i with
+       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+       | ' ' .. '~' -> 1
+       | _ -> 4)
+  done;
+  if !n = Bytes.length s then Bytes.copy s else begin
+    let s' = Bytes.create !n in
+    n := 0;
+    for i = 0 to Bytes.length s - 1 do
+      begin match Bytes.unsafe_get s i with
+      | ('"' | '\\') as c ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
+      | '\n' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
+      | '\t' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
+      | '\r' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
+      | '\b' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
+      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+      | c ->
+          let a = char_code c in
+          Bytes.unsafe_set s' !n '\\';
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
+      end;
+      incr n
+    done;
+    s'
+  end
+
+end
+module Ext_string : sig 
+#1 "ext_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [String] module, avoid locale sensitivity *) 
+
+
+val trim : string -> string 
+
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
+(** default is false *)
+
+val split : ?keep_empty:bool -> string -> char -> string list
+(** default is false *)
+
+val starts_with : string -> string -> bool
+
+(**
+   return [-1] when not found, the returned index is useful 
+   see [ends_with_then_chop]
+*)
+val ends_with_index : string -> string -> int
+
+val ends_with : string -> string -> bool
+
+(**
+   {[
+     ends_with_then_chop "a.cmj" ".cmj"
+     "a"
+   ]}
+   This is useful in controlled or file case sensitve system
+*)
+val ends_with_then_chop : string -> string -> string option
+
+
+val escaped : string -> string
+
+val for_all : (char -> bool) -> string -> bool
+
+val is_empty : string -> bool
+
+val repeat : int -> string -> string 
+
+val equal : string -> string -> bool
+
+val find : ?start:int -> sub:string -> string -> int
+
+val rfind : sub:string -> string -> int
+
+val tail_from : string -> int -> string
+
+val digits_of_str : string -> offset:int -> int -> int
+
+val starts_with_and_number : string -> offset:int -> string -> int
+
+val unsafe_concat_with_length : int -> string -> string list -> string
+
+end = struct
+#1 "ext_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let split_by ?(keep_empty=false) is_delim str =
+  let len = String.length str in
+  let rec loop acc last_pos pos =
+    if pos = -1 then
+      if last_pos = 0 && not keep_empty then
+        (*
+           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+        *)
+        acc
+      else 
+        String.sub str 0 last_pos :: acc
+    else
+      if is_delim str.[pos] then
+        let new_len = (last_pos - pos - 1) in
+        if new_len <> 0 || keep_empty then 
+          let v = String.sub str (pos + 1) new_len in
+          loop ( v :: acc)
+            pos (pos - 1)
+        else loop acc pos (pos - 1)
+    else loop acc last_pos (pos - 1)
+  in
+  loop [] len (len - 1)
+
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
+
+let split ?keep_empty  str on = 
+  if str = "" then [] else 
+  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+
+let starts_with s beg = 
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+   beg_len <=  s_len &&
+  (let i = ref 0 in
+    while !i <  beg_len 
+          && String.unsafe_get s !i =
+             String.unsafe_get beg !i do 
+      incr i 
+    done;
+    !i = beg_len
+  )
+
+
+
+let ends_with_index s beg = 
+  let s_finish = String.length s - 1 in
+  let s_beg = String.length beg - 1 in
+  if s_beg > s_finish then -1
+  else
+    let rec aux j k = 
+      if k < 0 then (j + 1)
+      else if String.unsafe_get s j = String.unsafe_get beg k then 
+        aux (j - 1) (k - 1)
+      else  -1 in 
+    aux s_finish s_beg
+
+let ends_with s beg = ends_with_index s beg >= 0 
+
+
+let ends_with_then_chop s beg = 
+  let i =  ends_with_index s beg in 
+  if i >= 0 then Some (String.sub s 0 i) 
+  else None
+
+(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
+     this version try to make it not locale senstive, this bug is fixed
+     in the compiler trunk     
+*)
+let escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+  else
+    s
+
+
+let for_all (p : char -> bool) s = 
+  let len = String.length s in
+  let rec aux i = 
+    if i >= len then true 
+    else  p (String.unsafe_get s i) && aux (i + 1)
+  in aux 0 
+
+let is_empty s = String.length s = 0
+
+
+let repeat n s  =
+  let len = String.length s in
+  let res = Bytes.create(n * len) in
+  for i = 0 to pred n do
+    String.blit s 0 res (i * len) len
+  done;
+  Bytes.to_string res
+
+let equal (x : string) y  = x = y
+
+
+
+let _is_sub ~sub i s j ~len =
+  let rec check k =
+    if k = len
+    then true
+    else 
+      String.unsafe_get sub (i+k) = 
+      String.unsafe_get s (j+k) && check (k+1)
+  in
+  j+len <= String.length s && check 0
+
+
+
+let find ?(start=0) ~sub s =
+  let n = String.length sub in
+  let i = ref start in
+  let module M = struct exception Exit end  in
+  try
+    while !i + n <= String.length s do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      incr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+
+let rfind ~sub s =
+  let n = String.length sub in
+  let i = ref (String.length s - n) in
+  let module M = struct exception Exit end in 
+  try
+    while !i >= 0 do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      decr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+let tail_from s x = 
+  let len = String.length s  in 
+  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  else String.sub s x (len - x)
+
+
+(**
+   {[ 
+     digits_of_str "11_js" 2 == 11     
+   ]}
+*)
+let digits_of_str s ~offset x = 
+  let rec aux i acc s x  = 
+    if i >= x then acc 
+    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
+  aux 0 0 s x 
+
+
+
+(*
+   {[
+     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
+     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
+     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
+     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
+     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
+     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
+   ]}
+*)
+let starts_with_and_number s ~offset beg =
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+  let finish_delim = offset + beg_len in 
+
+   if finish_delim >  s_len  then -1 
+   else 
+     let i = ref offset  in
+      while !i <  finish_delim
+            && String.unsafe_get s !i =
+               String.unsafe_get beg (!i - offset) do 
+        incr i 
+      done;
+      if !i = finish_delim then 
+        digits_of_str ~offset:finish_delim s 2 
+      else 
+        -1 
+
+let equal (x : string) y  = x = y
+
+let unsafe_concat_with_length len sep l =
+  match l with 
+  | [] -> ""
+  | hd :: tl -> (* num is positive *)
+  let r = Bytes.create len in
+  let hd_len = String.length hd in 
+  let sep_len = String.length sep in 
+  String.unsafe_blit hd 0 r 0 hd_len;
+  let pos = ref hd_len in
+  List.iter
+    (fun s ->
+       let s_len = String.length s in
+       String.unsafe_blit sep 0 r !pos sep_len;
+       pos := !pos +  sep_len;
+       String.unsafe_blit s 0 r !pos s_len;
+       pos := !pos + s_len)
+    tl;
+  Bytes.unsafe_to_string r
+
+end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+type t = 
+  [ `File of string 
+  | `Dir of string ]
+
+val combine : string -> string -> string 
+val path_as_directory : string -> string
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+ *)
+
+(** Js_output is node style, which means 
+    separator is only '/'
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
+ *)
+
+val node_relative_path : t -> [`File of string] -> string
+
+val chop_extension : ?loc:string -> string -> string
+
+
+
+
+
+
+val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t
+
+val replace_backward_slash : string -> string
+
+val module_name_of_file : string -> string
+
+val chop_extension_if_any : string -> string
+
+val absolute_path : string -> string
+
+val module_name_of_file_if_any : string -> string
+
+(**
+   1. add some simplifications when concatenating
+   2. when the second one is absolute, drop the first one
+*)
+val combine : string -> string -> string
+
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Used when produce node compatible paths *)
+let node_sep = "/"
+let node_parent = ".."
+let node_current = "."
+
+type t = 
+  [ `File of string 
+  | `Dir of string ]
+
+let cwd = lazy (Sys.getcwd ())
+
+let (//) = Filename.concat 
+
+let combine path1 path2 =
+  if path1 = "" then
+    path2
+  else if path2 = "" then path1
+  else 
+  if Filename.is_relative path2 then
+     path1// path2 
+  else
+    path2
+
+(* Note that [.//] is the same as [./] *)
+let path_as_directory x =
+  if x = "" then x
+  else
+  if Ext_string.ends_with x  Filename.dir_sep then
+    x 
+  else 
+    x ^ Filename.dir_sep
+
+let absolute_path s = 
+  let process s = 
+    let s = 
+      if Filename.is_relative s then
+        Lazy.force cwd // s 
+      else s in
+    (* Now simplify . and .. components *)
+    let rec aux s =
+      let base,dir  = Filename.basename s, Filename.dirname s  in
+      if dir = s then dir
+      else if base = Filename.current_dir_name then aux dir
+      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
+      else aux dir // base
+    in aux s  in 
+  process s 
+
+
+let chop_extension ?(loc="") name =
+  try Filename.chop_extension name 
+  with Invalid_argument _ -> 
+    Ext_pervasives.invalid_argf 
+      "Filename.chop_extension ( %s : %s )"  loc name
+
+let chop_extension_if_any fname =
+  try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+
+
+(** example
+    {[
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+    ]}
+
+    The other way
+    {[
+    
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+    ]}
+    {[
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
+    ]}
+    {[
+    /a/b
+    /c/d
+    ]}
+ *)
+let relative_path file_or_dir_1 file_or_dir_2 = 
+  let sep_char = Filename.dir_sep.[0] in
+  let relevant_dir1 = 
+    (match file_or_dir_1 with 
+    | `Dir x -> x 
+    | `File file1 ->  Filename.dirname file1) in
+  let relevant_dir2 = 
+    (match file_or_dir_2 with 
+    |`Dir x -> x 
+    |`File file2 -> Filename.dirname file2 ) in
+  let dir1 = Ext_string.split relevant_dir1 sep_char   in
+  let dir2 = Ext_string.split relevant_dir2 sep_char  in
+  let rec go (dir1 : string list) (dir2 : string list) = 
+    match dir1, dir2 with 
+    | x::xs , y :: ys when x = y
+      -> go xs ys 
+    | _, _
+      -> 
+        List.map (fun _ -> node_parent) dir2 @ dir1 
+  in
+  match go dir1 dir2 with
+  | (x :: _ ) as ys when x = node_parent -> 
+      String.concat node_sep ys
+  | ys -> 
+      String.concat node_sep  @@ node_current :: ys
+
+
+
+
+
+let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
+
+(** path2: a/b 
+    path1: a 
+    result:  ./b 
+    TODO: [Filename.concat] with care
+
+    [file1] is currently compilation file 
+    [file2] is the dependency
+ *)
+let node_relative_path (file1 : t) 
+    (`File file2 as dep_file : [`File of string]) = 
+  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
+  let len = String.length file2 in 
+  if v >= 0 then
+    let rec skip  i =       
+      if i >= len then
+        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
+      else 
+        (* https://en.wikipedia.org/wiki/Path_(computing))
+           most path separator are a single char 
+        *)
+        let curr_char = String.unsafe_get file2 i  in 
+        if curr_char = os_path_separator_char || curr_char = '.' then 
+          skip (i + 1) 
+        else i
+        (*
+          TODO: we need do more than this suppose user 
+          input can be
+           {[
+           "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
+           ]}
+           This seems weird though
+        *)
+    in 
+    Ext_string.tail_from file2
+      (skip (v + Literals.node_modules_length)) 
+  else 
+    relative_path 
+      (  match dep_file with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir (absolute_path x))
+
+       (match file1 with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir(absolute_path x))
+     ^ node_sep ^
+    chop_extension_if_any (Filename.basename file2)
+
+
+
+
+
+let find_package_json_dir cwd  = 
+  let rec aux cwd  = 
+    if Sys.file_exists (cwd // Literals.package_json) then cwd
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux cwd'
+      else 
+        Ext_pervasives.failwithf 
+          ~loc:__LOC__
+            "package.json not found from %s" cwd
+  in
+  aux cwd 
+
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
+let replace_backward_slash (x : string)= 
+  String.map (function 
+    |'\\'-> '/'
+    | x -> x) x  
+
+let module_name_of_file file =
+    String.capitalize 
+      (Filename.chop_extension @@ Filename.basename file)  
+
+let module_name_of_file_if_any file = 
+    String.capitalize 
+      (chop_extension_if_any @@ Filename.basename file)  
+
+
+(** For win32 or case insensitve OS 
+    [".cmj"] is the same as [".CMJ"]
+  *)
+(* let has_exact_suffix_then_chop fname suf =  *)
+  
+let combine p1 p2 = 
+  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
+  if p2 = "" || p2 = Filename.current_dir_name then p1 
+  else 
+  if Filename.is_relative p2 then 
+    Filename.concat p1 p2 
+  else p2 
+
+end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type module_system = 
+  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
+
+
+type package_info = 
+ (module_system * string )
+
+type package_name  = string
+type packages_info =
+  | Empty 
+  | NonBrowser of (package_name * package_info  list)
+
+
+
+val cmj_ext : string 
+
+
+(* val is_browser : unit -> bool  *)
+(* val set_browser : unit -> unit *)
+
+
+val get_ext : unit -> string
+
+(** depends on [package_infos], used in {!Js_program_loader} *)
+val get_output_dir : pkg_dir:string -> module_system -> string -> string
+
+
+(** used by command line option *)
+val set_npm_package_path : string -> unit 
+val get_packages_info : unit -> packages_info
+
+type info_query = 
+  [ `Empty 
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound 
+  ]
+
+val query_package_infos : 
+  packages_info ->
+  module_system ->
+  info_query
+
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+val get_current_package_name_and_path : 
+  module_system -> info_query
+
+
+val set_package_name : string -> unit 
+val get_package_name : unit -> string option
+
+(** corss module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** generate tds option *)
+val default_gen_tds : bool ref
+
+(** options for builtion ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+val no_warn_ffi_type : bool ref 
+val no_warn_unused_bs_attribute : bool ref 
+
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
+
+val block : string
+val int32 : string
+val gc : string 
+val backtrace : string
+
+val builtin_exceptions : string
+val exceptions : string
+val io : string
+val oo : string
+val sys : string
+val lexer : string 
+val parser : string
+val obj_runtime : string
+val array : string
+val format : string
+val string : string
+val bytes : string  
+val float : string 
+val curry : string 
+(* val bigarray : string *)
+(* val unix : string *)
+val int64 : string
+val md5 : string
+val hash : string
+val weak : string
+val js_primitive : string
+val module_ : string
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+val is_windows : bool 
+
+val better_errors : bool ref
+val sort_imports : bool ref 
+val dump_js : bool ref
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+type env =
+  | NodeJS
+  | AmdJS
+  | Goog (* of string option *)
+
+
+
+type path = string
+type module_system =
+  [ `NodeJS | `AmdJS | `Goog ]
+type package_info =
+ ( module_system * string )
+
+type package_name  = string
+type packages_info =
+  | Empty (* No set *)
+  | NonBrowser of (package_name * package_info  list)
+(** we don't force people to use package *)
+
+
+
+let ext = ref ".js"
+let cmj_ext = ".cmj"
+
+
+
+let get_ext () = !ext
+
+
+let packages_info : packages_info ref = ref Empty
+
+
+let get_package_name () =
+  match !packages_info with
+  | Empty  -> None
+  | NonBrowser(n,_) -> Some n
+
+let no_version_header = ref false
+
+let set_package_name name =
+  match !packages_info with
+  | Empty -> packages_info := NonBrowser(name,  [])
+  |  _ ->
+    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
+
+
+let set_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match package_name with
+         | "commonjs" -> `NodeJS
+         | "amdjs" -> `AmdJS
+         | "goog" -> `Goog
+         | _ ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        `NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs))
+   (** Browser is not set via command line only for internal use *)
+
+
+
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+let (//) = Filename.concat
+
+let get_packages_info () = !packages_info
+
+type info_query =
+  [ `Empty
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound ]
+let query_package_infos package_infos module_system =
+  match package_infos with
+  | Empty -> `Empty
+  | NonBrowser (name, []) -> `Package_script name
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> k = module_system) paths with
+      | (_, x) -> `Found (name, x)
+      | exception _ -> `NotFound
+    end
+
+let get_current_package_name_and_path   module_system =
+  query_package_infos !packages_info module_system
+
+
+(* for a single pass compilation, [output_dir]
+   can be cached
+*)
+let get_output_dir ~pkg_dir module_system filename =
+  match !packages_info with
+  | Empty | NonBrowser (_, [])->
+    if Filename.is_relative filename then
+      Lazy.force Ext_filename.cwd //
+      Filename.dirname filename
+    else
+      Filename.dirname filename
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> k = module_system) modules with
+      | (_, _path) -> pkg_dir // _path
+      |  exception _ -> assert false
+    end
+
+
+
+
+let default_gen_tds = ref false
+
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+let no_warn_ffi_type = ref false
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unused_bs_attribute = ref false
+
+
+let builtin_exceptions = "Caml_builtin_exceptions"
+let exceptions = "Caml_exceptions"
+let io = "Caml_io"
+let sys = "Caml_sys"
+let lexer = "Caml_lexer"
+let parser = "Caml_parser"
+let obj_runtime = "Caml_obj"
+let array = "Caml_array"
+let format = "Caml_format"
+let string = "Caml_string"
+let bytes = "Caml_bytes"
+let float = "Caml_float"
+let hash = "Caml_hash"
+let oo = "Caml_oo"
+let curry = "Curry"
+let int64 = "Caml_int64"
+let md5 = "Caml_md5"
+let weak = "Caml_weak"
+let backtrace = "Caml_backtrace"
+let gc = "Caml_gc"
+let int32 = "Caml_int32"
+let block = "Block"
+let js_primitive = "Js_primitive"
+let module_ = "Caml_module"
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f
+let get_current_file () = !current_file
+let get_module_name () =
+  Filename.chop_extension
+    (Filename.basename (String.uncapitalize !current_file))
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+let no_any_assert = ref false
+
+let set_no_any_assert () = no_any_assert := true
+let get_no_any_assert () = !no_any_assert
+
+let better_errors = ref false
+let sort_imports = ref false
+let dump_js = ref false
+
+let is_windows =
+  match Sys.os_type with
+  | "Win32"
+  | "Cygwin"-> true
+  | _ -> false
+
+let syntax_only = ref false
+let binary_ast = ref false
 
 end
 module Binary_ast : sig 
@@ -22793,7 +22884,8 @@ let warning_formatter = Format.err_formatter
 let print_string_warning loc x = 
   Location.print warning_formatter loc ; 
   Format.pp_print_string warning_formatter "Warning: ";
-  Format.pp_print_string warning_formatter x
+  Format.pp_print_string warning_formatter x;
+  Format.pp_print_string warning_formatter "\n"
 
 let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then
@@ -65757,6 +65849,7 @@ let string_of_module_id ~output_prefix
     (module_system : Lam_module_ident.system)
     (x : Lam_module_ident.t) : string =
 
+
     let result = 
       match x.kind  with 
       | Runtime  
@@ -65765,7 +65858,7 @@ let string_of_module_id ~output_prefix
         let file = Printf.sprintf "%s.js" id.name in
         let modulename = String.uncapitalize id.name in
         let current_unit_dir =
-          `Dir (Js_config.get_output_dir module_system output_prefix) in
+          `Dir (Js_config.get_output_dir (Lazy.force Ext_filename.package_dir) module_system output_prefix) in
         let rebase dep =
           Ext_filename.node_relative_path  current_unit_dir dep 
         in 
@@ -67583,7 +67676,7 @@ let amd_program ~output_prefix f (  x : J.deps_program) =
 *)
 let bs_header = 
   "// Generated by BUCKLESCRIPT VERSION " ^
-  Js_config.version ^
+  Bs_version.version ^
   " , PLEASE EDIT WITH CARE"
 
 let pp_deps_program
@@ -73879,7 +73972,7 @@ let init_st =
   }
 
 
-let bs_external = "BS:" ^ Js_config.version
+let bs_external = "BS:" ^ Bs_version.version
 let bs_external_length = String.length bs_external
 
 let is_bs_external_prefix s = 
@@ -97455,14 +97548,15 @@ type module_info =
     mll : string option 
   }
 
-type t = module_info String_map.t 
+type t =
+  module_info String_map.t 
 val write_build_cache : string -> t -> unit
 
 val read_build_cache : string -> t
 
 val bsbuild_cache : string
 
-val simple_concat : string -> string -> string
+
 
 
 
@@ -97512,10 +97606,12 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    mll : string option 
+    mll : string option ;
   }
 
-type t = module_info String_map.t 
+type t = 
+      module_info String_map.t 
+
 
 let module_info_magic_number = "BSBUILD20161012"
 
@@ -97563,16 +97659,12 @@ let module_info_of_mll exist mll : module_info =
   | None -> { mll  = Some mll ; ml = Ml_empty ; mli = Mli_empty }
   | Some x -> { x with mll = Some mll} 
 
-let simple_concat (x : string)  y =
-  if x = Filename.current_dir_name then y else 
-  if y = Filename.current_dir_name then x else 
-    Filename.concat x y
 
 let map_update ?dir (map : t)  name : t  = 
   let prefix   = 
     match dir with
     | None -> fun x ->  x
-    | Some v -> fun x ->  simple_concat v x in
+    | Some v -> fun x ->  Ext_filename.combine v x in
   let module_name = Ext_filename.module_name_of_file_if_any name in 
   let handle name v cb =
     String_map.add module_name
@@ -98933,7 +99025,7 @@ let show_config () =
 
 let ocaml_options = 
   let bs_version_string = 
-    "BuckleScript " ^ Js_config.version ^
+    "BuckleScript " ^ Bs_version.version ^
     " (Using OCaml" ^ Config.version ^ " )" in
 
   let print_version_and_library compiler =
@@ -99140,39 +99232,10 @@ let set_eval_string s =
 
 
 let (//) = Filename.concat
-(** [resolve cwd module_name], 
-    [cwd] is current working directory, absolute path
-    Trying to find paths to load [module_name]
-    it is sepcialized for option [-bs-package-include] which requires
-    [npm_package_name/lib/ocaml]
-*)
-let  resolve_bs_package ~cwd name = 
-  let sub_path = name // "lib" // "ocaml" in
-  let rec aux origin cwd name = 
-    let destdir =  cwd // Literals.node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then destdir
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux origin   cwd' name
-      else 
-        try 
-          let destdir = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // Literals.node_modules // sub_path in
-          if Ext_sys.is_directory_no_exn destdir
-          then destdir
-          else
-            Bs_exception.error (Bs_package_not_found name)
-        with 
-          Not_found ->
-          Bs_exception.error (Bs_package_not_found name)          
-  in
-  aux cwd cwd name
 
 let add_package s = 
   let path = 
-    resolve_bs_package
+    Bs_pkg.resolve_bs_package
       ~cwd:(Lazy.force Ext_filename.cwd) s   in 
   Clflags.include_dirs := path :: ! Clflags.include_dirs
 

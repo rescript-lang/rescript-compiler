@@ -26,21 +26,6 @@ var cwd = Block.__(246, [function () {
       return Caml_sys.caml_sys_getcwd(/* () */0);
     }]);
 
-function combine(path1, path2) {
-  if (path1 === "") {
-    return path2;
-  }
-  else if (path2 === "") {
-    return path1;
-  }
-  else if (Curry._1(Filename.is_relative, path2)) {
-    return Filename.concat(path1, path2);
-  }
-  else {
-    return path2;
-  }
-}
-
 function path_as_directory(x) {
   if (x === "" || Ext_string.ends_with(x, Filename.dir_sep)) {
     return x;
@@ -305,6 +290,21 @@ function module_name_of_file_if_any(file) {
   return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
 }
 
+function combine(p1, p2) {
+  if (p1 === "" || p1 === Filename.current_dir_name) {
+    return p2;
+  }
+  else if (p2 === "" || p2 === Filename.current_dir_name) {
+    return p1;
+  }
+  else if (Curry._1(Filename.is_relative, p2)) {
+    return Filename.concat(p1, p2);
+  }
+  else {
+    return p2;
+  }
+}
+
 var $slash$slash = Filename.concat;
 
 exports.node_sep                   = node_sep;
@@ -312,7 +312,6 @@ exports.node_parent                = node_parent;
 exports.node_current               = node_current;
 exports.cwd                        = cwd;
 exports.$slash$slash               = $slash$slash;
-exports.combine                    = combine;
 exports.path_as_directory          = path_as_directory;
 exports.absolute_path              = absolute_path;
 exports.chop_extension             = chop_extension;
@@ -325,4 +324,5 @@ exports.package_dir                = package_dir;
 exports.replace_backward_slash     = replace_backward_slash;
 exports.module_name_of_file        = module_name_of_file;
 exports.module_name_of_file_if_any = module_name_of_file_if_any;
+exports.combine                    = combine;
 /* Filename Not a pure module */

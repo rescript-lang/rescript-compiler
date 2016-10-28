@@ -760,8 +760,9 @@ val bs_type : string
 
 val node_modules : string
 val node_modules_length : int
-val package_json : string  
-
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
 val suffix_cmj : string
 val suffix_cmi : string
 val suffix_ml : string
@@ -771,6 +772,7 @@ val suffix_mll : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
+val suffix_js : string
 
 end = struct
 #1 "literals.ml"
@@ -850,7 +852,8 @@ let bs_type = "bs.type"
 let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
 let package_json = "package.json"
-
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
 
 let suffix_cmj = ".cmj"
 let suffix_cmi = ".cmi"
@@ -861,7 +864,7 @@ let suffix_mliast = ".mliast"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-
+let suffix_js = ".js"
 
 
 end
@@ -929,6 +932,8 @@ val chop_extension : ?loc:string -> string -> string
 
 
 val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
 val replace_backward_slash : string -> string
@@ -940,6 +945,12 @@ val chop_extension_if_any : string -> string
 val absolute_path : string -> string
 
 val module_name_of_file_if_any : string -> string
+
+(**
+   1. add some simplifications when concatenating
+   2. when the second one is absolute, drop the first one
+*)
+val combine : string -> string -> string
 
 end = struct
 #1 "ext_filename.ml"
@@ -1172,6 +1183,13 @@ let module_name_of_file_if_any file =
   *)
 (* let has_exact_suffix_then_chop fname suf =  *)
   
+let combine p1 p2 = 
+  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
+  if p2 = "" || p2 = Filename.current_dir_name then p1 
+  else 
+  if Filename.is_relative p2 then 
+    Filename.concat p1 p2 
+  else p2 
 
 end
 module String_map : sig 
@@ -1322,14 +1340,15 @@ type module_info =
     mll : string option 
   }
 
-type t = module_info String_map.t 
+type t =
+  module_info String_map.t 
 val write_build_cache : string -> t -> unit
 
 val read_build_cache : string -> t
 
 val bsbuild_cache : string
 
-val simple_concat : string -> string -> string
+
 
 
 
@@ -1379,10 +1398,12 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    mll : string option 
+    mll : string option ;
   }
 
-type t = module_info String_map.t 
+type t = 
+      module_info String_map.t 
+
 
 let module_info_magic_number = "BSBUILD20161012"
 
@@ -1430,16 +1451,12 @@ let module_info_of_mll exist mll : module_info =
   | None -> { mll  = Some mll ; ml = Ml_empty ; mli = Mli_empty }
   | Some x -> { x with mll = Some mll} 
 
-let simple_concat (x : string)  y =
-  if x = Filename.current_dir_name then y else 
-  if y = Filename.current_dir_name then x else 
-    Filename.concat x y
 
 let map_update ?dir (map : t)  name : t  = 
   let prefix   = 
     match dir with
     | None -> fun x ->  x
-    | Some v -> fun x ->  simple_concat v x in
+    | Some v -> fun x ->  Ext_filename.combine v x in
   let module_name = Ext_filename.module_name_of_file_if_any name in 
   let handle name v cb =
     String_map.add module_name
@@ -1483,6 +1500,8 @@ let ocamllex = "ocamllex"
 let bsc_flags = "bsc-flags"
 let excludes = "excludes"
 let slow_re = "slow-re"
+let resources = "resources"
+let public = "public"
 
 end
 module Bs_dir : sig 
@@ -1491,10 +1510,10 @@ module Bs_dir : sig
 
 val readdir : string -> string array
 
-val flush_cache : unit -> unit
-val reset_readdir_cache : unit -> unit
+(* val flush_cache : unit -> unit *)
+(* val reset_readdir_cache : unit -> unit *)
 
-val reset_readdir_cache_for : string -> unit
+(* val reset_readdir_cache_for : string -> unit *)
 
 
 end = struct
@@ -1523,7 +1542,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(*
 type ('a,'b) result = 
   | Ok of 'a
   | Error of 'b
@@ -1603,8 +1622,12 @@ let  reset_readdir_cache () =
 let reset_readdir_cache_for dir =
   cache_dirty := true; 
   Hashtbl.remove !cache dir 
+*)
 
-
+(* TODO: see if it is worth turn caching on
+   if turned on, we need make sure avoid data racing issues
+*)
+let readdir = Sys.readdir 
 
 end
 module Ext_array : sig 
@@ -1865,7 +1888,7 @@ val query : path -> t ->  status
 
 end = struct
 #1 "bs_json.ml"
-# 1 "json_lexer.gen.mll"
+# 1 "bsb/bs_json.mll"
  
 type error =
   | Illegal_character of char
@@ -1982,7 +2005,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 119 "json_lexer.ml"
+# 119 "bsb/bs_json.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -2170,80 +2193,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 137 "json_lexer.gen.mll"
+# 137 "bsb/bs_json.mll"
           ( lex_json buf lexbuf)
-# 309 "json_lexer.ml"
+# 309 "bsb/bs_json.ml"
 
   | 1 ->
-# 138 "json_lexer.gen.mll"
+# 138 "bsb/bs_json.mll"
                    ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 317 "json_lexer.ml"
+# 317 "bsb/bs_json.ml"
 
   | 2 ->
-# 142 "json_lexer.gen.mll"
+# 142 "bsb/bs_json.mll"
                 ( comment buf lexbuf)
-# 322 "json_lexer.ml"
+# 322 "bsb/bs_json.ml"
 
   | 3 ->
-# 143 "json_lexer.gen.mll"
+# 143 "bsb/bs_json.mll"
          ( True)
-# 327 "json_lexer.ml"
+# 327 "bsb/bs_json.ml"
 
   | 4 ->
-# 144 "json_lexer.gen.mll"
+# 144 "bsb/bs_json.mll"
           (False)
-# 332 "json_lexer.ml"
+# 332 "bsb/bs_json.ml"
 
   | 5 ->
-# 145 "json_lexer.gen.mll"
+# 145 "bsb/bs_json.mll"
          (Null)
-# 337 "json_lexer.ml"
+# 337 "bsb/bs_json.ml"
 
   | 6 ->
-# 146 "json_lexer.gen.mll"
+# 146 "bsb/bs_json.mll"
        (Lbracket)
-# 342 "json_lexer.ml"
+# 342 "bsb/bs_json.ml"
 
   | 7 ->
-# 147 "json_lexer.gen.mll"
+# 147 "bsb/bs_json.mll"
        (Rbracket)
-# 347 "json_lexer.ml"
+# 347 "bsb/bs_json.ml"
 
   | 8 ->
-# 148 "json_lexer.gen.mll"
+# 148 "bsb/bs_json.mll"
        (Lbrace)
-# 352 "json_lexer.ml"
+# 352 "bsb/bs_json.ml"
 
   | 9 ->
-# 149 "json_lexer.gen.mll"
+# 149 "bsb/bs_json.mll"
        (Rbrace)
-# 357 "json_lexer.ml"
+# 357 "bsb/bs_json.ml"
 
   | 10 ->
-# 150 "json_lexer.gen.mll"
+# 150 "bsb/bs_json.mll"
        (Comma)
-# 362 "json_lexer.ml"
+# 362 "bsb/bs_json.ml"
 
   | 11 ->
-# 151 "json_lexer.gen.mll"
+# 151 "bsb/bs_json.mll"
         (Colon)
-# 367 "json_lexer.ml"
+# 367 "bsb/bs_json.ml"
 
   | 12 ->
-# 152 "json_lexer.gen.mll"
+# 152 "bsb/bs_json.mll"
                       (lex_json buf lexbuf)
-# 372 "json_lexer.ml"
+# 372 "bsb/bs_json.ml"
 
   | 13 ->
-# 154 "json_lexer.gen.mll"
+# 154 "bsb/bs_json.mll"
          ( Number (Lexing.lexeme lexbuf))
-# 377 "json_lexer.ml"
+# 377 "bsb/bs_json.ml"
 
   | 14 ->
-# 156 "json_lexer.gen.mll"
+# 156 "bsb/bs_json.mll"
       (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -2251,22 +2274,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 388 "json_lexer.ml"
+# 388 "bsb/bs_json.ml"
 
   | 15 ->
-# 163 "json_lexer.gen.mll"
+# 163 "bsb/bs_json.mll"
        (Eof )
-# 393 "json_lexer.ml"
+# 393 "bsb/bs_json.ml"
 
   | 16 ->
 let
-# 164 "json_lexer.gen.mll"
+# 164 "bsb/bs_json.mll"
        c
-# 399 "json_lexer.ml"
+# 399 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 164 "json_lexer.gen.mll"
+# 164 "bsb/bs_json.mll"
           ( error lexbuf (Illegal_character c ))
-# 403 "json_lexer.ml"
+# 403 "bsb/bs_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -2276,19 +2299,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 166 "json_lexer.gen.mll"
+# 166 "bsb/bs_json.mll"
               (lex_json buf lexbuf)
-# 415 "json_lexer.ml"
+# 415 "bsb/bs_json.ml"
 
   | 1 ->
-# 167 "json_lexer.gen.mll"
+# 167 "bsb/bs_json.mll"
      (comment buf lexbuf)
-# 420 "json_lexer.ml"
+# 420 "bsb/bs_json.ml"
 
   | 2 ->
-# 168 "json_lexer.gen.mll"
+# 168 "bsb/bs_json.mll"
        (error lexbuf Unterminated_comment)
-# 425 "json_lexer.ml"
+# 425 "bsb/bs_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -2298,64 +2321,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 172 "json_lexer.gen.mll"
+# 172 "bsb/bs_json.mll"
       ( () )
-# 437 "json_lexer.ml"
+# 437 "bsb/bs_json.ml"
 
   | 1 ->
-# 174 "json_lexer.gen.mll"
+# 174 "bsb/bs_json.mll"
   (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 447 "json_lexer.ml"
+# 447 "bsb/bs_json.ml"
 
   | 2 ->
-# 181 "json_lexer.gen.mll"
+# 181 "bsb/bs_json.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 456 "json_lexer.ml"
+# 456 "bsb/bs_json.ml"
 
   | 3 ->
 let
-# 186 "json_lexer.gen.mll"
+# 186 "bsb/bs_json.mll"
                                                c
-# 462 "json_lexer.ml"
+# 462 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 187 "json_lexer.gen.mll"
+# 187 "bsb/bs_json.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 469 "json_lexer.ml"
+# 469 "bsb/bs_json.ml"
 
   | 4 ->
 let
-# 191 "json_lexer.gen.mll"
+# 191 "bsb/bs_json.mll"
                  c1
-# 475 "json_lexer.ml"
+# 475 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 191 "json_lexer.gen.mll"
+# 191 "bsb/bs_json.mll"
                                c2
-# 480 "json_lexer.ml"
+# 480 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 191 "json_lexer.gen.mll"
+# 191 "bsb/bs_json.mll"
                                              c3
-# 485 "json_lexer.ml"
+# 485 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 191 "json_lexer.gen.mll"
+# 191 "bsb/bs_json.mll"
                                                     s
-# 490 "json_lexer.ml"
+# 490 "bsb/bs_json.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 192 "json_lexer.gen.mll"
+# 192 "bsb/bs_json.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -2364,55 +2387,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 501 "json_lexer.ml"
+# 501 "bsb/bs_json.ml"
 
   | 5 ->
 let
-# 200 "json_lexer.gen.mll"
+# 200 "bsb/bs_json.mll"
                         c1
-# 507 "json_lexer.ml"
+# 507 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 200 "json_lexer.gen.mll"
+# 200 "bsb/bs_json.mll"
                                          c2
-# 512 "json_lexer.ml"
+# 512 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 201 "json_lexer.gen.mll"
+# 201 "bsb/bs_json.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 521 "json_lexer.ml"
+# 521 "bsb/bs_json.ml"
 
   | 6 ->
 let
-# 207 "json_lexer.gen.mll"
+# 207 "bsb/bs_json.mll"
              c
-# 527 "json_lexer.ml"
+# 527 "bsb/bs_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 208 "json_lexer.gen.mll"
+# 208 "bsb/bs_json.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 536 "json_lexer.ml"
+# 536 "bsb/bs_json.ml"
 
   | 7 ->
-# 215 "json_lexer.gen.mll"
+# 215 "bsb/bs_json.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 546 "json_lexer.ml"
+# 546 "bsb/bs_json.ml"
 
   | 8 ->
-# 222 "json_lexer.gen.mll"
+# 222 "bsb/bs_json.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -2420,21 +2443,21 @@ let
 
         scan_string buf start lexbuf
       )
-# 557 "json_lexer.ml"
+# 557 "bsb/bs_json.ml"
 
   | 9 ->
-# 230 "json_lexer.gen.mll"
+# 230 "bsb/bs_json.mll"
       (
         error lexbuf Unterminated_string
       )
-# 564 "json_lexer.ml"
+# 564 "bsb/bs_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 234 "json_lexer.gen.mll"
+# 234 "bsb/bs_json.mll"
  
 
 type js_array =
@@ -2588,7 +2611,7 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 725 "json_lexer.ml"
+# 725 "bsb/bs_json.ml"
 
 end
 module Ext_file_pp : sig 
@@ -2738,252 +2761,6 @@ let cpp_process_file fname whole_intervals oc =
   close_in ic 
 
 end
-module Bs_build_ui : sig 
-#1 "bs_build_ui.mli"
-
-type 'a file_group = 
-  { dir : string ;
-    sources : 'a
-  } 
-
-type t = 
-  { files : Binary_cache.t file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-
-(** entry is to the 
-    [sources] in the schema
-*)
-val parsing_sources : 
-  Bs_json.t array ->
-  t 
-  
-
-end = struct
-#1 "bs_build_ui.ml"
-type 'a file_group = 
-  { dir : string ;
-    sources : 'a
-  } 
-
-let (//) = Binary_cache.simple_concat
-
-let (|?)  m (key, cb) =
-    m  |> Bs_json.test key cb 
-
-let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Bs_json.t) ->
-      match x with 
-      | `Str x -> Some x 
-      | _ -> None
-    ) s   
-
-
-let print_arrays file_array oc offset  =
-  let indent = String.make offset ' ' in 
-  let p_str s = 
-    output_string oc indent ; 
-    output_string oc s ;
-    output_string oc "\n"
-  in
-  match file_array with 
-  | []
-    -> output_string oc "[ ]\n"
-  | first::rest 
-    -> 
-    output_string oc "[ \n";
-    p_str ("\"" ^ first ^ "\"");
-    List.iter 
-      (fun f -> 
-         p_str (", \"" ^f ^ "\"")
-      ) rest;
-    p_str "]" 
-
-let  handle_list_files dir s loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
-  if Array.length s  = 0 then 
-    begin 
-      let files_array = Bs_dir.readdir dir  in 
-      let files, file_array =
-        Array.fold_left (fun (acc, f) name -> 
-            let new_acc = Binary_cache.map_update ~dir acc name in 
-            if new_acc == acc then 
-              new_acc, f 
-            else new_acc, name :: f 
-          ) (String_map.empty, []) files_array in 
-        [{Ext_file_pp.loc_start ;
-         loc_end; action = (`print (print_arrays file_array))}],
-       files
-    end
-
-  else 
-    [],
-     Array.fold_left (fun acc s ->
-        match s with 
-        | `Str s -> 
-          Binary_cache.map_update ~dir acc s
-        | _ -> acc
-      ) String_map.empty s
-
-(* we need add a new line in the end,
-   otherwise it will be idented twice
-*)
-type t = 
-  { files : Binary_cache.t file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-let (++) 
-    ({files = a; intervals = b; globbed_dirs } : t) ({files = c; intervals = d; globbed_dirs = dirs2})
-  : t 
-  = 
-  {files = a@c; 
-   intervals =  b@d ;
-   globbed_dirs = globbed_dirs @ dirs2
-  }
-
-let empty = { files = []; intervals  = []; globbed_dirs = []}
-
-let  parsing_sources (file_groups : Bs_json.t array)  = 
-  let rec expect_file_group cwd (x : Bs_json.t String_map.t )
-    : t =
-    let dir = ref cwd in
-    let sources = ref String_map.empty in
-
-    let update_queue = ref [] in 
-    let globbed_dirs = ref [] in 
-    let children = ref [] in 
-    let children_update_queue = ref [] in 
-    let children_globbed_dirs = ref [] in 
-    let () = 
-      x 
-      |?  (Bs_build_schemas.dir, `Str (fun s -> dir := cwd // s))
-      |?  (Bs_build_schemas.files ,
-           `Arr_loc (fun s loc_start loc_end ->
-               let dir = !dir in 
-               let tasks, files =  handle_list_files  dir s loc_start loc_end in
-               update_queue := tasks ;
-               sources := files
-
-             ))
-      |? (Bs_build_schemas.files, 
-          `Obj (fun m -> 
-              let excludes = ref [] in 
-              m
-              |? (Bs_build_schemas.excludes, `Arr (fun arr ->  excludes := get_list_string arr))
-              |? (Bs_build_schemas.slow_re, `Str 
-                    (fun s -> 
-                       let re = Str.regexp s in 
-                       let dir = !dir in 
-                       let excludes = !excludes in 
-                       let file_array = Bs_dir.readdir dir in 
-                       sources := 
-                         Array.fold_left (fun acc name -> 
-                             if Str.string_match re name 0 && 
-                                not (List.mem name excludes)
-                             then 
-                               Binary_cache.map_update  ~dir acc name 
-                             else acc
-                           ) String_map.empty file_array;
-                       globbed_dirs :=  [dir]
-                ))
-              |> ignore
-            )
-         )
-      |? (Bs_build_schemas.subdirs, `Arr (fun s -> 
-          let res  = 
-            Array.fold_left (fun  origin json ->
-                match json with 
-                | `Obj m -> 
-                   expect_file_group !dir  m  ++ origin
-                | _ -> origin ) empty s in 
-          children :=  res.files ; 
-          children_update_queue := res.intervals;
-          children_globbed_dirs := res.globbed_dirs
-        ))
-      |> ignore 
-    in 
-    {files = {dir = !dir; sources = !sources} :: !children;
-     intervals = !update_queue @ !children_update_queue ;
-     globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
-    } in 
-  Array.fold_left (fun  origin x ->
-      match x with 
-      | `Obj map ->  
-        expect_file_group Filename.current_dir_name map ++ origin
-      | _ -> origin
-    ) empty  file_groups 
-
-
-end
-module Bs_dep_infos : sig 
-#1 "bs_dep_infos.mli"
-
-
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float 
-}
-
-type t = dep_info array 
-
-
-val check : string -> string
-
-val write : string -> t -> unit
-
-end = struct
-#1 "bs_dep_infos.ml"
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float 
-}
-
-type t = dep_info array 
-
-let magic_number = "BS_DEP_INFOS_20161022"
-
-
-let write (fname : string)  (x : t) = 
-  let oc = open_out_bin fname in 
-  output_string oc magic_number ;
-  output_value oc x ; 
-  close_out oc 
-
-let read (fname : string) : t = 
-  let ic = open_in fname in 
-  let buffer = really_input_string ic (String.length magic_number) in
-  assert (buffer = magic_number);
-  let res : t = input_value ic  in 
-  close_in ic ; 
-  res
-
-
-
-let no_need_regenerate = ""
-
-(** check time stamp for all files 
-    TODO: those checks system call can be saved later
-    Return a reason 
-*)
-let check file =
-  try 
-    let xs = read file  in 
-    let rec aux i finish = 
-      if i = finish then no_need_regenerate
-      else 
-        let k = Array.unsafe_get  xs i  in
-        let current_file = k.dir_or_file in
-        let stat = Unix.stat  current_file in 
-        if stat.st_mtime <= k.stamp then 
-          aux (i + 1 ) finish 
-        else current_file
-    in aux 0 (Array.length xs)  
-  with _ -> file ^ " does not exist"
-
-end
 module String_set : sig 
 #1 "string_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3055,8 +2832,8 @@ end = struct
 include Set.Make(String)
 
 end
-module Bs_ninja : sig 
-#1 "bs_ninja.mli"
+module Bs_build_ui : sig 
+#1 "bs_build_ui.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3081,57 +2858,38 @@ module Bs_ninja : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type public = 
+  | Export_all 
+  | Export_set of String_set.t 
+  | Export_none
+    
+
+type  file_group = 
+  { dir : string ;
+    sources : Binary_cache.t ; 
+    resources : string list ;
+    bs_dependencies : string list;
+    public : public
+  } 
+
+type t = 
+  { files :  file_group list ; 
+    intervals :  Ext_file_pp.interval list ;
+    globbed_dirs : string list ; 
+  }
 
 
-
-module Rules : sig
-  type t  
-  val define : command:string ->
-  ?depfile:string ->
-  ?description:string ->
-  string -> t 
-
-  val build_ast : t
-  val build_ast_from_reason_impl : t 
-  val build_ast_from_reason_intf : t 
-  val build_deps : t 
-  val reload : t 
-  val copy_resources : t
-  val build_ml_from_mll : t 
-  val build_cmj_only : t
-  val build_cmj_cmi : t 
-  val build_cmi : t
-end
-
-
-(** output should always be marked explicitly,
-   otherwise the build system can not figure out clearly
-   however, for the command we don't need pass `-o`
+(** entry is to the 
+    [sources] in the schema
 *)
-val output_build :
-  ?order_only_deps:string list ->
-  ?implicit_deps:string list ->
-  ?outputs:string list ->
-  ?inputs:string list ->
-  output:string ->
-  input:string ->
-  rule:Rules.t -> out_channel -> unit
-
-
-val phony  :
-  ?order_only_deps:string list ->
-  inputs:string list -> output:string -> out_channel -> unit
-
-val output_kvs : (string * string) list -> out_channel -> unit
-
-val handle_module_info : 
-  string ->
-  out_channel ->
-  Binary_cache.module_info ->
-  string list * string list -> string list * string list
+val parsing_sources : 
+  string -> 
+  Bs_json.t array ->
+  t 
+  
 
 end = struct
-#1 "bs_ninja.ml"
+#1 "bs_build_ui.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3156,268 +2914,197 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type public = 
+  | Export_all 
+  | Export_set of String_set.t 
+  | Export_none
+    
+type  file_group = 
+  { dir : string ;
+    sources : Binary_cache.t ; 
+    resources : string list ;
+    bs_dependencies : string list ;
+    public : public
+  } 
 
-module Rules = struct
+let (//) = Ext_filename.combine
 
-  let rule_id = ref 0 
-  let rule_names = ref String_set.empty
-  type t = < name : out_channel -> String_set.elt >
-  let define
-      ~command
-      ?depfile
-      ?(description = "Building ${out}")
-      name 
-       =
-       let current_id = !rule_id in
-       let () = incr rule_id in 
-       object(self) 
-         val mutable used = false
-         val name = 
-           match String_set.find name !rule_names with 
-           | exception Not_found -> 
-             rule_names := String_set.add name !rule_names ; 
-             name 
-           | _ -> 
-             begin (* could be improved later
-                      1. instead of having a global id, having a unique id per rule name 
-                      2. the rule id is increased only when actually used
-                   *)
-               let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-               rule_names := String_set.add new_name  !rule_names ; 
-               new_name 
-             end
-         method private print oc =
-           if not used then 
-             begin 
-               output_string oc "rule "; output_string oc name ; output_string oc "\n";
-               output_string oc "  command = "; output_string oc command; output_string oc "\n";
-               begin match depfile with
-               | None -> ()
-               | Some f ->
-                 output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
-               end;
-               output_string oc "  description = " ; output_string oc description; output_string oc "\n";
-               used <- true
-             end
-           else ()
-         method name oc  =
-           self#print oc ;
-           name  
-       end
-     (* # for ast building, we remove most flags with respect to -I  *)
-     let build_ast =
-       define
-         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-        "build_ast" 
-     let build_ast_from_reason_impl =
-       define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-         "build_ast_from_reason_impl"
+let (|?)  m (key, cb) =
+    m  |> Bs_json.test key cb 
 
-     let build_ast_from_reason_intf =
-       (* we have to do this way, 
-          because it need to be ppxed by bucklescript
-       *)
-       define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-         "build_ast_from_reason_intf"
-
-     let build_deps =
-       define
-         ~command:"${bsdep} -bs-oprefix ${builddir}  -bs-MD ${in}"
-         "build_deps"
-     let reload =
-       define
-         ~command:"${bsbuild} -init"
-         "reload"
-     let copy_resources =
-       define
-         ~command:"cp ${in} ${out}"
-         "copy_resources"
-
-     (* only generate mll no mli generated *)
-     (* actually we would prefer generators in source ?
-        generator are divided into two categories:
-        1. not system dependent (ocamllex,ocamlyacc)
-        2. system dependent - has to be run on client's machine
-     *)
-
-     let build_ml_from_mll =
-       define
-         ~command:"${ocamllex} -o ${out} ${in}"
-         "build_ml_from_mll"
-
-     let build_cmj_only =
-       define
-         ~command:"${bsc} -bs-no-builtin-ppx-ml -bs-no-implicit-include ${bsc_computed_flags} -o ${in} -c -impl ${in}"
-         
-         ~depfile:"${in}.d"
-         "build_cmj_only"
-
-     let build_cmj_cmi =
-       define
-         ~command:"${bsc} -bs-assume-no-mli -bs-no-implicit-include -bs-no-builtin-ppx-ml ${bsc_computed_flags} -o ${in} -c -impl ${in}"
-         ~depfile:"${in}.d"
-         "build_cmj_cmi"
-     let build_cmi =
-       define
-         ~command:"${bsc} -bs-no-builtin-ppx-mli -bs-no-implicit-include ${bsc_computed_flags} -o ${out} -c -intf ${in}"
-         ~depfile:"${in}.d"
-         "build_cmi"
-end
-
-let output_build ?(order_only_deps=[]) ?(implicit_deps=[]) ?(outputs=[]) ?(inputs=[]) ~output ~input  ~rule  oc =
-  let rule = rule#name oc in
-  output_string oc "build "; 
-  output_string oc output ; 
-  outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
-  output_string oc " : ";
-  output_string oc rule;
-  output_string oc " ";
-  output_string oc input;
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
-  begin match implicit_deps with 
-  | [] -> ()
-  | _ -> 
-    begin 
-      output_string oc " | "; 
-      implicit_deps 
-      |> 
-      List.iter (fun s -> output_string oc " "; output_string oc s )
-    end
-  end;
-  begin match order_only_deps with
-  | [] -> ()
-  | _ ->
-    begin
-      output_string oc " || ";
-      order_only_deps
-      |>
-      List.iter (fun s -> output_string oc " " ; output_string oc s)
-    end
-  end;
-  output_string oc "\n"
-
-let phony ?(order_only_deps=[]) ~inputs ~output oc =
-  output_string oc "build "; 
-  output_string oc output ; 
-  output_string oc " : ";
-  output_string oc "phony";
-  output_string oc " ";
-  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
-  begin match order_only_deps with
-    | [] -> ()
-    | _ ->
-      begin
-        output_string oc " || ";
-        order_only_deps
-        |>
-        List.iter (fun s -> output_string oc " " ; output_string oc s)
-      end
-  end;
-  output_string oc "\n"
-
-let output_kv key value oc  =
-  output_string oc key ; 
-  output_string oc " = "; 
-  output_string oc value ; 
-  output_string oc "\n"
-
-let output_kvs kvs oc = 
-  List.iter (fun (k,v) -> output_kv k v oc) kvs 
+let get_list_string s = 
+  Ext_array.to_list_map (fun (x : Bs_json.t) ->
+      match x with 
+      | `Str x -> Some x 
+      | _ -> None
+    ) s   
 
 
-
-let (//) = Binary_cache.simple_concat
-
-let handle_module_info builddir oc 
-    ({mli; ml; mll } : Binary_cache.module_info) (all_deps, all_cmis) =  
-  let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  = 
-    let filename_sans_extension = Filename.chop_extension input in
-    let output_file_sans_extension = builddir // filename_sans_extension in
-    let output_ml = output_file_sans_extension ^ Literals.suffix_ml in 
-    let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in 
-    let output_mlastd = output_file_sans_extension ^ Literals.suffix_mlastd in
-    let output_mliast = output_file_sans_extension ^ Literals.suffix_mliast in 
-    let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
-    let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in 
-    let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in 
-    if kind = `Mll then 
-      output_build oc
-        ~output:output_ml 
-        ~input
-        ~rule: Rules.build_ml_from_mll ;  
-    begin match kind with
-      | `Mll 
-      | `Ml 
-      | `Re ->
-        let input, rule  = 
-          if kind = `Re then 
-            input, Rules.build_ast_from_reason_impl
-          else if kind = `Mll then 
-            output_ml, Rules.build_ast  
-          else 
-            input, Rules.build_ast  
-        in 
-        begin 
-          output_build oc
-            ~output:output_mlast ~input ~rule;
-          output_build oc ~output:output_mlastd
-            ~input:output_mlast
-            ~rule:Rules.build_deps ;
-          let rule_name , cm_outputs, deps = 
-            if mli = Mli_empty then Rules.build_cmj_only, [  output_cmi]  , [] 
-            else Rules.build_cmj_cmi, [], [output_cmi]  
-          in  
-          output_build oc ~output:output_cmj 
-            ~outputs:cm_outputs ~input:output_mlast ~implicit_deps:deps ~rule:rule_name ;
-          ([output_mlastd] , [output_cmi]);
-        end
-      | `Mli
-      | `Rei -> 
-        let rule = 
-          if kind = `Mli then Rules.build_ast 
-          else Rules.build_ast_from_reason_intf  in
-        output_build oc 
-          ~output:output_mliast
-          ~input
-          ~rule;
-        output_build oc 
-          ~output:output_mliastd
-          ~input:output_mliast 
-          ~rule:Rules.build_deps  ; 
-        output_build oc 
-          ~output:output_cmi 
-          ~input:output_mliast 
-          ~implicit_deps:[output_mliastd]
-          ~rule:Rules.build_cmi;
-        ([output_mliastd] ,
-         [output_cmi]  )
-    end 
+let print_arrays file_array oc offset  =
+  let indent = String.make offset ' ' in 
+  let p_str s = 
+    output_string oc indent ; 
+    output_string oc s ;
+    output_string oc "\n"
   in
-  let (++) (xs,ys) (us,vs) = (xs @ us, ys @ vs) in 
-  let zero = ([],[]) in
-  begin match ml with 
-    | Ml input -> emit_build `Ml input
-    | Re input -> emit_build `Re input 
-    | Ml_empty -> zero
-  end ++ 
-  begin match mli with 
-    | Mli mli_file  -> 
-      emit_build `Mli mli_file
-    | Rei rei_file -> 
-      emit_build `Rei rei_file
-    | Mli_empty -> zero 
-  end ++
-  begin match mll with 
-    | Some mll_file -> 
-      begin match ml with
-        | Ml_empty -> emit_build `Mll mll_file
-        | Ml input | Re input ->  
-          failwith ("both "^ mll_file ^ " and " ^ input ^ " are found in source listings" )
-      end
-    | None -> zero
-  end ++ (all_deps, all_cmis)
+  match file_array with 
+  | []
+    -> output_string oc "[ ]\n"
+  | first::rest 
+    -> 
+    output_string oc "[ \n";
+    p_str ("\"" ^ first ^ "\"");
+    List.iter 
+      (fun f -> 
+         p_str (", \"" ^f ^ "\"")
+      ) rest;
+    p_str "]" 
+
+let  handle_list_files dir s loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
+  if Array.length s  = 0 then 
+    begin 
+      let files_array = Bs_dir.readdir dir  in 
+      let files, file_array =
+        Array.fold_left (fun (acc, f) name -> 
+            let new_acc = Binary_cache.map_update ~dir acc name in 
+            if new_acc == acc then 
+              new_acc, f 
+            else new_acc, name :: f 
+          ) (String_map.empty, []) files_array in 
+        [{Ext_file_pp.loc_start ;
+         loc_end; action = (`print (print_arrays file_array))}],
+       files
+    end
+
+  else 
+    [],
+     Array.fold_left (fun acc s ->
+        match s with 
+        | `Str s -> 
+          Binary_cache.map_update ~dir acc s
+        | _ -> acc
+      ) String_map.empty s
+
+(* we need add a new line in the end,
+   otherwise it will be idented twice
+*)
+type t = 
+  { files :  file_group list ; 
+    intervals :  Ext_file_pp.interval list ;
+    globbed_dirs : string list ; 
+  }
+
+let (++) 
+    ({files = a; 
+      intervals = b; 
+      globbed_dirs;
+     } : t)
+    ({files = c; intervals = d; globbed_dirs = dirs2; 
+     })
+  : t 
+  = 
+  {files = a@c; 
+   intervals =  b@d ;
+   globbed_dirs = globbed_dirs @ dirs2;
+  }
+
+let empty = { files = []; intervals  = []; globbed_dirs = [];  }
+
+let  parsing_sources cwd (file_groups : Bs_json.t array)  = 
+  let rec expect_file_group cwd (x : Bs_json.t String_map.t )
+    : t =
+    let dir = ref cwd in
+    let sources = ref String_map.empty in
+    let resources = ref [] in 
+    let bs_dependencies = ref [] in
+    let public = ref Export_none in 
+
+    let update_queue = ref [] in 
+    let globbed_dirs = ref [] in 
+
+    let children = ref [] in 
+    let children_update_queue = ref [] in 
+    let children_globbed_dirs = ref [] in 
+    let () = 
+      x 
+      |?  (Bs_build_schemas.dir, `Str (fun s -> dir := cwd // s))
+      |?  (Bs_build_schemas.files ,
+           `Arr_loc (fun s loc_start loc_end ->
+               let dir = !dir in 
+               let tasks, files =  handle_list_files  dir s loc_start loc_end in
+               update_queue := tasks ;
+               sources := files
+
+             ))
+      |? (Bs_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+      |?  (Bs_build_schemas.resources ,
+           `Arr (fun s  ->
+               resources := get_list_string s
+             ))
+      |? (Bs_build_schemas.public, `Str (fun s -> 
+          if s = "all" then public := Export_all else 
+          if s = "none" then public := Export_none else 
+            failwith ("invalid str for" ^ s )
+        ))
+      |? (Bs_build_schemas.public, `Arr (fun s -> 
+          public := Export_set (String_set.of_list (get_list_string s ) )
+        ) )
+      |? (Bs_build_schemas.files, 
+          `Obj (fun m -> 
+              let excludes = ref [] in 
+              m
+              |? (Bs_build_schemas.excludes, `Arr (fun arr ->  excludes := get_list_string arr))
+              |? (Bs_build_schemas.slow_re, `Str 
+                    (fun s -> 
+                       let re = Str.regexp s in 
+                       let dir = !dir in 
+                       let excludes = !excludes in 
+                       let file_array = Bs_dir.readdir dir in 
+                       sources := 
+                         Array.fold_left (fun acc name -> 
+                             if Str.string_match re name 0 && 
+                                not (List.mem name excludes)
+                             then 
+                               Binary_cache.map_update  ~dir acc name 
+                             else acc
+                           ) String_map.empty file_array;
+                       globbed_dirs :=  [dir]
+                ))
+              |> ignore
+            )
+         )
+      |? (Bs_build_schemas.subdirs, `Arr (fun s -> 
+          let res  = 
+            Array.fold_left (fun  origin json ->
+                match json with 
+                | `Obj m -> 
+                   expect_file_group !dir  m  ++ origin
+                | _ -> origin ) empty s in 
+          children :=  res.files ; 
+          children_update_queue := res.intervals;
+          children_globbed_dirs := res.globbed_dirs
+        ))
+      |> ignore 
+    in 
+    {
+      files = 
+        {dir = !dir; 
+         sources = !sources; 
+         resources = !resources;
+         bs_dependencies = !bs_dependencies;
+         public = !public
+        } 
+        :: !children;
+      intervals = !update_queue @ !children_update_queue ;
+     globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
+    } in 
+  Array.fold_left (fun  origin x ->
+      match x with 
+      | `Obj map ->  
+        expect_file_group cwd map ++ origin
+      | _ -> origin
+    ) empty  file_groups 
+
 
 end
 module Ext_list : sig 
@@ -3906,6 +3593,669 @@ let rec last xs =
   | [] -> invalid_arg "Ext_list.last"
 
 end
+module Bs_build_util : sig 
+#1 "bs_build_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** 
+Use:
+{[
+flag_concat "-ppx" [ppxs]
+]}
+*)
+val flag_concat : string -> string list -> string
+
+val proj_rel : string -> string
+
+val convert_path : string -> string
+
+val mkp : string -> unit
+
+end = struct
+#1 "bs_build_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let flag_concat flag xs = 
+  xs 
+  |> Ext_list.flat_map (fun x -> [flag ; x])
+  |> String.concat " "
+
+let lazy_src_root_dir = "$src_root_dir" 
+let (//) = Ext_filename.combine
+let proj_rel path = lazy_src_root_dir // path
+(* we use lazy $src_root_dir *)
+
+(* assume build dir is fixed to be _build *)
+let rel_dir = Filename.parent_dir_name 
+
+(* More tests needed *)
+let convert_unix_path_to_windows p = 
+  String.map (function '/' ->'\\' | c -> c ) p 
+
+let convert_path = 
+  if Sys.unix then fun (p : string) -> 
+    if Filename.basename p = p then p else 
+      proj_rel  p 
+  else 
+  if Sys.win32 || Sys.cygwin then 
+    fun (p:string) -> 
+      if Filename.basename p = p then p else 
+       proj_rel @@ convert_unix_path_to_windows p
+  else failwith ("Unknown OS :" ^ Sys.os_type)
+(* we only need convert the path in the begining*)
+
+
+(** 
+{[
+mkp "a/b/c/d"
+]}
+*)
+let rec mkp dir = 
+  if not (Sys.file_exists dir) then 
+    let parent_dir  = Filename.dirname dir in
+    if  parent_dir = Filename.current_dir_name then 
+      Unix.mkdir dir 0o777 (* leaf node *)
+    else 
+      begin 
+        mkp parent_dir ; 
+        Unix.mkdir dir 0o777 
+      end
+  else if not  @@ Sys.is_directory dir then 
+    failwith ( dir ^ " exists but it is not a directory, plz remove it first")
+  else ()
+
+end
+module Bs_dep_infos : sig 
+#1 "bs_dep_infos.mli"
+
+
+type dep_info = {
+  dir_or_file : string ;
+  stamp : float 
+}
+
+type t = dep_info array 
+
+
+val check : string -> string
+
+val write : string -> t -> unit
+
+end = struct
+#1 "bs_dep_infos.ml"
+type dep_info = {
+  dir_or_file : string ;
+  stamp : float 
+}
+
+type t = dep_info array 
+
+let magic_number = "BS_DEP_INFOS_20161022"
+
+
+let write (fname : string)  (x : t) = 
+  let oc = open_out_bin fname in 
+  output_string oc magic_number ;
+  output_value oc x ; 
+  close_out oc 
+
+let read (fname : string) : t = 
+  let ic = open_in fname in 
+  let buffer = really_input_string ic (String.length magic_number) in
+  assert (buffer = magic_number);
+  let res : t = input_value ic  in 
+  close_in ic ; 
+  res
+
+
+
+let no_need_regenerate = ""
+
+(** check time stamp for all files 
+    TODO: those checks system call can be saved later
+    Return a reason 
+*)
+let check file =
+  try 
+    let xs = read file  in 
+    let rec aux i finish = 
+      if i = finish then no_need_regenerate
+      else 
+        let k = Array.unsafe_get  xs i  in
+        let current_file = k.dir_or_file in
+        let stat = Unix.stat  current_file in 
+        if stat.st_mtime <= k.stamp then 
+          aux (i + 1 ) finish 
+        else current_file
+    in aux 0 (Array.length xs)  
+  with _ -> file ^ " does not exist"
+
+end
+module Bs_ninja : sig 
+#1 "bs_ninja.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+module Rules : sig
+  type t  
+  val get_name : t  -> out_channel -> string
+    
+  val define : command:string ->
+  ?depfile:string ->
+  ?description:string ->
+  string -> t 
+
+  val build_ast : t
+  val build_ast_from_reason_impl : t 
+  val build_ast_from_reason_intf : t 
+  val build_deps : t 
+  val reload : t 
+  val copy_resources : t
+  val build_ml_from_mll : t 
+  val build_cmj_only : t
+  val build_cmj_cmi : t 
+  val build_cmi : t
+end
+
+
+(** output should always be marked explicitly,
+   otherwise the build system can not figure out clearly
+   however, for the command we don't need pass `-o`
+*)
+val output_build :
+  ?order_only_deps:string list ->
+  ?implicit_deps:string list ->
+  ?outputs:string list ->
+  ?inputs:string list ->
+  ?shadows:(string * [`Append of string | `Overwrite of string ]) list ->
+  output:string ->
+  input:string ->
+  rule:Rules.t -> out_channel -> unit
+
+
+val phony  :
+  ?order_only_deps:string list ->
+  inputs:string list -> output:string -> out_channel -> unit
+
+val output_kvs : (string * string) list -> out_channel -> unit
+
+type info = string list  * string list 
+val handle_file_groups : out_channel ->
+  Bs_build_ui.file_group list ->
+  info -> info
+
+end = struct
+#1 "bs_ninja.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+module Rules = struct
+
+  let rule_id = ref 0 
+  let rule_names = ref String_set.empty
+  type t = < name : out_channel -> String_set.elt >
+  let get_name (x : t) oc = x # name oc 
+  let define
+      ~command
+      ?depfile
+      ?(description = "Building ${out}")
+      name 
+       =
+       let current_id = !rule_id in
+       let () = incr rule_id in 
+       object(self) 
+         val mutable used = false
+         val name = 
+           match String_set.find name !rule_names with 
+           | exception Not_found -> 
+             rule_names := String_set.add name !rule_names ; 
+             name 
+           | _ -> 
+             begin (* could be improved later
+                      1. instead of having a global id, having a unique id per rule name 
+                      2. the rule id is increased only when actually used
+                   *)
+               let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
+               rule_names := String_set.add new_name  !rule_names ; 
+               new_name 
+             end
+         method private print oc =
+           if not used then 
+             begin 
+               output_string oc "rule "; output_string oc name ; output_string oc "\n";
+               output_string oc "  command = "; output_string oc command; output_string oc "\n";
+               begin match depfile with
+               | None -> ()
+               | Some f ->
+                 output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
+               end;
+               output_string oc "  description = " ; output_string oc description; output_string oc "\n";
+               used <- true
+             end
+           else ()
+         method name oc  =
+           self#print oc ;
+           name  
+       end
+     (* # for ast building, we remove most flags with respect to -I  *)
+     let build_ast =
+       define
+         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+        "build_ast" 
+     let build_ast_from_reason_impl =
+       define
+         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+         "build_ast_from_reason_impl"
+
+     let build_ast_from_reason_intf =
+       (* we have to do this way, 
+          because it need to be ppxed by bucklescript
+       *)
+       define
+         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+         "build_ast_from_reason_intf"
+
+     let build_deps =
+       define
+         ~command:"${bsdep}  -bs-MD ${in}"
+         "build_deps"
+     let reload =
+       define
+         ~command:"${bsbuild} -init"
+         "reload"
+     let copy_resources =
+       define
+         ~command:"cp ${in} ${out}"
+         "copy_resources"
+
+
+     let ocaml_bin_install = 
+       define ~command:"cp ${in} ${out}"
+         "ocaml_bin_install"
+     (* only generate mll no mli generated *)
+     (* actually we would prefer generators in source ?
+        generator are divided into two categories:
+        1. not system dependent (ocamllex,ocamlyacc)
+        2. system dependent - has to be run on client's machine
+     *)
+
+     let build_ml_from_mll =
+       define
+         ~command:"${ocamllex} -o ${out} ${in}"
+         "build_ml_from_mll"
+
+(**************************************)
+(* below are rules not local any more *)
+(**************************************)     
+     let build_cmj_only =
+       define
+         ~command:"${bsc} -bs-no-builtin-ppx-ml -bs-no-implicit-include ${bs_package_includes} ${bsc_computed_flags} ${bs_package_flags} -o ${in} -c -impl ${in}"
+         
+         ~depfile:"${in}.d"
+         "build_cmj_only"
+
+     let build_cmj_cmi =
+       define
+         ~command:"${bsc} -bs-assume-no-mli -bs-no-implicit-include -bs-no-builtin-ppx-ml ${bs_package_includes} ${bsc_computed_flags} ${bs_package_flags} -o ${in} -c -impl ${in}"
+         ~depfile:"${in}.d"
+         "build_cmj_cmi"
+     let build_cmi =
+       define
+         ~command:"${bsc} -bs-no-builtin-ppx-mli -bs-no-implicit-include ${bs_package_includes} ${bsc_computed_flags} -o ${out} -c -intf ${in}"
+         ~depfile:"${in}.d"
+         "build_cmi"
+end
+
+let output_build 
+    ?(order_only_deps=[]) 
+    ?(implicit_deps=[]) 
+    ?(outputs=[]) 
+    ?(inputs=[]) 
+    ?(shadows=[])
+    ~output 
+    ~input  
+    ~rule
+    oc =
+  let rule = Rules.get_name rule  oc in
+  output_string oc "build "; 
+  output_string oc output ; 
+  outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
+  output_string oc " : ";
+  output_string oc rule;
+  output_string oc " ";
+  output_string oc input;
+  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  begin match implicit_deps with 
+  | [] -> ()
+  | _ -> 
+    begin 
+      output_string oc " | "; 
+      implicit_deps 
+      |> 
+      List.iter (fun s -> output_string oc " "; output_string oc s )
+    end
+  end;
+  begin match order_only_deps with
+  | [] -> ()
+  | _ ->
+    begin
+      output_string oc " || ";
+      order_only_deps
+      |>
+      List.iter (fun s -> output_string oc " " ; output_string oc s)
+    end
+  end;
+  output_string oc "\n";
+  begin match shadows with 
+    | [] -> ()
+    | xs -> 
+      List.iter (fun (k,v) -> 
+          output_string oc "  " ;
+          output_string oc k ; 
+          output_string oc " = ";
+          match v with 
+          | `Overwrite s -> output_string oc s ; output_string oc "\n"
+          | `Append s -> 
+            output_string oc "$" ;
+            output_string oc k; 
+            output_string oc " "; 
+            output_string oc s ; output_string oc "\n"
+        ) xs 
+  end
+
+
+let phony ?(order_only_deps=[]) ~inputs ~output oc =
+  output_string oc "build "; 
+  output_string oc output ; 
+  output_string oc " : ";
+  output_string oc "phony";
+  output_string oc " ";
+  inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
+  begin match order_only_deps with
+    | [] -> ()
+    | _ ->
+      begin
+        output_string oc " || ";
+        order_only_deps
+        |>
+        List.iter (fun s -> output_string oc " " ; output_string oc s)
+      end
+  end;
+  output_string oc "\n"
+
+let output_kv key value oc  =
+  output_string oc key ; 
+  output_string oc " = "; 
+  output_string oc value ; 
+  output_string oc "\n"
+
+let output_kvs kvs oc = 
+  List.iter (fun (k,v) -> output_kv k v oc) kvs 
+
+
+
+let (//) = Ext_filename.combine
+type info = string list  * string list 
+
+let zero : info = ([],[])
+           
+let (++) (us : info) (vs : info) = 
+  if us == zero then vs else
+  if vs == zero then us 
+  else
+    let (xs,ys) = us in 
+    let (xxs,yys) = vs in
+    (xs @ xxs, ys @ yys)
+
+
+
+let common_js_prefix =  "lib"//"js" 
+let ocaml_bin_install_prefix = "lib"// "ocaml"
+                               
+let handle_file_group oc acc (group: Bs_build_ui.file_group) =
+  let handle_module_info  oc  module_name
+      ({mli; ml; mll } : Binary_cache.module_info) 
+      bs_dependencies
+      info  =  
+    let installable = 
+      match group.public with 
+      | Export_all -> true 
+      | Export_none -> false 
+      | Export_set set ->  String_set.mem module_name set in 
+    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  = 
+      let filename_sans_extension = Filename.chop_extension input in
+      let input = "$src_root_dir"// input in
+      let output_file_sans_extension = filename_sans_extension in
+      let output_ml = output_file_sans_extension ^ Literals.suffix_ml in 
+      let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in 
+      let output_mlastd = output_file_sans_extension ^ Literals.suffix_mlastd in
+      let output_mliast = output_file_sans_extension ^ Literals.suffix_mliast in 
+      let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
+      let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in 
+      let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in 
+      let output_js = Bs_build_util.proj_rel common_js_prefix
+                      // output_file_sans_extension ^ Literals.suffix_js in
+
+      let shadows = 
+        let package_flags = 
+          [ "bs_package_flags",
+            `Overwrite ("-bs-package-output commonjs:"^  
+                       common_js_prefix //Filename.dirname output_cmi)
+            (* FIXME: assume that output is calculated correctly*)
+          ]
+        in
+
+        match bs_dependencies with 
+        | [] -> package_flags
+        | _ -> 
+          (
+            "bs_package_includes",
+            `Append (String.concat " " (Ext_list.flat_map (fun x ->  ["-bs-package-include"; x] ) bs_dependencies) ))
+          :: package_flags
+      in 
+      if kind = `Mll then 
+        output_build oc
+          ~output:output_ml 
+          ~input
+          ~rule: Rules.build_ml_from_mll ;  
+      begin match kind with
+        | `Mll 
+        | `Ml 
+        | `Re ->
+          let input, rule  = 
+            if kind = `Re then 
+              input, Rules.build_ast_from_reason_impl
+            else if kind = `Mll then 
+              output_ml, Rules.build_ast  
+            else 
+              input, Rules.build_ast  
+          in 
+          begin 
+            output_build oc
+              ~output:output_mlast ~input ~rule;
+            output_build oc ~output:output_mlastd
+              ~input:output_mlast
+              ~rule:Rules.build_deps ;
+            let rule_name , cm_outputs, deps = 
+              if mli = Mli_empty then
+                Rules.build_cmj_only, 
+                [  output_cmi]  , [] 
+              else Rules.build_cmj_cmi, [], [output_cmi]  
+            in  
+
+            output_build oc
+              ~output:output_cmj 
+              ~shadows 
+              ~outputs:  (output_js:: cm_outputs)
+              ~input:output_mlast ~implicit_deps:deps ~rule:rule_name ;
+            if installable then 
+              begin 
+                output_cmj :: cm_outputs
+                |> List.iter 
+                  (
+                    fun x -> 
+                      output_build oc 
+                        ~output:(Bs_build_util.proj_rel @@ "lib" // "ocaml"// Filename.basename x)
+                        ~input:x
+                        ~rule:Rules.copy_resources
+                  )
+              end;
+            ([output_mlastd] , [output_cmi])
+          end
+        | `Mli
+        | `Rei -> 
+          let rule = 
+            if kind = `Mli then Rules.build_ast 
+            else Rules.build_ast_from_reason_intf  in
+          output_build oc 
+            ~output:output_mliast
+            ~input
+            ~rule;
+          output_build oc 
+            ~output:output_mliastd
+            ~input:output_mliast 
+            ~rule:Rules.build_deps  ; 
+          output_build oc 
+            ~shadows
+            ~output:output_cmi 
+            ~input:output_mliast 
+            ~implicit_deps:[output_mliastd]
+            ~rule:Rules.build_cmi;
+          if installable then 
+            begin 
+              output_build oc 
+                ~output:(Bs_build_util.proj_rel @@ "lib" // "ocaml"// Filename.basename output_cmi)
+                ~input:output_cmi
+                ~rule:Rules.copy_resources
+            end;
+          ([output_mliastd] ,
+           [output_cmi]  )
+      end 
+    in
+    begin match ml with 
+      | Ml input -> emit_build `Ml input
+      | Re input -> emit_build `Re input 
+      | Ml_empty -> zero
+    end ++ 
+    begin match mli with 
+      | Mli mli_file  -> 
+        emit_build `Mli mli_file
+      | Rei rei_file -> 
+        emit_build `Rei rei_file
+      | Mli_empty -> zero 
+    end ++
+    begin match mll with 
+      | Some mll_file -> 
+        begin match ml with
+          | Ml_empty -> emit_build `Mll mll_file
+          | Ml input | Re input ->  
+            failwith ("both "^ mll_file ^ " and " ^ input ^ " are found in source listings" )
+        end
+      | None -> zero
+    end ++ info
+
+  in
+  String_map.fold (fun  k v  acc -> 
+      handle_module_info  oc k v group.bs_dependencies acc 
+    ) group.sources  acc
+
+
+let handle_file_groups oc  (file_groups  :  Bs_build_ui.file_group list) st =
+      List.fold_left (handle_file_group oc) st  file_groups
+
+  
+
+end
 module Bsb_main : sig 
 #1 "bsb_main.mli"
 (* *)
@@ -3947,12 +4297,12 @@ end = struct
 let (|?)  m (key, cb) =
     m  |> Bs_json.test key cb 
 
-let main_ninja = "build.ninja"
-let config_file = "bsconfig.json"
+
+
 let config_file_bak = "bsconfig.json.bak"
 let ninja = "ninja" 
 let bsdeps = ".bsdeps"
-let (//) = Binary_cache.simple_concat
+let (//) = Ext_filename.combine
 let get_list_string s = 
   Ext_array.to_list_map (fun (x : Bs_json.t) ->
       match x with 
@@ -3960,24 +4310,39 @@ let get_list_string s =
       | _ -> None
     ) s   
 
-(* More tests needed *)
-let convert_unix_path_to_windows p = 
-  String.map (function '/' ->'\\' | c -> c ) p 
-
-let convert_path  = 
-  if Sys.unix then fun p -> p else 
-  if Sys.win32 || Sys.cygwin then convert_unix_path_to_windows
-  else failwith ("Unknown OS :" ^ Sys.os_type)
-(* we only need convert the path in the begining*)
+let bs_file_groups = ref []
 
 
 
 
-module Default = struct
-  let bsc = ref  "bsc.exe"
-  let bsbuild = ref "bsbuild.exe"
-  let bsdep = ref "bsdep.exe"
-  let ocamllex =  ref "ocamllex.opt"
+module Default : sig
+  val set_bsc : string -> unit 
+  val set_builddir : string -> unit 
+  val set_bsdep : string -> unit 
+  val set_ocamllex : string -> unit 
+  val set_package_name : string -> unit
+  val set_bs_external_includes : Bs_json.t array -> unit 
+  val set_bsc_flags : Bs_json.t array -> unit 
+  (* val ppx_flags : string list ref  *)
+
+  val get_bsc : unit -> string 
+  val get_builddir : unit ->  string 
+  val get_bsdep : unit -> string 
+  val get_ocamllex : unit -> string 
+  val get_package_name : unit -> string option 
+  val get_bs_external_includes : unit -> string list 
+  val get_bsc_flags : unit -> string list
+  val get_ppx_flags : unit -> string list 
+  val get_bs_dependencies : unit  -> string list 
+  val set_bs_dependencies : Bs_json.t array  -> unit
+end  = struct
+
+  (* let () = print_endline Sys.executable_name *)
+  let bsb_dir = Filename.dirname Sys.executable_name
+  let bsc = ref  (bsb_dir // "bsc.exe")
+
+  let bsdep = ref (bsb_dir // "bsdep.exe")
+  let ocamllex =  ref ( "ocamllex.opt")
 
   let bs_external_includes = ref []
 
@@ -3986,18 +4351,28 @@ module Default = struct
   let bsc_flags = ref []
   let ppx_flags = ref []
   let static_resources = ref []
-  let builddir = ref "_build"
-  let bs_file_groups = ref []
-
-  let set_bsc s = bsc := convert_path s
-  let set_bsbuild s = bsbuild := convert_path s 
-  let set_bsdep s = bsdep := convert_path s
-  let set_ocamllex s = ocamllex := convert_path s 
-  let set_static_resouces_from_array s = 
-    static_resources := Ext_array.to_list_map (fun x ->
-      match x with 
-      | `Str x -> Some (convert_path x)
-      | _ -> None) s 
+  let builddir = ref ("lib"//"bs")
+  let bs_dependencies = ref []
+  let get_bs_dependencies () = !bs_dependencies
+  let set_bs_dependencies  s =
+    bs_dependencies := get_list_string s 
+  let set_bs_external_includes s = 
+    bs_external_includes := List.map Bs_build_util.convert_path (get_list_string s )
+  let set_bsc_flags s = bsc_flags := get_list_string s 
+  let set_bsc s = bsc := Bs_build_util.convert_path s
+  let set_builddir s = builddir := Bs_build_util.convert_path s 
+  let set_bsdep s = bsdep := Bs_build_util.convert_path s
+  let set_ocamllex s = ocamllex := Bs_build_util.convert_path s 
+  let set_package_name s = package_name := Some s
+  let get_bsdep () = !bsdep
+  let get_bsc () = !bsc 
+  let get_builddir () = !builddir
+  let get_package_name () = !package_name
+  let get_ocamllex () = !ocamllex 
+  let get_builddir () = !builddir
+  let get_bs_external_includes () = !bs_external_includes
+  let get_bsc_flags () = !bsc_flags 
+  let get_ppx_flags () = !ppx_flags
 end
 
 let output_ninja 
@@ -4007,15 +4382,17 @@ let output_ninja
     ocamllex
     builddir
     bs_external_includes
-    static_resources 
     bs_file_groups 
     bsc_flags
     ppx_flags 
+    bs_dependencies
   = 
-  let ppx_flags =
-    String.concat " " @@
-    Ext_list.flat_map (fun x -> ["-ppx";  x ])  ppx_flags in 
-  let bs_files, source_dirs  = List.fold_left (fun (acc,dirs) {Bs_build_ui.sources ; dir } -> 
+  let () = Bs_build_util.mkp builddir in 
+  let eager_src_root_dir  =  Sys.getcwd () in
+
+  let ppx_flags = Bs_build_util.flag_concat "-ppx" ppx_flags in 
+  let bs_groups, source_dirs,static_resources  = 
+    List.fold_left (fun (acc, dirs,acc_resources) ({Bs_build_ui.sources ; dir; resources }) -> 
       String_map.merge (fun modname k1 k2 ->
           match k1 , k2 with
           | None , None -> 
@@ -4024,19 +4401,17 @@ let output_ninja
             failwith ("conflict files found: " ^ modname)
           | Some v, None  -> Some v 
           | None, Some v ->  Some v 
-        ) acc  sources , dir::dirs
-    ) (String_map.empty,[]) bs_file_groups in
-  if not (Sys.file_exists builddir && Sys.is_directory builddir) then 
-    begin 
-      ignore @@ Unix.mkdir builddir 0o777
-    end;
-  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_files ;
+        ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
+    ) (String_map.empty,[],[]) bs_file_groups in
+  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
   let internal_includes =
       source_dirs
-      |> Ext_list.flat_map (fun x -> ["-I" ; builddir // x ]) in 
+      |> Ext_list.flat_map (fun x -> ["-I" ;  x ]) (* it is a mirror, no longer need `builddir//` *)
+  in 
   let external_includes = 
       Ext_list.flat_map (fun x -> ["-I" ; x]) bs_external_includes in 
-
+  let bs_package_includes = 
+    Bs_build_util.flag_concat "-bs-package-include" bs_dependencies in 
   let bsc_parsing_flags =
     String.concat " " bsc_flags 
   in  
@@ -4045,39 +4420,48 @@ let output_ninja
       match package_name with 
       | None -> external_includes @ internal_includes 
       | Some x -> "-bs-package-name" ::  x :: external_includes @ internal_includes
-    in 
+    in  (* make sure -bs-package-name is before -bs-package-output *)
     String.concat " " ( bsc_flags @ init_flags)
   in
-  let oc = open_out (builddir // main_ninja) in 
+  let oc = open_out (builddir // Literals.build_ninja) in 
   begin 
+
     let () = 
       oc 
       |>
-      Bs_ninja.output_kvs [ "bsc", bsc ; 
-                   "bsc_computed_flags", bsc_computed_flags ; 
-                   "bsc_parsing_flags", bsc_parsing_flags ; 
-                   "bsdep", bsdep; 
-                   "ocamllex", ocamllex;
-                   "ppx_flags", ppx_flags;
-                   "builddir", builddir
-                 ]
+      Bs_ninja.output_kvs 
+        [
+          "src_root_dir", eager_src_root_dir (* TODO: need check its integrity*);
+          "bsc", bsc ; 
+          "bsdep", bsdep; 
+          "ocamllex", ocamllex;
+          "bsc_computed_flags", bsc_computed_flags ; 
+          "bsc_parsing_flags", bsc_parsing_flags ; 
+          "ppx_flags", ppx_flags;
+          "bs_packaeg_includes", bs_package_includes;
+          "bs_package_flags", "" (* TODO*)
+          (* "builddir", builddir; we should not have it set, since it's correct here *)
+
+        ]
     in
-    let all_deps, all_cmis = String_map.fold
-        (fun _k v acc -> 
-        Bs_ninja.handle_module_info builddir oc v acc) bs_files ([],[]) in
+    let all_deps, all_cmis = 
+      Bs_ninja.handle_file_groups oc bs_file_groups ([],[]) in 
     let all_deps = 
+      (* we need copy package.json into [_build] since it does affect build output *)
+      (* Literals.package_json ::  
+         it is a bad idea to copy package.json which requires to copy js files
+      *)
       static_resources 
       |> List.fold_left (fun all_deps x -> 
-          let output = (builddir//x) in
           Bs_ninja.output_build oc
-            ~output
-            ~input:x
+            ~output:x
+            ~input:(Bs_build_util.proj_rel x)
             ~rule:Bs_ninja.Rules.copy_resources;
-          output:: all_deps 
+          x:: all_deps 
         ) all_deps in 
     Bs_ninja.phony oc ~order_only_deps:all_deps 
       ~inputs:[]
-      ~output:(builddir//main_ninja) ; 
+      ~output:Literals.build_ninja ; 
     close_out oc;
   end
 
@@ -4086,7 +4470,7 @@ let output_ninja
 
 (** *)
 let write_ninja_file () = 
-  let config_json_chan = open_in_bin config_file in 
+  let config_json_chan = open_in_bin Literals.bsconfig_json in 
   let global_data = Bs_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in 
   let globbed_dirs = ref [] in
@@ -4094,7 +4478,7 @@ let write_ninja_file () =
     match global_data with
     | `Obj map -> 
       map 
-      |?  (Bs_build_schemas.name, `Str (fun s -> Default.package_name := Some s))
+      |?  (Bs_build_schemas.name, `Str Default.set_package_name)
       |?
       (Bs_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
@@ -4102,20 +4486,21 @@ let write_ninja_file () =
           (* |?  (Bs_build_schemas.bsbuild,   `Str Default.set_bsbuild) *)
           |?  (Bs_build_schemas.bsdep,  `Str  Default.set_bsdep)
           |?  (Bs_build_schemas.ocamllex, `Str Default.set_ocamllex)
+          |? (Bs_build_schemas.bs_dependencies, `Arr Default.set_bs_dependencies)
           (* More design *)
           |?  (Bs_build_schemas.bs_external_includes,
-               `Arr (fun s -> Default.bs_external_includes := get_list_string s))
-          |?  (Bs_build_schemas.bsc_flags, `Arr (fun s -> Default.bsc_flags :=  get_list_string s ))
+               `Arr Default.set_bs_external_includes)
+          |?  (Bs_build_schemas.bsc_flags, `Arr Default.set_bsc_flags)
 
           (* More design *)
-          |?  (Bs_build_schemas.ppx_flags, `Arr (fun s -> Default.ppx_flags := get_list_string s))
+          (* |?  (Bs_build_schemas.ppx_flags, `Arr (fun s -> Default.ppx_flags := get_list_string s)) *)
 
 
-          |?  (Bs_build_schemas.bs_copy_or_symlink, `Arr Default.set_static_resouces_from_array)
+          (* |?  (Bs_build_schemas.bs_copy_or_symlink, `Arr Default.set_static_resouces_from_array) *)
 
           |?  (Bs_build_schemas.sources, `Arr (fun xs ->
-              let res =  Bs_build_ui.parsing_sources xs  in
-              Default.bs_file_groups := res.files ; 
+              let res =  Bs_build_ui.parsing_sources Filename.current_dir_name xs  in
+              bs_file_groups := res.files ; 
               update_queue := res.intervals;
               globbed_dirs := res.globbed_dirs
             ))
@@ -4135,20 +4520,20 @@ let write_ninja_file () =
         queue file_size config_json_chan oc in 
     close_out oc ;
     close_in config_json_chan ; 
-    Unix.unlink config_file; 
-    Unix.rename config_file_bak config_file
+    Unix.unlink Literals.bsconfig_json; 
+    Unix.rename config_file_bak Literals.bsconfig_json
   end;
   Default.(output_ninja 
-             !bsc     
-             !bsdep
-             !package_name
-             !ocamllex
-             !builddir
-             !bs_external_includes
-             !static_resources 
-             !bs_file_groups 
-             !bsc_flags
-             !ppx_flags 
+             (get_bsc ())
+             (get_bsdep ())
+             (get_package_name ())
+             (get_ocamllex ())
+             (get_builddir ())
+             (get_bs_external_includes ())
+             !bs_file_groups
+             (get_bsc_flags ())
+             (get_ppx_flags ())
+             (get_bs_dependencies ())
           );
   !globbed_dirs
 
@@ -4160,7 +4545,7 @@ let load_ninja argv =
   Unix.execvp ninja
     (Array.concat 
        [
-         [|ninja ; "-f"; (!Default.builddir // main_ninja);  "-d"; "keepdepfile"|];
+         [|ninja ; "-C"; (Default.get_builddir ());  "-d"; "keepdepfile"|];
          ninja_flags
        ]
     )
@@ -4175,7 +4560,7 @@ ninja -C _build
 *)
 let () = 
   try
-    let builddir = !Default.builddir in 
+    let builddir = Default.get_builddir () in 
     let output_deps = (builddir // bsdeps) in
     let reason = Bs_dep_infos.check  output_deps in 
     if String.length reason <> 0 then 
@@ -4184,7 +4569,7 @@ let () =
         print_endline reason;
         print_endline "Regenrating build spec";
         let globbed_dirs = write_ninja_file () in 
-        config_file :: globbed_dirs 
+        Literals.bsconfig_json :: globbed_dirs 
         |> List.map
           (fun x ->
              { Bs_dep_infos.dir_or_file = x ;

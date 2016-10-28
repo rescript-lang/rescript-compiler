@@ -36,6 +36,11 @@
             ]
 
         },
+        "bs-dependencies" : {
+            "type" : "array",
+            "items" : { "type" : "string" },
+            "description" : "bucklescript package dependencies"   
+        },
         "sourceItem" : {
             "title" : "sourceItem",
             "properties": {
@@ -71,8 +76,31 @@
                   }
                 ]
             },
-            
-                
+            "bs-dependencies" : {
+                "$ref" : "#/definitions/bs-dependencies"
+            },
+            "public" : {
+                "oneOf": [
+                    {
+                        "enum": 
+                        [
+                        "all"
+                        ]
+                    },
+                    {
+                        "type": "array",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    }
+                ]
+            },
+            "resources" : {
+                "type": "array",
+                "items": {
+                    "type" : "string"
+                }
+            },                
               "subdirs" : {
                   "type" : "array",
                   "items" : {
@@ -130,6 +158,9 @@
         "ocaml-config" : {
             "title": "OCaml Configuration format",
 
+            "bs-dependencies" : {
+                "$ref" : "#/definitions/bs-dependencies" 
+            },
             "properties": {
                 "bsdep": {
                     "type": "string",
@@ -175,13 +206,7 @@
                     "type": "string",
                     "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/bs "
                 },
-                "bs-dependencies": {
-                    "type" : "object",
-                    "additionalProperties": {
-                     "type" : "string"   
-                    },
-                    "description": "the ocaml (via BuckleScript) dependencies available on npm"
-                },
+
                 "bs-copy-or-symlink": {
                     "$ref" : "#/definitions/stringArray",
                     "description" : "the resource files, the use case is in test build, we need keep the same relative path between code and resources"

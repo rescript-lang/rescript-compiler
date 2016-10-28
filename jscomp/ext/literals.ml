@@ -74,7 +74,8 @@ let bs_type = "bs.type"
 let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
 let package_json = "package.json"
-
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
 
 let suffix_cmj = ".cmj"
 let suffix_cmi = ".cmi"
@@ -85,5 +86,5 @@ let suffix_mliast = ".mliast"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-
+let suffix_js = ".js"
 

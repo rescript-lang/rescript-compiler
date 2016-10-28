@@ -136,7 +136,7 @@ let get_current_package_name_and_path   module_system =
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
-let get_output_dir module_system filename =
+let get_output_dir ~pkg_dir module_system filename =
   match !packages_info with
   | Empty | NonBrowser (_, [])->
     if Filename.is_relative filename then
@@ -146,7 +146,7 @@ let get_output_dir module_system filename =
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
     begin match List.find (fun (k,_) -> k = module_system) modules with
-      | (_, _path) -> Lazy.force Ext_filename.package_dir // _path
+      | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
 
@@ -187,7 +187,6 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.2.2"
 let current_file = ref ""
 let debug_file = ref ""
 

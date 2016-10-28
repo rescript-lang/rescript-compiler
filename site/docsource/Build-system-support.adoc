@@ -13,6 +13,85 @@ files with the extension `.cmj` which are later used for cross module
 inlining, arity inference and other information.
 ======
 
+=== Build with bsb (experimental)
+
+BuckleScript proivdes a native build tool using https://github.com/ninja-build/ninja/releases[ninja], 
+it is designed for fast feedback loop (typically 100ms feedback loop). 
+[NOTE]
+======
+Currently user needs install ninja first
+======
+
+It is a schema based build tool, the schema is 
+http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available]
+
+Here is a typical configuration:
+
+.bsconfig.json
+[source,js]
+-----------  
+{
+    "name": "bs-string",
+    "version": "0.1.2",    
+    "ocaml-config": {
+      //  "bs-dependencies": ["bs-mocha"], // <1>
+        "sources": [
+            {
+                "dir": "src",
+                "public" : "all", // <2>
+                "files": [
+                    "bs_string.ml",
+                    "bs_nativeint.ml",
+                    "bs_math.ml",
+                    "bs_array.ml"
+                ]
+            },
+            { "dir" : "test",
+              "files": [ 
+                         "bs_string_test.ml"
+                         ]
+                         ,
+              "bs-dependencies" : ["bs-mocha"] // <3>  
+            }
+        ]
+    }
+}
+-----------
+<1> It is an extension to JSON with comment support
+<2> List interfaces to be exposed to client
+<3> Add more dependencies for some TARGETS
+
+The entry point is `bsb.exe`,
+it will check if there is already `build.ninja` in the build directory, 
+if not or need regenerated it will generate a file  `build.ninja` 
+and delegate the hard work to `ninja`.
+
+The directory layout (after building) would be
+
+-----------
+.                                                                                                                    
+├── lib                                                                                                                                                                                                                      
+│   ├── bs                                                                                                           
+│   │   ├── src                                                                                                      
+│   │   └── test                                                                                                                                                                                                              
+│   ├── js                                                                                                           
+│   │   ├── src                                                                                                      
+│   │   └── test
+│   ├── amdjs // <1>     
+│   │   ├── src                                                                                                      
+│   │   └── test
+│   ├── goog  // <2>                                                                                                
+│   │   ├── src                                                                                                      
+│   │   └── test
+│   └── ocaml                                                                                                        
+├── scripts                                                                                                          
+├── src                                                                                                              
+└── test   
+-----------  
+<1> Will generate amdjs modules if flags are turned on
+<2> Will generate goog modules if flags are turned on 
+
+=== Build using Make
 BuckleScript distribution has `bsdep.exe` which has the same interface as `ocamldep`
 
 Here is a simple Makefile to get started:
