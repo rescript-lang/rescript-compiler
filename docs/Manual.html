@@ -1118,7 +1118,7 @@ will call <code>fib</code>.</p>
         <span class="tok-s2">&quot;bs-platform&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;1.0.1&quot;</span>
     <span class="tok-p">},</span>
     <span class="tok-s2">&quot;scripts&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span>
-        <span class="tok-s2">&quot;build&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsc.exe -c -bs-main main_entry.ml&quot;</span> <b class="conum">(1)</b>
+        <span class="tok-s2">&quot;build&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsc.exe -c -bs-main Main_entry&quot;</span> <b class="conum">(1)</b>
     <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
@@ -1126,7 +1126,7 @@ will call <code>fib</code>.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>here <code>-bs-main</code> option tells the compiler compile <code>main_entry</code> module and
+<p>here <code>-bs-main</code> option tells the compiler compile <code>Main_entry</code> module and
 its dependency accordingly</p>
 </li>
 </ol>
@@ -3251,7 +3251,7 @@ also adds several flags:</p>
 <h3 id="__bs_main_single_directory_build"><a class="anchor" href="#__bs_main_single_directory_build"></a>-bs-main (single directory build)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">bsc.exe -bs-main main.ml</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">bsc.exe -bs-main Main</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3260,7 +3260,7 @@ finishes, it will run <code>node main.js</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh">bsc.exe -c -bs-main main.ml</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">bsc.exe -c -bs-main Main</code></pre>
 </div>
 </div>
 <div class="paragraph">

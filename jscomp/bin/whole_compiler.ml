@@ -98065,6 +98065,10 @@ val collect_ast_map :
   ('a, 'b) t String_map.t
 
 
+(** If the genereated queue is empty, it means 
+    1. The main module  does not exist (does not exist due to typo)
+    2. It does exist but not in search path
+*)
 val collect_from_main :
   ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
   ?excludes : string list -> 
@@ -98304,6 +98308,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
+
 let collect_from_main 
     ?(extra_dirs=[])
     ?(excludes=[])
@@ -98312,23 +98317,7 @@ let collect_from_main
     parse_interface
     project_impl 
     project_intf 
-    main_file =
-  let not_excluded  = 
-    match excludes with 
-    | [] -> fun _ -> true
-    | _ -> 
-      fun source_file -> not (List.mem source_file excludes)
-  in 
-  let dirname = Filename.dirname main_file in
-  (** TODO: same filename module detection  *)
-  let files = 
-    Array.fold_left (fun acc source_file ->
-        if (Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli") 
-           && not_excluded source_file
-        then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   
-      (Sys.readdir dirname) in 
+    main_module =
   let files = 
     List.fold_left (fun acc dir_spec -> 
         let  dirname, excludes = 
@@ -98347,7 +98336,7 @@ let collect_from_main
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
-      files extra_dirs in
+      [] extra_dirs in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
@@ -98379,7 +98368,7 @@ let collect_from_main
         Queue.push current result;
         Hashtbl.add visited current ();
       end in
-  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+  visit (String_set.empty) [] main_module ;
   ast_table, result   
 
 
@@ -98540,7 +98529,7 @@ type task =
   | None
 
 (** reutrn value is the error code *)
-val batch_compile : Format.formatter -> string list -> task ->  int
+val batch_compile : Format.formatter -> string list -> string list -> task ->  int
 
 end = struct
 #1 "ocaml_batch_compile.ml"
@@ -98572,6 +98561,9 @@ end = struct
 
 module String_set = Depend.StringSet
 
+(* we can cache it, since all deps have already being processed,
+   but having this functionalilty will introduce deps on {!Unix.stat}
+*)
 let process_result ppf  main_file ast_table result = 
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter
@@ -98582,7 +98574,7 @@ let process_result ppf  main_file ast_table result =
       result ;
   Ast_extract.build_lazy_queue ppf result ast_table
     Js_implementation.after_parsing_impl
-    Js_implementation.after_parsing_sig
+       Js_implementation.after_parsing_sig 
   ;
   if not (!Clflags.compile_only) then
     Sys.command
@@ -98604,7 +98596,7 @@ let print_if ppf flag printer arg =
   if !flag then Format.fprintf ppf "%a@." printer arg;
   arg
 
-let batch_compile ppf files main_file =
+let batch_compile ppf search_dirs files main_file =
   Compenv.readenv ppf Before_compile; 
   Compmisc.init_path  false;
   if files <> [] then 
@@ -98622,16 +98614,21 @@ let batch_compile ppf files main_file =
   ;
   begin match main_file with
     | Main main_file -> 
+      let main_module = (Ext_filename.module_name_of_file main_file) in
       let ast_table, result =
-        Ast_extract.collect_from_main ppf
+        Ast_extract.collect_from_main ppf ~extra_dirs:(List.map (fun x -> `Dir x ) search_dirs)
           Ocaml_parse.lazy_parse_implementation
           Ocaml_parse.lazy_parse_interface         
           Lazy.force
           Lazy.force
-          main_file in
-      (* if Queue.is_empty result then  *)
-      (*   Bs_exception.error (Bs_main_not_exist main_file) *)
-      (* ; *) (* Not necessary since we will alwasy check [main_file] is valid or not*)
+          main_module
+      in
+      if Queue.is_empty result then
+        Bs_exception.error (Bs_main_not_exist main_module);
+      (* ; Not necessary since we will alwasy check [main_file] is valid or not,
+         so if we support 
+         bsc -I xx -I yy -bs-main Module_name
+      *)
       process_result ppf main_file ast_table result     
     | None ->  0
     | Eval s ->
@@ -99119,12 +99116,14 @@ let intf filename =
   Compenv.readenv ppf Before_compile; process_interface_file ppf filename;;
 
 let batch_files  = ref []
+let script_dirs = ref []
 let main_file  = ref ""
 let eval_string = ref ""
     
 let collect_file name = 
   batch_files := name :: !batch_files
-
+let add_bs_dir v = 
+  script_dirs := v :: !script_dirs
 
 let set_main_entry name =
   if !eval_string <> "" then
@@ -99322,7 +99321,12 @@ let buckle_script_flags =
   ::
   ("-bs-main",
    Arg.String set_main_entry,   
-   " set the Main entry file")
+   " set the Main entry module in script mode, for example -bs-main Main")
+  ::
+  ("-bs-I", 
+   Arg.String add_bs_dir, 
+   " add source dir search path in script mode"
+  )
   :: 
   ("-bs-files", 
    Arg.Rest collect_file, 
@@ -99354,7 +99358,9 @@ let _ =
       else if eval_string <> "" then 
         Eval eval_string
       else None in
-    exit (Ocaml_batch_compile.batch_compile ppf !batch_files task) 
+    exit (Ocaml_batch_compile.batch_compile ppf 
+            (if !Clflags.no_implicit_current_dir then !script_dirs else 
+               Filename.current_dir_name::!script_dirs) !batch_files task) 
   with x ->
     if not @@ !Js_config.better_errors then
       begin (* plain error messge reporting*)

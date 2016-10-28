@@ -176,12 +176,11 @@ let output_file = ref None
 let set_output file = output_file := Some file
 let header_option = ref false
 (** set bs-main*)
-let main_file = ref None
+let main_module = ref None
 
-let set_main_file file = 
-  if Sys.file_exists file then 
-    main_file := Some file
-  else raise (Arg.Bad ("file " ^ file ^ " don't exist"))
+let set_main_module modulename = 
+    main_module := Some modulename
+
 
 let mllib_file = ref None
 let set_mllib_file file =     
@@ -226,9 +225,13 @@ let add_include dir =
 let exclude_modules = ref []                                     
 let add_exclude module_ = 
   exclude_modules := module_ :: !exclude_modules
+let no_implicit_include = ref false 
   
 let specs : (string * Arg.spec * string) list =
-  [ "-prelude-str", (Arg.String set_prelude_str),
+  [ 
+    "-bs-no-implicit-include", (Arg.Set no_implicit_include),
+    " Not including cwd as search path";
+    "-prelude-str", (Arg.String set_prelude_str),
     " Set a prelude string, (before -prelude) option" ;
     "-prelude", (Arg.String set_prelude),
     " Set a prelude file, literally copy into the beginning";    
@@ -243,7 +246,7 @@ let specs : (string * Arg.spec * string) list =
     "-bs-exclude-I", (Arg.String add_exclude),
     " don't read and pack such modules from -I (in the future, we should detect conflicts in mllib or commandline) "
     ;
-    "-bs-main", (Arg.String set_main_file),
+    "-bs-main", (Arg.String set_main_module),
     " set the main entry module";
     "-I",  (Arg.String add_include),
     " add dir to search path"
@@ -291,28 +294,34 @@ let () =
           -> read_lines (Sys.getcwd ()) s
         | None -> []) @ command_files in
 
-     match !main_file, files with
+     match !main_module, files with
      | Some _, _ :: _
        -> 
        Ext_pervasives.failwithf ~loc:__LOC__ 
          "-bs-main conflicts with other flags (%s)"
          (String.concat ", " files)
-     | Some main_file ,  []
+     | Some main_module ,  []
        ->
        let excludes =
          match !exclude_modules with
          | [] -> []
          | xs -> 
            Ext_list.flat_map (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) xs in 
+       let extra_dirs = 
+         if not !no_implicit_include then `Dir Filename.current_dir_name :: !includes 
+         else !includes in  
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~excludes ~extra_dirs:!includes
+         Ast_extract.collect_from_main ~excludes ~extra_dirs
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))
            (fun (lazy (stru, _)) -> stru)
            (fun (lazy (sigi, _)) -> sigi)
-           main_file
+           main_module
        in 
+       if Queue.is_empty tasks then 
+         raise (Arg.Bad (main_module ^ " does not pull in any libs, maybe wrong input"))
+       ;
        let out_chan = Lazy.force out_chan in
        let collect_modules  = !mllib_file <> None in
        let collection_modules = Queue.create () in

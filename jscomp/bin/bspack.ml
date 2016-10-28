@@ -1,4 +1,4 @@
-module Config = Config_bspack
+module Config = Config_bspack 
 module Terminfo : sig 
 #1 "terminfo.mli"
 (***********************************************************************)
@@ -6376,6 +6376,14 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
+(**FIXME: 
+   if [main_file] is not in search path, what will happen ,
+   if it does not work, we shall fail early at least
+   we need path normalization in this case
+
+   A better idea: pass `-bs-main` the module name instead 
+
+*)
 let collect_from_main 
     ?(extra_dirs=[])
     ?(excludes=[])
@@ -6384,23 +6392,7 @@ let collect_from_main
     parse_interface
     project_impl 
     project_intf 
-    main_file =
-  let not_excluded  = 
-    match excludes with 
-    | [] -> fun _ -> true
-    | _ -> 
-      fun source_file -> not (List.mem source_file excludes)
-  in 
-  let dirname = Filename.dirname main_file in
-  (** TODO: same filename module detection  *)
-  let files = 
-    Array.fold_left (fun acc source_file ->
-        if (Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli") 
-           && not_excluded source_file
-        then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   
-      (Sys.readdir dirname) in 
+    main_module =
   let files = 
     List.fold_left (fun acc dir_spec -> 
         let  dirname, excludes = 
@@ -6419,7 +6411,7 @@ let collect_from_main
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
-      files extra_dirs in
+      [] extra_dirs in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
@@ -6451,7 +6443,7 @@ let collect_from_main
         Queue.push current result;
         Hashtbl.add visited current ();
       end in
-  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+  visit (String_set.empty) [] main_module ;
   ast_table, result   
 
 
@@ -23827,9 +23819,9 @@ let header_option = ref false
 let main_file = ref None
 
 let set_main_file file = 
-  if Sys.file_exists file then 
+  (* if Sys.file_exists file then  *)
     main_file := Some file
-  else raise (Arg.Bad ("file " ^ file ^ " don't exist"))
+  (* else raise (Arg.Bad ("file " ^ file ^ " don't exist")) *)
 
 let mllib_file = ref None
 let set_mllib_file file =     
@@ -23874,9 +23866,13 @@ let add_include dir =
 let exclude_modules = ref []                                     
 let add_exclude module_ = 
   exclude_modules := module_ :: !exclude_modules
+let no_implicit_include = ref false 
   
 let specs : (string * Arg.spec * string) list =
-  [ "-prelude-str", (Arg.String set_prelude_str),
+  [ 
+    "-bs-no-implicit-include", (Arg.Set no_implicit_include),
+    " Not including cwd as search path";
+    "-prelude-str", (Arg.String set_prelude_str),
     " Set a prelude string, (before -prelude) option" ;
     "-prelude", (Arg.String set_prelude),
     " Set a prelude file, literally copy into the beginning";    
@@ -23952,14 +23948,18 @@ let () =
          | [] -> []
          | xs -> 
            Ext_list.flat_map (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) xs in 
+       let extra_dirs = 
+         if not !no_implicit_include then `Dir Filename.current_dir_name :: !includes 
+         else !includes in  
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~excludes ~extra_dirs:!includes
+         Ast_extract.collect_from_main ~excludes ~extra_dirs(* :!includes *)
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))
            (fun (lazy (stru, _)) -> stru)
            (fun (lazy (sigi, _)) -> sigi)
            main_file
+
        in 
        let out_chan = Lazy.force out_chan in
        let collect_modules  = !mllib_file <> None in

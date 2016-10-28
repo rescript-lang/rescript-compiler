@@ -63,6 +63,10 @@ val collect_ast_map :
   ('a, 'b) t String_map.t
 
 
+(** If the genereated queue is empty, it means 
+    1. The main module  does not exist (does not exist due to typo)
+    2. It does exist but not in search path
+*)
 val collect_from_main :
   ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
   ?excludes : string list -> 
