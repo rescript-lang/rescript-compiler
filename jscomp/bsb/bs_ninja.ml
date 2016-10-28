@@ -194,7 +194,7 @@ let output_kvs kvs oc =
 
 
 
-let (//) = Binary_cache.simple_concat
+let (//) = Ext_filename.combine
 
 let handle_module_info builddir oc 
     ({mli; ml; mll } : Binary_cache.module_info) (all_deps, all_cmis) =  

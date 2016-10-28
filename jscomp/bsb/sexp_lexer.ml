@@ -1,4 +1,4 @@
-# 1 "sexp_lexer.gen.mll"
+# 1 "bsb/sexp_lexer.mll"
  
 
 type error =
@@ -97,7 +97,7 @@ let new_rparen  buf lexbuf =
 let get_data buf = buf.top
 
 
-# 101 "sexp_lexer.ml"
+# 101 "bsb/sexp_lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\246\255\247\255\078\000\249\255\250\255\251\255\002\000\
@@ -273,48 +273,48 @@ let rec main buf lexbuf =
 and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 111 "sexp_lexer.gen.mll"
+# 111 "bsb/sexp_lexer.mll"
                      ( 
     update_loc lexbuf 0;
     main (buf : st ) lexbuf  )
-# 281 "sexp_lexer.ml"
+# 281 "bsb/sexp_lexer.ml"
 
   | 1 ->
-# 114 "sexp_lexer.gen.mll"
+# 114 "bsb/sexp_lexer.mll"
            ( main buf lexbuf  )
-# 286 "sexp_lexer.ml"
+# 286 "bsb/sexp_lexer.ml"
 
   | 2 ->
-# 115 "sexp_lexer.gen.mll"
+# 115 "bsb/sexp_lexer.mll"
                        (  main buf lexbuf )
-# 291 "sexp_lexer.ml"
+# 291 "bsb/sexp_lexer.ml"
 
   | 3 ->
-# 116 "sexp_lexer.gen.mll"
+# 116 "bsb/sexp_lexer.mll"
          (
     new_lparen true buf; 
     main buf lexbuf
   )
-# 299 "sexp_lexer.ml"
+# 299 "bsb/sexp_lexer.ml"
 
   | 4 ->
-# 120 "sexp_lexer.gen.mll"
+# 120 "bsb/sexp_lexer.mll"
         ( 
     new_lparen false buf ; 
     main buf lexbuf 
   )
-# 307 "sexp_lexer.ml"
+# 307 "bsb/sexp_lexer.ml"
 
   | 5 ->
-# 124 "sexp_lexer.gen.mll"
+# 124 "bsb/sexp_lexer.mll"
         ( 
       new_rparen  buf lexbuf; 
       main buf lexbuf 
   )
-# 315 "sexp_lexer.ml"
+# 315 "bsb/sexp_lexer.ml"
 
   | 6 ->
-# 129 "sexp_lexer.gen.mll"
+# 129 "bsb/sexp_lexer.mll"
       (
         let pos = Lexing.lexeme_start_p lexbuf in
         scan_string buf.buf pos lexbuf;
@@ -322,38 +322,38 @@ and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
         Buffer.clear buf.buf;
         main buf lexbuf
       )
-# 326 "sexp_lexer.ml"
+# 326 "bsb/sexp_lexer.ml"
 
   | 7 ->
 let
-# 136 "sexp_lexer.gen.mll"
+# 136 "bsb/sexp_lexer.mll"
                     s
-# 332 "sexp_lexer.ml"
+# 332 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 137 "sexp_lexer.gen.mll"
+# 137 "bsb/sexp_lexer.mll"
     ( push_atom lexbuf (Atom s) buf ; 
       main buf lexbuf
     )
-# 338 "sexp_lexer.ml"
+# 338 "bsb/sexp_lexer.ml"
 
   | 8 ->
 let
-# 140 "sexp_lexer.gen.mll"
+# 140 "bsb/sexp_lexer.mll"
          c
-# 344 "sexp_lexer.ml"
+# 344 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 141 "sexp_lexer.gen.mll"
+# 141 "bsb/sexp_lexer.mll"
       (  error  lexbuf (Illegal_character c))
-# 348 "sexp_lexer.ml"
+# 348 "bsb/sexp_lexer.ml"
 
   | 9 ->
-# 143 "sexp_lexer.gen.mll"
+# 143 "bsb/sexp_lexer.mll"
         (
     if buf.paren_depth > 0 then 
       error lexbuf Unterminated_paren
     else 
       get_data buf )
-# 357 "sexp_lexer.ml"
+# 357 "bsb/sexp_lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state
@@ -363,64 +363,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 150 "sexp_lexer.gen.mll"
+# 150 "bsb/sexp_lexer.mll"
         ( () )
-# 369 "sexp_lexer.ml"
+# 369 "bsb/sexp_lexer.ml"
 
   | 1 ->
-# 152 "sexp_lexer.gen.mll"
+# 152 "bsb/sexp_lexer.mll"
       (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 379 "sexp_lexer.ml"
+# 379 "bsb/sexp_lexer.ml"
 
   | 2 ->
-# 159 "sexp_lexer.gen.mll"
+# 159 "bsb/sexp_lexer.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 388 "sexp_lexer.ml"
+# 388 "bsb/sexp_lexer.ml"
 
   | 3 ->
 let
-# 164 "sexp_lexer.gen.mll"
+# 164 "bsb/sexp_lexer.mll"
                                                  c
-# 394 "sexp_lexer.ml"
+# 394 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 165 "sexp_lexer.gen.mll"
+# 165 "bsb/sexp_lexer.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 401 "sexp_lexer.ml"
+# 401 "bsb/sexp_lexer.ml"
 
   | 4 ->
 let
-# 169 "sexp_lexer.gen.mll"
+# 169 "bsb/sexp_lexer.mll"
                    c1
-# 407 "sexp_lexer.ml"
+# 407 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 169 "sexp_lexer.gen.mll"
+# 169 "bsb/sexp_lexer.mll"
                                  c2
-# 412 "sexp_lexer.ml"
+# 412 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 169 "sexp_lexer.gen.mll"
+# 169 "bsb/sexp_lexer.mll"
                                                c3
-# 417 "sexp_lexer.ml"
+# 417 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 169 "sexp_lexer.gen.mll"
+# 169 "bsb/sexp_lexer.mll"
                                                       s
-# 422 "sexp_lexer.ml"
+# 422 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 170 "sexp_lexer.gen.mll"
+# 170 "bsb/sexp_lexer.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -429,55 +429,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 433 "sexp_lexer.ml"
+# 433 "bsb/sexp_lexer.ml"
 
   | 5 ->
 let
-# 178 "sexp_lexer.gen.mll"
+# 178 "bsb/sexp_lexer.mll"
                           c1
-# 439 "sexp_lexer.ml"
+# 439 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 178 "sexp_lexer.gen.mll"
+# 178 "bsb/sexp_lexer.mll"
                                            c2
-# 444 "sexp_lexer.ml"
+# 444 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 179 "sexp_lexer.gen.mll"
+# 179 "bsb/sexp_lexer.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 453 "sexp_lexer.ml"
+# 453 "bsb/sexp_lexer.ml"
 
   | 6 ->
 let
-# 185 "sexp_lexer.gen.mll"
+# 185 "bsb/sexp_lexer.mll"
                c
-# 459 "sexp_lexer.ml"
+# 459 "bsb/sexp_lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 186 "sexp_lexer.gen.mll"
+# 186 "bsb/sexp_lexer.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 468 "sexp_lexer.ml"
+# 468 "bsb/sexp_lexer.ml"
 
   | 7 ->
-# 193 "sexp_lexer.gen.mll"
+# 193 "bsb/sexp_lexer.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 478 "sexp_lexer.ml"
+# 478 "bsb/sexp_lexer.ml"
 
   | 8 ->
-# 200 "sexp_lexer.gen.mll"
+# 200 "bsb/sexp_lexer.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -485,21 +485,21 @@ let
 
         scan_string buf start lexbuf
       )
-# 489 "sexp_lexer.ml"
+# 489 "bsb/sexp_lexer.ml"
 
   | 9 ->
-# 208 "sexp_lexer.gen.mll"
+# 208 "bsb/sexp_lexer.mll"
       (
         error lexbuf Unterminated_string
       )
-# 496 "sexp_lexer.ml"
+# 496 "bsb/sexp_lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 212 "sexp_lexer.gen.mll"
+# 212 "bsb/sexp_lexer.mll"
   
 
     let token  lexbuf  =
@@ -515,4 +515,4 @@ let
       | exception  e -> close_in in_channel; raise e 
       | sexps -> close_in in_channel ; sexps
 
-# 519 "sexp_lexer.ml"
+# 519 "bsb/sexp_lexer.ml"

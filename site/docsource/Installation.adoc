@@ -118,7 +118,6 @@ the previous section.
 
 [source,sh]
 -----------
-export BS_RELEASE_BUILD=1
 make world
 -----------
 

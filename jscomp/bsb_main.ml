@@ -38,7 +38,7 @@ let config_file = "bsconfig.json"
 let config_file_bak = "bsconfig.json.bak"
 let ninja = "ninja" 
 let bsdeps = ".bsdeps"
-let (//) = Binary_cache.simple_concat
+let (//) = Ext_filename.combine
 let get_list_string s = 
   Ext_array.to_list_map (fun (x : Bs_json.t) ->
       match x with 

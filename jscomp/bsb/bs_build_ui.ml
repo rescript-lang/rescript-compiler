@@ -3,7 +3,7 @@ type 'a file_group =
     sources : 'a
   } 
 
-let (//) = Binary_cache.simple_concat
+let (//) = Ext_filename.combine
 
 let (|?)  m (key, cb) =
     m  |> Bs_json.test key cb 

@@ -88,16 +88,12 @@ let module_info_of_mll exist mll : module_info =
   | None -> { mll  = Some mll ; ml = Ml_empty ; mli = Mli_empty }
   | Some x -> { x with mll = Some mll} 
 
-let simple_concat (x : string)  y =
-  if x = Filename.current_dir_name then y else 
-  if y = Filename.current_dir_name then x else 
-    Filename.concat x y
 
 let map_update ?dir (map : t)  name : t  = 
   let prefix   = 
     match dir with
     | None -> fun x ->  x
-    | Some v -> fun x ->  simple_concat v x in
+    | Some v -> fun x ->  Ext_filename.combine v x in
   let module_name = Ext_filename.module_name_of_file_if_any name in 
   let handle name v cb =
     String_map.add module_name

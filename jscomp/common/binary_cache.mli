@@ -46,7 +46,7 @@ val read_build_cache : string -> t
 
 val bsbuild_cache : string
 
-val simple_concat : string -> string -> string
+
 
 
 

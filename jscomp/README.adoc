@@ -1,16 +1,62 @@
+## Build modes
+
+### Release mode
+
+In release mode, assume you have NodeJS and
+OCaml compiler  with the right version installed:
+
+[source,sh]
+-----------
+node scripts/install.js
+-----------
+
+The build process will generate configure file with correct `LIBDIR` path,
+build all binaries and libraries and
+install the binaries into `bin` and lib files into `lib`.
+
+First it will try to generate `bin/config_whole_compiler.ml` based on existing
+OCaml installation, if it fails, it will try to invoke `buildocaml.sh` to
+install an OCaml compiler from scratch, and retry again
 
 
-# Code structure
+### Dev mode
+
+In dev mode, BuckleScript reuses OCaml's compiler-libs, in that case, `LIBDIR`
+maybe incorrect, but it is okay in dev environment, since all paths are specified
+explicitly.
+
+Several useful targets
+
+- make check
+- make bin/bsc.exe
+- make bin/bsb
+- make libs
+
+The binaries depend on whether we really need it during dev time.
+### Publish process
+
+- Bump the compiler version
+
+- Build the JS playground
+  * Generate js_compiler.ml
+  * Generate cmj data sets
+  * Generate preload.js
+  * Make sure AMDJS are up to date
+
+
+
+
+## Code structure
 
 The highlevel architecture is illustrated as below:
 
 ```
 Lambda IR (OCaml compiler libs) ---+
-  |   ^                            |                      
-  |   |                     Lambda Passes (lam_* files) 
+  |   ^                            |
+  |   |                     Lambda Passes (lam_* files)
   |   |             Optimization/inlining/dead code elimination
   |   \                            |
-  |    \ --------------------------+ 
+  |    \ --------------------------+
   |
   |  Self tail call elimination
   |  Constant folding + propagation
@@ -21,11 +67,11 @@ JS IR (J.ml)  ---------------------+
   |   |            Optimization/inlining/dead code elimination
   |   \                            |
   |    \  -------------------------+
-  |        
-  |  Smart printer includes scope analysis 
+  |
+  |  Smart printer includes scope analysis
   |
   V
-Javascript Code 
+Javascript Code
 ```
 
 Note that there is one design goal to keep in mind, never introduce
@@ -33,7 +79,7 @@ any meaningless symbol unless real necessary, we do optimizations,
 however, it should also compile readable output code.
 
 
-# Dependencies and Dev-Build
+## Dependencies and Dev-Build
 
 
 ### Build the compiler
@@ -43,7 +89,7 @@ then the only dependency is the build tool:
 [ocamlbuild](http://caml.inria.fr/pub/docs/manual-ocaml-400/manual032.html)
 
 ```sh
-ocamlbuild  -no-hygiene -cflags -g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,+compiler-libs  compiler.cmxa 
+ocamlbuild  -no-hygiene -cflags -g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,+compiler-libs  compiler.cmxa
 ```
 
 ```sh
@@ -75,7 +121,7 @@ cd ./stdlib; make all
 
 ## [stdlib](./stdlib)
 
-A copy of standard library from OCaml distribution(4.02) for fast development, 
+A copy of standard library from OCaml distribution(4.02) for fast development,
 so that we don't need bootstrap compiler, everytime we deliver a new feature.
 
 - Files copied

@@ -18,6 +18,8 @@ bsdep.exe: config_bsdep.mli config_bsdep.ml bsdep.mli bsdep.ml
 bsb:  bsb.mli bsb.ml
 	$(NATIVE) -g -inline 1000  -linkall unix.cmxa str.cmxa -w -a $^ -o $@
 
+config_whole_compiler.ml:config_whole_compiler.mlp ../config.js
+	node ../config.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
 	$(NATIVE) -w -a $^  -o $@
 

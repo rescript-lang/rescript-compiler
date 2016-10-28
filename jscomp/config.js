@@ -16,10 +16,16 @@ var fs = require('fs')
 var path = require('path')
 var os = require('os')
 
-var jscomp = path.join(__dirname,'..','jscomp')
+var jscomp = __dirname
 var working_dir = process.cwd()
 console.log("Working dir", working_dir)
 
+
+delete process.env.OCAMLPARAM // stdlib is already compiled using -bin-annot
+process.env.OCAMLRUNPARAM = 'b'
+if (is_windows) {
+    process.env.WIN32 = '1'
+}
 
 // need check which variables exist when we update compiler
 var map = {
@@ -56,13 +62,16 @@ var map = {
 
 var is_windows = ! (os.type().indexOf('Windows') < 0)
 
-process.env.BS_RELEASE_BUILD = 1
-delete process.env.OCAMLPARAM // stdlib is already compiled using -bin-annot
-// delete process.env.OCAMLLIB // this will not work on Windows
-// delete process.env.CAMLLIB
-process.env.OCAMLRUNPARAM = 'b'
+/* This will not work on Windows
+   Windows diestribution relies on env variable OCAMLLIB and CAMLLIB
+   delete process.env.OCAMLLIB
+   delete process.env.CAMLLIB
+*/
 
-// return False if it does not exist otherwise the map
+
+/*
+ * @return false if it does not exist otherwise the map
+*/
 function getConfigOutput(){
     try{
         var ocamlc_config ;
@@ -73,17 +82,17 @@ function getConfigOutput(){
         }
         var config_output = child_process.execSync(ocamlc_config, {encoding: 'utf8'})
         console.log("config_output:\n", config_output);
-        var keyvalues = 
-            config_output 
+        var keyvalues =
+            config_output
             .split('\n')
-            .filter(function(x){return x}) 
+            .filter(function(x){return x})
             .map(function(x){
                 var index = x.indexOf(":")
                 var key = x.substr(0,index);
                 var value = x.substr(index+1);
                 return [key.trim(), value.trim()]
-            }   
-            )   
+            }
+            )
         console.log("keyvalues",keyvalues)
         return keyvalues.reduce(function(acc,curr){
             acc[curr[0]] = curr[1]
@@ -98,16 +107,15 @@ function getConfigOutput(){
 }
 
 
-
-
 function patch_config(config_map){
-    var whole_compiler_config = path.join(jscomp, 'bin', 'config_whole_compiler.ml')
+    var whole_compiler_config = path.join(jscomp, 'bin', 'config_whole_compiler.mlp')
+    var whole_compiler_config_output = path.join(jscomp, 'bin', 'config_whole_compiler.ml')
     var content = fs.readFileSync(whole_compiler_config, 'utf8')
     var generated = content.replace(/%%(\w+)%%/g,
         function (_whole, p0) {
             if (p0 === "LIBDIR") {
                 //Escape
-                var origin_path = path.join(working_dir, 'lib', 'ocaml')
+                var origin_path = path.join(jscomp, '..', 'lib', 'ocaml')
                 return JSON.stringify(origin_path).slice(1, -1)
             }
             else {
@@ -115,60 +123,13 @@ function patch_config(config_map){
             }
         })
 
-    fs.writeFileSync(whole_compiler_config, generated, 'utf8')
+    fs.writeFileSync(whole_compiler_config_output, generated, 'utf8')
 }
-
-/*
-function install_built_in_compiler(){
-    var env = process.env;
-    env.BS_RELEASE_BUILD = 1; 
-    // env.OCAMLPARAM='_,bin-annot=1'
-    var ocaml_build_dir; 
-    if(env.BS_TRAVIS_CI){
-        ocaml_build_dir = path.join(__dirname,'..','ocaml')
-        child_process.execSync('git submodule update --init --recursive')
-        
-    }else{
-        ocaml_build_dir = path.join(__dirname,'..','ocaml_src')
-        ocaml_tar = path.join(__dirname,'..','ocaml.tar.gz') 
-        if(fs.existsSync(ocaml_tar)){
-            console.log('ocaml.tar.gz already exists')
-            child_process.execSync("rm -rf " + ocaml_build_dir + " && mkdir -p " + ocaml_build_dir + )
-        }
-    }
-}
-*/
 
 
 var config_map = getConfigOutput()
-console.log('config_map',config_map)
-var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
-
-if(config_map && config_map.version.indexOf('4.02.3') >= 0 ){
-    patch_config(config_map);
-    if (is_windows) {
-        process.env.WIN32 = '1'
-    }
-    
-    console.log("Build the compiler and runtime .. ")
-    child_process.execSync("make world", working_config)
-    console.log("Installing")
-    child_process.execSync('make VERBOSE=true install', working_config)
-
-
+if(config_map && config_map.version.indexOf('4.02.3') >= 0){
+  patch_config(config_map);
 }else{
-    // No compiler existed
-    child_process.execSync(path.join(__dirname,'buildocaml.sh'))
-    process.env.PATH = path.join(__dirname,'..','bin') + path.delimiter + process.env.PATH
-    console.log('configure again with local ocaml installed')
-    config_map = getConfigOutput()
-    console.log('config_map', config_map)
-    patch_config(config_map)
-    if(process.env.BS_TRAVIS_CI){
-        child_process.execSync("make travis-world-test", working_config)
-    } else {
-        child_process.execSync("make world", working_config)
-    }
-    var clean = require('./clean.js')
-    clean.clean()
+  process.exit(2)
 }

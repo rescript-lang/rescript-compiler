@@ -7548,6 +7548,12 @@ val absolute_path : string -> string
 
 val module_name_of_file_if_any : string -> string
 
+(**
+   1. add some simplifications when concatenating
+   2. when the second one is absolute, drop the first one
+*)
+val combine : string -> string -> string
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7779,6 +7785,13 @@ let module_name_of_file_if_any file =
   *)
 (* let has_exact_suffix_then_chop fname suf =  *)
   
+let combine p1 p2 = 
+  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
+  if p2 = "" || p2 = Filename.current_dir_name then p1 
+  else 
+  if Filename.is_relative p2 then 
+    Filename.concat p1 p2 
+  else p2 
 
 end
 module Js_config : sig 
@@ -8277,7 +8290,8 @@ let warning_formatter = Format.err_formatter
 let print_string_warning loc x = 
   Location.print warning_formatter loc ; 
   Format.pp_print_string warning_formatter "Warning: ";
-  Format.pp_print_string warning_formatter x
+  Format.pp_print_string warning_formatter x;
+  Format.pp_print_string warning_formatter "\n"
 
 let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then

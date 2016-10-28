@@ -85,3 +85,4 @@ ocaml_src
 .bsbuild
 jscomp/bin/bsb
 jscomp/bin/bsc
+jscomp/bin/config_whole_compiler.ml

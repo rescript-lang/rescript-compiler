@@ -350,14 +350,20 @@ let () =
          );
        close_out_chan out_chan;
        begin 
-         (* if !set_mllib_file then  *)
+         if !set_mllib_file then
            match !output_file with
            | None -> ()
            | Some file ->
-             let out = Filename.basename file in
+             let output = (Ext_filename.chop_extension_if_any file ^ ".d") in
              Ext_io.write_file 
-               (Ext_filename.chop_extension_if_any file ^ ".d") 
-               (Queue.fold (fun acc a -> acc ^ out ^ " : " ^ a ^ "\n") "" collection_modules)
+               output
+               (Queue.fold 
+                  (fun acc a -> 
+                     acc ^ file ^ " : " ^ a ^ "\n"
+                     (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
+                  ) 
+                  ""
+                  collection_modules)
        end
      | None, _ -> 
        let ast_table =

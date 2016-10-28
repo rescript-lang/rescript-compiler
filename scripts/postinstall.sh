@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export BS_RELEASE_BUILD=1
+
 export PATH=$(pwd)/bin:$PATH
 
 if [ $BS_TRAVIS_CI ]

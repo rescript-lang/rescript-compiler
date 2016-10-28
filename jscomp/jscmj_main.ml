@@ -120,7 +120,9 @@ let from_cmi (files : string list) (output_file : string) =
 let () = 
   from_cmj (get_files Js_config.cmj_ext "stdlib"
             @ get_files Js_config.cmj_ext "runtime"
-            @ get_files Js_config.cmj_ext "others") "js_cmj_datasets.ml";
+            @ get_files Js_config.cmj_ext "others") 
+    (Filename.concat "core" "js_cmj_datasets.ml");
   from_cmi (get_files ".cmi" "stdlib"
-            @ get_files ".cmi" "others") "js_cmi_datasets.ml"
+            @ get_files ".cmi" "others") 
+    (Filename.concat "core" "js_cmi_datasets.ml")
 
