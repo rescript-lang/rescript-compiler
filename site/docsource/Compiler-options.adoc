@@ -8,7 +8,7 @@ also adds several flags:
 
 [source,sh]
 --------------------
-bsc.exe -bs-main main.ml
+bsc.exe -bs-main Main
 --------------------
 
 `bsc.exe` will build module `Main` and all its dependencies, when it
@@ -16,7 +16,7 @@ finishes, it will run `node main.js`.
 
 [source,sh]
 -----------------------
-bsc.exe -c -bs-main main.ml
+bsc.exe -c -bs-main Main
 -----------------------
 
 The same as above, but will not run `node`.

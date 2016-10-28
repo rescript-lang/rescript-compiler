@@ -1,7 +1,0 @@
-../ocaml/utils/terminfo
-../ocaml/utils/warnings
-../ocaml/parsing/location
-../ocaml/utils/misc
-bspp/parser
-../ocaml/parsing/lexer
-./bspp_main

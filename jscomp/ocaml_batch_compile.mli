@@ -28,4 +28,4 @@ type task =
   | None
 
 (** reutrn value is the error code *)
-val batch_compile : Format.formatter -> string list -> task ->  int
+val batch_compile : Format.formatter -> string list -> string list -> task ->  int

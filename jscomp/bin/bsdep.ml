@@ -6137,6 +6137,10 @@ val collect_ast_map :
   ('a, 'b) t String_map.t
 
 
+(** If the genereated queue is empty, it means 
+    1. The main module  does not exist (does not exist due to typo)
+    2. It does exist but not in search path
+*)
 val collect_from_main :
   ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
   ?excludes : string list -> 
@@ -6376,6 +6380,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
+
 let collect_from_main 
     ?(extra_dirs=[])
     ?(excludes=[])
@@ -6384,23 +6389,7 @@ let collect_from_main
     parse_interface
     project_impl 
     project_intf 
-    main_file =
-  let not_excluded  = 
-    match excludes with 
-    | [] -> fun _ -> true
-    | _ -> 
-      fun source_file -> not (List.mem source_file excludes)
-  in 
-  let dirname = Filename.dirname main_file in
-  (** TODO: same filename module detection  *)
-  let files = 
-    Array.fold_left (fun acc source_file ->
-        if (Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli") 
-           && not_excluded source_file
-        then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   
-      (Sys.readdir dirname) in 
+    main_module =
   let files = 
     List.fold_left (fun acc dir_spec -> 
         let  dirname, excludes = 
@@ -6419,7 +6408,7 @@ let collect_from_main
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
-      files extra_dirs in
+      [] extra_dirs in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
@@ -6451,7 +6440,7 @@ let collect_from_main
         Queue.push current result;
         Hashtbl.add visited current ();
       end in
-  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+  visit (String_set.empty) [] main_module ;
   ast_table, result   
 
 

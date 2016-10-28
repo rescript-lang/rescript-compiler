@@ -6137,6 +6137,10 @@ val collect_ast_map :
   ('a, 'b) t String_map.t
 
 
+(** If the genereated queue is empty, it means 
+    1. The main module  does not exist (does not exist due to typo)
+    2. It does exist but not in search path
+*)
 val collect_from_main :
   ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
   ?excludes : string list -> 
@@ -6376,6 +6380,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
     ) String_map.empty files
 
 
+
 let collect_from_main 
     ?(extra_dirs=[])
     ?(excludes=[])
@@ -6384,23 +6389,7 @@ let collect_from_main
     parse_interface
     project_impl 
     project_intf 
-    main_file =
-  let not_excluded  = 
-    match excludes with 
-    | [] -> fun _ -> true
-    | _ -> 
-      fun source_file -> not (List.mem source_file excludes)
-  in 
-  let dirname = Filename.dirname main_file in
-  (** TODO: same filename module detection  *)
-  let files = 
-    Array.fold_left (fun acc source_file ->
-        if (Ext_string.ends_with source_file ".ml" ||
-            Ext_string.ends_with source_file ".mli") 
-           && not_excluded source_file
-        then 
-          (Filename.concat dirname source_file) :: acc else acc ) []   
-      (Sys.readdir dirname) in 
+    main_module =
   let files = 
     List.fold_left (fun acc dir_spec -> 
         let  dirname, excludes = 
@@ -6419,7 +6408,7 @@ let collect_from_main
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
-      files extra_dirs in
+      [] extra_dirs in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
@@ -6451,7 +6440,7 @@ let collect_from_main
         Queue.push current result;
         Hashtbl.add visited current ();
       end in
-  visit (String_set.empty) [] (Ext_filename.module_name_of_file main_file) ;
+  visit (String_set.empty) [] main_module ;
   ast_table, result   
 
 
@@ -23824,16 +23813,15 @@ let output_file = ref None
 let set_output file = output_file := Some file
 let header_option = ref false
 (** set bs-main*)
-let main_file = ref None
+let main_module = ref None
 
-let set_main_file file = 
-  if Sys.file_exists file then 
-    main_file := Some file
-  else raise (Arg.Bad ("file " ^ file ^ " don't exist"))
+let set_main_module modulename = 
+    main_module := Some modulename
 
-let mllib_file = ref None
-let set_mllib_file file =     
-  mllib_file := Some file 
+
+
+let set_mllib_file = ref false     
+
 let prelude = ref None 
 let set_prelude f = 
   if Sys.file_exists f then 
@@ -23874,15 +23862,19 @@ let add_include dir =
 let exclude_modules = ref []                                     
 let add_exclude module_ = 
   exclude_modules := module_ :: !exclude_modules
+let no_implicit_include = ref false 
   
 let specs : (string * Arg.spec * string) list =
-  [ "-prelude-str", (Arg.String set_prelude_str),
+  [ 
+    "-bs-no-implicit-include", (Arg.Set no_implicit_include),
+    " Not including cwd as search path";
+    "-prelude-str", (Arg.String set_prelude_str),
     " Set a prelude string, (before -prelude) option" ;
     "-prelude", (Arg.String set_prelude),
     " Set a prelude file, literally copy into the beginning";    
     "-bs-mllib", (Arg.String set_string),
     " Files collected from mllib";
-    "-bs-log-mllib", (Arg.String set_mllib_file),
+    "-bs-MD", (Arg.Set set_mllib_file),
     " Log files into mllib(only effective under -bs-main mode)";
     "-o", (Arg.String set_output),
     " Set output file (default to stdout)" ;
@@ -23891,7 +23883,7 @@ let specs : (string * Arg.spec * string) list =
     "-bs-exclude-I", (Arg.String add_exclude),
     " don't read and pack such modules from -I (in the future, we should detect conflicts in mllib or commandline) "
     ;
-    "-bs-main", (Arg.String set_main_file),
+    "-bs-main", (Arg.String set_main_module),
     " set the main entry module";
     "-I",  (Arg.String add_include),
     " add dir to search path"
@@ -23939,41 +23931,47 @@ let () =
           -> read_lines (Sys.getcwd ()) s
         | None -> []) @ command_files in
 
-     match !main_file, files with
+     match !main_module, files with
      | Some _, _ :: _
        -> 
        Ext_pervasives.failwithf ~loc:__LOC__ 
          "-bs-main conflicts with other flags (%s)"
          (String.concat ", " files)
-     | Some main_file ,  []
+     | Some main_module ,  []
        ->
        let excludes =
          match !exclude_modules with
          | [] -> []
          | xs -> 
            Ext_list.flat_map (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) xs in 
+       let extra_dirs = 
+         if not !no_implicit_include then `Dir Filename.current_dir_name :: !includes 
+         else !includes in  
        let ast_table, tasks =
-         Ast_extract.collect_from_main ~excludes ~extra_dirs:!includes
+         Ast_extract.collect_from_main ~excludes ~extra_dirs
            Format.err_formatter
            (fun _ppf sourcefile -> lazy (implementation sourcefile))
            (fun _ppf sourcefile -> lazy (interface sourcefile))
            (fun (lazy (stru, _)) -> stru)
            (fun (lazy (sigi, _)) -> sigi)
-           main_file
+           main_module
        in 
+       if Queue.is_empty tasks then 
+         raise (Arg.Bad (main_module ^ " does not pull in any libs, maybe wrong input"))
+       ;
        let out_chan = Lazy.force out_chan in
-       let collect_modules  = !mllib_file <> None in
+       let collect_modules  = !set_mllib_file in 
        let collection_modules = Queue.create () in
        emit_header out_chan ;
        Ast_extract.handle_queue Format.err_formatter tasks ast_table
          (fun base ml_name (lazy(_, ml_content)) -> 
             if collect_modules then 
-              Queue.add (Filename.chop_extension ml_name ) collection_modules; 
+              Queue.add ml_name collection_modules; 
             decorate_module_only  out_chan base ml_name ml_content
          )
          (fun base mli_name (lazy (_, mli_content))  -> 
             if collect_modules then 
-              Queue.add (Filename.chop_extension mli_name ) collection_modules; 
+              Queue.add mli_name collection_modules; 
             decorate_interface_only out_chan base mli_name mli_content )
          (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
            -> 
@@ -23981,14 +23979,22 @@ let () =
                Needs to be addressed 
              *)
             if collect_modules then 
-              Queue.add (Filename.chop_extension ml_name ) collection_modules; 
+              begin 
+                Queue.add ml_name collection_modules;
+                Queue.add mli_name collection_modules
+              end; 
              decorate_module out_chan base mli_name ml_name mli_content ml_content
          );
        close_out_chan out_chan;
-       begin match !mllib_file with 
-       | None -> ()
-       | Some file -> 
-         Ext_io.write_file file (Queue.fold (fun acc a -> acc ^ a ^ "\n") "" collection_modules)
+       begin 
+         (* if !set_mllib_file then  *)
+           match !output_file with
+           | None -> ()
+           | Some file ->
+             let out = Filename.basename file in
+             Ext_io.write_file 
+               (Ext_filename.chop_extension_if_any file ^ ".d") 
+               (Queue.fold (fun acc a -> acc ^ out ^ " : " ^ a ^ "\n") "" collection_modules)
        end
      | None, _ -> 
        let ast_table =

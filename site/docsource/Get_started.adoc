@@ -68,11 +68,11 @@ will call `fib`.
         "bs-platform": "1.0.1"
     },
     "scripts" : {
-        "build" : "bsc.exe -c -bs-main main_entry.ml" // <1>
+        "build" : "bsc.exe -c -bs-main Main_entry" // <1>
     }
 }
 ----------
-<1> here `-bs-main` option tells the compiler compile `main_entry` module and
+<1> here `-bs-main` option tells the compiler compile `Main_entry` module and
 its dependency accordingly
 * Create file `fib.ml` and file `main_entry.ml`
 +

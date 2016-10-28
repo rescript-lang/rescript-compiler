@@ -38,12 +38,14 @@ let intf filename =
   Compenv.readenv ppf Before_compile; process_interface_file ppf filename;;
 
 let batch_files  = ref []
+let script_dirs = ref []
 let main_file  = ref ""
 let eval_string = ref ""
     
 let collect_file name = 
   batch_files := name :: !batch_files
-
+let add_bs_dir v = 
+  script_dirs := v :: !script_dirs
 
 let set_main_entry name =
   if !eval_string <> "" then
@@ -241,7 +243,12 @@ let buckle_script_flags =
   ::
   ("-bs-main",
    Arg.String set_main_entry,   
-   " set the Main entry file")
+   " set the Main entry module in script mode, for example -bs-main Main")
+  ::
+  ("-bs-I", 
+   Arg.String add_bs_dir, 
+   " add source dir search path in script mode"
+  )
   :: 
   ("-bs-files", 
    Arg.Rest collect_file, 
@@ -273,7 +280,9 @@ let _ =
       else if eval_string <> "" then 
         Eval eval_string
       else None in
-    exit (Ocaml_batch_compile.batch_compile ppf !batch_files task) 
+    exit (Ocaml_batch_compile.batch_compile ppf 
+            (if !Clflags.no_implicit_current_dir then !script_dirs else 
+               Filename.current_dir_name::!script_dirs) !batch_files task) 
   with x ->
     if not @@ !Js_config.better_errors then
       begin (* plain error messge reporting*)

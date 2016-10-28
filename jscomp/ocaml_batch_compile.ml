@@ -26,6 +26,9 @@
 
 module String_set = Depend.StringSet
 
+(* we can cache it, since all deps have already being processed,
+   but having this functionalilty will introduce deps on {!Unix.stat}
+*)
 let process_result ppf  main_file ast_table result = 
   if Js_config.get_diagnose () then
     Format.fprintf Format.err_formatter
@@ -36,7 +39,7 @@ let process_result ppf  main_file ast_table result =
       result ;
   Ast_extract.build_lazy_queue ppf result ast_table
     Js_implementation.after_parsing_impl
-    Js_implementation.after_parsing_sig
+       Js_implementation.after_parsing_sig 
   ;
   if not (!Clflags.compile_only) then
     Sys.command
@@ -58,7 +61,7 @@ let print_if ppf flag printer arg =
   if !flag then Format.fprintf ppf "%a@." printer arg;
   arg
 
-let batch_compile ppf files main_file =
+let batch_compile ppf search_dirs files main_file =
   Compenv.readenv ppf Before_compile; 
   Compmisc.init_path  false;
   if files <> [] then 
@@ -76,16 +79,21 @@ let batch_compile ppf files main_file =
   ;
   begin match main_file with
     | Main main_file -> 
+      let main_module = (Ext_filename.module_name_of_file main_file) in
       let ast_table, result =
-        Ast_extract.collect_from_main ppf
+        Ast_extract.collect_from_main ppf ~extra_dirs:(List.map (fun x -> `Dir x ) search_dirs)
           Ocaml_parse.lazy_parse_implementation
           Ocaml_parse.lazy_parse_interface         
           Lazy.force
           Lazy.force
-          main_file in
-      (* if Queue.is_empty result then  *)
-      (*   Bs_exception.error (Bs_main_not_exist main_file) *)
-      (* ; *) (* Not necessary since we will alwasy check [main_file] is valid or not*)
+          main_module
+      in
+      if Queue.is_empty result then
+        Bs_exception.error (Bs_main_not_exist main_module);
+      (* ; Not necessary since we will alwasy check [main_file] is valid or not,
+         so if we support 
+         bsc -I xx -I yy -bs-main Module_name
+      *)
       process_result ppf main_file ast_table result     
     | None ->  0
     | Eval s ->

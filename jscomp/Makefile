@@ -59,19 +59,17 @@ snapshot: ./bin/bspack.exe snapshotcmj
 # files including Parsetree/Parser should be shaked 
 snapshotml:./bin/bspack.exe
 	@echo "Snapshot ml"
-	make -j6 snapshot1 snapshot2 snapshot3 snapshot4 snapshot5 snapshot6
-snapshot1:./bin/bspack.exe 
-	$< -bs-log-mllib bin/compiler.mllib -o bin/compiler.ml -bs-main js_main.ml -I ext -I syntax -I depends -I common
+	make -j6  snapshot2 snapshot3 snapshot4 snapshot5 snapshot6
 snapshot2:./bin/bspack.exe 
-	$< -bs-log-mllib bin/bsppx.mllib  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -bs-main bsppx_main.ml -o bin/bsppx.ml
+	$< -bs-MD  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -bs-main Bsppx_main -o bin/bsppx.ml
 snapshot3:./bin/bspack.exe 
-	$< -bs-log-mllib bin/whole_compiler.mllib -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main js_main.ml -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
+	$< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o bin/whole_compiler.ml -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common
 snapshot4:./bin/bspack.exe 
-	BS_OCAMLDEP=true $< -bs-log-mllib bin/bsdep.mllib  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I common -I ext -I syntax -I depends -I .  -bs-main ../ocaml/tools/ocamldep.ml -o bin/bsdep.ml
+	BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends  -bs-main Ocamldep -o bin/bsdep.ml
 snapshot5:./bin/bspack.exe 
-	$< -bs-log-mllib bin/bsb.mllib -I common -I ext -I syntax -I depends -bs-main ./bsb_main.ml -o bin/bsb.ml
+	$< -bs-MD -I common -I ext -I syntax -I depends -bs-main Bsb_main -o bin/bsb.ml
 snapshot6:./bin/bspack.exe 
-	BS_MIN_LEX_DEPS=true $< -bs-log-mllib bin/bspp.mllib   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -bs-main bspp_main.ml -o bin/bspp.ml
+	BS_MIN_LEX_DEPS=true $< -bs-MD   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -bs-main Bspp_main -o bin/bspp.ml
 
 
 snapshotcmj:
@@ -87,10 +85,10 @@ snapshotcmj:
 # which may already be wrong
 bootbspack: 
 	@echo "Bootstrap bspack.exe"
-	./bin/bspack.exe -bs-log-mllib bin/bspack.mllib -prelude-str 'module Config = Config_bspack '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	./bin/bspack.exe -bs-MD -prelude-str 'module Config = Config_bspack '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main Bspack_main -o bin/bspack.ml
 	$(NATIVE) -w -40  unix.cmxa  -I bin bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
 	@echo "Using the bootstrapped bspack.exe to genreate new bspack.ml: `date`"
-	./bin/bspack.exe -bs-log-mllib bin/bspack.mllib -prelude-str  'module Config = Config_bspack'   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main bspack_main.ml -o bin/bspack.ml
+	./bin/bspack.exe -bs-MD  -prelude-str  'module Config = Config_bspack'   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -bs-main Bspack_main -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
 	@echo "Rebuilding bspack.exe"
 	make -C bin -B bspack.exe
