@@ -182,9 +182,9 @@ let set_main_module modulename =
     main_module := Some modulename
 
 
-let mllib_file = ref None
-let set_mllib_file file =     
-  mllib_file := Some file 
+
+let set_mllib_file = ref false     
+
 let prelude = ref None 
 let set_prelude f = 
   if Sys.file_exists f then 
@@ -237,7 +237,7 @@ let specs : (string * Arg.spec * string) list =
     " Set a prelude file, literally copy into the beginning";    
     "-bs-mllib", (Arg.String set_string),
     " Files collected from mllib";
-    "-bs-log-mllib", (Arg.String set_mllib_file),
+    "-bs-MD", (Arg.Set set_mllib_file),
     " Log files into mllib(only effective under -bs-main mode)";
     "-o", (Arg.String set_output),
     " Set output file (default to stdout)" ;
@@ -323,18 +323,18 @@ let () =
          raise (Arg.Bad (main_module ^ " does not pull in any libs, maybe wrong input"))
        ;
        let out_chan = Lazy.force out_chan in
-       let collect_modules  = !mllib_file <> None in
+       let collect_modules  = !set_mllib_file in 
        let collection_modules = Queue.create () in
        emit_header out_chan ;
        Ast_extract.handle_queue Format.err_formatter tasks ast_table
          (fun base ml_name (lazy(_, ml_content)) -> 
             if collect_modules then 
-              Queue.add (Filename.chop_extension ml_name ) collection_modules; 
+              Queue.add ml_name collection_modules; 
             decorate_module_only  out_chan base ml_name ml_content
          )
          (fun base mli_name (lazy (_, mli_content))  -> 
             if collect_modules then 
-              Queue.add (Filename.chop_extension mli_name ) collection_modules; 
+              Queue.add mli_name collection_modules; 
             decorate_interface_only out_chan base mli_name mli_content )
          (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
            -> 
@@ -342,14 +342,22 @@ let () =
                Needs to be addressed 
              *)
             if collect_modules then 
-              Queue.add (Filename.chop_extension ml_name ) collection_modules; 
+              begin 
+                Queue.add ml_name collection_modules;
+                Queue.add mli_name collection_modules
+              end; 
              decorate_module out_chan base mli_name ml_name mli_content ml_content
          );
        close_out_chan out_chan;
-       begin match !mllib_file with 
-       | None -> ()
-       | Some file -> 
-         Ext_io.write_file file (Queue.fold (fun acc a -> acc ^ a ^ "\n") "" collection_modules)
+       begin 
+         (* if !set_mllib_file then  *)
+           match !output_file with
+           | None -> ()
+           | Some file ->
+             let out = Filename.basename file in
+             Ext_io.write_file 
+               (Ext_filename.chop_extension_if_any file ^ ".d") 
+               (Queue.fold (fun acc a -> acc ^ out ^ " : " ^ a ^ "\n") "" collection_modules)
        end
      | None, _ -> 
        let ast_table =
