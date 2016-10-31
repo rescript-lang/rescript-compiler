@@ -28,6 +28,7 @@ module Rules = struct
   let rule_id = ref 0 
   let rule_names = ref String_set.empty
   type t = < name : out_channel -> String_set.elt >
+  let get_name (x : t) oc = x # name oc 
   let define
       ~command
       ?depfile
@@ -90,7 +91,7 @@ module Rules = struct
 
      let build_deps =
        define
-         ~command:"${bsdep} -bs-oprefix ${builddir}  -bs-MD ${in}"
+         ~command:"${bsdep}  -bs-MD ${in}"
          "build_deps"
      let reload =
        define
@@ -133,7 +134,7 @@ module Rules = struct
 end
 
 let output_build ?(order_only_deps=[]) ?(implicit_deps=[]) ?(outputs=[]) ?(inputs=[]) ~output ~input  ~rule  oc =
-  let rule = rule#name oc in
+  let rule = Rules.get_name rule  oc in
   output_string oc "build "; 
   output_string oc output ; 
   outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
@@ -196,11 +197,12 @@ let output_kvs kvs oc =
 
 let (//) = Ext_filename.combine
 
-let handle_module_info builddir oc 
+let handle_module_info  oc 
     ({mli; ml; mll } : Binary_cache.module_info) (all_deps, all_cmis) =  
   let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  = 
     let filename_sans_extension = Filename.chop_extension input in
-    let output_file_sans_extension = builddir // filename_sans_extension in
+    let input = "$src_root_dir"// input in
+    let output_file_sans_extension = filename_sans_extension in
     let output_ml = output_file_sans_extension ^ Literals.suffix_ml in 
     let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in 
     let output_mlastd = output_file_sans_extension ^ Literals.suffix_mlastd in

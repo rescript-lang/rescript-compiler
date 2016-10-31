@@ -27,6 +27,8 @@
 
 module Rules : sig
   type t  
+  val get_name : t  -> out_channel -> string
+    
   val define : command:string ->
   ?depfile:string ->
   ?description:string ->
@@ -66,7 +68,6 @@ val phony  :
 val output_kvs : (string * string) list -> out_channel -> unit
 
 val handle_module_info : 
-  string ->
   out_channel ->
   Binary_cache.module_info ->
   string list * string list -> string list * string list

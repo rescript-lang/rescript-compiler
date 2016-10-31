@@ -10,11 +10,11 @@ export npm_package_name=bs-platform
 
 
 echo "Building the compiler" > build.compile
-make -j5 -r  check  2>>build.compile
-make -j2 bin/bsc.exe bin/bsb
+make  -j5 -r  check  2>>build.compile
+make -j2 bin/bsc.exe bin/bsb.exe 2>>build.compile
 echo "Building finished" >> build.compile
 echo "Building libs" >> build.compile
-make libs >> build.compile
+make libs 2>> build.compile
 echo "Building finished" >> build.compile
 # TODO: this quick test is buggy, 
 # since a.ml maybe depend on another module 

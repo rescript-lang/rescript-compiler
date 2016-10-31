@@ -159,7 +159,7 @@ let make_compiler name impl =
                     Js.wrap_meth_callback
                       (fun _ code ->
                          Js.string (shake_compile impl (Js.to_string code)));
-                    "version", Js.Unsafe.inject (Js.string (Js_config.version));
+                    "version", Js.Unsafe.inject (Js.string (Bs_version.version));
                   |]))
 let () = make_compiler "ocaml" Parse.implementation
 

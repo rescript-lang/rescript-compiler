@@ -25,4 +25,4 @@
 
 let setup_env () = 
   Lexer.replace_directive_built_in_value "BS" (Dir_bool true);
-  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Js_config.version)
+  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Bs_version.version)

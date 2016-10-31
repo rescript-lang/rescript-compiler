@@ -55,6 +55,7 @@ common/binary_cache.cmx : ext/string_map.cmx ext/ext_filename.cmx \
     common/binary_cache.cmi
 common/bs_exception.cmx : common/bs_exception.cmi
 common/bs_loc.cmx : common/bs_loc.cmi
+common/bs_version.cmx : common/bs_version.cmi
 common/bs_warnings.cmx : common/js_config.cmx common/bs_warnings.cmi
 common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
 common/js_config.cmx : ext/ext_string.cmx ext/ext_pervasives.cmx \
@@ -64,6 +65,7 @@ common/binary_ast.cmi :
 common/binary_cache.cmi : ext/string_map.cmi
 common/bs_exception.cmi :
 common/bs_loc.cmi :
+common/bs_version.cmi :
 common/bs_warnings.cmi :
 common/ext_log.cmi :
 common/js_config.cmi :
@@ -89,8 +91,8 @@ syntax/ast_derive_util.cmx :
 syntax/ast_exp.cmx : syntax/ast_exp.cmi
 syntax/ast_external.cmx : syntax/ast_external.cmi
 syntax/ast_external_attributes.cmx : common/lam_methname.cmx \
-    common/js_config.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
-    common/bs_warnings.cmx common/bs_loc.cmx syntax/ast_payload.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx common/bs_warnings.cmx \
+    common/bs_version.cmx common/bs_loc.cmx syntax/ast_payload.cmx \
     syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
     syntax/ast_external_attributes.cmi
 syntax/ast_lift.cmx : syntax/ast_lift.cmi
@@ -150,7 +152,7 @@ depends/ast_extract.cmx : ext/string_map.cmx ext/literals.cmx \
     common/bs_exception.cmx common/binary_cache.cmx common/binary_ast.cmx \
     depends/ast_extract.cmi
 depends/ast_extract.cmi : ext/string_map.cmi
-core/bs_conditional_initial.cmx : common/js_config.cmx \
+core/bs_conditional_initial.cmx : common/bs_version.cmx \
     core/bs_conditional_initial.cmi
 core/bspack_main.cmx : ext/ext_string.cmx ext/ext_pervasives.cmx \
     ext/ext_list.cmx ext/ext_io.cmx ext/ext_filename.cmx \
@@ -182,7 +184,7 @@ core/js_dump.cmx : ext/literals.cmx core/lam_module_ident.cmx \
     core/js_op.cmx core/js_number.cmx core/js_fun_env.cmx \
     core/js_exp_make.cmx common/js_config.cmx core/js_closure.cmx core/j.cmx \
     ext/ident_set.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx ext/ext_list.cmx \
-    ext/ext_ident.cmx core/js_dump.cmi
+    ext/ext_ident.cmx common/bs_version.cmx core/js_dump.cmi
 core/js_exp_make.cmx : ext/literals.cmx core/lam_compile_util.cmx \
     core/js_op_util.cmx core/js_fun_env.cmx common/js_config.cmx \
     core/js_call_info.cmx core/js_analyzer.cmx core/j.cmx ext/ext_string.cmx \
@@ -254,7 +256,7 @@ core/js_shake.cmx : core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
 core/js_stmt_make.cmx : core/lam_util.cmx core/lam.cmx core/js_exp_make.cmx \
     core/js_closure.cmx core/js_analyzer.cmx core/j.cmx core/js_stmt_make.cmi
 core/jsoo_main.cmx : syntax/ppx_entry.cmx core/lam_compile_group.cmx \
-    core/js_dump.cmx common/js_config.cmx ext/ext_pp.cmx \
+    core/js_dump.cmx ext/ext_pp.cmx common/bs_version.cmx \
     core/bs_conditional_initial.cmx core/jsoo_main.cmi
 core/lam.cmx : core/ocaml_stdlib_slots.cmx ext/literals.cmx \
     common/js_config.cmx ext/ext_string.cmx core/lam.cmi
@@ -376,7 +378,7 @@ core/ocaml_batch_compile.cmx : core/ocaml_parse.cmx \
     ext/ext_pervasives.cmx ext/ext_format.cmx ext/ext_filename.cmx \
     common/bs_exception.cmx depends/ast_extract.cmx \
     core/ocaml_batch_compile.cmi
-core/ocaml_options.cmx : common/js_config.cmx core/ocaml_options.cmi
+core/ocaml_options.cmx : common/bs_version.cmx core/ocaml_options.cmi
 core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
     core/ocaml_parse.cmi
 core/ocaml_stdlib_slots.cmx :

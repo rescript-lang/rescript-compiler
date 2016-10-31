@@ -333,7 +333,7 @@ let init_st =
   }
 
 
-let bs_external = "BS:" ^ Js_config.version
+let bs_external = "BS:" ^ Bs_version.version
 let bs_external_length = String.length bs_external
 
 let is_bs_external_prefix s = 

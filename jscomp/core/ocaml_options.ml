@@ -240,7 +240,7 @@ let show_config () =
 
 let ocaml_options = 
   let bs_version_string = 
-    "BuckleScript " ^ Js_config.version ^
+    "BuckleScript " ^ Bs_version.version ^
     " (Using OCaml" ^ Config.version ^ " )" in
 
   let print_version_and_library compiler =

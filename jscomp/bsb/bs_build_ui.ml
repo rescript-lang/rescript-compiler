@@ -1,6 +1,7 @@
 type 'a file_group = 
   { dir : string ;
-    sources : 'a
+    sources : 'a ; 
+    resources : string list 
   } 
 
 let (//) = Ext_filename.combine
@@ -71,24 +72,31 @@ type t =
   }
 
 let (++) 
-    ({files = a; intervals = b; globbed_dirs } : t) ({files = c; intervals = d; globbed_dirs = dirs2})
+    ({files = a; 
+      intervals = b; 
+      globbed_dirs;
+     } : t)
+    ({files = c; intervals = d; globbed_dirs = dirs2; 
+     })
   : t 
   = 
   {files = a@c; 
    intervals =  b@d ;
-   globbed_dirs = globbed_dirs @ dirs2
+   globbed_dirs = globbed_dirs @ dirs2;
   }
 
-let empty = { files = []; intervals  = []; globbed_dirs = []}
+let empty = { files = []; intervals  = []; globbed_dirs = [];  }
 
-let  parsing_sources (file_groups : Bs_json.t array)  = 
+let  parsing_sources cwd (file_groups : Bs_json.t array)  = 
   let rec expect_file_group cwd (x : Bs_json.t String_map.t )
     : t =
     let dir = ref cwd in
     let sources = ref String_map.empty in
+    let resources = ref [] in 
 
     let update_queue = ref [] in 
     let globbed_dirs = ref [] in 
+
     let children = ref [] in 
     let children_update_queue = ref [] in 
     let children_globbed_dirs = ref [] in 
@@ -103,6 +111,11 @@ let  parsing_sources (file_groups : Bs_json.t array)  =
                sources := files
 
              ))
+      |?  (Bs_build_schemas.resources ,
+           `Arr (fun s  ->
+               resources := get_list_string s
+             ))
+
       |? (Bs_build_schemas.files, 
           `Obj (fun m -> 
               let excludes = ref [] in 
@@ -140,14 +153,15 @@ let  parsing_sources (file_groups : Bs_json.t array)  =
         ))
       |> ignore 
     in 
-    {files = {dir = !dir; sources = !sources} :: !children;
-     intervals = !update_queue @ !children_update_queue ;
+    {
+      files = {dir = !dir; sources = !sources; resources = !resources} :: !children;
+      intervals = !update_queue @ !children_update_queue ;
      globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
     } in 
   Array.fold_left (fun  origin x ->
       match x with 
       | `Obj map ->  
-        expect_file_group Filename.current_dir_name map ++ origin
+        expect_file_group cwd map ++ origin
       | _ -> origin
     ) empty  file_groups 
 

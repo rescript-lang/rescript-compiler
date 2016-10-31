@@ -120,7 +120,7 @@ val block : string
 val int32 : string
 val gc : string 
 val backtrace : string
-val version : string
+
 val builtin_exceptions : string
 val exceptions : string
 val io : string

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(*
 type ('a,'b) result = 
   | Ok of 'a
   | Error of 'b
@@ -102,5 +102,9 @@ let  reset_readdir_cache () =
 let reset_readdir_cache_for dir =
   cache_dirty := true; 
   Hashtbl.remove !cache dir 
+*)
 
-
+(* TODO: see if it is worth turn caching on
+   if turned on, we need make sure avoid data racing issues
+*)
+let readdir = Sys.readdir 

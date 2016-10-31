@@ -71,8 +71,12 @@
                   }
                 ]
             },
-            
-                
+            "resources" : {
+                "type": "array",
+                "items": {
+                    "type" : "string"
+                }
+            },                
               "subdirs" : {
                   "type" : "array",
                   "items" : {

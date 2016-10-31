@@ -47,6 +47,8 @@ bin/bsppx.ml : syntax/ast_core_type.ml
 bin/bsppx.ml : syntax/ast_core_type.mli
 bin/bsppx.ml : common/bs_loc.ml
 bin/bsppx.ml : common/bs_loc.mli
+bin/bsppx.ml : common/bs_version.ml
+bin/bsppx.ml : common/bs_version.mli
 bin/bsppx.ml : ext/ext_pervasives.ml
 bin/bsppx.ml : ext/ext_pervasives.mli
 bin/bsppx.ml : ext/ext_filename.ml

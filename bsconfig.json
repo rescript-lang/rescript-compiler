@@ -10,31 +10,22 @@
             "jscomp/stdlib", 
             "jscomp/others"
             ],
-
-        
         "bsc-flags" : 
         [
             "-w", "-40",  "-bs-no-version-header", "-bs-cross-module-opt"
         ],
-        "bs-copy-or-symlink" :  
-        // for out of source build, on Unix will do a symlink
-        // on windows will copy
-        [
-            "jscomp/test/flow_parser_sample.js",
-            "jscomp/test/joinClasses.js"
-        ]
-        ,
-                     // so the design is this way
-            // if we find 
-            // "files" : [
-            // ]
-            // we will update it *before* spitting out build.ninja
-
     "sources" : 
     [ 
 
         {
             "dir" : "jscomp/test/" ,
+            "resources" : 
+            [
+                "flow_parser_sample.js",
+                "joinClasses.js"
+            ]
+            ,
+
             "subdirs": [
                 {
                     "dir": "acyc",

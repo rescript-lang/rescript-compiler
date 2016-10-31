@@ -1,7 +1,8 @@
 
 type 'a file_group = 
   { dir : string ;
-    sources : 'a
+    sources : 'a ; 
+    resources : string list 
   } 
 
 type t = 
@@ -15,6 +16,7 @@ type t =
     [sources] in the schema
 *)
 val parsing_sources : 
+  string -> 
   Bs_json.t array ->
   t 
   

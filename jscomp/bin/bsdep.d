@@ -40,6 +40,8 @@ bin/bsdep.ml : common/js_config.ml
 bin/bsdep.ml : common/js_config.mli
 bin/bsdep.ml : depends/ast_extract.ml
 bin/bsdep.ml : depends/ast_extract.mli
+bin/bsdep.ml : common/bs_version.ml
+bin/bsdep.ml : common/bs_version.mli
 bin/bsdep.ml : ../ocaml/parsing/docstrings.ml
 bin/bsdep.ml : ../ocaml/parsing/docstrings.mli
 bin/bsdep.ml : ../ocaml/parsing/ast_helper.ml

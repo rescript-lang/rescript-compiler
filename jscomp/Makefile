@@ -36,7 +36,8 @@ core/js_map.ml:core/js_map.mlp core/j.ml
 core/js_fold.ml:core/js_fold.mlp core/j.ml
 	@echo "Regenrating j_fold.ml"
 	$(CAMLP4OF) -I core -filter Camlp4FoldGenerator  -filter trash -impl $< -printer o -o $@
-
+common/bs_version.ml: build_version.js ../package.json
+	node $<
 
 
 
@@ -50,7 +51,7 @@ EXT_SRCS = ext_array ext_bytes ext_char ext_file_pp ext_format ext_hashtbl ext_l
 	string_set ext_pp_scope ext_io ext_ident ext_filename 
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
-COMMON_SRCS= js_config ext_log bs_loc bs_exception bs_warnings lam_methname binary_ast binary_cache
+COMMON_SRCS= bs_version js_config ext_log bs_loc bs_exception bs_warnings lam_methname binary_ast binary_cache
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift \
 	ast_literal ast_pat ast_payload ast_signature ast_structure bs_ast_iterator bs_ast_invariant \
@@ -78,7 +79,7 @@ OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS=bs_build_schemas bs_dep_infos bs_dir bs_json sexp_lexer sexp_eval  bs_ninja bs_build_ui
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
-MAIN_SRCS= jsgen_main jscmj_main 
+MAIN_SRCS= jsgen_main jscmj_main bsb_main
 MAINS_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
 ext.cmxa: $(EXT_CMXS)
@@ -96,7 +97,7 @@ bsb.cmxa:$(BSB_CMXS)
 
 check:  $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS)
 
-bin/bsb: ext.cmxa common.cmxa  bsb.cmxa bsb_main.cmx
+bin/bsb.exe: ext.cmxa common.cmxa  bsb.cmxa bsb_main.cmx
 	$(NATIVE) -g -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
 
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
@@ -273,7 +274,7 @@ DEST_BIN=../bin
 install:
 	@echo "copy exe"
 	mkdir -p $(DEST_BIN) $(DEST)
-	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe ./bin/bspp.exe ./bin/bsb  $(DEST_BIN)
+	cp  ./bin/bsc.exe ./bin/bsppx.exe  ./bin/bspack.exe ./bin/bsdep.exe ./bin/bspp.exe ./bin/bsb.exe  $(DEST_BIN)
 	@echo "copy stdlib"
 	cp ./runtime/*.cmt* ./runtime/*.cmj* ./stdlib/*.cm* ./others/*.ml ./others/*.mli  ./others/*.cm* \
 	 ./runtime/js.ml  ./runtime/js.cmi ./runtime/js_unsafe.cmi ./runtime/js_null.ml ./runtime/js_null.cmi \
@@ -285,6 +286,7 @@ clean:
 	rm  -f $(SNAPSHOT_SRCS)
 	rm -f $(SNAPSHOT_DEPS)
 	rm -f bsb/bs_json.ml bsb/sexp_lexer.ml core/js_fold.ml core/js_map.ml
+	rm -f common/bs_version.ml
 	rm -rf bin/config_whole_compiler.ml 	
 	git clean -dfx ext common syntax depends core bsb
 

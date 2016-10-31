@@ -5801,7 +5801,7 @@ val block : string
 val int32 : string
 val gc : string 
 val backtrace : string
-val version : string
+
 val builtin_exceptions : string
 val exceptions : string
 val io : string
@@ -6037,7 +6037,6 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.2.2"
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -6576,6 +6575,15 @@ let handle_depfile oprefix  (fn : string) : unit =
   in 
   let output = fn ^ Literals.suffix_d in
   Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
+
+end
+module Bs_version : sig 
+#1 "bs_version.mli"
+val version : string
+
+end = struct
+#1 "bs_version.ml"
+let version = "1.2.2+dev"
 
 end
 module Docstrings : sig 
@@ -23483,7 +23491,7 @@ end = struct
 
 let setup_env () = 
   Lexer.replace_directive_built_in_value "BS" (Dir_bool true);
-  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Js_config.version)
+  Lexer.replace_directive_built_in_value "BS_VERSION" (Dir_string Bs_version.version)
 
 end
 module Compenv : sig 
@@ -28042,7 +28050,7 @@ let init_st =
   }
 
 
-let bs_external = "BS:" ^ Js_config.version
+let bs_external = "BS:" ^ Bs_version.version
 let bs_external_length = String.length bs_external
 
 let is_bs_external_prefix s = 
