@@ -61,19 +61,8 @@ ocaml_src
 # for npm publish
 !bin/bsc.exe
 !bin/bsppx
-!bin/ocaml
-!bin/ocamldep
-!bin/ocamldep.opt
-!bin/ocamlyacc
-!bin/ocamllex.opt
-!bin/ocamllex
-!bin/ocamlobjinfo
-!bin/ocamlopt
-!bin/ocamlopt.opt
-!bin/ocamlrun
-!bin/ocamlc
-!bin/ocamlc.opt
 !bin/bspack
+!/bin/bsb
 !ocaml.tar.gz
 
 #ninja
