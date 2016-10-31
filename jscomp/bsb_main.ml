@@ -91,10 +91,13 @@ module Default : sig
   val get_bsc_flags : unit -> string list
   val get_ppx_flags : unit -> string list 
 end  = struct
-  let bsc = ref  "bsc.exe"
-  let bsbuild = ref "bsbuild.exe"
-  let bsdep = ref "bsdep.exe"
-  let ocamllex =  ref "ocamllex.opt"
+
+  (* let () = print_endline Sys.executable_name *)
+  let bsb_dir = Filename.dirname Sys.executable_name
+  let bsc = ref  (bsb_dir // "bsc.exe")
+
+  let bsdep = ref (bsb_dir // "bsdep.exe")
+  let ocamllex =  ref ( "ocamllex.opt")
 
   let bs_external_includes = ref []
 
@@ -104,18 +107,18 @@ end  = struct
   let ppx_flags = ref []
   let static_resources = ref []
   let builddir = ref "_build"
-  (* let bs_file_groups = ref [] *)
+
   let set_bs_external_includes s = 
     bs_external_includes := List.map convert_path (get_list_string s )
   let set_bsc_flags s = bsc_flags := get_list_string s 
   let set_bsc s = bsc := convert_path s
-  let set_builddir s = bsbuild := convert_path s 
+  let set_builddir s = builddir := convert_path s 
   let set_bsdep s = bsdep := convert_path s
   let set_ocamllex s = ocamllex := convert_path s 
   let set_package_name s = package_name := Some s
   let get_bsdep () = !bsdep
   let get_bsc () = !bsc 
-  let get_builddir () = !bsbuild
+  let get_builddir () = !builddir
   let get_package_name () = !package_name
   let get_ocamllex () = !ocamllex 
   let get_builddir () = !builddir
@@ -185,10 +188,10 @@ let output_ninja
         [
           "src_root_dir", eager_src_root_dir (* TODO: need check its integrity*);
           "bsc", bsc ; 
-          "bsc_computed_flags", bsc_computed_flags ; 
-          "bsc_parsing_flags", bsc_parsing_flags ; 
           "bsdep", bsdep; 
           "ocamllex", ocamllex;
+          "bsc_computed_flags", bsc_computed_flags ; 
+          "bsc_parsing_flags", bsc_parsing_flags ; 
           "ppx_flags", ppx_flags;
           "builddir", builddir;
 

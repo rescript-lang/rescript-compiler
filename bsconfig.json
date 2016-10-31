@@ -3,8 +3,6 @@
     "version": "1.2.2",
     "ocaml-config" : 
     {
-        "bsdep" : "jscomp/bin/bsdep.exe",
-        "bsc" : "jscomp/bin/bsc.exe",
         "bs-external-includes" : [
             "jscomp/runtime", 
             "jscomp/stdlib", 
