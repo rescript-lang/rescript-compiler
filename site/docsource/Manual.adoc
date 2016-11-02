@@ -71,4 +71,6 @@ include::./Dev-mode-How-to.adoc[]
 
 include::./Differences-from-js_of_ocaml.adoc[]
 
+[appendix]
 include::./CHANGELOG.adoc[]
+
