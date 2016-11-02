@@ -60,6 +60,8 @@ val chop_extension : ?loc:string -> string -> string
 
 
 val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
 val replace_backward_slash : string -> string
@@ -71,3 +73,9 @@ val chop_extension_if_any : string -> string
 val absolute_path : string -> string
 
 val module_name_of_file_if_any : string -> string
+
+(**
+   1. add some simplifications when concatenating
+   2. when the second one is absolute, drop the first one
+*)
+val combine : string -> string -> string

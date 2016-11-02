@@ -47,7 +47,7 @@ val cmj_ext : string
 val get_ext : unit -> string
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : module_system -> string -> string
+val get_output_dir : pkg_dir:string -> module_system -> string -> string
 
 
 (** used by command line option *)
@@ -120,7 +120,7 @@ val block : string
 val int32 : string
 val gc : string 
 val backtrace : string
-val version : string
+
 val builtin_exceptions : string
 val exceptions : string
 val io : string

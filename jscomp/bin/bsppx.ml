@@ -6188,8 +6188,9 @@ val bs_type : string
 
 val node_modules : string
 val node_modules_length : int
-val package_json : string  
-
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
 val suffix_cmj : string
 val suffix_cmi : string
 val suffix_ml : string
@@ -6199,6 +6200,7 @@ val suffix_mll : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
+val suffix_js : string
 
 end = struct
 #1 "literals.ml"
@@ -6278,7 +6280,8 @@ let bs_type = "bs.type"
 let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
 let package_json = "package.json"
-
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
 
 let suffix_cmj = ".cmj"
 let suffix_cmi = ".cmi"
@@ -6289,7 +6292,7 @@ let suffix_mliast = ".mliast"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-
+let suffix_js = ".js"
 
 
 end
@@ -7242,6 +7245,15 @@ let merge (l: t) (r : t) =
 let none = Location.none
 
 end
+module Bs_version : sig 
+#1 "bs_version.mli"
+val version : string
+
+end = struct
+#1 "bs_version.ml"
+let version = "1.2.3"
+
+end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7536,6 +7548,8 @@ val chop_extension : ?loc:string -> string -> string
 
 
 val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
 val replace_backward_slash : string -> string
@@ -7547,6 +7561,12 @@ val chop_extension_if_any : string -> string
 val absolute_path : string -> string
 
 val module_name_of_file_if_any : string -> string
+
+(**
+   1. add some simplifications when concatenating
+   2. when the second one is absolute, drop the first one
+*)
+val combine : string -> string -> string
 
 end = struct
 #1 "ext_filename.ml"
@@ -7779,6 +7799,13 @@ let module_name_of_file_if_any file =
   *)
 (* let has_exact_suffix_then_chop fname suf =  *)
   
+let combine p1 p2 = 
+  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
+  if p2 = "" || p2 = Filename.current_dir_name then p1 
+  else 
+  if Filename.is_relative p2 then 
+    Filename.concat p1 p2 
+  else p2 
 
 end
 module Js_config : sig 
@@ -7832,7 +7859,7 @@ val cmj_ext : string
 val get_ext : unit -> string
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : module_system -> string -> string
+val get_output_dir : pkg_dir:string -> module_system -> string -> string
 
 
 (** used by command line option *)
@@ -7905,7 +7932,7 @@ val block : string
 val int32 : string
 val gc : string 
 val backtrace : string
-val version : string
+
 val builtin_exceptions : string
 val exceptions : string
 val io : string
@@ -8090,7 +8117,7 @@ let get_current_package_name_and_path   module_system =
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
-let get_output_dir module_system filename =
+let get_output_dir ~pkg_dir module_system filename =
   match !packages_info with
   | Empty | NonBrowser (_, [])->
     if Filename.is_relative filename then
@@ -8100,7 +8127,7 @@ let get_output_dir module_system filename =
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
     begin match List.find (fun (k,_) -> k = module_system) modules with
-      | (_, _path) -> Lazy.force Ext_filename.package_dir // _path
+      | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
 
@@ -8141,7 +8168,6 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.2.2"
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -8277,7 +8303,8 @@ let warning_formatter = Format.err_formatter
 let print_string_warning loc x = 
   Location.print warning_formatter loc ; 
   Format.pp_print_string warning_formatter "Warning: ";
-  Format.pp_print_string warning_formatter x
+  Format.pp_print_string warning_formatter x;
+  Format.pp_print_string warning_formatter "\n"
 
 let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then
@@ -8816,7 +8843,7 @@ let init_st =
   }
 
 
-let bs_external = "BS:" ^ Js_config.version
+let bs_external = "BS:" ^ Bs_version.version
 let bs_external_length = String.length bs_external
 
 let is_bs_external_prefix s = 

@@ -227,3 +227,10 @@ let module_name_of_file_if_any file =
   *)
 (* let has_exact_suffix_then_chop fname suf =  *)
   
+let combine p1 p2 = 
+  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
+  if p2 = "" || p2 = Filename.current_dir_name then p1 
+  else 
+  if Filename.is_relative p2 then 
+    Filename.concat p1 p2 
+  else p2 

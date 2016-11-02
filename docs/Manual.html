@@ -629,7 +629,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_changes_to_command_line_options">Changes to command line options</a></li>
 </ul>
 </li>
-<li><a href="#_build_system_support">Build system support</a></li>
+<li><a href="#_build_system_support">Build system support</a>
+<ul class="sectlevel2">
+<li><a href="#_build_with_bsb_experimental">Build with bsb (experimental)</a></li>
+<li><a href="#_build_using_make">Build using Make</a></li>
+</ul>
+</li>
 <li><a href="#_faq">FAQ</a></li>
 <li><a href="#_high_level_compiler_workflow">High Level compiler workflow</a>
 <ul class="sectlevel2">
@@ -985,8 +990,7 @@ the previous section.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">export </span><span class="tok-nv">BS_RELEASE_BUILD</span><span class="tok-o">=</span>1
-make world</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">make world</code></pre>
 </div>
 </div>
 <hr>
@@ -3753,6 +3757,121 @@ inlining, arity inference and other information.</p>
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_build_with_bsb_experimental"><a class="anchor" href="#_build_with_bsb_experimental"></a>Build with bsb (experimental)</h3>
+<div class="paragraph">
+<p>BuckleScript proivdes a native build tool using <a href="https://github.com/ninja-build/ninja/releases">ninja</a>,
+it is designed for fast feedback loop (typically 100ms feedback loop).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Currently user needs install ninja first</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>It is a schema based build tool, the schema is
+<a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a></p>
+</div>
+<div class="paragraph">
+<p>Here is a typical configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">bsconfig.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bs-string&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.2&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;ocaml-config&quot;</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+      <span class="tok-c1">//  &quot;bs-dependencies&quot;: [&quot;bs-mocha&quot;], </span><b class="conum">(1)</b>
+        <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+            <span class="tok-p">{</span>
+                <span class="tok-s2">&quot;dir&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
+                <span class="tok-s2">&quot;public&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;all&quot;</span><span class="tok-p">,</span> <b class="conum">(2)</b>
+                <span class="tok-s2">&quot;files&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+                    <span class="tok-s2">&quot;bs_string.ml&quot;</span><span class="tok-p">,</span>
+                    <span class="tok-s2">&quot;bs_nativeint.ml&quot;</span><span class="tok-p">,</span>
+                    <span class="tok-s2">&quot;bs_math.ml&quot;</span><span class="tok-p">,</span>
+                    <span class="tok-s2">&quot;bs_array.ml&quot;</span>
+                <span class="tok-p">]</span>
+            <span class="tok-p">},</span>
+            <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;test&quot;</span><span class="tok-p">,</span>
+              <span class="tok-s2">&quot;files&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+                         <span class="tok-s2">&quot;bs_string_test.ml&quot;</span>
+                         <span class="tok-p">]</span>
+                         <span class="tok-p">,</span>
+              <span class="tok-s2">&quot;bs-dependencies&quot;</span> <span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s2">&quot;bs-mocha&quot;</span><span class="tok-p">]</span> <b class="conum">(3)</b>
+            <span class="tok-p">}</span>
+        <span class="tok-p">]</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>It is an extension to JSON with comment support</p>
+</li>
+<li>
+<p>List interfaces to be exposed to client</p>
+</li>
+<li>
+<p>Add more dependencies for some TARGETS</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The entry point is <code>bsb.exe</code>,
+it will check if there is already <code>build.ninja</code> in the build directory,
+if not or need regenerated it will generate a file  <code>build.ninja</code>
+and delegate the hard work to <code>ninja</code>.</p>
+</div>
+<div class="paragraph">
+<p>The directory layout (after building) would be</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>.
+├── lib
+│   ├── bs
+│   │   ├── src
+│   │   └── test
+│   ├── js
+│   │   ├── src
+│   │   └── test
+│   ├── amdjs <b class="conum">(1)</b>
+│   │   ├── src
+│   │   └── test
+│   ├── goog  <b class="conum">(2)</b>
+│   │   ├── src
+│   │   └── test
+│   └── ocaml
+├── scripts
+├── src
+└── test</pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Will generate amdjs modules if flags are turned on</p>
+</li>
+<li>
+<p>Will generate goog modules if flags are turned on</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_build_using_make"><a class="anchor" href="#_build_using_make"></a>Build using Make</h3>
 <div class="paragraph">
 <p>BuckleScript distribution has <code>bsdep.exe</code> which has the same interface as <code>ocamldep</code></p>
 </div>
@@ -3836,6 +3955,7 @@ make depend <b class="conum">(2)</b></code></pre>
 </div>
 <div class="paragraph">
 <p>Now in your working directory, type <code>watchman -j &lt; build.json</code> and enjoy the lightning build speed.</p>
+</div>
 </div>
 </div>
 </div>

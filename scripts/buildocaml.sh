@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export BS_RELEASE_BUILD=1
+
 export OCAMLPARAM='_,bin-annot=1' 
 export OCAMLRUNPARAM=b
 

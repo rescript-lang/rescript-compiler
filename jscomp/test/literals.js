@@ -67,6 +67,10 @@ var node_modules_length = 12;
 
 var package_json = "package.json";
 
+var bsconfig_json = "bsconfig.json";
+
+var build_ninja = "build.ninja";
+
 var suffix_cmj = ".cmj";
 
 var suffix_cmi = ".cmi";
@@ -84,6 +88,8 @@ var suffix_d = ".d";
 var suffix_mlastd = ".mlast.d";
 
 var suffix_mliastd = ".mliast.d";
+
+var suffix_js = ".js";
 
 exports.js_array_ctor       = js_array_ctor;
 exports.js_type_number      = js_type_number;
@@ -118,6 +124,8 @@ exports.bs_type             = bs_type;
 exports.node_modules        = node_modules;
 exports.node_modules_length = node_modules_length;
 exports.package_json        = package_json;
+exports.bsconfig_json       = bsconfig_json;
+exports.build_ninja         = build_ninja;
 exports.suffix_cmj          = suffix_cmj;
 exports.suffix_cmi          = suffix_cmi;
 exports.suffix_ml           = suffix_ml;
@@ -127,4 +135,5 @@ exports.suffix_mll          = suffix_mll;
 exports.suffix_d            = suffix_d;
 exports.suffix_mlastd       = suffix_mlastd;
 exports.suffix_mliastd      = suffix_mliastd;
+exports.suffix_js           = suffix_js;
 /* No side effect */

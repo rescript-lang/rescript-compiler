@@ -53,7 +53,7 @@ let report_error ppf = function
 
   | Bs_package_not_found package
     ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
       package package
   | Bs_invalid_path path
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
