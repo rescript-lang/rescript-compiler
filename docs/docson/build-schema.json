@@ -1,24 +1,26 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "definitions" : {
-        "module-format" : {
+    "definitions": {
+        "module-format": {
             "enum": [
                 "commonjs",
                 "amdjs",
                 "goog"
             ]
         },
-        "module-output" : {
+        "module-output": {
             "type": "array",
-            "items": [ 
-                { "$ref" : "#/definitions/module-format"},
-                { 
-                    "type" : "string",
+            "items": [
+                {
+                    "$ref": "#/definitions/module-format"
+                },
+                {
+                    "type": "string",
                     "description": "output path, if not set, it will be `lib/js/commonjs`, `lib/js/amdjs` or `lib/js/goog` "
                 }
-            ]            
+            ]
         },
-        "package-spec" : {
+        "package-spec": {
             "oneOf": [
                 {
                     "type": "array",
@@ -34,147 +36,150 @@
                     "description": "All supported format with default output"
                 }
             ]
-
         },
-        "bs-dependencies" : {
-            "type" : "array",
-            "items" : { "type" : "string" },
-            "description" : "bucklescript package dependencies"   
-        },
-        "sourceItem" : {
-            "title" : "sourceItem",
-            "properties": {
-              "dir" : {
-                  "type" : "string"
-              },
-              "files" : 
-            {
-                "oneOf": [
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "if files are empty, the build tool will populate it automatically, this is useful for initial adoption"
-                    },
-                    {
-                        "type" : "object",
-                        "properties" : {
-                            "slow-re" : {
-                                "type" : "string",
-                                "description": "Regex to glob the patterns, syntax is documented here: http://caml.inria.fr/pub/docs/manual-ocaml/libref/Str.html, if users want to have better performance for incremental build, we would suggest list it explicitly"
-                            },
-                            "excludes" : {
-                                "type": "array",
-                                "items": {
-                                    "type" : "string"
-                                },
-                                "description": "A list of strings to be excluded "
-                            } 
-                        },
-                        "required": ["slow-re"]
-                  }
-                ]
-            },
-            "bs-dependencies" : {
-                "$ref" : "#/definitions/bs-dependencies"
-            },
-            "public" : {
-                "oneOf": [
-                    {
-                        "enum": 
-                        [
-                        "all"
-                        ]
-                    },
-                    {
-                        "type": "array",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    }
-                ]
-            },
-            "resources" : {
-                "type": "array",
-                "items": {
-                    "type" : "string"
-                }
-            },                
-              "subdirs" : {
-                  "type" : "array",
-                  "items" : {
-                      "$ref" : "#/definitions/sourceItem"
-                  }
-              },
-              "group" : {
-                  "oneOf": [
-                  {
-                  "type" : "string",
-                  "description": "A _unique_ name for each directory to refer as an internal dependency later"
-                  },
-                  {
-                      "properties": {
-                        "name" : {
-                            "type" : "string"
-                        },
-                        "hierachy" : {
-                            "type" : "boolean",
-                            "description": "When true, all subdirs are considered as a whole as dependency"
-                        }     
-                      }
-                  }
-                  ]
-              },
-              "internal-depends" : {
-                  "type" : "array",
-                  "items": {
-                      "type": "string",
-                      "description": "internal dependencies, if unspecified, all existing listed source files are considered potential dependencies"
-                  }
-              }  
-            },
-            "required": ["dir","files"] 
-        },
-        "stringArray" : {
-            "type" : "array",
+        "bs-dependencies": {
+            "type": "array",
             "items": {
-                "type" : "string"
+                "type": "string"
+            },
+            "description": "bucklescript package dependencies"
+        },
+        "sourceItem": {
+            "title": "sourceItem",
+            "properties": {
+                "dir": {
+                    "type": "string"
+                },
+                "files": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "if files are empty, the build tool will populate it automatically, this is useful for initial adoption"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "slow-re": {
+                                    "type": "string",
+                                    "description": "Regex to glob the patterns, syntax is documented here: http://caml.inria.fr/pub/docs/manual-ocaml/libref/Str.html, if users want to have better performance for incremental build, we would suggest list it explicitly"
+                                },
+                                "excludes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description": "A list of strings to be excluded "
+                                }
+                            },
+                            "required": [
+                                "slow-re"
+                            ]
+                        }
+                    ]
+                },
+                "bs-dependencies": {
+                    "$ref": "#/definitions/bs-dependencies"
+                },
+                "public": {
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "all"
+                            ]
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "resources": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "subdirs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sourceItem"
+                    }
+                },
+                "group": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "description": "A _unique_ name for each directory to refer as an internal dependency later"
+                        },
+                        {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "hierachy": {
+                                    "type": "boolean",
+                                    "description": "When true, all subdirs are considered as a whole as dependency"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "internal-depends": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "internal dependencies, if unspecified, all existing listed source files are considered potential dependencies"
+                    }
+                }
+            },
+            "required": [
+                "dir",
+                "files"
+            ]
+        },
+        "stringArray": {
+            "type": "array",
+            "items": {
+                "type": "string"
             }
         }
     },
     "title": "BuckleScript build configuration",
     "description": "All paths are required for Unix format, the build tool will do conversion internally",
     "type": "object",
-    "properties" : {
-        "version" : {
-            "type" : "string",
+    "properties": {
+        "version": {
+            "type": "string",
             "description": "The semantic version of the OCaml library"
         },
-        "name" : {
-            "type" : "string",
+        "name": {
+            "type": "string",
             "description": "package name"
-        },        
-        "ocaml-config" : {
+        },
+        "ocaml-config": {
             "title": "OCaml Configuration format",
-
-            "bs-dependencies" : {
-                "$ref" : "#/definitions/bs-dependencies" 
+            "bs-dependencies": {
+                "$ref": "#/definitions/bs-dependencies"
             },
             "properties": {
                 "bsdep": {
                     "type": "string",
                     "description": "the path to bsdep"
                 },
-                "ppx-flags" : {
-                    "$ref" : "#/definitions/stringArray",
+                "ppx-flags": {
+                    "$ref": "#/definitions/stringArray",
                     "description": "ppx flags"
                 },
-                "bsc-flags" : {
-                    "$ref" : "#/definitions/stringArray"
+                "bsc-flags": {
+                    "$ref": "#/definitions/stringArray"
                 },
-                "package-spec" : {
-                    "$ref" : "#/definitions/package-spec"
+                "package-spec": {
+                    "$ref": "#/definitions/package-spec"
                 },
                 "bsbuild": {
                     "type": "string",
@@ -184,19 +189,19 @@
                     "type": "string",
                     "description": "the path to bsc"
                 },
-                "ocamllex" : {
-                    "type" : "string",
+                "ocamllex": {
+                    "type": "string",
                     "description": "path to ocamllex"
                 },
-                "ocamlyacc" : {
-                    "type": "string"
-                }, 
-                "menhir" : {
+                "ocamlyacc": {
                     "type": "string"
                 },
-                "refmt" : {
-                    "type" : "string",
-                    "description": "the path to refmt" 
+                "menhir": {
+                    "type": "string"
+                },
+                "refmt": {
+                    "type": "string",
+                    "description": "the path to refmt"
                 },
                 "bs-external-includes": {
                     "$ref": "#/definitions/stringArray",
@@ -206,23 +211,26 @@
                     "type": "string",
                     "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/bs "
                 },
-
                 "bs-copy-or-symlink": {
-                    "$ref" : "#/definitions/stringArray",
-                    "description" : "the resource files, the use case is in test build, we need keep the same relative path between code and resources"
+                    "$ref": "#/definitions/stringArray",
+                    "description": "the resource files, the use case is in test build, we need keep the same relative path between code and resources"
                 },
-                "sources" : {
-                    "type" : "array",
+                "sources": {
+                    "type": "array",
                     "items": {
-                        "$ref" : "#/definitions/sourceItem"
+                        "$ref": "#/definitions/sourceItem"
                     }
                 }
             },
-            "required": ["sources"] ,
-            "additionalProperties": false           
+            "required": [
+                "sources"
+            ],
+            "additionalProperties": false
         }
     },
-    "required": ["version", "name", "ocaml-config"]
-    
+    "required": [
+        "version",
+        "name",
+        "ocaml-config"
+    ]
 }
-
