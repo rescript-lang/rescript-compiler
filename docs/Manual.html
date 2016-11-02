@@ -649,12 +649,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_integration_with_reason">Integration with Reason</a></li>
-<li><a href="#_how_to_contribute">How to contribute</a>
+<li><a href="#_contributions">Contributions</a>
 <ul class="sectlevel2">
-<li><a href="#_build_the_compiler">Build the compiler</a></li>
-<li><a href="#_build_the_runtime">Build the runtime</a></li>
-<li><a href="#_build_the_stdlib">Build the stdlib</a></li>
-<li><a href="#_help_rewrite_the_whole_runtime_in_ocaml">Help rewrite the whole runtime in OCaml</a></li>
+<li><a href="#_development_set_up">Development set-up</a></li>
+<li><a href="#_contributing_to_code_bsb_exe_code">Contributing to <code>bsb.exe</code></a></li>
+<li><a href="#_contributing_to_code_bsc_exe_code">Contributing to <code>bsc.exe</code></a></li>
+<li><a href="#_contributing_to_the_runtime">Contributing to the runtime</a></li>
 </ul>
 </li>
 <li><a href="#_comparisons">Comparisons</a>
@@ -4528,55 +4528,106 @@ We are working to provide a ppx extension as below:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_how_to_contribute"><a class="anchor" href="#_how_to_contribute"></a>How to contribute</h2>
+<h2 id="_contributions"><a class="anchor" href="#_contributions"></a>Contributions</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_build_the_compiler"><a class="anchor" href="#_build_the_compiler"></a>Build the compiler</h3>
 <div class="paragraph">
-<p>The development of BuckleScript compiler relies on 2 tools which are
-readily available in <code>opam</code> and work with our patched OCaml compiler:</p>
+<p>First, thanks for your interest in contribution,
+there are plenty of ways in contributions, like blogging, sharing your experience,
+open sourcing your libraries using BuckleScript, they are all deeply appreciated.</p>
 </div>
+<div class="paragraph">
+<p>This section will focus on how to contribute to this repo.</p>
+</div>
+<div class="sect2">
+<h3 id="_development_set_up"><a class="anchor" href="#_development_set_up"></a>Development set-up</h3>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="http://caml.inria.fr/pub/docs/manual-ocaml-400/manual032.html">ocamlbuild</a>:
-Default build tool for OCaml project</p>
+<p>Having <a href="https://opam.ocaml.org/">opam</a> installed</p>
+<div class="literalblock">
+<div class="content">
+<pre>opam switch 4.02.3+buckle-master # use our OCaml compiler
+opam install camlp4  &lt;1&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Camlp4</code> is used to generate OCaml code for processing large AST. (<code>j.ml</code> file), if you don&#8217;t
+change <code>j.ml</code> (most likely you won&#8217;t), so you probably don&#8217;t need it</p>
+</div>
 </li>
 <li>
-<p><a href="https://github.com/ocaml/camlp4">camlp4</a>: Tool used to generate OCaml
-code for processing large AST. (j.ml file).</p>
+<p>Having <a href="https://nodejs.org/">NodeJS</a> installed</p>
+</li>
+<li>
+<p>Having Make installed</p>
+</li>
+<li>
+<p>OS: Mac/Linux (Note BuckleScript works on Windows, but the dev mode is not tested)</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>After having installed the above dependencies from opam you can run the
-following:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd </span>jscomp/
-./build.sh</code></pre>
-</div>
+<p>Below assume that you are working in <code>jscomp</code> directory.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_build_the_runtime"><a class="anchor" href="#_build_the_runtime"></a>Build the runtime</h3>
+<h3 id="_contributing_to_code_bsb_exe_code"><a class="anchor" href="#_contributing_to_code_bsb_exe_code"></a>Contributing to <code>bsb.exe</code></h3>
+<div class="paragraph">
+<p>The build target is</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd</span> ./runtime<span class="tok-p">;</span> make all</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">make bin/bsb.exe</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>So whenever you change files relevant to the build tool <code>bsb.exe</code>, try it and do some
+test, if it works, send a pull request!</p>
+</div>
+<div class="paragraph">
+<p>Note that for most binaries in BuckleScript, we also have a <strong>release mode</strong>, which will pack
+all relevant files into a single file, this is important, since it will cut all our dev-dependencies,
+so the user does not need install those tools.</p>
+</div>
+<div class="paragraph">
+<p>You can verify it by typing</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">make snapshotml <span class="tok-c"># see the diffs in jscomp/bin</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But please <strong>don&#8217;t commit</strong> those changes in PR, it will cause painful merge conflicts</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_build_the_stdlib"><a class="anchor" href="#_build_the_stdlib"></a>Build the stdlib</h3>
+<h3 id="_contributing_to_code_bsc_exe_code"><a class="anchor" href="#_contributing_to_code_bsc_exe_code"></a>Contributing to <code>bsc.exe</code></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd</span> ./stdlib<span class="tok-p">;</span> make all</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">make bin/bsc.exe <span class="tok-c"># build the compiler in dev mode</span></code></pre>
 </div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">make lib <span class="tok-c"># build all libs using the dev compiler</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There is also a snapshot mode,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">make snapshotml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will actually snapshot your changes into a single ml file and used in npm distribution.
+But please <strong>don&#8217;t commit</strong> those changes in PR, it will cause painful merge conflicts</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_help_rewrite_the_whole_runtime_in_ocaml"><a class="anchor" href="#_help_rewrite_the_whole_runtime_in_ocaml"></a>Help rewrite the whole runtime in OCaml</h3>
+<h3 id="_contributing_to_the_runtime"><a class="anchor" href="#_contributing_to_the_runtime"></a>Contributing to the runtime</h3>
 <div class="paragraph">
 <p>BuckleScript runtime implementation is currently a mix of OCaml and
 JavaScript. (<code>jscomp/runtime</code> directory). The JavaScript code is defined
