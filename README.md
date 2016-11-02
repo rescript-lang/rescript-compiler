@@ -177,13 +177,12 @@ issue](https://github.com/bloomberg/bucklescript/issues).
 
 ## Licensing
 
-Since our work is derivative work of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml), the
-license of the BuckleScript components is GPLv2, the same as js_of_ocaml.
+See [COPYING](./COPYING)
 
 The [`ocaml`](ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.02.3).
 Refer to its copyright and license notices for information about its licensing.
 
-BuckleScript builds on parts of js_of_ocaml:
+BuckleScript builds on parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
 
 * [`jscomp/js_dump.ml`](jscomp/js_dump.ml) (pretty printer)
 * [`jscomp/runtime`](jscomp/runtime)
