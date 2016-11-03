@@ -97687,7 +97687,7 @@ let write_build_cache bsbuild (bs_files : module_info String_map.t)  =
   close_out oc 
 
 let read_build_cache bsbuild : module_info String_map.t = 
-  let ic = open_in bsbuild in 
+  let ic = open_in_bin bsbuild in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
   let data : module_info String_map.t = input_value ic in 

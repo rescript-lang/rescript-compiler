@@ -19,7 +19,7 @@ var Format                  = require("../../lib/js/format");
 var Caml_string             = require("../../lib/js/caml_string");
 
 function _with_in(filename, f) {
-  var ic = Pervasives.open_in(filename);
+  var ic = Pervasives.open_in_bin(filename);
   try {
     var x = Curry._1(f, ic);
     (function () {

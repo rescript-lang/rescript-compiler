@@ -1478,7 +1478,7 @@ let write_build_cache bsbuild (bs_files : module_info String_map.t)  =
   close_out oc 
 
 let read_build_cache bsbuild : module_info String_map.t = 
-  let ic = open_in bsbuild in 
+  let ic = open_in_bin bsbuild in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
   let data : module_info String_map.t = input_value ic in 
@@ -2624,7 +2624,7 @@ let parse_json_from_chan in_chan =
   parse_json lexbuf 
 
 let parse_json_from_file s = 
-  let in_chan = open_in s in 
+  let in_chan = open_in_bin s in 
   let lexbuf = Lexing.from_channel in_chan in 
   match parse_json lexbuf with 
   | exception e -> close_in in_chan ; raise e
@@ -3911,7 +3911,7 @@ let write (fname : string)  (x : t) =
   close_out oc 
 
 let read (fname : string) : t = 
-  let ic = open_in fname in 
+  let ic = open_in_bin fname in  (* Windows binary mode*)
   let buffer = really_input_string ic (String.length magic_number) in
   assert (buffer = magic_number);
   let res : t = input_value ic  in 
