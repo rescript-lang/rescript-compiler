@@ -35,11 +35,11 @@ function $$finally(v, action, f) {
 }
 
 function with_file_as_chan(filename, f) {
-  return $$finally(Pervasives.open_out(filename), Pervasives.close_out, f);
+  return $$finally(Pervasives.open_out_bin(filename), Pervasives.close_out, f);
 }
 
 function with_file_as_pp(filename, f) {
-  return $$finally(Pervasives.open_out(filename), Pervasives.close_out, function (chan) {
+  return $$finally(Pervasives.open_out_bin(filename), Pervasives.close_out, function (chan) {
               var fmt = Format.formatter_of_out_channel(chan);
               var v = Curry._1(f, fmt);
               Format.pp_print_flush(fmt, /* () */0);

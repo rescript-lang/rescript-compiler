@@ -165,7 +165,7 @@ let output_ninja
     in  (* make sure -bs-package-name is before -bs-package-output *)
     String.concat " " ( bsc_flags @ init_flags)
   in
-  let oc = open_out (builddir // Literals.build_ninja) in 
+  let oc = open_out_bin (builddir // Literals.build_ninja) in 
   begin 
 
     let () = 

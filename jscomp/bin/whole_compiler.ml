@@ -20696,10 +20696,10 @@ let finally v action f   =
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
-  finally (open_out filename) close_out f 
+  finally (open_out_bin filename) close_out f 
 
 let with_file_as_pp filename f = 
-  finally (open_out filename) close_out
+  finally (open_out_bin filename) close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
@@ -22170,7 +22170,8 @@ let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : uni
     match kind with 
     | Ml -> Config.ast_impl_magic_number
     | Mli -> Config.ast_intf_magic_number in
-  let oc = open_out output in 
+  let oc = open_out_bin output in 
+  (* FIX for windows: output_value: not a binary channel*)
   output_string oc magic ;
   output_value oc fname;
   output_value oc pt;

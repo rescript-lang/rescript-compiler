@@ -43,6 +43,6 @@ let rev_lines_of_file file =
   end
 
 let write_file f content = 
-  Ext_pervasives.finally (open_out f) close_out begin fun oc ->   
+  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
     output_string oc content
   end

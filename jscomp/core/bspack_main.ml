@@ -266,7 +266,7 @@ let () =
      let out_chan =
        lazy (match !output_file with
            | None -> stdout
-           | Some file -> open_out file)  in
+           | Some file -> open_out_bin file)  in
      let emit_header out_chan = 
        let local_time = Unix.(localtime (gettimeofday ())) in
        (if  !header_option 

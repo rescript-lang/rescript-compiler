@@ -52,7 +52,8 @@ let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : uni
     match kind with 
     | Ml -> Config.ast_impl_magic_number
     | Mli -> Config.ast_intf_magic_number in
-  let oc = open_out output in 
+  let oc = open_out_bin output in 
+  (* FIX for windows: output_value: not a binary channel*)
   output_string oc magic ;
   output_value oc fname;
   output_value oc pt;

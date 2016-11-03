@@ -37,10 +37,10 @@ let finally v action f   =
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
-  finally (open_out filename) close_out f 
+  finally (open_out_bin filename) close_out f 
 
 let with_file_as_pp filename f = 
-  finally (open_out filename) close_out
+  finally (open_out_bin filename) close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
