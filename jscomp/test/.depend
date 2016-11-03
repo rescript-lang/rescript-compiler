@@ -40,8 +40,8 @@ a.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
     ../stdlib/list.cmx
-a_filename_test.cmj : mt.cmi ext_filename.cmj
-a_filename_test.cmx : mt.cmx ext_filename.cmx
+a_filename_test.cmj : mt.cmi ext_filename.cmj ../stdlib/array.cmi
+a_filename_test.cmx : mt.cmx ext_filename.cmx ../stdlib/array.cmx
 a_list_test.cmj : mt.cmi ext_list.cmj
 a_list_test.cmx : mt.cmx ext_list.cmx
 a_recursive_type.cmj : a_recursive_type.cmi
@@ -908,8 +908,8 @@ a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
     ../stdlib/list.cmj
-a_filename_test.cmo : mt.cmi ext_filename.cmo
-a_filename_test.cmj : mt.cmj ext_filename.cmj
+a_filename_test.cmo : mt.cmi ext_filename.cmo ../stdlib/array.cmi
+a_filename_test.cmj : mt.cmj ext_filename.cmj ../stdlib/array.cmj
 a_list_test.cmo : mt.cmi ext_list.cmo
 a_list_test.cmj : mt.cmj ext_list.cmj
 a_recursive_type.cmo : a_recursive_type.cmi
