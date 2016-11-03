@@ -4036,7 +4036,6 @@ let normalize_absolute_path x =
     | "." :: xs -> normalize_list acc xs
     | ".." :: xs -> 
       normalize_list (drop_if_exist acc ) xs 
-
     | x :: xs -> 
       normalize_list (x::acc) xs 
   in

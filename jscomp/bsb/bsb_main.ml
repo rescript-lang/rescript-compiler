@@ -117,6 +117,7 @@ end
 
 let output_ninja 
     ~builddir
+    ~cwd 
     bsc
     bsdep
     package_name
@@ -126,9 +127,10 @@ let output_ninja
     bsc_flags
     ppx_flags 
     bs_dependencies
+
   = 
 
-  let eager_src_root_dir  =  Sys.getcwd () in
+
 
   let ppx_flags = Bs_build_util.flag_concat "-ppx" ppx_flags in 
   let bs_groups, source_dirs,static_resources  = 
@@ -171,7 +173,7 @@ let output_ninja
       |>
       Bs_ninja.output_kvs 
         [
-          "src_root_dir", eager_src_root_dir (* TODO: need check its integrity*);
+          "src_root_dir", cwd (* TODO: need check its integrity*);
 
           "bsc", bsc ; 
           "bsdep", bsdep; 
@@ -212,7 +214,8 @@ let output_ninja
 (** *)
 let write_ninja_file () = 
   let builddir = Bsb_config.lib_bs in 
-  let bsc, bsdep = Bs_build_util.get_bsc_bsdep ()  in
+  let cwd = Sys.getcwd () in 
+  let bsc, bsdep = Bs_build_util.get_bsc_bsdep cwd  in
   let () = Bs_build_util.mkp builddir in 
   let config_json_chan = open_in_bin Literals.bsconfig_json in 
   let global_data = Bs_json.parse_json_from_chan config_json_chan  in
@@ -267,7 +270,7 @@ let write_ninja_file () =
     Unix.unlink Literals.bsconfig_json; 
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  Default.(output_ninja ~builddir
+  Default.(output_ninja ~builddir ~cwd
              (* (get_bsc ()) *)
              (* (get_bsdep ()) *)
              bsc 
