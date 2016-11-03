@@ -203,19 +203,34 @@ let set_prelude_str f = prelude_str := Some f
 `Dir_with_excludes ("ghsogh", ["a"])
 ]}
 *)
-type dir_spec = 
-  [ `Dir of string | `Dir_with_excludes of string * string list ]
+(* type dir_spec =  *)
+(*   [ `Dir of string | `Dir_with_excludes of string * string list ] *)
 
-let process_include s : dir_spec = 
+let cwd = Sys.getcwd ()
+
+let normalize s = 
+  Ext_filename.normalize_absolute_path (Ext_filename.combine cwd s )
+
+let process_include s : Ast_extract.dir_spec = 
   match String.rindex s '?'  with 
   | exception Not_found -> 
-    `Dir s 
+    { dir = normalize s; excludes = []}
   | i ->
-    `Dir_with_excludes
-      (String.sub s 0 i,  
-       Ext_string.split 
-         (String.sub s (i + 1) (String.length s - i - 1)    )
-         ',')
+    let dir = String.sub s 0 i in
+    { dir = normalize dir;
+      excludes = Ext_string.split 
+          (String.sub s (i + 1) (String.length s - i - 1)    )
+          ','}
+
+let deduplicate_dirs (xs : Ast_extract.dir_spec list) =
+  let set : (string, Ast_extract.dir_spec) Hashtbl.t = Hashtbl.create 64 in 
+  List.filter (fun ({Ast_extract.dir ; excludes = new_excludes } as y) -> 
+      match Hashtbl.find set dir with
+      | exception Not_found -> 
+        Hashtbl.add set dir y;
+        true 
+      | x ->  x.excludes <- new_excludes @ x.excludes ; false
+    ) xs 
 
 let includes :  _ list ref = ref []
 
@@ -308,8 +323,10 @@ let () =
          | xs -> 
            Ext_list.flat_map (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) xs in 
        let extra_dirs = 
-         if not !no_implicit_include then `Dir Filename.current_dir_name :: !includes 
-         else !includes in  
+         deduplicate_dirs @@
+         if not !no_implicit_include then {Ast_extract.dir =  cwd; excludes = []} :: !includes 
+         else !includes 
+       in  
        let ast_table, tasks =
          Ast_extract.collect_from_main ~excludes ~extra_dirs
            Format.err_formatter
@@ -359,7 +376,18 @@ let () =
                output
                (Queue.fold 
                   (fun acc a -> 
-                     acc ^ file ^ " : " ^ a ^ "\n"
+                     acc ^ file ^ " : " ^ 
+                     (*FIXME: now we normalized path,
+                       we need a beautiful output too for relative path
+                       The relative path should be also be normalized..
+                     *)
+                     Filename.concat 
+                       (Ext_filename.rel_normalized_absolute_path
+                        cwd 
+                        (Filename.dirname a)
+                       ) (Filename.basename a)
+
+                     ^ "\n"
                      (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
                   ) 
                   ""

@@ -57,6 +57,19 @@ let () =
            (`Dir "./a/")
            (`File "./a/b.js"))
     "./b";
+  eq __LOC__ 
+    (Ext_filename.get_extension "a.txt"
+    )
+    ".txt";
+  eq __LOC__ 
+    (Ext_filename.get_extension "a"
+    )
+    "";
+  eq __LOC__ 
+    (Ext_filename.get_extension ".txt"
+    )
+    ".txt";
+
   eq __LOC__
     (Array.map Ext_filename.normalize_absolute_path
        [|
@@ -82,9 +95,9 @@ let () =
        "/a";
        "/a.txt";
        "/a.txt"
-     |]
+     |] 
   ;
 
-
+  
 
 ;; Mt.from_pair_suites __FILE__ !suites

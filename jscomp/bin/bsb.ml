@@ -954,6 +954,30 @@ val combine : string -> string -> string
 
 val normalize_absolute_path : string -> string
 
+(** 
+TODO: could be highly optimized
+if [from] and [to] resolve to the same path, a zero-length string is returned 
+Given that two paths are directory
+
+A typical use case is 
+{[
+Filename.concat 
+  (rel_normalized_absolute_path cwd (Filename.dirname a))
+  (Filename.basename a)
+]}
+*)
+val rel_normalized_absolute_path : string -> string -> string 
+
+
+
+(**
+{[
+get_extension "a.txt" = ".txt"
+get_extension "a" = ""
+]}
+*)
+val get_extension : string -> string
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1047,6 +1071,11 @@ let chop_extension_if_any fname =
 
 
 
+
+
+let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
+
+
 (** example
     {[
     "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
@@ -1068,7 +1097,7 @@ let chop_extension_if_any fname =
     ]}
  *)
 let relative_path file_or_dir_1 file_or_dir_2 = 
-  let sep_char = Filename.dir_sep.[0] in
+  let sep_char = os_path_separator_char in
   let relevant_dir1 = 
     (match file_or_dir_1 with 
     | `Dir x -> x 
@@ -1093,11 +1122,6 @@ let relative_path file_or_dir_1 file_or_dir_2 =
   | ys -> 
       String.concat node_sep  @@ node_current :: ys
 
-
-
-
-
-let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
 
 (** path2: a/b 
     path1: a 
@@ -1208,8 +1232,27 @@ let split_aux p =
     else go dir (Filename.basename p :: acc)
   in go p []
 
-
-
+(** 
+TODO: optimization
+if [from] and [to] resolve to the same path, a zero-length string is returned 
+*)
+let rel_normalized_absolute_path from to_ =
+  let root1, paths1 = split_aux from in 
+  let root2, paths2 = split_aux to_ in 
+  if root1 <> root2 then root2 else
+    let rec go xss yss =
+      match xss, yss with 
+      | x::xs, y::ys -> 
+        if x = y then go xs ys 
+        else 
+          let start = 
+            List.fold_left (fun acc _ -> acc // ".." ) ".." xs in 
+          List.fold_left (fun acc v -> acc // v) start yss
+      | [], [] -> ""
+      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
+      | x::xs, [] ->
+        List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
+    go paths1 paths2
 
 (*TODO: could be hgighly optimized later 
 {[
@@ -1254,6 +1297,12 @@ let normalize_absolute_path x =
   | [] -> root 
   | last :: rest -> go last rest 
 
+
+let get_extension x =
+  try
+    let pos = String.rindex x '.' in
+    Ext_string.tail_from x pos
+  with Not_found -> ""
 
 end
 module String_map : sig 
@@ -3372,6 +3421,8 @@ val sort_via_array :
 
 val last : 'a list -> 'a
 
+
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3733,6 +3784,7 @@ let rec last xs =
   | [x] -> x 
   | _ :: tl -> last tl 
   | [] -> invalid_arg "Ext_list.last"
+
 
 end
 module Bs_build_util : sig 

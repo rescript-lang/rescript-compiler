@@ -92,7 +92,13 @@ eq('File "a_filename_test.ml", line 55, characters 5-12', Ext_filename.node_rela
           "./a/b.js"
         ]), "./b");
 
-eq('File "a_filename_test.ml", line 60, characters 5-12', $$Array.map(Ext_filename.normalize_absolute_path, /* array */[
+eq('File "a_filename_test.ml", line 60, characters 5-12', Ext_filename.get_extension("a.txt"), ".txt");
+
+eq('File "a_filename_test.ml", line 64, characters 5-12', Ext_filename.get_extension("a"), "");
+
+eq('File "a_filename_test.ml", line 68, characters 5-12', Ext_filename.get_extension(".txt"), ".txt");
+
+eq('File "a_filename_test.ml", line 73, characters 5-12', $$Array.map(Ext_filename.normalize_absolute_path, /* array */[
           "/gsho/./..",
           "/a/b/../c../d/e/f",
           "/a/b/../c/../d/e/f",
