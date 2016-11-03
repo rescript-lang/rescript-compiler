@@ -15,7 +15,7 @@ let write (fname : string)  (x : t) =
   close_out oc 
 
 let read (fname : string) : t = 
-  let ic = open_in fname in 
+  let ic = open_in_bin fname in  (* Windows binary mode*)
   let buffer = really_input_string ic (String.length magic_number) in
   assert (buffer = magic_number);
   let res : t = input_value ic  in 

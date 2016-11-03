@@ -721,7 +721,7 @@ let main () =
   | "-blk" -> doone (block (ref 0, 0)) []
   | f ->
     let oc = open_out "a.out" in
-    inch := open_in f;
+    inch := open_in_bin f;
     top (); elfgen oc;
     close_out oc
 
