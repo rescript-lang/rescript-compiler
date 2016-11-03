@@ -25,6 +25,8 @@ bin/bsb.ml : ext/string_set.ml
 bin/bsb.ml : ext/string_set.mli
 bin/bsb.ml : bsb/bs_build_ui.ml
 bin/bsb.ml : bsb/bs_build_ui.mli
+bin/bsb.ml : bsb/bsb_config.ml
+bin/bsb.ml : bsb/bsb_config.mli
 bin/bsb.ml : ext/ext_list.ml
 bin/bsb.ml : ext/ext_list.mli
 bin/bsb.ml : bsb/bs_build_util.ml
