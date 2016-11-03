@@ -1959,7 +1959,7 @@ function main() {
         };
     default:
       var oc = Pervasives.open_out("a.out");
-      inch[0] = Pervasives.open_in(f);
+      inch[0] = Pervasives.open_in_bin(f);
       top(/* () */0);
       elfgen(oc);
       Caml_io.caml_ml_flush(oc);

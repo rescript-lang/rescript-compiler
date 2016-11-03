@@ -14,7 +14,7 @@ type t = [
 type sexp = t
 
 let _with_in filename f =
-  let ic = open_in filename in
+  let ic = open_in_bin filename in
   try
     let x = f ic in
     close_in ic;

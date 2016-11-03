@@ -670,7 +670,7 @@ let parse_json_from_chan in_chan =
   parse_json lexbuf 
 
 let parse_json_from_file s = 
-  let in_chan = open_in s in 
+  let in_chan = open_in_bin s in 
   let lexbuf = Lexing.from_channel in_chan in 
   match parse_json lexbuf with 
   | exception e -> close_in in_chan ; raise e

@@ -4887,7 +4887,7 @@ let buffer_intervals (intervals : (int * int) list) buf ic oc =
   
 
 let preprocess fn oc = 
-  let ic = open_in fn in 
+  let ic = open_in_bin fn in 
   let lexbuf = Lexing.from_channel ic in 
   let buf = Buffer.create 4096 in 
   Location.init lexbuf fn;

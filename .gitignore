@@ -76,3 +76,5 @@ build.ninja
 jscomp/bin/bsb
 jscomp/bin/bsc
 jscomp/bin/config_whole_compiler.ml
+lib/bs
+lib/js/jscomp/test
