@@ -243,8 +243,6 @@ let (++) (us : info) (vs : info) =
 
 
 
-let common_js_prefix =  "lib"//"js" 
-let ocaml_bin_install_prefix = "lib"// "ocaml"
                                
 let handle_file_group oc acc (group: Bs_build_ui.file_group) =
   let handle_module_info  oc  module_name
@@ -258,7 +256,7 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
       | Export_set set ->  String_set.mem module_name set in 
     let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  = 
       let filename_sans_extension = Filename.chop_extension input in
-      let input = "$src_root_dir"// input in
+      let input = Bsb_config.proj_rel input in
       let output_file_sans_extension = filename_sans_extension in
       let output_ml = output_file_sans_extension ^ Literals.suffix_ml in 
       let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in 
@@ -267,14 +265,14 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
       let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
       let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in 
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in 
-      let output_js = Bs_build_util.proj_rel common_js_prefix
-                      // output_file_sans_extension ^ Literals.suffix_js in
+      let output_js = Bsb_config.proj_rel @@ Bsb_config.common_js_prefix
+                       output_file_sans_extension ^ Literals.suffix_js in
 
       let shadows = 
         let package_flags = 
           [ "bs_package_flags",
             `Overwrite ("-bs-package-output commonjs:"^  
-                       common_js_prefix //Filename.dirname output_cmi)
+                       Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
             (* FIXME: assume that output is calculated correctly*)
           ]
         in
@@ -329,7 +327,8 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
                   (
                     fun x -> 
                       output_build oc 
-                        ~output:(Bs_build_util.proj_rel @@ "lib" // "ocaml"// Filename.basename x)
+                        ~output:(Bsb_config.proj_rel @@ 
+                                 Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
                         ~input:x
                         ~rule:Rules.copy_resources
                   )
@@ -358,7 +357,9 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
           if installable then 
             begin 
               output_build oc 
-                ~output:(Bs_build_util.proj_rel @@ "lib" // "ocaml"// Filename.basename output_cmi)
+                ~output:(Bsb_config.proj_rel @@ 
+                         Bsb_config.ocaml_bin_install_prefix @@ 
+                         Filename.basename output_cmi)
                 ~input:output_cmi
                 ~rule:Rules.copy_resources
             end;

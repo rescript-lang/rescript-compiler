@@ -17,12 +17,12 @@
 
         {
             "dir" : "jscomp/test/" ,
-            "resources" : 
-            [
-                "flow_parser_sample.js",
-                "joinClasses.js"
-            ]
-            ,
+            // "resources" : 
+            // [
+            //     "flow_parser_sample.js",
+            //     "joinClasses.js"
+            // ]
+            // ,
 
             "subdirs": [
                 {

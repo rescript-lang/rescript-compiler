@@ -49,21 +49,25 @@ let get_list_string s =
 let bs_file_groups = ref []
 
 
+(* let () = print_endline Sys.executable_name *)
 
+(* let bsb_dir =  *)
+(*   let bsb_path = Filename.dirname Sys.executable_name in  *)
+(*   Bs_build_util.convert_path (Bsb_config.rev_lib_bs_prefix  bsb_path) *)
 
 module Default : sig
-  val set_bsc : string -> unit 
-  val set_builddir : string -> unit 
-  val set_bsdep : string -> unit 
+  (* val set_bsc : string -> unit  *)
+  (* val set_builddir : string -> unit  *)
+  (* val set_bsdep : string -> unit  *)
   val set_ocamllex : string -> unit 
   val set_package_name : string -> unit
   val set_bs_external_includes : Bs_json.t array -> unit 
   val set_bsc_flags : Bs_json.t array -> unit 
   (* val ppx_flags : string list ref  *)
 
-  val get_bsc : unit -> string 
-  val get_builddir : unit ->  string 
-  val get_bsdep : unit -> string 
+  (* val get_bsc : unit -> string  *)
+  (* val get_builddir : unit ->  string *)
+  (* val get_bsdep : unit -> string  *)
   val get_ocamllex : unit -> string 
   val get_package_name : unit -> string option 
   val get_bs_external_includes : unit -> string list 
@@ -73,11 +77,10 @@ module Default : sig
   val set_bs_dependencies : Bs_json.t array  -> unit
 end  = struct
 
-  (* let () = print_endline Sys.executable_name *)
-  let bsb_dir = Filename.dirname Sys.executable_name
-  let bsc = ref  (bsb_dir // "bsc.exe")
 
-  let bsdep = ref (bsb_dir // "bsdep.exe")
+  (* let bsc = ref  (bsb_dir // "bsc.exe") *)
+
+  (* let bsdep = ref (bsb_dir // "bsdep.exe") *)
   let ocamllex =  ref ( "ocamllex.opt")
 
   let bs_external_includes = ref []
@@ -94,15 +97,16 @@ end  = struct
     bs_dependencies := get_list_string s 
   let set_bs_external_includes s = 
     bs_external_includes := List.map Bs_build_util.convert_path (get_list_string s )
-  let set_bsc_flags s = bsc_flags := get_list_string s 
-  let set_bsc s = bsc := Bs_build_util.convert_path s
   let set_builddir s = builddir := Bs_build_util.convert_path s 
-  let set_bsdep s = bsdep := Bs_build_util.convert_path s
-  let set_ocamllex s = ocamllex := Bs_build_util.convert_path s 
+
+  let set_bsc_flags s = bsc_flags := get_list_string s 
+  (* let set_bsc s = bsc := Bs_build_util.convert_file s *)
+  (* let set_bsdep s = bsdep := Bs_build_util.convert_file s *)
+  let set_ocamllex s = ocamllex := Bs_build_util.convert_file s 
   let set_package_name s = package_name := Some s
-  let get_bsdep () = !bsdep
-  let get_bsc () = !bsc 
-  let get_builddir () = !builddir
+  (* let get_bsdep () = !bsdep *)
+  (* let get_bsc () = !bsc  *)
+  (* let get_builddir () = !builddir *)
   let get_package_name () = !package_name
   let get_ocamllex () = !ocamllex 
   let get_builddir () = !builddir
@@ -112,18 +116,18 @@ end  = struct
 end
 
 let output_ninja 
+    ~builddir
     bsc
     bsdep
     package_name
     ocamllex
-    builddir
     bs_external_includes
     bs_file_groups 
     bsc_flags
     ppx_flags 
     bs_dependencies
   = 
-  let () = Bs_build_util.mkp builddir in 
+
   let eager_src_root_dir  =  Sys.getcwd () in
 
   let ppx_flags = Bs_build_util.flag_concat "-ppx" ppx_flags in 
@@ -168,6 +172,7 @@ let output_ninja
       Bs_ninja.output_kvs 
         [
           "src_root_dir", eager_src_root_dir (* TODO: need check its integrity*);
+
           "bsc", bsc ; 
           "bsdep", bsdep; 
           "ocamllex", ocamllex;
@@ -191,7 +196,7 @@ let output_ninja
       |> List.fold_left (fun all_deps x -> 
           Bs_ninja.output_build oc
             ~output:x
-            ~input:(Bs_build_util.proj_rel x)
+            ~input:(Bsb_config.proj_rel x)
             ~rule:Bs_ninja.Rules.copy_resources;
           x:: all_deps 
         ) all_deps in 
@@ -206,6 +211,9 @@ let output_ninja
 
 (** *)
 let write_ninja_file () = 
+  let builddir = Bsb_config.lib_bs in 
+  let bsc, bsdep = Bs_build_util.get_bsc_bsdep ()  in
+  let () = Bs_build_util.mkp builddir in 
   let config_json_chan = open_in_bin Literals.bsconfig_json in 
   let global_data = Bs_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in 
@@ -218,9 +226,9 @@ let write_ninja_file () =
       |?
       (Bs_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
-          |?  (Bs_build_schemas.bsc,  `Str  Default.set_bsc)
+          (* |?  (Bs_build_schemas.bsc,  `Str  Default.set_bsc) *)
           (* |?  (Bs_build_schemas.bsbuild,   `Str Default.set_bsbuild) *)
-          |?  (Bs_build_schemas.bsdep,  `Str  Default.set_bsdep)
+          (* |?  (Bs_build_schemas.bsdep,  `Str  Default.set_bsdep) *)
           |?  (Bs_build_schemas.ocamllex, `Str Default.set_ocamllex)
           |? (Bs_build_schemas.bs_dependencies, `Arr Default.set_bs_dependencies)
           (* More design *)
@@ -259,12 +267,13 @@ let write_ninja_file () =
     Unix.unlink Literals.bsconfig_json; 
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  Default.(output_ninja 
-             (get_bsc ())
-             (get_bsdep ())
+  Default.(output_ninja ~builddir
+             (* (get_bsc ()) *)
+             (* (get_bsdep ()) *)
+             bsc 
+             bsdep 
              (get_package_name ())
              (get_ocamllex ())
-             (get_builddir ())
              (get_bs_external_includes ())
              !bs_file_groups
              (get_bsc_flags ())
@@ -281,7 +290,7 @@ let load_ninja argv =
   Unix.execvp ninja
     (Array.concat 
        [
-         [|ninja ; "-C"; (Default.get_builddir ());  "-d"; "keepdepfile"|];
+         [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|];
          ninja_flags
        ]
     )
@@ -296,7 +305,7 @@ ninja -C _build
 *)
 let () = 
   try
-    let builddir = Default.get_builddir () in 
+    let builddir = Bsb_config.lib_bs in 
     let output_deps = (builddir // bsdeps) in
     let reason = Bs_dep_infos.check  output_deps in 
     if String.length reason <> 0 then 

@@ -3107,6 +3107,84 @@ let  parsing_sources cwd (file_groups : Bs_json.t array)  =
 
 
 end
+module Bsb_config : sig 
+#1 "bsb_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val common_js_prefix : string -> string
+val ocaml_bin_install_prefix : string -> string
+val proj_rel : string -> string
+val lib_bs : string
+(* we need generate path relative to [lib/bs] directory in the opposite direction *)
+val rev_lib_bs_prefix : string -> string
+
+end = struct
+#1 "bsb_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+let (//) = Ext_filename.combine 
+
+let lib_js = "lib"//"js"
+let lib_ocaml = "lib"// "ocaml"
+let lib_bs = "lib" // "bs"
+let rev_lib_bs = ".."// ".."
+let rev_lib_bs_prefix p = rev_lib_bs // p 
+let common_js_prefix p  =  lib_js  // p 
+let ocaml_bin_install_prefix p = lib_ocaml // p
+
+let lazy_src_root_dir = "$src_root_dir" 
+let proj_rel path = lazy_src_root_dir // path
+                                 
+(** it may not be a bad idea to hard code the binary path 
+    of bsb in configuration time
+*)
+
+
+end
 module Ext_list : sig 
 #1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3627,11 +3705,10 @@ flag_concat "-ppx" [ppxs]
 *)
 val flag_concat : string -> string list -> string
 
-val proj_rel : string -> string
-
 val convert_path : string -> string
-
+val convert_file : string -> string
 val mkp : string -> unit
+val get_bsc_bsdep : unit -> string * string 
 
 end = struct
 #1 "bs_build_util.ml"
@@ -3663,10 +3740,8 @@ let flag_concat flag xs =
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
   |> String.concat " "
-
-let lazy_src_root_dir = "$src_root_dir" 
 let (//) = Ext_filename.combine
-let proj_rel path = lazy_src_root_dir // path
+
 (* we use lazy $src_root_dir *)
 
 (* assume build dir is fixed to be _build *)
@@ -3677,17 +3752,47 @@ let convert_unix_path_to_windows p =
   String.map (function '/' ->'\\' | c -> c ) p 
 
 let convert_path = 
-  if Sys.unix then fun (p : string) -> 
-    if Filename.basename p = p then p else 
-      proj_rel  p 
+  if Sys.unix then Bsb_config.proj_rel  
   else 
   if Sys.win32 || Sys.cygwin then 
     fun (p:string) -> 
-      if Filename.basename p = p then p else 
-       proj_rel @@ convert_unix_path_to_windows p
+      let p = convert_unix_path_to_windows p in
+      Bsb_config.proj_rel p 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the begining*)
 
+(** converting a file from Linux path format to Windows *)
+let convert_file = 
+  if Sys.unix then fun (p : string) -> 
+    if Filename.basename p = p then p 
+    else Bsb_config.proj_rel  p 
+  else 
+  if Sys.win32 || Sys.cygwin then 
+    fun (p:string) -> 
+      let p = convert_unix_path_to_windows p in
+      if Filename.basename p = p then 
+        p 
+      else 
+       Bsb_config.proj_rel p 
+  else failwith ("Unknown OS :" ^ Sys.os_type)
+
+(**
+   if [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done
+   if it is a relative path 
+
+   there are two cases: 
+   - bsb.exe
+   - ./bsb.exe 
+   The first should also not be touched
+   Only the latter need be adapted based on project root  
+*)
+let get_bsc_bsdep () = 
+  if Filename.basename Sys.executable_name = Sys.executable_name then 
+    "bsc.exe", "bsdep.exe" 
+  else
+    let u = Bsb_config.proj_rel (Filename.dirname Sys.executable_name)  in 
+    u // "bsc.exe", u // "bsdep.exe"
 
 (** 
 {[
@@ -4099,8 +4204,6 @@ let (++) (us : info) (vs : info) =
 
 
 
-let common_js_prefix =  "lib"//"js" 
-let ocaml_bin_install_prefix = "lib"// "ocaml"
                                
 let handle_file_group oc acc (group: Bs_build_ui.file_group) =
   let handle_module_info  oc  module_name
@@ -4114,7 +4217,7 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
       | Export_set set ->  String_set.mem module_name set in 
     let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  = 
       let filename_sans_extension = Filename.chop_extension input in
-      let input = "$src_root_dir"// input in
+      let input = Bsb_config.proj_rel input in
       let output_file_sans_extension = filename_sans_extension in
       let output_ml = output_file_sans_extension ^ Literals.suffix_ml in 
       let output_mlast = output_file_sans_extension  ^ Literals.suffix_mlast in 
@@ -4123,14 +4226,14 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
       let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
       let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in 
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in 
-      let output_js = Bs_build_util.proj_rel common_js_prefix
-                      // output_file_sans_extension ^ Literals.suffix_js in
+      let output_js = Bsb_config.proj_rel @@ Bsb_config.common_js_prefix
+                       output_file_sans_extension ^ Literals.suffix_js in
 
       let shadows = 
         let package_flags = 
           [ "bs_package_flags",
             `Overwrite ("-bs-package-output commonjs:"^  
-                       common_js_prefix //Filename.dirname output_cmi)
+                       Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
             (* FIXME: assume that output is calculated correctly*)
           ]
         in
@@ -4185,7 +4288,8 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
                   (
                     fun x -> 
                       output_build oc 
-                        ~output:(Bs_build_util.proj_rel @@ "lib" // "ocaml"// Filename.basename x)
+                        ~output:(Bsb_config.proj_rel @@ 
+                                 Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
                         ~input:x
                         ~rule:Rules.copy_resources
                   )
@@ -4214,7 +4318,9 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
           if installable then 
             begin 
               output_build oc 
-                ~output:(Bs_build_util.proj_rel @@ "lib" // "ocaml"// Filename.basename output_cmi)
+                ~output:(Bsb_config.proj_rel @@ 
+                         Bsb_config.ocaml_bin_install_prefix @@ 
+                         Filename.basename output_cmi)
                 ~input:output_cmi
                 ~rule:Rules.copy_resources
             end;
@@ -4313,21 +4419,25 @@ let get_list_string s =
 let bs_file_groups = ref []
 
 
+(* let () = print_endline Sys.executable_name *)
 
+(* let bsb_dir =  *)
+(*   let bsb_path = Filename.dirname Sys.executable_name in  *)
+(*   Bs_build_util.convert_path (Bsb_config.rev_lib_bs_prefix  bsb_path) *)
 
 module Default : sig
-  val set_bsc : string -> unit 
-  val set_builddir : string -> unit 
-  val set_bsdep : string -> unit 
+  (* val set_bsc : string -> unit  *)
+  (* val set_builddir : string -> unit  *)
+  (* val set_bsdep : string -> unit  *)
   val set_ocamllex : string -> unit 
   val set_package_name : string -> unit
   val set_bs_external_includes : Bs_json.t array -> unit 
   val set_bsc_flags : Bs_json.t array -> unit 
   (* val ppx_flags : string list ref  *)
 
-  val get_bsc : unit -> string 
-  val get_builddir : unit ->  string 
-  val get_bsdep : unit -> string 
+  (* val get_bsc : unit -> string  *)
+  (* val get_builddir : unit ->  string *)
+  (* val get_bsdep : unit -> string  *)
   val get_ocamllex : unit -> string 
   val get_package_name : unit -> string option 
   val get_bs_external_includes : unit -> string list 
@@ -4337,11 +4447,10 @@ module Default : sig
   val set_bs_dependencies : Bs_json.t array  -> unit
 end  = struct
 
-  (* let () = print_endline Sys.executable_name *)
-  let bsb_dir = Filename.dirname Sys.executable_name
-  let bsc = ref  (bsb_dir // "bsc.exe")
 
-  let bsdep = ref (bsb_dir // "bsdep.exe")
+  (* let bsc = ref  (bsb_dir // "bsc.exe") *)
+
+  (* let bsdep = ref (bsb_dir // "bsdep.exe") *)
   let ocamllex =  ref ( "ocamllex.opt")
 
   let bs_external_includes = ref []
@@ -4358,15 +4467,16 @@ end  = struct
     bs_dependencies := get_list_string s 
   let set_bs_external_includes s = 
     bs_external_includes := List.map Bs_build_util.convert_path (get_list_string s )
-  let set_bsc_flags s = bsc_flags := get_list_string s 
-  let set_bsc s = bsc := Bs_build_util.convert_path s
   let set_builddir s = builddir := Bs_build_util.convert_path s 
-  let set_bsdep s = bsdep := Bs_build_util.convert_path s
-  let set_ocamllex s = ocamllex := Bs_build_util.convert_path s 
+
+  let set_bsc_flags s = bsc_flags := get_list_string s 
+  (* let set_bsc s = bsc := Bs_build_util.convert_file s *)
+  (* let set_bsdep s = bsdep := Bs_build_util.convert_file s *)
+  let set_ocamllex s = ocamllex := Bs_build_util.convert_file s 
   let set_package_name s = package_name := Some s
-  let get_bsdep () = !bsdep
-  let get_bsc () = !bsc 
-  let get_builddir () = !builddir
+  (* let get_bsdep () = !bsdep *)
+  (* let get_bsc () = !bsc  *)
+  (* let get_builddir () = !builddir *)
   let get_package_name () = !package_name
   let get_ocamllex () = !ocamllex 
   let get_builddir () = !builddir
@@ -4376,18 +4486,18 @@ end  = struct
 end
 
 let output_ninja 
+    ~builddir
     bsc
     bsdep
     package_name
     ocamllex
-    builddir
     bs_external_includes
     bs_file_groups 
     bsc_flags
     ppx_flags 
     bs_dependencies
   = 
-  let () = Bs_build_util.mkp builddir in 
+
   let eager_src_root_dir  =  Sys.getcwd () in
 
   let ppx_flags = Bs_build_util.flag_concat "-ppx" ppx_flags in 
@@ -4432,6 +4542,7 @@ let output_ninja
       Bs_ninja.output_kvs 
         [
           "src_root_dir", eager_src_root_dir (* TODO: need check its integrity*);
+
           "bsc", bsc ; 
           "bsdep", bsdep; 
           "ocamllex", ocamllex;
@@ -4455,7 +4566,7 @@ let output_ninja
       |> List.fold_left (fun all_deps x -> 
           Bs_ninja.output_build oc
             ~output:x
-            ~input:(Bs_build_util.proj_rel x)
+            ~input:(Bsb_config.proj_rel x)
             ~rule:Bs_ninja.Rules.copy_resources;
           x:: all_deps 
         ) all_deps in 
@@ -4470,6 +4581,9 @@ let output_ninja
 
 (** *)
 let write_ninja_file () = 
+  let builddir = Bsb_config.lib_bs in 
+  let bsc, bsdep = Bs_build_util.get_bsc_bsdep ()  in
+  let () = Bs_build_util.mkp builddir in 
   let config_json_chan = open_in_bin Literals.bsconfig_json in 
   let global_data = Bs_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in 
@@ -4482,9 +4596,9 @@ let write_ninja_file () =
       |?
       (Bs_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
-          |?  (Bs_build_schemas.bsc,  `Str  Default.set_bsc)
+          (* |?  (Bs_build_schemas.bsc,  `Str  Default.set_bsc) *)
           (* |?  (Bs_build_schemas.bsbuild,   `Str Default.set_bsbuild) *)
-          |?  (Bs_build_schemas.bsdep,  `Str  Default.set_bsdep)
+          (* |?  (Bs_build_schemas.bsdep,  `Str  Default.set_bsdep) *)
           |?  (Bs_build_schemas.ocamllex, `Str Default.set_ocamllex)
           |? (Bs_build_schemas.bs_dependencies, `Arr Default.set_bs_dependencies)
           (* More design *)
@@ -4523,12 +4637,13 @@ let write_ninja_file () =
     Unix.unlink Literals.bsconfig_json; 
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  Default.(output_ninja 
-             (get_bsc ())
-             (get_bsdep ())
+  Default.(output_ninja ~builddir
+             (* (get_bsc ()) *)
+             (* (get_bsdep ()) *)
+             bsc 
+             bsdep 
              (get_package_name ())
              (get_ocamllex ())
-             (get_builddir ())
              (get_bs_external_includes ())
              !bs_file_groups
              (get_bsc_flags ())
@@ -4545,7 +4660,7 @@ let load_ninja argv =
   Unix.execvp ninja
     (Array.concat 
        [
-         [|ninja ; "-C"; (Default.get_builddir ());  "-d"; "keepdepfile"|];
+         [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|];
          ninja_flags
        ]
     )
@@ -4560,7 +4675,7 @@ ninja -C _build
 *)
 let () = 
   try
-    let builddir = Default.get_builddir () in 
+    let builddir = Bsb_config.lib_bs in 
     let output_deps = (builddir // bsdeps) in
     let reason = Bs_dep_infos.check  output_deps in 
     if String.length reason <> 0 then 

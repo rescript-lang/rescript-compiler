@@ -22,15 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** 
-Use:
-{[
-flag_concat "-ppx" [ppxs]
-]}
-*)
-val flag_concat : string -> string list -> string
 
-val convert_path : string -> string
-val convert_file : string -> string
-val mkp : string -> unit
-val get_bsc_bsdep : unit -> string * string 
+val common_js_prefix : string -> string
+val ocaml_bin_install_prefix : string -> string
+val proj_rel : string -> string
+val lib_bs : string
+(* we need generate path relative to [lib/bs] directory in the opposite direction *)
+val rev_lib_bs_prefix : string -> string

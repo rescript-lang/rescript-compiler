@@ -26,10 +26,8 @@ let flag_concat flag xs =
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
   |> String.concat " "
-
-let lazy_src_root_dir = "$src_root_dir" 
 let (//) = Ext_filename.combine
-let proj_rel path = lazy_src_root_dir // path
+
 (* we use lazy $src_root_dir *)
 
 (* assume build dir is fixed to be _build *)
@@ -40,17 +38,47 @@ let convert_unix_path_to_windows p =
   String.map (function '/' ->'\\' | c -> c ) p 
 
 let convert_path = 
-  if Sys.unix then fun (p : string) -> 
-    if Filename.basename p = p then p else 
-      proj_rel  p 
+  if Sys.unix then Bsb_config.proj_rel  
   else 
   if Sys.win32 || Sys.cygwin then 
     fun (p:string) -> 
-      if Filename.basename p = p then p else 
-       proj_rel @@ convert_unix_path_to_windows p
+      let p = convert_unix_path_to_windows p in
+      Bsb_config.proj_rel p 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the begining*)
 
+(** converting a file from Linux path format to Windows *)
+let convert_file = 
+  if Sys.unix then fun (p : string) -> 
+    if Filename.basename p = p then p 
+    else Bsb_config.proj_rel  p 
+  else 
+  if Sys.win32 || Sys.cygwin then 
+    fun (p:string) -> 
+      let p = convert_unix_path_to_windows p in
+      if Filename.basename p = p then 
+        p 
+      else 
+       Bsb_config.proj_rel p 
+  else failwith ("Unknown OS :" ^ Sys.os_type)
+
+(**
+   if [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done
+   if it is a relative path 
+
+   there are two cases: 
+   - bsb.exe
+   - ./bsb.exe 
+   The first should also not be touched
+   Only the latter need be adapted based on project root  
+*)
+let get_bsc_bsdep () = 
+  if Filename.basename Sys.executable_name = Sys.executable_name then 
+    "bsc.exe", "bsdep.exe" 
+  else
+    let u = Bsb_config.proj_rel (Filename.dirname Sys.executable_name)  in 
+    u // "bsc.exe", u // "bsdep.exe"
 
 (** 
 {[

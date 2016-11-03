@@ -21,16 +21,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+let (//) = Ext_filename.combine 
 
-(** 
-Use:
-{[
-flag_concat "-ppx" [ppxs]
-]}
+let lib_js = "lib"//"js"
+let lib_ocaml = "lib"// "ocaml"
+let lib_bs = "lib" // "bs"
+let rev_lib_bs = ".."// ".."
+let rev_lib_bs_prefix p = rev_lib_bs // p 
+let common_js_prefix p  =  lib_js  // p 
+let ocaml_bin_install_prefix p = lib_ocaml // p
+
+let lazy_src_root_dir = "$src_root_dir" 
+let proj_rel path = lazy_src_root_dir // path
+                                 
+(** it may not be a bad idea to hard code the binary path 
+    of bsb in configuration time
 *)
-val flag_concat : string -> string list -> string
 
-val convert_path : string -> string
-val convert_file : string -> string
-val mkp : string -> unit
-val get_bsc_bsdep : unit -> string * string 
