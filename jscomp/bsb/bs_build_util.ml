@@ -73,12 +73,10 @@ let convert_file =
    The first should also not be touched
    Only the latter need be adapted based on project root  
 *)
-let get_bsc_bsdep () = 
-  if Filename.basename Sys.executable_name = Sys.executable_name then 
-    "bsc.exe", "bsdep.exe" 
-  else
-    let u = Bsb_config.proj_rel (Filename.dirname Sys.executable_name)  in 
-    u // "bsc.exe", u // "bsdep.exe"
+let get_bsc_bsdep cwd = 
+  let dir = 
+    Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))in 
+  dir // "bsc.exe", dir // "bsdep.exe"
 
 (** 
 {[

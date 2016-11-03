@@ -56,7 +56,34 @@ let () =
     (Ext_filename.node_relative_path
            (`Dir "./a/")
            (`File "./a/b.js"))
-    "./b"
+    "./b";
+  eq __LOC__
+    (Array.map Ext_filename.normalize_absolute_path
+       [|
+         "/gsho/./..";
+         "/a/b/../c../d/e/f";
+         "/a/b/../c/../d/e/f";
+         "/gsho/./../..";
+         "/a/b/c/d";
+         "/a/b/c/d/";
+         "/a/";
+         "/a";
+         "/a.txt/";
+         "/a.txt"
+       |])
+     [|
+       "/";
+       "/a/c../d/e/f";
+       "/a/d/e/f";
+       "/";
+       "/a/b/c/d" ;
+       "/a/b/c/d";
+       "/a";
+       "/a";
+       "/a.txt";
+       "/a.txt"
+     |]
+  ;
 
 
 

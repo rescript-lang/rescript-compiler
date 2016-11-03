@@ -79,3 +79,5 @@ val module_name_of_file_if_any : string -> string
    2. when the second one is absolute, drop the first one
 *)
 val combine : string -> string -> string
+
+val normalize_absolute_path : string -> string

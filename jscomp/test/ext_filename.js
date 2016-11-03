@@ -305,6 +305,94 @@ function combine(p1, p2) {
   }
 }
 
+function split_aux(p) {
+  var _p = p;
+  var _acc = /* [] */0;
+  while(true) {
+    var acc = _acc;
+    var p$1 = _p;
+    var dir = Curry._1(Filename.dirname, p$1);
+    if (dir === p$1) {
+      return /* tuple */[
+              dir,
+              acc
+            ];
+    }
+    else {
+      _acc = /* :: */[
+        Curry._1(Filename.basename, p$1),
+        acc
+      ];
+      _p = dir;
+      continue ;
+      
+    }
+  };
+}
+
+function normalize_absolute_path(x) {
+  var drop_if_exist = function (xs) {
+    if (xs) {
+      return xs[1];
+    }
+    else {
+      return /* [] */0;
+    }
+  };
+  var normalize_list = function (_acc, _paths) {
+    while(true) {
+      var paths = _paths;
+      var acc = _acc;
+      if (paths) {
+        var x = paths[0];
+        switch (x) {
+          case "." : 
+              _paths = paths[1];
+              continue ;
+              case ".." : 
+              _paths = paths[1];
+              _acc = drop_if_exist(acc);
+              continue ;
+              default:
+            _paths = paths[1];
+            _acc = /* :: */[
+              x,
+              acc
+            ];
+            continue ;
+            
+        }
+      }
+      else {
+        return acc;
+      }
+    };
+  };
+  var match = split_aux(x);
+  var root = match[0];
+  var rev_paths = normalize_list(/* [] */0, match[1]);
+  if (rev_paths) {
+    var _acc = rev_paths[0];
+    var _rev_paths = rev_paths[1];
+    while(true) {
+      var rev_paths$1 = _rev_paths;
+      var acc = _acc;
+      if (rev_paths$1) {
+        _rev_paths = rev_paths$1[1];
+        _acc = Filename.concat(rev_paths$1[0], acc);
+        continue ;
+        
+      }
+      else {
+        return Filename.concat(root, acc);
+      }
+    };
+  }
+  else {
+    return root;
+  }
+}
+
 var $slash$slash = Filename.concat;
 
 exports.node_sep                   = node_sep;
@@ -325,4 +413,6 @@ exports.replace_backward_slash     = replace_backward_slash;
 exports.module_name_of_file        = module_name_of_file;
 exports.module_name_of_file_if_any = module_name_of_file_if_any;
 exports.combine                    = combine;
+exports.split_aux                  = split_aux;
+exports.normalize_absolute_path    = normalize_absolute_path;
 /* Filename Not a pure module */

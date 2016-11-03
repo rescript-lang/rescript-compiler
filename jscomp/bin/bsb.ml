@@ -952,6 +952,8 @@ val module_name_of_file_if_any : string -> string
 *)
 val combine : string -> string -> string
 
+val normalize_absolute_path : string -> string
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1190,6 +1192,68 @@ let combine p1 p2 =
   if Filename.is_relative p2 then 
     Filename.concat p1 p2 
   else p2 
+
+
+
+(**
+{[
+split_aux "//ghosg//ghsogh/";;
+- : string * string list = ("/", ["ghosg"; "ghsogh"])
+]}
+*)
+let split_aux p =
+  let rec go p acc =
+    let dir = Filename.dirname p in
+    if dir = p then dir, acc
+    else go dir (Filename.basename p :: acc)
+  in go p []
+
+
+
+
+(*TODO: could be hgighly optimized later 
+{[
+  normalize_absolute_path "/gsho/./..";;
+
+  normalize_absolute_path "/a/b/../c../d/e/f";;
+
+  normalize_absolute_path "/gsho/./..";;
+
+  normalize_absolute_path "/gsho/./../..";;
+
+  normalize_absolute_path "/a/b/c/d";;
+
+  normalize_absolute_path "/a/b/c/d/";;
+
+  normalize_absolute_path "/a/";;
+
+  normalize_absolute_path "/a";;
+]}
+*)
+let normalize_absolute_path x =
+  let drop_if_exist xs =
+    match xs with 
+    | [] -> []
+    | _ :: xs -> xs in 
+  let rec normalize_list acc paths =
+    match paths with 
+    | [] -> acc 
+    | "." :: xs -> normalize_list acc xs
+    | ".." :: xs -> 
+      normalize_list (drop_if_exist acc ) xs 
+    | x :: xs -> 
+      normalize_list (x::acc) xs 
+  in
+  let root, paths = split_aux x in
+  let rev_paths =  normalize_list [] paths in 
+  let rec go acc rev_paths =
+    match rev_paths with 
+    | [] -> Filename.concat root acc 
+    | last::rest ->  go (Filename.concat last acc ) rest  in 
+  match rev_paths with 
+  | [] -> root 
+  | last :: rest -> go last rest 
+
 
 end
 module String_map : sig 
@@ -3708,7 +3772,7 @@ val flag_concat : string -> string list -> string
 val convert_path : string -> string
 val convert_file : string -> string
 val mkp : string -> unit
-val get_bsc_bsdep : unit -> string * string 
+val get_bsc_bsdep : string -> string * string 
 
 end = struct
 #1 "bs_build_util.ml"
@@ -3787,12 +3851,10 @@ let convert_file =
    The first should also not be touched
    Only the latter need be adapted based on project root  
 *)
-let get_bsc_bsdep () = 
-  if Filename.basename Sys.executable_name = Sys.executable_name then 
-    "bsc.exe", "bsdep.exe" 
-  else
-    let u = Bsb_config.proj_rel (Filename.dirname Sys.executable_name)  in 
-    u // "bsc.exe", u // "bsdep.exe"
+let get_bsc_bsdep cwd = 
+  let dir = 
+    Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))in 
+  dir // "bsc.exe", dir // "bsdep.exe"
 
 (** 
 {[
@@ -4487,6 +4549,7 @@ end
 
 let output_ninja 
     ~builddir
+    ~cwd 
     bsc
     bsdep
     package_name
@@ -4496,9 +4559,10 @@ let output_ninja
     bsc_flags
     ppx_flags 
     bs_dependencies
+
   = 
 
-  let eager_src_root_dir  =  Sys.getcwd () in
+
 
   let ppx_flags = Bs_build_util.flag_concat "-ppx" ppx_flags in 
   let bs_groups, source_dirs,static_resources  = 
@@ -4541,7 +4605,7 @@ let output_ninja
       |>
       Bs_ninja.output_kvs 
         [
-          "src_root_dir", eager_src_root_dir (* TODO: need check its integrity*);
+          "src_root_dir", cwd (* TODO: need check its integrity*);
 
           "bsc", bsc ; 
           "bsdep", bsdep; 
@@ -4582,7 +4646,8 @@ let output_ninja
 (** *)
 let write_ninja_file () = 
   let builddir = Bsb_config.lib_bs in 
-  let bsc, bsdep = Bs_build_util.get_bsc_bsdep ()  in
+  let cwd = Sys.getcwd () in 
+  let bsc, bsdep = Bs_build_util.get_bsc_bsdep cwd  in
   let () = Bs_build_util.mkp builddir in 
   let config_json_chan = open_in_bin Literals.bsconfig_json in 
   let global_data = Bs_json.parse_json_from_chan config_json_chan  in
@@ -4637,7 +4702,7 @@ let write_ninja_file () =
     Unix.unlink Literals.bsconfig_json; 
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  Default.(output_ninja ~builddir
+  Default.(output_ninja ~builddir ~cwd
              (* (get_bsc ()) *)
              (* (get_bsdep ()) *)
              bsc 

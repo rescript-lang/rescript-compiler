@@ -2,6 +2,7 @@
 
 var Mt           = require("./mt");
 var Block        = require("../../lib/js/block");
+var $$Array      = require("../../lib/js/array");
 var Ext_filename = require("./ext_filename");
 
 var suites = [/* [] */0];
@@ -90,6 +91,30 @@ eq('File "a_filename_test.ml", line 55, characters 5-12', Ext_filename.node_rela
           781515420,
           "./a/b.js"
         ]), "./b");
+
+eq('File "a_filename_test.ml", line 60, characters 5-12', $$Array.map(Ext_filename.normalize_absolute_path, /* array */[
+          "/gsho/./..",
+          "/a/b/../c../d/e/f",
+          "/a/b/../c/../d/e/f",
+          "/gsho/./../..",
+          "/a/b/c/d",
+          "/a/b/c/d/",
+          "/a/",
+          "/a",
+          "/a.txt/",
+          "/a.txt"
+        ]), /* array */[
+      "/",
+      "/a/c../d/e/f",
+      "/a/d/e/f",
+      "/",
+      "/a/b/c/d",
+      "/a/b/c/d",
+      "/a",
+      "/a",
+      "/a.txt",
+      "/a.txt"
+    ]);
 
 Mt.from_pair_suites("a_filename_test.ml", suites[0]);
 
