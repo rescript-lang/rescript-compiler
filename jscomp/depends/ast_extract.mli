@@ -62,13 +62,18 @@ val collect_ast_map :
   (Format.formatter -> string -> 'b) ->
   ('a, 'b) t String_map.t
 
+type dir_spec = 
+  { dir : string ;
+    mutable  excludes : string list 
+  }
 
 (** If the genereated queue is empty, it means 
     1. The main module  does not exist (does not exist due to typo)
     2. It does exist but not in search path
+    The order matters from head to tail 
 *)
 val collect_from_main :
-  ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
+  ?extra_dirs:dir_spec list -> 
   ?excludes : string list -> 
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->

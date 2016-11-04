@@ -178,7 +178,7 @@ bin/bsdep.ml:./bin/bspack.exe
 
 
 bin/bsb.ml:./bin/bspack.exe  
-	$< -bs-MD -I common -I ext -I syntax -I depends -I bsb -bs-main Bsb_main -o $@
+	$< -bs-MD -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
 # Actually we can not make it correct by including..
 # if we force it, then the initial build will fail

@@ -12,9 +12,9 @@ var Curry                   = require("../../lib/js/curry");
 var Ext_pervasives          = require("./ext_pervasives");
 var $$String                = require("../../lib/js/string");
 var Format                  = require("../../lib/js/format");
-var Caml_string             = require("../../lib/js/caml_string");
 var List                    = require("../../lib/js/list");
 var Literals                = require("./literals");
+var Caml_string             = require("../../lib/js/caml_string");
 
 var node_sep = "/";
 
@@ -120,12 +120,13 @@ function chop_extension_if_any(fname) {
   }
 }
 
+var os_path_separator_char = Filename.dir_sep.charCodeAt(0);
+
 function relative_path(file_or_dir_1, file_or_dir_2) {
-  var sep_char = Caml_string.get(Filename.dir_sep, 0);
   var relevant_dir1 = file_or_dir_1[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_1[1]) : file_or_dir_1[1];
   var relevant_dir2 = file_or_dir_2[0] >= 781515420 ? Curry._1(Filename.dirname, file_or_dir_2[1]) : file_or_dir_2[1];
-  var dir1 = Ext_string.split(/* None */0, relevant_dir1, sep_char);
-  var dir2 = Ext_string.split(/* None */0, relevant_dir2, sep_char);
+  var dir1 = Ext_string.split(/* None */0, relevant_dir1, os_path_separator_char);
+  var dir2 = Ext_string.split(/* None */0, relevant_dir2, os_path_separator_char);
   var go = function (_dir1, _dir2) {
     while(true) {
       var dir2 = _dir2;
@@ -177,8 +178,6 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
               ]);
   }
 }
-
-var os_path_separator_char = Filename.dir_sep.charCodeAt(0);
 
 function node_relative_path(file1, dep_file) {
   var file2 = dep_file[1];
@@ -330,6 +329,51 @@ function split_aux(p) {
   };
 }
 
+function rel_normalized_absolute_path(from, to_) {
+  var match = split_aux(from);
+  var match$1 = split_aux(to_);
+  var root2 = match$1[0];
+  if (match[0] !== root2) {
+    return root2;
+  }
+  else {
+    var _xss = match[1];
+    var _yss = match$1[1];
+    while(true) {
+      var yss = _yss;
+      var xss = _xss;
+      if (xss) {
+        var xs = xss[1];
+        if (yss) {
+          if (xss[0] === yss[0]) {
+            _yss = yss[1];
+            _xss = xs;
+            continue ;
+            
+          }
+          else {
+            var start = List.fold_left(function (acc, _) {
+                  return Filename.concat(acc, "..");
+                }, "..", xs);
+            return List.fold_left(Filename.concat, start, yss);
+          }
+        }
+        else {
+          return List.fold_left(function (acc, _) {
+                      return Filename.concat(acc, "..");
+                    }, "..", xs);
+        }
+      }
+      else if (yss) {
+        return List.fold_left(Filename.concat, yss[0], yss[1]);
+      }
+      else {
+        return "";
+      }
+    };
+  }
+}
+
 function normalize_absolute_path(x) {
   var drop_if_exist = function (xs) {
     if (xs) {
@@ -393,26 +437,43 @@ function normalize_absolute_path(x) {
   }
 }
 
+function get_extension(x) {
+  try {
+    var pos = Bytes.rindex(Caml_string.bytes_of_string(x), /* "." */46);
+    return Ext_string.tail_from(x, pos);
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return "";
+    }
+    else {
+      throw exn;
+    }
+  }
+}
+
 var $slash$slash = Filename.concat;
 
-exports.node_sep                   = node_sep;
-exports.node_parent                = node_parent;
-exports.node_current               = node_current;
-exports.cwd                        = cwd;
-exports.$slash$slash               = $slash$slash;
-exports.path_as_directory          = path_as_directory;
-exports.absolute_path              = absolute_path;
-exports.chop_extension             = chop_extension;
-exports.chop_extension_if_any      = chop_extension_if_any;
-exports.relative_path              = relative_path;
-exports.os_path_separator_char     = os_path_separator_char;
-exports.node_relative_path         = node_relative_path;
-exports.find_package_json_dir      = find_package_json_dir;
-exports.package_dir                = package_dir;
-exports.replace_backward_slash     = replace_backward_slash;
-exports.module_name_of_file        = module_name_of_file;
-exports.module_name_of_file_if_any = module_name_of_file_if_any;
-exports.combine                    = combine;
-exports.split_aux                  = split_aux;
-exports.normalize_absolute_path    = normalize_absolute_path;
+exports.node_sep                     = node_sep;
+exports.node_parent                  = node_parent;
+exports.node_current                 = node_current;
+exports.cwd                          = cwd;
+exports.$slash$slash                 = $slash$slash;
+exports.path_as_directory            = path_as_directory;
+exports.absolute_path                = absolute_path;
+exports.chop_extension               = chop_extension;
+exports.chop_extension_if_any        = chop_extension_if_any;
+exports.os_path_separator_char       = os_path_separator_char;
+exports.relative_path                = relative_path;
+exports.node_relative_path           = node_relative_path;
+exports.find_package_json_dir        = find_package_json_dir;
+exports.package_dir                  = package_dir;
+exports.replace_backward_slash       = replace_backward_slash;
+exports.module_name_of_file          = module_name_of_file;
+exports.module_name_of_file_if_any   = module_name_of_file_if_any;
+exports.combine                      = combine;
+exports.split_aux                    = split_aux;
+exports.rel_normalized_absolute_path = rel_normalized_absolute_path;
+exports.normalize_absolute_path      = normalize_absolute_path;
+exports.get_extension                = get_extension;
 /* Filename Not a pure module */

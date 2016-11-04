@@ -2785,7 +2785,8 @@ let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : uni
     match kind with 
     | Ml -> Config.ast_impl_magic_number
     | Mli -> Config.ast_intf_magic_number in
-  let oc = open_out output in 
+  let oc = open_out_bin output in 
+  (* FIX for windows: output_value: not a binary channel*)
   output_string oc magic ;
   output_value oc fname;
   output_value oc pt;
@@ -2897,10 +2898,10 @@ let finally v action f   =
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
-  finally (open_out filename) close_out f 
+  finally (open_out_bin filename) close_out f 
 
 let with_file_as_pp filename f = 
-  finally (open_out filename) close_out
+  finally (open_out_bin filename) close_out
     (fun chan -> 
       let fmt = Format.formatter_of_out_channel chan in
       let v = f  fmt in
@@ -3555,8 +3556,9 @@ val bs_type : string
 
 val node_modules : string
 val node_modules_length : int
-val package_json : string  
-
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
 val suffix_cmj : string
 val suffix_cmi : string
 val suffix_ml : string
@@ -3566,6 +3568,7 @@ val suffix_mll : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
+val suffix_js : string
 
 end = struct
 #1 "literals.ml"
@@ -3645,7 +3648,8 @@ let bs_type = "bs.type"
 let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
 let package_json = "package.json"
-
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
 
 let suffix_cmj = ".cmj"
 let suffix_cmi = ".cmi"
@@ -3656,7 +3660,7 @@ let suffix_mliast = ".mliast"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-
+let suffix_js = ".js"
 
 
 end
@@ -3724,6 +3728,8 @@ val chop_extension : ?loc:string -> string -> string
 
 
 val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
 val replace_backward_slash : string -> string
@@ -3741,6 +3747,32 @@ val module_name_of_file_if_any : string -> string
    2. when the second one is absolute, drop the first one
 *)
 val combine : string -> string -> string
+
+val normalize_absolute_path : string -> string
+
+(** 
+TODO: could be highly optimized
+if [from] and [to] resolve to the same path, a zero-length string is returned 
+Given that two paths are directory
+
+A typical use case is 
+{[
+Filename.concat 
+  (rel_normalized_absolute_path cwd (Filename.dirname a))
+  (Filename.basename a)
+]}
+*)
+val rel_normalized_absolute_path : string -> string -> string 
+
+
+
+(**
+{[
+get_extension "a.txt" = ".txt"
+get_extension "a" = ""
+]}
+*)
+val get_extension : string -> string
 
 end = struct
 #1 "ext_filename.ml"
@@ -3835,6 +3867,11 @@ let chop_extension_if_any fname =
 
 
 
+
+
+let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
+
+
 (** example
     {[
     "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
@@ -3856,7 +3893,7 @@ let chop_extension_if_any fname =
     ]}
  *)
 let relative_path file_or_dir_1 file_or_dir_2 = 
-  let sep_char = Filename.dir_sep.[0] in
+  let sep_char = os_path_separator_char in
   let relevant_dir1 = 
     (match file_or_dir_1 with 
     | `Dir x -> x 
@@ -3881,11 +3918,6 @@ let relative_path file_or_dir_1 file_or_dir_2 =
   | ys -> 
       String.concat node_sep  @@ node_current :: ys
 
-
-
-
-
-let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
 
 (** path2: a/b 
     path1: a 
@@ -3980,6 +4012,93 @@ let combine p1 p2 =
   if Filename.is_relative p2 then 
     Filename.concat p1 p2 
   else p2 
+
+
+
+(**
+{[
+split_aux "//ghosg//ghsogh/";;
+- : string * string list = ("/", ["ghosg"; "ghsogh"])
+]}
+*)
+let split_aux p =
+  let rec go p acc =
+    let dir = Filename.dirname p in
+    if dir = p then dir, acc
+    else go dir (Filename.basename p :: acc)
+  in go p []
+
+(** 
+TODO: optimization
+if [from] and [to] resolve to the same path, a zero-length string is returned 
+*)
+let rel_normalized_absolute_path from to_ =
+  let root1, paths1 = split_aux from in 
+  let root2, paths2 = split_aux to_ in 
+  if root1 <> root2 then root2 else
+    let rec go xss yss =
+      match xss, yss with 
+      | x::xs, y::ys -> 
+        if x = y then go xs ys 
+        else 
+          let start = 
+            List.fold_left (fun acc _ -> acc // ".." ) ".." xs in 
+          List.fold_left (fun acc v -> acc // v) start yss
+      | [], [] -> ""
+      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
+      | x::xs, [] ->
+        List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
+    go paths1 paths2
+
+(*TODO: could be hgighly optimized later 
+{[
+  normalize_absolute_path "/gsho/./..";;
+
+  normalize_absolute_path "/a/b/../c../d/e/f";;
+
+  normalize_absolute_path "/gsho/./..";;
+
+  normalize_absolute_path "/gsho/./../..";;
+
+  normalize_absolute_path "/a/b/c/d";;
+
+  normalize_absolute_path "/a/b/c/d/";;
+
+  normalize_absolute_path "/a/";;
+
+  normalize_absolute_path "/a";;
+]}
+*)
+let normalize_absolute_path x =
+  let drop_if_exist xs =
+    match xs with 
+    | [] -> []
+    | _ :: xs -> xs in 
+  let rec normalize_list acc paths =
+    match paths with 
+    | [] -> acc 
+    | "." :: xs -> normalize_list acc xs
+    | ".." :: xs -> 
+      normalize_list (drop_if_exist acc ) xs 
+    | x :: xs -> 
+      normalize_list (x::acc) xs 
+  in
+  let root, paths = split_aux x in
+  let rev_paths =  normalize_list [] paths in 
+  let rec go acc rev_paths =
+    match rev_paths with 
+    | [] -> Filename.concat root acc 
+    | last::rest ->  go (Filename.concat last acc ) rest  in 
+  match rev_paths with 
+  | [] -> root 
+  | last :: rest -> go last rest 
+
+
+let get_extension x =
+  try
+    let pos = String.rindex x '.' in
+    Ext_string.tail_from x pos
+  with Not_found -> ""
 
 end
 module String_map : sig 
@@ -4130,7 +4249,8 @@ type module_info =
     mll : string option 
   }
 
-type t = module_info String_map.t 
+type t =
+  module_info String_map.t 
 val write_build_cache : string -> t -> unit
 
 val read_build_cache : string -> t
@@ -4187,10 +4307,12 @@ type module_info =
   {
     mli : mli_kind ; 
     ml : ml_kind ; 
-    mll : string option 
+    mll : string option ;
   }
 
-type t = module_info String_map.t 
+type t = 
+      module_info String_map.t 
+
 
 let module_info_magic_number = "BSBUILD20161012"
 
@@ -4201,7 +4323,7 @@ let write_build_cache bsbuild (bs_files : module_info String_map.t)  =
   close_out oc 
 
 let read_build_cache bsbuild : module_info String_map.t = 
-  let ic = open_in bsbuild in 
+  let ic = open_in_bin bsbuild in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
   let data : module_info String_map.t = input_value ic in 
@@ -4356,7 +4478,7 @@ let report_error ppf = function
 
   | Bs_package_not_found package
     ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist"
+    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
       package package
   | Bs_invalid_path path
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
@@ -5314,6 +5436,8 @@ val sort_via_array :
 
 val last : 'a list -> 'a
 
+
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5676,6 +5800,7 @@ let rec last xs =
   | _ :: tl -> last tl 
   | [] -> invalid_arg "Ext_list.last"
 
+
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -5728,7 +5853,7 @@ val cmj_ext : string
 val get_ext : unit -> string
 
 (** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : module_system -> string -> string
+val get_output_dir : pkg_dir:string -> module_system -> string -> string
 
 
 (** used by command line option *)
@@ -5801,7 +5926,7 @@ val block : string
 val int32 : string
 val gc : string 
 val backtrace : string
-val version : string
+
 val builtin_exceptions : string
 val exceptions : string
 val io : string
@@ -5986,7 +6111,7 @@ let get_current_package_name_and_path   module_system =
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
-let get_output_dir module_system filename =
+let get_output_dir ~pkg_dir module_system filename =
   match !packages_info with
   | Empty | NonBrowser (_, [])->
     if Filename.is_relative filename then
@@ -5996,7 +6121,7 @@ let get_output_dir module_system filename =
       Filename.dirname filename
   | NonBrowser (_,  modules) ->
     begin match List.find (fun (k,_) -> k = module_system) modules with
-      | (_, _path) -> Lazy.force Ext_filename.package_dir // _path
+      | (_, _path) -> pkg_dir // _path
       |  exception _ -> assert false
     end
 
@@ -6037,7 +6162,6 @@ let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
 let module_ = "Caml_module"
-let version = "1.2.2"
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -6145,13 +6269,18 @@ val collect_ast_map :
   (Format.formatter -> string -> 'b) ->
   ('a, 'b) t String_map.t
 
+type dir_spec = 
+  { dir : string ;
+    mutable  excludes : string list 
+  }
 
 (** If the genereated queue is empty, it means 
     1. The main module  does not exist (does not exist due to typo)
     2. It does exist but not in search path
+    The order matters from head to tail 
 *)
 val collect_from_main :
-  ?extra_dirs:[`Dir of string  | `Dir_with_excludes of string * string list] list -> 
+  ?extra_dirs:dir_spec list -> 
   ?excludes : string list -> 
   Format.formatter ->
   (Format.formatter -> string -> 'a) ->
@@ -6387,8 +6516,11 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                module_name} acc
         end
     ) String_map.empty files
-
-
+;;
+type dir_spec = 
+  { dir : string ;
+    mutable  excludes : string list 
+  }
 
 let collect_from_main 
     ?(extra_dirs=[])
@@ -6403,8 +6535,9 @@ let collect_from_main
     List.fold_left (fun acc dir_spec -> 
         let  dirname, excludes = 
           match dir_spec with 
-          | `Dir dirname -> dirname, excludes
-          | `Dir_with_excludes (dirname, dir_excludes) ->
+          | { dir =  dirname; excludes = dir_excludes} ->
+          (*   dirname, excludes *)
+          (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
             Ext_list.flat_map 
               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
@@ -6639,7 +6772,7 @@ end = struct
 
 (** on 32 bit , there are 16M limitation *)
 let load_file f =
-  Ext_pervasives.finally (open_in f) close_in begin fun ic ->   
+  Ext_pervasives.finally (open_in_bin f) close_in begin fun ic ->   
     let n = in_channel_length ic in
     let s = Bytes.create n in
     really_input ic s 0 n;
@@ -6648,7 +6781,7 @@ let load_file f =
 
 
 let rev_lines_of_file file = 
-  Ext_pervasives.finally (open_in file) close_in begin fun chan -> 
+  Ext_pervasives.finally (open_in_bin file) close_in begin fun chan -> 
     let rec loop acc = 
       match input_line chan with
       | line -> loop (line :: acc)
@@ -6657,7 +6790,7 @@ let rev_lines_of_file file =
   end
 
 let write_file f content = 
-  Ext_pervasives.finally (open_out f) close_out begin fun oc ->   
+  Ext_pervasives.finally (open_out_bin f) close_out begin fun oc ->   
     output_string oc content
   end
 
@@ -23849,19 +23982,34 @@ let set_prelude_str f = prelude_str := Some f
 `Dir_with_excludes ("ghsogh", ["a"])
 ]}
 *)
-type dir_spec = 
-  [ `Dir of string | `Dir_with_excludes of string * string list ]
+(* type dir_spec =  *)
+(*   [ `Dir of string | `Dir_with_excludes of string * string list ] *)
 
-let process_include s : dir_spec = 
+let cwd = Sys.getcwd ()
+
+let normalize s = 
+  Ext_filename.normalize_absolute_path (Ext_filename.combine cwd s )
+
+let process_include s : Ast_extract.dir_spec = 
   match String.rindex s '?'  with 
   | exception Not_found -> 
-    `Dir s 
+    { dir = normalize s; excludes = []}
   | i ->
-    `Dir_with_excludes
-      (String.sub s 0 i,  
-       Ext_string.split 
-         (String.sub s (i + 1) (String.length s - i - 1)    )
-         ',')
+    let dir = String.sub s 0 i in
+    { dir = normalize dir;
+      excludes = Ext_string.split 
+          (String.sub s (i + 1) (String.length s - i - 1)    )
+          ','}
+
+let deduplicate_dirs (xs : Ast_extract.dir_spec list) =
+  let set : (string, Ast_extract.dir_spec) Hashtbl.t = Hashtbl.create 64 in 
+  List.filter (fun ({Ast_extract.dir ; excludes = new_excludes } as y) -> 
+      match Hashtbl.find set dir with
+      | exception Not_found -> 
+        Hashtbl.add set dir y;
+        true 
+      | x ->  x.excludes <- new_excludes @ x.excludes ; false
+    ) xs 
 
 let includes :  _ list ref = ref []
 
@@ -23912,7 +24060,7 @@ let () =
      let out_chan =
        lazy (match !output_file with
            | None -> stdout
-           | Some file -> open_out file)  in
+           | Some file -> open_out_bin file)  in
      let emit_header out_chan = 
        let local_time = Unix.(localtime (gettimeofday ())) in
        (if  !header_option 
@@ -23954,8 +24102,10 @@ let () =
          | xs -> 
            Ext_list.flat_map (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) xs in 
        let extra_dirs = 
-         if not !no_implicit_include then `Dir Filename.current_dir_name :: !includes 
-         else !includes in  
+         deduplicate_dirs @@
+         if not !no_implicit_include then {Ast_extract.dir =  cwd; excludes = []} :: !includes 
+         else !includes 
+       in  
        let ast_table, tasks =
          Ast_extract.collect_from_main ~excludes ~extra_dirs
            Format.err_formatter
@@ -24005,7 +24155,18 @@ let () =
                output
                (Queue.fold 
                   (fun acc a -> 
-                     acc ^ file ^ " : " ^ a ^ "\n"
+                     acc ^ file ^ " : " ^ 
+                     (*FIXME: now we normalized path,
+                       we need a beautiful output too for relative path
+                       The relative path should be also be normalized..
+                     *)
+                     Filename.concat 
+                       (Ext_filename.rel_normalized_absolute_path
+                        cwd 
+                        (Filename.dirname a)
+                       ) (Filename.basename a)
+
+                     ^ "\n"
                      (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
                   ) 
                   ""

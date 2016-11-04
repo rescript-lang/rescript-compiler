@@ -197,8 +197,11 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                module_name} acc
         end
     ) String_map.empty files
-
-
+;;
+type dir_spec = 
+  { dir : string ;
+    mutable  excludes : string list 
+  }
 
 let collect_from_main 
     ?(extra_dirs=[])
@@ -213,8 +216,9 @@ let collect_from_main
     List.fold_left (fun acc dir_spec -> 
         let  dirname, excludes = 
           match dir_spec with 
-          | `Dir dirname -> dirname, excludes
-          | `Dir_with_excludes (dirname, dir_excludes) ->
+          | { dir =  dirname; excludes = dir_excludes} ->
+          (*   dirname, excludes *)
+          (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
             Ext_list.flat_map 
               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
