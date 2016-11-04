@@ -1,8 +1,9 @@
 S .
-B _build/
-B _build/common
-B _build/ext
-B _build/syntax
+B .
+B common
+B ext
+B syntax
+B core
 
 S runtime
 B runtime

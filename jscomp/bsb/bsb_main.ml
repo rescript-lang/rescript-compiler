@@ -49,25 +49,14 @@ let get_list_string s =
 let bs_file_groups = ref []
 
 
-(* let () = print_endline Sys.executable_name *)
-
-(* let bsb_dir =  *)
-(*   let bsb_path = Filename.dirname Sys.executable_name in  *)
-(*   Bs_build_util.convert_path (Bsb_config.rev_lib_bs_prefix  bsb_path) *)
 
 module Default : sig
-  (* val set_bsc : string -> unit  *)
-  (* val set_builddir : string -> unit  *)
-  (* val set_bsdep : string -> unit  *)
   val set_ocamllex : string -> unit 
   val set_package_name : string -> unit
   val set_bs_external_includes : Bsb_json.t array -> unit 
   val set_bsc_flags : Bsb_json.t array -> unit 
   (* val ppx_flags : string list ref  *)
 
-  (* val get_bsc : unit -> string  *)
-  (* val get_builddir : unit ->  string *)
-  (* val get_bsdep : unit -> string  *)
   val get_ocamllex : unit -> string 
   val get_package_name : unit -> string option 
   val get_bs_external_includes : unit -> string list 
@@ -77,11 +66,7 @@ module Default : sig
   val set_bs_dependencies : Bsb_json.t array  -> unit
 end  = struct
 
-
-  (* let bsc = ref  (bsb_dir // "bsc.exe") *)
-
-  (* let bsdep = ref (bsb_dir // "bsdep.exe") *)
-  let ocamllex =  ref ( "ocamllex.opt")
+  let ocamllex =  ref  "ocamllex.opt"
 
   let bs_external_includes = ref []
 
@@ -90,26 +75,19 @@ end  = struct
   let bsc_flags = ref []
   let ppx_flags = ref []
   let static_resources = ref []
-  let builddir = ref ("lib"//"bs")
+
   let bs_dependencies = ref []
   let get_bs_dependencies () = !bs_dependencies
   let set_bs_dependencies  s =
     bs_dependencies := get_list_string s 
   let set_bs_external_includes s = 
     bs_external_includes := List.map Bsb_build_util.convert_path (get_list_string s )
-  let set_builddir s = builddir := Bsb_build_util.convert_path s 
-
   let set_bsc_flags s = bsc_flags := get_list_string s 
-  (* let set_bsc s = bsc := Bs_build_util.convert_file s *)
-  (* let set_bsdep s = bsdep := Bs_build_util.convert_file s *)
   let set_ocamllex s = ocamllex := Bsb_build_util.convert_file s 
   let set_package_name s = package_name := Some s
-  (* let get_bsdep () = !bsdep *)
-  (* let get_bsc () = !bsc  *)
-  (* let get_builddir () = !builddir *)
   let get_package_name () = !package_name
   let get_ocamllex () = !ocamllex 
-  let get_builddir () = !builddir
+
   let get_bs_external_includes () = !bs_external_includes
   let get_bsc_flags () = !bsc_flags 
   let get_ppx_flags () = !ppx_flags
@@ -167,7 +145,8 @@ let output_ninja
   in
   let oc = open_out_bin (builddir // Literals.build_ninja) in 
   begin 
-
+    let () = 
+      output_string oc "ninja_required_version = 1.7.1 \n" in
     let () = 
       oc 
       |>
@@ -229,9 +208,8 @@ let write_ninja_file () =
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
-          (* |?  (Bs_build_schemas.bsc,  `Str  Default.set_bsc) *)
-          (* |?  (Bs_build_schemas.bsbuild,   `Str Default.set_bsbuild) *)
-          (* |?  (Bs_build_schemas.bsdep,  `Str  Default.set_bsdep) *)
+
+
           |?  (Bsb_build_schemas.ocamllex, `Str Default.set_ocamllex)
           |? (Bsb_build_schemas.bs_dependencies, `Arr Default.set_bs_dependencies)
           (* More design *)
@@ -240,10 +218,8 @@ let write_ninja_file () =
           |?  (Bsb_build_schemas.bsc_flags, `Arr Default.set_bsc_flags)
 
           (* More design *)
-          (* |?  (Bs_build_schemas.ppx_flags, `Arr (fun s -> Default.ppx_flags := get_list_string s)) *)
-
-
-          (* |?  (Bs_build_schemas.bs_copy_or_symlink, `Arr Default.set_static_resouces_from_array) *)
+          (* |?  (Bs_build_schemas.ppx_flags,  *)
+          (*      `Arr (fun s -> Default.ppx_flags := get_list_string s)) *)
 
           |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
               let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
@@ -271,8 +247,6 @@ let write_ninja_file () =
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
   Default.(output_ninja ~builddir ~cwd
-             (* (get_bsc ()) *)
-             (* (get_bsdep ()) *)
              bsc 
              bsdep 
              (get_package_name ())
