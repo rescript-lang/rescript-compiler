@@ -76,7 +76,7 @@ CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
-BSB_SRCS= bsb_config bs_build_schemas bs_build_util bs_dep_infos bs_dir bs_json sexp_lexer sexp_eval  bs_ninja bs_build_ui
+BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util bsb_dep_infos bsb_dir bsb_json sexp_lexer sexp_eval  bsb_ninja bsb_build_ui
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main

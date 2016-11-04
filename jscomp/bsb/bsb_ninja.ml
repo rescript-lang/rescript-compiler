@@ -244,7 +244,7 @@ let (++) (us : info) (vs : info) =
 
 
                                
-let handle_file_group oc acc (group: Bs_build_ui.file_group) =
+let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
   let handle_module_info  oc  module_name
       ({mli; ml; mll } : Binary_cache.module_info) 
       bs_dependencies
@@ -394,8 +394,7 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
       handle_module_info  oc k v group.bs_dependencies acc 
     ) group.sources  acc
 
-
-let handle_file_groups oc  (file_groups  :  Bs_build_ui.file_group list) st =
+let handle_file_groups oc  (file_groups  :  Bsb_build_ui.file_group list) st =
       List.fold_left (handle_file_group oc) st  file_groups
 
   

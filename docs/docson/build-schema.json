@@ -37,18 +37,31 @@
                 }
             ]
         },
+        "single-ppx-spec" : {
+            "type" : "string",
+            "description": "the path to ppx binary"
+        },
+        "ppx-specs" : {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/single-ppx-spec"
+            }
+        },
         "bs-dependencies": {
             "type": "array",
             "items": {
                 "type": "string"
             },
-            "description": "bucklescript package dependencies"
+            "description": "Bucklescript package dependencies"
         },
         "sourceItem": {
             "title": "sourceItem",
             "properties": {
                 "dir": {
                     "type": "string"
+                },
+                "ppx-specs" : {
+                    "$ref" : "#/definitions/ppx-spec"
                 },
                 "files": {
                     "oneOf": [
@@ -81,7 +94,8 @@
                     ]
                 },
                 "bs-dependencies": {
-                    "$ref": "#/definitions/bs-dependencies"
+                    "$ref": "#/definitions/bs-dependencies",
+                    "description": "More dependencies added to this group"
                 },
                 "public": {
                     "oneOf": [
@@ -150,7 +164,7 @@
         }
     },
     "title": "BuckleScript build configuration",
-    "description": "All paths are required for Unix format, the build tool will do conversion internally",
+    "description": "All paths are required for **Unix format**, the build tool will do conversion internally",
     "type": "object",
     "properties": {
         "version": {
@@ -159,61 +173,46 @@
         },
         "name": {
             "type": "string",
-            "description": "package name"
+            "description": "Package name"
         },
         "ocaml-config": {
             "title": "OCaml Configuration format",
             "bs-dependencies": {
-                "$ref": "#/definitions/bs-dependencies"
+                "$ref": "#/definitions/bs-dependencies",
+                "description" : "OCaml dependencies applied to all modules inside"
             },
             "properties": {
-                "bsdep": {
-                    "type": "string",
-                    "description": "the path to bsdep"
-                },
-                "ppx-flags": {
-                    "$ref": "#/definitions/stringArray",
-                    "description": "ppx flags"
+                "ppx-flags": {                    
+                    "$ref": "#/definitions/ppx-specs",
+                    "description": "TODO: ppx flags"
                 },
                 "bsc-flags": {
-                    "$ref": "#/definitions/stringArray"
+                    "$ref": "#/definitions/stringArray",
+                    "description": "A list of flags for bsc.exe"
                 },
                 "package-spec": {
-                    "$ref": "#/definitions/package-spec"
-                },
-                "bsbuild": {
-                    "type": "string",
-                    "description": "the path to bsbuild"
-                },
-                "bsc": {
-                    "type": "string",
-                    "description": "the path to bsc"
+                    "$ref": "#/definitions/package-spec",
+                    "description": "TODO: currently only support commonjs"
                 },
                 "ocamllex": {
                     "type": "string",
-                    "description": "path to ocamllex"
+                    "description": "Path to ocamllex"
                 },
                 "ocamlyacc": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "TODO path to ocamlyacc, mly"
                 },
                 "menhir": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "TODO"
                 },
                 "refmt": {
                     "type": "string",
-                    "description": "the path to refmt"
+                    "description": "Path to refmt"
                 },
                 "bs-external-includes": {
                     "$ref": "#/definitions/stringArray",
                     "description": "external include directories, which will be applied -I to all compilation units, it is not needed in most cases"
-                },
-                "bs-lib-dir": {
-                    "type": "string",
-                    "description": "path to install bucklescript ocaml libs, used for its dependent compilation, default to /lib/bs "
-                },
-                "bs-copy-or-symlink": {
-                    "$ref": "#/definitions/stringArray",
-                    "description": "the resource files, the use case is in test build, we need keep the same relative path between code and resources"
                 },
                 "sources": {
                     "type": "array",
