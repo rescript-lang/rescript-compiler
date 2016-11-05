@@ -98878,6 +98878,16 @@ let batch_compile ppf search_dirs files main_file =
          Js_config.dump_js, true ;
         ]  (fun _ -> 
           Ocaml_parse.parse_implementation_from_string s 
+          (* FIXME: Note in theory, the order of applying our built in ppx 
+             and apply third party ppx should not matter, but in practice  
+             it may.
+             We should make it more consistent. 
+             Thirdy party ppx may be buggy to drop annotations.
+             If we always put our ppx in the beginning, it will be more robust, 
+             however, the current implementation (in the batch compilation mode) 
+             seems to apply our ppx after all ppx transformations
+          *)
+          |> Pparse.apply_rewriters_str ~tool_name:Js_config.tool_name
           |> print_if ppf Clflags.dump_parsetree Printast.implementation
           |> print_if ppf Clflags.dump_source Pprintast.structure
           |> Js_implementation.after_parsing_impl ppf "//<toplevel>//" "Bs_internal_eval" 
