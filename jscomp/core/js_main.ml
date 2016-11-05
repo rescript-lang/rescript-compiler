@@ -61,6 +61,15 @@ let set_eval_string s =
   eval_string :=  s 
 
 
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Bs_exception.Error err
+        -> Some (Location.error_of_printer_file Bs_exception.report_error err)
+      | _ -> None
+    )
+
 let (//) = Filename.concat
 
 let add_package s = 

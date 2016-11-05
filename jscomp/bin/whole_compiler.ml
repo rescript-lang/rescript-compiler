@@ -19861,7 +19861,14 @@ type error =
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
-      
+(*
+TODO: In the futrue, we should refine dependency [bsb] 
+should not rely on such exception, it should have its own exception handling
+*)
+
+exception Error of error
+
+val report_error : Format.formatter -> error -> unit
 val error : error -> 'a 
 
 end = struct
@@ -19926,16 +19933,6 @@ let report_error ppf = function
   | Bs_invalid_path path
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
 
-(**
-FIXME: this introduces dependencies on compiler-libs
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
-*)
 
 
 end
@@ -99380,6 +99377,15 @@ let set_eval_string s =
     raise (Arg.Bad ("-bs-main conflicts with -bs-eval")) else 
   eval_string :=  s 
 
+
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Bs_exception.Error err
+        -> Some (Location.error_of_printer_file Bs_exception.report_error err)
+      | _ -> None
+    )
 
 let (//) = Filename.concat
 
