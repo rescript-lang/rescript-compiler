@@ -98,7 +98,7 @@ bsb.cmxa:$(BSB_CMXS)
 check:  $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS)
 
 bin/bsb.exe: ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
-	$(NATIVE) -g -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
+	$(NATIVE) -g  unix.cmxa str.cmxa $^ -o $@
 
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@

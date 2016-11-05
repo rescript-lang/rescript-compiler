@@ -4484,6 +4484,9 @@ let report_error ppf = function
       package package
   | Bs_invalid_path path
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
+
+(**
+FIXME: this introduces dependencies on compiler-libs
 let () =
   Location.register_error_of_exn
     (function
@@ -4491,7 +4494,7 @@ let () =
         -> Some (Location.error_of_printer_file report_error err)
       | _ -> None
     )
-
+*)
 
 
 end
