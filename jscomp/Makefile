@@ -51,7 +51,7 @@ EXT_SRCS = ext_array ext_bytes ext_char ext_file_pp ext_format ext_hashtbl ext_l
 	string_set ext_pp_scope ext_io ext_ident ext_filename 
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
-COMMON_SRCS= bs_version bs_exception bs_pkg js_config ext_log bs_loc  bs_warnings  lam_methname binary_ast binary_cache
+COMMON_SRCS= bs_version bs_exception  js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname binary_ast binary_cache
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift \
 	ast_literal ast_pat ast_payload ast_signature ast_structure bs_ast_iterator bs_ast_invariant \
@@ -76,7 +76,7 @@ CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
-BSB_SRCS= bsb_config bs_build_schemas bs_build_util bs_dep_infos bs_dir bs_json sexp_lexer sexp_eval  bs_ninja bs_build_ui
+BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util bsb_dep_infos bsb_dir bsb_json sexp_lexer sexp_eval  bsb_ninja bsb_build_ui
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main
@@ -98,7 +98,7 @@ bsb.cmxa:$(BSB_CMXS)
 check:  $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS)
 
 bin/bsb.exe: ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
-	$(NATIVE) -g -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
+	$(NATIVE) -g  unix.cmxa str.cmxa $^ -o $@
 
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@

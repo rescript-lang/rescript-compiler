@@ -31,7 +31,7 @@
 
 
 let (|?)  m (key, cb) =
-    m  |> Bs_json.test key cb 
+    m  |> Bsb_json.test key cb 
 
 
 
@@ -40,7 +40,7 @@ let ninja = "ninja"
 let bsdeps = ".bsdeps"
 let (//) = Ext_filename.combine
 let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Bs_json.t) ->
+  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
       match x with 
       | `Str x -> Some x 
       | _ -> None
@@ -49,39 +49,24 @@ let get_list_string s =
 let bs_file_groups = ref []
 
 
-(* let () = print_endline Sys.executable_name *)
-
-(* let bsb_dir =  *)
-(*   let bsb_path = Filename.dirname Sys.executable_name in  *)
-(*   Bs_build_util.convert_path (Bsb_config.rev_lib_bs_prefix  bsb_path) *)
 
 module Default : sig
-  (* val set_bsc : string -> unit  *)
-  (* val set_builddir : string -> unit  *)
-  (* val set_bsdep : string -> unit  *)
   val set_ocamllex : string -> unit 
   val set_package_name : string -> unit
-  val set_bs_external_includes : Bs_json.t array -> unit 
-  val set_bsc_flags : Bs_json.t array -> unit 
-  (* val ppx_flags : string list ref  *)
+  val set_bs_external_includes : Bsb_json.t array -> unit 
+  val set_bsc_flags : Bsb_json.t array -> unit 
+  val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit 
 
-  (* val get_bsc : unit -> string  *)
-  (* val get_builddir : unit ->  string *)
-  (* val get_bsdep : unit -> string  *)
   val get_ocamllex : unit -> string 
   val get_package_name : unit -> string option 
   val get_bs_external_includes : unit -> string list 
   val get_bsc_flags : unit -> string list
-  val get_ppx_flags : unit -> string list 
+  val get_ppx_flags : unit -> string list
   val get_bs_dependencies : unit  -> string list 
-  val set_bs_dependencies : Bs_json.t array  -> unit
+  val set_bs_dependencies : Bsb_json.t array  -> unit
 end  = struct
 
-
-  (* let bsc = ref  (bsb_dir // "bsc.exe") *)
-
-  (* let bsdep = ref (bsb_dir // "bsdep.exe") *)
-  let ocamllex =  ref ( "ocamllex.opt")
+  let ocamllex =  ref  "ocamllex.opt"
 
   let bs_external_includes = ref []
 
@@ -90,29 +75,36 @@ end  = struct
   let bsc_flags = ref []
   let ppx_flags = ref []
   let static_resources = ref []
-  let builddir = ref ("lib"//"bs")
+
   let bs_dependencies = ref []
   let get_bs_dependencies () = !bs_dependencies
   let set_bs_dependencies  s =
     bs_dependencies := get_list_string s 
   let set_bs_external_includes s = 
-    bs_external_includes := List.map Bs_build_util.convert_path (get_list_string s )
-  let set_builddir s = builddir := Bs_build_util.convert_path s 
-
+    bs_external_includes := List.map Bsb_build_util.convert_path (get_list_string s )
   let set_bsc_flags s = bsc_flags := get_list_string s 
-  (* let set_bsc s = bsc := Bs_build_util.convert_file s *)
-  (* let set_bsdep s = bsdep := Bs_build_util.convert_file s *)
-  let set_ocamllex s = ocamllex := Bs_build_util.convert_file s 
+  let set_ocamllex s = ocamllex := Bsb_build_util.convert_file s 
   let set_package_name s = package_name := Some s
-  (* let get_bsdep () = !bsdep *)
-  (* let get_bsc () = !bsc  *)
-  (* let get_builddir () = !builddir *)
   let get_package_name () = !package_name
   let get_ocamllex () = !ocamllex 
-  let get_builddir () = !builddir
+
   let get_bs_external_includes () = !bs_external_includes
   let get_bsc_flags () = !bsc_flags 
   let get_ppx_flags () = !ppx_flags
+  let set_ppx_flags ~cwd s = 
+    let s = 
+      s (* TODO: unix conversion *)
+      |> get_list_string 
+      |> List.map (fun x -> 
+          if x = "" then failwith "invalid ppx, empty string found"
+          else 
+          if Filename.is_relative x &&  String.unsafe_get x 0 <> '.' then 
+            let name = String.sub x 0 ( String.index x '/') in
+            Bsb_build_util.convert_path (Filename.dirname (Bs_pkg.resolve_bs_package ~cwd name ) // x) 
+          else 
+            Bsb_build_util.convert_path x 
+        ) in 
+    ppx_flags := s
 end
 
 let output_ninja 
@@ -132,9 +124,9 @@ let output_ninja
 
 
 
-  let ppx_flags = Bs_build_util.flag_concat "-ppx" ppx_flags in 
+  let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in 
   let bs_groups, source_dirs,static_resources  = 
-    List.fold_left (fun (acc, dirs,acc_resources) ({Bs_build_ui.sources ; dir; resources }) -> 
+    List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) -> 
       String_map.merge (fun modname k1 k2 ->
           match k1 , k2 with
           | None , None -> 
@@ -146,49 +138,43 @@ let output_ninja
         ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
     ) (String_map.empty,[],[]) bs_file_groups in
   Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
-  let internal_includes =
-      source_dirs
-      |> Ext_list.flat_map (fun x -> ["-I" ;  x ]) (* it is a mirror, no longer need `builddir//` *)
-  in 
-  let external_includes = 
-      Ext_list.flat_map (fun x -> ["-I" ; x]) bs_external_includes in 
-  let bs_package_includes = 
-    Bs_build_util.flag_concat "-bs-package-include" bs_dependencies in 
-  let bsc_parsing_flags =
+  let bsc_flags =
     String.concat " " bsc_flags 
   in  
-  let bsc_computed_flags =
-    let init_flags = 
-      match package_name with 
-      | None -> external_includes @ internal_includes 
-      | Some x -> "-bs-package-name" ::  x :: external_includes @ internal_includes
-    in  (* make sure -bs-package-name is before -bs-package-output *)
-    String.concat " " ( bsc_flags @ init_flags)
+  let bsc_includes =
+    Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  )
   in
   let oc = open_out_bin (builddir // Literals.build_ninja) in 
   begin 
+    let () = 
+      output_string oc "ninja_required_version = 1.7.1 \n" ;
+      match package_name with 
+      | None -> output_string oc ("bs_package_flags = \n")
+      | Some x -> output_string oc ("bs_package_flags = -bs-package-name "  ^ x ^ " \n" )
+    in
+    let bs_package_includes = 
+      Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in 
 
     let () = 
       oc 
       |>
-      Bs_ninja.output_kvs 
+      Bsb_ninja.output_kvs 
         [
           "src_root_dir", cwd (* TODO: need check its integrity*);
 
           "bsc", bsc ; 
           "bsdep", bsdep; 
           "ocamllex", ocamllex;
-          "bsc_computed_flags", bsc_computed_flags ; 
-          "bsc_parsing_flags", bsc_parsing_flags ; 
+          "bsc_includes", bsc_includes ; 
+          "bsc_flags", bsc_flags ; 
           "ppx_flags", ppx_flags;
           "bs_packaeg_includes", bs_package_includes;
-          "bs_package_flags", "" (* TODO*)
           (* "builddir", builddir; we should not have it set, since it's correct here *)
 
         ]
     in
     let all_deps, all_cmis = 
-      Bs_ninja.handle_file_groups oc bs_file_groups ([],[]) in 
+      Bsb_ninja.handle_file_groups oc bs_file_groups ([],[]) in 
     let all_deps = 
       (* we need copy package.json into [_build] since it does affect build output *)
       (* Literals.package_json ::  
@@ -196,13 +182,13 @@ let output_ninja
       *)
       static_resources 
       |> List.fold_left (fun all_deps x -> 
-          Bs_ninja.output_build oc
+          Bsb_ninja.output_build oc
             ~output:x
             ~input:(Bsb_config.proj_rel x)
-            ~rule:Bs_ninja.Rules.copy_resources;
+            ~rule:Bsb_ninja.Rules.copy_resources;
           x:: all_deps 
         ) all_deps in 
-    Bs_ninja.phony oc ~order_only_deps:all_deps 
+    Bsb_ninja.phony oc ~order_only_deps:all_deps 
       ~inputs:[]
       ~output:Literals.build_ninja ; 
     close_out oc;
@@ -215,38 +201,35 @@ let output_ninja
 let write_ninja_file () = 
   let builddir = Bsb_config.lib_bs in 
   let cwd = Sys.getcwd () in 
-  let bsc, bsdep = Bs_build_util.get_bsc_bsdep cwd  in
-  let () = Bs_build_util.mkp builddir in 
+  let bsc, bsdep = Bsb_build_util.get_bsc_bsdep cwd  in
+  let () = Bsb_build_util.mkp builddir in 
   let config_json_chan = open_in_bin Literals.bsconfig_json in 
-  let global_data = Bs_json.parse_json_from_chan config_json_chan  in
+  let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in 
   let globbed_dirs = ref [] in
   let () = 
     match global_data with
     | `Obj map -> 
       map 
-      |?  (Bs_build_schemas.name, `Str Default.set_package_name)
+      |?  (Bsb_build_schemas.name, `Str Default.set_package_name)
       |?
-      (Bs_build_schemas.ocaml_config,   `Obj  begin fun m ->
+      (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
-          (* |?  (Bs_build_schemas.bsc,  `Str  Default.set_bsc) *)
-          (* |?  (Bs_build_schemas.bsbuild,   `Str Default.set_bsbuild) *)
-          (* |?  (Bs_build_schemas.bsdep,  `Str  Default.set_bsdep) *)
-          |?  (Bs_build_schemas.ocamllex, `Str Default.set_ocamllex)
-          |? (Bs_build_schemas.bs_dependencies, `Arr Default.set_bs_dependencies)
+
+
+          |?  (Bsb_build_schemas.ocamllex, `Str Default.set_ocamllex)
+          |? (Bsb_build_schemas.bs_dependencies, `Arr Default.set_bs_dependencies)
           (* More design *)
-          |?  (Bs_build_schemas.bs_external_includes,
+          |?  (Bsb_build_schemas.bs_external_includes,
                `Arr Default.set_bs_external_includes)
-          |?  (Bs_build_schemas.bsc_flags, `Arr Default.set_bsc_flags)
+          |?  (Bsb_build_schemas.bsc_flags, `Arr Default.set_bsc_flags)
 
           (* More design *)
-          (* |?  (Bs_build_schemas.ppx_flags, `Arr (fun s -> Default.ppx_flags := get_list_string s)) *)
+          |?  (Bsb_build_schemas.ppx_flags,
+               `Arr (Default.set_ppx_flags ~cwd))
 
-
-          (* |?  (Bs_build_schemas.bs_copy_or_symlink, `Arr Default.set_static_resouces_from_array) *)
-
-          |?  (Bs_build_schemas.sources, `Arr (fun xs ->
-              let res =  Bs_build_ui.parsing_sources Filename.current_dir_name xs  in
+          |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
+              let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
               bs_file_groups := res.files ; 
               update_queue := res.intervals;
               globbed_dirs := res.globbed_dirs
@@ -271,8 +254,6 @@ let write_ninja_file () =
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
   Default.(output_ninja ~builddir ~cwd
-             (* (get_bsc ()) *)
-             (* (get_bsdep ()) *)
              bsc 
              bsdep 
              (get_package_name ())
@@ -310,7 +291,7 @@ let () =
   try
     let builddir = Bsb_config.lib_bs in 
     let output_deps = (builddir // bsdeps) in
-    let reason = Bs_dep_infos.check  output_deps in 
+    let reason = Bsb_dep_infos.check  output_deps in 
     if String.length reason <> 0 then 
       begin
         (* This is actual slow path, okay to be slight slower *)
@@ -320,12 +301,12 @@ let () =
         Literals.bsconfig_json :: globbed_dirs 
         |> List.map
           (fun x ->
-             { Bs_dep_infos.dir_or_file = x ;
+             { Bsb_dep_infos.dir_or_file = x ;
                stamp = (Unix.stat x).st_mtime
              }
           ) 
         |> Array.of_list 
-        |> Bs_dep_infos.write output_deps
+        |> Bsb_dep_infos.write output_deps
 
       end;
     load_ninja Sys.argv

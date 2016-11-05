@@ -74,11 +74,11 @@ module Rules = struct
      (* # for ast building, we remove most flags with respect to -I  *)
      let build_ast =
        define
-         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
         "build_ast" 
      let build_ast_from_reason_impl =
        define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
          "build_ast_from_reason_impl"
 
      let build_ast_from_reason_intf =
@@ -86,7 +86,7 @@ module Rules = struct
           because it need to be ppxed by bucklescript
        *)
        define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
          "build_ast_from_reason_intf"
 
      let build_deps =
@@ -123,19 +123,22 @@ module Rules = struct
 (**************************************)     
      let build_cmj_only =
        define
-         ~command:"${bsc} -bs-no-builtin-ppx-ml -bs-no-implicit-include ${bs_package_includes} ${bsc_computed_flags} ${bs_package_flags} -o ${in} -c -impl ${in}"
+         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
          
          ~depfile:"${in}.d"
          "build_cmj_only"
 
      let build_cmj_cmi =
        define
-         ~command:"${bsc} -bs-assume-no-mli -bs-no-implicit-include -bs-no-builtin-ppx-ml ${bs_package_includes} ${bsc_computed_flags} ${bs_package_flags} -o ${in} -c -impl ${in}"
+         ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
          ~depfile:"${in}.d"
          "build_cmj_cmi"
      let build_cmi =
        define
-         ~command:"${bsc} -bs-no-builtin-ppx-mli -bs-no-implicit-include ${bs_package_includes} ${bsc_computed_flags} -o ${out} -c -intf ${in}"
+         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c -intf ${in}"
          ~depfile:"${in}.d"
          "build_cmi"
 end
@@ -244,7 +247,7 @@ let (++) (us : info) (vs : info) =
 
 
                                
-let handle_file_group oc acc (group: Bs_build_ui.file_group) =
+let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
   let handle_module_info  oc  module_name
       ({mli; ml; mll } : Binary_cache.module_info) 
       bs_dependencies
@@ -271,7 +274,7 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
       let shadows = 
         let package_flags = 
           [ "bs_package_flags",
-            `Overwrite ("-bs-package-output commonjs:"^  
+            `Append ("-bs-package-output commonjs:"^  
                        Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
             (* FIXME: assume that output is calculated correctly*)
           ]
@@ -394,8 +397,7 @@ let handle_file_group oc acc (group: Bs_build_ui.file_group) =
       handle_module_info  oc k v group.bs_dependencies acc 
     ) group.sources  acc
 
-
-let handle_file_groups oc  (file_groups  :  Bs_build_ui.file_group list) st =
+let handle_file_groups oc  (file_groups  :  Bsb_build_ui.file_group list) st =
       List.fold_left (handle_file_group oc) st  file_groups
 
   

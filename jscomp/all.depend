@@ -201,7 +201,8 @@ core/js_long.cmx : core/js_exp_make.cmx common/js_config.cmx core/j.cmx \
 core/js_main.cmx : core/ocaml_parse.cmx core/ocaml_options.cmx \
     core/ocaml_batch_compile.cmx core/js_implementation.cmx \
     common/js_config.cmx ext/ext_string.cmx ext/ext_filename.cmx \
-    common/bs_pkg.cmx core/bs_conditional_initial.cmx core/js_main.cmi
+    common/bs_pkg.cmx common/bs_exception.cmx core/bs_conditional_initial.cmx \
+    core/js_main.cmi
 core/js_map.cmx : core/j.cmx
 core/js_number.cmx : core/js_number.cmi
 core/js_of_lam_array.cmx : core/js_exp_make.cmx core/js_of_lam_array.cmi
@@ -379,7 +380,7 @@ core/ocaml_options.cmx : common/bs_version.cmx core/ocaml_options.cmi
 core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
     core/ocaml_parse.cmi
 core/ocaml_stdlib_slots.cmx :
-core/script.cmx : bsb/sexp_lexer.cmx bsb/sexp_eval.cmx bsb/bs_json.cmx
+core/script.cmx : bsb/sexp_lexer.cmx bsb/sexp_eval.cmx
 core/type_int_to_string.cmx :
 core/type_util.cmx : core/type_int_to_string.cmx common/ext_log.cmx \
     core/type_util.cmi
@@ -473,34 +474,34 @@ core/ocaml_batch_compile.cmi :
 core/ocaml_options.cmi :
 core/ocaml_parse.cmi :
 core/type_util.cmi :
-bsb/bs_build_schemas.cmx :
-bsb/bs_build_ui.cmx : ext/string_set.cmx ext/string_map.cmx \
+bsb/bsb_build_schemas.cmx :
+bsb/bsb_build_ui.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
-    bsb/bs_json.cmx bsb/bs_dir.cmx bsb/bs_build_schemas.cmx \
-    common/binary_cache.cmx bsb/bs_build_ui.cmi
-bsb/bs_build_util.cmx : ext/ext_list.cmx ext/ext_filename.cmx \
-    bsb/bsb_config.cmx bsb/bs_build_util.cmi
-bsb/bs_dep_infos.cmx : bsb/bs_dep_infos.cmi
-bsb/bs_dir.cmx : bsb/bs_dir.cmi
-bsb/bs_json.cmx : ext/string_map.cmx ext/ext_array.cmx bsb/bs_json.cmi
-bsb/bs_ninja.cmx : ext/string_set.cmx ext/string_map.cmx ext/literals.cmx \
-    ext/ext_list.cmx ext/ext_filename.cmx bsb/bsb_config.cmx \
-    bsb/bs_build_ui.cmx common/binary_cache.cmx bsb/bs_ninja.cmi
+    bsb/bsb_json.cmx bsb/bsb_dir.cmx bsb/bsb_build_schemas.cmx \
+    common/binary_cache.cmx bsb/bsb_build_ui.cmi
+bsb/bsb_build_util.cmx : ext/ext_list.cmx ext/ext_filename.cmx \
+    bsb/bsb_config.cmx bsb/bsb_build_util.cmi
 bsb/bsb_config.cmx : ext/ext_filename.cmx bsb/bsb_config.cmi
-bsb/bsb_main.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_list.cmx \
-    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
-    bsb/bsb_config.cmx bsb/bs_ninja.cmx bsb/bs_json.cmx bsb/bs_dep_infos.cmx \
-    bsb/bs_build_util.cmx bsb/bs_build_ui.cmx bsb/bs_build_schemas.cmx \
+bsb/bsb_dep_infos.cmx : bsb/bsb_dep_infos.cmi
+bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
+bsb/bsb_json.cmx : ext/string_map.cmx ext/ext_array.cmx bsb/bsb_json.cmi
+bsb/bsb_main.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_filename.cmx \
+    ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_ninja.cmx bsb/bsb_json.cmx \
+    bsb/bsb_dep_infos.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/bs_pkg.cmx \
     common/binary_cache.cmx bsb/bsb_main.cmi
+bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx ext/literals.cmx \
+    ext/ext_list.cmx ext/ext_filename.cmx bsb/bsb_config.cmx \
+    bsb/bsb_build_ui.cmx common/binary_cache.cmx bsb/bsb_ninja.cmi
 bsb/sexp_eval.cmx : bsb/sexp_lexer.cmx ext/ext_list.cmx
 bsb/sexp_lexer.cmx : bsb/sexp_lexer.cmi
-bsb/bs_build_ui.cmi : ext/string_set.cmi ext/ext_file_pp.cmi bsb/bs_json.cmi \
-    common/binary_cache.cmi
-bsb/bs_build_util.cmi :
-bsb/bs_dep_infos.cmi :
-bsb/bs_dir.cmi :
-bsb/bs_json.cmi : ext/string_map.cmi
-bsb/bs_ninja.cmi : bsb/bs_build_ui.cmi
+bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/ext_file_pp.cmi \
+    bsb/bsb_json.cmi common/binary_cache.cmi
+bsb/bsb_build_util.cmi :
 bsb/bsb_config.cmi :
+bsb/bsb_dep_infos.cmi :
+bsb/bsb_dir.cmi :
+bsb/bsb_json.cmi : ext/string_map.cmi
 bsb/bsb_main.cmi :
+bsb/bsb_ninja.cmi : bsb/bsb_build_ui.cmi
 bsb/sexp_lexer.cmi :

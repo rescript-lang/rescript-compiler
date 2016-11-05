@@ -29,5 +29,12 @@ type error =
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
-      
+(*
+TODO: In the futrue, we should refine dependency [bsb] 
+should not rely on such exception, it should have its own exception handling
+*)
+
+exception Error of error
+
+val report_error : Format.formatter -> error -> unit
 val error : error -> 'a 

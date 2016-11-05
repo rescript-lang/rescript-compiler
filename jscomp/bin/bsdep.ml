@@ -4100,6 +4100,8 @@ let get_extension x =
     Ext_string.tail_from x pos
   with Not_found -> ""
 
+
+
 end
 module String_map : sig 
 #1 "string_map.mli"
@@ -4418,7 +4420,14 @@ type error =
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
-      
+(*
+TODO: In the futrue, we should refine dependency [bsb] 
+should not rely on such exception, it should have its own exception handling
+*)
+
+exception Error of error
+
+val report_error : Format.formatter -> error -> unit
 val error : error -> 'a 
 
 end = struct
@@ -4482,13 +4491,6 @@ let report_error ppf = function
       package package
   | Bs_invalid_path path
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
 
 
 
@@ -5971,6 +5973,8 @@ val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
 
+val lib_ocaml_dir : string
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6201,6 +6205,11 @@ let is_windows =
 
 let syntax_only = ref false
 let binary_ast = ref false
+
+(** The installation directory, it will affect 
+    [-bs-package-include] and [bsb] on how to install it and look it up
+*)
+let lib_ocaml_dir = Filename.concat "lib" "ocaml"
 
 end
 module Ast_extract : sig 

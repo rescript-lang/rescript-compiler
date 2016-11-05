@@ -61,12 +61,23 @@ let set_eval_string s =
   eval_string :=  s 
 
 
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Bs_exception.Error err
+        -> Some (Location.error_of_printer_file Bs_exception.report_error err)
+      | _ -> None
+    )
+
 let (//) = Filename.concat
 
 let add_package s = 
   let path = 
     Bs_pkg.resolve_bs_package
-      ~cwd:(Lazy.force Ext_filename.cwd) s   in 
+      ~cwd:(Lazy.force Ext_filename.cwd) 
+      ~subdir:Js_config.lib_ocaml_dir
+      s   in 
   Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 

@@ -48,6 +48,6 @@ type t =
 *)
 val parsing_sources : 
   string -> 
-  Bs_json.t array ->
+  Bsb_json.t array ->
   t 
   
