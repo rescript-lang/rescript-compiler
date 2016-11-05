@@ -1,14 +1,13 @@
 
 let (//) = Filename.concat
 
-(** [resolve cwd module_name], 
-    [cwd] is current working directory, absolute path
-    Trying to find paths to load [module_name]
-    it is sepcialized for option [-bs-package-include] which requires
-    [npm_package_name/lib/ocaml]
-*)
-let  resolve_bs_package ~cwd name = 
-  let sub_path = name // "lib" // "ocaml" in
+
+
+let  resolve_bs_package  
+    ?(subdir="")
+    ~cwd
+    name = 
+  let sub_path = name // subdir  in
   let rec aux origin cwd name = 
     let destdir =  cwd // Literals.node_modules // sub_path in 
     if Ext_sys.is_directory_no_exn destdir then destdir

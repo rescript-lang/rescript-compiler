@@ -12,6 +12,12 @@ bin/bsb.ml : ext/string_map.ml
 bin/bsb.ml : ext/string_map.mli
 bin/bsb.ml : common/binary_cache.ml
 bin/bsb.ml : common/binary_cache.mli
+bin/bsb.ml : common/bs_exception.ml
+bin/bsb.ml : common/bs_exception.mli
+bin/bsb.ml : ext/ext_sys.ml
+bin/bsb.ml : ext/ext_sys.mli
+bin/bsb.ml : common/bs_pkg.ml
+bin/bsb.ml : common/bs_pkg.mli
 bin/bsb.ml : bsb/bsb_build_schemas.ml
 bin/bsb.ml : bsb/bsb_dir.ml
 bin/bsb.ml : bsb/bsb_dir.mli

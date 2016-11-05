@@ -4100,6 +4100,8 @@ let get_extension x =
     Ext_string.tail_from x pos
   with Not_found -> ""
 
+
+
 end
 module String_map : sig 
 #1 "string_map.mli"
@@ -5971,6 +5973,8 @@ val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
 
+val lib_ocaml_dir : string
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6201,6 +6205,11 @@ let is_windows =
 
 let syntax_only = ref false
 let binary_ast = ref false
+
+(** The installation directory, it will affect 
+    [-bs-package-include] and [bsb] on how to install it and look it up
+*)
+let lib_ocaml_dir = Filename.concat "lib" "ocaml"
 
 end
 module Ast_extract : sig 

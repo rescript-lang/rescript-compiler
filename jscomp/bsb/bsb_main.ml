@@ -55,13 +55,13 @@ module Default : sig
   val set_package_name : string -> unit
   val set_bs_external_includes : Bsb_json.t array -> unit 
   val set_bsc_flags : Bsb_json.t array -> unit 
-  (* val ppx_flags : string list ref  *)
+  val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit 
 
   val get_ocamllex : unit -> string 
   val get_package_name : unit -> string option 
   val get_bs_external_includes : unit -> string list 
   val get_bsc_flags : unit -> string list
-  val get_ppx_flags : unit -> string list 
+  val get_ppx_flags : unit -> string list
   val get_bs_dependencies : unit  -> string list 
   val set_bs_dependencies : Bsb_json.t array  -> unit
 end  = struct
@@ -91,6 +91,20 @@ end  = struct
   let get_bs_external_includes () = !bs_external_includes
   let get_bsc_flags () = !bsc_flags 
   let get_ppx_flags () = !ppx_flags
+  let set_ppx_flags ~cwd s = 
+    let s = 
+      s (* TODO: unix conversion *)
+      |> get_list_string 
+      |> List.map (fun x -> 
+          if x = "" then failwith "invalid ppx, empty string found"
+          else 
+          if Filename.is_relative x &&  String.unsafe_get x 0 <> '.' then 
+            let name = String.sub x 0 ( String.index x '/') in
+            Bsb_build_util.convert_path (Filename.dirname (Bs_pkg.resolve_bs_package ~cwd name ) // x) 
+          else 
+            Bsb_build_util.convert_path x 
+        ) in 
+    ppx_flags := s
 end
 
 let output_ninja 
@@ -211,8 +225,8 @@ let write_ninja_file () =
           |?  (Bsb_build_schemas.bsc_flags, `Arr Default.set_bsc_flags)
 
           (* More design *)
-          (* |?  (Bs_build_schemas.ppx_flags,  *)
-          (*      `Arr (fun s -> Default.ppx_flags := get_list_string s)) *)
+          |?  (Bsb_build_schemas.ppx_flags,
+               `Arr (Default.set_ppx_flags ~cwd))
 
           |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
               let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in

@@ -66,7 +66,9 @@ let (//) = Filename.concat
 let add_package s = 
   let path = 
     Bs_pkg.resolve_bs_package
-      ~cwd:(Lazy.force Ext_filename.cwd) s   in 
+      ~cwd:(Lazy.force Ext_filename.cwd) 
+      ~subdir:Js_config.lib_ocaml_dir
+      s   in 
   Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 

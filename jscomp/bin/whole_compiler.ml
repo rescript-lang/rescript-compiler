@@ -20208,21 +20208,30 @@ module Bs_pkg : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val resolve_bs_package : cwd:string -> string -> string
-
-end = struct
-#1 "bs_pkg.ml"
-
-let (//) = Filename.concat
 
 (** [resolve cwd module_name], 
     [cwd] is current working directory, absolute path
     Trying to find paths to load [module_name]
     it is sepcialized for option [-bs-package-include] which requires
     [npm_package_name/lib/ocaml]
+
+    it relies on [npm_config_prefix] env variable for global npm modules
 *)
-let  resolve_bs_package ~cwd name = 
-  let sub_path = name // "lib" // "ocaml" in
+
+val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string
+
+end = struct
+#1 "bs_pkg.ml"
+
+let (//) = Filename.concat
+
+
+
+let  resolve_bs_package  
+    ?(subdir="")
+    ~cwd
+    name = 
+  let sub_path = name // subdir  in
   let rec aux origin cwd name = 
     let destdir =  cwd // Literals.node_modules // sub_path in 
     if Ext_sys.is_directory_no_exn destdir then destdir
@@ -21712,6 +21721,8 @@ let get_extension x =
     Ext_string.tail_from x pos
   with Not_found -> ""
 
+
+
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -21881,6 +21892,8 @@ val sort_imports : bool ref
 val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
+
+val lib_ocaml_dir : string
 
 end = struct
 #1 "js_config.ml"
@@ -22112,6 +22125,11 @@ let is_windows =
 
 let syntax_only = ref false
 let binary_ast = ref false
+
+(** The installation directory, it will affect 
+    [-bs-package-include] and [bsb] on how to install it and look it up
+*)
+let lib_ocaml_dir = Filename.concat "lib" "ocaml"
 
 end
 module Binary_ast : sig 
@@ -99365,7 +99383,9 @@ let (//) = Filename.concat
 let add_package s = 
   let path = 
     Bs_pkg.resolve_bs_package
-      ~cwd:(Lazy.force Ext_filename.cwd) s   in 
+      ~cwd:(Lazy.force Ext_filename.cwd) 
+      ~subdir:Js_config.lib_ocaml_dir
+      s   in 
   Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 

@@ -12,6 +12,10 @@
         [
             "-w", "-40",  "-bs-no-version-header", "-bs-cross-module-opt"
         ],
+        // "ppx-flags" : 
+        // [
+        //     "reason/bin/ppx_lwt"
+        // ],
     "sources" : 
     [ 
 
@@ -49,6 +53,7 @@
                 }
             ], 
             "files" : [ 
+                       // "ppx_lwt.ml",
                         "watch_test.ml"
                         , "utf8_decode_test.ml"
                         , "update_record_test.ml"

@@ -7923,6 +7923,8 @@ let get_extension x =
     Ext_string.tail_from x pos
   with Not_found -> ""
 
+
+
 end
 module Js_config : sig 
 #1 "js_config.mli"
@@ -8092,6 +8094,8 @@ val sort_imports : bool ref
 val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
+
+val lib_ocaml_dir : string
 
 end = struct
 #1 "js_config.ml"
@@ -8323,6 +8327,11 @@ let is_windows =
 
 let syntax_only = ref false
 let binary_ast = ref false
+
+(** The installation directory, it will affect 
+    [-bs-package-include] and [bsb] on how to install it and look it up
+*)
+let lib_ocaml_dir = Filename.concat "lib" "ocaml"
 
 end
 module Bs_warnings : sig 
