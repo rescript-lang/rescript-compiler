@@ -124,29 +124,23 @@ let output_ninja
         ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
     ) (String_map.empty,[],[]) bs_file_groups in
   Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
-  let internal_includes =
-      source_dirs
-      |> Ext_list.flat_map (fun x -> ["-I" ;  x ]) (* it is a mirror, no longer need `builddir//` *)
-  in 
-  let external_includes = 
-      Ext_list.flat_map (fun x -> ["-I" ; x]) bs_external_includes in 
-  let bs_package_includes = 
-    Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in 
-  let bsc_parsing_flags =
+  let bsc_flags =
     String.concat " " bsc_flags 
   in  
-  let bsc_computed_flags =
-    let init_flags = 
-      match package_name with 
-      | None -> external_includes @ internal_includes 
-      | Some x -> "-bs-package-name" ::  x :: external_includes @ internal_includes
-    in  (* make sure -bs-package-name is before -bs-package-output *)
-    String.concat " " ( bsc_flags @ init_flags)
+  let bsc_includes =
+    Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  )
   in
   let oc = open_out_bin (builddir // Literals.build_ninja) in 
   begin 
     let () = 
-      output_string oc "ninja_required_version = 1.7.1 \n" in
+      output_string oc "ninja_required_version = 1.7.1 \n" ;
+      match package_name with 
+      | None -> output_string oc ("bs_package_flags = \n")
+      | Some x -> output_string oc ("bs_package_flags = -bs-package-name "  ^ x ^ " \n" )
+    in
+    let bs_package_includes = 
+      Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in 
+
     let () = 
       oc 
       |>
@@ -157,11 +151,10 @@ let output_ninja
           "bsc", bsc ; 
           "bsdep", bsdep; 
           "ocamllex", ocamllex;
-          "bsc_computed_flags", bsc_computed_flags ; 
-          "bsc_parsing_flags", bsc_parsing_flags ; 
+          "bsc_includes", bsc_includes ; 
+          "bsc_flags", bsc_flags ; 
           "ppx_flags", ppx_flags;
           "bs_packaeg_includes", bs_package_includes;
-          "bs_package_flags", "" (* TODO*)
           (* "builddir", builddir; we should not have it set, since it's correct here *)
 
         ]

@@ -484,11 +484,11 @@ bsb/bsb_config.cmx : ext/ext_filename.cmx bsb/bsb_config.cmi
 bsb/bsb_dep_infos.cmx : bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
 bsb/bsb_json.cmx : ext/string_map.cmx ext/ext_array.cmx bsb/bsb_json.cmi
-bsb/bsb_main.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_list.cmx \
-    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
-    bsb/bsb_ninja.cmx bsb/bsb_json.cmx bsb/bsb_dep_infos.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_ui.cmx \
-    bsb/bsb_build_schemas.cmx common/binary_cache.cmx bsb/bsb_main.cmi
+bsb/bsb_main.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_filename.cmx \
+    ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_ninja.cmx bsb/bsb_json.cmx \
+    bsb/bsb_dep_infos.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
+    bsb/bsb_main.cmi
 bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx ext/literals.cmx \
     ext/ext_list.cmx ext/ext_filename.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_ui.cmx common/binary_cache.cmx bsb/bsb_ninja.cmi

@@ -4154,11 +4154,11 @@ module Rules = struct
      (* # for ast building, we remove most flags with respect to -I  *)
      let build_ast =
        define
-         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
         "build_ast" 
      let build_ast_from_reason_impl =
        define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
          "build_ast_from_reason_impl"
 
      let build_ast_from_reason_intf =
@@ -4166,7 +4166,7 @@ module Rules = struct
           because it need to be ppxed by bucklescript
        *)
        define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_parsing_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
          "build_ast_from_reason_intf"
 
      let build_deps =
@@ -4203,19 +4203,22 @@ module Rules = struct
 (**************************************)     
      let build_cmj_only =
        define
-         ~command:"${bsc} -bs-no-builtin-ppx-ml -bs-no-implicit-include ${bs_package_includes} ${bsc_computed_flags} ${bs_package_flags} -o ${in} -c -impl ${in}"
+         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
          
          ~depfile:"${in}.d"
          "build_cmj_only"
 
      let build_cmj_cmi =
        define
-         ~command:"${bsc} -bs-assume-no-mli -bs-no-implicit-include -bs-no-builtin-ppx-ml ${bs_package_includes} ${bsc_computed_flags} ${bs_package_flags} -o ${in} -c -impl ${in}"
+         ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
          ~depfile:"${in}.d"
          "build_cmj_cmi"
      let build_cmi =
        define
-         ~command:"${bsc} -bs-no-builtin-ppx-mli -bs-no-implicit-include ${bs_package_includes} ${bsc_computed_flags} -o ${out} -c -intf ${in}"
+         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c -intf ${in}"
          ~depfile:"${in}.d"
          "build_cmi"
 end
@@ -4351,7 +4354,7 @@ let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
       let shadows = 
         let package_flags = 
           [ "bs_package_flags",
-            `Overwrite ("-bs-package-output commonjs:"^  
+            `Append ("-bs-package-output commonjs:"^  
                        Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
             (* FIXME: assume that output is calculated correctly*)
           ]
@@ -4612,29 +4615,23 @@ let output_ninja
         ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
     ) (String_map.empty,[],[]) bs_file_groups in
   Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
-  let internal_includes =
-      source_dirs
-      |> Ext_list.flat_map (fun x -> ["-I" ;  x ]) (* it is a mirror, no longer need `builddir//` *)
-  in 
-  let external_includes = 
-      Ext_list.flat_map (fun x -> ["-I" ; x]) bs_external_includes in 
-  let bs_package_includes = 
-    Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in 
-  let bsc_parsing_flags =
+  let bsc_flags =
     String.concat " " bsc_flags 
   in  
-  let bsc_computed_flags =
-    let init_flags = 
-      match package_name with 
-      | None -> external_includes @ internal_includes 
-      | Some x -> "-bs-package-name" ::  x :: external_includes @ internal_includes
-    in  (* make sure -bs-package-name is before -bs-package-output *)
-    String.concat " " ( bsc_flags @ init_flags)
+  let bsc_includes =
+    Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  )
   in
   let oc = open_out_bin (builddir // Literals.build_ninja) in 
   begin 
     let () = 
-      output_string oc "ninja_required_version = 1.7.1 \n" in
+      output_string oc "ninja_required_version = 1.7.1 \n" ;
+      match package_name with 
+      | None -> output_string oc ("bs_package_flags = \n")
+      | Some x -> output_string oc ("bs_package_flags = -bs-package-name "  ^ x ^ " \n" )
+    in
+    let bs_package_includes = 
+      Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in 
+
     let () = 
       oc 
       |>
@@ -4645,11 +4642,10 @@ let output_ninja
           "bsc", bsc ; 
           "bsdep", bsdep; 
           "ocamllex", ocamllex;
-          "bsc_computed_flags", bsc_computed_flags ; 
-          "bsc_parsing_flags", bsc_parsing_flags ; 
+          "bsc_includes", bsc_includes ; 
+          "bsc_flags", bsc_flags ; 
           "ppx_flags", ppx_flags;
           "bs_packaeg_includes", bs_package_includes;
-          "bs_package_flags", "" (* TODO*)
           (* "builddir", builddir; we should not have it set, since it's correct here *)
 
         ]
