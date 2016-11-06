@@ -35,6 +35,12 @@ let rel_dir = Filename.parent_dir_name
 
 
 let convert_path = 
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_filename.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
+
+let convert_and_resolve_path = 
   if Sys.unix then Bsb_config.proj_rel  
   else 
   if Sys.win32 || Sys.cygwin then 
@@ -45,7 +51,7 @@ let convert_path =
 (* we only need convert the path in the begining*)
 
 (** converting a file from Linux path format to Windows *)
-let convert_file = 
+let convert_and_resolve_file = 
   if Sys.unix then fun (p : string) -> 
     if Ext_filename.no_slash p 0 (String.length p) then p 
     else Bsb_config.proj_rel  p 

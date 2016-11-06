@@ -51,12 +51,12 @@ let set_bs_dependencies  s =
 
 let bs_external_includes = ref []
 let set_bs_external_includes s = 
-  bs_external_includes := List.map Bsb_build_util.convert_path (get_list_string s )
+  bs_external_includes := List.map Bsb_build_util.convert_and_resolve_path (get_list_string s )
 let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex s = ocamllex := Bsb_build_util.convert_file s 
+let set_ocamllex s = ocamllex := Bsb_build_util.convert_and_resolve_file s 
 let get_ocamllex () = !ocamllex 
 
 
@@ -76,8 +76,8 @@ let set_ppx_flags ~cwd s =
           | None ->
             failwith (name ^ "not found when resolving ppx")
           | Some package
-            -> Bsb_build_util.convert_path (Filename.dirname package // x) 
+            -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // x) 
         else 
-          Bsb_build_util.convert_path x 
+          Bsb_build_util.convert_and_resolve_path x 
       ) in 
   ppx_flags := s

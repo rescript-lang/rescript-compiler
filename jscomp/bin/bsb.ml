@@ -3640,20 +3640,22 @@ flag_concat "-ppx" [ppxs]
 val flag_concat : string -> string list -> string
 
 
-
+val convert_path : string -> string
+  
 (**
 it does several conversion:
 First, it will convert unix path to windows backward on windows platform.
 Then if it is absolute path, it will do thing
 Else if it is relative path, it will be rebased on project's root directory 
+
 *)
-val convert_path : string -> string
+val convert_and_resolve_path : string -> string
 
 (**
    The difference between [convert_path] is that if the file is [ocamlc.opt] 
    it will not do any conversion to it (maybe environment variable will help it get picked up)
 *)
-val convert_file : string -> string
+val convert_and_resolve_file : string -> string
 
 val mkp : string -> unit
 
@@ -3712,6 +3714,12 @@ let rel_dir = Filename.parent_dir_name
 
 
 let convert_path = 
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_filename.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
+
+let convert_and_resolve_path = 
   if Sys.unix then Bsb_config.proj_rel  
   else 
   if Sys.win32 || Sys.cygwin then 
@@ -3722,7 +3730,7 @@ let convert_path =
 (* we only need convert the path in the begining*)
 
 (** converting a file from Linux path format to Windows *)
-let convert_file = 
+let convert_and_resolve_file = 
   if Sys.unix then fun (p : string) -> 
     if Ext_filename.no_slash p 0 (String.length p) then p 
     else Bsb_config.proj_rel  p 
@@ -4636,12 +4644,12 @@ let set_bs_dependencies  s =
 
 let bs_external_includes = ref []
 let set_bs_external_includes s = 
-  bs_external_includes := List.map Bsb_build_util.convert_path (get_list_string s )
+  bs_external_includes := List.map Bsb_build_util.convert_and_resolve_path (get_list_string s )
 let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex s = ocamllex := Bsb_build_util.convert_file s 
+let set_ocamllex s = ocamllex := Bsb_build_util.convert_and_resolve_file s 
 let get_ocamllex () = !ocamllex 
 
 
@@ -4661,9 +4669,9 @@ let set_ppx_flags ~cwd s =
           | None ->
             failwith (name ^ "not found when resolving ppx")
           | Some package
-            -> Bsb_build_util.convert_path (Filename.dirname package // x) 
+            -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // x) 
         else 
-          Bsb_build_util.convert_path x 
+          Bsb_build_util.convert_and_resolve_path x 
       ) in 
   ppx_flags := s
 
