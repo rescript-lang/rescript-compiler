@@ -26,8 +26,8 @@ bin/bsdep.ml : ext/string_map.ml
 bin/bsdep.ml : ext/string_map.mli
 bin/bsdep.ml : common/binary_cache.ml
 bin/bsdep.ml : common/binary_cache.mli
-bin/bsdep.ml : common/bs_exception.ml
-bin/bsdep.ml : common/bs_exception.mli
+bin/bsdep.ml : depends/bs_exception.ml
+bin/bsdep.ml : depends/bs_exception.mli
 bin/bsdep.ml : ../ocaml/utils/clflags.ml
 bin/bsdep.ml : ../ocaml/utils/clflags.mli
 bin/bsdep.ml : ../ocaml/parsing/depend.ml
