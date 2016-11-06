@@ -96,3 +96,13 @@ let rec mkp dir =
   else if not  @@ Sys.is_directory dir then 
     failwith ( dir ^ " exists but it is not a directory, plz remove it first")
   else ()
+
+
+let get_list_string s = 
+  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
+      match x with 
+      | `Str x -> Some x.str
+      | _ -> None
+    ) s   
+
+let bs_file_groups = ref []

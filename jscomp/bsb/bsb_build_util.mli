@@ -32,5 +32,9 @@ val flag_concat : string -> string list -> string
 
 val convert_path : string -> string
 val convert_file : string -> string
+
 val mkp : string -> unit
-val get_bsc_bsdep : string -> string * string 
+
+val get_bsc_bsdep : string -> string * string
+                              
+val get_list_string : Bsb_json.t array -> string list

@@ -22,50 +22,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type js_array =  
-  { content : t array ; 
-    loc_start : Lexing.position ; 
-    loc_end : Lexing.position ; 
-  }
-and js_str = 
-  { str : string ; loc : Lexing.position}
-and t = 
-  [
-    `True
-  | `False
-  | `Null
-  | `Flo of string 
-  | `Str of js_str
-  | `Arr of js_array
-  | `Obj of t String_map.t 
-  ]
 
-val parse_json : Lexing.lexbuf -> t 
-val parse_json_from_string : string -> t 
-val parse_json_from_chan : in_channel -> t 
-val parse_json_from_file  : string -> t
-
-type path = string list 
-type status = 
-  | No_path
-  | Found of t 
-  | Wrong_type of path 
+val set_ocamllex : string -> unit 
+val get_ocamllex : unit -> string 
 
 
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (t String_map.t -> unit)
-  | `Arr of (t array -> unit )
-  | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  ]
 
-val test:
-  ?fail:(unit -> unit) ->
-  string -> callback -> t String_map.t -> t String_map.t
+val set_bs_external_includes : Bsb_json.t array -> unit 
+val get_bs_external_includes : unit -> string list 
 
-val query : path -> t ->  status
+
+
+
+val set_bsc_flags : Bsb_json.t array -> unit 
+val get_bsc_flags : unit -> string list
+
+val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit 
+val get_ppx_flags : unit -> string list
+
+val set_package_name : string -> unit
+val get_package_name : unit -> string option 
+
+
+val get_bs_dependencies : unit  -> string list 
+val set_bs_dependencies : Bsb_json.t array  -> unit
+

@@ -24,7 +24,7 @@
 let (//) = Ext_filename.combine 
 
 let lib_js = "lib"//"js"
-let lib_ocaml = "lib"// "ocaml"
+let lib_ocaml = Js_config.lib_ocaml_dir
 let lib_bs = "lib" // "bs"
 let rev_lib_bs = ".."// ".."
 let rev_lib_bs_prefix p = rev_lib_bs // p 

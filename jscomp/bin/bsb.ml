@@ -1,3 +1,31 @@
+module Bsb_build_schemas
+= struct
+#1 "bsb_build_schemas.ml"
+let files = "files"
+let version = "version"
+let name = "name"
+let ocaml_config = "ocaml-config"
+let bsdep = "bsdep"
+let ppx_flags = "ppx-flags"
+let bsbuild = "bsbuild"
+let bsc = "bsc"
+let refmt = "refmt"
+let bs_external_includes = "bs-external-includes"
+let bs_lib_dir = "bs-lib-dir"
+let bs_dependencies = "bs-dependencies"
+let bs_copy_or_symlink = "bs-copy-or-symlink"
+let sources = "sources"
+let dir = "dir"
+let files = "files"
+let subdirs = "subdirs"
+let ocamllex = "ocamllex"
+let bsc_flags = "bsc-flags"
+let excludes = "excludes"
+let slow_re = "slow-re"
+let resources = "resources"
+let public = "public"
+
+end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1591,36 +1619,8 @@ let map_update ?dir (map : t)  name : t  =
     aux (Some v ) name
 
 end
-module Ext_sys : sig 
-#1 "ext_sys.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val is_directory_no_exn : string -> bool
-
-end = struct
-#1 "ext_sys.ml"
+module Js_config : sig 
+#1 "js_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1646,126 +1646,389 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let is_directory_no_exn f = 
-  try Sys.is_directory f with _ -> false 
-
-end
-module Bs_pkg : sig 
-#1 "bs_pkg.mli"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type module_system = 
+  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
 
 
-(** [resolve cwd module_name], 
-    [cwd] is current working directory, absolute path
-    Trying to find paths to load [module_name]
-    it is sepcialized for option [-bs-package-include] which requires
-    [npm_package_name/lib/ocaml]
+type package_info = 
+ (module_system * string )
 
-    it relies on [npm_config_prefix] env variable for global npm modules
+type package_name  = string
+type packages_info =
+  | Empty 
+  | NonBrowser of (package_name * package_info  list)
+
+
+
+val cmj_ext : string 
+
+
+(* val is_browser : unit -> bool  *)
+(* val set_browser : unit -> unit *)
+
+
+val get_ext : unit -> string
+
+(** depends on [package_infos], used in {!Js_program_loader} *)
+val get_output_dir : pkg_dir:string -> module_system -> string -> string
+
+
+(** used by command line option *)
+val set_npm_package_path : string -> unit 
+val get_packages_info : unit -> packages_info
+
+type info_query = 
+  [ `Empty 
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound 
+  ]
+
+val query_package_infos : 
+  packages_info ->
+  module_system ->
+  info_query
+
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
 *)
 
-val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string option
+val get_current_package_name_and_path : 
+  module_system -> info_query
+
+
+val set_package_name : string -> unit 
+val get_package_name : unit -> string option
+
+(** corss module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** generate tds option *)
+val default_gen_tds : bool ref
+
+(** options for builtion ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+val no_warn_ffi_type : bool ref 
+val no_warn_unused_bs_attribute : bool ref 
+
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
+
+val block : string
+val int32 : string
+val gc : string 
+val backtrace : string
+
+val builtin_exceptions : string
+val exceptions : string
+val io : string
+val oo : string
+val sys : string
+val lexer : string 
+val parser : string
+val obj_runtime : string
+val array : string
+val format : string
+val string : string
+val bytes : string  
+val float : string 
+val curry : string 
+(* val bigarray : string *)
+(* val unix : string *)
+val int64 : string
+val md5 : string
+val hash : string
+val weak : string
+val js_primitive : string
+val module_ : string
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+val is_windows : bool 
+
+val better_errors : bool ref
+val sort_imports : bool ref 
+val dump_js : bool ref
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+val lib_ocaml_dir : string
 
 end = struct
-#1 "bs_pkg.ml"
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+type env =
+  | NodeJS
+  | AmdJS
+  | Goog (* of string option *)
+
+
+
+type path = string
+type module_system =
+  [ `NodeJS | `AmdJS | `Goog ]
+type package_info =
+ ( module_system * string )
+
+type package_name  = string
+type packages_info =
+  | Empty (* No set *)
+  | NonBrowser of (package_name * package_info  list)
+(** we don't force people to use package *)
+
+
+
+let ext = ref ".js"
+let cmj_ext = ".cmj"
+
+
+
+let get_ext () = !ext
+
+
+let packages_info : packages_info ref = ref Empty
+
+
+let get_package_name () =
+  match !packages_info with
+  | Empty  -> None
+  | NonBrowser(n,_) -> Some n
+
+let no_version_header = ref false
+
+let set_package_name name =
+  match !packages_info with
+  | Empty -> packages_info := NonBrowser(name,  [])
+  |  _ ->
+    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
+
+
+let set_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match package_name with
+         | "commonjs" -> `NodeJS
+         | "amdjs" -> `AmdJS
+         | "goog" -> `Goog
+         | _ ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        `NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs))
+   (** Browser is not set via command line only for internal use *)
+
+
+
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
 
 let (//) = Filename.concat
 
+let get_packages_info () = !packages_info
+
+type info_query =
+  [ `Empty
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound ]
+let query_package_infos package_infos module_system =
+  match package_infos with
+  | Empty -> `Empty
+  | NonBrowser (name, []) -> `Package_script name
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> k = module_system) paths with
+      | (_, x) -> `Found (name, x)
+      | exception _ -> `NotFound
+    end
+
+let get_current_package_name_and_path   module_system =
+  query_package_infos !packages_info module_system
 
 
-let  resolve_bs_package  
-    ?(subdir="")
-    ~cwd
-    name = 
-  let sub_path = name // subdir  in
-  let rec aux origin cwd name = 
-    let destdir =  cwd // Literals.node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then Some destdir
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux origin   cwd' name
-      else 
-        try 
-          let destdir = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // Literals.node_modules // sub_path in
-          if Ext_sys.is_directory_no_exn destdir
-          then Some destdir
-          else None
-            (* Bs_exception.error (Bs_package_not_found name) *)
-        with 
-          Not_found -> None
-          (* Bs_exception.error (Bs_package_not_found name)           *)
-  in
-  aux cwd cwd name
+(* for a single pass compilation, [output_dir]
+   can be cached
+*)
+let get_output_dir ~pkg_dir module_system filename =
+  match !packages_info with
+  | Empty | NonBrowser (_, [])->
+    if Filename.is_relative filename then
+      Lazy.force Ext_filename.cwd //
+      Filename.dirname filename
+    else
+      Filename.dirname filename
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> k = module_system) modules with
+      | (_, _path) -> pkg_dir // _path
+      |  exception _ -> assert false
+    end
+
+
+
+
+let default_gen_tds = ref false
+
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+let no_warn_ffi_type = ref false
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unused_bs_attribute = ref false
+
+
+let builtin_exceptions = "Caml_builtin_exceptions"
+let exceptions = "Caml_exceptions"
+let io = "Caml_io"
+let sys = "Caml_sys"
+let lexer = "Caml_lexer"
+let parser = "Caml_parser"
+let obj_runtime = "Caml_obj"
+let array = "Caml_array"
+let format = "Caml_format"
+let string = "Caml_string"
+let bytes = "Caml_bytes"
+let float = "Caml_float"
+let hash = "Caml_hash"
+let oo = "Caml_oo"
+let curry = "Curry"
+let int64 = "Caml_int64"
+let md5 = "Caml_md5"
+let weak = "Caml_weak"
+let backtrace = "Caml_backtrace"
+let gc = "Caml_gc"
+let int32 = "Caml_int32"
+let block = "Block"
+let js_primitive = "Js_primitive"
+let module_ = "Caml_module"
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f
+let get_current_file () = !current_file
+let get_module_name () =
+  Filename.chop_extension
+    (Filename.basename (String.uncapitalize !current_file))
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+let no_any_assert = ref false
+
+let set_no_any_assert () = no_any_assert := true
+let get_no_any_assert () = !no_any_assert
+
+let better_errors = ref false
+let sort_imports = ref false
+let dump_js = ref false
+
+let is_windows =
+  match Sys.os_type with
+  | "Win32"
+  | "Cygwin"-> true
+  | _ -> false
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+(** The installation directory, it will affect 
+    [-bs-package-include] and [bsb] on how to install it and look it up
+*)
+let lib_ocaml_dir = Filename.concat "lib" "ocaml"
 
 end
-module Bsb_build_schemas
-= struct
-#1 "bsb_build_schemas.ml"
-let files = "files"
-let version = "version"
-let name = "name"
-let ocaml_config = "ocaml-config"
-let bsdep = "bsdep"
-let ppx_flags = "ppx-flags"
-let bsbuild = "bsbuild"
-let bsc = "bsc"
-let refmt = "refmt"
-let bs_external_includes = "bs-external-includes"
-let bs_lib_dir = "bs-lib-dir"
-let bs_dependencies = "bs-dependencies"
-let bs_copy_or_symlink = "bs-copy-or-symlink"
-let sources = "sources"
-let dir = "dir"
-let files = "files"
-let subdirs = "subdirs"
-let ocamllex = "ocamllex"
-let bsc_flags = "bsc-flags"
-let excludes = "excludes"
-let slow_re = "slow-re"
-let resources = "resources"
-let public = "public"
-
-end
-module Bsb_dir : sig 
-#1 "bsb_dir.mli"
-
-
-val readdir : string -> string array
-
-(* val flush_cache : unit -> unit *)
-(* val reset_readdir_cache : unit -> unit *)
-
-(* val reset_readdir_cache_for : string -> unit *)
-
-
-end = struct
-#1 "bsb_dir.ml"
+module Bsb_config : sig 
+#1 "bsb_config.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1790,92 +2053,56 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(*
-type ('a,'b) result = 
-  | Ok of 'a
-  | Error of 'b
 
-let warp f x = 
-  try Ok (f x ) with e -> Error e
+val common_js_prefix : string -> string
+val ocaml_bin_install_prefix : string -> string
+val proj_rel : string -> string
+val lib_bs : string
+(* we need generate path relative to [lib/bs] directory in the opposite direction *)
+val rev_lib_bs_prefix : string -> string
 
-let (!) = Lazy.force 
+end = struct
+#1 "bsb_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+let (//) = Ext_filename.combine 
 
-type dir =
-  {
-    dir_mtime : float ; 
-    dir_contents : string array ;
-  }
+let lib_js = "lib"//"js"
+let lib_ocaml = Js_config.lib_ocaml_dir
+let lib_bs = "lib" // "bs"
+let rev_lib_bs = ".."// ".."
+let rev_lib_bs_prefix p = rev_lib_bs // p 
+let common_js_prefix p  =  lib_js  // p 
+let ocaml_bin_install_prefix p = lib_ocaml // p
 
-type t = (string,dir) Hashtbl.t 
-(* let cache = Hashtbl.create 103 *)
-
-let dir_cache_magic_number = "BSDIR20161020"
-
-let write_dir_cache (fname : string)  (x : t) = 
-  let oc = open_out_bin fname in 
-  output_string oc dir_cache_magic_number ;
-  output_value oc x ; 
-  close_out oc 
-
-let read_dir_cache (fname : string) : t = 
-  let ic = open_in fname in 
-  let buffer = really_input_string ic (String.length dir_cache_magic_number) in
-  assert (buffer = dir_cache_magic_number);
-  let res : t = input_value ic  in 
-  close_in ic ; 
-  res
-
-(** FIXME: we should not share directory caches, since 
-    it may result in  concurrent write issues
-    Note, if no dir is ever read, we can leave without
-    this cache
-
-    TODO: does it make sense to share with other cache,
-    seems like not?
-*)
-let cache_name = ".bs_dir_cache"
-
-let cache = 
-  lazy (try read_dir_cache cache_name with _ -> Hashtbl.create 103)
-
-let cache_dirty = ref false 
-
-let flush_cache () = 
-  if cache_dirty.contents then 
-    write_dir_cache cache_name !cache
-
-let () = Pervasives.at_exit flush_cache
-    
-let readdir dir =
-  let stat = Unix.stat dir in 
-  let st_mtime = stat.st_mtime in 
-  match Hashtbl.find !cache dir with
-  | {dir_mtime} as e when st_mtime <= dir_mtime ->  
-    e.dir_contents
-  | _ -> 
-    let res =  Sys.readdir dir in
-    cache_dirty := true; 
-    Hashtbl.replace !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
-    res
-  | exception Not_found ->
-    let res =  Sys.readdir dir in
-    cache_dirty := true ;
-    Hashtbl.add !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
-    res
-
-let  reset_readdir_cache () =
-  cache_dirty := true ; 
-  Hashtbl.clear !cache
-
-let reset_readdir_cache_for dir =
-  cache_dirty := true; 
-  Hashtbl.remove !cache dir 
+let lazy_src_root_dir = "$src_root_dir" 
+let proj_rel path = lazy_src_root_dir // path
+                                 
+(** it may not be a bad idea to hard code the binary path 
+    of bsb in configuration time
 *)
 
-(* TODO: see if it is worth turn caching on
-   if turned on, we need make sure avoid data racing issues
-*)
-let readdir = Sys.readdir 
 
 end
 module Ext_array : sig 
@@ -2094,13 +2321,15 @@ type js_array =
     loc_start : Lexing.position ; 
     loc_end : Lexing.position ; 
   }
+and js_str = 
+  { str : string ; loc : Lexing.position}
 and t = 
   [
     `True
   | `False
   | `Null
   | `Flo of string 
-  | `Str of string 
+  | `Str of js_str
   | `Arr of js_array
   | `Obj of t String_map.t 
   ]
@@ -2120,6 +2349,7 @@ type status =
 type callback = 
   [
     `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Bool of (bool -> unit )
   | `Obj of (t String_map.t -> unit)
@@ -2713,13 +2943,15 @@ type js_array =
     loc_start : Lexing.position ; 
     loc_end : Lexing.position ; 
   }
+and js_str = 
+  { str : string ; loc : Lexing.position}
 and t = 
   [  
     `True
   | `False
   | `Null
   | `Flo of string 
-  | `Str of string 
+  | `Str of js_str
   | `Arr  of js_array
   | `Obj of t String_map.t 
    ]
@@ -2743,17 +2975,17 @@ let rec parse_json lexbuf =
       x 
   in
   let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) = 
+  let rec json (lexbuf : Lexing.lexbuf) : t = 
     match token () with 
     | True -> `True
     | False -> `False
     | Null -> `Null
     | Number s ->  `Flo s 
-    | String s -> `Str s 
+    | String s -> `Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  trailing_comma loc_start loc_finish acc lexbuf =
+  and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
     match token () with 
     | Rbracket ->
       if trailing_comma then 
@@ -2774,7 +3006,7 @@ let rec parse_json lexbuf =
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map trailing_comma acc lexbuf = 
+  and parse_map trailing_comma acc lexbuf : t = 
     match token () with 
     | Rbrace -> 
       if trailing_comma then 
@@ -2819,6 +3051,7 @@ let parse_json_from_file s =
 type callback = 
   [
     `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Bool of (bool -> unit )
   | `Obj of (t String_map.t -> unit)
@@ -2840,7 +3073,8 @@ let test   ?(fail=(fun () -> ())) key
        | `Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
          cb content  loc_start loc_end 
        | `Null, `Null cb  -> cb ()
-       | `Str s, `Str cb  -> cb s 
+       | `Str {str = s }, `Str cb  -> cb s 
+       | `Str {str = s ; loc }, `Str_loc cb -> cb s loc 
        | _, _ -> fail () 
      end;
      m
@@ -2859,578 +3093,7 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 725 "bsb/bsb_json.ml"
-
-end
-module Ext_file_pp : sig 
-#1 "ext_file_pp.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type action = 
-  [
-    `skip
-  | `print of (out_channel -> int -> unit)
-  ]
-
-
-type interval = {
-  loc_start : Lexing.position ; 
-  loc_end : Lexing.position ; 
-  action : action 
-}
-
-val process_wholes : 
-  interval list ->
-  int -> ?line_directive:string -> in_channel -> out_channel -> unit
-
-val cpp_process_file : 
-  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit
-
-
-(** Assume that there is no overlapp *)
-val interval_compare : 
-  interval -> interval -> int
-
-end = struct
-#1 "ext_file_pp.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type action = 
-  [
-    `skip
-  | `print of (out_channel -> int -> unit)
-  ]
-
-
-type interval = {
-  loc_start : Lexing.position ; 
-  loc_end : Lexing.position ; 
-  action : action 
-}
-
-let interval_compare x y = 
-  Pervasives.compare (x.loc_start.pos_cnum : int) y.loc_start.pos_cnum
-
-let process_wholes 
-    (whole_intervals : interval list ) 
-    file_size
-    ?line_directive ic oc 
-  = 
-  let buf = Buffer.create 4096 in 
-  let rec aux (cur, line, offset)  wholes = 
-    seek_in ic cur ;
-    begin match line_directive with 
-      | Some fname -> 
-        output_string oc "# ";
-        output_string oc  (string_of_int line);
-        output_string oc " \"";
-        output_string oc fname; (* TOOD escape ? *)
-        output_string oc "\"\n";
-      | None -> ()
-    end;
-    if offset <> 0 then 
-      begin 
-        output_string oc (String.make offset ' ')
-      end; 
-    let print next = 
-      Buffer.add_channel buf ic (next - cur) ;
-      Buffer.output_buffer oc buf ; 
-      Buffer.clear buf 
-    in 
-    match wholes with 
-    | [] -> print file_size
-    | {
-      loc_start = 
-        {Lexing.pos_cnum = start   };
-      loc_end  = {Lexing.pos_cnum = stop; pos_bol ; pos_lnum} ;
-      action 
-    } :: xs  -> 
-      print start ;
-      let offset = stop - pos_bol in
-      begin match action with 
-      | `skip -> ()
-      | `print f -> f oc offset 
-      end;
-      aux (stop, pos_lnum, offset) xs 
-  in 
-    aux (0, 1, 0) whole_intervals
-
-
-let cpp_process_file fname whole_intervals oc = 
-  let ic = open_in_bin fname in
-  let file_size = in_channel_length ic in 
-  process_wholes ~line_directive:fname 
-    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = `skip}) whole_intervals)
-    file_size   ic oc ;
-  close_in ic 
-
-end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.S with type elt = string
-
-end = struct
-#1 "string_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Set.Make(String)
-
-end
-module Bsb_build_ui : sig 
-#1 "bsb_build_ui.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
-
-type  file_group = 
-  { dir : string ;
-    sources : Binary_cache.t ; 
-    resources : string list ;
-    bs_dependencies : string list;
-    public : public
-  } 
-
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-
-(** entry is to the 
-    [sources] in the schema
-*)
-val parsing_sources : 
-  string -> 
-  Bsb_json.t array ->
-  t 
-  
-
-end = struct
-#1 "bsb_build_ui.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-    
-type  file_group = 
-  { dir : string ;
-    sources : Binary_cache.t ; 
-    resources : string list ;
-    bs_dependencies : string list ;
-    public : public
-  } 
-
-let (//) = Ext_filename.combine
-
-let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb 
-
-let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
-      match x with 
-      | `Str x -> Some x 
-      | _ -> None
-    ) s   
-
-
-let print_arrays file_array oc offset  =
-  let indent = String.make offset ' ' in 
-  let p_str s = 
-    output_string oc indent ; 
-    output_string oc s ;
-    output_string oc "\n"
-  in
-  match file_array with 
-  | []
-    -> output_string oc "[ ]\n"
-  | first::rest 
-    -> 
-    output_string oc "[ \n";
-    p_str ("\"" ^ first ^ "\"");
-    List.iter 
-      (fun f -> 
-         p_str (", \"" ^f ^ "\"")
-      ) rest;
-    p_str "]" 
-
-let  handle_list_files dir s loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
-  if Array.length s  = 0 then 
-    begin 
-      let files_array = Bsb_dir.readdir dir  in 
-      let files, file_array =
-        Array.fold_left (fun (acc, f) name -> 
-            let new_acc = Binary_cache.map_update ~dir acc name in 
-            if new_acc == acc then 
-              new_acc, f 
-            else new_acc, name :: f 
-          ) (String_map.empty, []) files_array in 
-        [{Ext_file_pp.loc_start ;
-         loc_end; action = (`print (print_arrays file_array))}],
-       files
-    end
-
-  else 
-    [],
-     Array.fold_left (fun acc s ->
-        match s with 
-        | `Str s -> 
-          Binary_cache.map_update ~dir acc s
-        | _ -> acc
-      ) String_map.empty s
-
-(* we need add a new line in the end,
-   otherwise it will be idented twice
-*)
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-let (++) 
-    ({files = a; 
-      intervals = b; 
-      globbed_dirs;
-     } : t)
-    ({files = c; intervals = d; globbed_dirs = dirs2; 
-     })
-  : t 
-  = 
-  {files = a@c; 
-   intervals =  b@d ;
-   globbed_dirs = globbed_dirs @ dirs2;
-  }
-
-let empty = { files = []; intervals  = []; globbed_dirs = [];  }
-
-let  parsing_sources cwd (file_groups : Bsb_json.t array)  = 
-  let rec expect_file_group cwd (x : Bsb_json.t String_map.t )
-    : t =
-    let dir = ref cwd in
-    let sources = ref String_map.empty in
-    let resources = ref [] in 
-    let bs_dependencies = ref [] in
-    let public = ref Export_none in 
-
-    let update_queue = ref [] in 
-    let globbed_dirs = ref [] in 
-
-    let children = ref [] in 
-    let children_update_queue = ref [] in 
-    let children_globbed_dirs = ref [] in 
-    let () = 
-      x 
-      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // s))
-      |?  (Bsb_build_schemas.files ,
-           `Arr_loc (fun s loc_start loc_end ->
-               let dir = !dir in 
-               let tasks, files =  handle_list_files  dir s loc_start loc_end in
-               update_queue := tasks ;
-               sources := files
-
-             ))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
-      |?  (Bsb_build_schemas.resources ,
-           `Arr (fun s  ->
-               resources := get_list_string s
-             ))
-      |? (Bsb_build_schemas.public, `Str (fun s -> 
-          if s = "all" then public := Export_all else 
-          if s = "none" then public := Export_none else 
-            failwith ("invalid str for" ^ s )
-        ))
-      |? (Bsb_build_schemas.public, `Arr (fun s -> 
-          public := Export_set (String_set.of_list (get_list_string s ) )
-        ) )
-      |? (Bsb_build_schemas.files, 
-          `Obj (fun m -> 
-              let excludes = ref [] in 
-              m
-              |? (Bsb_build_schemas.excludes, `Arr (fun arr ->  excludes := get_list_string arr))
-              |? (Bsb_build_schemas.slow_re, `Str 
-                    (fun s -> 
-                       let re = Str.regexp s in 
-                       let dir = !dir in 
-                       let excludes = !excludes in 
-                       let file_array = Bsb_dir.readdir dir in 
-                       sources := 
-                         Array.fold_left (fun acc name -> 
-                             if Str.string_match re name 0 && 
-                                not (List.mem name excludes)
-                             then 
-                               Binary_cache.map_update  ~dir acc name 
-                             else acc
-                           ) String_map.empty file_array;
-                       globbed_dirs :=  [dir]
-                ))
-              |> ignore
-            )
-         )
-      |? (Bsb_build_schemas.subdirs, `Arr (fun s -> 
-          let res  = 
-            Array.fold_left (fun  origin json ->
-                match json with 
-                | `Obj m -> 
-                   expect_file_group !dir  m  ++ origin
-                | _ -> origin ) empty s in 
-          children :=  res.files ; 
-          children_update_queue := res.intervals;
-          children_globbed_dirs := res.globbed_dirs
-        ))
-      |> ignore 
-    in 
-    {
-      files = 
-        {dir = !dir; 
-         sources = !sources; 
-         resources = !resources;
-         bs_dependencies = !bs_dependencies;
-         public = !public
-        } 
-        :: !children;
-      intervals = !update_queue @ !children_update_queue ;
-     globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
-    } in 
-  Array.fold_left (fun  origin x ->
-      match x with 
-      | `Obj map ->  
-        expect_file_group cwd map ++ origin
-      | _ -> origin
-    ) empty  file_groups 
-
-
-end
-module Bsb_config : sig 
-#1 "bsb_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val common_js_prefix : string -> string
-val ocaml_bin_install_prefix : string -> string
-val proj_rel : string -> string
-val lib_bs : string
-(* we need generate path relative to [lib/bs] directory in the opposite direction *)
-val rev_lib_bs_prefix : string -> string
-
-end = struct
-#1 "bsb_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-let (//) = Ext_filename.combine 
-
-let lib_js = "lib"//"js"
-let lib_ocaml = "lib"// "ocaml"
-let lib_bs = "lib" // "bs"
-let rev_lib_bs = ".."// ".."
-let rev_lib_bs_prefix p = rev_lib_bs // p 
-let common_js_prefix p  =  lib_js  // p 
-let ocaml_bin_install_prefix p = lib_ocaml // p
-
-let lazy_src_root_dir = "$src_root_dir" 
-let proj_rel path = lazy_src_root_dir // path
-                                 
-(** it may not be a bad idea to hard code the binary path 
-    of bsb in configuration time
-*)
-
+# 729 "bsb/bsb_json.ml"
 
 end
 module Ext_list : sig 
@@ -3958,8 +3621,12 @@ val flag_concat : string -> string list -> string
 
 val convert_path : string -> string
 val convert_file : string -> string
+
 val mkp : string -> unit
-val get_bsc_bsdep : string -> string * string 
+
+val get_bsc_bsdep : string -> string * string
+                              
+val get_list_string : Bsb_json.t array -> string list
 
 end = struct
 #1 "bsb_build_util.ml"
@@ -4061,6 +3728,902 @@ let rec mkp dir =
   else if not  @@ Sys.is_directory dir then 
     failwith ( dir ^ " exists but it is not a directory, plz remove it first")
   else ()
+
+
+let get_list_string s = 
+  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
+      match x with 
+      | `Str x -> Some x.str
+      | _ -> None
+    ) s   
+
+let bs_file_groups = ref []
+
+end
+module Bsb_dir : sig 
+#1 "bsb_dir.mli"
+
+
+val readdir : string -> string array
+
+(* val flush_cache : unit -> unit *)
+(* val reset_readdir_cache : unit -> unit *)
+
+(* val reset_readdir_cache_for : string -> unit *)
+
+
+end = struct
+#1 "bsb_dir.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(*
+type ('a,'b) result = 
+  | Ok of 'a
+  | Error of 'b
+
+let warp f x = 
+  try Ok (f x ) with e -> Error e
+
+let (!) = Lazy.force 
+
+type dir =
+  {
+    dir_mtime : float ; 
+    dir_contents : string array ;
+  }
+
+type t = (string,dir) Hashtbl.t 
+(* let cache = Hashtbl.create 103 *)
+
+let dir_cache_magic_number = "BSDIR20161020"
+
+let write_dir_cache (fname : string)  (x : t) = 
+  let oc = open_out_bin fname in 
+  output_string oc dir_cache_magic_number ;
+  output_value oc x ; 
+  close_out oc 
+
+let read_dir_cache (fname : string) : t = 
+  let ic = open_in fname in 
+  let buffer = really_input_string ic (String.length dir_cache_magic_number) in
+  assert (buffer = dir_cache_magic_number);
+  let res : t = input_value ic  in 
+  close_in ic ; 
+  res
+
+(** FIXME: we should not share directory caches, since 
+    it may result in  concurrent write issues
+    Note, if no dir is ever read, we can leave without
+    this cache
+
+    TODO: does it make sense to share with other cache,
+    seems like not?
+*)
+let cache_name = ".bs_dir_cache"
+
+let cache = 
+  lazy (try read_dir_cache cache_name with _ -> Hashtbl.create 103)
+
+let cache_dirty = ref false 
+
+let flush_cache () = 
+  if cache_dirty.contents then 
+    write_dir_cache cache_name !cache
+
+let () = Pervasives.at_exit flush_cache
+    
+let readdir dir =
+  let stat = Unix.stat dir in 
+  let st_mtime = stat.st_mtime in 
+  match Hashtbl.find !cache dir with
+  | {dir_mtime} as e when st_mtime <= dir_mtime ->  
+    e.dir_contents
+  | _ -> 
+    let res =  Sys.readdir dir in
+    cache_dirty := true; 
+    Hashtbl.replace !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
+    res
+  | exception Not_found ->
+    let res =  Sys.readdir dir in
+    cache_dirty := true ;
+    Hashtbl.add !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
+    res
+
+let  reset_readdir_cache () =
+  cache_dirty := true ; 
+  Hashtbl.clear !cache
+
+let reset_readdir_cache_for dir =
+  cache_dirty := true; 
+  Hashtbl.remove !cache dir 
+*)
+
+(* TODO: see if it is worth turn caching on
+   if turned on, we need make sure avoid data racing issues
+*)
+let readdir = Sys.readdir 
+
+end
+module Ext_file_pp : sig 
+#1 "ext_file_pp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type action = 
+  [
+    `skip
+  | `print of (out_channel -> int -> unit)
+  ]
+
+
+type interval = {
+  loc_start : Lexing.position ; 
+  loc_end : Lexing.position ; 
+  action : action 
+}
+
+val process_wholes : 
+  interval list ->
+  int -> ?line_directive:string -> in_channel -> out_channel -> unit
+
+val cpp_process_file : 
+  string -> (Lexing.position * Lexing.position) list -> out_channel -> unit
+
+
+(** Assume that there is no overlapp *)
+val interval_compare : 
+  interval -> interval -> int
+
+end = struct
+#1 "ext_file_pp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type action = 
+  [
+    `skip
+  | `print of (out_channel -> int -> unit)
+  ]
+
+
+type interval = {
+  loc_start : Lexing.position ; 
+  loc_end : Lexing.position ; 
+  action : action 
+}
+
+let interval_compare x y = 
+  Pervasives.compare (x.loc_start.pos_cnum : int) y.loc_start.pos_cnum
+
+let process_wholes 
+    (whole_intervals : interval list ) 
+    file_size
+    ?line_directive ic oc 
+  = 
+  let buf = Buffer.create 4096 in 
+  let rec aux (cur, line, offset)  wholes = 
+    seek_in ic cur ;
+    begin match line_directive with 
+      | Some fname -> 
+        output_string oc "# ";
+        output_string oc  (string_of_int line);
+        output_string oc " \"";
+        output_string oc fname; (* TOOD escape ? *)
+        output_string oc "\"\n";
+      | None -> ()
+    end;
+    if offset <> 0 then 
+      begin 
+        output_string oc (String.make offset ' ')
+      end; 
+    let print next = 
+      Buffer.add_channel buf ic (next - cur) ;
+      Buffer.output_buffer oc buf ; 
+      Buffer.clear buf 
+    in 
+    match wholes with 
+    | [] -> print file_size
+    | {
+      loc_start = 
+        {Lexing.pos_cnum = start   };
+      loc_end  = {Lexing.pos_cnum = stop; pos_bol ; pos_lnum} ;
+      action 
+    } :: xs  -> 
+      print start ;
+      let offset = stop - pos_bol in
+      begin match action with 
+      | `skip -> ()
+      | `print f -> f oc offset 
+      end;
+      aux (stop, pos_lnum, offset) xs 
+  in 
+    aux (0, 1, 0) whole_intervals
+
+
+let cpp_process_file fname whole_intervals oc = 
+  let ic = open_in_bin fname in
+  let file_size = in_channel_length ic in 
+  process_wholes ~line_directive:fname 
+    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = `skip}) whole_intervals)
+    file_size   ic oc ;
+  close_in ic 
+
+end
+module String_set : sig 
+#1 "string_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Set.S with type elt = string
+
+end = struct
+#1 "string_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Set.Make(String)
+
+end
+module Bsb_build_ui : sig 
+#1 "bsb_build_ui.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type public = 
+  | Export_all 
+  | Export_set of String_set.t 
+  | Export_none
+    
+
+type  file_group = 
+  { dir : string ;
+    sources : Binary_cache.t ; 
+    resources : string list ;
+    bs_dependencies : string list;
+    public : public
+  } 
+
+type t = 
+  { files :  file_group list ; 
+    intervals :  Ext_file_pp.interval list ;
+    globbed_dirs : string list ; 
+  }
+
+
+(** entry is to the 
+    [sources] in the schema
+*)
+val parsing_sources : 
+  string -> 
+  Bsb_json.t array ->
+  t 
+  
+
+end = struct
+#1 "bsb_build_ui.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type public = 
+  | Export_all 
+  | Export_set of String_set.t 
+  | Export_none
+    
+type  file_group = 
+  { dir : string ;
+    sources : Binary_cache.t ; 
+    resources : string list ;
+    bs_dependencies : string list ;
+    public : public
+  } 
+
+let (//) = Ext_filename.combine
+
+let (|?)  m (key, cb) =
+    m  |> Bsb_json.test key cb 
+
+let get_list_string  =  Bsb_build_util.get_list_string
+
+
+let print_arrays file_array oc offset  =
+  let indent = String.make offset ' ' in 
+  let p_str s = 
+    output_string oc indent ; 
+    output_string oc s ;
+    output_string oc "\n"
+  in
+  match file_array with 
+  | []
+    -> output_string oc "[ ]\n"
+  | first::rest 
+    -> 
+    output_string oc "[ \n";
+    p_str ("\"" ^ first ^ "\"");
+    List.iter 
+      (fun f -> 
+         p_str (", \"" ^f ^ "\"")
+      ) rest;
+    p_str "]" 
+
+let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
+  if Array.length s  = 0 then 
+    begin 
+      let files_array = Bsb_dir.readdir dir  in 
+      let files, file_array =
+        Array.fold_left (fun (acc, f) name -> 
+            let new_acc = Binary_cache.map_update ~dir acc name in 
+            if new_acc == acc then 
+              new_acc, f 
+            else new_acc, name :: f 
+          ) (String_map.empty, []) files_array in 
+        [{Ext_file_pp.loc_start ;
+         loc_end; action = (`print (print_arrays file_array))}],
+       files
+    end
+
+  else 
+    [],
+     Array.fold_left (fun acc (s : Bsb_json.t) ->
+        match s with 
+        | `Str {str = s} -> 
+          Binary_cache.map_update ~dir acc s
+        | _ -> acc
+      ) String_map.empty s
+
+(* we need add a new line in the end,
+   otherwise it will be idented twice
+*)
+type t = 
+  { files :  file_group list ; 
+    intervals :  Ext_file_pp.interval list ;
+    globbed_dirs : string list ; 
+  }
+
+let (++) 
+    ({files = a; 
+      intervals = b; 
+      globbed_dirs;
+     } : t)
+    ({files = c; intervals = d; globbed_dirs = dirs2; 
+     })
+  : t 
+  = 
+  {files = a@c; 
+   intervals =  b@d ;
+   globbed_dirs = globbed_dirs @ dirs2;
+  }
+
+let empty = { files = []; intervals  = []; globbed_dirs = [];  }
+
+let  parsing_sources cwd (file_groups : Bsb_json.t array)  = 
+  let rec expect_file_group cwd (x : Bsb_json.t String_map.t )
+    : t =
+    let dir = ref cwd in
+    let sources = ref String_map.empty in
+    let resources = ref [] in 
+    let bs_dependencies = ref [] in
+    let public = ref Export_none in 
+
+    let update_queue = ref [] in 
+    let globbed_dirs = ref [] in 
+
+    let children = ref [] in 
+    let children_update_queue = ref [] in 
+    let children_globbed_dirs = ref [] in 
+    let () = 
+      x 
+      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // s))
+      |?  (Bsb_build_schemas.files ,
+           `Arr_loc (fun s loc_start loc_end ->
+               let dir = !dir in 
+               let tasks, files =  handle_list_files  dir s loc_start loc_end in
+               update_queue := tasks ;
+               sources := files
+
+             ))
+      |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+      |?  (Bsb_build_schemas.resources ,
+           `Arr (fun s  ->
+               resources := get_list_string s
+             ))
+      |? (Bsb_build_schemas.public, `Str (fun s -> 
+          if s = "all" then public := Export_all else 
+          if s = "none" then public := Export_none else 
+            failwith ("invalid str for" ^ s )
+        ))
+      |? (Bsb_build_schemas.public, `Arr (fun s -> 
+          public := Export_set (String_set.of_list (get_list_string s ) )
+        ) )
+      |? (Bsb_build_schemas.files, 
+          `Obj (fun m -> 
+              let excludes = ref [] in 
+              m
+              |? (Bsb_build_schemas.excludes, `Arr (fun arr ->  excludes := get_list_string arr))
+              |? (Bsb_build_schemas.slow_re, `Str 
+                    (fun s -> 
+                       let re = Str.regexp s in 
+                       let dir = !dir in 
+                       let excludes = !excludes in 
+                       let file_array = Bsb_dir.readdir dir in 
+                       sources := 
+                         Array.fold_left (fun acc name -> 
+                             if Str.string_match re name 0 && 
+                                not (List.mem name excludes)
+                             then 
+                               Binary_cache.map_update  ~dir acc name 
+                             else acc
+                           ) String_map.empty file_array;
+                       globbed_dirs :=  [dir]
+                ))
+              |> ignore
+            )
+         )
+      |? (Bsb_build_schemas.subdirs, `Arr (fun s -> 
+          let res  = 
+            Array.fold_left (fun  origin json ->
+                match json with 
+                | `Obj m -> 
+                   expect_file_group !dir  m  ++ origin
+                | _ -> origin ) empty s in 
+          children :=  res.files ; 
+          children_update_queue := res.intervals;
+          children_globbed_dirs := res.globbed_dirs
+        ))
+      |> ignore 
+    in 
+    {
+      files = 
+        {dir = !dir; 
+         sources = !sources; 
+         resources = !resources;
+         bs_dependencies = !bs_dependencies;
+         public = !public
+        } 
+        :: !children;
+      intervals = !update_queue @ !children_update_queue ;
+     globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
+    } in 
+  Array.fold_left (fun  origin x ->
+      match x with 
+      | `Obj map ->  
+        expect_file_group cwd map ++ origin
+      | _ -> origin
+    ) empty  file_groups 
+
+
+end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val is_directory_no_exn : string -> bool
+
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
+
+end
+module Bs_pkg : sig 
+#1 "bs_pkg.mli"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(** [resolve cwd module_name], 
+    [cwd] is current working directory, absolute path
+    Trying to find paths to load [module_name]
+    it is sepcialized for option [-bs-package-include] which requires
+    [npm_package_name/lib/ocaml]
+
+    it relies on [npm_config_prefix] env variable for global npm modules
+*)
+
+val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string option
+
+end = struct
+#1 "bs_pkg.ml"
+
+let (//) = Filename.concat
+
+
+
+let  resolve_bs_package  
+    ?(subdir="")
+    ~cwd
+    name = 
+  let sub_path = name // subdir  in
+  let rec aux origin cwd name = 
+    let destdir =  cwd // Literals.node_modules // sub_path in 
+    if Ext_sys.is_directory_no_exn destdir then Some destdir
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux origin   cwd' name
+      else 
+        try 
+          let destdir = 
+            Sys.getenv "npm_config_prefix" 
+            // "lib" // Literals.node_modules // sub_path in
+          if Ext_sys.is_directory_no_exn destdir
+          then Some destdir
+          else None
+            (* Bs_exception.error (Bs_package_not_found name) *)
+        with 
+          Not_found -> None
+          (* Bs_exception.error (Bs_package_not_found name)           *)
+  in
+  aux cwd cwd name
+
+end
+module Bsb_default : sig 
+#1 "bsb_default.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val set_ocamllex : string -> unit 
+val get_ocamllex : unit -> string 
+
+
+
+val set_bs_external_includes : Bsb_json.t array -> unit 
+val get_bs_external_includes : unit -> string list 
+
+
+
+
+val set_bsc_flags : Bsb_json.t array -> unit 
+val get_bsc_flags : unit -> string list
+
+val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit 
+val get_ppx_flags : unit -> string list
+
+val set_package_name : string -> unit
+val get_package_name : unit -> string option 
+
+
+val get_bs_dependencies : unit  -> string list 
+val set_bs_dependencies : Bsb_json.t array  -> unit
+
+
+end = struct
+#1 "bsb_default.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let get_list_string = Bsb_build_util.get_list_string
+let (//) = Ext_filename.combine
+
+
+
+
+
+let package_name = ref None
+let set_package_name s = package_name := Some s
+let get_package_name () = !package_name
+
+
+
+
+let bsc_flags = ref []
+let get_bsc_flags () = !bsc_flags 
+let set_bsc_flags s = bsc_flags := get_list_string s 
+
+
+
+
+let bs_dependencies = ref []
+let get_bs_dependencies () = !bs_dependencies
+let set_bs_dependencies  s =
+  bs_dependencies := get_list_string s 
+
+
+let bs_external_includes = ref []
+let set_bs_external_includes s = 
+  bs_external_includes := List.map Bsb_build_util.convert_path (get_list_string s )
+let get_bs_external_includes () = !bs_external_includes
+
+
+let ocamllex =  ref  "ocamllex.opt"
+let set_ocamllex s = ocamllex := Bsb_build_util.convert_file s 
+let get_ocamllex () = !ocamllex 
+
+
+let ppx_flags = ref []
+let get_ppx_flags () = !ppx_flags
+let set_ppx_flags ~cwd s = 
+  let s = 
+    s (* TODO: unix conversion *)
+    |> get_list_string 
+    |> List.map (fun x -> 
+        if x = "" then failwith "invalid ppx, empty string found"
+        else 
+        if Filename.is_relative x &&  String.unsafe_get x 0 <> '.' then 
+          let name = String.sub x 0 ( String.index x '/') in
+          let package = (Bs_pkg.resolve_bs_package ~cwd name ) in
+          match package with
+          | None ->
+            failwith (name ^ "not found when resolving ppx")
+          | Some package
+            -> Bsb_build_util.convert_path (Filename.dirname package // x) 
+        else 
+          Bsb_build_util.convert_path x 
+      ) in 
+  ppx_flags := s
 
 end
 module Bsb_dep_infos : sig 
@@ -4618,12 +5181,8 @@ let handle_file_groups oc  (file_groups  :  Bsb_build_ui.file_group list) st =
   
 
 end
-module Bsb_main : sig 
-#1 "bsb_main.mli"
-(* *)
-
-end = struct
-#1 "bsb_main.ml"
+module Bsb_gen : sig 
+#1 "bsb_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4649,94 +5208,44 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+val output_ninja : 
+  builddir:string ->
+  cwd:string ->
+  string ->
+  string ->
+  string option ->
+  string ->
+  string list ->
+  Bsb_build_ui.file_group list ->
+  string list -> string list -> string list -> unit
 
+end = struct
+#1 "bsb_gen.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(* Key is the path *)
-
-
-
-let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb 
-
-
-
-let config_file_bak = "bsconfig.json.bak"
-let ninja = "ninja" 
-let bsdeps = ".bsdeps"
 let (//) = Ext_filename.combine
-let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
-      match x with 
-      | `Str x -> Some x 
-      | _ -> None
-    ) s   
-
-let bs_file_groups = ref []
-
-
-
-module Default : sig
-  val set_ocamllex : string -> unit 
-  val set_package_name : string -> unit
-  val set_bs_external_includes : Bsb_json.t array -> unit 
-  val set_bsc_flags : Bsb_json.t array -> unit 
-  val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit 
-
-  val get_ocamllex : unit -> string 
-  val get_package_name : unit -> string option 
-  val get_bs_external_includes : unit -> string list 
-  val get_bsc_flags : unit -> string list
-  val get_ppx_flags : unit -> string list
-  val get_bs_dependencies : unit  -> string list 
-  val set_bs_dependencies : Bsb_json.t array  -> unit
-end  = struct
-
-  let ocamllex =  ref  "ocamllex.opt"
-
-  let bs_external_includes = ref []
-
-
-  let package_name = ref None
-  let bsc_flags = ref []
-  let ppx_flags = ref []
-  let static_resources = ref []
-
-  let bs_dependencies = ref []
-  let get_bs_dependencies () = !bs_dependencies
-  let set_bs_dependencies  s =
-    bs_dependencies := get_list_string s 
-  let set_bs_external_includes s = 
-    bs_external_includes := List.map Bsb_build_util.convert_path (get_list_string s )
-  let set_bsc_flags s = bsc_flags := get_list_string s 
-  let set_ocamllex s = ocamllex := Bsb_build_util.convert_file s 
-  let set_package_name s = package_name := Some s
-  let get_package_name () = !package_name
-  let get_ocamllex () = !ocamllex 
-
-  let get_bs_external_includes () = !bs_external_includes
-  let get_bsc_flags () = !bsc_flags 
-  let get_ppx_flags () = !ppx_flags
-  let set_ppx_flags ~cwd s = 
-    let s = 
-      s (* TODO: unix conversion *)
-      |> get_list_string 
-      |> List.map (fun x -> 
-          if x = "" then failwith "invalid ppx, empty string found"
-          else 
-          if Filename.is_relative x &&  String.unsafe_get x 0 <> '.' then 
-            let name = String.sub x 0 ( String.index x '/') in
-            let package = (Bs_pkg.resolve_bs_package ~cwd name ) in
-            match package with
-            | None ->
-              failwith (name ^ "not found when resolving ppx")
-            | Some package
-              -> Bsb_build_util.convert_path (Filename.dirname package // x) 
-          else 
-            Bsb_build_util.convert_path x 
-        ) in 
-    ppx_flags := s
-end
 
 let output_ninja 
     ~builddir
@@ -4750,11 +5259,7 @@ let output_ninja
     bsc_flags
     ppx_flags 
     bs_dependencies
-
   = 
-
-
-
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in 
   let bs_groups, source_dirs,static_resources  = 
     List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) -> 
@@ -4825,15 +5330,59 @@ let output_ninja
     close_out oc;
   end
 
+end
+module Bsb_main : sig 
+#1 "bsb_main.mli"
+(* *)
+
+end = struct
+#1 "bsb_main.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+let config_file_bak = "bsconfig.json.bak"
+let ninja = "ninja" 
+let bsdeps = ".bsdeps"
+
+
+
+(* Key is the path *)
+let (|?)  m (key, cb) =
+    m  |> Bsb_json.test key cb 
+
+let (//) = Ext_filename.combine
+
+let bs_file_groups = ref []
 
 (** *)
 let write_ninja_file () = 
   let builddir = Bsb_config.lib_bs in 
   let cwd = Sys.getcwd () in 
-  let bsc, bsdep = Bsb_build_util.get_bsc_bsdep cwd  in
   let () = Bsb_build_util.mkp builddir in 
+  let bsc, bsdep = Bsb_build_util.get_bsc_bsdep cwd  in
+
   let config_json_chan = open_in_bin Literals.bsconfig_json in 
   let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in 
@@ -4842,23 +5391,16 @@ let write_ninja_file () =
     match global_data with
     | `Obj map -> 
       map 
-      |?  (Bsb_build_schemas.name, `Str Default.set_package_name)
+      |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
-
-
-          |?  (Bsb_build_schemas.ocamllex, `Str Default.set_ocamllex)
-          |? (Bsb_build_schemas.bs_dependencies, `Arr Default.set_bs_dependencies)
+          |?  (Bsb_build_schemas.ocamllex, `Str Bsb_default.set_ocamllex)
+          |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
           (* More design *)
-          |?  (Bsb_build_schemas.bs_external_includes,
-               `Arr Default.set_bs_external_includes)
-          |?  (Bsb_build_schemas.bsc_flags, `Arr Default.set_bsc_flags)
-
-          (* More design *)
-          |?  (Bsb_build_schemas.ppx_flags,
-               `Arr (Default.set_ppx_flags ~cwd))
-
+          |?  (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
+          |?  (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
+          |?  (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
           |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
               let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
               bs_file_groups := res.files ; 
@@ -4868,7 +5410,6 @@ let write_ninja_file () =
           |> ignore
         end)
       |> ignore
-
     | _ -> ()
   in
   begin match List.sort Ext_file_pp.interval_compare  !update_queue with 
@@ -4884,17 +5425,17 @@ let write_ninja_file () =
     Unix.unlink Literals.bsconfig_json; 
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  Default.(output_ninja ~builddir ~cwd
+  Bsb_gen.output_ninja ~builddir ~cwd
              bsc 
              bsdep 
-             (get_package_name ())
-             (get_ocamllex ())
-             (get_bs_external_includes ())
+             (Bsb_default.get_package_name ())
+             (Bsb_default.get_ocamllex ())
+             (Bsb_default.get_bs_external_includes ())
              !bs_file_groups
-             (get_bsc_flags ())
-             (get_ppx_flags ())
-             (get_bs_dependencies ())
-          );
+             Bsb_default.(get_bsc_flags ())
+             Bsb_default.(get_ppx_flags ())
+             Bsb_default.(get_bs_dependencies ())
+          ;
   !globbed_dirs
 
 
@@ -4921,7 +5462,7 @@ ninja -C _build
 let () = 
   try
     let builddir = Bsb_config.lib_bs in 
-    let output_deps = (builddir // bsdeps) in
+    let output_deps = builddir // bsdeps in
     let reason = Bsb_dep_infos.check  output_deps in 
     if String.length reason <> 0 then 
       begin

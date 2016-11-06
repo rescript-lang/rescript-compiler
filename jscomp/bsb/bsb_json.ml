@@ -575,13 +575,15 @@ type js_array =
     loc_start : Lexing.position ; 
     loc_end : Lexing.position ; 
   }
+and js_str = 
+  { str : string ; loc : Lexing.position}
 and t = 
   [  
     `True
   | `False
   | `Null
   | `Flo of string 
-  | `Str of string 
+  | `Str of js_str
   | `Arr  of js_array
   | `Obj of t String_map.t 
    ]
@@ -605,17 +607,17 @@ let rec parse_json lexbuf =
       x 
   in
   let push e = look_ahead := Some e in 
-  let rec json (lexbuf : Lexing.lexbuf) = 
+  let rec json (lexbuf : Lexing.lexbuf) : t = 
     match token () with 
     | True -> `True
     | False -> `False
     | Null -> `Null
     | Number s ->  `Flo s 
-    | String s -> `Str s 
+    | String s -> `Str { str = s; loc =    lexbuf.lex_start_p}
     | Lbracket -> parse_array false lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
     | Lbrace -> parse_map false String_map.empty lexbuf
     |  _ -> error lexbuf Unexpected_token
-  and parse_array  trailing_comma loc_start loc_finish acc lexbuf =
+  and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
     match token () with 
     | Rbracket ->
       if trailing_comma then 
@@ -636,7 +638,7 @@ let rec parse_json lexbuf =
       | _ -> 
         error lexbuf Expect_comma_or_rbracket
       end
-  and parse_map trailing_comma acc lexbuf = 
+  and parse_map trailing_comma acc lexbuf : t = 
     match token () with 
     | Rbrace -> 
       if trailing_comma then 
@@ -681,6 +683,7 @@ let parse_json_from_file s =
 type callback = 
   [
     `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
   | `Bool of (bool -> unit )
   | `Obj of (t String_map.t -> unit)
@@ -702,7 +705,8 @@ let test   ?(fail=(fun () -> ())) key
        | `Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
          cb content  loc_start loc_end 
        | `Null, `Null cb  -> cb ()
-       | `Str s, `Str cb  -> cb s 
+       | `Str {str = s }, `Str cb  -> cb s 
+       | `Str {str = s ; loc }, `Str_loc cb -> cb s loc 
        | _, _ -> fail () 
      end;
      m
@@ -721,4 +725,4 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 725 "bsb/bsb_json.ml"
+# 729 "bsb/bsb_json.ml"
