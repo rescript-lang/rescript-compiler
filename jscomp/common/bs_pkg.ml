@@ -10,7 +10,7 @@ let  resolve_bs_package
   let sub_path = name // subdir  in
   let rec aux origin cwd name = 
     let destdir =  cwd // Literals.node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then destdir
+    if Ext_sys.is_directory_no_exn destdir then Some destdir
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
@@ -21,11 +21,11 @@ let  resolve_bs_package
             Sys.getenv "npm_config_prefix" 
             // "lib" // Literals.node_modules // sub_path in
           if Ext_sys.is_directory_no_exn destdir
-          then destdir
-          else
-            Bs_exception.error (Bs_package_not_found name)
+          then Some destdir
+          else None
+            (* Bs_exception.error (Bs_package_not_found name) *)
         with 
-          Not_found ->
-          Bs_exception.error (Bs_package_not_found name)          
+          Not_found -> None
+          (* Bs_exception.error (Bs_package_not_found name)           *)
   in
   aux cwd cwd name

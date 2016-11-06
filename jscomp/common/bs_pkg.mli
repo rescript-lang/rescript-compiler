@@ -33,4 +33,4 @@
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
-val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string
+val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string option

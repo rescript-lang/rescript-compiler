@@ -61,7 +61,7 @@
                     "type": "string"
                 },
                 "ppx-specs" : {
-                    "$ref" : "#/definitions/ppx-spec"
+                    "$ref" : "#/definitions/ppx-specs"
                 },
                 "files": {
                     "oneOf": [

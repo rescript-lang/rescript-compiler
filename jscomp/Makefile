@@ -51,14 +51,14 @@ EXT_SRCS = ext_array ext_bytes ext_char ext_file_pp ext_format ext_hashtbl ext_l
 	string_set ext_pp_scope ext_io ext_ident ext_filename 
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
-COMMON_SRCS= bs_version bs_exception  js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname binary_ast binary_cache
+COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname binary_ast binary_cache
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift \
 	ast_literal ast_pat ast_payload ast_signature ast_structure bs_ast_iterator bs_ast_invariant \
 	ast_derive ast_comb ast_attributes ast_core_type ast_derive_dyn ast_derive_projector \
 	ast_external_attributes ast_util ppx_entry 
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
-DEPENDS_SRCS= ast_extract  
+DEPENDS_SRCS= bs_exception ast_extract  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util idents_analysis bs_conditional_initial ocaml_options ocaml_parse lam\
 	lam_iter lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\

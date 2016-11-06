@@ -19866,9 +19866,10 @@ TODO: In the futrue, we should refine dependency [bsb]
 should not rely on such exception, it should have its own exception handling
 *)
 
-exception Error of error
+(* exception Error of error *)
 
-val report_error : Format.formatter -> error -> unit
+(* val report_error : Format.formatter -> error -> unit *)
+
 val error : error -> 'a 
 
 end = struct
@@ -19934,6 +19935,13 @@ let report_error ppf = function
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
 
 
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err
+        -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
 
 end
 module Ext_sys : sig 
@@ -20218,7 +20226,7 @@ module Bs_pkg : sig
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
-val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string
+val resolve_bs_package : ?subdir:string -> cwd:string ->  string -> string option
 
 end = struct
 #1 "bs_pkg.ml"
@@ -20234,7 +20242,7 @@ let  resolve_bs_package
   let sub_path = name // subdir  in
   let rec aux origin cwd name = 
     let destdir =  cwd // Literals.node_modules // sub_path in 
-    if Ext_sys.is_directory_no_exn destdir then destdir
+    if Ext_sys.is_directory_no_exn destdir then Some destdir
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
@@ -20245,12 +20253,12 @@ let  resolve_bs_package
             Sys.getenv "npm_config_prefix" 
             // "lib" // Literals.node_modules // sub_path in
           if Ext_sys.is_directory_no_exn destdir
-          then destdir
-          else
-            Bs_exception.error (Bs_package_not_found name)
+          then Some destdir
+          else None
+            (* Bs_exception.error (Bs_package_not_found name) *)
         with 
-          Not_found ->
-          Bs_exception.error (Bs_package_not_found name)          
+          Not_found -> None
+          (* Bs_exception.error (Bs_package_not_found name)           *)
   in
   aux cwd cwd name
 
@@ -99389,13 +99397,6 @@ let set_eval_string s =
 
 
 
-let () =
-  Location.register_error_of_exn
-    (function
-      | Bs_exception.Error err
-        -> Some (Location.error_of_printer_file Bs_exception.report_error err)
-      | _ -> None
-    )
 
 let (//) = Filename.concat
 
@@ -99405,7 +99406,10 @@ let add_package s =
       ~cwd:(Lazy.force Ext_filename.cwd) 
       ~subdir:Js_config.lib_ocaml_dir
       s   in 
-  Clflags.include_dirs := path :: ! Clflags.include_dirs
+  match path with
+  | None -> Bs_exception.error (Bs_package_not_found s)
+  | Some path ->
+    Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 
 let set_noassert () = 

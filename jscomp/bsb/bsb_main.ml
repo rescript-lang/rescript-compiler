@@ -100,7 +100,12 @@ end  = struct
           else 
           if Filename.is_relative x &&  String.unsafe_get x 0 <> '.' then 
             let name = String.sub x 0 ( String.index x '/') in
-            Bsb_build_util.convert_path (Filename.dirname (Bs_pkg.resolve_bs_package ~cwd name ) // x) 
+            let package = (Bs_pkg.resolve_bs_package ~cwd name ) in
+            match package with
+            | None ->
+              failwith (name ^ "not found when resolving ppx")
+            | Some package
+              -> Bsb_build_util.convert_path (Filename.dirname package // x) 
           else 
             Bsb_build_util.convert_path x 
         ) in 

@@ -4425,9 +4425,10 @@ TODO: In the futrue, we should refine dependency [bsb]
 should not rely on such exception, it should have its own exception handling
 *)
 
-exception Error of error
+(* exception Error of error *)
 
-val report_error : Format.formatter -> error -> unit
+(* val report_error : Format.formatter -> error -> unit *)
+
 val error : error -> 'a 
 
 end = struct
@@ -4493,6 +4494,13 @@ let report_error ppf = function
     ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
 
 
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err
+        -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
 
 end
 module Clflags : sig 
