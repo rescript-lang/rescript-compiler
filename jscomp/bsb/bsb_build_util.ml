@@ -33,33 +33,36 @@ let (//) = Ext_filename.combine
 (* assume build dir is fixed to be _build *)
 let rel_dir = Filename.parent_dir_name 
 
-(* More tests needed *)
-let convert_unix_path_to_windows p = 
-  String.map (function '/' ->'\\' | c -> c ) p 
 
 let convert_path = 
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_filename.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
+
+let convert_and_resolve_path = 
   if Sys.unix then Bsb_config.proj_rel  
   else 
   if Sys.win32 || Sys.cygwin then 
     fun (p:string) -> 
-      let p = convert_unix_path_to_windows p in
+      let p = Ext_filename.replace_slash_backward p in
       Bsb_config.proj_rel p 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the begining*)
 
 (** converting a file from Linux path format to Windows *)
-let convert_file = 
+let convert_and_resolve_file = 
   if Sys.unix then fun (p : string) -> 
-    if Filename.basename p = p then p 
+    if Ext_filename.no_slash p 0 (String.length p) then p 
     else Bsb_config.proj_rel  p 
   else 
   if Sys.win32 || Sys.cygwin then 
     fun (p:string) -> 
-      let p = convert_unix_path_to_windows p in
-      if Filename.basename p = p then 
+      let p1 = Ext_filename.replace_slash_backward p in
+      if p1 == p then 
         p 
       else 
-       Bsb_config.proj_rel p 
+       Bsb_config.proj_rel p1 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 
 (**
@@ -96,3 +99,13 @@ let rec mkp dir =
   else if not  @@ Sys.is_directory dir then 
     failwith ( dir ^ " exists but it is not a directory, plz remove it first")
   else ()
+
+
+let get_list_string s = 
+  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
+      match x with 
+      | `Str x -> Some x.str
+      | _ -> None
+    ) s   
+
+

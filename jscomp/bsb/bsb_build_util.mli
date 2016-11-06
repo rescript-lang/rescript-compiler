@@ -30,7 +30,38 @@ flag_concat "-ppx" [ppxs]
 *)
 val flag_concat : string -> string list -> string
 
+
 val convert_path : string -> string
-val convert_file : string -> string
+  
+(**
+it does several conversion:
+First, it will convert unix path to windows backward on windows platform.
+Then if it is absolute path, it will do thing
+Else if it is relative path, it will be rebased on project's root directory 
+
+*)
+val convert_and_resolve_path : string -> string
+
+(**
+   The difference between [convert_path] is that if the file is [ocamlc.opt] 
+   it will not do any conversion to it (maybe environment variable will help it get picked up)
+*)
+val convert_and_resolve_file : string -> string
+
 val mkp : string -> unit
-val get_bsc_bsdep : string -> string * string 
+
+
+(* The path of [bsc] and [bsdep] is normalized so that the invokation of [./jscomp/bin/bsb.exe] 
+   and [bsb.exe] (combined with a dirty bsconfig.json) will not trigger unnecessary rebuild.
+   
+   The location of [bsc] and [bsdep] is configured by the combination of [Sys.executable_name] 
+   and [cwd].
+   
+   In theory, we should also check the integrity of [bsb.exe], if it is changed, the rebuild 
+   should be regen, but that is too much in practice, not only you need check the integrity of 
+   path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
+   [bsdep.exe] [bsc.exe] etc.
+*)
+val get_bsc_bsdep : string -> string * string
+                              
+val get_list_string : Bsb_json.t array -> string list

@@ -40,12 +40,7 @@ let (//) = Ext_filename.combine
 let (|?)  m (key, cb) =
     m  |> Bsb_json.test key cb 
 
-let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
-      match x with 
-      | `Str x -> Some x 
-      | _ -> None
-    ) s   
+let get_list_string  =  Bsb_build_util.get_list_string
 
 
 let print_arrays file_array oc offset  =
@@ -68,7 +63,7 @@ let print_arrays file_array oc offset  =
       ) rest;
     p_str "]" 
 
-let  handle_list_files dir s loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
+let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
   if Array.length s  = 0 then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
@@ -86,9 +81,9 @@ let  handle_list_files dir s loc_start loc_end : Ext_file_pp.interval list * Bin
 
   else 
     [],
-     Array.fold_left (fun acc s ->
+     Array.fold_left (fun acc (s : Bsb_json.t) ->
         match s with 
-        | `Str s -> 
+        | `Str {str = s} -> 
           Binary_cache.map_update ~dir acc s
         | _ -> acc
       ) String_map.empty s
@@ -135,7 +130,7 @@ let  parsing_sources cwd (file_groups : Bsb_json.t array)  =
     let children_globbed_dirs = ref [] in 
     let () = 
       x 
-      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // s))
+      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Bsb_build_util.convert_path s))
       |?  (Bsb_build_schemas.files ,
            `Arr_loc (fun s loc_start loc_end ->
                let dir = !dir in 
