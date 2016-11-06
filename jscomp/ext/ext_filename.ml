@@ -211,7 +211,20 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 let replace_backward_slash (x : string)= 
   String.map (function 
     |'\\'-> '/'
-    | x -> x) x  
+    | x -> x) x
+
+
+let rec no_slash x i len = 
+  i >= len  || 
+  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if no_slash x 0 len then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
 
 let module_name_of_file file =
     String.capitalize 

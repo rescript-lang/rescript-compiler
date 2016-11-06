@@ -130,7 +130,7 @@ let  parsing_sources cwd (file_groups : Bsb_json.t array)  =
     let children_globbed_dirs = ref [] in 
     let () = 
       x 
-      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // s))
+      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Bsb_build_util.convert_path s))
       |?  (Bsb_build_schemas.files ,
            `Arr_loc (fun s loc_start loc_end ->
                let dir = !dir in 

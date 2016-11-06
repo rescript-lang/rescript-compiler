@@ -7597,6 +7597,13 @@ get_extension "a" = ""
 *)
 val get_extension : string -> string
 
+val replace_backward_slash : string -> string
+
+
+val no_slash : string -> int -> int -> bool
+(** if no conversion happens, reference equality holds *)
+val replace_slash_backward : string -> string 
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7812,7 +7819,20 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 let replace_backward_slash (x : string)= 
   String.map (function 
     |'\\'-> '/'
-    | x -> x) x  
+    | x -> x) x
+
+
+let rec no_slash x i len = 
+  i >= len  || 
+  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if no_slash x 0 len then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
 
 let module_name_of_file file =
     String.capitalize 

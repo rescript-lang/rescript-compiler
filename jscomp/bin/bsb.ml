@@ -1006,6 +1006,13 @@ get_extension "a" = ""
 *)
 val get_extension : string -> string
 
+val replace_backward_slash : string -> string
+
+
+val no_slash : string -> int -> int -> bool
+(** if no conversion happens, reference equality holds *)
+val replace_slash_backward : string -> string 
+
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1221,7 +1228,20 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 let replace_backward_slash (x : string)= 
   String.map (function 
     |'\\'-> '/'
-    | x -> x) x  
+    | x -> x) x
+
+
+let rec no_slash x i len = 
+  i >= len  || 
+  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if no_slash x 0 len then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
 
 let module_name_of_file file =
     String.capitalize 
@@ -3619,11 +3639,36 @@ flag_concat "-ppx" [ppxs]
 *)
 val flag_concat : string -> string list -> string
 
+
+
+(**
+it does several conversion:
+First, it will convert unix path to windows backward on windows platform.
+Then if it is absolute path, it will do thing
+Else if it is relative path, it will be rebased on project's root directory 
+*)
 val convert_path : string -> string
+
+(**
+   The difference between [convert_path] is that if the file is [ocamlc.opt] 
+   it will not do any conversion to it (maybe environment variable will help it get picked up)
+*)
 val convert_file : string -> string
 
 val mkp : string -> unit
 
+
+(* The path of [bsc] and [bsdep] is normalized so that the invokation of [./jscomp/bin/bsb.exe] 
+   and [bsb.exe] (combined with a dirty bsconfig.json) will not trigger unnecessary rebuild.
+   
+   The location of [bsc] and [bsdep] is configured by the combination of [Sys.executable_name] 
+   and [cwd].
+   
+   In theory, we should also check the integrity of [bsb.exe], if it is changed, the rebuild 
+   should be regen, but that is too much in practice, not only you need check the integrity of 
+   path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
+   [bsdep.exe] [bsc.exe] etc.
+*)
 val get_bsc_bsdep : string -> string * string
                               
 val get_list_string : Bsb_json.t array -> string list
@@ -3665,16 +3710,13 @@ let (//) = Ext_filename.combine
 (* assume build dir is fixed to be _build *)
 let rel_dir = Filename.parent_dir_name 
 
-(* More tests needed *)
-let convert_unix_path_to_windows p = 
-  String.map (function '/' ->'\\' | c -> c ) p 
 
 let convert_path = 
   if Sys.unix then Bsb_config.proj_rel  
   else 
   if Sys.win32 || Sys.cygwin then 
     fun (p:string) -> 
-      let p = convert_unix_path_to_windows p in
+      let p = Ext_filename.replace_slash_backward p in
       Bsb_config.proj_rel p 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the begining*)
@@ -3682,16 +3724,16 @@ let convert_path =
 (** converting a file from Linux path format to Windows *)
 let convert_file = 
   if Sys.unix then fun (p : string) -> 
-    if Filename.basename p = p then p 
+    if Ext_filename.no_slash p 0 (String.length p) then p 
     else Bsb_config.proj_rel  p 
   else 
   if Sys.win32 || Sys.cygwin then 
     fun (p:string) -> 
-      let p = convert_unix_path_to_windows p in
-      if Filename.basename p = p then 
+      let p1 = Ext_filename.replace_slash_backward p in
+      if p1 == p then 
         p 
       else 
-       Bsb_config.proj_rel p 
+       Bsb_config.proj_rel p1 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 
 (**
@@ -3737,7 +3779,7 @@ let get_list_string s =
       | _ -> None
     ) s   
 
-let bs_file_groups = ref []
+
 
 end
 module Bsb_dir : sig 
@@ -4274,7 +4316,7 @@ let  parsing_sources cwd (file_groups : Bsb_json.t array)  =
     let children_globbed_dirs = ref [] in 
     let () = 
       x 
-      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // s))
+      |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Bsb_build_util.convert_path s))
       |?  (Bsb_build_schemas.files ,
            `Arr_loc (fun s loc_start loc_end ->
                let dir = !dir in 

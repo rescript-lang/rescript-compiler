@@ -279,6 +279,40 @@ function replace_backward_slash(x) {
             }, x);
 }
 
+function no_slash(x, _i, len) {
+  while(true) {
+    var i = _i;
+    if (i >= len) {
+      return /* true */1;
+    }
+    else if (x.charCodeAt(i) !== /* "/" */47) {
+      _i = i + 1 | 0;
+      continue ;
+      
+    }
+    else {
+      return /* false */0;
+    }
+  };
+}
+
+function replace_slash_backward(x) {
+  var len = x.length;
+  if (no_slash(x, 0, len)) {
+    return x;
+  }
+  else {
+    return $$String.map(function (x) {
+                if (x !== 47) {
+                  return x;
+                }
+                else {
+                  return /* "\\" */92;
+                }
+              }, x);
+  }
+}
+
 function module_name_of_file(file) {
   var s = Filename.chop_extension(Curry._1(Filename.basename, file));
   return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
@@ -469,6 +503,8 @@ exports.node_relative_path           = node_relative_path;
 exports.find_package_json_dir        = find_package_json_dir;
 exports.package_dir                  = package_dir;
 exports.replace_backward_slash       = replace_backward_slash;
+exports.no_slash                     = no_slash;
+exports.replace_slash_backward       = replace_slash_backward;
 exports.module_name_of_file          = module_name_of_file;
 exports.module_name_of_file_if_any   = module_name_of_file_if_any;
 exports.combine                      = combine;
