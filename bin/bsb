@@ -1,3 +1,0 @@
-#!/bin/sh
-echo "please run npm postinstall"
-exit 2
