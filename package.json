@@ -15,9 +15,6 @@
     "should-equal": "^1.0.0",
     "uglify-js": "^2.6.1"
   },
-  "bin": {
-    "bsb" : "./bin/bsb"
-  },
   "exportedEnvVars": {
     "PATH": {
       "global": true,
