@@ -16,7 +16,7 @@ COMPFLAGS= -g -w -40-30 -warn-error +a-40-30
 
 print-%  : ; @echo $* = $($*)
 
-INCLUDES= -I +compiler-libs -I ext -I common -I syntax -I depends -I core -I bsb
+INCLUDES= -I +compiler-libs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests
 
 .mli.cmi:
 	$(NATIVE) $(INCLUDES) $(COMPFLAGS) -c $<
@@ -46,7 +46,12 @@ common/bs_version.ml: build_version.js ../package.json
 
 
 ### list files 
-EXT_SRCS = ext_array ext_bytes ext_char ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
+OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
+OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
+OUNIT_TESTS_SRCS =  ounit_tests_main
+OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
+
+EXT_SRCS = ext_array ext_bytes ext_char resize_array ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ident_set int_map literals string_map \
 	string_set ext_pp_scope ext_io ext_ident ext_filename 
 
@@ -82,6 +87,9 @@ BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main
 MAINS_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
+ounit.cmxa: $(OUNIT_CMXS)
+	ocamlopt.opt -a $^ -o $@
+
 ext.cmxa: $(EXT_CMXS)
 	ocamlopt.opt -a $^ -o $@ 
 common.cmxa:$(COMMON_CMXS)
@@ -95,7 +103,7 @@ core.cmxa:$(CORE_CMXS)
 bsb.cmxa:$(BSB_CMXS)
 	ocamlopt.opt -a $^ -o $@
 
-check:  $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS)
+check:  $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
 bin/bsb.exe: ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 	$(NATIVE) -g  unix.cmxa str.cmxa $^ -o $@
@@ -118,11 +126,11 @@ bin/jsgen.exe:ext.cmxa jsgen_main.cmx
 
 
 depend:
-	$(CAMLDEP) -native -I ext -I common -I syntax -I depends -I core -I bsb ext/*.ml ext/*.mli common/*.ml common/*.mli syntax/*.ml syntax/*.mli *.ml *.mli depends/*.ml depends/*.mli core/*.ml core/*.mli bsb/*.ml bsb/*.mli > all.depend
+	$(CAMLDEP) -native -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb ext/*.ml ext/*.mli common/*.ml common/*.mli syntax/*.ml syntax/*.mli *.ml *.mli depends/*.ml depends/*.mli core/*.ml core/*.mli bsb/*.ml bsb/*.mli ounit/*.mli ounit/*.ml ounit_tests/*.ml ounit_tests/*.mli > all.depend
 
 
 
-SNAPSHOT_SRCS=$(addprefix bin/, $(addsuffix .ml, bsppx whole_compiler bsdep bsb bspp))
+SNAPSHOT_SRCS=$(addprefix bin/, $(addsuffix .ml, bsppx whole_compiler bsdep bsb bspp all_ounit_tests))
 SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d) 
 
 # this target  is used to make snapshotml
@@ -194,7 +202,15 @@ bin/bspp.ml:./bin/bspack.exe
 bin/js_compiler.ml:./bin/bspack.exe
 	BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
 
+bin/all_ounit_tests.ml:./bin/bspack.exe 
+	$< -bs-MD   -I ounit -I ounit_tests  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
+-include bin/all_ounit_tests.d
+bin/all_ounit_tests.byte:bin/all_ounit_tests.mli bin/all_ounit_tests.ml
+	ocamlc.opt -g -I bin -w -a unix.cma $^ -o $@
 
+ounit_test:bin/all_ounit_tests.byte
+	$^
+.PHONY:ounit_test
 # TODO: Fix Me use its own configuration
 bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
 	ocamlc.opt -w -a -I bin bin/config_whole_compiler.mli bin/config_whole_compiler.ml $^ -no-check-prims -o $@
@@ -265,6 +281,7 @@ world:
 travis-world-test:
 	$(MAKE) world
 	@echo "Making test"
+	make ounit_test
 	$(MAKE) -C test all
 	@echo "Making test finsihed"
 

@@ -38,9 +38,8 @@ let (//) = Ext_filename.combine
 let bs_file_groups = ref []
 
 (** *)
-let write_ninja_file () = 
+let write_ninja_file cwd = 
   let builddir = Bsb_config.lib_bs in 
-  let cwd = Sys.getcwd () in 
   let () = Bsb_build_util.mkp builddir in 
   let bsc, bsdep = Bsb_build_util.get_bsc_bsdep cwd  in
 
@@ -124,13 +123,15 @@ let () =
   try
     let builddir = Bsb_config.lib_bs in 
     let output_deps = builddir // bsdeps in
-    let reason = Bsb_dep_infos.check  output_deps in 
+    let cwd = Sys.getcwd () in 
+
+    let reason = Bsb_dep_infos.check cwd  output_deps in 
     if String.length reason <> 0 then 
       begin
         (* This is actual slow path, okay to be slight slower *)
         print_endline reason;
         print_endline "Regenrating build spec";
-        let globbed_dirs = write_ninja_file () in 
+        let globbed_dirs = write_ninja_file cwd in 
         Literals.bsconfig_json :: globbed_dirs 
         |> List.map
           (fun x ->
@@ -138,7 +139,8 @@ let () =
                stamp = (Unix.stat x).st_mtime
              }
           ) 
-        |> Array.of_list 
+        |> (fun x ->  
+               Bsb_dep_infos.{ file_stamps = Array.of_list x; source_directory = cwd})
         |> Bsb_dep_infos.write output_deps
 
       end;

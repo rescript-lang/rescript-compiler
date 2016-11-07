@@ -42,7 +42,8 @@ let (|?)  m (key, cb) =
 
 let get_list_string  =  Bsb_build_util.get_list_string
 
-
+module String_vect = Resize_array.Make(struct type t = string let null = "" end)
+    
 let print_arrays file_array oc offset  =
   let indent = String.make offset ' ' in 
   let p_str s = 
@@ -50,32 +51,38 @@ let print_arrays file_array oc offset  =
     output_string oc s ;
     output_string oc "\n"
   in
-  match file_array with 
-  | []
+  let len = String_vect.length file_array in 
+  match len with 
+  | 0
     -> output_string oc "[ ]\n"
-  | first::rest 
+  | 1 
+    -> output_string oc ("[ " ^ String_vect.get file_array 0  ^ " ]\n")
+  | _ (* first::(_::_ as rest) *)
     -> 
     output_string oc "[ \n";
-    p_str ("\"" ^ first ^ "\"");
-    List.iter 
-      (fun f -> 
-         p_str (", \"" ^f ^ "\"")
-      ) rest;
+    String_vect.iter_range 0 (len - 2 ) (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    p_str @@ "\"" ^ (String_vect.last file_array) ^ "\"";
+
     p_str "]" 
 
+
+
+    
 let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
   if Array.length s  = 0 then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
-      let files, file_array =
-        Array.fold_left (fun (acc, f) name -> 
+      let dyn_file_array = String_vect.make (Array.length files_array) in 
+      let files  =
+        Array.fold_left (fun acc name -> 
             let new_acc = Binary_cache.map_update ~dir acc name in 
-            if new_acc == acc then 
-              new_acc, f 
-            else new_acc, name :: f 
-          ) (String_map.empty, []) files_array in 
+            if new_acc != acc then (* reference in-equality *)
+              String_vect.push dyn_file_array name ;
+            new_acc
+
+          ) String_map.empty files_array in 
         [{Ext_file_pp.loc_start ;
-         loc_end; action = (`print (print_arrays file_array))}],
+         loc_end; action = (`print (print_arrays dyn_file_array))}],
        files
     end
 
