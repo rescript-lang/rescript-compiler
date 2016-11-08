@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+"use strict";
+
+var child_process = require('child_process')
+
+child_process.execFileSync(__filename + ".exe", process.argv.slice(2), {stdio:[0,1,2]})
