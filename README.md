@@ -209,3 +209,8 @@ included with BuckleScript.
 * [`jscomp/test`](jscomp/test)
 
 `jscomp/test` is based on [`ocaml/testsuite`](ocaml/testsuite).
+
+BuckleScript unittest builds on parts of [OUnit](http://ounit.forge.ocamlcore.org/)
+
+* [`jscomp/ounit`](jscomp/ounit) is adapted from ounit, the unit test
+  utilities are only used for dev purpose, they are not required for distribution
