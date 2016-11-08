@@ -85,9 +85,9 @@ let string_of_module_id ~output_prefix
         let id = x.id in
         let file = Printf.sprintf "%s.js" id.name in
         let modulename = String.uncapitalize id.name in
-        let current_unit_dir =
-          `Dir (Js_config.get_output_dir (Lazy.force Ext_filename.package_dir) module_system output_prefix) in
-        let rebase dep =
+        let rebase package_dir dep =
+          let current_unit_dir =
+            `Dir (Js_config.get_output_dir package_dir module_system output_prefix) in
           Ext_filename.node_relative_path  current_unit_dir dep 
         in 
         let dependency_pkg_info = 
@@ -119,16 +119,17 @@ let string_of_module_id ~output_prefix
             `Found(package_name, x),
             `Found(current_package, path) -> 
             if  current_package = package_name then 
-              rebase (`File (
-                  Lazy.force Ext_filename.package_dir // x // modulename)) 
+              let package_dir = Lazy.force Ext_filename.package_dir in
+              rebase package_dir (`File (package_dir // x // modulename)) 
             else 
               package_name // x // modulename
           | (`AmdJS | `NodeJS), `Found(package_name, x), 
             `Package_script(current_package)
             ->    
             if current_package = package_name then 
-              rebase (`File (
-                  Lazy.force Ext_filename.package_dir // x // modulename)) 
+              let package_dir = Lazy.force Ext_filename.package_dir in
+              rebase package_dir (`File (
+                  package_dir // x // modulename)) 
             else 
               package_name // x // modulename
           | (`AmdJS | `NodeJS), `Found(package_name, x), `Empty 
@@ -139,7 +140,8 @@ let string_of_module_id ~output_prefix
             -> 
             begin match Config_util.find file with 
               | file -> 
-                rebase (`File file) 
+                let package_dir = Lazy.force Ext_filename.package_dir in
+                rebase package_dir (`File file) 
               | exception Not_found -> 
                 Ext_pervasives.failwithf ~loc:__LOC__ 
                   "@[%s was not found  in search path - while compiling %s @] "
