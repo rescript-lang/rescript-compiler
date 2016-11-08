@@ -23,6 +23,9 @@
       "val": "./bin/"
     }
   },
+  "bin" : {
+      "bsb" : "bin/bsb"
+   },
   "scripts": {
     "test": "mocha './jscomp/test/**/*test.js' ",
     "wtest": "mocha './jscomp/test/**/*test.js'  -R spec -w",
