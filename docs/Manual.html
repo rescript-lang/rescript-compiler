@@ -3771,7 +3771,7 @@ it is designed for fast feedback loop (typically 100ms feedback loop).</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Currently user needs install ninja first</p>
+<p>Currently user needs install ninja first (version &gt;= 1.7.1)</p>
 </div>
 </td>
 </tr>
@@ -3780,6 +3780,11 @@ it is designed for fast feedback loop (typically 100ms feedback loop).</p>
 <div class="paragraph">
 <p>It is a schema based build tool, the schema is
 <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a></p>
+</div>
+<div class="paragraph">
+<p>The build system is installed as <code>bsb.exe</code> in <code>bs-platform/bin/bsb.exe</code>, due to a known issue in npm,
+we create a JS wrapper (which is accessible in <code>.bin</code> too), so the user can call
+either <code>bsb</code>(slightly higher latency but symlinked into <code>.bin</code>) or <code>bsb.exe</code></p>
 </div>
 <div class="paragraph">
 <p>Here is a typical configuration:</p>

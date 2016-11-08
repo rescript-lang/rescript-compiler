@@ -17,13 +17,19 @@ inlining, arity inference and other information.
 
 BuckleScript proivdes a native build tool using https://github.com/ninja-build/ninja/releases[ninja], 
 it is designed for fast feedback loop (typically 100ms feedback loop). 
+
 [NOTE]
 ======
-Currently user needs install ninja first
+Currently user needs install ninja first (version >= 1.7.1)
 ======
 
 It is a schema based build tool, the schema is 
 http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available]
+
+The build system is installed as `bsb.exe` in `bs-platform/bin/bsb.exe`, due to a known issue in npm, 
+we create a JS wrapper (which is accessible in `.bin` too), so the user can call 
+either `bsb`(slightly higher latency but symlinked into `.bin`) or `bsb.exe` 
+
 
 Here is a typical configuration:
 
