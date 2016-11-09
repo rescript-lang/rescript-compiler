@@ -22,7 +22,7 @@ var class_tables = [
 var suites_000 = /* tuple */[
   "caml_obj",
   function () {
-    if (!class_tables[0]) {
+    if (! class_tables[0]) {
       var $$class = CamlinternalOO.create_table(["say"]);
       var say = CamlinternalOO.get_method_label($$class, "say");
       CamlinternalOO.set_method($$class, say, function (_, x) {

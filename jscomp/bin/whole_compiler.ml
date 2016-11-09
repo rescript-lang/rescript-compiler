@@ -66910,7 +66910,10 @@ and
 
   | Not e ->
     let action () = 
-      P.string f "!" ;
+      (* gpr #904 
+         TODO: need check precedence of `+`
+      *)
+      P.string f "+!" ; 
       expression 13 cxt f e 
     in
     if l > 13 
@@ -67414,7 +67417,16 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
   | If (e, s1,  s2) -> (* TODO: always brace those statements *)
     P.string f L.if_;
     P.space f;
-    let cxt = P.paren_group f 1 @@ fun _ -> expression 0 cxt f e in
+    let cxt = P.paren_group f 1 @@ fun _ ->
+      begin match e with 
+      | {expression_desc = Not e ; comment }
+        ->
+        P.string f "!" ;
+        P.space f  ; (* TODO: check priority *)
+        expression 0 cxt f e 
+      | _ -> 
+        expression 0 cxt f e
+      end in
     P.space f;
     let cxt =
       block cxt f s1
@@ -90768,7 +90780,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-    Js_config.iset_debug_file "jsoo_400_test.ml";
+    Js_config.iset_debug_file "gpr_904_test.ml";
     let lambda_output = compile ~filename output_prefix false env sigs lam in
     let (//) = Filename.concat in 
     let basename =  

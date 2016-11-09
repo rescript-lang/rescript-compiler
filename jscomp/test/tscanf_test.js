@@ -634,7 +634,7 @@ function test7() {
                     ])]),
               "%C %C %C %C %C"
             ]), function (c1, c2, c3, c4, c5) {
-          return c1 === /* "a" */97 && c2 === /* "\n" */10 && c3 === /* "\t" */9 && !c4 ? +(c5 === /* " " */32) : /* false */0;
+          return c1 === /* "a" */97 && c2 === /* "\n" */10 && c3 === /* "\t" */9 && +!c4 ? +(c5 === /* " " */32) : /* false */0;
         })) {
     return Curry._1(Scanf.bscanf(Curry._1(Scanf.Scanning[/* from_string */6], "a \n \t \0  b"), /* Format */[
                     /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
@@ -649,7 +649,7 @@ function test7() {
                           ])]),
                     "%c %c %c "
                   ]), function (c1, c2, c3) {
-                if (c1 === /* "a" */97 && !c2) {
+                if (c1 === /* "a" */97 && +!c2) {
                   return +(c3 === /* "b" */98);
                 }
                 else {

@@ -296,7 +296,7 @@ function to_pair(e) {
     var match = e[1];
     if (match) {
       var match$1 = match[1];
-      if (match$1 && !match$1[1]) {
+      if (match$1 && +!match$1[1]) {
         return /* Some */[/* tuple */[
                   match[0],
                   match$1[0]
@@ -339,7 +339,7 @@ function to_triple(e) {
       var match$1 = match[1];
       if (match$1) {
         var match$2 = match$1[1];
-        if (match$2 && !match$2[1]) {
+        if (match$2 && +!match$2[1]) {
           return /* Some */[/* tuple */[
                     match[0],
                     match$1[0],

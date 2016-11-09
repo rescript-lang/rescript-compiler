@@ -20,7 +20,7 @@ function bool_equal(x, y) {
 }
 
 function assertions() {
-  if (!bool_equal(/* true */1, /* true */1)) {
+  if (! bool_equal(/* true */1, /* true */1)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -30,7 +30,7 @@ function assertions() {
           ]
         ];
   }
-  if (!bool_equal(/* false */0, /* false */0)) {
+  if (! bool_equal(/* false */0, /* false */0)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
