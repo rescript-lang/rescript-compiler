@@ -61471,24 +61471,37 @@ let bin ?comment (op : J.binop) e0 e1 : t =
   | EqEqEq -> triple_equal ?comment e0 e1
   | _ -> {expression_desc = Bin(op,e0,e1); comment}
 
+(* | (Bin (NotEqEq, e1,  *)
+(*         {expression_desc = Var (Id ({name = "undefined"; _} as id))}) *)
+(*   | Bin (NotEqEq,  *)
+(*          {expression_desc = Var (Id ({name = "undefined"; _} as id))},  *)
+(*          e1) *)
+(*   ),  *)
+(*   _ when Ext_ident.is_js id ->  *)
+(*   and_ e1 e2 *)
 (* TODO: Constant folding, Google Closure will do that?,
    Even if Google Clsoure can do that, we will see how it interact with other
    optimizations
    We wrap all boolean functions here, since OCaml boolean is a 
    bit different from Javascript, so that we can change it in the future
 *)
-let rec and_ ?comment (e1 : t) (e2 : t) = 
+let rec and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
-  (* | (Bin (NotEqEq, e1,  *)
-  (*         {expression_desc = Var (Id ({name = "undefined"; _} as id))}) *)
-  (*   | Bin (NotEqEq,  *)
-  (*          {expression_desc = Var (Id ({name = "undefined"; _} as id))},  *)
-  (*          e1) *)
-  (*   ),  *)
-  (*   _ when Ext_ident.is_js id ->  *)
-  (*   and_ e1 e2 *)
   |  Int_of_boolean e1 , Int_of_boolean e2 ->
     to_ocaml_boolean @@ and_ ?comment e1 e2
+
+(*
+   {[ a && (b && c) === (a && b ) && c ]}
+   is not used: benefit is not clear 
+  | Int_of_boolean e10, Bin(And, {expression_desc = Int_of_boolean e20 }, e3) 
+    -> 
+    and_ ?comment 
+      { e1 with expression_desc 
+                = 
+                  J.Int_of_boolean { expression_desc = Bin (And, e10,e20); comment = None}
+      }
+      e3
+*)
   (* Note that 
      {[ "" && 3 ]}
      return  "" instead of false, so [e1] is indeed useful
