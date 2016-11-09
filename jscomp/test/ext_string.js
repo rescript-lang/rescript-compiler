@@ -21,7 +21,7 @@ function split_by($staropt$star, is_delim, str) {
     var last_pos = _last_pos;
     var acc = _acc;
     if (pos === -1) {
-      if (last_pos === 0 && !keep_empty) {
+      if (last_pos === 0 && +!keep_empty) {
         return acc;
       }
       else {

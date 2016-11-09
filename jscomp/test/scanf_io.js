@@ -61,7 +61,7 @@ function get_lines(fname) {
   var ib = Curry._1(Scanf.Scanning[/* from_file */4], fname);
   var l = [/* [] */0];
   try {
-    while(!Curry._1(Scanf.Scanning[/* end_of_input */9], ib)) {
+    while(+!Curry._1(Scanf.Scanning[/* end_of_input */9], ib)) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
                     /* " " */32,

@@ -54,7 +54,7 @@ var q = /* record */[
   /* tail : None */0
 ];
 
-if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
+if (! to_list(q) === /* [] */0 && q[/* length */0] === 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -67,10 +67,10 @@ if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
 
 Queue.add(1, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* [] */0
-        ]) && q[/* length */0] === 1)) {
+if (! Caml_obj.caml_equal(to_list(q), /* :: */[
+        1,
+        /* [] */0
+      ]) && q[/* length */0] === 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -83,13 +83,13 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(2, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
-          ]
-        ]) && q[/* length */0] === 2)) {
+if (! Caml_obj.caml_equal(to_list(q), /* :: */[
+        1,
+        /* :: */[
+          2,
+          /* [] */0
+        ]
+      ]) && q[/* length */0] === 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -102,16 +102,16 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(3, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
+if (! Caml_obj.caml_equal(to_list(q), /* :: */[
+        1,
+        /* :: */[
+          2,
           /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
-            ]
+            3,
+            /* [] */0
           ]
-        ]) && q[/* length */0] === 3)) {
+        ]
+      ]) && q[/* length */0] === 3) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -124,19 +124,19 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
 
 Queue.add(4, q);
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          1,
+if (! Caml_obj.caml_equal(to_list(q), /* :: */[
+        1,
+        /* :: */[
+          2,
           /* :: */[
-            2,
+            3,
             /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
-              ]
+              4,
+              /* [] */0
             ]
           ]
-        ]) && q[/* length */0] === 4)) {
+        ]
+      ]) && q[/* length */0] === 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -158,16 +158,16 @@ if (Queue.take(q) !== 1) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          2,
+if (! Caml_obj.caml_equal(to_list(q), /* :: */[
+        2,
+        /* :: */[
+          3,
           /* :: */[
-            3,
-            /* :: */[
-              4,
-              /* [] */0
-            ]
+            4,
+            /* [] */0
           ]
-        ]) && q[/* length */0] === 3)) {
+        ]
+      ]) && q[/* length */0] === 3) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -189,13 +189,13 @@ if (Queue.take(q) !== 2) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          3,
-          /* :: */[
-            4,
-            /* [] */0
-          ]
-        ]) && q[/* length */0] === 2)) {
+if (! Caml_obj.caml_equal(to_list(q), /* :: */[
+        3,
+        /* :: */[
+          4,
+          /* [] */0
+        ]
+      ]) && q[/* length */0] === 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -217,10 +217,10 @@ if (Queue.take(q) !== 3) {
       ];
 }
 
-if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
-          4,
-          /* [] */0
-        ]) && q[/* length */0] === 1)) {
+if (! Caml_obj.caml_equal(to_list(q), /* :: */[
+        4,
+        /* [] */0
+      ]) && q[/* length */0] === 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -242,7 +242,7 @@ if (Queue.take(q) !== 4) {
       ];
 }
 
-if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
+if (! to_list(q) === /* [] */0 && q[/* length */0] === 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -253,7 +253,7 @@ if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
       ];
 }
 
-if (!does_raise(Queue.take, q)) {
+if (! does_raise(Queue.take, q)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -282,7 +282,7 @@ if (Queue.take(q$1) !== 1) {
       ];
 }
 
-if (!does_raise(Queue.take, q$1)) {
+if (! does_raise(Queue.take, q$1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -306,7 +306,7 @@ if (Queue.take(q$1) !== 2) {
       ];
 }
 
-if (!does_raise(Queue.take, q$1)) {
+if (! does_raise(Queue.take, q$1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -438,7 +438,7 @@ if (Queue.take(q$2) !== 3) {
       ];
 }
 
-if (!does_raise(Queue.peek, q$2)) {
+if (! does_raise(Queue.peek, q$2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -449,7 +449,7 @@ if (!does_raise(Queue.peek, q$2)) {
       ];
 }
 
-if (!does_raise(Queue.peek, q$2)) {
+if (! does_raise(Queue.peek, q$2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -482,7 +482,7 @@ if (q$3[/* length */0] !== 0) {
       ];
 }
 
-if (!does_raise(Queue.take, q$3)) {
+if (! does_raise(Queue.take, q$3)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -493,7 +493,7 @@ if (!does_raise(Queue.take, q$3)) {
       ];
 }
 
-if (!Caml_obj.caml_equal(q$3, /* record */[
+if (! Caml_obj.caml_equal(q$3, /* record */[
         /* length */0,
         /* tail : None */0
       ])) {
@@ -531,7 +531,7 @@ for(var i$1 = 1; i$1 <= 10; ++i$1){
 
 var q2 = Queue.copy(q1);
 
-if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q1), /* :: */[
         1,
         /* :: */[
           2,
@@ -572,7 +572,7 @@ if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q2), /* :: */[
         1,
         /* :: */[
           2,
@@ -691,7 +691,7 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
           ]
         ];
   }
-  if (!q$4[/* length */0]) {
+  if (! q$4[/* length */0]) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -715,7 +715,7 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
           ]
         ];
   }
-  if (!q$4[/* length */0]) {
+  if (! q$4[/* length */0]) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -900,7 +900,7 @@ if (q1$2[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q1$2), /* :: */[
         1,
         /* :: */[
           2,
@@ -980,7 +980,7 @@ if (q2$2[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q2$2), /* :: */[
         1,
         /* :: */[
           2,
@@ -1050,7 +1050,7 @@ if (q2$3[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q2$3), /* :: */[
         5,
         /* :: */[
           6,
@@ -1108,7 +1108,7 @@ if (q2$3[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q2$3), /* :: */[
         5,
         /* :: */[
           6,
@@ -1160,7 +1160,7 @@ if (q1$4[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q1$4), /* :: */[
         1,
         /* :: */[
           2,
@@ -1194,7 +1194,7 @@ if (q2$4[/* length */0] !== 4) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q2$4), /* :: */[
         5,
         /* :: */[
           6,
@@ -1252,7 +1252,7 @@ if (q2$4[/* length */0] !== 8) {
       ];
 }
 
-if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
+if (! Caml_obj.caml_equal(to_list(q2$4), /* :: */[
         5,
         /* :: */[
           6,

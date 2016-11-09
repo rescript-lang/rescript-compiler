@@ -968,7 +968,7 @@ function unary(stk) {
               ]
             ];
             unary(stk);
-            if (!List.mem_assoc(o, unops)) {
+            if (! List.mem_assoc(o, unops)) {
               var s = Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             "unknown operator ",
@@ -1289,7 +1289,7 @@ function decl(g, _n, _stk) {
     }
     else {
       Curry._1(unnext, t);
-      if (!g && n !== 0) {
+      if (+!g && n !== 0) {
         if ((n << 3) >= 256) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
@@ -1304,7 +1304,7 @@ function decl(g, _n, _stk) {
         out((n << 3));
         align[0] = align[0] + n | 0;
       }
-      if (dbg[0] && !g) {
+      if (dbg[0] && +!g) {
         console.error("end of blk decls");
       }
       return /* tuple */[
@@ -1361,7 +1361,7 @@ function stmt(brk, stk) {
     }
     else {
       Curry._1(next$1, /* () */0);
-      if (!nextis(/* Op */Block.__(0, [";"]))) {
+      if (! nextis(/* Op */Block.__(0, [";"]))) {
         expr(stk);
       }
       Curry._1(next$1, /* () */0);
@@ -1397,7 +1397,7 @@ function stmt(brk, stk) {
     return patch(/* true */1, bl[0], opos[0]);
   }
   else if (Caml_obj.caml_equal(t, tokret)) {
-    if (!nextis(/* Op */Block.__(0, [";"]))) {
+    if (! nextis(/* Op */Block.__(0, [";"]))) {
       expr(stk);
     }
     Curry._1(next$1, /* () */0);
@@ -1457,7 +1457,7 @@ function block(brk, stk) {
   var match = decl(/* false */0, 0, stk);
   var stk$prime = match[1];
   var n = match[0];
-  while(!nextis(/* Op */Block.__(0, ["}"]))) {
+  while(+!nextis(/* Op */Block.__(0, ["}"]))) {
     stmt(brk, stk$prime);
   };
   Curry._1(next$1, /* () */0);

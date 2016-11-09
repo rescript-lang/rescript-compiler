@@ -7272,7 +7272,7 @@ function compile(proto_definition) {
                                   var has_encoded = first ? Curry._3(f, /* None */0, type_, sc) : Curry._3(f, /* Some */[/* () */0], type_, sc);
                                   line$1(sc, "");
                                   if (first) {
-                                    return !has_encoded;
+                                    return +!has_encoded;
                                   }
                                   else {
                                     return /* false */0;
