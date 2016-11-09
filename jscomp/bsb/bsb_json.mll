@@ -10,8 +10,8 @@ type error =
   | Expect_colon
   | Expect_string_or_rbrace 
   | Expect_eof 
-  | Trailing_comma_in_obj
-  | Trailing_comma_in_array
+  (* | Trailing_comma_in_obj *)
+  (* | Trailing_comma_in_array *)
 exception Error of error * Lexing.position * Lexing.position;;
 
 let fprintf  = Format.fprintf
@@ -35,10 +35,10 @@ let report_error ppf = function
   | Unexpected_token 
     ->
     fprintf ppf "Unexpected_token"
-  | Trailing_comma_in_obj 
-    -> fprintf ppf "Trailing_comma_in_obj"
-  | Trailing_comma_in_array 
-    -> fprintf ppf "Trailing_comma_in_array"
+  (* | Trailing_comma_in_obj  *)
+  (*   -> fprintf ppf "Trailing_comma_in_obj" *)
+  (* | Trailing_comma_in_array  *)
+  (*   -> fprintf ppf "Trailing_comma_in_array" *)
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
          
@@ -283,9 +283,9 @@ let rec parse_json lexbuf =
   and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
     match token () with 
     | Rbracket ->
-      if trailing_comma then 
-        error lexbuf Trailing_comma_in_array
-      else 
+      (* if trailing_comma then  *)
+      (*   error lexbuf Trailing_comma_in_array *)
+      (* else  *)
         `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
@@ -304,9 +304,9 @@ let rec parse_json lexbuf =
   and parse_map trailing_comma acc lexbuf : t = 
     match token () with 
     | Rbrace -> 
-      if trailing_comma then 
-        error lexbuf Trailing_comma_in_obj
-      else 
+      (* if trailing_comma then  *)
+      (*   error lexbuf Trailing_comma_in_obj *)
+      (* else  *)
         `Obj acc 
     | String key -> 
       begin match token () with 

@@ -4,7 +4,15 @@ bin/all_ounit_tests.ml : ounit/oUnitUtils.ml
 bin/all_ounit_tests.ml : ounit/oUnitLogger.ml
 bin/all_ounit_tests.ml : ounit/oUnit.ml
 bin/all_ounit_tests.ml : ounit/oUnit.mli
+bin/all_ounit_tests.ml : ext/ext_array.ml
+bin/all_ounit_tests.ml : ext/ext_array.mli
+bin/all_ounit_tests.ml : ext/string_map.ml
+bin/all_ounit_tests.ml : ext/string_map.mli
+bin/all_ounit_tests.ml : bsb/bsb_json.ml
+bin/all_ounit_tests.ml : bsb/bsb_json.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_json_tests.ml
 bin/all_ounit_tests.ml : ext/resize_array.ml
 bin/all_ounit_tests.ml : ext/resize_array.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_vec_test.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_tests_main.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_tests_main.mli
