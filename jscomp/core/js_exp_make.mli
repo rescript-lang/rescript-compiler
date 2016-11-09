@@ -56,8 +56,11 @@ type binary_op =   ?comment:string -> t -> t -> t
 
 type unary_op =  ?comment:string -> t -> t
 
-
-
+(** simplify 
+    {[if b then ]}
+    there is no need to convert b into OCaml boolean under this scenario
+*)
+val ocaml_boolean_under_condition : t -> t 
 
 
 val bin : ?comment:string -> J.binop -> t -> t -> t

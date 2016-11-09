@@ -1165,7 +1165,7 @@ function test111() {
             });
 }
 
-test('File "tscanf_test.ml", line 293, characters 5-12', +(test11(/* () */0) && test110(/* () */0) && test111(/* () */0)));
+test('File "tscanf_test.ml", line 293, characters 5-12', test11(/* () */0) && test110(/* () */0) && test111(/* () */0));
 
 function ib() {
   return Curry._1(Scanf.Scanning[/* from_string */6], "[1;2;3;4; ]");
@@ -2104,7 +2104,7 @@ function test27() {
   return Testing.scan_failure_test(scan_int_list$5, Curry._1(Scanf.Scanning[/* from_string */6], "[1;2;3;4;; 23]"));
 }
 
-+(test24(/* () */0) && test25(/* () */0) && test26(/* () */0) && test27(/* () */0));
+test24(/* () */0) && test25(/* () */0) && test26(/* () */0) && test27(/* () */0);
 
 function scan_string_elem(ib) {
   return Scanf.bscanf(ib, /* Format */[
@@ -2929,7 +2929,7 @@ function test35() {
   }
 }
 
-test('File "tscanf_test.ml", line 940, characters 5-12', +(test340(/* () */0) && test35(/* () */0)));
+test('File "tscanf_test.ml", line 940, characters 5-12', test340(/* () */0) && test35(/* () */0));
 
 function read_elems(read_elem, accu, ib) {
   return Curry._2(Scanf.kscanf(ib, function (_, _$1) {
@@ -3286,7 +3286,7 @@ var test44 = match_001;
 
 var test43 = match_000;
 
-+(Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test43, /* () */0) && Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test44, /* () */0));
+Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test43, /* () */0) && Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test44, /* () */0);
 
 function test45() {
   var ib = Curry._1(Scanf.Scanning[/* from_string */6], "12.2");

@@ -269,6 +269,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       aux ?comment e then_ else_ acc 
 
     | _ -> 
+      let e = E.ocaml_boolean_under_condition e in 
       { statement_desc = If (e, 
                              then_,
                              (match else_ with 
@@ -315,9 +316,10 @@ let declare_unit ?comment  id :  t =
 
 let rec while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
   match e with 
-  | {expression_desc = Int_of_boolean e; _} -> 
-    while_ ?comment  ?label  e st
+  (* | {expression_desc = Int_of_boolean e; _} ->  *)
+  (*   while_ ?comment  ?label  e st *)
   | _ -> 
+    let e = E.ocaml_boolean_under_condition e in
     let env = 
       match env with 
       | None -> Js_closure.empty ()
