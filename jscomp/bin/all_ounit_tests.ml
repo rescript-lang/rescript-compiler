@@ -1600,8 +1600,8 @@ type error =
   | Expect_colon
   | Expect_string_or_rbrace 
   | Expect_eof 
-  | Trailing_comma_in_obj
-  | Trailing_comma_in_array
+  (* | Trailing_comma_in_obj *)
+  (* | Trailing_comma_in_array *)
 exception Error of error * Lexing.position * Lexing.position;;
 
 let fprintf  = Format.fprintf
@@ -1625,10 +1625,10 @@ let report_error ppf = function
   | Unexpected_token 
     ->
     fprintf ppf "Unexpected_token"
-  | Trailing_comma_in_obj 
-    -> fprintf ppf "Trailing_comma_in_obj"
-  | Trailing_comma_in_array 
-    -> fprintf ppf "Trailing_comma_in_array"
+  (* | Trailing_comma_in_obj  *)
+  (*   -> fprintf ppf "Trailing_comma_in_obj" *)
+  (* | Trailing_comma_in_array  *)
+  (*   -> fprintf ppf "Trailing_comma_in_array" *)
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
          
@@ -2328,6 +2328,7 @@ open Bsb_json
 let (|?)  m (key, cb) =
     m  |> Bsb_json.test key cb 
 
+exception Parse_error 
 let suites = 
   __FILE__ 
   >:::
@@ -2346,6 +2347,23 @@ let suites =
       | _ -> OUnit.assert_failure "should be empty"
     end
     ;
+    "empty trails" >:: begin fun _ -> 
+      (OUnit.assert_raises Parse_error @@ fun _ -> 
+       try parse_json_from_string {| [,]|} with _ -> raise Parse_error);
+      OUnit.assert_raises Parse_error @@ fun _ -> 
+        try parse_json_from_string {| {,}|} with _ -> raise Parse_error
+    end;
+    "two trails" >:: begin fun _ -> 
+      (OUnit.assert_raises Parse_error @@ fun _ -> 
+       try parse_json_from_string {| [1,2,,]|} with _ -> raise Parse_error);
+      (OUnit.assert_raises Parse_error @@ fun _ -> 
+       try parse_json_from_string {| { "x": 3, ,}|} with _ -> raise Parse_error)
+    end;
+
+    "two trails fail" >:: begin fun _ -> 
+      (OUnit.assert_raises Parse_error @@ fun _ -> 
+       try parse_json_from_string {| { "x": 3, 2 ,}|} with _ -> raise Parse_error)
+    end;
 
     "trail comma obj" >:: begin fun _ -> 
       let v =  parse_json_from_string {| { "x" : 3 , }|} in 

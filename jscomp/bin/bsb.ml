@@ -2399,8 +2399,8 @@ type error =
   | Expect_colon
   | Expect_string_or_rbrace 
   | Expect_eof 
-  | Trailing_comma_in_obj
-  | Trailing_comma_in_array
+  (* | Trailing_comma_in_obj *)
+  (* | Trailing_comma_in_array *)
 exception Error of error * Lexing.position * Lexing.position;;
 
 let fprintf  = Format.fprintf
@@ -2424,10 +2424,10 @@ let report_error ppf = function
   | Unexpected_token 
     ->
     fprintf ppf "Unexpected_token"
-  | Trailing_comma_in_obj 
-    -> fprintf ppf "Trailing_comma_in_obj"
-  | Trailing_comma_in_array 
-    -> fprintf ppf "Trailing_comma_in_array"
+  (* | Trailing_comma_in_obj  *)
+  (*   -> fprintf ppf "Trailing_comma_in_obj" *)
+  (* | Trailing_comma_in_array  *)
+  (*   -> fprintf ppf "Trailing_comma_in_array" *)
   | Unterminated_comment 
     -> fprintf ppf "Unterminated_comment"
          
