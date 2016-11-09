@@ -620,9 +620,9 @@ let rec parse_json lexbuf =
   and parse_array  trailing_comma loc_start loc_finish acc lexbuf : t =
     match token () with 
     | Rbracket ->
-      if trailing_comma then 
-        error lexbuf Trailing_comma_in_array
-      else 
+      (* if trailing_comma then  *)
+      (*   error lexbuf Trailing_comma_in_array *)
+      (* else  *)
         `Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
@@ -641,9 +641,9 @@ let rec parse_json lexbuf =
   and parse_map trailing_comma acc lexbuf : t = 
     match token () with 
     | Rbrace -> 
-      if trailing_comma then 
-        error lexbuf Trailing_comma_in_obj
-      else 
+      (* if trailing_comma then  *)
+      (*   error lexbuf Trailing_comma_in_obj *)
+      (* else  *)
         `Obj acc 
     | String key -> 
       begin match token () with 
