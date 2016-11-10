@@ -741,8 +741,10 @@ and
     if l > 12 
     then P.paren_group f 1 action 
     else action ()
+  | Caml_not e ->
+    expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
 
-  | Not e ->
+  | Js_not e ->
     let action () = 
       P.string f "!" ;
       expression 13 cxt f e 
@@ -1228,7 +1230,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Typeof _
       | Bind _ 
       | Number _
-      | Not _ 
+      | Caml_not _ (* FIXME*)
+      | Js_not _ 
       | Bool _
       | New _ 
       | J.Anything_to_number _ 

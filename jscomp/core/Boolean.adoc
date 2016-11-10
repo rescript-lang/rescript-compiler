@@ -26,7 +26,7 @@ JS operatons which could generate JS booleans
 - `not`
 - Equality comparison
 
-`and`, `or` is fine
+# `and`, `or` is fine
 In JS, `and`, `or` is untyped, but it is a superset of OCaml semantics:
 
 [source,js]
@@ -40,3 +40,7 @@ There is no coersion so `1&&0`, `1&&1`, `0&&1`, `0&&0` are all the same as JS ve
 Same for `or`
 
 but `not` is not the same as `!`, `!` will do the conversion to enforce its result is JS boolean  
+
+# It does not affect `if_then_else` compilation
+
+since JS if is more capable, there is no need do any coercion  

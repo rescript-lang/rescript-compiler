@@ -57336,7 +57336,8 @@ and expression_desc =
      [typeof] is an operator     
   *)
   | Typeof of expression
-  | Not of expression (* !v *)
+  | Caml_not of expression (* 1 - v *)
+  | Js_not of expression (* !v *)
   | String_of_small_int_array of expression 
     (* String.fromCharCode.apply(null, args) *)
     (* Convert JS boolean into OCaml boolean 
@@ -59639,7 +59640,8 @@ class virtual fold =
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* !v *) (* String.fromCharCode.apply(null, args) *)
+                 (* 1 - v *) (* !v *)
+                 (* String.fromCharCode.apply(null, args) *)
                  (* Convert JS boolean into OCaml boolean 
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
@@ -59877,7 +59879,8 @@ class virtual fold =
       | Anything_to_number _x -> let o = o#expression _x in o
       | Bool _x -> let o = o#bool _x in o
       | Typeof _x -> let o = o#expression _x in o
-      | Not _x -> let o = o#expression _x in o
+      | Caml_not _x -> let o = o#expression _x in o
+      | Js_not _x -> let o = o#expression _x in o
       | String_of_small_int_array _x -> let o = o#expression _x in o
       | Json_stringify _x -> let o = o#expression _x in o
       | Anything_to_string _x -> let o = o#expression _x in o
@@ -60178,7 +60181,8 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   (* | Tag_ml_obj _ *)
   | Int_of_boolean _ 
   | J.Anything_to_number _
-  | Not _ 
+  | Caml_not _ 
+  | Js_not _
   | String_of_small_int_array _ 
   | Json_stringify _ 
   | Anything_to_string _ 
@@ -61546,24 +61550,37 @@ let rec or_ ?comment (e1 : t) (e2 : t) =
      it is right that !(x > 3 ) -> x <= 3 *)
 let rec not ({expression_desc; comment} as e : t) : t =
   match expression_desc with 
-  | Bin(EqEqEq , e0,e1)
-    -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
-  | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
-
-  (* Note here the compiled js use primtive comparison only 
-     for *primitive types*, so it is safe to do such optimization,
-     for generic comparison, this does not hold        
-  *)
-  | Bin(Lt, a, b) -> {e with expression_desc = Bin (Ge,a,b)}
-  | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}          
-  | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
-  | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
-
   | Number (Int {i; _}) -> 
     if i <> 0l then caml_false else caml_true
-  | Int_of_boolean  e -> not e
-  | Not e -> e 
-  | x -> {expression_desc = Not e ; comment = None}
+  | Int_of_boolean  x -> js_not  x  e
+  | Caml_not e -> e
+  | Js_not e -> e 
+  (* match expression_desc with  *)
+  (* can still hapen after some optimizations *)
+  | Bin(EqEqEq , e0,e1) 
+    -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
+  | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
+  | Bin(Lt, a, b) -> {e with expression_desc = Bin (Ge,a,b)}
+  | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}
+  | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
+  | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
+  | x -> {expression_desc = Caml_not e ; comment = None}
+and js_not ({expression_desc; comment} as e : t) origin : t =
+  match expression_desc with 
+  | Bin(EqEqEq , e0,e1) 
+    -> 
+    to_ocaml_boolean {expression_desc = Bin(NotEqEq, e0,e1); comment}
+  | Bin(NotEqEq , e0,e1) -> 
+    to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
+  | Bin(Lt, a, b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Ge,a,b)}
+  | Bin(Ge,a,b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Lt,a,b)}
+  | Bin(Le,a,b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Gt,a,b)}
+  | Bin(Gt,a,b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Le,a,b)}
+  | _ -> {expression_desc = Caml_not origin; comment = None}
 
 let rec ocaml_boolean_under_condition (b : t) =
   match b.expression_desc with 
@@ -61579,11 +61596,15 @@ let rec ocaml_boolean_under_condition (b : t) =
     if x == x' && y == y' then b 
     else {b with expression_desc = Bin(Or,x',y')}
   (** TODO: settle down Not semantics *)
-  | Not u
+  | Caml_not u
+    -> 
+    let u' = ocaml_boolean_under_condition u in 
+    {b with expression_desc = Js_not u'}
+  | Js_not u 
     -> 
     let u' = ocaml_boolean_under_condition u in 
     if u' == u then b 
-    else {b with expression_desc = Not u'} 
+    else {b with expression_desc = Js_not u'} 
   | _ -> b 
   
 let rec econd ?comment (b : t) (t : t) (f : t) : t = 
@@ -61665,7 +61686,10 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
     (* the same as above except we revert the [cond] expression *)      
     econd (or_ b (not p1')) t branch_code0
 
-  | Not e, _, _ -> econd ?comment e f t 
+  | Caml_not e, _, _ 
+  | Js_not e, _, _ 
+    ->
+    econd ?comment e f t 
   | Int_of_boolean  b, _, _  -> econd ?comment  b t f
   (* | Bin (And ,{expression_desc = Int_of_boolean b0},b1), _, _  -> *)
   (*   econd ?comment { b with expression_desc = Bin (And , b0,b1)} t f *)
@@ -65228,8 +65252,8 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       exp (E.econd e b a) :: acc 
     | _, [], []                                   
       -> exp e :: acc 
-
-    | Not e, _ , _ :: _
+    | Caml_not e, _ , _ :: _
+    | Js_not e, _ , _ :: _
       -> aux ?comment e else_ then_ acc
     | _, [], _
       ->
@@ -66953,8 +66977,10 @@ and
     if l > 12 
     then P.paren_group f 1 action 
     else action ()
+  | Caml_not e ->
+    expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
 
-  | Not e ->
+  | Js_not e ->
     let action () = 
       P.string f "!" ;
       expression 13 cxt f e 
@@ -67440,7 +67466,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Typeof _
       | Bind _ 
       | Number _
-      | Not _ 
+      | Caml_not _ (* FIXME*)
+      | Js_not _ 
       | Bool _
       | New _ 
       | J.Anything_to_number _ 
@@ -68664,7 +68691,8 @@ class virtual map =
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* !v *) (* String.fromCharCode.apply(null, args) *)
+                 (* 1 - v *) (* !v *)
+                 (* String.fromCharCode.apply(null, args) *)
                  (* Convert JS boolean into OCaml boolean 
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
@@ -68917,7 +68945,8 @@ class virtual map =
           let _x = o#expression _x in Anything_to_number _x
       | Bool _x -> let _x = o#bool _x in Bool _x
       | Typeof _x -> let _x = o#expression _x in Typeof _x
-      | Not _x -> let _x = o#expression _x in Not _x
+      | Caml_not _x -> let _x = o#expression _x in Caml_not _x
+      | Js_not _x -> let _x = o#expression _x in Js_not _x
       | String_of_small_int_array _x ->
           let _x = o#expression _x in String_of_small_int_array _x
       | Json_stringify _x -> let _x = o#expression _x in Json_stringify _x

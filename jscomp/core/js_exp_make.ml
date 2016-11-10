@@ -631,24 +631,37 @@ let rec or_ ?comment (e1 : t) (e2 : t) =
      it is right that !(x > 3 ) -> x <= 3 *)
 let rec not ({expression_desc; comment} as e : t) : t =
   match expression_desc with 
-  | Bin(EqEqEq , e0,e1)
-    -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
-  | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
-
-  (* Note here the compiled js use primtive comparison only 
-     for *primitive types*, so it is safe to do such optimization,
-     for generic comparison, this does not hold        
-  *)
-  | Bin(Lt, a, b) -> {e with expression_desc = Bin (Ge,a,b)}
-  | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}          
-  | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
-  | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
-
   | Number (Int {i; _}) -> 
     if i <> 0l then caml_false else caml_true
-  | Int_of_boolean  e -> not e
-  | Not e -> e 
-  | x -> {expression_desc = Not e ; comment = None}
+  | Int_of_boolean  x -> js_not  x  e
+  | Caml_not e -> e
+  | Js_not e -> e 
+  (* match expression_desc with  *)
+  (* can still hapen after some optimizations *)
+  | Bin(EqEqEq , e0,e1) 
+    -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
+  | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
+  | Bin(Lt, a, b) -> {e with expression_desc = Bin (Ge,a,b)}
+  | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}
+  | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
+  | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
+  | x -> {expression_desc = Caml_not e ; comment = None}
+and js_not ({expression_desc; comment} as e : t) origin : t =
+  match expression_desc with 
+  | Bin(EqEqEq , e0,e1) 
+    -> 
+    to_ocaml_boolean {expression_desc = Bin(NotEqEq, e0,e1); comment}
+  | Bin(NotEqEq , e0,e1) -> 
+    to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
+  | Bin(Lt, a, b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Ge,a,b)}
+  | Bin(Ge,a,b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Lt,a,b)}
+  | Bin(Le,a,b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Gt,a,b)}
+  | Bin(Gt,a,b) -> 
+    to_ocaml_boolean {e with expression_desc = Bin (Le,a,b)}
+  | _ -> {expression_desc = Caml_not origin; comment = None}
 
 let rec ocaml_boolean_under_condition (b : t) =
   match b.expression_desc with 
@@ -664,11 +677,15 @@ let rec ocaml_boolean_under_condition (b : t) =
     if x == x' && y == y' then b 
     else {b with expression_desc = Bin(Or,x',y')}
   (** TODO: settle down Not semantics *)
-  | Not u
+  | Caml_not u
+    -> 
+    let u' = ocaml_boolean_under_condition u in 
+    {b with expression_desc = Js_not u'}
+  | Js_not u 
     -> 
     let u' = ocaml_boolean_under_condition u in 
     if u' == u then b 
-    else {b with expression_desc = Not u'} 
+    else {b with expression_desc = Js_not u'} 
   | _ -> b 
   
 let rec econd ?comment (b : t) (t : t) (f : t) : t = 
@@ -750,7 +767,10 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
     (* the same as above except we revert the [cond] expression *)      
     econd (or_ b (not p1')) t branch_code0
 
-  | Not e, _, _ -> econd ?comment e f t 
+  | Caml_not e, _, _ 
+  | Js_not e, _, _ 
+    ->
+    econd ?comment e f t 
   | Int_of_boolean  b, _, _  -> econd ?comment  b t f
   (* | Bin (And ,{expression_desc = Int_of_boolean b0},b1), _, _  -> *)
   (*   econd ?comment { b with expression_desc = Bin (And , b0,b1)} t f *)
