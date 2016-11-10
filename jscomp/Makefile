@@ -48,7 +48,7 @@ common/bs_version.ml: build_version.js ../package.json
 ### list files 
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_path_tests ounit_json_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_array ext_bytes ext_char resize_array ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
