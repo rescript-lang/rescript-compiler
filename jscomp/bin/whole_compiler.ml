@@ -66979,13 +66979,6 @@ and
     else action ()
   | Caml_not e ->
     expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
-    (* let action () =  *)
-    (*   P.string f "+!" ; (\* FIXME: priority*\) *)
-    (*   expression 13 cxt f e  *)
-    (* in *)
-    (* if l > 13  *)
-    (* then P.paren_group f 1 action  *)
-    (* else action () *)
 
   | Js_not e ->
     let action () = 

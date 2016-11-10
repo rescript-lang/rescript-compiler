@@ -316,6 +316,8 @@ gpr_627_test.cmj : mt.cmi
 gpr_627_test.cmx : mt.cmx
 gpr_658.cmj : ../runtime/js.cmj
 gpr_658.cmx : ../runtime/js.cmx
+gpr_904_test.cmj : mt.cmi
+gpr_904_test.cmx : mt.cmx
 guide_for_ext.cmj :
 guide_for_ext.cmx :
 hamming_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
@@ -386,8 +388,8 @@ js_date.cmj : ../runtime/js.cmj
 js_date.cmx : ../runtime/js.cmx
 js_date_test.cmj : mt.cmi js_date.cmj
 js_date_test.cmx : mt.cmx js_date.cmx
-js_json_test.cmj : ../runtime/js.cmj
-js_json_test.cmx : ../runtime/js.cmx
+js_json_test.cmj : mt.cmi ../runtime/js.cmj
+js_json_test.cmx : mt.cmx ../runtime/js.cmx
 js_obj_test.cmj : mt.cmi
 js_obj_test.cmx : mt.cmx
 js_string_test.cmj : mt.cmi ../runtime/js.cmj
@@ -1184,6 +1186,8 @@ gpr_627_test.cmo : mt.cmi
 gpr_627_test.cmj : mt.cmj
 gpr_658.cmo : ../runtime/js.cmo
 gpr_658.cmj : ../runtime/js.cmj
+gpr_904_test.cmo : mt.cmi
+gpr_904_test.cmj : mt.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
 hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
@@ -1254,8 +1258,8 @@ js_date.cmo : ../runtime/js.cmo
 js_date.cmj : ../runtime/js.cmj
 js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
-js_json_test.cmo : ../runtime/js.cmo
-js_json_test.cmj : ../runtime/js.cmj
+js_json_test.cmo : mt.cmi ../runtime/js.cmo
+js_json_test.cmj : mt.cmj ../runtime/js.cmj
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
 js_string_test.cmo : mt.cmi ../runtime/js.cmo
