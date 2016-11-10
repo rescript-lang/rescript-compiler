@@ -18,7 +18,8 @@ let suites =
   __FILE__ >:::
   [
     Ounit_vec_test.suites;
-    Ounit_json_tests.suites
+    Ounit_json_tests.suites;
+    Ounit_path_tests.suites
   ]
 let _ = 
   OUnit.run_test_tt_main suites

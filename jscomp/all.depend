@@ -525,9 +525,11 @@ ounit/oUnitTypes.cmx :
 ounit/oUnitUtils.cmx : ounit/oUnitTypes.cmx
 ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \
     bsb/bsb_json.cmx
+ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_filename.cmx
 ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
-    ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_json_tests.cmx \
-    ounit/oUnit.cmx ounit_tests/ounit_tests_main.cmi
+    ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_path_tests.cmx \
+    ounit_tests/ounit_json_tests.cmx ounit/oUnit.cmx \
+    ounit_tests/ounit_tests_main.cmi
 ounit_tests/ounit_vec_test.cmx : ext/resize_array.cmx ounit/oUnit.cmx \
     bsb/bsb_json.cmx
 ounit_tests/ounit_tests_main.cmi :
