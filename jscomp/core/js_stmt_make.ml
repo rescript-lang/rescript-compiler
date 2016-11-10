@@ -208,8 +208,8 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       exp (E.econd e b a) :: acc 
     | _, [], []                                   
       -> exp e :: acc 
-
-    | Not e, _ , _ :: _
+    | Caml_not e, _ , _ :: _
+    | Js_not e, _ , _ :: _
       -> aux ?comment e else_ then_ acc
     | _, [], _
       ->

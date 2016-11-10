@@ -7149,7 +7149,7 @@ function identifier_no_dupe_check(param, param$1) {
 
 function strict_post_check(env, strict, simple, id, params) {
   if (strict || !simple) {
-    var env$1 = strict ? with_strict(!env[/* in_strict_mode */5], env) : env;
+    var env$1 = strict ? with_strict(1 - env[/* in_strict_mode */5], env) : env;
     if (id) {
       var match = id[0];
       var name = match[1][/* name */0];
@@ -7692,7 +7692,7 @@ function assignment(env) {
         error$1(env$1, /* IllegalYield */24);
       }
       var delegate = maybe(env$1, /* T_MULT */97);
-      var has_argument = !(+(Curry._2(Parser_env_048[/* token */0], /* None */0, env$1) === /* T_SEMICOLON */7) || Curry._1(Parser_env_048[/* is_implicit_semicolon */6], env$1));
+      var has_argument = 1 - (+(Curry._2(Parser_env_048[/* token */0], /* None */0, env$1) === /* T_SEMICOLON */7) || Curry._1(Parser_env_048[/* is_implicit_semicolon */6], env$1));
       var argument = delegate || has_argument ? /* Some */[Curry._1(assignment, env$1)] : /* None */0;
       var end_loc;
       if (argument) {

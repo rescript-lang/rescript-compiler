@@ -134,7 +134,8 @@ class virtual fold =
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* !v *) (* String.fromCharCode.apply(null, args) *)
+                 (* 1 - v *) (* !v *)
+                 (* String.fromCharCode.apply(null, args) *)
                  (* Convert JS boolean into OCaml boolean 
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
@@ -372,7 +373,8 @@ class virtual fold =
       | Anything_to_number _x -> let o = o#expression _x in o
       | Bool _x -> let o = o#bool _x in o
       | Typeof _x -> let o = o#expression _x in o
-      | Not _x -> let o = o#expression _x in o
+      | Caml_not _x -> let o = o#expression _x in o
+      | Js_not _x -> let o = o#expression _x in o
       | String_of_small_int_array _x -> let o = o#expression _x in o
       | Json_stringify _x -> let o = o#expression _x in o
       | Anything_to_string _x -> let o = o#expression _x in o

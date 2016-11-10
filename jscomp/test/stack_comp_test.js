@@ -304,12 +304,12 @@ assert_('File "stack_comp_test.ml", line 93, characters 10-17', +(s$4[/* c */0] 
 for(var i$4 = 1; i$4 <= 10; ++i$4){
   Stack.push(i$4, s$4);
   assert_('File "stack_comp_test.ml", line 96, characters 12-19', +(List.length(s$4[/* c */0]) === i$4));
-  assert_('File "stack_comp_test.ml", line 97, characters 12-19', s$4[/* c */0] !== /* [] */0);
+  assert_('File "stack_comp_test.ml", line 97, characters 12-19', +(s$4[/* c */0] !== /* [] */0));
 }
 
 for(var i$5 = 10; i$5 >= 1; --i$5){
   assert_('File "stack_comp_test.ml", line 100, characters 12-19', +(List.length(s$4[/* c */0]) === i$5));
-  assert_('File "stack_comp_test.ml", line 101, characters 12-19', s$4[/* c */0] !== /* [] */0);
+  assert_('File "stack_comp_test.ml", line 101, characters 12-19', +(s$4[/* c */0] !== /* [] */0));
   Stack.pop(s$4);
 }
 
