@@ -409,7 +409,7 @@ function main() {
   var bdd = hwb(22);
   var succeeded = /* true */1;
   for(var i = 1; i <= 100; ++i){
-    succeeded = +(succeeded && test_hwb(bdd, random_vars(22)));
+    succeeded = succeeded && test_hwb(bdd, random_vars(22));
   }
   if (succeeded) {
     return 0;

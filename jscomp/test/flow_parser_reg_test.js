@@ -2727,7 +2727,7 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
             var e = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
             Buffer.add_char(raw$1, e);
             var match = string_escape(env$1, buf$1, lexbuf$1);
-            var octal$2 = +(match[1] || octal$1);
+            var octal$2 = match[1] || octal$1;
             Buffer.add_string(raw$1, Lexing.lexeme(lexbuf$1));
             return string_quote(match[0], q$1, buf$1, raw$1, octal$2, lexbuf$1);
         case 2 : 
@@ -6608,7 +6608,7 @@ function properties(allow_static, env, _param) {
     var indexers = param[1];
     var acc = param[0];
     var start_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
-    var $$static = +(allow_static && maybe(env, /* T_STATIC */40));
+    var $$static = allow_static && maybe(env, /* T_STATIC */40);
     var match = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
     var exit = 0;
     if (typeof match === "number") {
@@ -7220,7 +7220,7 @@ function param_list$1(env, _param) {
       case 1 : 
           var match = param$1(env);
           var $$default = match[1];
-          var has_default$1 = +(has_default || $$default !== /* None */0);
+          var has_default$1 = has_default || +($$default !== /* None */0);
           if (Curry._2(Parser_env_048[/* token */0], /* None */0, env) !== /* T_RPAREN */4) {
             token$4(env, /* T_COMMA */8);
           }
@@ -7692,7 +7692,7 @@ function assignment(env) {
         error$1(env$1, /* IllegalYield */24);
       }
       var delegate = maybe(env$1, /* T_MULT */97);
-      var has_argument = !(Curry._2(Parser_env_048[/* token */0], /* None */0, env$1) === /* T_SEMICOLON */7 || Curry._1(Parser_env_048[/* is_implicit_semicolon */6], env$1));
+      var has_argument = !(+(Curry._2(Parser_env_048[/* token */0], /* None */0, env$1) === /* T_SEMICOLON */7) || Curry._1(Parser_env_048[/* is_implicit_semicolon */6], env$1));
       var argument = delegate || has_argument ? /* Some */[Curry._1(assignment, env$1)] : /* None */0;
       var end_loc;
       if (argument) {
@@ -9303,7 +9303,7 @@ function error_callback$1(_, param) {
 function try_arrow_function(env) {
   var env$1 = with_error_callback(error_callback$1, env);
   var start_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env$1);
-  var async$1 = +(Curry._2(Parser_env_048[/* token */0], /* Some */[1], env$1) !== /* T_ARROW */10 && async(env$1));
+  var async$1 = +(Curry._2(Parser_env_048[/* token */0], /* Some */[1], env$1) !== /* T_ARROW */10) && async(env$1);
   var typeParameters = type_parameter_declaration$1(env$1);
   var match;
   if (Curry._2(Parser_env_048[/* is_identifier */8], /* None */0, env$1) && typeParameters === /* None */0) {
@@ -9707,7 +9707,7 @@ function property$1(env) {
               ]]);
   }
   else {
-    var async$1 = +(Curry._2(Parser_env_048[/* is_identifier */8], /* Some */[1], env) && async(env));
+    var async$1 = Curry._2(Parser_env_048[/* is_identifier */8], /* Some */[1], env) && async(env);
     var match = generator(env, async$1);
     var match$1 = key(env);
     var $js;
@@ -10377,7 +10377,7 @@ function class_element(env) {
   var start_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
   var decorators = decorator_list(env);
   var $$static = maybe(env, /* T_STATIC */40);
-  var async$1 = +(Curry._2(Parser_env_048[/* token */0], /* Some */[1], env) !== /* T_LPAREN */3 && Curry._2(Parser_env_048[/* token */0], /* Some */[1], env) !== /* T_COLON */77 && async(env));
+  var async$1 = +(Curry._2(Parser_env_048[/* token */0], /* Some */[1], env) !== /* T_LPAREN */3) && +(Curry._2(Parser_env_048[/* token */0], /* Some */[1], env) !== /* T_COLON */77) && async(env);
   var generator$1 = generator(env, async$1);
   var match = key(env);
   var exit = 0;
@@ -10688,7 +10688,7 @@ function case_list(env, _param) {
         token$4(env, /* T_CASE */31);
         test = /* Some */[Curry._1(Parse[/* expression */6], env)];
       }
-      var seen_default$1 = +(seen_default || test === /* None */0);
+      var seen_default$1 = seen_default || +(test === /* None */0);
       var end_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
       token$4(env, /* T_COLON */77);
       var term_fn = function (param) {
@@ -12966,7 +12966,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
             else {
               var loc = match$1[0];
               var len = loc[/* _end */2][/* column */1] - loc[/* start */1][/* column */1] | 0;
-              var strict = +(env[/* in_strict_mode */5] || match$3[0] === "use strict" && len === 12);
+              var strict = env[/* in_strict_mode */5] || +(match$3[0] === "use strict" && len === 12);
               var string_tokens$1 = /* :: */[
                 string_token,
                 string_tokens

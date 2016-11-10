@@ -60679,8 +60679,11 @@ type binary_op =   ?comment:string -> t -> t -> t
 
 type unary_op =  ?comment:string -> t -> t
 
-
-
+(** simplify 
+    {[if b then ]}
+    there is no need to convert b into OCaml boolean under this scenario
+*)
+val ocaml_boolean_under_condition : t -> t 
 
 
 val bin : ?comment:string -> J.binop -> t -> t -> t
@@ -61415,6 +61418,9 @@ let caml_false  = int ~comment:"false" 0l
 
 let bool v = if  v then caml_true else caml_false
 
+(** Here we have to use JS [===], and therefore, we are introducing 
+    Js boolean, so be sure to convert it back to OCaml boolean
+ *)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
   | Var (Id ({name = "undefined"|"null"; } as id)), 
@@ -61465,62 +61471,74 @@ let bin ?comment (op : J.binop) e0 e1 : t =
   | EqEqEq -> triple_equal ?comment e0 e1
   | _ -> {expression_desc = Bin(op,e0,e1); comment}
 
+(* | (Bin (NotEqEq, e1,  *)
+(*         {expression_desc = Var (Id ({name = "undefined"; _} as id))}) *)
+(*   | Bin (NotEqEq,  *)
+(*          {expression_desc = Var (Id ({name = "undefined"; _} as id))},  *)
+(*          e1) *)
+(*   ),  *)
+(*   _ when Ext_ident.is_js id ->  *)
+(*   and_ e1 e2 *)
 (* TODO: Constant folding, Google Closure will do that?,
    Even if Google Clsoure can do that, we will see how it interact with other
    optimizations
    We wrap all boolean functions here, since OCaml boolean is a 
    bit different from Javascript, so that we can change it in the future
 *)
-let rec and_ ?comment (e1 : t) (e2 : t) = 
+let rec and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
-  (* | (Bin (NotEqEq, e1,  *)
-  (*         {expression_desc = Var (Id ({name = "undefined"; _} as id))}) *)
-  (*   | Bin (NotEqEq,  *)
-  (*          {expression_desc = Var (Id ({name = "undefined"; _} as id))},  *)
-  (*          e1) *)
-  (*   ),  *)
-  (*   _ when Ext_ident.is_js id ->  *)
-  (*   and_ e1 e2 *)
-  |  Int_of_boolean e1 , Int_of_boolean e2 -> 
-    and_ ?comment e1 e2
-  |  Int_of_boolean e1 , _ -> and_ ?comment e1 e2
-  | _,  Int_of_boolean e2
-    -> and_ ?comment e1 e2
+  |  Int_of_boolean e1 , Int_of_boolean e2 ->
+    to_ocaml_boolean @@ and_ ?comment e1 e2
+
+(*
+   {[ a && (b && c) === (a && b ) && c ]}
+   is not used: benefit is not clear 
+  | Int_of_boolean e10, Bin(And, {expression_desc = Int_of_boolean e20 }, e3) 
+    -> 
+    and_ ?comment 
+      { e1 with expression_desc 
+                = 
+                  J.Int_of_boolean { expression_desc = Bin (And, e10,e20); comment = None}
+      }
+      e3
+*)
+  (* Note that 
+     {[ "" && 3 ]}
+     return  "" instead of false, so [e1] is indeed useful
+  *)
+  
   (* optimization if [e1 = e2], then and_ e1 e2 -> e2
      be careful for side effect        
   *)
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
-    to_ocaml_boolean e1
+    e1
   | Var i, 
     (Bin (And,   {expression_desc = Var j ; _}, _) 
     | Bin (And ,  _, {expression_desc = Var j ; _}))
     when Js_op_util.same_vident  i j 
     ->
-    to_ocaml_boolean e2          
+    e2          
   | _, _ ->     
-    to_ocaml_boolean { expression_desc = Bin(And, e1,e2) ; comment }
-    (* to_ocaml_boolean @@ bin ?comment And e1 e2  *)
+    { expression_desc = Bin(And, e1,e2) ; comment }
+
 
 let rec or_ ?comment (e1 : t) (e2 : t) = 
   match e1.expression_desc, e2.expression_desc with 
   | Int_of_boolean e1 , Int_of_boolean e2
-    -> 
-    or_ ?comment e1 e2
-  | Int_of_boolean e1 , _  -> or_ ?comment e1 e2
-  | _,  Int_of_boolean e2
-    -> or_ ?comment e1 e2
+    ->
+    to_ocaml_boolean @@ or_ ?comment e1 e2
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
-    to_ocaml_boolean e1
+    e1
   | Var i, 
     (Bin (Or,   {expression_desc = Var j ; _}, _) 
     | Bin (Or ,  _, {expression_desc = Var j ; _}))
     when Js_op_util.same_vident  i j 
-    -> to_ocaml_boolean e2          
+    -> e2          
   | _, _ ->     
-    to_ocaml_boolean {expression_desc = Bin(Or, e1,e2); comment }
-    (* to_ocaml_boolean @@ bin ?comment Or e1 e2  *)
+    {expression_desc = Bin(Or, e1,e2); comment }
+
 
 (* return a value of type boolean *)
 (* TODO: 
@@ -61547,6 +61565,27 @@ let rec not ({expression_desc; comment} as e : t) : t =
   | Not e -> e 
   | x -> {expression_desc = Not e ; comment = None}
 
+let rec ocaml_boolean_under_condition (b : t) =
+  match b.expression_desc with 
+  | Int_of_boolean b -> ocaml_boolean_under_condition b 
+  | Bin (And, x,y) -> 
+    let x' = ocaml_boolean_under_condition x in 
+    let y' = ocaml_boolean_under_condition y in 
+    if x == x' && y==y' then b 
+    else {b with expression_desc = Bin(And,x',y')}
+  | Bin(Or,x,y) ->
+    let x' = ocaml_boolean_under_condition x in 
+    let y' = ocaml_boolean_under_condition y in 
+    if x == x' && y == y' then b 
+    else {b with expression_desc = Bin(Or,x',y')}
+  (** TODO: settle down Not semantics *)
+  | Not u
+    -> 
+    let u' = ocaml_boolean_under_condition u in 
+    if u' == u then b 
+    else {b with expression_desc = Not u'} 
+  | _ -> b 
+  
 let rec econd ?comment (b : t) (t : t) (f : t) : t = 
   match b.expression_desc , t.expression_desc, f.expression_desc with
 
@@ -61628,8 +61667,13 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
 
   | Not e, _, _ -> econd ?comment e f t 
   | Int_of_boolean  b, _, _  -> econd ?comment  b t f
-
+  (* | Bin (And ,{expression_desc = Int_of_boolean b0},b1), _, _  -> *)
+  (*   econd ?comment { b with expression_desc = Bin (And , b0,b1)} t f *)
   | _ -> 
+    let b  = ocaml_boolean_under_condition b in 
+    (* if b' != b then *)
+    (*   econd ?comment b' t f  *)
+    (* else  *)
     if Js_analyzer.eq_expression t f then
       if no_side_effect b then t else seq  ?comment b t
     else
@@ -65245,6 +65289,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       aux ?comment e then_ else_ acc 
 
     | _ -> 
+      let e = E.ocaml_boolean_under_condition e in 
       { statement_desc = If (e, 
                              then_,
                              (match else_ with 
@@ -65291,9 +65336,10 @@ let declare_unit ?comment  id :  t =
 
 let rec while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
   match e with 
-  | {expression_desc = Int_of_boolean e; _} -> 
-    while_ ?comment  ?label  e st
+  (* | {expression_desc = Int_of_boolean e; _} ->  *)
+  (*   while_ ?comment  ?label  e st *)
   | _ -> 
+    let e = E.ocaml_boolean_under_condition e in
     let env = 
       match env with 
       | None -> Js_closure.empty ()
