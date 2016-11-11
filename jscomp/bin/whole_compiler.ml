@@ -66088,8 +66088,8 @@ let string_of_module_id ~output_prefix
       | Runtime  
       | Ml  -> 
         let id = x.id in
-        let file = Printf.sprintf "%s.js" id.name in
         let modulename = String.uncapitalize id.name in
+        let js_file = Printf.sprintf "%s.js" modulename in
         let rebase package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir package_dir module_system output_prefix) in
@@ -66105,20 +66105,20 @@ let string_of_module_id ~output_prefix
           | _, `NotFound , _ -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s not found in search path - while compiling %s @] "
-              file !Location.input_name 
+              js_file !Location.input_name 
           | `Goog , `Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
           | `Goog, (`Empty | `Package_script _), _ 
             -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
-              file !Location.input_name 
+              js_file !Location.input_name 
           | (`AmdJS | `NodeJS),
             ( `Empty | `Package_script _) ,
             `Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
               "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
-              file !Location.input_name
+              js_file !Location.input_name
           | _ , _, `NotFound -> assert false 
           | (`AmdJS | `NodeJS), 
             `Found(package_name, x),
@@ -66143,14 +66143,14 @@ let string_of_module_id ~output_prefix
              (`Empty | `Package_script _) , 
              (`Empty  | `Package_script _)
             -> 
-            begin match Config_util.find file with 
+            begin match Config_util.find js_file with 
               | file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
                 rebase package_dir (`File file) 
               | exception Not_found -> 
                 Ext_pervasives.failwithf ~loc:__LOC__ 
                   "@[%s was not found  in search path - while compiling %s @] "
-                  file !Location.input_name 
+                  js_file !Location.input_name 
             end
         end
       | External name -> name in 
@@ -90857,28 +90857,24 @@ let lambda_as_module
     | Empty 
     | NonBrowser (_, []) -> 
       (* script mode *)
-      let output_filename = 
-        (if Filename.is_relative filename then 
-           Lazy.force Ext_filename.cwd // 
-           Filename.dirname filename 
-         else 
-           Filename.dirname filename) // basename         
-      in 
       let output_chan chan =         
         Js_dump.dump_deps_program output_prefix `NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
-          output_filename output_chan
+          ((if Filename.is_relative filename then 
+               Lazy.force Ext_filename.cwd // 
+               Filename.dirname filename 
+             else 
+               Filename.dirname filename) // String.uncapitalize basename
+             (* #913
+                only generate little-case js file
+             *)
+          ) output_chan
 
 
-    | NonBrowser (_package_name, module_systems) -> 
+    | NonBrowser (_package_name, module_systems) ->
       module_systems |> List.iter begin fun (module_system, _path) -> 
-        let output_filename = 
-          Lazy.force Ext_filename.package_dir //
-          _path //
-          basename 
-        in
         let output_chan chan  = 
           Js_dump.dump_deps_program ~output_prefix
             module_system 
@@ -90887,7 +90883,12 @@ let lambda_as_module
         (if !Js_config.dump_js then 
           output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
-          Ext_pervasives.with_file_as_chan output_filename output_chan
+          Ext_pervasives.with_file_as_chan
+            (Lazy.force Ext_filename.package_dir //
+             _path //
+             String.uncapitalize basename
+               (* #913 only generate little-case js file *)
+            ) output_chan
             
       end
   end

@@ -1,0 +1,10 @@
+# Phony targets
+
+.default
+All  output (not just js in case we support native build)
+
+.install
+
+It's hard to bake it in built rules, since it is flag dependent, if you have `-bin-annot` 
+then you would like to install `cmt` too, however, it might be or not be there 
+ 
