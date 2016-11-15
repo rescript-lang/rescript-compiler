@@ -45,7 +45,7 @@ common/bs_version.ml: build_version.js ../package.json
 
 
 
-### list files 
+### list files
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
 OUNIT_TESTS_SRCS =  ounit_path_tests ounit_json_tests ounit_vec_test ounit_tests_main
@@ -53,7 +53,7 @@ OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRC
 
 EXT_SRCS = ext_array ext_bytes ext_char resize_array ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ident_set int_map literals string_map \
-	string_set ext_pp_scope ext_io ext_ident ext_filename 
+	string_set ext_pp_scope ext_io ext_ident ext_filename
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname binary_ast binary_cache
@@ -61,9 +61,9 @@ COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift \
 	ast_literal ast_pat ast_payload ast_signature ast_structure bs_ast_iterator bs_ast_invariant \
 	ast_derive ast_comb ast_attributes ast_core_type ast_derive_dyn ast_derive_projector \
-	ast_external_attributes ast_util ppx_entry 
+	ast_external_attributes ast_util ppx_entry
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
-DEPENDS_SRCS= bs_exception ast_extract  
+DEPENDS_SRCS= bs_exception ast_extract
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util idents_analysis bs_conditional_initial ocaml_options ocaml_parse lam\
 	lam_iter lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
@@ -76,7 +76,7 @@ CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util 
 	lam_compile_external_call lam_compile_primitive lam_compile lam_pass_exits\
 	lam_pass_lets_dce lam_pass_remove_alias lam_compile_group\
 	js_implementation ocaml_batch_compile
-CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))	 
+CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 
 OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main
@@ -91,14 +91,14 @@ ounit.cmxa: $(OUNIT_CMXS)
 	ocamlopt.opt -a $^ -o $@
 
 ext.cmxa: $(EXT_CMXS)
-	ocamlopt.opt -a $^ -o $@ 
-common.cmxa:$(COMMON_CMXS)
-	ocamlopt.opt -a $^ -o $@ 
-syntax.cmxa:$(SYNTAX_CMXS)
-	ocamlopt.opt -a $^ -o $@ 
-depends.cmxa:$(DEPENDS_CMXS) 
 	ocamlopt.opt -a $^ -o $@
-core.cmxa:$(CORE_CMXS) 
+common.cmxa:$(COMMON_CMXS)
+	ocamlopt.opt -a $^ -o $@
+syntax.cmxa:$(SYNTAX_CMXS)
+	ocamlopt.opt -a $^ -o $@
+depends.cmxa:$(DEPENDS_CMXS)
+	ocamlopt.opt -a $^ -o $@
+core.cmxa:$(CORE_CMXS)
 	ocamlopt.opt -a $^ -o $@
 bsb.cmxa:$(BSB_CMXS)
 	ocamlopt.opt -a $^ -o $@
@@ -131,7 +131,7 @@ depend:
 
 
 SNAPSHOT_SRCS=$(addprefix bin/, $(addsuffix .ml, bsppx whole_compiler bsdep bsb bspp all_ounit_tests))
-SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d) 
+SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 
 # this target  is used to make snapshotml
 ./bin/bspack.exe: bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml
@@ -140,7 +140,7 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 
 
 # TODO
-# enhace for Parser module, we only care about Parser.token 
+# enhace for Parser module, we only care about Parser.token
 # files including Parsetree/Parser should be shaked
 
 # It is really hard to `make snapshotml` work as expected
@@ -149,14 +149,14 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 # Then if we rename files `bsb/bs_build_schemas.ml`, it will *fail* to build, since pre-requisite is not found
 # If we use empty recipies as below
 #  bin/bsb.ml : bsb/bs_build_schemas.ml
-#  bsb/bs_build_schemas.ml : 
+#  bsb/bs_build_schemas.ml :
 # When we rename files `bsb/bs_build_schemas.ml`, it will not rebuild, since Make will ignore non-exist files,
 # But it will rebuild if the file is modified.
 # What we really need is such semantics in between:
 # if the file is modified or non-existent, trigger rebuild, when non-existent,
 # alwasy rebuild (don't fail)
 
-# The trick we have is that whenever the file is non-existent, we will touch the stamp of output, since the 
+# The trick we have is that whenever the file is non-existent, we will touch the stamp of output, since the
 # Make program does not verify the rule generate output or not (it only checks exit code)
 # So this will force a snapshot
 # This will not work if we have multiple snapshot and include them, they will cause a conflict
@@ -166,7 +166,7 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 
 # To work around this problem, we should touch  a global stamp file , too complex to maintain..
 # Gave up, make can not handle delete/adding new files correctly
-# Let's make it still work and fail to build, delegating `make clean` 
+# Let's make it still work and fail to build, delegating `make clean`
 
 snapshotml:./bin/bspack.exe $(SNAPSHOT_SRCS)
 
@@ -178,14 +178,14 @@ bin/bsppx.ml:./bin/bspack.exe
 	$< -bs-MD  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
 
 
-bin/whole_compiler.ml:./bin/bspack.exe 
+bin/whole_compiler.ml:./bin/bspack.exe
 	$< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
 
-bin/bsdep.ml:./bin/bspack.exe 
+bin/bsdep.ml:./bin/bspack.exe
 	BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core  -bs-main Ocamldep -o $@
 
 
-bin/bsb.ml:./bin/bspack.exe  
+bin/bsb.ml:./bin/bspack.exe
 	$< -bs-MD -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
 # Actually we can not make it correct by including..
@@ -195,14 +195,14 @@ bin/bsb.ml:./bin/bspack.exe
 # if we move files around, it will cause file failure
 # Note the currently snapshot mode means if we don't
 # generate ml files it will not be included
-bin/bspp.ml:./bin/bspack.exe 
+bin/bspp.ml:./bin/bspack.exe
 	BS_MIN_LEX_DEPS=true $< -bs-MD   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
 
 
 bin/js_compiler.ml:./bin/bspack.exe
 	BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
 
-bin/all_ounit_tests.ml:./bin/bspack.exe 
+bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD   -I ounit -I ounit_tests  -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
 -include bin/all_ounit_tests.d
 bin/all_ounit_tests.byte:bin/all_ounit_tests.mli bin/all_ounit_tests.ml
@@ -228,7 +228,7 @@ bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
 # which may already be wrong
 
 
-bootbspack: 
+bootbspack:
 	@echo "Bootstrap bspack.exe"
 	./bin/bspack.exe -bs-MD -prelude-str 'module Config = Config_bspack '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
 	$(NATIVE) -w -40  unix.cmxa  -I bin bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
@@ -264,7 +264,7 @@ release:bin/bspack.exe bin/jscmj.exe bin/jsgen.exe snapshotml
 	@echo "Generating cmj_datasets"
 	bin/jscmj.exe # for cmj file up to date
 	@echo "Generating preload.js"
-	bin/jsgen.exe # for js file up to date 
+	bin/jsgen.exe # for js file up to date
 	$(MAKE) -C bin -j6 all
 	$(MAKE) libs
 
@@ -303,8 +303,7 @@ include all.depend
 clean:
 	rm -f bsb/bs_json.ml bsb/sexp_lexer.ml core/js_fold.ml core/js_map.ml
 	rm -f common/bs_version.ml
-	rm -rf bin/config_whole_compiler.ml 	
+	rm -rf bin/config_whole_compiler.ml
 	git clean -dfx ext common syntax depends core bsb
 
-.PHONY: release   releasebuild libs snapshotml force-snapshotml	
-
+.PHONY: release   releasebuild libs snapshotml force-snapshotml
