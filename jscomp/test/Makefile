@@ -69,7 +69,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	bytes_split_gpr_743_test module_splice_test hello.foo \
 	ffi_splice_test node_path_test js_string_test string_unicode_test node_fs_test\
 	flow_parser_reg_test	utf8_decode_test stream_parser_test condition_compilation_test semver_test update_record_test installation_test app_root_finder derive_projector_test\
-	gpr_904_test
+	gpr_904_test gpr_858_unit2_test
 
 
 

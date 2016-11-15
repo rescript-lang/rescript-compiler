@@ -66539,7 +66539,11 @@ type name =
   | No_name
   | Name_top  of Ident.t
   | Name_non_top of Ident.t
-(* TODO: refactoring *)
+
+
+(* TODO: refactoring 
+   Note that {!pp_function} could print both statement and expression when [No_name] is given 
+*)
 let rec pp_function method_
     cxt (f : P.t) ?(name=No_name)  return 
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
