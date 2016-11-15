@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,33 +17,35 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val set_ocamllex : string -> unit 
-val get_ocamllex : unit -> string 
+val set_ocamllex : string -> unit
+val get_ocamllex : unit -> string
 
 
 
-val set_bs_external_includes : Bsb_json.t array -> unit 
-val get_bs_external_includes : unit -> string list 
+val set_bs_external_includes : Bsb_json.t array -> unit
+val get_bs_external_includes : unit -> string list
 
 
 
 
-val set_bsc_flags : Bsb_json.t array -> unit 
+val set_bsc_flags : Bsb_json.t array -> unit
 val get_bsc_flags : unit -> string list
 
-val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit 
+val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit
 val get_ppx_flags : unit -> string list
 
 val set_package_name : string -> unit
-val get_package_name : unit -> string option 
+val get_package_name : unit -> string option
+
+val set_refmt : cwd:string -> string -> unit
+val get_refmt : unit -> string
 
 
-val get_bs_dependencies : unit  -> string list 
+val get_bs_dependencies : unit  -> string list
 val set_bs_dependencies : Bsb_json.t array  -> unit
-

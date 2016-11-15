@@ -4936,7 +4936,7 @@ end
 module Bsb_default : sig 
 #1 "bsb_default.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -4954,41 +4954,43 @@ module Bsb_default : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val set_ocamllex : string -> unit 
-val get_ocamllex : unit -> string 
+val set_ocamllex : string -> unit
+val get_ocamllex : unit -> string
 
 
 
-val set_bs_external_includes : Bsb_json.t array -> unit 
-val get_bs_external_includes : unit -> string list 
+val set_bs_external_includes : Bsb_json.t array -> unit
+val get_bs_external_includes : unit -> string list
 
 
 
 
-val set_bsc_flags : Bsb_json.t array -> unit 
+val set_bsc_flags : Bsb_json.t array -> unit
 val get_bsc_flags : unit -> string list
 
-val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit 
+val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit
 val get_ppx_flags : unit -> string list
 
 val set_package_name : string -> unit
-val get_package_name : unit -> string option 
+val get_package_name : unit -> string option
+
+val set_refmt : cwd:string -> string -> unit
+val get_refmt : unit -> string
 
 
-val get_bs_dependencies : unit  -> string list 
+val get_bs_dependencies : unit  -> string list
 val set_bs_dependencies : Bsb_json.t array  -> unit
-
 
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -5006,7 +5008,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -5026,8 +5028,8 @@ let get_package_name () = !package_name
 
 
 let bsc_flags = ref []
-let get_bsc_flags () = !bsc_flags 
-let set_bsc_flags s = bsc_flags := get_list_string s 
+let get_bsc_flags () = !bsc_flags
+let set_bsc_flags s = bsc_flags := get_list_string s
 
 
 
@@ -5035,40 +5037,48 @@ let set_bsc_flags s = bsc_flags := get_list_string s
 let bs_dependencies = ref []
 let get_bs_dependencies () = !bs_dependencies
 let set_bs_dependencies  s =
-  bs_dependencies := get_list_string s 
+  bs_dependencies := get_list_string s
 
 
 let bs_external_includes = ref []
-let set_bs_external_includes s = 
+let set_bs_external_includes s =
   bs_external_includes := List.map Bsb_build_util.convert_and_resolve_path (get_list_string s )
 let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex s = ocamllex := Bsb_build_util.convert_and_resolve_file s 
-let get_ocamllex () = !ocamllex 
+let set_ocamllex s = ocamllex := Bsb_build_util.convert_and_resolve_file s
+let get_ocamllex () = !ocamllex
+
+(* Magic path resolution:
+foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
+/foo/bar => /foo/bar
+./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
+let resolve_bsb_magic_path ~cwd ~desc p =
+  if Filename.is_relative p && String.unsafe_get p 0 <> '.' then
+    let name = String.sub p 0 (String.index p '/') in
+    let package = (Bs_pkg.resolve_bs_package ~cwd name) in
+    match package with
+    | None -> failwith (name ^ " not found when resolving " ^ desc)
+    | Some package -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // p)
+  else
+    Bsb_build_util.convert_and_resolve_path p
+
+let refmt = ref "refmt"
+let get_refmt () = !refmt
+let set_refmt ~cwd p = refmt := resolve_bsb_magic_path ~cwd ~desc:"refmt" p
 
 
 let ppx_flags = ref []
 let get_ppx_flags () = !ppx_flags
-let set_ppx_flags ~cwd s = 
-  let s = 
+let set_ppx_flags ~cwd s =
+  let s =
     s (* TODO: unix conversion *)
-    |> get_list_string 
-    |> List.map (fun x -> 
-        if x = "" then failwith "invalid ppx, empty string found"
-        else 
-        if Filename.is_relative x &&  String.unsafe_get x 0 <> '.' then 
-          let name = String.sub x 0 ( String.index x '/') in
-          let package = (Bs_pkg.resolve_bs_package ~cwd name ) in
-          match package with
-          | None ->
-            failwith (name ^ "not found when resolving ppx")
-          | Some package
-            -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // x) 
-        else 
-          Bsb_build_util.convert_and_resolve_path x 
-      ) in 
+    |> get_list_string
+    |> List.map (fun p ->
+        if p = "" then failwith "invalid ppx, empty string found"
+        else resolve_bsb_magic_path ~cwd ~desc:"ppx" p
+      ) in
   ppx_flags := s
 
 end
@@ -5325,7 +5335,7 @@ module Rules = struct
         "build_ast"
      let build_ast_from_reason_impl =
        define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+         ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
          "build_ast_from_reason_impl"
 
      let build_ast_from_reason_intf =
@@ -5333,7 +5343,7 @@ module Rules = struct
           because it need to be ppxed by bucklescript
        *)
        define
-         ~command:"${bsc} -pp refmt ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+         ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
          "build_ast_from_reason_intf"
 
      let build_deps =
@@ -5651,7 +5661,7 @@ end
 module Bsb_gen : sig 
 #1 "bsb_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -5669,13 +5679,13 @@ module Bsb_gen : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val output_ninja : 
+val output_ninja :
   builddir:string ->
   cwd:string ->
   string ->
@@ -5684,7 +5694,11 @@ val output_ninja :
   string ->
   string list ->
   Bsb_build_ui.file_group list ->
-  string list -> string list -> string list -> unit
+  string list ->
+  string list ->
+  string list ->
+  string ->
+  unit
 
 end = struct
 #1 "bsb_gen.ml"
@@ -5726,6 +5740,7 @@ let output_ninja
     bsc_flags
     ppx_flags
     bs_dependencies
+    refmt
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bs_groups, source_dirs,static_resources  =
@@ -5772,6 +5787,7 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", bs_package_includes;
+          "refmt", refmt;
           (* "builddir", builddir; we should not have it set, since it's correct here *)
 
         ]
@@ -5805,7 +5821,7 @@ module Bsb_main : sig
 end = struct
 #1 "bsb_main.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -5823,40 +5839,40 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 let config_file_bak = "bsconfig.json.bak"
-let ninja = "ninja" 
+let ninja = "ninja"
 let bsdeps = ".bsdeps"
 
 
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb 
+    m  |> Bsb_json.test key cb
 
 let (//) = Ext_filename.combine
 
 let bs_file_groups = ref []
 
 (** *)
-let write_ninja_file cwd = 
-  let builddir = Bsb_config.lib_bs in 
-  let () = Bsb_build_util.mkp builddir in 
+let write_ninja_file cwd =
+  let builddir = Bsb_config.lib_bs in
+  let () = Bsb_build_util.mkp builddir in
   let bsc, bsdep = Bsb_build_util.get_bsc_bsdep cwd  in
 
-  let config_json_chan = open_in_bin Literals.bsconfig_json in 
+  let config_json_chan = open_in_bin Literals.bsconfig_json in
   let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
-  let update_queue = ref [] in 
+  let update_queue = ref [] in
   let globbed_dirs = ref [] in
-  let () = 
+  let () =
     match global_data with
-    | `Obj map -> 
-      map 
+    | `Obj map ->
+      map
       |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
@@ -5867,9 +5883,10 @@ let write_ninja_file cwd =
           |?  (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
           |?  (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
           |?  (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
+          |?  (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
           |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
               let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
-              bs_file_groups := res.files ; 
+              bs_file_groups := res.files ;
               update_queue := res.intervals;
               globbed_dirs := res.globbed_dirs
             ))
@@ -5878,22 +5895,22 @@ let write_ninja_file cwd =
       |> ignore
     | _ -> ()
   in
-  begin match List.sort Ext_file_pp.interval_compare  !update_queue with 
+  begin match List.sort Ext_file_pp.interval_compare  !update_queue with
   | [] -> ()
-  | queue -> 
+  | queue ->
     let file_size = in_channel_length config_json_chan in
     let oc = open_out_bin config_file_bak in
-    let () = 
+    let () =
       Ext_file_pp.process_wholes
-        queue file_size config_json_chan oc in 
+        queue file_size config_json_chan oc in
     close_out oc ;
-    close_in config_json_chan ; 
-    Unix.unlink Literals.bsconfig_json; 
+    close_in config_json_chan ;
+    Unix.unlink Literals.bsconfig_json;
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
   Bsb_gen.output_ninja ~builddir ~cwd
-             bsc 
-             bsdep 
+             bsc
+             bsdep
              (Bsb_default.get_package_name ())
              (Bsb_default.get_ocamllex ())
              (Bsb_default.get_bs_external_includes ())
@@ -5901,16 +5918,17 @@ let write_ninja_file cwd =
              Bsb_default.(get_bsc_flags ())
              Bsb_default.(get_ppx_flags ())
              Bsb_default.(get_bs_dependencies ())
+             Bsb_default.(get_refmt ())
           ;
   !globbed_dirs
 
 
 
 
-let load_ninja argv = 
+let load_ninja argv =
   let ninja_flags = (Array.sub Sys.argv 1 (Array.length argv - 1)) in
   Unix.execvp ninja
-    (Array.concat 
+    (Array.concat
        [
          [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|];
          ninja_flags
@@ -5919,33 +5937,33 @@ let load_ninja argv =
 
 (**
 Cache files generated:
-- .bsdircache in project root dir 
-- .bsdeps in builddir 
+- .bsdircache in project root dir
+- .bsdeps in builddir
 
-What will happen, some flags are really not good  
-ninja -C _build 
+What will happen, some flags are really not good
+ninja -C _build
 *)
-let () = 
+let () =
   try
-    let builddir = Bsb_config.lib_bs in 
+    let builddir = Bsb_config.lib_bs in
     let output_deps = builddir // bsdeps in
-    let cwd = Sys.getcwd () in 
+    let cwd = Sys.getcwd () in
 
-    let reason = Bsb_dep_infos.check cwd  output_deps in 
-    if String.length reason <> 0 then 
+    let reason = Bsb_dep_infos.check cwd  output_deps in
+    if String.length reason <> 0 then
       begin
         (* This is actual slow path, okay to be slight slower *)
         print_endline reason;
         print_endline "Regenrating build spec";
-        let globbed_dirs = write_ninja_file cwd in 
-        Literals.bsconfig_json :: globbed_dirs 
+        let globbed_dirs = write_ninja_file cwd in
+        Literals.bsconfig_json :: globbed_dirs
         |> List.map
           (fun x ->
              { Bsb_dep_infos.dir_or_file = x ;
                stamp = (Unix.stat x).st_mtime
              }
-          ) 
-        |> (fun x ->  
+          )
+        |> (fun x ->
                Bsb_dep_infos.{ file_stamps = Array.of_list x; source_directory = cwd})
         |> Bsb_dep_infos.write output_deps
 
@@ -5953,12 +5971,7 @@ let () =
     load_ninja Sys.argv
 
   with x ->
-    prerr_endline @@ Printexc.to_string x ; 
-    exit 2 
-
-
-
-
-
+    prerr_endline @@ Printexc.to_string x ;
+    exit 2
 
 end

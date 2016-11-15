@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,40 +17,40 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 let config_file_bak = "bsconfig.json.bak"
-let ninja = "ninja" 
+let ninja = "ninja"
 let bsdeps = ".bsdeps"
 
 
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb 
+    m  |> Bsb_json.test key cb
 
 let (//) = Ext_filename.combine
 
 let bs_file_groups = ref []
 
 (** *)
-let write_ninja_file cwd = 
-  let builddir = Bsb_config.lib_bs in 
-  let () = Bsb_build_util.mkp builddir in 
+let write_ninja_file cwd =
+  let builddir = Bsb_config.lib_bs in
+  let () = Bsb_build_util.mkp builddir in
   let bsc, bsdep = Bsb_build_util.get_bsc_bsdep cwd  in
 
-  let config_json_chan = open_in_bin Literals.bsconfig_json in 
+  let config_json_chan = open_in_bin Literals.bsconfig_json in
   let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
-  let update_queue = ref [] in 
+  let update_queue = ref [] in
   let globbed_dirs = ref [] in
-  let () = 
+  let () =
     match global_data with
-    | `Obj map -> 
-      map 
+    | `Obj map ->
+      map
       |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
@@ -61,9 +61,10 @@ let write_ninja_file cwd =
           |?  (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
           |?  (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
           |?  (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
+          |?  (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
           |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
               let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
-              bs_file_groups := res.files ; 
+              bs_file_groups := res.files ;
               update_queue := res.intervals;
               globbed_dirs := res.globbed_dirs
             ))
@@ -72,22 +73,22 @@ let write_ninja_file cwd =
       |> ignore
     | _ -> ()
   in
-  begin match List.sort Ext_file_pp.interval_compare  !update_queue with 
+  begin match List.sort Ext_file_pp.interval_compare  !update_queue with
   | [] -> ()
-  | queue -> 
+  | queue ->
     let file_size = in_channel_length config_json_chan in
     let oc = open_out_bin config_file_bak in
-    let () = 
+    let () =
       Ext_file_pp.process_wholes
-        queue file_size config_json_chan oc in 
+        queue file_size config_json_chan oc in
     close_out oc ;
-    close_in config_json_chan ; 
-    Unix.unlink Literals.bsconfig_json; 
+    close_in config_json_chan ;
+    Unix.unlink Literals.bsconfig_json;
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
   Bsb_gen.output_ninja ~builddir ~cwd
-             bsc 
-             bsdep 
+             bsc
+             bsdep
              (Bsb_default.get_package_name ())
              (Bsb_default.get_ocamllex ())
              (Bsb_default.get_bs_external_includes ())
@@ -95,16 +96,17 @@ let write_ninja_file cwd =
              Bsb_default.(get_bsc_flags ())
              Bsb_default.(get_ppx_flags ())
              Bsb_default.(get_bs_dependencies ())
+             Bsb_default.(get_refmt ())
           ;
   !globbed_dirs
 
 
 
 
-let load_ninja argv = 
+let load_ninja argv =
   let ninja_flags = (Array.sub Sys.argv 1 (Array.length argv - 1)) in
   Unix.execvp ninja
-    (Array.concat 
+    (Array.concat
        [
          [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|];
          ninja_flags
@@ -113,33 +115,33 @@ let load_ninja argv =
 
 (**
 Cache files generated:
-- .bsdircache in project root dir 
-- .bsdeps in builddir 
+- .bsdircache in project root dir
+- .bsdeps in builddir
 
-What will happen, some flags are really not good  
-ninja -C _build 
+What will happen, some flags are really not good
+ninja -C _build
 *)
-let () = 
+let () =
   try
-    let builddir = Bsb_config.lib_bs in 
+    let builddir = Bsb_config.lib_bs in
     let output_deps = builddir // bsdeps in
-    let cwd = Sys.getcwd () in 
+    let cwd = Sys.getcwd () in
 
-    let reason = Bsb_dep_infos.check cwd  output_deps in 
-    if String.length reason <> 0 then 
+    let reason = Bsb_dep_infos.check cwd  output_deps in
+    if String.length reason <> 0 then
       begin
         (* This is actual slow path, okay to be slight slower *)
         print_endline reason;
         print_endline "Regenrating build spec";
-        let globbed_dirs = write_ninja_file cwd in 
-        Literals.bsconfig_json :: globbed_dirs 
+        let globbed_dirs = write_ninja_file cwd in
+        Literals.bsconfig_json :: globbed_dirs
         |> List.map
           (fun x ->
              { Bsb_dep_infos.dir_or_file = x ;
                stamp = (Unix.stat x).st_mtime
              }
-          ) 
-        |> (fun x ->  
+          )
+        |> (fun x ->
                Bsb_dep_infos.{ file_stamps = Array.of_list x; source_directory = cwd})
         |> Bsb_dep_infos.write output_deps
 
@@ -147,10 +149,5 @@ let () =
     load_ninja Sys.argv
 
   with x ->
-    prerr_endline @@ Printexc.to_string x ; 
-    exit 2 
-
-
-
-
-
+    prerr_endline @@ Printexc.to_string x ;
+    exit 2
