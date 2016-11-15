@@ -271,9 +271,9 @@ function f8$2(x) {
 
 var u$2 = f8$2(/* None */0);
 
-var f9$2 = Js_primitive.js_from_nullable_def
+var f9$2 = Js_primitive.js_from_nullable_def;
 
-var f10$2 = Js_primitive.js_is_nil_undef
+var f10$2 = Js_primitive.js_is_nil_undef;
 
 var f11$2 = Js_primitive.js_is_nil_undef(3);
 

@@ -131,7 +131,7 @@ function u(v) {
                 ]), v);
 }
 
-var to_str = Caml_format.caml_int_of_string
+var to_str = Caml_format.caml_int_of_string;
 
 var v = Curry._1(Printf.sprintf(/* Format */[
           /* Int */Block.__(4, [

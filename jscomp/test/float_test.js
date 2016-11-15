@@ -142,7 +142,7 @@ function from_pairs(ps) {
                 }, ps));
 }
 
-var float_compare = Caml_float.caml_float_compare
+var float_compare = Caml_float.caml_float_compare;
 
 var param = Caml_float.caml_classify_float(3);
 

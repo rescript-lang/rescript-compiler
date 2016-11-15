@@ -35,13 +35,13 @@ var n5 = /* int64 */[
   /* lo */5
 ];
 
-var $percent = Caml_int64.mod_
+var $percent = Caml_int64.mod_;
 
-var $star = Caml_int64.mul
+var $star = Caml_int64.mul;
 
-var $slash = Caml_int64.div
+var $slash = Caml_int64.div;
 
-var $plus = Caml_int64.add
+var $plus = Caml_int64.add;
 
 var digit = Caml_format.caml_int64_of_string("1000000000000000000");
 

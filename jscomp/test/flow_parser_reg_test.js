@@ -5969,7 +5969,7 @@ function semicolon$1(env) {
   }
 }
 
-var _type = union
+var _type = union;
 
 function annotation(env) {
   if (!env[/* parse_options */20][/* types */4]) {
@@ -8514,7 +8514,7 @@ function _new(env, _finish_fn) {
         var start_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
         token$4(env, /* T_NEW */42);
         var finish_fn$prime = (function(finish_fn,start_loc){
-        return function (callee, args) {
+        return function finish_fn$prime(callee, args) {
           var match;
           if (args) {
             var match$1 = args[0];

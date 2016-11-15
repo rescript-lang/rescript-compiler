@@ -38,7 +38,7 @@ function commutative_add(result, a, b) {
           ]);
 }
 
-var generic_compare = Caml_obj.caml_compare
+var generic_compare = Caml_obj.caml_compare;
 
 var shift_left_tests_000 = $$Array.map(function (i) {
       return Caml_int64.lsl_(/* int64 */[

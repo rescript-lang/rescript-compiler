@@ -66535,9 +66535,13 @@ f/122 -->
              if in  use it 
              else check last bumped id, increase it and register
 *)
-
+type name =
+  | No_name
+  | Name_top  of Ident.t
+  | Name_non_top of Ident.t
+(* TODO: refactoring *)
 let rec pp_function method_
-    cxt (f : P.t) ?name  return 
+    cxt (f : P.t) ?(name=No_name)  return 
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
   match b, (name,  return)  with 
   | [ {statement_desc =
@@ -66549,7 +66553,7 @@ let rec pp_function method_
                             (* TODO: need a case to justify it*)
                             call_info = 
                               (Call_builtin_runtime | Call_ml )})}}}],
-    ((_, false) | (None, true))  
+    ((_, false) | (No_name, true))  
     when
       not method_ && 
       Ext_list.for_all2_no_exn (fun a b -> 
@@ -66570,16 +66574,17 @@ let rec pp_function method_
     in
     let len = List.length l in (* length *)           
     begin match name with 
-      | Some i -> 
+      | Name_top i | Name_non_top i  -> 
         P.string f L.var; 
         P.space f ; 
         let cxt = ident cxt f i in
         P.space f ;
         P.string f L.eq;
         P.space f ;
-
-        optimize len (arity = NA && len <= 8) cxt f v 
-      | None ->
+        let cxt = optimize len (arity = NA && len <= 8) cxt f v in 
+        semi f ;
+        cxt
+      | No_name ->
         if return then 
           begin 
             P.string f L.return ;
@@ -66591,9 +66596,9 @@ let rec pp_function method_
 
     let set_env : Ident_set.t = (** identifiers will be printed following*)
       match name with 
-      | None ->
+      | No_name ->
         Js_fun_env.get_unbounded env 
-      | Some id -> Ident_set.add id (Js_fun_env.get_unbounded env )
+      | Name_top id | Name_non_top id -> Ident_set.add id (Js_fun_env.get_unbounded env )
     in
     (* the context will be continued after this function *)
     let outer_cxt = Ext_pp_scope.merge set_env cxt in  
@@ -66609,17 +66614,7 @@ let rec pp_function method_
 
     (* (if not @@ Js_fun_env.is_empty env then *)
     (* pp_comment  f (Some (Js_fun_env.to_string env))) ; *)
-    let action return = 
-      if return then 
-        begin 
-          P.string f L.return ;
-          P.space f
-        end ;
-      P.string f L.function_;
-      P.space f ;
-      (match name with 
-      | None  -> () 
-      | Some x -> ignore (ident inner_cxt f x));
+    let param_body () = 
       if method_ then begin
         let cxt = P.paren_group f 1 (fun _ -> 
             formal_parameter_list inner_cxt  f method_ (List.tl l) env )
@@ -66657,33 +66652,98 @@ let rec pp_function method_
       end
     in
     let lexical = Js_fun_env.get_lexical_scope env in
+    let enclose  lexical  return = 
+        let handle lexical = 
+          if  Ident_set.is_empty lexical  
+          then
+            begin 
+              if return then 
+                begin 
+                  P.string f L.return ;
+                  P.space f
+                end ;
 
-    let enclose action lexical  return = 
-      if  Ident_set.is_empty lexical  
-      then 
-        action return 
-      else
-        (* print as 
-           {[(function(x,y){...} (x,y))]}           
-        *)
-        let lexical = Ident_set.elements lexical in
-        if return then
-          begin 
-            P.string f L.return ; 
-            P.space f
-          end ;
-        P.string f L.lparen;
-        P.string f L.function_; 
-        P.string f L.lparen;
-        ignore @@ comma_idents inner_cxt f lexical;
-        P.string f L.rparen;
-        P.brace_vgroup f 0  (fun _ -> action true);
-        P.string f L.lparen;
-        ignore @@ comma_idents inner_cxt f lexical;
-        P.string f L.rparen;
-        P.string f L.rparen
+              begin match name with 
+              | No_name -> 
+                P.string f L.function_;
+                P.space f ;
+                param_body ();
+                (* semi f ; *)
+              | Name_non_top x  -> 
+                P.string f L.var ;
+                P.space f ; 
+                ignore @@ ident inner_cxt f x ; 
+                P.space f ;
+                P.string f L.eq ;
+                P.space f ; 
+                P.string f L.function_;
+                P.space f ;
+                param_body ();
+                semi f ;
+              | Name_top x  -> 
+                P.string f L.function_;
+                P.space f ;
+                ignore (ident inner_cxt f x);
+                param_body ();
+              end;
+          end
+          else
+            (* print as 
+               {[(function(x,y){...} (x,y))]}           
+            *)
+            let lexical = Ident_set.elements lexical in
+            (if return then
+               begin 
+                 P.string f L.return ; 
+                 P.space f
+               end
+             else 
+               begin match name with
+                 | No_name -> ()
+                 | Name_non_top name | Name_top name->
+                   P.string f L.var;
+                   P.space f;
+                   ignore @@ ident inner_cxt f name ;
+                   P.space f ;
+                   P.string f L.eq;
+                   P.space f ;
+               end
+            )   
+            ;
+            P.string f L.lparen;
+            P.string f L.function_; 
+            P.string f L.lparen;
+            ignore @@ comma_idents inner_cxt f lexical;
+            P.string f L.rparen;
+            P.brace_vgroup f 0  (fun _ -> 
+                begin 
+                  P.string f L.return ;
+                  P.space f;
+                  P.string f L.function_;
+                  P.space f ;
+                  (match name with 
+                   | No_name  -> () 
+                   | Name_non_top x | Name_top x -> ignore (ident inner_cxt f x));
+                  param_body ()
+                end);
+            P.string f L.lparen;
+            ignore @@ comma_idents inner_cxt f lexical;
+            P.string f L.rparen;
+            P.string f L.rparen;
+            begin match name with 
+              | No_name -> () (* expression *)
+              | _ -> semi f (* has binding, a statement *)
+            end
+        in 
+        begin match name with 
+          | Name_top name | Name_non_top name  when Ident_set.mem name lexical ->
+            (*TODO: when calculating lexical we should not include itself *)
+            let lexical =  (Ident_set.remove name lexical) in
+            handle lexical
+          | _ -> handle lexical 
+        end
     in
-    enclose action lexical return 
+    enclose lexical return 
     ;
     outer_cxt
 
@@ -67361,8 +67421,10 @@ and variable_declaration top cxt f
         statement_desc top cxt f (J.Exp e)
       | _ -> 
         begin match e, top  with 
-          | {expression_desc = Fun (method_, params, b, env ); comment = _}, true -> 
-            pp_function method_ cxt f ~name false params b env 
+          | {expression_desc = Fun (method_, params, b, env ); comment = _}, _ -> 
+            pp_function method_ cxt f 
+              ~name:(if top then Name_top name else Name_non_top name) 
+              false params b env 
           | _, _ -> 
               P.string f L.var;
               P.space f;

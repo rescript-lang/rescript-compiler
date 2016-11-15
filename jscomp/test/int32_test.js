@@ -150,7 +150,7 @@ var shift_left_tests = /* tuple */[
   shift_left_tests_001
 ];
 
-var $star$tilde = Caml_int32.imul
+var $star$tilde = Caml_int32.imul;
 
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[

@@ -49,7 +49,7 @@ function g(H) {
   };
 }
 
-var hash = Hashtbl.hash
+var hash = Hashtbl.hash;
 
 function equal(x, y) {
   return +(x === y);

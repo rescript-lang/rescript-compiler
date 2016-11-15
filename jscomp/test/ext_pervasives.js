@@ -272,7 +272,7 @@ function dump(r) {
   }
 }
 
-var dump$1 = dump
+var dump$1 = dump;
 
 function hash_variant(s) {
   var accu = 0;
