@@ -8,11 +8,11 @@ var Caml_format             = require("../../lib/js/caml_format");
 var Curry                   = require("../../lib/js/curry");
 var List                    = require("../../lib/js/list");
 
-var equal = Caml_obj.caml_equal
+var equal = Caml_obj.caml_equal;
 
-var compare = Caml_obj.caml_compare
+var compare = Caml_obj.caml_compare;
 
-var hash = Hashtbl.hash
+var hash = Hashtbl.hash;
 
 function of_int(x) {
   return /* `Atom */[

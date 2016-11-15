@@ -1195,7 +1195,7 @@ function decl(g, _n, _stk) {
     if (Caml_obj.caml_equal(t, tokint)) {
       var top = stk ? stk[0][1] : 0;
       var vars = (function(top){
-      return function (_n, _stk) {
+      return function vars(_n, _stk) {
         while(true) {
           var stk = _stk;
           var n = _n;

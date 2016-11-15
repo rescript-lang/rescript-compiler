@@ -316,6 +316,10 @@ gpr_627_test.cmj : mt.cmi
 gpr_627_test.cmx : mt.cmx
 gpr_658.cmj : ../runtime/js.cmj
 gpr_658.cmx : ../runtime/js.cmx
+gpr_858_test.cmj : ../stdlib/list.cmi
+gpr_858_test.cmx : ../stdlib/list.cmx
+gpr_858_unit2_test.cmj :
+gpr_858_unit2_test.cmx :
 gpr_904_test.cmj : mt.cmi
 gpr_904_test.cmx : mt.cmx
 guide_for_ext.cmj :
@@ -1186,6 +1190,10 @@ gpr_627_test.cmo : mt.cmi
 gpr_627_test.cmj : mt.cmj
 gpr_658.cmo : ../runtime/js.cmo
 gpr_658.cmj : ../runtime/js.cmj
+gpr_858_test.cmo : ../stdlib/list.cmi
+gpr_858_test.cmj : ../stdlib/list.cmj
+gpr_858_unit2_test.cmo :
+gpr_858_unit2_test.cmj :
 gpr_904_test.cmo : mt.cmi
 gpr_904_test.cmj : mt.cmj
 guide_for_ext.cmo :

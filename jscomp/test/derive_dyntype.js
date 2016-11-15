@@ -73,7 +73,7 @@ function _t_to_value(value) {
   }
 }
 
-var t_to_value = _t_to_value
+var t_to_value = _t_to_value;
 
 var shape = /* array */[
   "x",

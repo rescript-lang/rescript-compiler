@@ -4,7 +4,7 @@ var Pervasives = require("../../lib/js/pervasives");
 var Mt         = require("./mt");
 var Block      = require("../../lib/js/block");
 
-var ff = Pervasives.string_of_float
+var ff = Pervasives.string_of_float;
 
 function f(v) {
   return "" + v;

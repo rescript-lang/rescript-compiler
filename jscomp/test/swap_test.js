@@ -938,7 +938,7 @@ var d16_000 = /* Format */[
   "%x"
 ];
 
-var d16_001 = Caml_int32.caml_bswap16
+var d16_001 = Caml_int32.caml_bswap16;
 
 var d16_002 = /* array */[
   /* tuple */[
@@ -967,7 +967,7 @@ var d32_000 = /* Format */[
   "%lx"
 ];
 
-var d32_001 = Caml_int32.caml_int32_bswap
+var d32_001 = Caml_int32.caml_int32_bswap;
 
 var d32_002 = /* array */[
   /* tuple */[
