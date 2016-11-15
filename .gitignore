@@ -20,7 +20,7 @@ _build
 *.annot
 *.mj
 *.bak
-.vscode
+
 *.jsx
 *.lambda
 *.rawlambda

@@ -83,8 +83,8 @@ let string_of_module_id ~output_prefix
       | Runtime  
       | Ml  -> 
         let id = x.id in
-        let file = Printf.sprintf "%s.js" id.name in
         let modulename = String.uncapitalize id.name in
+        let js_file = Printf.sprintf "%s.js" modulename in
         let rebase package_dir dep =
           let current_unit_dir =
             `Dir (Js_config.get_output_dir package_dir module_system output_prefix) in
@@ -100,20 +100,20 @@ let string_of_module_id ~output_prefix
           | _, `NotFound , _ -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s not found in search path - while compiling %s @] "
-              file !Location.input_name 
+              js_file !Location.input_name 
           | `Goog , `Found (package_name, x), _  -> 
             package_name  ^ "." ^  String.uncapitalize id.name
           | `Goog, (`Empty | `Package_script _), _ 
             -> 
             Ext_pervasives.failwithf ~loc:__LOC__ 
               " @[%s was not compiled with goog support  in search path - while compiling %s @] "
-              file !Location.input_name 
+              js_file !Location.input_name 
           | (`AmdJS | `NodeJS),
             ( `Empty | `Package_script _) ,
             `Found _  -> 
             Ext_pervasives.failwithf ~loc:__LOC__
               "@[dependency %s was compiled in script mode - while compiling %s in package mode @]"
-              file !Location.input_name
+              js_file !Location.input_name
           | _ , _, `NotFound -> assert false 
           | (`AmdJS | `NodeJS), 
             `Found(package_name, x),
@@ -138,14 +138,14 @@ let string_of_module_id ~output_prefix
              (`Empty | `Package_script _) , 
              (`Empty  | `Package_script _)
             -> 
-            begin match Config_util.find file with 
+            begin match Config_util.find js_file with 
               | file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
                 rebase package_dir (`File file) 
               | exception Not_found -> 
                 Ext_pervasives.failwithf ~loc:__LOC__ 
                   "@[%s was not found  in search path - while compiling %s @] "
-                  file !Location.input_name 
+                  js_file !Location.input_name 
             end
         end
       | External name -> name in 

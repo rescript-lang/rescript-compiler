@@ -444,28 +444,24 @@ let lambda_as_module
     | Empty 
     | NonBrowser (_, []) -> 
       (* script mode *)
-      let output_filename = 
-        (if Filename.is_relative filename then 
-           Lazy.force Ext_filename.cwd // 
-           Filename.dirname filename 
-         else 
-           Filename.dirname filename) // basename         
-      in 
       let output_chan chan =         
         Js_dump.dump_deps_program output_prefix `NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
-          output_filename output_chan
+          ((if Filename.is_relative filename then 
+               Lazy.force Ext_filename.cwd // 
+               Filename.dirname filename 
+             else 
+               Filename.dirname filename) // String.uncapitalize basename
+             (* #913
+                only generate little-case js file
+             *)
+          ) output_chan
 
 
-    | NonBrowser (_package_name, module_systems) -> 
+    | NonBrowser (_package_name, module_systems) ->
       module_systems |> List.iter begin fun (module_system, _path) -> 
-        let output_filename = 
-          Lazy.force Ext_filename.package_dir //
-          _path //
-          basename 
-        in
         let output_chan chan  = 
           Js_dump.dump_deps_program ~output_prefix
             module_system 
@@ -474,7 +470,12 @@ let lambda_as_module
         (if !Js_config.dump_js then 
           output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
-          Ext_pervasives.with_file_as_chan output_filename output_chan
+          Ext_pervasives.with_file_as_chan
+            (Lazy.force Ext_filename.package_dir //
+             _path //
+             String.uncapitalize basename
+               (* #913 only generate little-case js file *)
+            ) output_chan
             
       end
   end
