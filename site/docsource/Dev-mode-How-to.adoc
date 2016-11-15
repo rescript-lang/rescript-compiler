@@ -1,9 +1,9 @@
 ## Contributions
 
-First, thanks for your interest in contribution, 
-there are plenty of ways in contributions, like blogging, sharing your experience, 
-open sourcing your libraries using BuckleScript, they are all deeply appreciated. 
- 
+First, thanks for your interest in contribution,
+there are plenty of ways in contributions, like blogging, sharing your experience,
+open sourcing your libraries using BuckleScript, they are all deeply appreciated.
+
 This section will focus on how to contribute to this repo.
 
 ### Development set-up
@@ -13,14 +13,14 @@ This section will focus on how to contribute to this repo.
     opam switch 4.02.3+buckle-master # use our OCaml compiler
     opam install camlp4  <1>
 +
-`Camlp4` is used to generate OCaml code for processing large AST. (`j.ml` file), if you don't 
+`Camlp4` is used to generate OCaml code for processing large AST. (`j.ml` file), if you don't
 change `j.ml` (most likely you won't), so you probably don't need it
 
-* Having https://nodejs.org/[NodeJS] installed 
-* Having Make installed 
+* Having https://nodejs.org/[NodeJS] installed
+* Having Make installed
 * OS: Mac/Linux (Note BuckleScript works on Windows, but the dev mode is not tested)
 
-Below assume that you are working in `jscomp` directory.  
+**Below assume that you are working in `jscomp` directory, and that you've followed instructions from <<Minimal dependencies>> to build OCaml.**
 
 
 ### Contributing to `bsb.exe`
@@ -31,13 +31,13 @@ The build target is
 make bin/bsb.exe
 -----------
 
-So whenever you change files relevant to the build tool `bsb.exe`, try it and do some 
+So whenever you change files relevant to the build tool `bsb.exe`, try it and do some
 test, if it works, send a pull request!
 
 
-Note that for most binaries in BuckleScript, we also have a **release mode**, which will pack 
-all relevant files into a single file, this is important, since it will cut all our dev-dependencies, 
-so the user does not need install those tools. 
+Note that for most binaries in BuckleScript, we also have a **release mode**, which will pack
+all relevant files into a single file, this is important, since it will cut all our dev-dependencies,
+so the user does not need install those tools.
 
 
 You can verify it by typing
@@ -58,7 +58,7 @@ make bin/bsc.exe # build the compiler in dev mode
 
 [source,sh]
 -----------
-make lib # build all libs using the dev compiler
+make libs # build all libs using the dev compiler
 -----------
 
 There is also a snapshot mode,
@@ -66,12 +66,12 @@ There is also a snapshot mode,
 [source,sh]
 ----------
 make snapshotml
----------- 
+----------
 
 This will actually snapshot your changes into a single ml file and used in npm distribution.
 But please **don't commit** those changes in PR, it will cause painful merge conflicts
 
-### Contributing to the runtime 
+### Contributing to the runtime
 
 BuckleScript runtime implementation is currently a mix of OCaml and
 JavaScript. (`jscomp/runtime` directory). The JavaScript code is defined
