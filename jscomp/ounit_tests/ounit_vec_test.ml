@@ -28,7 +28,9 @@ let suites =
     "filter" >:: begin fun _ -> 
       let v = Int_array.of_array [|1;2;3;4;5;6|] in 
       v |> Int_array.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);
-      v =~~ [|1;2;3;4;5;6|]
+      v =~~ [|1;2;3;4;5;6|];
+      Int_array.pop v ; 
+      v =~~ [|1;2;3;4;5|]
     end
     ;
 

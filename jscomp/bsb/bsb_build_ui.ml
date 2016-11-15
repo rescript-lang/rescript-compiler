@@ -56,7 +56,7 @@ let print_arrays file_array oc offset  =
   | 0
     -> output_string oc "[ ]\n"
   | 1 
-    -> output_string oc ("[ " ^ String_vect.get file_array 0  ^ " ]\n")
+    -> output_string oc ("[ \"" ^ String_vect.get file_array 0  ^ "\" ]\n")
   | _ (* first::(_::_ as rest) *)
     -> 
     output_string oc "[ \n";

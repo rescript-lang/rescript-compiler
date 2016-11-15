@@ -44,6 +44,7 @@ module Make ( Resize : ResizeType) : sig
   val reserve : t -> int -> unit
   val push : t -> elt -> unit
   val delete : t -> int -> unit 
+  val pop : t -> unit
   val delete_range : t -> int -> int -> unit 
   val clear : t -> unit 
   val reset : t -> unit 

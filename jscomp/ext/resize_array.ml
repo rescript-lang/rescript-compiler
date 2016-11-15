@@ -114,7 +114,12 @@ module Make ( Resize : ResizeType) = struct
     Array.unsafe_set arr (d.len - 1) Resize.null;
     d.len <- d.len - 1
 
-
+  let pop d = 
+    let idx  = d.len - 1  in
+    if idx < 0 then invalid_arg "Resize_array.pop";
+    Array.unsafe_set d.arr idx Resize.null;
+    d.len <- idx
+             
   let delete_range d idx len =
     if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.delete_range"  ;
     let arr = d.arr in 
