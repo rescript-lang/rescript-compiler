@@ -124,7 +124,7 @@ module Rules = struct
      let build_cmj_js =
        define
          ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
 
          ~depfile:"${in}.d"
          "build_cmj_only"
@@ -132,7 +132,7 @@ module Rules = struct
      let build_cmi_cmj_js =
        define
          ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
          ~depfile:"${in}.d"
          "build_cmj_cmi"
      let build_cmi =
@@ -247,7 +247,7 @@ let (++) (us : info) (vs : info) =
 
 
 
-let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
+let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       bs_dependencies
@@ -319,7 +319,13 @@ let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
                 [  output_cmi]  , []
               else Rules.build_cmi_cmj_js, [], [output_cmi]
             in
-
+            let shadows = 
+              match js_post_build_cmd with 
+              | None -> shadows 
+              | Some cmd -> 
+                ("postbuild", 
+                `Overwrite ("&& " ^ cmd ^ " " ^ output_js)) :: shadows
+            in 
             output_build oc
               ~output:output_cmj
               ~shadows
@@ -399,5 +405,5 @@ let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
       handle_module_info  oc k v group.bs_dependencies acc
     ) group.sources  acc
 
-let handle_file_groups oc  (file_groups  :  Bsb_build_ui.file_group list) st =
-      List.fold_left (handle_file_group oc) st  file_groups
+let handle_file_groups oc ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
+      List.fold_left (handle_file_group oc ~js_post_build_cmd ) st  file_groups

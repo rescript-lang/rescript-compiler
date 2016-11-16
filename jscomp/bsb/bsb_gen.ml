@@ -27,6 +27,7 @@ let (//) = Ext_filename.combine
 let output_ninja
     ~builddir
     ~cwd
+    ~js_post_build_cmd
     bsc
     bsdep
     package_name
@@ -37,6 +38,7 @@ let output_ninja
     ppx_flags
     bs_dependencies
     refmt
+
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bs_groups, source_dirs,static_resources  =
@@ -89,7 +91,7 @@ let output_ninja
         ]
     in
     let all_deps, all_cmis =
-      Bsb_ninja.handle_file_groups oc bs_file_groups ([],[]) in
+      Bsb_ninja.handle_file_groups oc ~js_post_build_cmd  bs_file_groups ([],[]) in
     let all_deps =
       (* we need copy package.json into [_build] since it does affect build output *)
       (* Literals.package_json ::

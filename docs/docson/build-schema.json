@@ -180,8 +180,14 @@
             "bs-dependencies": {
                 "$ref": "#/definitions/bs-dependencies",
                 "description" : "OCaml dependencies applied to all modules inside"
-            },
+            },            
             "properties": {
+                "js-post-build" : {
+                    "cmd" : {
+                        "type" : "string"
+                    },
+                    "description": "Experimental, the build system will invoke `cmd ${file}` whenever a ${file} is generated"
+                },
                 "ppx-flags": {                    
                     "$ref": "#/definitions/ppx-specs",
                     "description": "TODO: ppx flags"

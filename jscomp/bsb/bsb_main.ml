@@ -55,6 +55,11 @@ let write_ninja_file cwd =
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
+          |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
+              m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
+                )
+            |> ignore 
+            end)
           |?  (Bsb_build_schemas.ocamllex, `Str Bsb_default.set_ocamllex)
           |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
           (* More design *)
@@ -86,7 +91,7 @@ let write_ninja_file cwd =
     Unix.unlink Literals.bsconfig_json;
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  Bsb_gen.output_ninja ~builddir ~cwd
+  Bsb_gen.output_ninja ~builddir ~cwd ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
              bsc
              bsdep
              (Bsb_default.get_package_name ())
@@ -97,6 +102,7 @@ let write_ninja_file cwd =
              Bsb_default.(get_ppx_flags ())
              Bsb_default.(get_bs_dependencies ())
              Bsb_default.(get_refmt ())
+
           ;
   !globbed_dirs
 
