@@ -119,9 +119,26 @@ let rfind_with_index arr cmp v =
     else aux (i - 1) in 
   aux (len - 1)
 
-let rfind_and_split arr cmp v = 
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+let rfind_and_split arr cmp v : _ split = 
   let i = rfind_with_index arr cmp v in 
   if  i < 0 then 
     `No_split 
   else 
     `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    `No_split
+  else
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        

@@ -170,7 +170,12 @@ module Make ( Resize : ResizeType) = struct
       arr = Array.copy src;
       (* okay to call {!Array.copy}*)
     }
-
+  let of_sub_array arr off len = 
+    { 
+      len = len ; 
+      arr = Array.sub arr off len  
+    }  
+  let unsafe_internal_array v = v.arr  
   (* we can not call {!Array.copy} *)
   let copy src =
     let len = src.len in

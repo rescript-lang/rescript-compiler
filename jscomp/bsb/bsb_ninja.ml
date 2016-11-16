@@ -27,120 +27,121 @@ module Rules = struct
 
   let rule_id = ref 0
   let rule_names = ref String_set.empty
-  type t = < name : out_channel -> String_set.elt >
+  let ask_name name = 
+    let current_id = !rule_id in
+    let () = incr rule_id in
+    match String_set.find name !rule_names with
+    | exception Not_found ->
+      rule_names := String_set.add name !rule_names ;
+      name
+    | _ ->
+      begin (* could be improved later
+               1. instead of having a global id, having a unique id per rule name
+               2. the rule id is increased only when actually used
+            *)
+        let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
+        rule_names := String_set.add new_name  !rule_names ;
+        new_name
+      end
+
+  type t = < name : out_channel -> string >
   let get_name (x : t) oc = x # name oc
+  let print_rule oc ~description ?depfile ~command   name  = 
+    output_string oc "rule "; output_string oc name ; output_string oc "\n";
+    output_string oc "  command = "; output_string oc command; output_string oc "\n";
+    begin match depfile with
+      | None -> ()
+      | Some f ->
+        output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
+    end;
+    output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+
   let define
       ~command
       ?depfile
       ?(description = "Building ${out}")
       name
-       =
-       let current_id = !rule_id in
-       let () = incr rule_id in
-       object(self)
-         val mutable used = false
-         val name =
-           match String_set.find name !rule_names with
-           | exception Not_found ->
-             rule_names := String_set.add name !rule_names ;
-             name
-           | _ ->
-             begin (* could be improved later
-                      1. instead of having a global id, having a unique id per rule name
-                      2. the rule id is increased only when actually used
-                   *)
-               let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-               rule_names := String_set.add new_name  !rule_names ;
-               new_name
-             end
-         method private print oc =
-           if not used then
-             begin
-               output_string oc "rule "; output_string oc name ; output_string oc "\n";
-               output_string oc "  command = "; output_string oc command; output_string oc "\n";
-               begin match depfile with
-               | None -> ()
-               | Some f ->
-                 output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
-               end;
-               output_string oc "  description = " ; output_string oc description; output_string oc "\n";
-               used <- true
-             end
-           else ()
-         method name oc  =
-           self#print oc ;
-           name
-       end
-     (* # for ast building, we remove most flags with respect to -I  *)
-     let build_ast =
-       define
-         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-        "build_ast"
-     let build_ast_from_reason_impl =
-       define
-         ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-         "build_ast_from_reason_impl"
+    =
+    object(self)
+      val mutable used = false
+      val rule_name = ask_name name 
+      method name oc  =
+        if not used then
+          begin
+            print_rule oc ~description ?depfile ~command name; 
+            used <- true
+          end;
+        rule_name
+    end
+  (* # for ast building, we remove most flags with respect to -I  *)
+  let build_ast =
+    define
+      ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+      "build_ast"
+  let build_ast_from_reason_impl =
+    define
+      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+      "build_ast_from_reason_impl"
 
-     let build_ast_from_reason_intf =
-       (* we have to do this way,
-          because it need to be ppxed by bucklescript
-       *)
-       define
-         ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-         "build_ast_from_reason_intf"
+  let build_ast_from_reason_intf =
+    (* we have to do this way,
+       because it need to be ppxed by bucklescript
+    *)
+    define
+      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+      "build_ast_from_reason_intf"
 
-     let build_deps =
-       define
-         ~command:"${bsdep}  -bs-MD ${in}"
-         "build_deps"
-     let reload =
-       define
-         ~command:"${bsbuild} -init"
-         "reload"
-     let copy_resources =
-       define
-         ~command:"cp ${in} ${out}"
-         "copy_resources"
+  let build_deps =
+    define
+      ~command:"${bsdep}  -bs-MD ${in}"
+      "build_deps"
+  let reload =
+    define
+      ~command:"${bsbuild} -init"
+      "reload"
+  let copy_resources =
+    define
+      ~command:"cp ${in} ${out}"
+      "copy_resources"
 
 
-     let ocaml_bin_install =
-       define ~command:"cp ${in} ${out}"
-         "ocaml_bin_install"
-     (* only generate mll no mli generated *)
-     (* actually we would prefer generators in source ?
-        generator are divided into two categories:
-        1. not system dependent (ocamllex,ocamlyacc)
-        2. system dependent - has to be run on client's machine
-     *)
+  let ocaml_bin_install =
+    define ~command:"cp ${in} ${out}"
+      "ocaml_bin_install"
+  (* only generate mll no mli generated *)
+  (* actually we would prefer generators in source ?
+     generator are divided into two categories:
+     1. not system dependent (ocamllex,ocamlyacc)
+     2. system dependent - has to be run on client's machine
+  *)
 
-     let build_ml_from_mll =
-       define
-         ~command:"${ocamllex} -o ${out} ${in}"
-         "build_ml_from_mll"
+  let build_ml_from_mll =
+    define
+      ~command:"${ocamllex} -o ${out} ${in}"
+      "build_ml_from_mll"
+  (**************************************)
+  (* below are rules not local any more *)
+  (**************************************)
+  let build_cmj_js =
+    define
+      ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
 
-(**************************************)
-(* below are rules not local any more *)
-(**************************************)
-     let build_cmj_js =
-       define
-         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
+      ~depfile:"${in}.d"
+      "build_cmj_only"
 
-         ~depfile:"${in}.d"
-         "build_cmj_only"
-
-     let build_cmi_cmj_js =
-       define
-         ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
-         ~depfile:"${in}.d"
-         "build_cmj_cmi"
-     let build_cmi =
-       define
-         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c -intf ${in}"
-         ~depfile:"${in}.d"
-         "build_cmi"
+  let build_cmi_cmj_js =
+    define
+      ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
+      ~depfile:"${in}.d"
+      "build_cmj_cmi"
+  let build_cmi =
+    define
+      ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c -intf ${in}"
+      ~depfile:"${in}.d"
+      "build_cmi"
 end
 
 let output_build
@@ -163,24 +164,24 @@ let output_build
   output_string oc input;
   inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
   begin match implicit_deps with
-  | [] -> ()
-  | _ ->
-    begin
-      output_string oc " | ";
-      implicit_deps
-      |>
-      List.iter (fun s -> output_string oc " "; output_string oc s )
-    end
+    | [] -> ()
+    | _ ->
+      begin
+        output_string oc " | ";
+        implicit_deps
+        |>
+        List.iter (fun s -> output_string oc " "; output_string oc s )
+      end
   end;
   begin match order_only_deps with
-  | [] -> ()
-  | _ ->
-    begin
-      output_string oc " || ";
-      order_only_deps
-      |>
-      List.iter (fun s -> output_string oc " " ; output_string oc s)
-    end
+    | [] -> ()
+    | _ ->
+      begin
+        output_string oc " || ";
+        order_only_deps
+        |>
+        List.iter (fun s -> output_string oc " " ; output_string oc s)
+      end
   end;
   output_string oc "\n";
   begin match shadows with
@@ -269,13 +270,13 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
       let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js = Bsb_config.proj_rel @@ Bsb_config.common_js_prefix
-                       output_file_sans_extension ^ Literals.suffix_js in
+          output_file_sans_extension ^ Literals.suffix_js in
 
       let shadows =
         let package_flags =
           [ "bs_package_flags",
             `Append ("-bs-package-output commonjs:"^
-                       Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
+                     Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
             (* FIXME: assume that output is calculated correctly*)
           ]
         in
@@ -404,6 +405,7 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
   String_map.fold (fun  k v  acc ->
       handle_module_info  oc k v group.bs_dependencies acc
     ) group.sources  acc
+
 
 let handle_file_groups oc ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
       List.fold_left (handle_file_group oc ~js_post_build_cmd ) st  file_groups

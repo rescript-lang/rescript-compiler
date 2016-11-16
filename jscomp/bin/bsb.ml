@@ -2176,10 +2176,18 @@ val to_list_map : ('a -> 'b option) -> 'a array -> 'b list
 
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+
 val rfind_and_split : 
   'a array ->
   ('a -> 'b -> bool) ->
-  'b -> [ `No_split | `Split of 'a array * 'a array ]
+  'b -> 'a split
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
 
 end = struct
 #1 "ext_array.ml"
@@ -2304,12 +2312,29 @@ let rfind_with_index arr cmp v =
     else aux (i - 1) in 
   aux (len - 1)
 
-let rfind_and_split arr cmp v = 
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+let rfind_and_split arr cmp v : _ split = 
   let i = rfind_with_index arr cmp v in 
   if  i < 0 then 
     `No_split 
   else 
     `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    `No_split
+  else
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
 
 end
 module Bsb_json : sig 
@@ -4110,6 +4135,12 @@ module Make ( Resize : ResizeType) : sig
   val init : int -> (int -> elt) -> t
   val is_empty : t -> bool
   val of_array : elt array -> t
+  val of_sub_array : elt array -> int -> int -> t
+  
+  (** Exposed for some APIs which only take array as input, 
+      when exposed   
+  *)
+  val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
   val push : t -> elt -> unit
   val delete : t -> int -> unit 
@@ -4314,7 +4345,12 @@ module Make ( Resize : ResizeType) = struct
       arr = Array.copy src;
       (* okay to call {!Array.copy}*)
     }
-
+  let of_sub_array arr off len = 
+    { 
+      len = len ; 
+      arr = Array.sub arr off len  
+    }  
+  let unsafe_internal_array v = v.arr  
   (* we can not call {!Array.copy} *)
   let copy src =
     let len = src.len in
@@ -5193,7 +5229,7 @@ type t =
 
 
 let magic_number = "BS_DEP_INFOS_20161116"
-let bsb_version = "20161116+dev"
+let bsb_version = "20161117+dev"
 
 let write (fname : string)  (x : t) = 
   let oc = open_out_bin fname in 
@@ -5349,120 +5385,121 @@ module Rules = struct
 
   let rule_id = ref 0
   let rule_names = ref String_set.empty
-  type t = < name : out_channel -> String_set.elt >
+  let ask_name name = 
+    let current_id = !rule_id in
+    let () = incr rule_id in
+    match String_set.find name !rule_names with
+    | exception Not_found ->
+      rule_names := String_set.add name !rule_names ;
+      name
+    | _ ->
+      begin (* could be improved later
+               1. instead of having a global id, having a unique id per rule name
+               2. the rule id is increased only when actually used
+            *)
+        let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
+        rule_names := String_set.add new_name  !rule_names ;
+        new_name
+      end
+
+  type t = < name : out_channel -> string >
   let get_name (x : t) oc = x # name oc
+  let print_rule oc ~description ?depfile ~command   name  = 
+    output_string oc "rule "; output_string oc name ; output_string oc "\n";
+    output_string oc "  command = "; output_string oc command; output_string oc "\n";
+    begin match depfile with
+      | None -> ()
+      | Some f ->
+        output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
+    end;
+    output_string oc "  description = " ; output_string oc description; output_string oc "\n"
+
   let define
       ~command
       ?depfile
       ?(description = "Building ${out}")
       name
-       =
-       let current_id = !rule_id in
-       let () = incr rule_id in
-       object(self)
-         val mutable used = false
-         val name =
-           match String_set.find name !rule_names with
-           | exception Not_found ->
-             rule_names := String_set.add name !rule_names ;
-             name
-           | _ ->
-             begin (* could be improved later
-                      1. instead of having a global id, having a unique id per rule name
-                      2. the rule id is increased only when actually used
-                   *)
-               let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-               rule_names := String_set.add new_name  !rule_names ;
-               new_name
-             end
-         method private print oc =
-           if not used then
-             begin
-               output_string oc "rule "; output_string oc name ; output_string oc "\n";
-               output_string oc "  command = "; output_string oc command; output_string oc "\n";
-               begin match depfile with
-               | None -> ()
-               | Some f ->
-                 output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
-               end;
-               output_string oc "  description = " ; output_string oc description; output_string oc "\n";
-               used <- true
-             end
-           else ()
-         method name oc  =
-           self#print oc ;
-           name
-       end
-     (* # for ast building, we remove most flags with respect to -I  *)
-     let build_ast =
-       define
-         ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-        "build_ast"
-     let build_ast_from_reason_impl =
-       define
-         ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-         "build_ast_from_reason_impl"
+    =
+    object(self)
+      val mutable used = false
+      val rule_name = ask_name name 
+      method name oc  =
+        if not used then
+          begin
+            print_rule oc ~description ?depfile ~command name; 
+            used <- true
+          end;
+        rule_name
+    end
+  (* # for ast building, we remove most flags with respect to -I  *)
+  let build_ast =
+    define
+      ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+      "build_ast"
+  let build_ast_from_reason_impl =
+    define
+      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+      "build_ast_from_reason_impl"
 
-     let build_ast_from_reason_intf =
-       (* we have to do this way,
-          because it need to be ppxed by bucklescript
-       *)
-       define
-         ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-         "build_ast_from_reason_intf"
+  let build_ast_from_reason_intf =
+    (* we have to do this way,
+       because it need to be ppxed by bucklescript
+    *)
+    define
+      ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+      "build_ast_from_reason_intf"
 
-     let build_deps =
-       define
-         ~command:"${bsdep}  -bs-MD ${in}"
-         "build_deps"
-     let reload =
-       define
-         ~command:"${bsbuild} -init"
-         "reload"
-     let copy_resources =
-       define
-         ~command:"cp ${in} ${out}"
-         "copy_resources"
+  let build_deps =
+    define
+      ~command:"${bsdep}  -bs-MD ${in}"
+      "build_deps"
+  let reload =
+    define
+      ~command:"${bsbuild} -init"
+      "reload"
+  let copy_resources =
+    define
+      ~command:"cp ${in} ${out}"
+      "copy_resources"
 
 
-     let ocaml_bin_install =
-       define ~command:"cp ${in} ${out}"
-         "ocaml_bin_install"
-     (* only generate mll no mli generated *)
-     (* actually we would prefer generators in source ?
-        generator are divided into two categories:
-        1. not system dependent (ocamllex,ocamlyacc)
-        2. system dependent - has to be run on client's machine
-     *)
+  let ocaml_bin_install =
+    define ~command:"cp ${in} ${out}"
+      "ocaml_bin_install"
+  (* only generate mll no mli generated *)
+  (* actually we would prefer generators in source ?
+     generator are divided into two categories:
+     1. not system dependent (ocamllex,ocamlyacc)
+     2. system dependent - has to be run on client's machine
+  *)
 
-     let build_ml_from_mll =
-       define
-         ~command:"${ocamllex} -o ${out} ${in}"
-         "build_ml_from_mll"
+  let build_ml_from_mll =
+    define
+      ~command:"${ocamllex} -o ${out} ${in}"
+      "build_ml_from_mll"
+  (**************************************)
+  (* below are rules not local any more *)
+  (**************************************)
+  let build_cmj_js =
+    define
+      ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
 
-(**************************************)
-(* below are rules not local any more *)
-(**************************************)
-     let build_cmj_js =
-       define
-         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
+      ~depfile:"${in}.d"
+      "build_cmj_only"
 
-         ~depfile:"${in}.d"
-         "build_cmj_only"
-
-     let build_cmi_cmj_js =
-       define
-         ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
-         ~depfile:"${in}.d"
-         "build_cmj_cmi"
-     let build_cmi =
-       define
-         ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c -intf ${in}"
-         ~depfile:"${in}.d"
-         "build_cmi"
+  let build_cmi_cmj_js =
+    define
+      ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
+      ~depfile:"${in}.d"
+      "build_cmj_cmi"
+  let build_cmi =
+    define
+      ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c -intf ${in}"
+      ~depfile:"${in}.d"
+      "build_cmi"
 end
 
 let output_build
@@ -5485,24 +5522,24 @@ let output_build
   output_string oc input;
   inputs |> List.iter (fun s ->   output_string oc " " ; output_string oc s);
   begin match implicit_deps with
-  | [] -> ()
-  | _ ->
-    begin
-      output_string oc " | ";
-      implicit_deps
-      |>
-      List.iter (fun s -> output_string oc " "; output_string oc s )
-    end
+    | [] -> ()
+    | _ ->
+      begin
+        output_string oc " | ";
+        implicit_deps
+        |>
+        List.iter (fun s -> output_string oc " "; output_string oc s )
+      end
   end;
   begin match order_only_deps with
-  | [] -> ()
-  | _ ->
-    begin
-      output_string oc " || ";
-      order_only_deps
-      |>
-      List.iter (fun s -> output_string oc " " ; output_string oc s)
-    end
+    | [] -> ()
+    | _ ->
+      begin
+        output_string oc " || ";
+        order_only_deps
+        |>
+        List.iter (fun s -> output_string oc " " ; output_string oc s)
+      end
   end;
   output_string oc "\n";
   begin match shadows with
@@ -5591,13 +5628,13 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
       let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js = Bsb_config.proj_rel @@ Bsb_config.common_js_prefix
-                       output_file_sans_extension ^ Literals.suffix_js in
+          output_file_sans_extension ^ Literals.suffix_js in
 
       let shadows =
         let package_flags =
           [ "bs_package_flags",
             `Append ("-bs-package-output commonjs:"^
-                       Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
+                     Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
             (* FIXME: assume that output is calculated correctly*)
           ]
         in
@@ -5726,6 +5763,7 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
   String_map.fold (fun  k v  acc ->
       handle_module_info  oc k v group.bs_dependencies acc
     ) group.sources  acc
+
 
 let handle_file_groups oc ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
       List.fold_left (handle_file_group oc ~js_post_build_cmd ) st  file_groups
@@ -5890,6 +5928,37 @@ let output_ninja
   end
 
 end
+module String_vec
+= struct
+#1 "string_vec.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Resize_array.Make(struct type t = string let null = "" end)
+end
 module Bsb_main : sig 
 #1 "bsb_main.mli"
 (* *)
@@ -5929,7 +5998,7 @@ let bsdeps = ".bsdeps"
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb
+  m  |> Bsb_json.test key cb
 
 let (//) = Ext_filename.combine
 
@@ -5977,18 +6046,19 @@ let write_ninja_file cwd =
     | _ -> ()
   in
   begin match List.sort Ext_file_pp.interval_compare  !update_queue with
-  | [] -> ()
-  | queue ->
-    let file_size = in_channel_length config_json_chan in
-    let oc = open_out_bin config_file_bak in
-    let () =
-      Ext_file_pp.process_wholes
-        queue file_size config_json_chan oc in
-    close_out oc ;
-    close_in config_json_chan ;
-    Unix.unlink Literals.bsconfig_json;
-    Unix.rename config_file_bak Literals.bsconfig_json
+    | [] -> ()
+    | queue ->
+      let file_size = in_channel_length config_json_chan in
+      let oc = open_out_bin config_file_bak in
+      let () =
+        Ext_file_pp.process_wholes
+          queue file_size config_json_chan oc in
+      close_out oc ;
+      close_in config_json_chan ;
+      Unix.unlink Literals.bsconfig_json;
+      Unix.rename config_file_bak Literals.bsconfig_json
   end;
+
   Bsb_gen.output_ninja ~builddir ~cwd ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
              bsc
              bsdep
@@ -6007,49 +6077,99 @@ let write_ninja_file cwd =
 
 
 
-let load_ninja argv =
-  let ninja_flags = (Array.sub Sys.argv 1 (Array.length argv - 1)) in
-  Unix.execvp ninja
-    (Array.concat
-       [
-         [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|];
-         ninja_flags
-       ]
-    )
+
+
+let force_regenerate = ref false
+let exec = ref false
+let targets = String_vec.make 5
+
+let create_bs_config () = 
+  ()
+
+let annoymous filename = 
+  String_vec.push targets filename
+let bsb_main_flags = 
+  [
+    (*    "-init", Arg.Unit create_bs_config , 
+          " Create an simple bsconfig.json"
+          ;
+    *)    "-regen", Arg.Set force_regenerate, 
+          " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"  
+    ;  
+    (*"-exec", Arg.Set exec, 
+      " Also run the JS files passsed" ;*)
+  ]
+
+let regenerate_ninja cwd forced =
+  let output_deps = Bsb_config.lib_bs // bsdeps in
+  let reason =
+    if forced then "Regenerating ninja (triggered by command line -regen)"
+    else  
+      Bsb_dep_infos.check ~cwd  output_deps in 
+  if String.length reason <> 0 then 
+    begin
+      print_endline reason ; 
+      print_endline "Regenrating build spec";
+      let globbed_dirs = write_ninja_file cwd in
+      Literals.bsconfig_json :: globbed_dirs
+      |> List.map
+        (fun x ->
+           { Bsb_dep_infos.dir_or_file = x ;
+             stamp = (Unix.stat x).st_mtime
+           }
+        )
+      |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x))
+
+    end
 
 (**
-Cache files generated:
-- .bsdircache in project root dir
-- .bsdeps in builddir
+   Cache files generated:
+   - .bsdircache in project root dir
+   - .bsdeps in builddir
 
-What will happen, some flags are really not good
-ninja -C _build
+   What will happen, some flags are really not good
+   ninja -C _build
 *)
+let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
+For ninja options, try ninja -h \n\
+ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
+It is always recommended to run ninja via bsb.exe \n\
+Bsb options are:"
+
 let () =
+  let cwd = Sys.getcwd () in
   try
-    let builddir = Bsb_config.lib_bs in
-    let output_deps = builddir // bsdeps in
-    let cwd = Sys.getcwd () in
-
-    let reason = Bsb_dep_infos.check ~cwd  output_deps in
-    if String.length reason <> 0 then
+    (* see discussion #929 *)
+    if Array.length Sys.argv <= 1 then
+      begin 
+        regenerate_ninja cwd false;
+        Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
+      end
+    else
       begin
-        (* This is actual slow path, okay to be slight slower *)
-        print_endline reason;
-        print_endline "Regenrating build spec";
-        let globbed_dirs = write_ninja_file cwd in
-        Literals.bsconfig_json :: globbed_dirs
-        |> List.map
-          (fun x ->
-             { Bsb_dep_infos.dir_or_file = x ;
-               stamp = (Unix.stat x).st_mtime
-             }
-          )
-        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x))
+        match Ext_array.find_and_split Sys.argv Ext_string.equal "--" with 
+        | `No_split 
+          ->
+          begin 
+            Arg.parse bsb_main_flags annoymous usage; 
+            regenerate_ninja cwd !force_regenerate;   
+            (* String_vec.iter (fun s -> print_endline s) targets; *)
+            (* ninja is not triggered in this case *)
+          end
+        | `Split (bsb_args,ninja_args) 
+          -> 
+          begin 
+            Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
+            (* String_vec.iter (fun s -> print_endline s) targets; *)
+            regenerate_ninja cwd !force_regenerate;
+            Unix.execvp ninja
+              (Array.append       
+                 [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|]
+                 ninja_args       
+              )
 
-      end;
-    load_ninja Sys.argv
-
+          end
+      end
   with x ->
     prerr_endline @@ Printexc.to_string x ;
     exit 2

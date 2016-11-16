@@ -6,6 +6,11 @@ bin/all_ounit_tests.ml : ounit/oUnit.ml
 bin/all_ounit_tests.ml : ounit/oUnit.mli
 bin/all_ounit_tests.ml : ext/ext_array.ml
 bin/all_ounit_tests.ml : ext/ext_array.mli
+bin/all_ounit_tests.ml : ext/ext_bytes.ml
+bin/all_ounit_tests.ml : ext/ext_bytes.mli
+bin/all_ounit_tests.ml : ext/ext_string.ml
+bin/all_ounit_tests.ml : ext/ext_string.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_array_tests.ml
 bin/all_ounit_tests.ml : ext/string_map.ml
 bin/all_ounit_tests.ml : ext/string_map.mli
 bin/all_ounit_tests.ml : bsb/bsb_json.ml
@@ -13,10 +18,6 @@ bin/all_ounit_tests.ml : bsb/bsb_json.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_json_tests.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.mli
-bin/all_ounit_tests.ml : ext/ext_bytes.ml
-bin/all_ounit_tests.ml : ext/ext_bytes.mli
-bin/all_ounit_tests.ml : ext/ext_string.ml
-bin/all_ounit_tests.ml : ext/ext_string.mli
 bin/all_ounit_tests.ml : ext/literals.ml
 bin/all_ounit_tests.ml : ext/literals.mli
 bin/all_ounit_tests.ml : ext/ext_filename.ml

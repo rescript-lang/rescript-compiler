@@ -41,6 +41,12 @@ module Make ( Resize : ResizeType) : sig
   val init : int -> (int -> elt) -> t
   val is_empty : t -> bool
   val of_array : elt array -> t
+  val of_sub_array : elt array -> int -> int -> t
+  
+  (** Exposed for some APIs which only take array as input, 
+      when exposed   
+  *)
+  val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
   val push : t -> elt -> unit
   val delete : t -> int -> unit 
