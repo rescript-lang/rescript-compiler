@@ -127,7 +127,7 @@ let () =
     let output_deps = builddir // bsdeps in
     let cwd = Sys.getcwd () in
 
-    let reason = Bsb_dep_infos.check cwd  output_deps in
+    let reason = Bsb_dep_infos.check ~cwd  output_deps in
     if String.length reason <> 0 then
       begin
         (* This is actual slow path, okay to be slight slower *)
@@ -141,9 +141,7 @@ let () =
                stamp = (Unix.stat x).st_mtime
              }
           )
-        |> (fun x ->
-               Bsb_dep_infos.{ file_stamps = Array.of_list x; source_directory = cwd})
-        |> Bsb_dep_infos.write output_deps
+        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x))
 
       end;
     load_ninja Sys.argv

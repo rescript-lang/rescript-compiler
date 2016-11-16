@@ -5084,6 +5084,29 @@ let set_ppx_flags ~cwd s =
 end
 module Bsb_dep_infos : sig 
 #1 "bsb_dep_infos.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 type dep_info = {
@@ -5104,15 +5127,16 @@ type dep_info = {
 *)
 type t = 
   { file_stamps : dep_info array ; 
-    source_directory :  string
+    source_directory :  string ; 
+    bsb_version : string
   }
 
 
 
 
 
-val write : string -> t -> unit
 
+val store : cwd:string -> string -> dep_info array -> unit
 
 
 (** check if [build.ninja] should be regenerated *)
@@ -5120,6 +5144,30 @@ val check : cwd:string ->  string -> string
 
 end = struct
 #1 "bsb_dep_infos.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 type dep_info = {
   dir_or_file : string ;
   stamp : float 
@@ -5127,12 +5175,13 @@ type dep_info = {
 
 type t = 
   { file_stamps : dep_info array ; 
-    source_directory :  string
+    source_directory :  string ;
+    bsb_version : string
   }
 
 
-let magic_number = "BS_DEP_INFOS_20161022"
-
+let magic_number = "BS_DEP_INFOS_20161116"
+let bsb_version = "20161116+dev"
 
 let write (fname : string)  (x : t) = 
   let oc = open_out_bin fname in 
@@ -5169,11 +5218,14 @@ let rec check_aux xs i finish =
 *)
 let check ~cwd file =
   try 
-    let {file_stamps = xs; source_directory} = read file  in 
-    if cwd <> source_directory then 
-      source_directory ^ " -> " ^ cwd
-    else check_aux xs  0 (Array.length xs)  
+    let {file_stamps = xs; source_directory; bsb_version = old_version} = read file  in 
+    if old_version <> bsb_version then old_version ^ " -> " ^ bsb_version else
+    if cwd <> source_directory then source_directory ^ " -> " ^ cwd else
+      check_aux xs  0 (Array.length xs)  
   with _ -> file ^ " does not exist"
+
+let store ~cwd name file_stamps = 
+  write name { file_stamps ; source_directory = cwd ; bsb_version }
 
 end
 module Bsb_ninja : sig 
@@ -5949,7 +6001,7 @@ let () =
     let output_deps = builddir // bsdeps in
     let cwd = Sys.getcwd () in
 
-    let reason = Bsb_dep_infos.check cwd  output_deps in
+    let reason = Bsb_dep_infos.check ~cwd  output_deps in
     if String.length reason <> 0 then
       begin
         (* This is actual slow path, okay to be slight slower *)
@@ -5963,9 +6015,7 @@ let () =
                stamp = (Unix.stat x).st_mtime
              }
           )
-        |> (fun x ->
-               Bsb_dep_infos.{ file_stamps = Array.of_list x; source_directory = cwd})
-        |> Bsb_dep_infos.write output_deps
+        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x))
 
       end;
     load_ninja Sys.argv
