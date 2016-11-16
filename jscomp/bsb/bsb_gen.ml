@@ -36,6 +36,7 @@ let output_ninja
     bsc_flags
     ppx_flags
     bs_dependencies
+    refmt
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bs_groups, source_dirs,static_resources  =
@@ -82,6 +83,7 @@ let output_ninja
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
           "bs_package_includes", bs_package_includes;
+          "refmt", refmt;
           (* "builddir", builddir; we should not have it set, since it's correct here *)
 
         ]
