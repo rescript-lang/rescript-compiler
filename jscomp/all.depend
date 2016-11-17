@@ -17,6 +17,7 @@ ext/ext_pp.cmx : ext/ext_pervasives.cmx ext/ext_pp.cmi
 ext/ext_pp_scope.cmx : ext/string_map.cmx ext/int_map.cmx ext/ident_set.cmx \
     ext/ext_pp_scope.cmi
 ext/ext_ref.cmx : ext/ext_ref.cmi
+ext/ext_scc.cmx : ext/string_map.cmx
 ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
 ext/ext_sys.cmx : ext/ext_sys.cmi
 ext/hash_set.cmx : ext/hash_set.cmi
