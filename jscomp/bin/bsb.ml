@@ -4123,10 +4123,9 @@ sig
 end
 
 
-
-
-module Make ( Resize : ResizeType) : sig 
-  type elt = Resize.t 
+module type S = 
+sig 
+  type elt 
   type t
   val length : t -> int 
   val compact : t -> unit
@@ -4168,6 +4167,7 @@ module Make ( Resize : ResizeType) : sig
   val last : t -> elt
   val capacity : t -> int
 end
+module Make ( Resize : ResizeType) : S with type elt = Resize.t 
 
 
 
@@ -4198,15 +4198,59 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+external unsafe_blit :
+  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
+
 module type ResizeType = 
 sig 
   type t 
   val null : t (* used to populate new allocated array checkout {!Obj.new_block} for more performance *)
 end
 
-
-external unsafe_blit :
-  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
+module type S = 
+sig 
+  type elt 
+  type t
+  val length : t -> int 
+  val compact : t -> unit
+  val empty : unit -> t 
+  val make : int -> t 
+  val init : int -> (int -> elt) -> t
+  val is_empty : t -> bool
+  val of_array : elt array -> t
+  val of_sub_array : elt array -> int -> int -> t
+  
+  (** Exposed for some APIs which only take array as input, 
+      when exposed   
+  *)
+  val unsafe_internal_array : t -> elt array
+  val reserve : t -> int -> unit
+  val push : t -> elt -> unit
+  val delete : t -> int -> unit 
+  val pop : t -> unit
+  val delete_range : t -> int -> int -> unit 
+  val clear : t -> unit 
+  val reset : t -> unit 
+  val to_list : t -> elt list 
+  val of_list : elt list -> t
+  val to_array : t -> elt array 
+  val of_array : elt array -> t
+  val copy : t -> t 
+  val iter : (elt -> unit) -> t -> unit 
+  val iteri : (int -> elt -> unit ) -> t -> unit 
+  val iter_range : int -> int -> (elt -> unit) -> t -> unit 
+  val iteri_range : int -> int -> (int -> elt -> unit) -> t -> unit
+  val map : (elt -> elt) -> t ->  t
+  val mapi : (int -> elt -> elt) -> t -> t
+  val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
+  val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
+  val filter : (elt -> bool) -> t -> t
+  val inplace_filter : (elt -> bool) -> t -> unit
+  val equal : (elt -> elt -> bool) -> t -> t -> bool 
+  val get : t -> int -> elt
+  val last : t -> elt
+  val capacity : t -> int
+end
 
 module Make ( Resize : ResizeType) = struct
   type elt = Resize.t 

@@ -29,10 +29,9 @@ sig
 end
 
 
-
-
-module Make ( Resize : ResizeType) : sig 
-  type elt = Resize.t 
+module type S = 
+sig 
+  type elt 
   type t
   val length : t -> int 
   val compact : t -> unit
@@ -74,5 +73,6 @@ module Make ( Resize : ResizeType) : sig
   val last : t -> elt
   val capacity : t -> int
 end
+module Make ( Resize : ResizeType) : S with type elt = Resize.t 
 
 
