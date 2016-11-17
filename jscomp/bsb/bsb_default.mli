@@ -49,3 +49,7 @@ val get_refmt : unit -> string
 
 val get_bs_dependencies : unit  -> string list
 val set_bs_dependencies : Bsb_json.t array  -> unit
+
+
+val get_js_post_build_cmd : unit -> string option
+val set_js_post_build_cmd : cwd:string -> string -> unit

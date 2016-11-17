@@ -24,6 +24,8 @@ let excludes = "excludes"
 let slow_re = "slow-re"
 let resources = "resources"
 let public = "public"
+let js_post_build = "js-post-build"
+let cmd = "cmd"
 
 end
 module Ext_pervasives : sig 
@@ -4987,6 +4989,10 @@ val get_refmt : unit -> string
 val get_bs_dependencies : unit  -> string list
 val set_bs_dependencies : Bsb_json.t array  -> unit
 
+
+val get_js_post_build_cmd : unit -> string option
+val set_js_post_build_cmd : cwd:string -> string -> unit
+
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5080,6 +5086,12 @@ let set_ppx_flags ~cwd s =
         else resolve_bsb_magic_path ~cwd ~desc:"ppx" p
       ) in
   ppx_flags := s
+
+
+let js_post_build_cmd = ref None 
+let get_js_post_build_cmd () = !js_post_build_cmd
+let set_js_post_build_cmd ~cwd s =
+  js_post_build_cmd := Some (resolve_bsb_magic_path ~cwd ~desc:"js-post-build:cmd" s )
 
 end
 module Bsb_dep_infos : sig 
@@ -5273,8 +5285,8 @@ module Rules : sig
   val reload : t 
   val copy_resources : t
   val build_ml_from_mll : t 
-  val build_cmj_only : t
-  val build_cmj_cmi : t 
+  val build_cmj_js : t
+  val build_cmi_cmj_js : t 
   val build_cmi : t
 end
 
@@ -5302,6 +5314,7 @@ val output_kvs : (string * string) list -> out_channel -> unit
 
 type info = string list  * string list 
 val handle_file_groups : out_channel ->
+  js_post_build_cmd:string option -> 
   Bsb_build_ui.file_group list ->
   info -> info
 
@@ -5430,18 +5443,18 @@ module Rules = struct
 (**************************************)
 (* below are rules not local any more *)
 (**************************************)
-     let build_cmj_only =
+     let build_cmj_js =
        define
          ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
 
          ~depfile:"${in}.d"
          "build_cmj_only"
 
-     let build_cmj_cmi =
+     let build_cmi_cmj_js =
        define
          ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in}"
+                   ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
          ~depfile:"${in}.d"
          "build_cmj_cmi"
      let build_cmi =
@@ -5556,9 +5569,9 @@ let (++) (us : info) (vs : info) =
 
 
 
-let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
+let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
   let handle_module_info  oc  module_name
-      ({mli; ml; mll } : Binary_cache.module_info)
+      ( module_info : Binary_cache.module_info)
       bs_dependencies
       info  =
     let installable =
@@ -5594,7 +5607,9 @@ let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
         | _ ->
           (
             "bs_package_includes",
-            `Append (String.concat " " (Ext_list.flat_map (fun x ->  ["-bs-package-include"; x] ) bs_dependencies) ))
+            `Append 
+              (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies)
+          )
           :: package_flags
       in
       if kind = `Mll then
@@ -5621,12 +5636,18 @@ let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
               ~input:output_mlast
               ~rule:Rules.build_deps ;
             let rule_name , cm_outputs, deps =
-              if mli = Mli_empty then
-                Rules.build_cmj_only,
+              if module_info.mli = Mli_empty then
+                Rules.build_cmj_js,
                 [  output_cmi]  , []
-              else Rules.build_cmj_cmi, [], [output_cmi]
+              else Rules.build_cmi_cmj_js, [], [output_cmi]
             in
-
+            let shadows = 
+              match js_post_build_cmd with 
+              | None -> shadows 
+              | Some cmd -> 
+                ("postbuild", 
+                `Overwrite ("&& " ^ cmd ^ " " ^ output_js)) :: shadows
+            in 
             output_build oc
               ~output:output_cmj
               ~shadows
@@ -5679,21 +5700,21 @@ let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
            [output_cmi]  )
       end
     in
-    begin match ml with
+    begin match module_info.ml with
       | Ml input -> emit_build `Ml input
       | Re input -> emit_build `Re input
       | Ml_empty -> zero
     end ++
-    begin match mli with
+    begin match module_info.mli with
       | Mli mli_file  ->
         emit_build `Mli mli_file
       | Rei rei_file ->
         emit_build `Rei rei_file
       | Mli_empty -> zero
     end ++
-    begin match mll with
+    begin match module_info.mll with
       | Some mll_file ->
-        begin match ml with
+        begin match module_info.ml with
           | Ml_empty -> emit_build `Mll mll_file
           | Ml input | Re input ->
             failwith ("both "^ mll_file ^ " and " ^ input ^ " are found in source listings" )
@@ -5706,8 +5727,8 @@ let handle_file_group oc acc (group: Bsb_build_ui.file_group) =
       handle_module_info  oc k v group.bs_dependencies acc
     ) group.sources  acc
 
-let handle_file_groups oc  (file_groups  :  Bsb_build_ui.file_group list) st =
-      List.fold_left (handle_file_group oc) st  file_groups
+let handle_file_groups oc ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
+      List.fold_left (handle_file_group oc ~js_post_build_cmd ) st  file_groups
 
 end
 module Bsb_gen : sig 
@@ -5740,6 +5761,7 @@ module Bsb_gen : sig
 val output_ninja :
   builddir:string ->
   cwd:string ->
+  js_post_build_cmd:string option -> 
   string ->
   string ->
   string option ->
@@ -5783,6 +5805,7 @@ let (//) = Ext_filename.combine
 let output_ninja
     ~builddir
     ~cwd
+    ~js_post_build_cmd
     bsc
     bsdep
     package_name
@@ -5793,6 +5816,7 @@ let output_ninja
     ppx_flags
     bs_dependencies
     refmt
+
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bs_groups, source_dirs,static_resources  =
@@ -5845,7 +5869,7 @@ let output_ninja
         ]
     in
     let all_deps, all_cmis =
-      Bsb_ninja.handle_file_groups oc bs_file_groups ([],[]) in
+      Bsb_ninja.handle_file_groups oc ~js_post_build_cmd  bs_file_groups ([],[]) in
     let all_deps =
       (* we need copy package.json into [_build] since it does affect build output *)
       (* Literals.package_json ::
@@ -5929,6 +5953,11 @@ let write_ninja_file cwd =
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
+          |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
+              m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
+                )
+            |> ignore 
+            end)
           |?  (Bsb_build_schemas.ocamllex, `Str Bsb_default.set_ocamllex)
           |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
           (* More design *)
@@ -5960,7 +5989,7 @@ let write_ninja_file cwd =
     Unix.unlink Literals.bsconfig_json;
     Unix.rename config_file_bak Literals.bsconfig_json
   end;
-  Bsb_gen.output_ninja ~builddir ~cwd
+  Bsb_gen.output_ninja ~builddir ~cwd ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
              bsc
              bsdep
              (Bsb_default.get_package_name ())
@@ -5971,6 +6000,7 @@ let write_ninja_file cwd =
              Bsb_default.(get_ppx_flags ())
              Bsb_default.(get_bs_dependencies ())
              Bsb_default.(get_refmt ())
+
           ;
   !globbed_dirs
 

@@ -89,3 +89,9 @@ let set_ppx_flags ~cwd s =
         else resolve_bsb_magic_path ~cwd ~desc:"ppx" p
       ) in
   ppx_flags := s
+
+
+let js_post_build_cmd = ref None 
+let get_js_post_build_cmd () = !js_post_build_cmd
+let set_js_post_build_cmd ~cwd s =
+  js_post_build_cmd := Some (resolve_bsb_magic_path ~cwd ~desc:"js-post-build:cmd" s )

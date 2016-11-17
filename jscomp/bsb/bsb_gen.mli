@@ -26,6 +26,7 @@
 val output_ninja :
   builddir:string ->
   cwd:string ->
+  js_post_build_cmd:string option -> 
   string ->
   string ->
   string option ->
