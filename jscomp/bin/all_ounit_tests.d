@@ -23,6 +23,7 @@ bin/all_ounit_tests.ml : ext/literals.mli
 bin/all_ounit_tests.ml : ext/ext_filename.ml
 bin/all_ounit_tests.ml : ext/ext_filename.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_path_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_scc_tests.ml
 bin/all_ounit_tests.ml : ext/resize_array.ml
 bin/all_ounit_tests.ml : ext/resize_array.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_vec_test.ml

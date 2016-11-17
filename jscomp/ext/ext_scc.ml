@@ -1,5 +1,5 @@
 
-type elt = string
+type elt = int
 type  v = {
   mutable index : int;
   mutable lowlink : int ;
@@ -14,6 +14,7 @@ type  v = {
    1. Easy to eoncode algorithm (especially given that the capacity of node is known)
    2. Algorithms itself are much more efficient
    3. Node comparison semantics is clear
+   4. Easy to print output
    Cons:
    1. post processing input data  
  *)
@@ -30,7 +31,7 @@ let graph vs e =
 
     v.next 
     |> List.iter (fun w  ->
-        let w = String_map.find  w e in 
+        let w = Int_map.find  w e in 
         if w.index < 0 then
           begin  
             scc w;
@@ -44,16 +45,18 @@ let graph vs e =
         print_endline "Cycle" ;  
         let curr = ref (Stack.pop s) in
         (!curr).onstack <- false;
-        print_endline (!curr).data ;    
+        (* print_endline (!curr).data ; *)    
         while !curr != v do
           curr := Stack.pop s ;
           (!curr).onstack <- false  ;
-          print_endline (!curr).data ;
+          (* print_endline (!curr).data ; *)
         done
       end   
   in
-  List.iter (fun v -> if v.index < 0 then scc v) vs   
+  List.iter (fun v -> if v.index < 0 then scc v) vs
 
+
+(*
 let test  (input : (string * string list) list) = 
     let vs = 
         input 
@@ -70,3 +73,4 @@ let drive () =
         "c", [ "b"];
         "d", [];
     ]              
+*)    
