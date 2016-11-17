@@ -31,7 +31,7 @@ let bsdeps = ".bsdeps"
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb
+  m  |> Bsb_json.test key cb
 
 let (//) = Ext_filename.combine
 
@@ -79,18 +79,19 @@ let write_ninja_file cwd =
     | _ -> ()
   in
   begin match List.sort Ext_file_pp.interval_compare  !update_queue with
-  | [] -> ()
-  | queue ->
-    let file_size = in_channel_length config_json_chan in
-    let oc = open_out_bin config_file_bak in
-    let () =
-      Ext_file_pp.process_wholes
-        queue file_size config_json_chan oc in
-    close_out oc ;
-    close_in config_json_chan ;
-    Unix.unlink Literals.bsconfig_json;
-    Unix.rename config_file_bak Literals.bsconfig_json
+    | [] -> ()
+    | queue ->
+      let file_size = in_channel_length config_json_chan in
+      let oc = open_out_bin config_file_bak in
+      let () =
+        Ext_file_pp.process_wholes
+          queue file_size config_json_chan oc in
+      close_out oc ;
+      close_in config_json_chan ;
+      Unix.unlink Literals.bsconfig_json;
+      Unix.rename config_file_bak Literals.bsconfig_json
   end;
+
   Bsb_gen.output_ninja ~builddir ~cwd ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
              bsc
              bsdep
@@ -109,49 +110,99 @@ let write_ninja_file cwd =
 
 
 
-let load_ninja argv =
-  let ninja_flags = (Array.sub Sys.argv 1 (Array.length argv - 1)) in
-  Unix.execvp ninja
-    (Array.concat
-       [
-         [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|];
-         ninja_flags
-       ]
-    )
+
+
+let force_regenerate = ref false
+let exec = ref false
+let targets = String_vec.make 5
+
+let create_bs_config () = 
+  ()
+
+let annoymous filename = 
+  String_vec.push targets filename
+let bsb_main_flags = 
+  [
+    (*    "-init", Arg.Unit create_bs_config , 
+          " Create an simple bsconfig.json"
+          ;
+    *)    "-regen", Arg.Set force_regenerate, 
+          " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"  
+    ;  
+    (*"-exec", Arg.Set exec, 
+      " Also run the JS files passsed" ;*)
+  ]
+
+let regenerate_ninja cwd forced =
+  let output_deps = Bsb_config.lib_bs // bsdeps in
+  let reason =
+    if forced then "Regenerating ninja (triggered by command line -regen)"
+    else  
+      Bsb_dep_infos.check ~cwd  output_deps in 
+  if String.length reason <> 0 then 
+    begin
+      print_endline reason ; 
+      print_endline "Regenrating build spec";
+      let globbed_dirs = write_ninja_file cwd in
+      Literals.bsconfig_json :: globbed_dirs
+      |> List.map
+        (fun x ->
+           { Bsb_dep_infos.dir_or_file = x ;
+             stamp = (Unix.stat x).st_mtime
+           }
+        )
+      |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x))
+
+    end
 
 (**
-Cache files generated:
-- .bsdircache in project root dir
-- .bsdeps in builddir
+   Cache files generated:
+   - .bsdircache in project root dir
+   - .bsdeps in builddir
 
-What will happen, some flags are really not good
-ninja -C _build
+   What will happen, some flags are really not good
+   ninja -C _build
 *)
+let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
+For ninja options, try ninja -h \n\
+ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
+It is always recommended to run ninja via bsb.exe \n\
+Bsb options are:"
+
 let () =
+  let cwd = Sys.getcwd () in
   try
-    let builddir = Bsb_config.lib_bs in
-    let output_deps = builddir // bsdeps in
-    let cwd = Sys.getcwd () in
-
-    let reason = Bsb_dep_infos.check ~cwd  output_deps in
-    if String.length reason <> 0 then
+    (* see discussion #929 *)
+    if Array.length Sys.argv <= 1 then
+      begin 
+        regenerate_ninja cwd false;
+        Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
+      end
+    else
       begin
-        (* This is actual slow path, okay to be slight slower *)
-        print_endline reason;
-        print_endline "Regenrating build spec";
-        let globbed_dirs = write_ninja_file cwd in
-        Literals.bsconfig_json :: globbed_dirs
-        |> List.map
-          (fun x ->
-             { Bsb_dep_infos.dir_or_file = x ;
-               stamp = (Unix.stat x).st_mtime
-             }
-          )
-        |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x))
+        match Ext_array.find_and_split Sys.argv Ext_string.equal "--" with 
+        | `No_split 
+          ->
+          begin 
+            Arg.parse bsb_main_flags annoymous usage; 
+            regenerate_ninja cwd !force_regenerate;   
+            (* String_vec.iter (fun s -> print_endline s) targets; *)
+            (* ninja is not triggered in this case *)
+          end
+        | `Split (bsb_args,ninja_args) 
+          -> 
+          begin 
+            Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
+            (* String_vec.iter (fun s -> print_endline s) targets; *)
+            regenerate_ninja cwd !force_regenerate;
+            Unix.execvp ninja
+              (Array.append       
+                 [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|]
+                 ninja_args       
+              )
 
-      end;
-    load_ninja Sys.argv
-
+          end
+      end
   with x ->
     prerr_endline @@ Printexc.to_string x ;
     exit 2

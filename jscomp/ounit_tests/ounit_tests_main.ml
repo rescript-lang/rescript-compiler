@@ -19,7 +19,8 @@ let suites =
   [
     Ounit_vec_test.suites;
     Ounit_json_tests.suites;
-    Ounit_path_tests.suites
+    Ounit_path_tests.suites;
+    Ounit_array_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

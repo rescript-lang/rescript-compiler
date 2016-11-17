@@ -196,6 +196,42 @@ function rfind_and_split(arr, cmp, v) {
   }
 }
 
+function find_with_index(arr, cmp, v) {
+  var len = arr.length;
+  var _i = 0;
+  var len$1 = len;
+  while(true) {
+    var i = _i;
+    if (i >= len$1) {
+      return -1;
+    }
+    else if (Curry._2(cmp, arr[i], v)) {
+      return i;
+    }
+    else {
+      _i = i + 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
+function find_and_split(arr, cmp, v) {
+  var i = find_with_index(arr, cmp, v);
+  if (i < 0) {
+    return /* No_split */-226265796;
+  }
+  else {
+    return /* `Split */[
+            345791162,
+            /* tuple */[
+              $$Array.sub(arr, 0, i),
+              $$Array.sub(arr, i + 1 | 0, (arr.length - i | 0) - 1 | 0)
+            ]
+          ];
+  }
+}
+
 exports.reverse_in_place = reverse_in_place;
 exports.reverse_of_list  = reverse_of_list;
 exports.filter           = filter;
@@ -205,4 +241,6 @@ exports.map2i            = map2i;
 exports.to_list_map      = to_list_map;
 exports.rfind_with_index = rfind_with_index;
 exports.rfind_and_split  = rfind_and_split;
+exports.find_with_index  = find_with_index;
+exports.find_and_split   = find_and_split;
 /* No side effect */

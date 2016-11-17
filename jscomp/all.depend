@@ -26,6 +26,7 @@ ext/literals.cmx : ext/literals.cmi
 ext/resize_array.cmx : ext/resize_array.cmi
 ext/string_map.cmx : ext/string_map.cmi
 ext/string_set.cmx : ext/string_set.cmi
+ext/string_vec.cmx : ext/resize_array.cmx
 ext/ext_array.cmi :
 ext/ext_bytes.cmi :
 ext/ext_char.cmi :
@@ -493,7 +494,8 @@ bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_filename.cmx \
     bsb/bsb_ninja.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
     bsb/bsb_build_ui.cmx common/binary_cache.cmx bsb/bsb_gen.cmi
 bsb/bsb_json.cmx : ext/string_map.cmx ext/ext_array.cmx bsb/bsb_json.cmi
-bsb/bsb_main.cmx : ext/literals.cmx ext/ext_filename.cmx ext/ext_file_pp.cmx \
+bsb/bsb_main.cmx : ext/string_vec.cmx ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
     bsb/bsb_json.cmx bsb/bsb_gen.cmx bsb/bsb_dep_infos.cmx \
     bsb/bsb_default.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
     bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx bsb/bsb_main.cmi
@@ -523,13 +525,15 @@ ounit/oUnitDiff.cmx : ounit/oUnit.cmx ounit/oUnitDiff.cmi
 ounit/oUnitLogger.cmx : ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx
 ounit/oUnitTypes.cmx :
 ounit/oUnitUtils.cmx : ounit/oUnitTypes.cmx
+ounit_tests/ounit_array_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
+    ext/ext_array.cmx
 ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \
     bsb/bsb_json.cmx
 ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_filename.cmx
 ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_path_tests.cmx \
-    ounit_tests/ounit_json_tests.cmx ounit/oUnit.cmx \
-    ounit_tests/ounit_tests_main.cmi
+    ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_array_tests.cmx \
+    ounit/oUnit.cmx ounit_tests/ounit_tests_main.cmi
 ounit_tests/ounit_vec_test.cmx : ext/resize_array.cmx ounit/oUnit.cmx \
     bsb/bsb_json.cmx
 ounit_tests/ounit_tests_main.cmi :

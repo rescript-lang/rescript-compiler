@@ -11,5 +11,13 @@ S stdlib
 B stdlib
 S test
 B test
+
+S bsb
+B bsb
+S ounit
+B ounit
+S ounit_tests
+B ounit_tests
+
 B +compiler-libs
 FLG -w -40-30
