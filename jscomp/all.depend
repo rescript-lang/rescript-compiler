@@ -22,11 +22,12 @@ ext/ext_sys.cmx : ext/ext_sys.cmi
 ext/hash_set.cmx : ext/hash_set.cmi
 ext/ident_set.cmx : ext/ext_format.cmx ext/ident_set.cmi
 ext/int_map.cmx : ext/int_map.cmi
+ext/int_vec.cmx : ext/resize_array.cmx ext/int_vec.cmi
 ext/literals.cmx : ext/literals.cmi
 ext/resize_array.cmx : ext/resize_array.cmi
 ext/string_map.cmx : ext/string_map.cmi
 ext/string_set.cmx : ext/string_set.cmi
-ext/string_vec.cmx : ext/resize_array.cmx
+ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
 ext/ext_array.cmi :
 ext/ext_bytes.cmi :
 ext/ext_char.cmi :
@@ -49,10 +50,12 @@ ext/ext_sys.cmi :
 ext/hash_set.cmi :
 ext/ident_set.cmi : ext/ext_format.cmi
 ext/int_map.cmi :
+ext/int_vec.cmi : ext/resize_array.cmi
 ext/literals.cmi :
 ext/resize_array.cmi :
 ext/string_map.cmi :
 ext/string_set.cmi :
+ext/string_vec.cmi : ext/resize_array.cmi
 common/binary_ast.cmx : common/binary_ast.cmi
 common/binary_cache.cmx : ext/string_map.cmx ext/ext_filename.cmx \
     common/binary_cache.cmi
