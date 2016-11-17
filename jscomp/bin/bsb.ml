@@ -4312,19 +4312,28 @@ module Make ( Resize : ResizeType) = struct
   let push d v =
     let d_len = d.len in
     let d_arr = d.arr in 
-    if d_len = Array.length d_arr then
-      begin
-        if d_len >= Sys.max_array_length then 
-          failwith "exceeds max_array_length";
-        let new_capacity = min Sys.max_array_length d_len * 2 in
-        let new_d_arr = Array.make new_capacity Resize.null in 
-        d.arr <- new_d_arr;
-        unsafe_blit d_arr 0 new_d_arr 0 d_len ;
-      end;
-    d.len <- d_len + 1;
-    Array.unsafe_set d.arr d_len v
-
-
+    let d_arr_len = Array.length d_arr in
+    if d_arr_len = 0 then
+      begin 
+        d.len <- 1 ;
+        d.arr <- [| v |]
+      end
+    else  
+      begin 
+        if d_len = d_arr_len then 
+          begin
+            if d_len >= Sys.max_array_length then 
+              failwith "exceeds max_array_length";
+            let new_capacity = min Sys.max_array_length d_len * 2 
+            (* [d_len] can not be zero, so [*2] will enlarge   *)
+            in
+            let new_d_arr = Array.make new_capacity Resize.null in 
+            d.arr <- new_d_arr;
+            unsafe_blit d_arr 0 new_d_arr 0 d_len ;
+          end;
+        d.len <- d_len + 1;
+        Array.unsafe_set d.arr d_len v
+      end
 
   let delete d idx =
     if idx < 0 || idx >= d.len then invalid_arg "Resize_array.delete" ;
@@ -5972,8 +5981,34 @@ let output_ninja
   end
 
 end
-module String_vec
-= struct
+module String_vec : sig 
+#1 "string_vec.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Resize_array.S with type elt = string
+end = struct
 #1 "string_vec.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.

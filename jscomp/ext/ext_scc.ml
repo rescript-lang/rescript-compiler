@@ -1,11 +1,37 @@
-
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ 
 type elt = int
-type  v = {
+
+
+type  node = {
   mutable index : int;
   mutable lowlink : int ;
   mutable onstack : bool;
-  next : elt list ;    
-  data : elt 
+  data : elt ;
+  next : Int_vec.t ;    
+
 }
 
 (** 
@@ -19,19 +45,25 @@ type  v = {
    1. post processing input data  
  *)
 let min_int (x : int) y = if x < y then x else y  
-let graph vs e =
+
+let graph  e =
   let index = ref 0 in 
   let s = Stack.create () in
+
+  (* collect output *)
+  let output = Queue.create () in 
+
   let rec scc v  =
-    v.index <- !index ; 
-    v.lowlink <- !index ; 
-    index := !index + 1 ; 
+    index := !index + 1 ;
     Stack.push v s; 
+    v.index <- !index ;
+    v.lowlink <- !index ;
+
     v.onstack <- true;
 
     v.next 
-    |> List.iter (fun w  ->
-        let w = Int_map.find  w e in 
+    |> Int_vec.iter (fun w  ->
+        let w = e.(w) in 
         if w.index < 0 then
           begin  
             scc w;
@@ -42,19 +74,26 @@ let graph vs e =
       ) ; 
     if v.lowlink = v.index then
       begin
-        print_endline "Cycle" ;  
-        let curr = ref (Stack.pop s) in
-        (!curr).onstack <- false;
-        (* print_endline (!curr).data ; *)    
-        while !curr != v do
-          curr := Stack.pop s ;
-          (!curr).onstack <- false  ;
-          (* print_endline (!curr).data ; *)
-        done
+        (* TODO: if we use stack as vector we can do batch update here *)
+        let curr_vec = Int_vec.make 4 in 
+
+        let curr_ele = Stack.pop s in
+        let curr = ref curr_ele in
+        curr_ele.onstack <- false;
+        Int_vec.push curr_vec  curr_ele.data; 
+
+        while !curr.data != v.data do
+          let curr_ele = Stack.pop s in
+          curr :=  curr_ele ;
+          curr_ele.onstack <- false  ;
+          Int_vec.push curr_vec curr_ele.data
+        done;
+        Queue.push curr_vec  output
       end   
   in
-  List.iter (fun v -> if v.index < 0 then scc v) vs
-
+  (* List.iter (fun v -> if v.index < 0 then scc v) vs *)
+  Array.iter (fun v -> if v.index < 0 then scc v) e;
+  output 
 
 (*
 let test  (input : (string * string list) list) = 

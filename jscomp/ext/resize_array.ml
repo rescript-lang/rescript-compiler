@@ -137,19 +137,28 @@ module Make ( Resize : ResizeType) = struct
   let push d v =
     let d_len = d.len in
     let d_arr = d.arr in 
-    if d_len = Array.length d_arr then
-      begin
-        if d_len >= Sys.max_array_length then 
-          failwith "exceeds max_array_length";
-        let new_capacity = min Sys.max_array_length d_len * 2 in
-        let new_d_arr = Array.make new_capacity Resize.null in 
-        d.arr <- new_d_arr;
-        unsafe_blit d_arr 0 new_d_arr 0 d_len ;
-      end;
-    d.len <- d_len + 1;
-    Array.unsafe_set d.arr d_len v
-
-
+    let d_arr_len = Array.length d_arr in
+    if d_arr_len = 0 then
+      begin 
+        d.len <- 1 ;
+        d.arr <- [| v |]
+      end
+    else  
+      begin 
+        if d_len = d_arr_len then 
+          begin
+            if d_len >= Sys.max_array_length then 
+              failwith "exceeds max_array_length";
+            let new_capacity = min Sys.max_array_length d_len * 2 
+            (* [d_len] can not be zero, so [*2] will enlarge   *)
+            in
+            let new_d_arr = Array.make new_capacity Resize.null in 
+            d.arr <- new_d_arr;
+            unsafe_blit d_arr 0 new_d_arr 0 d_len ;
+          end;
+        d.len <- d_len + 1;
+        Array.unsafe_set d.arr d_len v
+      end
 
   let delete d idx =
     if idx < 0 || idx >= d.len then invalid_arg "Resize_array.delete" ;

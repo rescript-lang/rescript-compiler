@@ -185,8 +185,35 @@ let medium_test_cases = {|
 reference output: 
 http://algs4.cs.princeton.edu/42digraph/KosarajuSharirSCC.java.html 
 *)
+
+let handle_lines tiny_test_cases = 
+  match Ext_string.split  tiny_test_cases '\n' with 
+  | nodes :: edges :: rest -> 
+    let nodes_num = int_of_string nodes in 
+    let node_array = 
+      Array.init nodes_num
+        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; onstack = false; next = Int_vec.empty ()})
+    in 
+    begin 
+      rest |> List.iter (fun x ->
+          match Ext_string.split x ' ' with 
+          | [ a ; b] -> 
+            let a , b = int_of_string a , int_of_string b in 
+            Int_vec.push node_array.(a).next b 
+          | _ -> assert false 
+        );
+      node_array 
+    end
+  | _ -> assert false
+
 let suites = 
     __FILE__
     >::: [
+      __LOC__ >:: begin fun _ -> 
+        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines tiny_test_cases))  5
+      end       ;
+      __LOC__ >:: begin fun _ -> 
+        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines medium_test_cases))  10
+      end       
 
     ]

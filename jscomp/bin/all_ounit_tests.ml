@@ -3832,202 +3832,6 @@ let suites =
   ]
 
 end
-module Ounit_scc_tests
-= struct
-#1 "ounit_scc_tests.ml"
-let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
-
-let (=~) = OUnit.assert_equal
-
-let tiny_test_cases = {|
-13
-22
- 4  2
- 2  3
- 3  2
- 6  0
- 0  1
- 2  0
-11 12
-12  9
- 9 10
- 9 11
- 7  9
-10 12
-11  4
- 4  3
- 3  5
- 6  8
- 8  6
- 5  4
- 0  5
- 6  4
- 6  9
- 7  6
-|}     
-
-let medium_test_cases = {|
-50
-147
- 0  7
- 0 34
- 1 14
- 1 45
- 1 21
- 1 22
- 1 22
- 1 49
- 2 19
- 2 25
- 2 33
- 3  4
- 3 17
- 3 27
- 3 36
- 3 42
- 4 17
- 4 17
- 4 27
- 5 43
- 6 13
- 6 13
- 6 28
- 6 28
- 7 41
- 7 44
- 8 19
- 8 48
- 9  9
- 9 11
- 9 30
- 9 46
-10  0
-10  7
-10 28
-10 28
-10 28
-10 29
-10 29
-10 34
-10 41
-11 21
-11 30
-12  9
-12 11
-12 21
-12 21
-12 26
-13 22
-13 23
-13 47
-14  8
-14 21
-14 48
-15  8
-15 34
-15 49
-16  9
-17 20
-17 24
-17 38
-18  6
-18 28
-18 32
-18 42
-19 15
-19 40
-20  3
-20 35
-20 38
-20 46
-22  6
-23 11
-23 21
-23 22
-24  4
-24  5
-24 38
-24 43
-25  2
-25 34
-26  9
-26 12
-26 16
-27  5
-27 24
-27 32
-27 31
-27 42
-28 22
-28 29
-28 39
-28 44
-29 22
-29 49
-30 23
-30 37
-31 18
-31 32
-32  5
-32  6
-32 13
-32 37
-32 47
-33  2
-33  8
-33 19
-34  2 
-34 19
-34 40
-35  9
-35 37
-35 46
-36 20
-36 42
-37  5
-37  9
-37 35
-37 47
-37 47
-38 35
-38 37
-38 38
-39 18
-39 42
-40 15
-41 28
-41 44
-42 31
-43 37
-43 38
-44 39
-45  8
-45 14
-45 14
-45 15
-45 49
-46 16
-47 23
-47 30
-48 12
-48 21
-48 33
-48 33
-49 34
-49 22
-49 49
-|}
-(* 
-reference output: 
-http://algs4.cs.princeton.edu/42digraph/KosarajuSharirSCC.java.html 
-*)
-let suites = 
-    __FILE__
-    >::: [
-
-    ]
-end
 module Resize_array : sig 
 #1 "resize_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4250,19 +4054,28 @@ module Make ( Resize : ResizeType) = struct
   let push d v =
     let d_len = d.len in
     let d_arr = d.arr in 
-    if d_len = Array.length d_arr then
-      begin
-        if d_len >= Sys.max_array_length then 
-          failwith "exceeds max_array_length";
-        let new_capacity = min Sys.max_array_length d_len * 2 in
-        let new_d_arr = Array.make new_capacity Resize.null in 
-        d.arr <- new_d_arr;
-        unsafe_blit d_arr 0 new_d_arr 0 d_len ;
-      end;
-    d.len <- d_len + 1;
-    Array.unsafe_set d.arr d_len v
-
-
+    let d_arr_len = Array.length d_arr in
+    if d_arr_len = 0 then
+      begin 
+        d.len <- 1 ;
+        d.arr <- [| v |]
+      end
+    else  
+      begin 
+        if d_len = d_arr_len then 
+          begin
+            if d_len >= Sys.max_array_length then 
+              failwith "exceeds max_array_length";
+            let new_capacity = min Sys.max_array_length d_len * 2 
+            (* [d_len] can not be zero, so [*2] will enlarge   *)
+            in
+            let new_d_arr = Array.make new_capacity Resize.null in 
+            d.arr <- new_d_arr;
+            unsafe_blit d_arr 0 new_d_arr 0 d_len ;
+          end;
+        d.len <- d_len + 1;
+        Array.unsafe_set d.arr d_len v
+      end
 
   let delete d idx =
     if idx < 0 || idx >= d.len then invalid_arg "Resize_array.delete" ;
@@ -4472,6 +4285,445 @@ module Make ( Resize : ResizeType) = struct
 end
 
 end
+module Int_vec : sig 
+#1 "int_vec.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Resize_array.S with type elt = int
+end = struct
+#1 "int_vec.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Resize_array.Make(struct type t = int let null = 0 end)
+end
+module Ext_scc : sig 
+#1 "ext_scc.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ 
+type elt = int
+
+
+type  node = {
+  mutable index : int;
+  mutable lowlink : int ;
+  mutable onstack : bool;
+  data : elt ;
+  next : Int_vec.t ;    
+
+}
+
+val graph : node array -> Int_vec.t Queue.t
+
+end = struct
+#1 "ext_scc.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ 
+type elt = int
+
+
+type  node = {
+  mutable index : int;
+  mutable lowlink : int ;
+  mutable onstack : bool;
+  data : elt ;
+  next : Int_vec.t ;    
+
+}
+
+(** 
+   [int] as data for this algorithm
+   Pros:
+   1. Easy to eoncode algorithm (especially given that the capacity of node is known)
+   2. Algorithms itself are much more efficient
+   3. Node comparison semantics is clear
+   4. Easy to print output
+   Cons:
+   1. post processing input data  
+ *)
+let min_int (x : int) y = if x < y then x else y  
+
+let graph  e =
+  let index = ref 0 in 
+  let s = Stack.create () in
+
+  (* collect output *)
+  let output = Queue.create () in 
+
+  let rec scc v  =
+    index := !index + 1 ;
+    Stack.push v s; 
+    v.index <- !index ;
+    v.lowlink <- !index ;
+
+    v.onstack <- true;
+
+    v.next 
+    |> Int_vec.iter (fun w  ->
+        let w = e.(w) in 
+        if w.index < 0 then
+          begin  
+            scc w;
+            v.lowlink <- min_int v.lowlink w.lowlink
+          end  
+        else if w.onstack then 
+          v.lowlink <- min_int v.lowlink w.lowlink 
+      ) ; 
+    if v.lowlink = v.index then
+      begin
+        (* TODO: if we use stack as vector we can do batch update here *)
+        let curr_vec = Int_vec.make 4 in 
+
+        let curr_ele = Stack.pop s in
+        let curr = ref curr_ele in
+        curr_ele.onstack <- false;
+        Int_vec.push curr_vec  curr_ele.data; 
+
+        while !curr.data != v.data do
+          let curr_ele = Stack.pop s in
+          curr :=  curr_ele ;
+          curr_ele.onstack <- false  ;
+          Int_vec.push curr_vec curr_ele.data
+        done;
+        Queue.push curr_vec  output
+      end   
+  in
+  (* List.iter (fun v -> if v.index < 0 then scc v) vs *)
+  Array.iter (fun v -> if v.index < 0 then scc v) e;
+  output 
+
+(*
+let test  (input : (string * string list) list) = 
+    let vs = 
+        input 
+        |> List.map (fun (data,next) -> {index = -1 ; lowlink = -1 ; onstack = false; next ; data }) 
+    in
+    let e =
+        List.fold_left2 (fun acc (x,_) y -> String_map.add x y acc) String_map.empty input vs in 
+    graph vs e
+
+let drive () = 
+    test [
+        "a", ["b" ; "c"];
+        "b" , ["c" ; "d"];
+        "c", [ "b"];
+        "d", [];
+    ]              
+*)    
+
+end
+module Ounit_scc_tests
+= struct
+#1 "ounit_scc_tests.ml"
+let ((>::),
+    (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+let tiny_test_cases = {|
+13
+22
+ 4  2
+ 2  3
+ 3  2
+ 6  0
+ 0  1
+ 2  0
+11 12
+12  9
+ 9 10
+ 9 11
+ 7  9
+10 12
+11  4
+ 4  3
+ 3  5
+ 6  8
+ 8  6
+ 5  4
+ 0  5
+ 6  4
+ 6  9
+ 7  6
+|}     
+
+let medium_test_cases = {|
+50
+147
+ 0  7
+ 0 34
+ 1 14
+ 1 45
+ 1 21
+ 1 22
+ 1 22
+ 1 49
+ 2 19
+ 2 25
+ 2 33
+ 3  4
+ 3 17
+ 3 27
+ 3 36
+ 3 42
+ 4 17
+ 4 17
+ 4 27
+ 5 43
+ 6 13
+ 6 13
+ 6 28
+ 6 28
+ 7 41
+ 7 44
+ 8 19
+ 8 48
+ 9  9
+ 9 11
+ 9 30
+ 9 46
+10  0
+10  7
+10 28
+10 28
+10 28
+10 29
+10 29
+10 34
+10 41
+11 21
+11 30
+12  9
+12 11
+12 21
+12 21
+12 26
+13 22
+13 23
+13 47
+14  8
+14 21
+14 48
+15  8
+15 34
+15 49
+16  9
+17 20
+17 24
+17 38
+18  6
+18 28
+18 32
+18 42
+19 15
+19 40
+20  3
+20 35
+20 38
+20 46
+22  6
+23 11
+23 21
+23 22
+24  4
+24  5
+24 38
+24 43
+25  2
+25 34
+26  9
+26 12
+26 16
+27  5
+27 24
+27 32
+27 31
+27 42
+28 22
+28 29
+28 39
+28 44
+29 22
+29 49
+30 23
+30 37
+31 18
+31 32
+32  5
+32  6
+32 13
+32 37
+32 47
+33  2
+33  8
+33 19
+34  2 
+34 19
+34 40
+35  9
+35 37
+35 46
+36 20
+36 42
+37  5
+37  9
+37 35
+37 47
+37 47
+38 35
+38 37
+38 38
+39 18
+39 42
+40 15
+41 28
+41 44
+42 31
+43 37
+43 38
+44 39
+45  8
+45 14
+45 14
+45 15
+45 49
+46 16
+47 23
+47 30
+48 12
+48 21
+48 33
+48 33
+49 34
+49 22
+49 49
+|}
+(* 
+reference output: 
+http://algs4.cs.princeton.edu/42digraph/KosarajuSharirSCC.java.html 
+*)
+
+let handle_lines tiny_test_cases = 
+  match Ext_string.split  tiny_test_cases '\n' with 
+  | nodes :: edges :: rest -> 
+    let nodes_num = int_of_string nodes in 
+    let node_array = 
+      Array.init nodes_num
+        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; onstack = false; next = Int_vec.empty ()})
+    in 
+    begin 
+      rest |> List.iter (fun x ->
+          match Ext_string.split x ' ' with 
+          | [ a ; b] -> 
+            let a , b = int_of_string a , int_of_string b in 
+            Int_vec.push node_array.(a).next b 
+          | _ -> assert false 
+        );
+      node_array 
+    end
+  | _ -> assert false
+
+let suites = 
+    __FILE__
+    >::: [
+      __LOC__ >:: begin fun _ -> 
+        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines tiny_test_cases))  5
+      end       ;
+      __LOC__ >:: begin fun _ -> 
+        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines medium_test_cases))  10
+      end       
+
+    ]
+
+end
 module Ounit_vec_test
 = struct
 #1 "ounit_vec_test.ml"
@@ -4479,12 +4731,12 @@ let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
 open Bsb_json
-module Int_array = Resize_array.Make(struct type t = int let null = 0 end);;
-let v = Int_array.init 10 (fun i -> i);;
-let (=~) x y = OUnit.assert_equal ~cmp:(Int_array.equal  (fun (x: int) y -> x=y)) x y
+
+let v = Int_vec.init 10 (fun i -> i);;
+let (=~) x y = OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x y
 let (=~~) x y 
   = 
-  OUnit.assert_equal ~cmp:(Int_array.equal  (fun (x: int) y -> x=y)) x (Int_array.of_array y) 
+  OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x (Int_vec.of_array y) 
 
 let suites = 
   __FILE__ 
@@ -4492,43 +4744,49 @@ let suites =
   [
     "inplace_filter" >:: begin fun _ -> 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
-      ignore @@ Int_array.push v 32;
+      ignore @@ Int_vec.push v 32;
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
-      Int_array.inplace_filter (fun x -> x mod 2 = 0) v ;
+      Int_vec.inplace_filter (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 2; 4; 6; 8; 32|];
-      Int_array.inplace_filter (fun x -> x mod 3 = 0) v ;
+      Int_vec.inplace_filter (fun x -> x mod 3 = 0) v ;
       v =~~ [|0;6|];
-      Int_array.inplace_filter (fun x -> x mod 3 <> 0) v ;
+      Int_vec.inplace_filter (fun x -> x mod 3 <> 0) v ;
       v =~~ [||]
     end
     ;
     "filter" >:: begin fun _ -> 
-      let v = Int_array.of_array [|1;2;3;4;5;6|] in 
-      v |> Int_array.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);
+      let v = Int_vec.of_array [|1;2;3;4;5;6|] in 
+      v |> Int_vec.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);
       v =~~ [|1;2;3;4;5;6|];
-      Int_array.pop v ; 
+      Int_vec.pop v ; 
       v =~~ [|1;2;3;4;5|]
     end
     ;
 
     "capacity" >:: begin fun _ -> 
-      let v = Int_array.of_array [|3|] in 
-      Int_array.reserve v 10 ;
+      let v = Int_vec.of_array [|3|] in 
+      Int_vec.reserve v 10 ;
       v =~~ [|3 |];
-      Int_array.push v 1;
-      Int_array.push v 2;
-      Int_array.push v 5;
+      Int_vec.push v 1;
+      Int_vec.push v 2;
+      Int_vec.push v 5;
       v=~~ [|3;1;2;5|];
-      OUnit.assert_equal (Int_array.capacity v  ) 10 ;
+      OUnit.assert_equal (Int_vec.capacity v  ) 10 ;
       for i = 0 to 5 do
-        Int_array.push v i
+        Int_vec.push v i
       done;
       v=~~ [|3;1;2;5;0;1;2;3;4;5|];
-      Int_array.push v 100;
+      Int_vec.push v 100;
       v=~~[|3;1;2;5;0;1;2;3;4;5;100|];
-      OUnit.assert_equal (Int_array.capacity v ) 20
+      OUnit.assert_equal (Int_vec.capacity v ) 20
     end
+    ;
+    __LOC__  >:: begin fun _ -> 
+      let empty = Int_vec.empty () in 
+      Int_vec.push  empty 3;
+      empty =~~ [|3|];
 
+    end
   ]
 
 end
