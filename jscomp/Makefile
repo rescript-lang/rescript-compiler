@@ -216,7 +216,15 @@ bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
 	ocamlc.opt -w -a -I bin bin/config_whole_compiler.mli bin/config_whole_compiler.ml $^ -no-check-prims -o $@
 
 ../docs/js-demo/exports.js:
-	js_of_ocaml  --toplevel +weak.js +toplevel.js  ./polyfill.js bin/js_compiler.byte -I ./others/ -I ./runtime/ --file js.cmi:/cmis/js.cmi --file js_unsafe.cmi:/cmis/js_unsafe.cmi --file js_re.cmi:/cmis/js_re.cmi --file js_array.cmi:/cmis/js_array.cmi --file js_null.cmi:/cmis/js_null.cmi --file js_undefined.cmi:/cmis/js_undefined.cmi --file js_types.cmi:/cmis/js_types.cmi --file js_null_undefined.cmi:/cmis/js_null_undefined.cmi --file js_dict.cmi:/cmis/js_dict.cmi --file js_string.cmi:/cmis/js_string.cmi   -o $@
+	js_of_ocaml --toplevel +weak.js +toplevel.js ./polyfill.js bin/js_compiler.byte \
+	-I ./others/ -I ./runtime/ \
+	--file js.cmi:/cmis/js.cmi --file js_unsafe.cmi:/cmis/js_unsafe.cmi \
+	--file js_re.cmi:/cmis/js_re.cmi --file js_array.cmi:/cmis/js_array.cmi \
+	--file js_null.cmi:/cmis/js_null.cmi --file js_undefined.cmi:/cmis/js_undefined.cmi \
+	--file js_types.cmi:/cmis/js_types.cmi --file js_null_undefined.cmi:/cmis/js_null_undefined.cmi \
+	--file js_dict.cmi:/cmis/js_dict.cmi --file js_string.cmi:/cmis/js_string.cmi \
+	--file js_boolean.cmi:/cmis/js_boolean.cmi \
+  -o $@
 
 
 # git diff bin/bspack.ml
