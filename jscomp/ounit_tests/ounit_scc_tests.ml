@@ -192,20 +192,38 @@ let handle_lines tiny_test_cases =
     let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; next = Int_vec.empty ()})
+        (fun i -> Int_vec.empty () )
     in 
     begin 
       rest |> List.iter (fun x ->
           match Ext_string.split x ' ' with 
           | [ a ; b] -> 
             let a , b = int_of_string a , int_of_string b in 
-            Int_vec.push node_array.(a).next b 
+            Int_vec.push  b node_array.(a) 
           | _ -> assert false 
         );
       node_array 
     end
   | _ -> assert false
 
+let read_file file = 
+  let in_chan = open_in_bin file in 
+  let nodes_sum = int_of_string (input_line in_chan) in 
+  let node_array = Array.init nodes_sum (fun i -> Int_vec.empty () ) in 
+  let rec aux () = 
+    match input_line in_chan with 
+    | exception End_of_file -> ()
+    | x -> 
+      begin match Ext_string.split x ' ' with 
+      | [ a ; b] -> 
+        let a , b = int_of_string a , int_of_string b in 
+        Int_vec.push  b node_array.(a) 
+      | _ -> (* assert false  *) ()
+      end; 
+      aux () in 
+  print_endline "read data into memory";
+  aux ();
+   (fst (Ext_scc.graph_check node_array)) (* 25 *)
 
 
 let test  (input : (string * string list) list) = 
@@ -224,14 +242,43 @@ let test  (input : (string * string list) list) =
   let nodes_num = Hashtbl.length tbl in
   let node_array = 
       Array.init nodes_num
-        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1;  next = Int_vec.empty ()}) in 
+        (fun i -> Int_vec.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
       let idx = Hashtbl.find tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push node_array.(idx).next (Hashtbl.find tbl y ))
+      List.iter (fun y -> Int_vec.push (Hashtbl.find tbl y ) node_array.(idx) )
     ) ; 
   Ext_scc.graph_check node_array 
+
+let test2  (input : (string * string list) list) = 
+  (* string -> int mapping 
+  *)
+  let tbl = Hashtbl.create 32 in
+  let idx = ref 0 in 
+  let add x =
+    if not (Hashtbl.mem tbl x ) then 
+      begin 
+        Hashtbl.add  tbl x !idx ;
+        incr idx 
+      end in
+  input |> List.iter 
+    (fun (x,others) -> List.iter add (x::others));
+  let nodes_num = Hashtbl.length tbl in
+  let other_mapping = Array.make nodes_num "" in 
+  Hashtbl.iter (fun k v  -> other_mapping.(v) <- k ) tbl ;
+  
+  let node_array = 
+      Array.init nodes_num
+        (fun i -> Int_vec.empty () ) in 
+  input |> 
+  List.iter (fun (x,others) -> 
+      let idx = Hashtbl.find tbl  x  in 
+      others |> 
+      List.iter (fun y -> Int_vec.push (Hashtbl.find tbl y ) node_array.(idx) )
+    )  ;
+  let output = Ext_scc.graph node_array in 
+  output |> Int_vec_vec.map_into_array (fun int_vec -> Int_vec.map_into_array (fun i -> other_mapping.(i)) int_vec )
 
 
 let suites = 
@@ -305,5 +352,28 @@ let suites =
             "3", [ "4"]
           ]) (3, [3;1;1])
       end ; 
+      (* http://algs4.cs.princeton.edu/42digraph/largeDG.txt *)
+      (* __LOC__ >:: begin fun _ -> *)
+      (*   OUnit.assert_equal (read_file "largeDG.txt") 25 *)
+      (* end *)
+      (* ; *)
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test2 [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", [];
+          ]) [|[|"d"|]; [|"b"; "c"|]; [|"a"|]|]
+      end ;
+
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test2 [
+            "a", ["b"];
+            "b" , ["c" ];
+            "c", ["d" ];
+            "d", ["e"];
+            "e", []
+          ]) [|[|"e"|]; [|"d"|]; [|"c"|]; [|"b"|]; [|"a"|]|] 
+      end ;
 
     ]

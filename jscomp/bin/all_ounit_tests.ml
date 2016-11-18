@@ -3871,6 +3871,7 @@ sig
   type t
   val length : t -> int 
   val compact : t -> unit
+  val singleton : elt -> t 
   val empty : unit -> t 
   val make : int -> t 
   val init : int -> (int -> elt) -> t
@@ -3883,10 +3884,12 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push : t -> elt -> unit
+  val push : elt -> t  -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
+  val get_last_and_pop : t -> elt
   val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t 
   val clear : t -> unit 
   val reset : t -> unit 
   val to_list : t -> elt list 
@@ -3896,16 +3899,18 @@ sig
   val copy : t -> t 
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : int -> int -> (elt -> unit) -> t -> unit 
-  val iteri_range : int -> int -> (int -> elt -> unit) -> t -> unit
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt 
   val last : t -> elt
   val capacity : t -> int
 end
@@ -3955,6 +3960,7 @@ sig
   type t
   val length : t -> int 
   val compact : t -> unit
+  val singleton : elt -> t 
   val empty : unit -> t 
   val make : int -> t 
   val init : int -> (int -> elt) -> t
@@ -3967,10 +3973,12 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push : t -> elt -> unit
+  val push :  elt -> t -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
+  val get_last_and_pop : t -> elt
   val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t
   val clear : t -> unit 
   val reset : t -> unit 
   val to_list : t -> elt list 
@@ -3980,16 +3988,18 @@ sig
   val copy : t -> t 
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : int -> int -> (elt -> unit) -> t -> unit 
-  val iteri_range : int -> int -> (int -> elt -> unit) -> t -> unit
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt
   val last : t -> elt
   val capacity : t -> int
 end
@@ -4011,7 +4021,12 @@ module Make ( Resize : ResizeType) = struct
         let newarr = Array.sub d_arr 0 d.len in 
         d.arr <- newarr
       end
-
+  let singleton v = 
+    {
+      len = 1 ; 
+      arr = [|v|]
+    }
+    
   let empty () =
     {
       len = 0;
@@ -4051,7 +4066,7 @@ module Make ( Resize : ResizeType) = struct
       unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push d v =
+  let push v d =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -4089,7 +4104,14 @@ module Make ( Resize : ResizeType) = struct
     if idx < 0 then invalid_arg "Resize_array.pop";
     Array.unsafe_set d.arr idx Resize.null;
     d.len <- idx
-             
+  let get_last_and_pop d = 
+    let idx  = d.len - 1  in
+    if idx < 0 then invalid_arg "Resize_array.get_last_and_pop";
+    let last = Array.unsafe_get d.arr idx in 
+    Array.unsafe_set d.arr idx Resize.null;
+    d.len <- idx; 
+    last 
+
   let delete_range d idx len =
     if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.delete_range"  ;
     let arr = d.arr in 
@@ -4100,7 +4122,18 @@ module Make ( Resize : ResizeType) = struct
     d.len <- d.len - len
 
 
+  let get_and_delete_range d idx len = 
+    if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.get_and_delete_range"  ;
+    let arr = d.arr in 
+    let value = Array.sub arr idx len in
+    unsafe_blit arr (idx + len) arr idx (d.len  - idx - len);
+    for i = d.len - len to d.len - 1 do
+      Array.unsafe_set d.arr i Resize.null
+    done;
+    d.len <- d.len - len; 
+    {len = len ; arr = value}
 
+  
 (** Below are simple wrapper around normal Array operations *)  
 
   let clear d =
@@ -4128,8 +4161,6 @@ module Make ( Resize : ResizeType) = struct
     let arr = Array.of_list lst in 
     { arr ; len = Array.length arr}
 
-  (* TODO *)
-  (* let append_array arr =  *)
     
   let to_array d = 
     Array.sub d.arr 0 d.len
@@ -4170,7 +4201,7 @@ module Make ( Resize : ResizeType) = struct
       f i (Array.unsafe_get arr i)
     done
 
-  let iter_range from to_ f d =
+  let iter_range ~from ~to_ f d =
     if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
     else 
       let d_arr = d.arr in 
@@ -4178,7 +4209,7 @@ module Make ( Resize : ResizeType) = struct
         f  (Array.unsafe_get d_arr i)
       done
 
-  let iteri_range from to_ f d =
+  let iteri_range ~from ~to_ f d =
     if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
     else 
       let d_arr = d.arr in 
@@ -4197,6 +4228,18 @@ module Make ( Resize : ResizeType) = struct
       len = src_len;
       arr = arr;
     }
+
+  let map_into_array f src =
+    let src_len = src.len in 
+    let src_arr = src.arr in 
+    if src_len = 0 then [||]
+    else 
+      let first_one = f (Array.unsafe_get src_arr 0) in 
+      let arr = Array.make  src_len  first_one in
+      for i = 1 to src_len - 1 do
+        Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+      done;
+      arr 
 
   let mapi f src =
     let len = src.len in 
@@ -4276,7 +4319,7 @@ module Make ( Resize : ResizeType) = struct
   let get d i = 
     if i < 0 || i >= d.len then invalid_arg "Resize_array.get"
     else Array.unsafe_get d.arr i
-
+  let unsafe_get d i = Array.unsafe_get d.arr i 
   let last d = 
     if d.len <= 0 then invalid_arg   "Resize_array.last"
     else Array.unsafe_get d.arr (d.len - 1)
@@ -4341,6 +4384,64 @@ end = struct
 
 include Resize_array.Make(struct type t = int let null = 0 end)
 end
+module Int_vec_vec : sig 
+#1 "int_vec_vec.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Resize_array.S with type elt = Int_vec.t
+
+end = struct
+#1 "int_vec_vec.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Resize_array.Make(struct type t = Int_vec.t let null = Int_vec.empty () end)
+
+end
 module Ext_scc : sig 
 #1 "ext_scc.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4370,29 +4471,23 @@ module Ext_scc : sig
 
 
 
-type  node = {
-  mutable index : int;
-  mutable lowlink : int ;
-  (* mutable onstack : bool; *)
-  data : int ;
-  next : Int_vec.t ;    
-
-}
-
+type node = Int_vec.t
 (** Assume input is int array with offset from 0 
     Typical input 
     {[
       [|
-        [|0; 1 ; 2 |]; 
-        [|1 ; |]; 
-        [|2|]
+        [ 1 ; 2 ]; // 0 -> 1,  0 -> 2 
+        [ 1 ];   // 0 -> 1 
+        [ 2 ]  // 0 -> 2 
       |]
     ]}
     Note that we can tell how many nodes by calculating 
     [Array.length] of the input 
 *)
-val graph : node array -> Int_vec.t Queue.t
+val graph : Int_vec.t array -> Int_vec_vec.t
 
+
+(** Used for unit test *)
 val graph_check : node array -> int * int list 
 
 end = struct
@@ -4421,18 +4516,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
  
-type elt = int
-
-
-type  node = {
-  mutable index : int;
-  mutable lowlink : int ;
-  (* mutable onstack : bool; *)
-  data : elt ;
-  next : Int_vec.t ;    
-
-}
-
+type node = Int_vec.t 
 (** 
    [int] as data for this algorithm
    Pros:
@@ -4445,63 +4529,68 @@ type  node = {
  *)
 let min_int (x : int) y = if x < y then x else y  
 
+
 let graph  e =
   let index = ref 0 in 
-  let s = Stack.create () in
+  let s = Int_vec.empty () in
 
-  (* collect output *)
-  let output = Queue.create () in 
-  let node_numes = Array.length e in 
+  let output = Int_vec_vec.empty () in (* collect output *)
+  let node_numes = Array.length e in
+  
   let on_stack_array = Array.make node_numes false in
-  let rec scc v  =
+  let index_array = Array.make node_numes (-1) in 
+  let lowlink_array = Array.make node_numes (-1) in
+  
+  let rec scc v_data  =
     let new_index = !index + 1 in 
     index := new_index ;
-    Stack.push v.data s; 
-    v.index <- new_index ;
-    v.lowlink <- new_index ;
-    on_stack_array. (v.data) <- true ; 
-    (* v.onstack <- true; *)
+    Int_vec.push  v_data s ; 
 
-    v.next 
-    |> Int_vec.iter (fun w  ->
-        let w = e.(w) in 
-        if w.index < 0 then
+    index_array.(v_data) <- new_index ;  
+    lowlink_array.(v_data) <- new_index ; 
+    on_stack_array.(v_data) <- true ;
+    
+    let v = e.(v_data) in 
+    v
+    |> Int_vec.iter (fun w_data  ->
+        if Array.unsafe_get index_array w_data < 0 then (* not processed *)
           begin  
-            scc w;
-            v.lowlink <- min_int v.lowlink w.lowlink
+            scc w_data;
+            Array.unsafe_set lowlink_array v_data  
+              (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
           end  
-        else if (* w.onstack *) on_stack_array.(w.data) then 
-          v.lowlink <- min_int v.lowlink w.lowlink 
+        else if Array.unsafe_get on_stack_array w_data then 
+          (* successor is in stack and hence in current scc *)
+          begin 
+            Array.unsafe_set lowlink_array v_data  
+              (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
+          end
       ) ; 
-    if v.lowlink = v.index then
+
+    if Array.unsafe_get lowlink_array v_data = Array.unsafe_get index_array v_data then
+      (* start a new scc *)
       begin
-        (* TODO: if we use stack as vector we can do batch update here *)
-        let curr_vec = Int_vec.make 4 in 
-
-        let curr_ele = Stack.pop s in
-        let curr = ref curr_ele in
-
-        on_stack_array.(curr_ele) <- false;
-        Int_vec.push curr_vec  curr_ele; 
-
-        while !curr != v.data do
-          let curr_ele = Stack.pop s in
-          curr :=  curr_ele ;
-
-          on_stack_array.(curr_ele) <- false ; 
-          Int_vec.push curr_vec curr_ele
-        done;
-        Queue.push curr_vec  output
+        let s_len = Int_vec.length s in
+        let last_index = ref (s_len - 1) in 
+        let u = ref (Int_vec.unsafe_get s !last_index) in
+        while  !u <> v_data do 
+          Array.unsafe_set on_stack_array (!u)  false ; 
+          last_index := !last_index - 1;
+          u := Int_vec.unsafe_get s !last_index
+        done ;
+        on_stack_array.(v_data) <- false; (* necessary *)
+        Int_vec_vec.push   (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index)) output;
       end   
   in
-
-  Array.iter (fun v -> if v.index < 0 then scc v) e;
+  for i = 0 to node_numes - 1 do 
+    if Array.unsafe_get index_array i < 0 then scc i
+  done ;
   output 
 
 let graph_check v = 
   let v = graph v in 
-  Queue.length v, 
-  Queue.fold (fun acc x -> Int_vec.length x :: acc ) [] v  
+  Int_vec_vec.length v, 
+  Int_vec_vec.fold_left (fun acc x -> Int_vec.length x :: acc ) [] v  
 
 end
 module Ounit_scc_tests
@@ -4701,20 +4790,38 @@ let handle_lines tiny_test_cases =
     let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; next = Int_vec.empty ()})
+        (fun i -> Int_vec.empty () )
     in 
     begin 
       rest |> List.iter (fun x ->
           match Ext_string.split x ' ' with 
           | [ a ; b] -> 
             let a , b = int_of_string a , int_of_string b in 
-            Int_vec.push node_array.(a).next b 
+            Int_vec.push  b node_array.(a) 
           | _ -> assert false 
         );
       node_array 
     end
   | _ -> assert false
 
+let read_file file = 
+  let in_chan = open_in_bin file in 
+  let nodes_sum = int_of_string (input_line in_chan) in 
+  let node_array = Array.init nodes_sum (fun i -> Int_vec.empty () ) in 
+  let rec aux () = 
+    match input_line in_chan with 
+    | exception End_of_file -> ()
+    | x -> 
+      begin match Ext_string.split x ' ' with 
+      | [ a ; b] -> 
+        let a , b = int_of_string a , int_of_string b in 
+        Int_vec.push  b node_array.(a) 
+      | _ -> (* assert false  *) ()
+      end; 
+      aux () in 
+  print_endline "read data into memory";
+  aux ();
+   (fst (Ext_scc.graph_check node_array)) (* 25 *)
 
 
 let test  (input : (string * string list) list) = 
@@ -4733,14 +4840,43 @@ let test  (input : (string * string list) list) =
   let nodes_num = Hashtbl.length tbl in
   let node_array = 
       Array.init nodes_num
-        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1;  next = Int_vec.empty ()}) in 
+        (fun i -> Int_vec.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
       let idx = Hashtbl.find tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push node_array.(idx).next (Hashtbl.find tbl y ))
+      List.iter (fun y -> Int_vec.push (Hashtbl.find tbl y ) node_array.(idx) )
     ) ; 
   Ext_scc.graph_check node_array 
+
+let test2  (input : (string * string list) list) = 
+  (* string -> int mapping 
+  *)
+  let tbl = Hashtbl.create 32 in
+  let idx = ref 0 in 
+  let add x =
+    if not (Hashtbl.mem tbl x ) then 
+      begin 
+        Hashtbl.add  tbl x !idx ;
+        incr idx 
+      end in
+  input |> List.iter 
+    (fun (x,others) -> List.iter add (x::others));
+  let nodes_num = Hashtbl.length tbl in
+  let other_mapping = Array.make nodes_num "" in 
+  Hashtbl.iter (fun k v  -> other_mapping.(v) <- k ) tbl ;
+  
+  let node_array = 
+      Array.init nodes_num
+        (fun i -> Int_vec.empty () ) in 
+  input |> 
+  List.iter (fun (x,others) -> 
+      let idx = Hashtbl.find tbl  x  in 
+      others |> 
+      List.iter (fun y -> Int_vec.push (Hashtbl.find tbl y ) node_array.(idx) )
+    )  ;
+  let output = Ext_scc.graph node_array in 
+  output |> Int_vec_vec.map_into_array (fun int_vec -> Int_vec.map_into_array (fun i -> other_mapping.(i)) int_vec )
 
 
 let suites = 
@@ -4814,6 +4950,29 @@ let suites =
             "3", [ "4"]
           ]) (3, [3;1;1])
       end ; 
+      (* http://algs4.cs.princeton.edu/42digraph/largeDG.txt *)
+      (* __LOC__ >:: begin fun _ -> *)
+      (*   OUnit.assert_equal (read_file "largeDG.txt") 25 *)
+      (* end *)
+      (* ; *)
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test2 [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", [];
+          ]) [|[|"d"|]; [|"b"; "c"|]; [|"a"|]|]
+      end ;
+
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test2 [
+            "a", ["b"];
+            "b" , ["c" ];
+            "c", ["d" ];
+            "d", ["e"];
+            "e", []
+          ]) [|[|"e"|]; [|"d"|]; [|"c"|]; [|"b"|]; [|"a"|]|] 
+      end ;
 
     ]
 
@@ -4838,7 +4997,7 @@ let suites =
   [
     "inplace_filter" >:: begin fun _ -> 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
-      ignore @@ Int_vec.push v 32;
+      ignore @@ Int_vec.push  32 v;
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
       Int_vec.inplace_filter (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 2; 4; 6; 8; 32|];
@@ -4861,23 +5020,23 @@ let suites =
       let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;
       v =~~ [|3 |];
-      Int_vec.push v 1;
-      Int_vec.push v 2;
-      Int_vec.push v 5;
+      Int_vec.push 1 v ;
+      Int_vec.push 2 v ;
+      Int_vec.push 5 v ;
       v=~~ [|3;1;2;5|];
       OUnit.assert_equal (Int_vec.capacity v  ) 10 ;
       for i = 0 to 5 do
-        Int_vec.push v i
+        Int_vec.push i  v
       done;
       v=~~ [|3;1;2;5;0;1;2;3;4;5|];
-      Int_vec.push v 100;
+      Int_vec.push   100 v;
       v=~~[|3;1;2;5;0;1;2;3;4;5;100|];
       OUnit.assert_equal (Int_vec.capacity v ) 20
     end
     ;
     __LOC__  >:: begin fun _ -> 
       let empty = Int_vec.empty () in 
-      Int_vec.push  empty 3;
+      Int_vec.push   3 empty;
       empty =~~ [|3|];
 
     end

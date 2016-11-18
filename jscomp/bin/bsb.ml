@@ -4129,6 +4129,7 @@ sig
   type t
   val length : t -> int 
   val compact : t -> unit
+  val singleton : elt -> t 
   val empty : unit -> t 
   val make : int -> t 
   val init : int -> (int -> elt) -> t
@@ -4141,10 +4142,12 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push : t -> elt -> unit
+  val push : elt -> t  -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
+  val get_last_and_pop : t -> elt
   val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t 
   val clear : t -> unit 
   val reset : t -> unit 
   val to_list : t -> elt list 
@@ -4154,16 +4157,18 @@ sig
   val copy : t -> t 
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : int -> int -> (elt -> unit) -> t -> unit 
-  val iteri_range : int -> int -> (int -> elt -> unit) -> t -> unit
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt 
   val last : t -> elt
   val capacity : t -> int
 end
@@ -4213,6 +4218,7 @@ sig
   type t
   val length : t -> int 
   val compact : t -> unit
+  val singleton : elt -> t 
   val empty : unit -> t 
   val make : int -> t 
   val init : int -> (int -> elt) -> t
@@ -4225,10 +4231,12 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push : t -> elt -> unit
+  val push :  elt -> t -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
+  val get_last_and_pop : t -> elt
   val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t
   val clear : t -> unit 
   val reset : t -> unit 
   val to_list : t -> elt list 
@@ -4238,16 +4246,18 @@ sig
   val copy : t -> t 
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : int -> int -> (elt -> unit) -> t -> unit 
-  val iteri_range : int -> int -> (int -> elt -> unit) -> t -> unit
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt
   val last : t -> elt
   val capacity : t -> int
 end
@@ -4269,7 +4279,12 @@ module Make ( Resize : ResizeType) = struct
         let newarr = Array.sub d_arr 0 d.len in 
         d.arr <- newarr
       end
-
+  let singleton v = 
+    {
+      len = 1 ; 
+      arr = [|v|]
+    }
+    
   let empty () =
     {
       len = 0;
@@ -4309,7 +4324,7 @@ module Make ( Resize : ResizeType) = struct
       unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push d v =
+  let push v d =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -4347,7 +4362,14 @@ module Make ( Resize : ResizeType) = struct
     if idx < 0 then invalid_arg "Resize_array.pop";
     Array.unsafe_set d.arr idx Resize.null;
     d.len <- idx
-             
+  let get_last_and_pop d = 
+    let idx  = d.len - 1  in
+    if idx < 0 then invalid_arg "Resize_array.get_last_and_pop";
+    let last = Array.unsafe_get d.arr idx in 
+    Array.unsafe_set d.arr idx Resize.null;
+    d.len <- idx; 
+    last 
+
   let delete_range d idx len =
     if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.delete_range"  ;
     let arr = d.arr in 
@@ -4358,7 +4380,18 @@ module Make ( Resize : ResizeType) = struct
     d.len <- d.len - len
 
 
+  let get_and_delete_range d idx len = 
+    if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.get_and_delete_range"  ;
+    let arr = d.arr in 
+    let value = Array.sub arr idx len in
+    unsafe_blit arr (idx + len) arr idx (d.len  - idx - len);
+    for i = d.len - len to d.len - 1 do
+      Array.unsafe_set d.arr i Resize.null
+    done;
+    d.len <- d.len - len; 
+    {len = len ; arr = value}
 
+  
 (** Below are simple wrapper around normal Array operations *)  
 
   let clear d =
@@ -4386,8 +4419,6 @@ module Make ( Resize : ResizeType) = struct
     let arr = Array.of_list lst in 
     { arr ; len = Array.length arr}
 
-  (* TODO *)
-  (* let append_array arr =  *)
     
   let to_array d = 
     Array.sub d.arr 0 d.len
@@ -4428,7 +4459,7 @@ module Make ( Resize : ResizeType) = struct
       f i (Array.unsafe_get arr i)
     done
 
-  let iter_range from to_ f d =
+  let iter_range ~from ~to_ f d =
     if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
     else 
       let d_arr = d.arr in 
@@ -4436,7 +4467,7 @@ module Make ( Resize : ResizeType) = struct
         f  (Array.unsafe_get d_arr i)
       done
 
-  let iteri_range from to_ f d =
+  let iteri_range ~from ~to_ f d =
     if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
     else 
       let d_arr = d.arr in 
@@ -4455,6 +4486,18 @@ module Make ( Resize : ResizeType) = struct
       len = src_len;
       arr = arr;
     }
+
+  let map_into_array f src =
+    let src_len = src.len in 
+    let src_arr = src.arr in 
+    if src_len = 0 then [||]
+    else 
+      let first_one = f (Array.unsafe_get src_arr 0) in 
+      let arr = Array.make  src_len  first_one in
+      for i = 1 to src_len - 1 do
+        Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+      done;
+      arr 
 
   let mapi f src =
     let len = src.len in 
@@ -4534,7 +4577,7 @@ module Make ( Resize : ResizeType) = struct
   let get d i = 
     if i < 0 || i >= d.len then invalid_arg "Resize_array.get"
     else Array.unsafe_get d.arr i
-
+  let unsafe_get d i = Array.unsafe_get d.arr i 
   let last d = 
     if d.len <= 0 then invalid_arg   "Resize_array.last"
     else Array.unsafe_get d.arr (d.len - 1)
@@ -4751,7 +4794,7 @@ let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_p
         Array.fold_left (fun acc name -> 
             let new_acc = Binary_cache.map_update ~dir acc name in 
             if new_acc != acc then (* reference in-equality *)
-              String_vect.push dyn_file_array name ;
+              String_vect.push name  dyn_file_array ;
             new_acc
 
           ) String_map.empty files_array in 
@@ -6166,7 +6209,7 @@ let create_bs_config () =
   ()
 
 let annoymous filename = 
-  String_vec.push targets filename
+  String_vec.push  filename targets
 let bsb_main_flags = 
   [
     (*    "-init", Arg.Unit create_bs_config , 

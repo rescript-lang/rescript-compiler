@@ -120,7 +120,7 @@ let create_bs_config () =
   ()
 
 let annoymous filename = 
-  String_vec.push targets filename
+  String_vec.push  filename targets
 let bsb_main_flags = 
   [
     (*    "-init", Arg.Unit create_bs_config , 

@@ -77,7 +77,7 @@ let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_p
         Array.fold_left (fun acc name -> 
             let new_acc = Binary_cache.map_update ~dir acc name in 
             if new_acc != acc then (* reference in-equality *)
-              String_vect.push dyn_file_array name ;
+              String_vect.push name  dyn_file_array ;
             new_acc
 
           ) String_map.empty files_array in 

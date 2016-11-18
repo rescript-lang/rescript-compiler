@@ -22,18 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
  
-type elt = int
-
-
-type  node = {
-  mutable index : int;
-  mutable lowlink : int ;
-  (* mutable onstack : bool; *)
-  data : elt ;
-  next : Int_vec.t ;    
-
-}
-
+type node = Int_vec.t 
 (** 
    [int] as data for this algorithm
    Pros:
@@ -46,60 +35,65 @@ type  node = {
  *)
 let min_int (x : int) y = if x < y then x else y  
 
+
 let graph  e =
   let index = ref 0 in 
-  let s = Stack.create () in
+  let s = Int_vec.empty () in
 
-  (* collect output *)
-  let output = Queue.create () in 
-  let node_numes = Array.length e in 
+  let output = Int_vec_vec.empty () in (* collect output *)
+  let node_numes = Array.length e in
+  
   let on_stack_array = Array.make node_numes false in
-  let rec scc v  =
+  let index_array = Array.make node_numes (-1) in 
+  let lowlink_array = Array.make node_numes (-1) in
+  
+  let rec scc v_data  =
     let new_index = !index + 1 in 
     index := new_index ;
-    Stack.push v.data s; 
-    v.index <- new_index ;
-    v.lowlink <- new_index ;
-    on_stack_array. (v.data) <- true ; 
-    (* v.onstack <- true; *)
+    Int_vec.push  v_data s ; 
 
-    v.next 
-    |> Int_vec.iter (fun w  ->
-        let w = e.(w) in 
-        if w.index < 0 then
+    index_array.(v_data) <- new_index ;  
+    lowlink_array.(v_data) <- new_index ; 
+    on_stack_array.(v_data) <- true ;
+    
+    let v = e.(v_data) in 
+    v
+    |> Int_vec.iter (fun w_data  ->
+        if Array.unsafe_get index_array w_data < 0 then (* not processed *)
           begin  
-            scc w;
-            v.lowlink <- min_int v.lowlink w.lowlink
+            scc w_data;
+            Array.unsafe_set lowlink_array v_data  
+              (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
           end  
-        else if (* w.onstack *) on_stack_array.(w.data) then 
-          v.lowlink <- min_int v.lowlink w.lowlink 
+        else if Array.unsafe_get on_stack_array w_data then 
+          (* successor is in stack and hence in current scc *)
+          begin 
+            Array.unsafe_set lowlink_array v_data  
+              (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
+          end
       ) ; 
-    if v.lowlink = v.index then
+
+    if Array.unsafe_get lowlink_array v_data = Array.unsafe_get index_array v_data then
+      (* start a new scc *)
       begin
-        (* TODO: if we use stack as vector we can do batch update here *)
-        let curr_vec = Int_vec.make 4 in 
-
-        let curr_ele = Stack.pop s in
-        let curr = ref curr_ele in
-
-        on_stack_array.(curr_ele) <- false;
-        Int_vec.push curr_vec  curr_ele; 
-
-        while !curr != v.data do
-          let curr_ele = Stack.pop s in
-          curr :=  curr_ele ;
-
-          on_stack_array.(curr_ele) <- false ; 
-          Int_vec.push curr_vec curr_ele
-        done;
-        Queue.push curr_vec  output
+        let s_len = Int_vec.length s in
+        let last_index = ref (s_len - 1) in 
+        let u = ref (Int_vec.unsafe_get s !last_index) in
+        while  !u <> v_data do 
+          Array.unsafe_set on_stack_array (!u)  false ; 
+          last_index := !last_index - 1;
+          u := Int_vec.unsafe_get s !last_index
+        done ;
+        on_stack_array.(v_data) <- false; (* necessary *)
+        Int_vec_vec.push   (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index)) output;
       end   
   in
-
-  Array.iter (fun v -> if v.index < 0 then scc v) e;
+  for i = 0 to node_numes - 1 do 
+    if Array.unsafe_get index_array i < 0 then scc i
+  done ;
   output 
 
 let graph_check v = 
   let v = graph v in 
-  Queue.length v, 
-  Queue.fold (fun acc x -> Int_vec.length x :: acc ) [] v  
+  Int_vec_vec.length v, 
+  Int_vec_vec.fold_left (fun acc x -> Int_vec.length x :: acc ) [] v  

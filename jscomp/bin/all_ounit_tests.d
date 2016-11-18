@@ -27,6 +27,8 @@ bin/all_ounit_tests.ml : ext/resize_array.ml
 bin/all_ounit_tests.ml : ext/resize_array.mli
 bin/all_ounit_tests.ml : ext/int_vec.ml
 bin/all_ounit_tests.ml : ext/int_vec.mli
+bin/all_ounit_tests.ml : ext/int_vec_vec.ml
+bin/all_ounit_tests.ml : ext/int_vec_vec.mli
 bin/all_ounit_tests.ml : ext/ext_scc.ml
 bin/all_ounit_tests.ml : ext/ext_scc.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_scc_tests.ml
