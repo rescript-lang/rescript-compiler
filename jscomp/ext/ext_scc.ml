@@ -28,7 +28,7 @@ type elt = int
 type  node = {
   mutable index : int;
   mutable lowlink : int ;
-  mutable onstack : bool;
+  (* mutable onstack : bool; *)
   data : elt ;
   next : Int_vec.t ;    
 
@@ -52,14 +52,16 @@ let graph  e =
 
   (* collect output *)
   let output = Queue.create () in 
-
+  let node_numes = Array.length e in 
+  let on_stack_array = Array.make node_numes false in
   let rec scc v  =
-    index := !index + 1 ;
+    let new_index = !index + 1 in 
+    index := new_index ;
     Stack.push v s; 
-    v.index <- !index ;
-    v.lowlink <- !index ;
-
-    v.onstack <- true;
+    v.index <- new_index ;
+    v.lowlink <- new_index ;
+    on_stack_array. (v.data) <- true ; 
+    (* v.onstack <- true; *)
 
     v.next 
     |> Int_vec.iter (fun w  ->
@@ -69,7 +71,7 @@ let graph  e =
             scc w;
             v.lowlink <- min_int v.lowlink w.lowlink
           end  
-        else if w.onstack then 
+        else if (* w.onstack *) on_stack_array.(w.data) then 
           v.lowlink <- min_int v.lowlink w.lowlink 
       ) ; 
     if v.lowlink = v.index then
@@ -79,37 +81,25 @@ let graph  e =
 
         let curr_ele = Stack.pop s in
         let curr = ref curr_ele in
-        curr_ele.onstack <- false;
+        (* curr_ele.onstack <- false; *)
+        on_stack_array.(curr_ele.data) <- false;
         Int_vec.push curr_vec  curr_ele.data; 
 
         while !curr.data != v.data do
           let curr_ele = Stack.pop s in
           curr :=  curr_ele ;
-          curr_ele.onstack <- false  ;
+          (* curr_ele.onstack <- false  ; *)
+          on_stack_array.(curr_ele.data) <- false ; 
           Int_vec.push curr_vec curr_ele.data
         done;
         Queue.push curr_vec  output
       end   
   in
-  (* List.iter (fun v -> if v.index < 0 then scc v) vs *)
+
   Array.iter (fun v -> if v.index < 0 then scc v) e;
   output 
 
-(*
-let test  (input : (string * string list) list) = 
-    let vs = 
-        input 
-        |> List.map (fun (data,next) -> {index = -1 ; lowlink = -1 ; onstack = false; next ; data }) 
-    in
-    let e =
-        List.fold_left2 (fun acc (x,_) y -> String_map.add x y acc) String_map.empty input vs in 
-    graph vs e
-
-let drive () = 
-    test [
-        "a", ["b" ; "c"];
-        "b" , ["c" ; "d"];
-        "c", [ "b"];
-        "d", [];
-    ]              
-*)    
+let graph_check v = 
+  let v = graph v in 
+  Queue.length v, 
+  Queue.fold (fun acc x -> Int_vec.length x :: acc ) [] v  

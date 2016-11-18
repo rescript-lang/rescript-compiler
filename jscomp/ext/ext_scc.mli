@@ -22,16 +22,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
  
-type elt = int
+
 
 
 type  node = {
   mutable index : int;
   mutable lowlink : int ;
-  mutable onstack : bool;
-  data : elt ;
+  (* mutable onstack : bool; *)
+  data : int ;
   next : Int_vec.t ;    
 
 }
 
+(** Assume input is int array with offset from 0 
+    Typical input 
+    {[
+      [|
+        [|0; 1 ; 2 |]; 
+        [|1 ; |]; 
+        [|2|]
+      |]
+    ]}
+    Note that we can tell how many nodes by calculating 
+    [Array.length] of the input 
+*)
 val graph : node array -> Int_vec.t Queue.t
+
+val graph_check : node array -> int * int list 

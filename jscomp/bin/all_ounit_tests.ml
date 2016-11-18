@@ -4367,19 +4367,33 @@ module Ext_scc : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
  
-type elt = int
+
 
 
 type  node = {
   mutable index : int;
   mutable lowlink : int ;
-  mutable onstack : bool;
-  data : elt ;
+  (* mutable onstack : bool; *)
+  data : int ;
   next : Int_vec.t ;    
 
 }
 
+(** Assume input is int array with offset from 0 
+    Typical input 
+    {[
+      [|
+        [|0; 1 ; 2 |]; 
+        [|1 ; |]; 
+        [|2|]
+      |]
+    ]}
+    Note that we can tell how many nodes by calculating 
+    [Array.length] of the input 
+*)
 val graph : node array -> Int_vec.t Queue.t
+
+val graph_check : node array -> int * int list 
 
 end = struct
 #1 "ext_scc.ml"
@@ -4413,7 +4427,7 @@ type elt = int
 type  node = {
   mutable index : int;
   mutable lowlink : int ;
-  mutable onstack : bool;
+  (* mutable onstack : bool; *)
   data : elt ;
   next : Int_vec.t ;    
 
@@ -4437,14 +4451,16 @@ let graph  e =
 
   (* collect output *)
   let output = Queue.create () in 
-
+  let node_numes = Array.length e in 
+  let on_stack_array = Array.make node_numes false in
   let rec scc v  =
-    index := !index + 1 ;
+    let new_index = !index + 1 in 
+    index := new_index ;
     Stack.push v s; 
-    v.index <- !index ;
-    v.lowlink <- !index ;
-
-    v.onstack <- true;
+    v.index <- new_index ;
+    v.lowlink <- new_index ;
+    on_stack_array. (v.data) <- true ; 
+    (* v.onstack <- true; *)
 
     v.next 
     |> Int_vec.iter (fun w  ->
@@ -4454,7 +4470,7 @@ let graph  e =
             scc w;
             v.lowlink <- min_int v.lowlink w.lowlink
           end  
-        else if w.onstack then 
+        else if (* w.onstack *) on_stack_array.(w.data) then 
           v.lowlink <- min_int v.lowlink w.lowlink 
       ) ; 
     if v.lowlink = v.index then
@@ -4464,40 +4480,28 @@ let graph  e =
 
         let curr_ele = Stack.pop s in
         let curr = ref curr_ele in
-        curr_ele.onstack <- false;
+        (* curr_ele.onstack <- false; *)
+        on_stack_array.(curr_ele.data) <- false;
         Int_vec.push curr_vec  curr_ele.data; 
 
         while !curr.data != v.data do
           let curr_ele = Stack.pop s in
           curr :=  curr_ele ;
-          curr_ele.onstack <- false  ;
+          (* curr_ele.onstack <- false  ; *)
+          on_stack_array.(curr_ele.data) <- false ; 
           Int_vec.push curr_vec curr_ele.data
         done;
         Queue.push curr_vec  output
       end   
   in
-  (* List.iter (fun v -> if v.index < 0 then scc v) vs *)
+
   Array.iter (fun v -> if v.index < 0 then scc v) e;
   output 
 
-(*
-let test  (input : (string * string list) list) = 
-    let vs = 
-        input 
-        |> List.map (fun (data,next) -> {index = -1 ; lowlink = -1 ; onstack = false; next ; data }) 
-    in
-    let e =
-        List.fold_left2 (fun acc (x,_) y -> String_map.add x y acc) String_map.empty input vs in 
-    graph vs e
-
-let drive () = 
-    test [
-        "a", ["b" ; "c"];
-        "b" , ["c" ; "d"];
-        "c", [ "b"];
-        "d", [];
-    ]              
-*)    
+let graph_check v = 
+  let v = graph v in 
+  Queue.length v, 
+  Queue.fold (fun acc x -> Int_vec.length x :: acc ) [] v  
 
 end
 module Ounit_scc_tests
@@ -4697,7 +4701,7 @@ let handle_lines tiny_test_cases =
     let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; onstack = false; next = Int_vec.empty ()})
+        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; next = Int_vec.empty ()})
     in 
     begin 
       rest |> List.iter (fun x ->
@@ -4711,15 +4715,105 @@ let handle_lines tiny_test_cases =
     end
   | _ -> assert false
 
+
+
+let test  (input : (string * string list) list) = 
+  (* string -> int mapping 
+  *)
+  let tbl = Hashtbl.create 32 in
+  let idx = ref 0 in 
+  let add x =
+    if not (Hashtbl.mem tbl x ) then 
+      begin 
+        Hashtbl.add  tbl x !idx ;
+        incr idx 
+      end in
+  input |> List.iter 
+    (fun (x,others) -> List.iter add (x::others));
+  let nodes_num = Hashtbl.length tbl in
+  let node_array = 
+      Array.init nodes_num
+        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1;  next = Int_vec.empty ()}) in 
+  input |> 
+  List.iter (fun (x,others) -> 
+      let idx = Hashtbl.find tbl  x  in 
+      others |> 
+      List.iter (fun y -> Int_vec.push node_array.(idx).next (Hashtbl.find tbl y ))
+    ) ; 
+  Ext_scc.graph_check node_array 
+
+
 let suites = 
     __FILE__
     >::: [
       __LOC__ >:: begin fun _ -> 
-        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines tiny_test_cases))  5
+        OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines tiny_test_cases))  5
       end       ;
       __LOC__ >:: begin fun _ -> 
-        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines medium_test_cases))  10
-      end       
+        OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines medium_test_cases))  10
+      end       ;
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", [];
+          ]) (3 , [1;2;1])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", [];
+            "e", []
+          ])  (4, [1;1;2;1])
+      end ;
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", ["e"];
+            "e", []
+          ]) (4 , [1;2;1;1])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", ["e"];
+            "e", ["c"]
+          ]) (2, [1;4])
+      end ;
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", ["e"];
+            "e", ["a"]
+          ]) (1, [5])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b"];
+            "b" , ["c" ];
+            "c", [ ];
+            "d", [];
+            "e", []
+          ]) (5, [1;1;1;1;1])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "1", ["0"];
+            "0" , ["2" ];
+            "2", ["1" ];
+            "0", ["3"];
+            "3", [ "4"]
+          ]) (3, [3;1;1])
+      end ; 
 
     ]
 

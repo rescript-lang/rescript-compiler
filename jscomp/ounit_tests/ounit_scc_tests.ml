@@ -192,7 +192,7 @@ let handle_lines tiny_test_cases =
     let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; onstack = false; next = Int_vec.empty ()})
+        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1; next = Int_vec.empty ()})
     in 
     begin 
       rest |> List.iter (fun x ->
@@ -206,14 +206,104 @@ let handle_lines tiny_test_cases =
     end
   | _ -> assert false
 
+
+
+let test  (input : (string * string list) list) = 
+  (* string -> int mapping 
+  *)
+  let tbl = Hashtbl.create 32 in
+  let idx = ref 0 in 
+  let add x =
+    if not (Hashtbl.mem tbl x ) then 
+      begin 
+        Hashtbl.add  tbl x !idx ;
+        incr idx 
+      end in
+  input |> List.iter 
+    (fun (x,others) -> List.iter add (x::others));
+  let nodes_num = Hashtbl.length tbl in
+  let node_array = 
+      Array.init nodes_num
+        (fun i -> {Ext_scc.data = i ; index = -1; lowlink = -1;  next = Int_vec.empty ()}) in 
+  input |> 
+  List.iter (fun (x,others) -> 
+      let idx = Hashtbl.find tbl  x  in 
+      others |> 
+      List.iter (fun y -> Int_vec.push node_array.(idx).next (Hashtbl.find tbl y ))
+    ) ; 
+  Ext_scc.graph_check node_array 
+
+
 let suites = 
     __FILE__
     >::: [
       __LOC__ >:: begin fun _ -> 
-        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines tiny_test_cases))  5
+        OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines tiny_test_cases))  5
       end       ;
       __LOC__ >:: begin fun _ -> 
-        OUnit.assert_equal (Queue.length @@ Ext_scc.graph (handle_lines medium_test_cases))  10
-      end       
+        OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines medium_test_cases))  10
+      end       ;
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", [];
+          ]) (3 , [1;2;1])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", [];
+            "e", []
+          ])  (4, [1;1;2;1])
+      end ;
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", ["e"];
+            "e", []
+          ]) (4 , [1;2;1;1])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", ["e"];
+            "e", ["c"]
+          ]) (2, [1;4])
+      end ;
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b" ; "c"];
+            "b" , ["c" ; "d"];
+            "c", [ "b"];
+            "d", ["e"];
+            "e", ["a"]
+          ]) (1, [5])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "a", ["b"];
+            "b" , ["c" ];
+            "c", [ ];
+            "d", [];
+            "e", []
+          ]) (5, [1;1;1;1;1])
+      end ; 
+      __LOC__ >:: begin fun _ ->
+        OUnit.assert_equal (test [
+            "1", ["0"];
+            "0" , ["2" ];
+            "2", ["1" ];
+            "0", ["3"];
+            "3", [ "4"]
+          ]) (3, [3;1;1])
+      end ; 
 
     ]
