@@ -4456,7 +4456,7 @@ let graph  e =
   let rec scc v  =
     let new_index = !index + 1 in 
     index := new_index ;
-    Stack.push v s; 
+    Stack.push v.data s; 
     v.index <- new_index ;
     v.lowlink <- new_index ;
     on_stack_array. (v.data) <- true ; 
@@ -4480,16 +4480,16 @@ let graph  e =
 
         let curr_ele = Stack.pop s in
         let curr = ref curr_ele in
-        (* curr_ele.onstack <- false; *)
-        on_stack_array.(curr_ele.data) <- false;
-        Int_vec.push curr_vec  curr_ele.data; 
 
-        while !curr.data != v.data do
+        on_stack_array.(curr_ele) <- false;
+        Int_vec.push curr_vec  curr_ele; 
+
+        while !curr != v.data do
           let curr_ele = Stack.pop s in
           curr :=  curr_ele ;
-          (* curr_ele.onstack <- false  ; *)
-          on_stack_array.(curr_ele.data) <- false ; 
-          Int_vec.push curr_vec curr_ele.data
+
+          on_stack_array.(curr_ele) <- false ; 
+          Int_vec.push curr_vec curr_ele
         done;
         Queue.push curr_vec  output
       end   
