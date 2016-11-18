@@ -48,12 +48,12 @@ common/bs_version.ml: build_version.js ../package.json
 ### list files
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_array_tests ounit_path_tests ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_array_tests ounit_path_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
-EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec int_vec ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
+EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec int_vec int_vec_vec ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ident_set int_map literals string_map \
-	string_set ext_pp_scope ext_io ext_ident ext_filename
+	string_set ext_scc ext_pp_scope ext_io ext_ident ext_filename
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname binary_ast binary_cache

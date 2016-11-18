@@ -48,5 +48,6 @@ bin/bsb.ml : bsb/bsb_ninja.mli
 bin/bsb.ml : bsb/bsb_gen.ml
 bin/bsb.ml : bsb/bsb_gen.mli
 bin/bsb.ml : ext/string_vec.ml
+bin/bsb.ml : ext/string_vec.mli
 bin/bsb.ml : bsb/bsb_main.ml
 bin/bsb.ml : bsb/bsb_main.mli

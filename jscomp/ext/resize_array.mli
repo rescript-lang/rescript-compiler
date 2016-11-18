@@ -35,6 +35,7 @@ sig
   type t
   val length : t -> int 
   val compact : t -> unit
+  val singleton : elt -> t 
   val empty : unit -> t 
   val make : int -> t 
   val init : int -> (int -> elt) -> t
@@ -47,10 +48,12 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push : t -> elt -> unit
+  val push : elt -> t  -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
+  val get_last_and_pop : t -> elt
   val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t 
   val clear : t -> unit 
   val reset : t -> unit 
   val to_list : t -> elt list 
@@ -60,16 +63,18 @@ sig
   val copy : t -> t 
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : int -> int -> (elt -> unit) -> t -> unit 
-  val iteri_range : int -> int -> (int -> elt -> unit) -> t -> unit
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt 
   val last : t -> elt
   val capacity : t -> int
 end
