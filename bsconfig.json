@@ -18,7 +18,7 @@
         // ],
         "js-post-build" : 
         {
-            "cmd" : "/bin/cat"
+            "cmd" : "cat"
         },
     "sources" : 
     [ 
