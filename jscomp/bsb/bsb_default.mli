@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val set_ocamllex : string -> unit
-val get_ocamllex : unit -> string
 
+val get_ocamllex : unit -> string
+val set_ocamllex : cwd:string -> string -> unit
 
 
 val set_bs_external_includes : Bsb_json.t array -> unit
@@ -53,3 +53,6 @@ val set_bs_dependencies : Bsb_json.t array  -> unit
 
 val get_js_post_build_cmd : unit -> string option
 val set_js_post_build_cmd : cwd:string -> string -> unit
+
+val get_ninja : unit -> string 
+val set_ninja : cwd:string -> string -> unit

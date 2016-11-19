@@ -51,6 +51,7 @@ let convert_and_resolve_path =
 (* we only need convert the path in the begining*)
 
 (** converting a file from Linux path format to Windows *)
+(*
 let convert_and_resolve_file = 
   if Sys.unix then fun (p : string) -> 
     if Ext_filename.no_slash p 0 (String.length p) then p 
@@ -64,7 +65,7 @@ let convert_and_resolve_file =
       else 
        Bsb_config.proj_rel p1 
   else failwith ("Unknown OS :" ^ Sys.os_type)
-
+*)
 (**
    if [Sys.executable_name] gives an absolute path, 
    nothing needs to be done

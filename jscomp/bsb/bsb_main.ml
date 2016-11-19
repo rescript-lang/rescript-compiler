@@ -60,7 +60,8 @@ let write_ninja_file cwd =
                 )
             |> ignore 
             end)
-          |?  (Bsb_build_schemas.ocamllex, `Str Bsb_default.set_ocamllex)
+          |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
+          |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
           |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
           (* More design *)
           |?  (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)

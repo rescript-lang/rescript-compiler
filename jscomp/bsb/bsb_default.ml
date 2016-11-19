@@ -26,7 +26,25 @@ let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_filename.combine
 
 
-
+(* Magic path resolution:
+foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
+/foo/bar => /foo/bar
+./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
+let resolve_bsb_magic_file ~cwd ~desc p =
+  let p_len = String.length p in 
+  let no_slash = Ext_filename.no_slash p 0 p_len in  
+  if no_slash then 
+    p 
+  else if Filename.is_relative p &&
+     p_len > 0 &&
+     String.unsafe_get p 0 <> '.' then
+    let name = String.sub p 0 (String.index p '/') in
+    let package = (Bs_pkg.resolve_bs_package ~cwd name) in
+    match package with
+    | None -> failwith (name ^ " not found when resolving " ^ desc)
+    | Some package -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // p)
+  else
+    Bsb_build_util.convert_and_resolve_path p
 
 
 let package_name = ref None
@@ -56,26 +74,16 @@ let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex s = ocamllex := Bsb_build_util.convert_and_resolve_file s
+let set_ocamllex ~cwd s = 
+  ocamllex := resolve_bsb_magic_file ~cwd ~desc:"ocamllex" s
 let get_ocamllex () = !ocamllex
 
-(* Magic path resolution:
-foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
-/foo/bar => /foo/bar
-./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
-let resolve_bsb_magic_path ~cwd ~desc p =
-  if Filename.is_relative p && String.unsafe_get p 0 <> '.' then
-    let name = String.sub p 0 (String.index p '/') in
-    let package = (Bs_pkg.resolve_bs_package ~cwd name) in
-    match package with
-    | None -> failwith (name ^ " not found when resolving " ^ desc)
-    | Some package -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // p)
-  else
-    Bsb_build_util.convert_and_resolve_path p
+
 
 let refmt = ref "refmt"
 let get_refmt () = !refmt
-let set_refmt ~cwd p = refmt := resolve_bsb_magic_path ~cwd ~desc:"refmt" p
+let set_refmt ~cwd p = 
+  refmt := resolve_bsb_magic_file ~cwd ~desc:"refmt" p
 
 
 let ppx_flags = ref []
@@ -86,7 +94,7 @@ let set_ppx_flags ~cwd s =
     |> get_list_string
     |> List.map (fun p ->
         if p = "" then failwith "invalid ppx, empty string found"
-        else resolve_bsb_magic_path ~cwd ~desc:"ppx" p
+        else resolve_bsb_magic_file ~cwd ~desc:"ppx" p
       ) in
   ppx_flags := s
 
@@ -94,4 +102,14 @@ let set_ppx_flags ~cwd s =
 let js_post_build_cmd = ref None 
 let get_js_post_build_cmd () = !js_post_build_cmd
 let set_js_post_build_cmd ~cwd s =
-  js_post_build_cmd := Some (resolve_bsb_magic_path ~cwd ~desc:"js-post-build:cmd" s )
+  js_post_build_cmd := Some (resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
+
+let ninja = ref "ninja"
+let get_ninja () = !ninja
+
+(* Setting ninja is a bit complex
+   First if [build.ninja] does use [ninja] we need set a variable
+   Second we need store it so that we can call ninja correctly
+*)
+let set_ninja ~cwd p  =
+  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p 

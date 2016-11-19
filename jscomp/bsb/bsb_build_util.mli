@@ -46,7 +46,7 @@ val convert_and_resolve_path : string -> string
    The difference between [convert_path] is that if the file is [ocamlc.opt] 
    it will not do any conversion to it (maybe environment variable will help it get picked up)
 *)
-val convert_and_resolve_file : string -> string
+(* val convert_and_resolve_file : string -> string *)
 
 val mkp : string -> unit
 

@@ -26,6 +26,7 @@ let resources = "resources"
 let public = "public"
 let js_post_build = "js-post-build"
 let cmd = "cmd"
+let ninja = "ninja" 
 
 end
 module Ext_pervasives : sig 
@@ -1010,7 +1011,9 @@ val get_extension : string -> string
 
 val replace_backward_slash : string -> string
 
-
+(*
+[no_slash s i len]
+*)
 val no_slash : string -> int -> int -> bool
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
@@ -1067,7 +1070,7 @@ let combine path1 path2 =
   else if path2 = "" then path1
   else 
   if Filename.is_relative path2 then
-     path1// path2 
+    path1// path2 
   else
     path2
 
@@ -1115,34 +1118,34 @@ let os_path_separator_char = String.unsafe_get Filename.dir_sep 0
 
 (** example
     {[
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
     ]}
 
     The other way
     {[
-    
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
     ]}
     {[
-    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
     ]}
     {[
-    /a/b
-    /c/d
+      /a/b
+      /c/d
     ]}
- *)
+*)
 let relative_path file_or_dir_1 file_or_dir_2 = 
   let sep_char = os_path_separator_char in
   let relevant_dir1 = 
     (match file_or_dir_1 with 
-    | `Dir x -> x 
-    | `File file1 ->  Filename.dirname file1) in
+     | `Dir x -> x 
+     | `File file1 ->  Filename.dirname file1) in
   let relevant_dir2 = 
     (match file_or_dir_2 with 
-    |`Dir x -> x 
-    |`File file2 -> Filename.dirname file2 ) in
+     |`Dir x -> x 
+     |`File file2 -> Filename.dirname file2 ) in
   let dir1 = Ext_string.split relevant_dir1 sep_char   in
   let dir2 = Ext_string.split relevant_dir2 sep_char  in
   let rec go (dir1 : string list) (dir2 : string list) = 
@@ -1151,13 +1154,13 @@ let relative_path file_or_dir_1 file_or_dir_2 =
       -> go xs ys 
     | _, _
       -> 
-        List.map (fun _ -> node_parent) dir2 @ dir1 
+      List.map (fun _ -> node_parent) dir2 @ dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = node_parent -> 
-      String.concat node_sep ys
+    String.concat node_sep ys
   | ys -> 
-      String.concat node_sep  @@ node_current :: ys
+    String.concat node_sep  @@ node_current :: ys
 
 
 (** path2: a/b 
@@ -1167,7 +1170,7 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 
     [file1] is currently compilation file 
     [file2] is the dependency
- *)
+*)
 let node_relative_path (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
   let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
@@ -1188,7 +1191,7 @@ let node_relative_path (file1 : t)
           TODO: we need do more than this suppose user 
           input can be
            {[
-           "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
+             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
            ]}
            This seems weird though
         *)
@@ -1201,10 +1204,10 @@ let node_relative_path (file1 : t)
          | `File x -> `File (absolute_path x)
          | `Dir x -> `Dir (absolute_path x))
 
-       (match file1 with 
-         | `File x -> `File (absolute_path x)
-         | `Dir x -> `Dir(absolute_path x))
-     ^ node_sep ^
+      (match file1 with 
+       | `File x -> `File (absolute_path x)
+       | `Dir x -> `Dir(absolute_path x))
+    ^ node_sep ^
     chop_extension_if_any (Filename.basename file2)
 
 
@@ -1221,21 +1224,25 @@ let find_package_json_dir cwd  =
       else 
         Ext_pervasives.failwithf 
           ~loc:__LOC__
-            "package.json not found from %s" cwd
+          "package.json not found from %s" cwd
   in
   aux cwd 
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
-let replace_backward_slash (x : string)= 
-  String.map (function 
-    |'\\'-> '/'
-    | x -> x) x
-
 
 let rec no_slash x i len = 
   i >= len  || 
   (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+
+let replace_backward_slash (x : string)=
+  let len = String.length x in
+  if no_slash x 0 len then x 
+  else  
+    String.map (function 
+        |'\\'-> '/'
+        | x -> x) x
+
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
@@ -1246,19 +1253,19 @@ let replace_slash_backward (x : string ) =
         | x -> x ) x 
 
 let module_name_of_file file =
-    String.capitalize 
-      (Filename.chop_extension @@ Filename.basename file)  
+  String.capitalize 
+    (Filename.chop_extension @@ Filename.basename file)  
 
 let module_name_of_file_if_any file = 
-    String.capitalize 
-      (chop_extension_if_any @@ Filename.basename file)  
+  String.capitalize 
+    (chop_extension_if_any @@ Filename.basename file)  
 
 
 (** For win32 or case insensitve OS 
     [".cmj"] is the same as [".CMJ"]
-  *)
+*)
 (* let has_exact_suffix_then_chop fname suf =  *)
-  
+
 let combine p1 p2 = 
   if p1 = "" || p1 = Filename.current_dir_name then p2 else 
   if p2 = "" || p2 = Filename.current_dir_name then p1 
@@ -1270,10 +1277,10 @@ let combine p1 p2 =
 
 
 (**
-{[
-split_aux "//ghosg//ghsogh/";;
-- : string * string list = ("/", ["ghosg"; "ghsogh"])
-]}
+   {[
+     split_aux "//ghosg//ghsogh/";;
+     - : string * string list = ("/", ["ghosg"; "ghsogh"])
+   ]}
 *)
 let split_aux p =
   let rec go p acc =
@@ -1283,8 +1290,8 @@ let split_aux p =
   in go p []
 
 (** 
-TODO: optimization
-if [from] and [to] resolve to the same path, a zero-length string is returned 
+   TODO: optimization
+   if [from] and [to] resolve to the same path, a zero-length string is returned 
 *)
 let rel_normalized_absolute_path from to_ =
   let root1, paths1 = split_aux from in 
@@ -1305,23 +1312,23 @@ let rel_normalized_absolute_path from to_ =
     go paths1 paths2
 
 (*TODO: could be hgighly optimized later 
-{[
-  normalize_absolute_path "/gsho/./..";;
+  {[
+    normalize_absolute_path "/gsho/./..";;
 
-  normalize_absolute_path "/a/b/../c../d/e/f";;
+    normalize_absolute_path "/a/b/../c../d/e/f";;
 
-  normalize_absolute_path "/gsho/./..";;
+    normalize_absolute_path "/gsho/./..";;
 
-  normalize_absolute_path "/gsho/./../..";;
+    normalize_absolute_path "/gsho/./../..";;
 
-  normalize_absolute_path "/a/b/c/d";;
+    normalize_absolute_path "/a/b/c/d";;
 
-  normalize_absolute_path "/a/b/c/d/";;
+    normalize_absolute_path "/a/b/c/d/";;
 
-  normalize_absolute_path "/a/";;
+    normalize_absolute_path "/a/";;
 
-  normalize_absolute_path "/a";;
-]}
+    normalize_absolute_path "/a";;
+  ]}
 *)
 let normalize_absolute_path x =
   let drop_if_exist xs =
@@ -3682,7 +3689,7 @@ val convert_and_resolve_path : string -> string
    The difference between [convert_path] is that if the file is [ocamlc.opt] 
    it will not do any conversion to it (maybe environment variable will help it get picked up)
 *)
-val convert_and_resolve_file : string -> string
+(* val convert_and_resolve_file : string -> string *)
 
 val mkp : string -> unit
 
@@ -3757,6 +3764,7 @@ let convert_and_resolve_path =
 (* we only need convert the path in the begining*)
 
 (** converting a file from Linux path format to Windows *)
+(*
 let convert_and_resolve_file = 
   if Sys.unix then fun (p : string) -> 
     if Ext_filename.no_slash p 0 (String.length p) then p 
@@ -3770,7 +3778,7 @@ let convert_and_resolve_file =
       else 
        Bsb_config.proj_rel p1 
   else failwith ("Unknown OS :" ^ Sys.os_type)
-
+*)
 (**
    if [Sys.executable_name] gives an absolute path, 
    nothing needs to be done
@@ -5094,9 +5102,9 @@ module Bsb_default : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val set_ocamllex : string -> unit
-val get_ocamllex : unit -> string
 
+val get_ocamllex : unit -> string
+val set_ocamllex : cwd:string -> string -> unit
 
 
 val set_bs_external_includes : Bsb_json.t array -> unit
@@ -5124,6 +5132,9 @@ val set_bs_dependencies : Bsb_json.t array  -> unit
 
 val get_js_post_build_cmd : unit -> string option
 val set_js_post_build_cmd : cwd:string -> string -> unit
+
+val get_ninja : unit -> string 
+val set_ninja : cwd:string -> string -> unit
 
 end = struct
 #1 "bsb_default.ml"
@@ -5155,7 +5166,25 @@ let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_filename.combine
 
 
-
+(* Magic path resolution:
+foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
+/foo/bar => /foo/bar
+./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
+let resolve_bsb_magic_file ~cwd ~desc p =
+  let p_len = String.length p in 
+  let no_slash = Ext_filename.no_slash p 0 p_len in  
+  if no_slash then 
+    p 
+  else if Filename.is_relative p &&
+     p_len > 0 &&
+     String.unsafe_get p 0 <> '.' then
+    let name = String.sub p 0 (String.index p '/') in
+    let package = (Bs_pkg.resolve_bs_package ~cwd name) in
+    match package with
+    | None -> failwith (name ^ " not found when resolving " ^ desc)
+    | Some package -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // p)
+  else
+    Bsb_build_util.convert_and_resolve_path p
 
 
 let package_name = ref None
@@ -5185,26 +5214,16 @@ let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex s = ocamllex := Bsb_build_util.convert_and_resolve_file s
+let set_ocamllex ~cwd s = 
+  ocamllex := resolve_bsb_magic_file ~cwd ~desc:"ocamllex" s
 let get_ocamllex () = !ocamllex
 
-(* Magic path resolution:
-foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
-/foo/bar => /foo/bar
-./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
-let resolve_bsb_magic_path ~cwd ~desc p =
-  if Filename.is_relative p && String.unsafe_get p 0 <> '.' then
-    let name = String.sub p 0 (String.index p '/') in
-    let package = (Bs_pkg.resolve_bs_package ~cwd name) in
-    match package with
-    | None -> failwith (name ^ " not found when resolving " ^ desc)
-    | Some package -> Bsb_build_util.convert_and_resolve_path (Filename.dirname package // p)
-  else
-    Bsb_build_util.convert_and_resolve_path p
+
 
 let refmt = ref "refmt"
 let get_refmt () = !refmt
-let set_refmt ~cwd p = refmt := resolve_bsb_magic_path ~cwd ~desc:"refmt" p
+let set_refmt ~cwd p = 
+  refmt := resolve_bsb_magic_file ~cwd ~desc:"refmt" p
 
 
 let ppx_flags = ref []
@@ -5215,7 +5234,7 @@ let set_ppx_flags ~cwd s =
     |> get_list_string
     |> List.map (fun p ->
         if p = "" then failwith "invalid ppx, empty string found"
-        else resolve_bsb_magic_path ~cwd ~desc:"ppx" p
+        else resolve_bsb_magic_file ~cwd ~desc:"ppx" p
       ) in
   ppx_flags := s
 
@@ -5223,7 +5242,17 @@ let set_ppx_flags ~cwd s =
 let js_post_build_cmd = ref None 
 let get_js_post_build_cmd () = !js_post_build_cmd
 let set_js_post_build_cmd ~cwd s =
-  js_post_build_cmd := Some (resolve_bsb_magic_path ~cwd ~desc:"js-post-build:cmd" s )
+  js_post_build_cmd := Some (resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
+
+let ninja = ref "ninja"
+let get_ninja () = !ninja
+
+(* Setting ninja is a bit complex
+   First if [build.ninja] does use [ninja] we need set a variable
+   Second we need store it so that we can call ninja correctly
+*)
+let set_ninja ~cwd p  =
+  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p 
 
 end
 module Bsb_dep_infos : sig 
@@ -6149,7 +6178,8 @@ let write_ninja_file cwd =
                 )
             |> ignore 
             end)
-          |?  (Bsb_build_schemas.ocamllex, `Str Bsb_default.set_ocamllex)
+          |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
+          |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
           |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
           (* More design *)
           |?  (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
