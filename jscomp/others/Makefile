@@ -45,6 +45,6 @@ clean::
 
 ML_SOURCES=$(addsuffix .ml, $(SOURCE_LIST))
 MLI_SOURCES=$(addsuffix .mli, $(SOURCE_LIST))
+
 depend:
-	$(CAMLDEP) $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmo/.cmj/g' > .depend
-	$(CAMLDEP) $(INCLUDES) $(ML_SOURCES) | sed -e 's/\.cmx/.cmj/g' >>.depend
+	$(CAMLDEP) -native $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmx/.cmj/g' >.depend

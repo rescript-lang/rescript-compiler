@@ -116,7 +116,6 @@ simple_lexer_test.ml: simple_lexer_test.mll
 -include .depend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmo/.cmj/g' > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >> .depend
+	$(CAMLDEP) -native $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
 
 

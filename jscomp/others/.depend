@@ -1,37 +1,20 @@
 node_path.cmj :
-node_path.cmx :
 node_fs.cmj : node.cmj js_string.cmj
-node_fs.cmx : node.cmx js_string.cmx
 node_process.cmj :
-node_process.cmx :
 node_module.cmj : node.cmj js_dict.cmj
-node_module.cmx : node.cmx js_dict.cmx
 js_array.cmj :
-js_array.cmx :
-js_string.cmj : js_re.cmi
-js_string.cmx : js_re.cmx
+js_string.cmj : js_re.cmj
 js_re.cmj : js_re.cmi
-js_re.cmx : js_re.cmi
 js_null_undefined.cmj : js_null_undefined.cmi
-js_null_undefined.cmx : js_null_undefined.cmi
 node_buffer.cmj : node.cmj
-node_buffer.cmx : node.cmx
 js_types.cmj : js_types.cmi
-js_types.cmx : js_types.cmi
-js_json.cmj : js_types.cmi js_string.cmj js_dict.cmj js_array.cmj \
-    js_json.cmi
-js_json.cmx : js_types.cmx js_string.cmx js_dict.cmx js_array.cmx \
+js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
     js_json.cmi
 js_obj.cmj :
-js_obj.cmx :
 bs_dyn.cmj : bs_dyn.cmi
-bs_dyn.cmx : bs_dyn.cmi
-bs_dyn_lib.cmj : bs_dyn.cmi bs_dyn_lib.cmi
-bs_dyn_lib.cmx : bs_dyn.cmx bs_dyn_lib.cmi
+bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
 node_child_process.cmj :
-node_child_process.cmx :
 js_boolean.cmj : js_boolean.cmi
-js_boolean.cmx : js_boolean.cmi
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
@@ -39,37 +22,3 @@ js_json.cmi : js_types.cmi js_string.cmj js_dict.cmj
 bs_dyn.cmi :
 bs_dyn_lib.cmi : bs_dyn.cmi
 js_boolean.cmi :
-node_path.cmo :
-node_path.cmj :
-node_fs.cmo : node.cmo js_string.cmo
-node_fs.cmj : node.cmj js_string.cmj
-node_process.cmo :
-node_process.cmj :
-node_module.cmo : node.cmo js_dict.cmo
-node_module.cmj : node.cmj js_dict.cmj
-js_array.cmo :
-js_array.cmj :
-js_string.cmo : js_re.cmi
-js_string.cmj : js_re.cmj
-js_re.cmo : js_re.cmi
-js_re.cmj : js_re.cmi
-js_null_undefined.cmo : js_null_undefined.cmi
-js_null_undefined.cmj : js_null_undefined.cmi
-node_buffer.cmo : node.cmo
-node_buffer.cmj : node.cmj
-js_types.cmo : js_types.cmi
-js_types.cmj : js_types.cmi
-js_json.cmo : js_types.cmi js_string.cmo js_dict.cmo js_array.cmo \
-    js_json.cmi
-js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
-    js_json.cmi
-js_obj.cmo :
-js_obj.cmj :
-bs_dyn.cmo : bs_dyn.cmi
-bs_dyn.cmj : bs_dyn.cmi
-bs_dyn_lib.cmo : bs_dyn.cmi bs_dyn_lib.cmi
-bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
-node_child_process.cmo :
-node_child_process.cmj :
-js_boolean.cmo : js_boolean.cmi
-js_boolean.cmj : js_boolean.cmi

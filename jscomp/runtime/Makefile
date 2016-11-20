@@ -9,17 +9,22 @@ OTHERS= caml_array caml_string caml_bytes\
 	caml_format caml_md5 caml_queue caml_hash caml_weak\
 	caml_backtrace caml_int32 caml_gc typed_array \
 	js_primitive caml_basic caml_oo curry caml_module \
-	bs_string  js_float bs_obj js_nativeint js_int js_null
+	bs_string  js_float bs_obj js_nativeint js_int js_null js_undefined
 
 SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe
 
 caml_oo.cmj : caml_array.cmj
+js_unsafe.cmj:js_unsafe.cmi js.cmj js.cmi
+js_unsafe.cmi js.cmj: js.cmi
 caml_format.cmj caml_io.cmj: curry.cmj
-caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi
+caml_weak.cmj caml_module.cmj: caml_obj.cmj
+caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi js_unsafe.cmi
 block.cmj: block.cmi
+
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj
 ## since we use ppx
-$(addsuffix .cmi, $(OTHERS)): js.cmi js_unsafe.cmj js_unsafe.cmi
+$(addsuffix .cmi, $(OTHERS)): js.cmi js_unsafe.cmj js_unsafe.cmi js.cmj
+
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 
@@ -44,17 +49,18 @@ clean::
 	rm -f  *.annot
 	rm -f *.rawlambda *.lam *.lambda *.map
 
-
+# Note since Makefile rules does not support multiple output
+# To avoid bugs, we should always have a .mli file for each .ml when using suffix rules
+# otherwise Make can not know how to generate .cmi when only .ml exists
 .mli.cmi:
 	$(COMPILER) $(INCLUDES) $(COMPFLAGS)  -c $<
 .ml.cmj:
 	$(COMPILER) $(INCLUDES) $(COMPFLAGS)  -c $<
 
--include .runtimedepend
+-include .depend
 
 ML_SOURCES=$(addsuffix .ml, $(OTHERS))
 MLI_SOURCES=$(addsuffix .mli, $(OTHERS))
 
 depend:
-	$(CAMLDEP) $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmo/.cmj/g' > .runtimedepend
-	$(CAMLDEP) $(INCLUDES) $(ML_SOURCES) | sed -e 's/\.cmx/.cmj/g' >>.runtimedepend
+	$(CAMLDEP) -native $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmx/.cmj/g' >.depend
