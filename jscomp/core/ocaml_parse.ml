@@ -57,5 +57,9 @@ let check_suffix  name  =
     Compenv.output_prefix name 
   else if Filename.check_suffix name !Config.interface_suffix then 
     `Mli,  Compenv.output_prefix name 
+  else if Filename.check_suffix name ".mlast" then 
+    `Mlast, Compenv.output_prefix name 
+  else if Filename.check_suffix name ".mliast" then 
+    `Mliast, Compenv.output_prefix name 
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))

@@ -4,7 +4,7 @@ let name = "name"
 let ocaml_config = "ocaml-config"
 let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
-let bsbuild = "bsbuild"
+
 let bsc = "bsc"
 let refmt = "refmt"
 let bs_external_includes = "bs-external-includes"

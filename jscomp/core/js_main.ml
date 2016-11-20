@@ -23,6 +23,10 @@ let process_file ppf name =
     Js_implementation.implementation ppf name opref 
   | `Mli, opref -> 
     Js_implementation.interface ppf name opref 
+  | `Mliast, opref 
+    -> Js_implementation.interface_mliast ppf name opref 
+  | `Mlast, opref 
+    -> Js_implementation.implementation_mlast ppf name opref
 
 
 let usage = "Usage: bsc <options> <files>\nOptions are:"
@@ -140,7 +144,7 @@ let buckle_script_flags =
   ::
   (
     "-bs-binary-ast", Arg.Set Js_config.binary_ast,
-    " generate binary .mli_ast and ml_ast"
+    " Generate binary .mli_ast and ml_ast"
   )
   ::
   ("-bs-syntax-only", 

@@ -29,15 +29,17 @@ module Rules : sig
   type t  
   val get_name : t  -> out_channel -> string
     
-  val define : command:string ->
-  ?depfile:string ->
-  ?description:string ->
-  string -> t 
+  val define :
+    command:string ->
+    ?depfile:string ->
+    ?restat:unit -> 
+    ?description:string ->
+    string -> t 
 
-  val build_ast : t
-  val build_ast_from_reason_impl : t 
-  val build_ast_from_reason_intf : t 
-  val build_deps : t 
+  val build_ast_and_deps : t
+  val build_ast_and_deps_from_reason_impl : t 
+  val build_ast_and_deps_from_reason_intf : t 
+  val build_bin_deps : t 
   val reload : t 
   val copy_resources : t
   val build_ml_from_mll : t 
@@ -55,8 +57,10 @@ val output_build :
   ?order_only_deps:string list ->
   ?implicit_deps:string list ->
   ?outputs:string list ->
+  ?implicit_outputs: string list ->  
   ?inputs:string list ->
   ?shadows:(string * [`Append of string | `Overwrite of string ]) list ->
+  ?restat:unit ->
   output:string ->
   input:string ->
   rule:Rules.t -> out_channel -> unit

@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -24,38 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind 
+let output_prefix = ref None
+let annoymous other = ()
+let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
+let () =
+    Arg.parse [
+    "-bs-oprefix", Arg.String (fun x -> output_prefix := Some x),
+    " Set output prefix for -bs-MD (internal use)";
+    "-bs-bin-MD", Arg.String (fun x -> Depends_post_process.handle_bin_depfile !output_prefix x),
+    " Generate dep file for ninja format(from .ml[i]deps)";
 
-
-let read_ast (type t ) (kind : t kind) fn : t  =
-  let magic =
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in 
-  let ic = open_in_bin fn in
-  try
-    let buffer = really_input_string ic (String.length magic) in
-    assert(buffer = magic); (* already checked by apply_rewriter *)
-    Location.input_name := input_value ic;
-    let ast = input_value ic in
-    close_in ic;
-    ast
-  with exn ->
-    close_in ic;
-    raise exn
-
-
-let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : unit =
-  let magic = 
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in
-  let oc = open_out_bin output in 
-  (* FIX for windows: output_value: not a binary channel*)
-  output_string oc magic ;
-  output_value oc fname;
-  output_value oc pt;
-  close_out oc 
-
+    ] annoymous usage

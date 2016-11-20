@@ -22,13 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val parse_interface : Format.formatter -> string -> Parsetree.signature
 
-val parse_implementation : Format.formatter -> string -> Parsetree.structure
+val read_ast : 'a Ast_extract.kind -> string -> 'a 
 
-val parse_implementation_from_string : string -> Parsetree.structure
-val lazy_parse_interface : Format.formatter -> string -> Parsetree.signature lazy_t
 
-val lazy_parse_implementation : Format.formatter -> string -> Parsetree.structure lazy_t
-    
-val check_suffix :  string -> [ `Ml | `Mli | `Mlast | `Mliast ] * string
+
+(**
+   Check out {!Depends_post_process} for set decoding
+   The [.ml] file can be recognized as an ast directly, the format
+   is
+   {
+   magic number;
+   filename;
+   ast
+   }
+   when [fname] is "-" it means the file is from an standard input or pipe.
+   An empty name would marshallized.
+
+   Use case cat - | fan -printer -impl -
+   redirect the standard input to fan
+ *)
+val write_ast : fname:string -> output:string -> 'a Ast_extract.kind -> 'a -> unit
+

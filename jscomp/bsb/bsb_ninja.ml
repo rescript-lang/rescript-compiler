@@ -46,7 +46,7 @@ module Rules = struct
 
   type t = < name : out_channel -> string >
   let get_name (x : t) oc = x # name oc
-  let print_rule oc ~description ?depfile ~command   name  = 
+  let print_rule oc ~description ?restat ?depfile ~command   name  = 
     output_string oc "rule "; output_string oc name ; output_string oc "\n";
     output_string oc "  command = "; output_string oc command; output_string oc "\n";
     begin match depfile with
@@ -54,11 +54,18 @@ module Rules = struct
       | Some f ->
         output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
     end;
+    begin match restat with
+      | None -> ()
+      | Some () ->
+        output_string oc "  restat = 1"; output_string oc  "\n"
+    end;
+
     output_string oc "  description = " ; output_string oc description; output_string oc "\n"
 
   let define
       ~command
       ?depfile
+      ?restat
       ?(description = "Building ${out}")
       name
     =
@@ -68,33 +75,36 @@ module Rules = struct
       method name oc  =
         if not used then
           begin
-            print_rule oc ~description ?depfile ~command name; 
+            print_rule oc ~description ?depfile ?restat ~command name; 
             used <- true
           end;
         rule_name
     end
-  (* # for ast building, we remove most flags with respect to -I  *)
-  let build_ast =
+
+  let build_ast_and_deps = 
     define
-      ~command:"${bsc} ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
-      "build_ast"
-  let build_ast_from_reason_impl =
+      ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+      "build_ast_and_deps"
+
+  let build_ast_and_deps_from_reason_impl =
     define
       ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
-      "build_ast_from_reason_impl"
+      "build_ast_and_deps_from_reason_impl"
 
-  let build_ast_from_reason_intf =
+  let build_ast_and_deps_from_reason_intf =
     (* we have to do this way,
        because it need to be ppxed by bucklescript
     *)
     define
       ~command:"${bsc} -pp ${refmt} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
-      "build_ast_from_reason_intf"
+      "build_ast_and_deps_from_reason_intf"
 
-  let build_deps =
+
+  let build_bin_deps =
     define
-      ~command:"${bsdep}  -bs-MD ${in}"
+      ~command:"${bsdep}  -bs-bin-MD ${in}"
       "build_deps"
+
   let reload =
     define
       ~command:"${bsbuild} -init"
@@ -125,7 +135,7 @@ module Rules = struct
   let build_cmj_js =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
       ~depfile:"${in}.d"
       "build_cmj_only"
@@ -133,13 +143,13 @@ module Rules = struct
   let build_cmi_cmj_js =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c -impl ${in} ${postbuild}"
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
       ~depfile:"${in}.d"
       "build_cmj_cmi"
   let build_cmi =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c -intf ${in}"
+                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c  ${in}"
       ~depfile:"${in}.d"
       "build_cmi"
 end
@@ -148,8 +158,10 @@ let output_build
     ?(order_only_deps=[])
     ?(implicit_deps=[])
     ?(outputs=[])
+    ?(implicit_outputs=[])
     ?(inputs=[])
     ?(shadows=[])
+    ?restat
     ~output
     ~input
     ~rule
@@ -158,6 +170,12 @@ let output_build
   output_string oc "build ";
   output_string oc output ;
   outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
+  begin match implicit_outputs with 
+  | [] -> ()
+  | _ ->
+    output_string oc " | ";
+    implicit_outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s)
+  end;
   output_string oc " : ";
   output_string oc rule;
   output_string oc " ";
@@ -199,7 +217,13 @@ let output_build
             output_string oc " ";
             output_string oc s ; output_string oc "\n"
         ) xs
-  end
+  end;
+begin match restat with
+| None -> ()
+| Some () ->
+  output_string oc " " ;
+  output_string oc "restat = 1 \n"
+end
 
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
@@ -271,7 +295,8 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js = Bsb_config.proj_rel @@ Bsb_config.common_js_prefix
           output_file_sans_extension ^ Literals.suffix_js in
-
+      (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
+      (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
         let package_flags =
           [ "bs_package_flags",
@@ -302,18 +327,23 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
         | `Re ->
           let input, rule  =
             if kind = `Re then
-              input, Rules.build_ast_from_reason_impl
+              input, Rules.build_ast_and_deps_from_reason_impl
             else if kind = `Mll then
-              output_ml, Rules.build_ast
+              output_ml, Rules.build_ast_and_deps
             else
-              input, Rules.build_ast
+              input, Rules.build_ast_and_deps
           in
           begin
             output_build oc
-              ~output:output_mlast ~input ~rule;
-            output_build oc ~output:output_mlastd
+              ~output:output_mlast 
+              (* ~implicit_outputs:[output_mldeps] *)
+              ~input
+              ~rule;
+            output_build 
+              oc
+              ~output:output_mlastd
               ~input:output_mlast
-              ~rule:Rules.build_deps ;
+              ~rule:Rules.build_bin_deps ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
                 Rules.build_cmj_js,
@@ -331,7 +361,9 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
               ~output:output_cmj
               ~shadows
               ~outputs:  (output_js:: cm_outputs)
-              ~input:output_mlast ~implicit_deps:deps ~rule:rule_name ;
+              ~input:output_mlast 
+              ~implicit_deps:deps
+              ~rule:rule_name ;
             if installable then
               begin
                 output_cmj :: cm_outputs
@@ -350,21 +382,22 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
         | `Mli
         | `Rei ->
           let rule =
-            if kind = `Mli then Rules.build_ast
-            else Rules.build_ast_from_reason_intf  in
+            if kind = `Mli then Rules.build_ast_and_deps
+            else Rules.build_ast_and_deps_from_reason_intf  in
           output_build oc
             ~output:output_mliast
+            (* ~implicit_outputs:[output_mlideps] *)
             ~input
             ~rule;
           output_build oc
             ~output:output_mliastd
             ~input:output_mliast
-            ~rule:Rules.build_deps  ;
+            ~rule:Rules.build_bin_deps  ;
           output_build oc
             ~shadows
             ~output:output_cmi
             ~input:output_mliast
-            ~implicit_deps:[output_mliastd]
+            (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
           if installable then
             begin

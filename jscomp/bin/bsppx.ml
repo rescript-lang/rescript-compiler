@@ -6205,6 +6205,8 @@ val suffix_mlastd : string
 val suffix_mliastd : string
 val suffix_js : string
 
+
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6296,7 +6298,6 @@ let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
-
 
 end
 module Ast_derive : sig 

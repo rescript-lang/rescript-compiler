@@ -18,3 +18,105 @@ and can do in source modification
 
 https://groups.google.com/forum/#!searchin/ninja-build/post$20process%7Csort:relevance/ninja-build/Q4hpcDmhPzw/KZpDyOEFuTkJ 
 
+# Performance tweaks
+
+Writing(truncating) files are siginificantly slower (20~30x) and it destroies cache(see Appendix), we should 
+try to avoid writing too many files.
+
+bsb is optimized for incremental build (espeically for modifing files ).
+
+There is a trade off here: if we generate `.bsdep` file, whenever adding or removing file, `.bscache` will not 
+impact the integrity of `.bsdep`, so that it will run `.bsdep -> .d`.
+
+The downside is 
+1. clean build will generate more smaller files (slow down), 
+2. build system has to track more outputs  (latency, stat more files almost doubled)
+
+Whenever we change a file it will regenerate the ast, optionally update `.bsdep`      
+
+So assuming that merge `.bsdep` into `.mlast`, build system will track not more files.
+The integrity of `.mlast` is not impacted by `.bscache`.
+`.mlast -> .d` can be still improved, not as good as `.bsdep -> .d` since `.bsdep` 
+can check `.bsdep` time stamp.
+
+So let's change the `.mlast` to such format
+
+----------
+magic number
+length of dependent modules
+dependent modules
+binary ast   
+----------
+
+This file is integrity is not impacted by `.bscache`. whenever `.bscache` changes we check if we need regenerate `.d`
+
+# Appendix
+[source,ocaml]
+--------------
+module String_set = Set.Make(String)
+
+(* let v = String_set.of_list ["List" ; "Set" ; "String" ; "Test_order"] *)
+let v = String_set.of_list []
+let deseralize f =
+  let ichan  = open_in_bin f in
+  let v : String_set.t = input_value ichan  in
+  close_in ichan ;
+  v
+
+let time f arg =
+  let v0 = Unix.gettimeofday () in
+  ignore @@ f arg;
+  let v1 = Unix.gettimeofday ()  in
+  print_endline (Printf.sprintf "%f elapsed" (v1 -. v0))
+
+let deseralize_and_compare f =
+  ignore @@ String_set.equal v (deseralize f)
+
+let  seralize f =
+  let ochan = open_out_bin f in
+  output_value ochan  v ;
+  close_out ochan
+
+let try_seralize f =
+  match open_in_bin f with
+  | ichan ->
+    close_in ichan ;
+    let ochan = open_out_bin f in
+    output_value ochan  v ;
+    close_out ochan
+  | exception _ ->
+    let ochan = open_out_bin f in
+    output_value ochan  v ;
+    close_out ochan
+
+let try_seralize2 f =
+  if Sys.file_exists f then
+    let ochan = open_out_bin f in
+    output_value ochan  v ;
+    close_out ochan
+  else
+    let ochan = open_out_bin f in
+    output_value ochan  v ;
+    close_out ochan
+
+
+
+let () =
+  let file = "/Users/hzhang295/git/tmp/bench/e.mldeps" in
+  time try_seralize file;
+  Unix.unlink file ;
+  time try_seralize2 file;
+  Unix.unlink file ;
+  time seralize file;
+  time deseralize_and_compare file;
+  Unix.unlink file
+
+(*                                                                                                                                                                                                                                                              
+0.002452 elapsed                                                                                                                                                                                                                                                
+0.002440 elapsed                                                                                                                                                                                                                                                
+0.001954 elapsed                                                                                                                                                                                                                                                
+0.000079 elapsed                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                
+*)
+
+--------------
