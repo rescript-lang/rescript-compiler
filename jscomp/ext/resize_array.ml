@@ -77,6 +77,7 @@ sig
   val inplace_filter : (elt -> bool) -> t -> unit
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
+  val set : t -> int -> elt -> unit
   val unsafe_get : t -> int -> elt
   val last : t -> elt
   val capacity : t -> int
@@ -397,6 +398,11 @@ module Make ( Resize : ResizeType) = struct
   let get d i = 
     if i < 0 || i >= d.len then invalid_arg "Resize_array.get"
     else Array.unsafe_get d.arr i
+
+  let set d idx v =
+    if idx < 0 || idx >= d.len then invalid_arg "Resize_array.set"
+    else Array.unsafe_set d.arr idx v
+    
   let unsafe_get d i = Array.unsafe_get d.arr i 
   let last d = 
     if d.len <= 0 then invalid_arg   "Resize_array.last"
