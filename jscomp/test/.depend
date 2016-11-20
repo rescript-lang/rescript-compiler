@@ -36,1123 +36,124 @@ test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmj
 testing.cmi :
 ui_defs.cmi :
 unsafe_this.cmi : ../runtime/js.cmj
-a.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
-    ../stdlib/list.cmi
-a.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
-    ../stdlib/list.cmx
-a_filename_test.cmj : mt.cmi ext_filename.cmj ../stdlib/array.cmi
-a_filename_test.cmx : mt.cmx ext_filename.cmx ../stdlib/array.cmx
-a_list_test.cmj : mt.cmi ext_list.cmj
-a_list_test.cmx : mt.cmx ext_list.cmx
-a_recursive_type.cmj : a_recursive_type.cmi
-a_recursive_type.cmx : a_recursive_type.cmi
-a_scope_bug.cmj :
-a_scope_bug.cmx :
-a_string_test.cmj : mt.cmi ../stdlib/list.cmi ext_string.cmj
-a_string_test.cmx : mt.cmx ../stdlib/list.cmx ext_string.cmx
-abstract_type.cmj : abstract_type.cmi
-abstract_type.cmx : abstract_type.cmi
-and_or_tailcall_test.cmj : mt.cmi
-and_or_tailcall_test.cmx : mt.cmx
-app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
-app_root_finder.cmx : ../others/node.cmx ../runtime/js.cmx
-ari_regress_test.cmj : mt.cmi ari_regress_test.cmi
-ari_regress_test.cmx : mt.cmx ari_regress_test.cmi
-arith_lexer.cmj : ../stdlib/lexing.cmi arith_syntax.cmj arith_parser.cmj
-arith_lexer.cmx : ../stdlib/lexing.cmx arith_syntax.cmx arith_parser.cmx
-arith_parser.cmj : ../stdlib/parsing.cmi ../stdlib/obj.cmi \
-    ../stdlib/lexing.cmi arith_syntax.cmj
-arith_parser.cmx : ../stdlib/parsing.cmx ../stdlib/obj.cmx \
-    ../stdlib/lexing.cmx arith_syntax.cmx
-arith_syntax.cmj :
-arith_syntax.cmx :
-array_subtle_test.cmj : mt.cmi ../runtime/js.cmj ../stdlib/array.cmi
-array_subtle_test.cmx : mt.cmx ../runtime/js.cmx ../stdlib/array.cmx
-array_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/array.cmi array_test.cmi
-array_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/array.cmx array_test.cmi
-attr_test.cmj :
-attr_test.cmx :
-b.cmj :
-b.cmx :
-basic_module_test.cmj : ../stdlib/set.cmi pr6726.cmj offset.cmj \
-    mt_global.cmi mt.cmi basic_module_test.cmi
-basic_module_test.cmx : ../stdlib/set.cmx pr6726.cmx offset.cmx \
-    mt_global.cmx mt.cmx basic_module_test.cmi
-bdd.cmj : ../stdlib/array.cmi
-bdd.cmx : ../stdlib/array.cmx
-bench.cmj : ../stdlib/array.cmi
-bench.cmx : ../stdlib/array.cmx
-bigarray_test.cmj : ../stdlib/int32.cmi ../stdlib/complex.cmi \
-    ../stdlib/bigarray.cmi
-bigarray_test.cmx : ../stdlib/int32.cmx ../stdlib/complex.cmx \
-    ../stdlib/bigarray.cmx
-boolean_test.cmj : test_bool_equal.cmj mt.cmi
-boolean_test.cmx : test_bool_equal.cmx mt.cmx
-bs_array_test.cmj : ../runtime/js.cmj
-bs_array_test.cmx : ../runtime/js.cmx
-bs_ignore_effect.cmj : mt.cmi
-bs_ignore_effect.cmx : mt.cmx
-bs_ignore_test.cmj : ../runtime/js.cmj
-bs_ignore_test.cmx : ../runtime/js.cmx
-bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
-bs_node_string_buffer_test.cmx : ../others/node.cmx ../runtime/js.cmx
-bs_rest_test.cmj :
-bs_rest_test.cmx :
-bs_string_test.cmj : ../runtime/js.cmj
-bs_string_test.cmx : ../runtime/js.cmx
-buffer_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi \
-    ../stdlib/buffer.cmi
-buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
-    ../stdlib/buffer.cmx
-bytes_split_gpr_743_test.cmj : mt.cmi ../runtime/js.cmj ../stdlib/bytes.cmi
-bytes_split_gpr_743_test.cmx : mt.cmx ../runtime/js.cmx ../stdlib/bytes.cmx
-caml_compare_test.cmj : mt.cmi
-caml_compare_test.cmx : mt.cmx
-caml_format_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
-caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
-    ../stdlib/format.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
-chain_code_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
-chain_code_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
-class3_test.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj \
-    ../stdlib/array.cmi
-class3_test.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx \
-    ../stdlib/array.cmx
-class4_test.cmj : mt.cmi
-class4_test.cmx : mt.cmx
-class5_test.cmj : mt.cmi ../stdlib/list.cmi
-class5_test.cmx : mt.cmx ../stdlib/list.cmx
-class6_test.cmj : mt.cmi
-class6_test.cmx : mt.cmx
-class7_test.cmj : ../stdlib/oo.cmi mt.cmi
-class7_test.cmx : ../stdlib/oo.cmx mt.cmx
-class8_test.cmj : mt.cmi
-class8_test.cmx : mt.cmx
-class_repr.cmj : ../stdlib/oo.cmi
-class_repr.cmx : ../stdlib/oo.cmx
-class_setter_getter.cmj : ../runtime/js.cmj class_setter_getter.cmi
-class_setter_getter.cmx : ../runtime/js.cmx class_setter_getter.cmi
-class_test.cmj : mt.cmi
-class_test.cmx : mt.cmx
-class_type_ffi_test.cmj : ../runtime/js.cmj
-class_type_ffi_test.cmx : ../runtime/js.cmx
-complex_if_test.cmj : mt.cmi ../stdlib/bytes.cmi
-complex_if_test.cmx : mt.cmx ../stdlib/bytes.cmx
-complex_test.cmj : mt.cmi ../stdlib/complex.cmi
-complex_test.cmx : mt.cmx ../stdlib/complex.cmx
-complex_while_loop.cmj :
-complex_while_loop.cmx :
-condition_compilation_test.cmj : ../stdlib/unix.cmi mt.cmi
-condition_compilation_test.cmx : ../stdlib/unix.cmx mt.cmx
-config1_test.cmj :
-config1_test.cmx :
-config2_test.cmj : ../runtime/js.cmj config2_test.cmi
-config2_test.cmx : ../runtime/js.cmx config2_test.cmi
-const_block_test.cmj : mt.cmi ../stdlib/array.cmi const_block_test.cmi
-const_block_test.cmx : mt.cmx ../stdlib/array.cmx const_block_test.cmi
-const_defs.cmj :
-const_defs.cmx :
-const_defs_test.cmj : const_defs.cmj
-const_defs_test.cmx : const_defs.cmx
-const_test.cmj :
-const_test.cmx :
-cont_int_fold_test.cmj :
-cont_int_fold_test.cmx :
-cps_test.cmj : mt.cmi ../stdlib/array.cmi
-cps_test.cmx : mt.cmx ../stdlib/array.cmx
-cross_module_inline_test.cmj :
-cross_module_inline_test.cmx :
-debug_keep_test.cmj :
-debug_keep_test.cmx :
-debugger_test.cmj : ../runtime/js.cmj
-debugger_test.cmx : ../runtime/js.cmx
-demo.cmj : ../runtime/js.cmj demo_binding.cmj
-demo.cmx : ../runtime/js.cmx demo_binding.cmx
-demo_binding.cmj : ../runtime/js.cmj
-demo_binding.cmx : ../runtime/js.cmx
-demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
-demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
-demo_page.cmj :
-demo_page.cmx :
-demo_pipe.cmj : ../runtime/js.cmj
-demo_pipe.cmx : ../runtime/js.cmx
-derive_dyntype.cmj : ../others/bs_dyn.cmi
-derive_dyntype.cmx : ../others/bs_dyn.cmx
-derive_projector_test.cmj : derive_projector_test.cmi
-derive_projector_test.cmx : derive_projector_test.cmi
-derive_type_test.cmj :
-derive_type_test.cmx :
-digest_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
-    ext_array.cmj ../stdlib/digest.cmi ../stdlib/array.cmi
-digest_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx mt.cmx \
-    ext_array.cmx ../stdlib/digest.cmx ../stdlib/array.cmx
-div_by_zero_test.cmj : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
-div_by_zero_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx
-earger_curry_test.cmj : ../stdlib/array.cmi
-earger_curry_test.cmx : ../stdlib/array.cmx
-empty_obj.cmj :
-empty_obj.cmx :
-epsilon_test.cmj : mt.cmi
-epsilon_test.cmx : mt.cmx
-equal_exception_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi
-equal_exception_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx
-equal_test.cmj :
-equal_test.cmx :
-es6_module_test.cmj : mt.cmi ../stdlib/list.cmi
-es6_module_test.cmx : mt.cmx ../stdlib/list.cmx
-event_ffi.cmj : ../stdlib/list.cmi ../runtime/js_unsafe.cmj \
-    ../runtime/js.cmj
-event_ffi.cmx : ../stdlib/list.cmx ../runtime/js_unsafe.cmx \
-    ../runtime/js.cmx
-exception_raise_test.cmj : mt.cmi
-exception_raise_test.cmx : mt.cmx
-exception_value_test.cmj :
-exception_value_test.cmx :
-ext_array.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
-ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
-ext_bytes.cmj : ../stdlib/bytes.cmi
-ext_bytes.cmx : ../stdlib/bytes.cmx
-ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi literals.cmi \
-    ../stdlib/list.cmi ../stdlib/lazy.cmi ../stdlib/filename.cmi \
-    ext_string.cmj ext_pervasives.cmi
-ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx literals.cmx \
-    ../stdlib/list.cmx ../stdlib/lazy.cmx ../stdlib/filename.cmx \
-    ext_string.cmx ext_pervasives.cmx
-ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
-ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
-ext_log.cmj : ../stdlib/format.cmi
-ext_log.cmx : ../stdlib/format.cmx
-ext_pervasives.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/obj.cmi ../stdlib/list.cmi ../stdlib/int32.cmi \
-    ../stdlib/format.cmi ../stdlib/char.cmi ../stdlib/array.cmi \
-    ../stdlib/arg.cmi ext_pervasives.cmi
-ext_pervasives.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
-    ../stdlib/obj.cmx ../stdlib/list.cmx ../stdlib/int32.cmx \
-    ../stdlib/format.cmx ../stdlib/char.cmx ../stdlib/array.cmx \
-    ../stdlib/arg.cmx ext_pervasives.cmi
-ext_string.cmj : ../stdlib/string.cmi ../stdlib/list.cmi ext_bytes.cmj \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi
-ext_string.cmx : ../stdlib/string.cmx ../stdlib/list.cmx ext_bytes.cmx \
-    ../stdlib/char.cmx ../stdlib/bytes.cmx
-ext_sys.cmj : ../stdlib/sys.cmi ext_sys.cmi
-ext_sys.cmx : ../stdlib/sys.cmx ext_sys.cmi
-extensible_variant_test.cmj : mt.cmi
-extensible_variant_test.cmx : mt.cmx
-external_ppx.cmj :
-external_ppx.cmx :
-fail_comp.cmj :
-fail_comp.cmx :
-ffi_arity_test.cmj : mt.cmi ../runtime/js_unsafe.cmj
-ffi_arity_test.cmx : mt.cmx ../runtime/js_unsafe.cmx
-ffi_array_test.cmj : mt.cmi ../others/js_array.cmj
-ffi_array_test.cmx : mt.cmx ../others/js_array.cmx
-ffi_js_test.cmj : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmj \
-    ../runtime/js.cmj ../stdlib/array.cmi
-ffi_js_test.cmx : ../stdlib/obj.cmx mt.cmx ../others/js_obj.cmx \
-    ../runtime/js.cmx ../stdlib/array.cmx
-ffi_splice_test.cmj : mt.cmi
-ffi_splice_test.cmx : mt.cmx
-ffi_test.cmj : ../runtime/js.cmj
-ffi_test.cmx : ../runtime/js.cmx
-fib.cmj :
-fib.cmx :
-float_array.cmj :
-float_array.cmx :
-float_of_bits_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
-float_of_bits_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/int64.cmx ../stdlib/int32.cmx ../stdlib/array.cmx
-float_record.cmj : float_record.cmi
-float_record.cmx : float_record.cmi
-float_test.cmj : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
-    mt.cmi ../runtime/js_float.cmj ../runtime/js.cmj ../stdlib/int64.cmi \
-    ../stdlib/array.cmi
-float_test.cmx : ../stdlib/printf.cmx ../stdlib/pervasives.cmx mt_global.cmx \
-    mt.cmx ../runtime/js_float.cmx ../runtime/js.cmx ../stdlib/int64.cmx \
-    ../stdlib/array.cmx
-flow_parser_reg_test.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi \
-    ../stdlib/set.cmi ../stdlib/queue.cmi ../stdlib/printf.cmi \
-    ../stdlib/pervasives.cmi ../stdlib/obj.cmi ../others/node.cmj mt.cmi \
-    ../stdlib/map.cmi ../stdlib/list.cmi ../stdlib/lexing.cmi \
-    ../runtime/js.cmj ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi \
-    ../stdlib/array.cmi flow_parser_reg_test.cmi
-flow_parser_reg_test.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx \
-    ../stdlib/set.cmx ../stdlib/queue.cmx ../stdlib/printf.cmx \
-    ../stdlib/pervasives.cmx ../stdlib/obj.cmx ../others/node.cmx mt.cmx \
-    ../stdlib/map.cmx ../stdlib/list.cmx ../stdlib/lexing.cmx \
-    ../runtime/js.cmx ../stdlib/hashtbl.cmx ../stdlib/filename.cmx \
-    ../stdlib/char.cmx ../stdlib/bytes.cmx ../stdlib/buffer.cmx \
-    ../stdlib/array.cmx flow_parser_reg_test.cmi
-for_loop_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
-for_loop_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/array.cmx
-for_side_effect_test.cmj : mt.cmi
-for_side_effect_test.cmx : mt.cmx
-format_regression.cmj :
-format_regression.cmx :
-format_test.cmj : mt.cmi ../stdlib/format.cmi
-format_test.cmx : mt.cmx ../stdlib/format.cmx
-fs_test.cmj : ../others/node.cmj mt.cmi ../runtime/js.cmj
-fs_test.cmx : ../others/node.cmx mt.cmx ../runtime/js.cmx
-genlex_test.cmj : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/genlex.cmi
-genlex_test.cmx : ../stdlib/stream.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/genlex.cmx
-global_exception_regression_test.cmj : mt.cmi
-global_exception_regression_test.cmx : mt.cmx
-google_closure_test.cmj : test_google_closure.cmj mt.cmi
-google_closure_test.cmx : test_google_closure.cmx mt.cmx
-gpr496_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../runtime/js.cmj
-gpr496_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../runtime/js.cmx
-gpr_405_test.cmj : ../stdlib/hashtbl.cmi gpr_405_test.cmi
-gpr_405_test.cmx : ../stdlib/hashtbl.cmx gpr_405_test.cmi
-gpr_441.cmj :
-gpr_441.cmx :
-gpr_459_test.cmj : mt.cmi
-gpr_459_test.cmx : mt.cmx
-gpr_627_test.cmj : mt.cmi
-gpr_627_test.cmx : mt.cmx
-gpr_658.cmj : ../runtime/js.cmj
-gpr_658.cmx : ../runtime/js.cmx
-gpr_858_test.cmj : ../stdlib/list.cmi
-gpr_858_test.cmx : ../stdlib/list.cmx
-gpr_858_unit2_test.cmj :
-gpr_858_unit2_test.cmx :
-gpr_904_test.cmj : mt.cmi
-gpr_904_test.cmx : mt.cmx
-guide_for_ext.cmj :
-guide_for_ext.cmx :
-hamming_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
-    ../stdlib/int64.cmi ../stdlib/buffer.cmi
-hamming_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/lazy.cmx \
-    ../stdlib/int64.cmx ../stdlib/buffer.cmx
-hash_test.cmj : ../stdlib/string.cmi mt_global.cmi mt.cmi \
-    ../stdlib/hashtbl.cmi ../stdlib/char.cmi ../stdlib/array.cmi
-hash_test.cmx : ../stdlib/string.cmx mt_global.cmx mt.cmx \
-    ../stdlib/hashtbl.cmx ../stdlib/char.cmx ../stdlib/array.cmx
-hashtbl_test.cmj : mt.cmi ../stdlib/moreLabels.cmi ../stdlib/list.cmi \
-    ../stdlib/hashtbl.cmi ../stdlib/array.cmi
-hashtbl_test.cmx : mt.cmx ../stdlib/moreLabels.cmx ../stdlib/list.cmx \
-    ../stdlib/hashtbl.cmx ../stdlib/array.cmx
-hello.foo.cmj : ../runtime/js.cmj
-hello.foo.cmx : ../runtime/js.cmx
-http_types.cmj : ../runtime/js.cmj
-http_types.cmx : ../runtime/js.cmx
-ignore_test.cmj : mt.cmi ../runtime/js.cmj
-ignore_test.cmx : mt.cmx ../runtime/js.cmx
-infer_type_test.cmj : ../runtime/js.cmj infer_type_test.cmi
-infer_type_test.cmx : ../runtime/js.cmx infer_type_test.cmi
-inline_edge_cases.cmj : inline_edge_cases.cmi
-inline_edge_cases.cmx : inline_edge_cases.cmi
-inline_map2_test.cmj : mt.cmi ../stdlib/list.cmi
-inline_map2_test.cmx : mt.cmx ../stdlib/list.cmx
-inline_map_test.cmj : mt.cmi ../stdlib/list.cmi inline_map_test.cmi
-inline_map_test.cmx : mt.cmx ../stdlib/list.cmx inline_map_test.cmi
-inline_regression_test.cmj : ../stdlib/string.cmi mt.cmi \
-    ../stdlib/filename.cmi
-inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
-    ../stdlib/filename.cmx
-inline_string_test.cmj : ../runtime/js.cmj
-inline_string_test.cmx : ../runtime/js.cmx
-installation_test.cmj : ../others/node.cmj mt.cmi ../runtime/js.cmj \
-    app_root_finder.cmj
-installation_test.cmx : ../others/node.cmx mt.cmx ../runtime/js.cmx \
-    app_root_finder.cmx
-int32_test.cmj : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ext_array.cmj ../stdlib/array.cmi
-int32_test.cmx : mt.cmx ../stdlib/int32.cmx ../stdlib/format.cmx \
-    ext_array.cmx ../stdlib/array.cmx
-int64_mul_div_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/array.cmi
-int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/int64.cmx ../stdlib/array.cmx
-int64_test.cmj : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
-    ../runtime/js_int64.cmj ../stdlib/int64.cmi ../stdlib/int32.cmi \
-    ../stdlib/format.cmi ext_array.cmj ../stdlib/array.cmi
-int64_test.cmx : ../stdlib/pervasives.cmx ../stdlib/nativeint.cmx mt.cmx \
-    ../runtime/js_int64.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
-    ../stdlib/format.cmx ext_array.cmx ../stdlib/array.cmx
-int_hashtbl_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
-    ../stdlib/array.cmi
-int_hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
-    ../stdlib/array.cmx
-int_map.cmj : ../stdlib/map.cmi
-int_map.cmx : ../stdlib/map.cmx
-int_overflow_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
-    ../stdlib/char.cmi
-int_overflow_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/int32.cmx \
-    ../stdlib/char.cmx
-io_test.cmj : ../runtime/js.cmj
-io_test.cmx : ../runtime/js.cmx
-js_bool_test.cmj : mt.cmi ../runtime/js.cmj
-js_bool_test.cmx : mt.cmx ../runtime/js.cmx
-js_date.cmj : ../runtime/js.cmj
-js_date.cmx : ../runtime/js.cmx
-js_date_test.cmj : mt.cmi js_date.cmj
-js_date_test.cmx : mt.cmx js_date.cmx
-js_json_test.cmj : mt.cmi ../runtime/js.cmj
-js_json_test.cmx : mt.cmx ../runtime/js.cmx
-js_obj_test.cmj : mt.cmi
-js_obj_test.cmx : mt.cmx
-js_string_test.cmj : mt.cmi ../runtime/js.cmj
-js_string_test.cmx : mt.cmx ../runtime/js.cmx
-js_val.cmj :
-js_val.cmx :
-jsoo_400_test.cmj : ../stdlib/string.cmi mt.cmi
-jsoo_400_test.cmx : ../stdlib/string.cmx mt.cmx
-jsoo_485.cmj :
-jsoo_485.cmx :
-jsoo_485_test.cmj :
-jsoo_485_test.cmx :
-largest_int_flow.cmj :
-largest_int_flow.cmx :
-lazy_test.cmj : mt.cmi ../stdlib/lazy.cmi
-lazy_test.cmx : mt.cmx ../stdlib/lazy.cmx
-lexer_test.cmj : number_lexer.cmj mt.cmi ../stdlib/list.cmi \
-    ../stdlib/lexing.cmi arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
-lexer_test.cmx : number_lexer.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/lexing.cmx arith_syntax.cmx arith_parser.cmx arith_lexer.cmx
-lib_js_test.cmj : mt.cmi ../runtime/js.cmj ../runtime/bs_string.cmj
-lib_js_test.cmx : mt.cmx ../runtime/js.cmx ../runtime/bs_string.cmx
-libarg_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/arg.cmi
-libarg_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/arg.cmx
-libqueue_test.cmj : ../stdlib/queue.cmi ../stdlib/list.cmi
-libqueue_test.cmx : ../stdlib/queue.cmx ../stdlib/list.cmx
-limits_test.cmj : mt.cmi ../stdlib/int32.cmi
-limits_test.cmx : mt.cmx ../stdlib/int32.cmx
-list_test.cmj : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/array.cmi
-list_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/array.cmx
-literals.cmj : ../stdlib/string.cmi literals.cmi
-literals.cmx : ../stdlib/string.cmx literals.cmi
-local_class_type.cmj : ../runtime/js.cmj
-local_class_type.cmx : ../runtime/js.cmx
-local_exception_test.cmj :
-local_exception_test.cmx :
-loop_regression_test.cmj : mt.cmi
-loop_regression_test.cmx : mt.cmx
-loop_suites_test.cmj : mt.cmi for_loop_test.cmj
-loop_suites_test.cmx : mt.cmx for_loop_test.cmx
-map_find_test.cmj : mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi
-map_find_test.cmx : mt.cmx ../stdlib/map.cmx ../stdlib/list.cmx
-map_test.cmj : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
-    ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
-map_test.cmx : ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx \
-    ../stdlib/map.cmx ../stdlib/list.cmx map_test.cmi
-method_chain.cmj :
-method_chain.cmx :
-method_name_test.cmj : mt.cmi
-method_name_test.cmx : mt.cmx
-mock_mt.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj
-mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx
-module_alias.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi
-module_alias.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx
-module_as_class_ffi.cmj :
-module_as_class_ffi.cmx :
-module_as_function.cmj :
-module_as_function.cmx :
-module_missing_conversion.cmj : ../stdlib/string.cmi \
-    ../stdlib/moreLabels.cmi ../stdlib/hashtbl.cmi ../stdlib/array.cmi
-module_missing_conversion.cmx : ../stdlib/string.cmx \
-    ../stdlib/moreLabels.cmx ../stdlib/hashtbl.cmx ../stdlib/array.cmx
-module_parameter_test.cmj : ../stdlib/string.cmi mt.cmi
-module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
-module_splice_test.cmj : mt.cmi ../runtime/js.cmj
-module_splice_test.cmx : mt.cmx ../runtime/js.cmx
-more_uncurry.cmj :
-more_uncurry.cmx :
-mt.cmj : ../others/node.cmj ../stdlib/list.cmi ../stdlib/array.cmi mt.cmi
-mt.cmx : ../others/node.cmx ../stdlib/list.cmx ../stdlib/array.cmx mt.cmi
-mt_global.cmj : mt.cmi mt_global.cmi
-mt_global.cmx : mt.cmx mt_global.cmi
-mutable_obj_test.cmj : ../runtime/js.cmj
-mutable_obj_test.cmx : ../runtime/js.cmx
-mutual_non_recursive_type.cmj :
-mutual_non_recursive_type.cmx :
-nested_include.cmj :
-nested_include.cmx :
-nested_module_alias.cmj : ../stdlib/list.cmi
-nested_module_alias.cmx : ../stdlib/list.cmx
-nested_obj_literal.cmj :
-nested_obj_literal.cmx :
-nested_obj_test.cmj :
-nested_obj_test.cmx :
-noassert.cmj :
-noassert.cmx :
-node_fs_test.cmj : ../others/node.cmj ../runtime/js.cmj
-node_fs_test.cmx : ../others/node.cmx ../runtime/js.cmx
-node_path_test.cmj : ../runtime/js.cmj
-node_path_test.cmx : ../runtime/js.cmx
-number_lexer.cmj : ../stdlib/sys.cmi ../stdlib/lexing.cmi
-number_lexer.cmx : ../stdlib/sys.cmx ../stdlib/lexing.cmx
-obj_literal_ppx.cmj : ../stdlib/array.cmi
-obj_literal_ppx.cmx : ../stdlib/array.cmx
-obj_literal_ppx_test.cmj : ../runtime/js.cmj
-obj_literal_ppx_test.cmx : ../runtime/js.cmx
-obj_magic_test.cmj : ../stdlib/obj.cmi mt.cmi
-obj_magic_test.cmx : ../stdlib/obj.cmx mt.cmx
-obj_test.cmj : mt.cmi
-obj_test.cmx : mt.cmx
-obj_type_test.cmj : ../runtime/js.cmj
-obj_type_test.cmx : ../runtime/js.cmx
-ocaml_proto_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/printexc.cmi ../stdlib/pervasives.cmi ../stdlib/parsing.cmi \
-    ../stdlib/obj.cmi mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi \
-    ../stdlib/lexing.cmi ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
-    ../stdlib/char.cmi ocaml_proto_test.cmi
-ocaml_proto_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
-    ../stdlib/printexc.cmx ../stdlib/pervasives.cmx ../stdlib/parsing.cmx \
-    ../stdlib/obj.cmx mt.cmx ../stdlib/map.cmx ../stdlib/list.cmx \
-    ../stdlib/lexing.cmx ../stdlib/hashtbl.cmx ../stdlib/filename.cmx \
-    ../stdlib/char.cmx ocaml_proto_test.cmi
-of_string_test.cmj : mt.cmi
-of_string_test.cmx : mt.cmx
-offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
-offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
-optional_ffi_test.cmj : mt.cmi
-optional_ffi_test.cmx : mt.cmx
-pipe_send_readline.cmj : ../runtime/js.cmj
-pipe_send_readline.cmx : ../runtime/js.cmx
-poly_type.cmj : ../runtime/js.cmj
-poly_type.cmx : ../runtime/js.cmx
-poly_variant_test.cmj : mt.cmi ../runtime/js.cmj poly_variant_test.cmi
-poly_variant_test.cmx : mt.cmx ../runtime/js.cmx poly_variant_test.cmi
-polymorphism_test.cmj : polymorphism_test.cmi
-polymorphism_test.cmx : polymorphism_test.cmi
-polyvar_test.cmj : ../runtime/js.cmj
-polyvar_test.cmx : ../runtime/js.cmx
-ppx_apply_test.cmj : mt.cmi
-ppx_apply_test.cmx : mt.cmx
-ppx_this_obj_field.cmj : mt.cmi ../runtime/js.cmj
-ppx_this_obj_field.cmx : mt.cmx ../runtime/js.cmx
-ppx_this_obj_test.cmj : mt.cmi
-ppx_this_obj_test.cmx : mt.cmx
-pq_test.cmj :
-pq_test.cmx :
-pr6726.cmj :
-pr6726.cmx :
-pr_regression_test.cmj : mt.cmi
-pr_regression_test.cmx : mt.cmx
-primitive_reg_test.cmj :
-primitive_reg_test.cmx :
-print_alpha_test.cmj : mt.cmi ../runtime/js.cmj
-print_alpha_test.cmx : mt.cmx ../runtime/js.cmx
-printf_sim.cmj : ../stdlib/printf.cmi
-printf_sim.cmx : ../stdlib/printf.cmx
-printf_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
-printf_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/format.cmx
-promise.cmj : ../runtime/js.cmj
-promise.cmx : ../runtime/js.cmx
-qcc.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
-    ../stdlib/array.cmi
-qcc.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/printf.cmx \
-    ../stdlib/list.cmx ../stdlib/char.cmx ../stdlib/bytes.cmx \
-    ../stdlib/array.cmx
-queue_test.cmj : ../stdlib/queue.cmi mt.cmi ../stdlib/array.cmi
-queue_test.cmx : ../stdlib/queue.cmx mt.cmx ../stdlib/array.cmx
-random_test.cmj : ../stdlib/random.cmi ../stdlib/printf.cmi mt_global.cmi \
-    mt.cmi ../stdlib/int64.cmi ../stdlib/array.cmi
-random_test.cmx : ../stdlib/random.cmx ../stdlib/printf.cmx mt_global.cmx \
-    mt.cmx ../stdlib/int64.cmx ../stdlib/array.cmx
-rec_module_test.cmj : ../stdlib/set.cmi ../stdlib/pervasives.cmi mt.cmi
-rec_module_test.cmx : ../stdlib/set.cmx ../stdlib/pervasives.cmx mt.cmx
-rec_value_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi
-rec_value_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/lazy.cmx
-record_with_test.cmj : mt.cmi
-record_with_test.cmx : mt.cmx
-recursive_module.cmj :
-recursive_module.cmx :
-recursive_module_test.cmj : mt.cmi
-recursive_module_test.cmx : mt.cmx
-regression_print.cmj :
-regression_print.cmx :
-runtime_encoding_test.cmj :
-runtime_encoding_test.cmx :
-scanf_io.cmj : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
-    ../stdlib/printf.cmi ../stdlib/list.cmi ../stdlib/digest.cmi \
-    ../stdlib/buffer.cmi
-scanf_io.cmx : testing.cmx ../stdlib/string.cmx ../stdlib/scanf.cmx \
-    ../stdlib/printf.cmx ../stdlib/list.cmx ../stdlib/digest.cmx \
-    ../stdlib/buffer.cmx
-scanf_reference_error_regression_test.cmj : ../stdlib/scanf.cmi \
-    ../stdlib/printf.cmi mt_global.cmi mt.cmi ../stdlib/list.cmi \
-    scanf_reference_error_regression_test.cmi
-scanf_reference_error_regression_test.cmx : ../stdlib/scanf.cmx \
-    ../stdlib/printf.cmx mt_global.cmx mt.cmx ../stdlib/list.cmx \
-    scanf_reference_error_regression_test.cmi
-scanf_test.cmj : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
-scanf_test.cmx : ../stdlib/scanf.cmx mt_global.cmx mt.cmx
-sexp.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
-    sexp.cmi
-sexp.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
-    sexp.cmi
-sexpm.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi sexpm.cmi
-sexpm.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/printf.cmx \
-    ../stdlib/printexc.cmx ../stdlib/list.cmx ../stdlib/format.cmx \
-    ../stdlib/char.cmx ../stdlib/bytes.cmx ../stdlib/buffer.cmx sexpm.cmi
-sexpm_test.cmj : sexpm.cmi mt.cmi ../runtime/js.cmj ../stdlib/format.cmi
-sexpm_test.cmx : sexpm.cmx mt.cmx ../runtime/js.cmx ../stdlib/format.cmx
-shift_test.cmj : ../stdlib/nativeint.cmi
-shift_test.cmx : ../stdlib/nativeint.cmx
-simple_derive_test.cmj : ../runtime/js.cmj ../others/bs.cmj \
-    simple_derive_test.cmi
-simple_derive_test.cmx : ../runtime/js.cmx ../others/bs.cmx \
-    simple_derive_test.cmi
-simple_derive_use.cmj : simple_derive_test.cmi simple_derive_use.cmi
-simple_derive_use.cmx : simple_derive_test.cmx simple_derive_use.cmi
-simple_lexer_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
-simple_lexer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/lexing.cmx
-simplify_lambda_632o.cmj :
-simplify_lambda_632o.cmx :
-single_module_alias.cmj : ../stdlib/list.cmi
-single_module_alias.cmx : ../stdlib/list.cmx
-small_inline_test.cmj :
-small_inline_test.cmx :
-sprintf_reg_test.cmj : ../stdlib/printf.cmi mt_global.cmi mt.cmi
-sprintf_reg_test.cmx : ../stdlib/printf.cmx mt_global.cmx mt.cmx
-stack_comp_test.cmj : ../stdlib/stack.cmi mt_global.cmi mt.cmi
-stack_comp_test.cmx : ../stdlib/stack.cmx mt_global.cmx mt.cmx
-stack_test.cmj : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
-stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
-stream_parser_test.cmj : ../stdlib/stream.cmi ../stdlib/queue.cmi mt.cmi \
-    ../stdlib/genlex.cmi
-stream_parser_test.cmx : ../stdlib/stream.cmx ../stdlib/queue.cmx mt.cmx \
-    ../stdlib/genlex.cmx
-string_bound_get_test.cmj : ../stdlib/string.cmi ../stdlib/bytes.cmi
-string_bound_get_test.cmx : ../stdlib/string.cmx ../stdlib/bytes.cmx
-string_get_set_test.cmj : mt.cmi
-string_get_set_test.cmx : mt.cmx
-string_literal_print_test.cmj : mt.cmi
-string_literal_print_test.cmx : mt.cmx
-string_runtime_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
-    ../runtime/caml_string.cmi ../stdlib/bytes.cmi
-string_runtime_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/list.cmx \
-    ../runtime/caml_string.cmx ../stdlib/bytes.cmx
-string_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
-    ext_string.cmj ../stdlib/bytes.cmi
-string_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/list.cmx \
-    ext_string.cmx ../stdlib/bytes.cmx
-string_unicode_test.cmj : ../runtime/js.cmj
-string_unicode_test.cmx : ../runtime/js.cmx
-stringmatch_test.cmj : ../stdlib/string.cmi
-stringmatch_test.cmx : ../stdlib/string.cmx
-swap_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ../stdlib/array.cmi
-swap_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/int64.cmx ../stdlib/int32.cmx ../stdlib/format.cmx \
-    ../stdlib/array.cmx
-tailcall_inline_test.cmj : mt.cmi ../stdlib/array.cmi
-tailcall_inline_test.cmx : mt.cmx ../stdlib/array.cmx
-test_alias.cmj : test_global_print.cmj
-test_alias.cmx : test_global_print.cmx
-test_ari.cmj : ../stdlib/list.cmi
-test_ari.cmx : ../stdlib/list.cmx
-test_array.cmj : ../stdlib/array.cmi
-test_array.cmx : ../stdlib/array.cmx
-test_array_append.cmj : ../stdlib/array.cmi
-test_array_append.cmx : ../stdlib/array.cmx
-test_array_primitive.cmj : ../stdlib/array.cmi
-test_array_primitive.cmx : ../stdlib/array.cmx
-test_bool_equal.cmj :
-test_bool_equal.cmx :
-test_bs_this.cmj : ../runtime/js.cmj
-test_bs_this.cmx : ../runtime/js.cmx
-test_bug.cmj : ../stdlib/bytes.cmi
-test_bug.cmx : ../stdlib/bytes.cmx
-test_bytes.cmj : ../stdlib/bytes.cmi
-test_bytes.cmx : ../stdlib/bytes.cmx
-test_case_set.cmj :
-test_case_set.cmx :
-test_char.cmj :
-test_char.cmx :
-test_closure.cmj : ../stdlib/array.cmi
-test_closure.cmx : ../stdlib/array.cmx
-test_common.cmj :
-test_common.cmx :
-test_const_elim.cmj :
-test_const_elim.cmx :
-test_const_propogate.cmj :
-test_const_propogate.cmx :
-test_cps.cmj : ../stdlib/array.cmi
-test_cps.cmx : ../stdlib/array.cmx
-test_demo.cmj : ../stdlib/list.cmi
-test_demo.cmx : ../stdlib/list.cmx
-test_dup_param.cmj :
-test_dup_param.cmx :
-test_eq.cmj :
-test_eq.cmx :
-test_exception.cmj : test_common.cmj
-test_exception.cmx : test_common.cmx
-test_exception_escape.cmj :
-test_exception_escape.cmx :
-test_export2.cmj :
-test_export2.cmx :
-test_external.cmj :
-test_external.cmx :
-test_external_unit.cmj :
-test_external_unit.cmx :
-test_ffi.cmj :
-test_ffi.cmx :
-test_fib.cmj :
-test_fib.cmx :
-test_filename.cmj : ../stdlib/list.cmi ../stdlib/filename.cmi
-test_filename.cmx : ../stdlib/list.cmx ../stdlib/filename.cmx
-test_for_loop.cmj : ../stdlib/array.cmi
-test_for_loop.cmx : ../stdlib/array.cmx
-test_for_map.cmj : ../stdlib/map.cmi
-test_for_map.cmx : ../stdlib/map.cmx
-test_for_map2.cmj : int_map.cmj test_for_map2.cmi
-test_for_map2.cmx : int_map.cmx test_for_map2.cmi
-test_format.cmj : ../stdlib/format.cmi
-test_format.cmx : ../stdlib/format.cmx
-test_formatter.cmj :
-test_formatter.cmx :
-test_functor_dead_code.cmj : ../stdlib/string.cmi ../stdlib/map.cmi
-test_functor_dead_code.cmx : ../stdlib/string.cmx ../stdlib/map.cmx
-test_generative_module.cmj :
-test_generative_module.cmx :
-test_global_print.cmj : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
-test_global_print.cmx : ../stdlib/list.cmx ../stdlib/hashtbl.cmx
-test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmi
-test_google_closure.cmx : ../runtime/js.cmx ../stdlib/array.cmx
-test_http_server.cmj : ../runtime/js.cmj http_types.cmj test_http_server.cmi
-test_http_server.cmx : ../runtime/js.cmx http_types.cmx test_http_server.cmi
-test_include.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
-    ../stdlib/list.cmi
-test_include.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
-    ../stdlib/list.cmx
-test_incomplete.cmj :
-test_incomplete.cmx :
-test_incr_ref.cmj :
-test_incr_ref.cmx :
-test_index.cmj : ../runtime/js.cmj
-test_index.cmx : ../runtime/js.cmx
-test_int_map_find.cmj : ../stdlib/map.cmi ../stdlib/list.cmi
-test_int_map_find.cmx : ../stdlib/map.cmx ../stdlib/list.cmx
-test_internalOO.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi \
-    ../stdlib/obj.cmi ../stdlib/map.cmi ../stdlib/list.cmi ../stdlib/char.cmi \
-    ../stdlib/array.cmi
-test_internalOO.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx \
-    ../stdlib/obj.cmx ../stdlib/map.cmx ../stdlib/list.cmx ../stdlib/char.cmx \
-    ../stdlib/array.cmx
-test_is_js.cmj : test_is_js.cmi
-test_is_js.cmx : test_is_js.cmi
-test_js_ffi.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
-test_js_ffi.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
-test_let.cmj :
-test_let.cmx :
-test_list.cmj : ../stdlib/list.cmi
-test_list.cmx : ../stdlib/list.cmx
-test_literal.cmj :
-test_literal.cmx :
-test_match_exception.cmj :
-test_match_exception.cmx :
-test_mutliple.cmj : ../stdlib/list.cmi
-test_mutliple.cmx : ../stdlib/list.cmx
-test_nat64.cmj :
-test_nat64.cmx :
-test_nested_let.cmj :
-test_nested_let.cmx :
-test_nested_print.cmj :
-test_nested_print.cmx :
-test_non_export.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
-test_non_export.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
-test_nullary.cmj :
-test_nullary.cmx :
-test_obj.cmj :
-test_obj.cmx :
-test_obj_simple_ffi.cmj : ../runtime/js.cmj
-test_obj_simple_ffi.cmx : ../runtime/js.cmx
-test_order.cmj : ../stdlib/pervasives.cmi
-test_order.cmx : ../stdlib/pervasives.cmx
-test_order_tailcall.cmj :
-test_order_tailcall.cmx :
-test_pack.cmj :
-test_pack.cmx :
-test_per.cmj : ../stdlib/camlinternalFormatBasics.cmi
-test_per.cmx : ../stdlib/camlinternalFormatBasics.cmx
-test_pervasive.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi
-test_pervasive.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx
-test_pervasives2.cmj : ../stdlib/stack.cmi ../stdlib/pervasives.cmi \
-    ../stdlib/list.cmi
-test_pervasives2.cmx : ../stdlib/stack.cmx ../stdlib/pervasives.cmx \
-    ../stdlib/list.cmx
-test_pervasives3.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi
-test_pervasives3.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx
-test_primitive.cmj : ../stdlib/string.cmi ../stdlib/lazy.cmi \
-    ../stdlib/array.cmi
-test_primitive.cmx : ../stdlib/string.cmx ../stdlib/lazy.cmx \
-    ../stdlib/array.cmx
-test_ramification.cmj :
-test_ramification.cmx :
-test_react.cmj : ../runtime/js.cmj
-test_react.cmx : ../runtime/js.cmx
-test_react_case.cmj :
-test_react_case.cmx :
-test_regex.cmj :
-test_regex.cmx :
-test_require.cmj : ../runtime/js.cmj
-test_require.cmx : ../runtime/js.cmx
-test_runtime_encoding.cmj : ../stdlib/array.cmi
-test_runtime_encoding.cmx : ../stdlib/array.cmx
-test_scope.cmj :
-test_scope.cmx :
-test_seq.cmj : ../stdlib/printf.cmi
-test_seq.cmx : ../stdlib/printf.cmx
-test_set.cmj : ../stdlib/list.cmi
-test_set.cmx : ../stdlib/list.cmx
-test_side_effect_functor.cmj :
-test_side_effect_functor.cmx :
-test_simple_include.cmj : ../stdlib/array.cmi
-test_simple_include.cmx : ../stdlib/array.cmx
-test_simple_obj.cmj :
-test_simple_obj.cmx :
-test_simple_pattern_match.cmj : ../stdlib/sys.cmi
-test_simple_pattern_match.cmx : ../stdlib/sys.cmx
-test_simple_ref.cmj :
-test_simple_ref.cmx :
-test_simple_tailcall.cmj :
-test_simple_tailcall.cmx :
-test_small.cmj :
-test_small.cmx :
-test_sprintf.cmj : ../stdlib/printf.cmi
-test_sprintf.cmx : ../stdlib/printf.cmx
-test_stack.cmj : ../stdlib/stack.cmi
-test_stack.cmx : ../stdlib/stack.cmx
-test_static_catch_ident.cmj :
-test_static_catch_ident.cmx :
-test_string.cmj : ../stdlib/string.cmi ../stdlib/bytes.cmi
-test_string.cmx : ../stdlib/string.cmx ../stdlib/bytes.cmx
-test_string_case.cmj :
-test_string_case.cmx :
-test_string_const.cmj : ../stdlib/string.cmi
-test_string_const.cmx : ../stdlib/string.cmx
-test_string_map.cmj : ../stdlib/map.cmi
-test_string_map.cmx : ../stdlib/map.cmx
-test_string_switch.cmj : ../stdlib/sys.cmi
-test_string_switch.cmx : ../stdlib/sys.cmx
-test_switch.cmj :
-test_switch.cmx :
-test_trywith.cmj :
-test_trywith.cmx :
-test_tuple.cmj :
-test_tuple.cmx :
-test_tuple_destructring.cmj :
-test_tuple_destructring.cmx :
-test_type_based_arity.cmj : abstract_type.cmi
-test_type_based_arity.cmx : abstract_type.cmx
-test_u.cmj :
-test_u.cmx :
-test_unsafe_cmp.cmj : ../runtime/js.cmj
-test_unsafe_cmp.cmx : ../runtime/js.cmx
-test_unsafe_obj_ffi.cmj : ../runtime/js_unsafe.cmj test_unsafe_obj_ffi.cmi
-test_unsafe_obj_ffi.cmx : ../runtime/js_unsafe.cmx test_unsafe_obj_ffi.cmi
-test_unsafe_obj_ffi_ppx.cmj : ../runtime/js.cmj test_unsafe_obj_ffi_ppx.cmi
-test_unsafe_obj_ffi_ppx.cmx : ../runtime/js.cmx test_unsafe_obj_ffi_ppx.cmi
-test_unsupported_primitive.cmj : ../stdlib/bytes.cmi
-test_unsupported_primitive.cmx : ../stdlib/bytes.cmx
-test_while_closure.cmj : ../stdlib/array.cmi
-test_while_closure.cmx : ../stdlib/array.cmx
-test_while_side_effect.cmj :
-test_while_side_effect.cmx :
-test_zero_nullable.cmj : mt.cmi ../runtime/js.cmj
-test_zero_nullable.cmx : mt.cmx ../runtime/js.cmx
-testing.cmj : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
-testing.cmx : ../stdlib/scanf.cmx ../stdlib/printf.cmx testing.cmi
-tfloat_record_test.cmj : mt_global.cmi mt.cmi ../stdlib/format.cmi \
-    float_record.cmi float_array.cmj ../stdlib/buffer.cmi ../stdlib/array.cmi
-tfloat_record_test.cmx : mt_global.cmx mt.cmx ../stdlib/format.cmx \
-    float_record.cmx float_array.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
-ticker.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
-ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
-    ../stdlib/pervasives.cmx ../stdlib/map.cmx ../stdlib/list.cmx
-to_string_test.cmj : mt.cmi
-to_string_test.cmx : mt.cmx
-tscanf_test.cmj : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
-    ../stdlib/printf.cmi ../stdlib/nativeint.cmi mt_global.cmi mt.cmi \
-    ../stdlib/list.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
-    ../stdlib/buffer.cmi
-tscanf_test.cmx : testing.cmx ../stdlib/string.cmx ../stdlib/scanf.cmx \
-    ../stdlib/printf.cmx ../stdlib/nativeint.cmx mt_global.cmx mt.cmx \
-    ../stdlib/list.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
-    ../stdlib/buffer.cmx
-tuple_alloc.cmj :
-tuple_alloc.cmx :
-typeof_test.cmj : mt.cmi ../runtime/js.cmj
-typeof_test.cmx : mt.cmx ../runtime/js.cmx
-uncurry_glob_test.cmj : ../runtime/caml_utils.cmi
-uncurry_glob_test.cmx : ../runtime/caml_utils.cmx
-undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
-undef_regression_test.cmx : ../runtime/js.cmx ../runtime/bs_obj.cmx
-unitest_string.cmj :
-unitest_string.cmx :
-unsafe_obj_external.cmj : ../runtime/js.cmj
-unsafe_obj_external.cmx : ../runtime/js.cmx
-unsafe_ppx_test.cmj : mt.cmi ffi_js_test.cmj
-unsafe_ppx_test.cmx : mt.cmx ffi_js_test.cmx
-unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
-unsafe_this.cmx : ../runtime/js.cmx unsafe_this.cmi
-update_record_test.cmj : ../stdlib/obj.cmi mt.cmi ../runtime/js.cmj
-update_record_test.cmx : ../stdlib/obj.cmx mt.cmx ../runtime/js.cmx
-utf8_decode_test.cmj : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
-    ../runtime/js.cmj ../stdlib/bytes.cmi
-utf8_decode_test.cmx : ../stdlib/stream.cmx mt.cmx ../stdlib/list.cmx \
-    ../runtime/js.cmx ../stdlib/bytes.cmx
-watch_test.cmj : ../others/node.cmj ../runtime/js.cmj
-watch_test.cmx : ../others/node.cmx ../runtime/js.cmx
-a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
-    ../stdlib/list.cmi
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
     ../stdlib/list.cmj
-a_filename_test.cmo : mt.cmi ext_filename.cmo ../stdlib/array.cmi
 a_filename_test.cmj : mt.cmj ext_filename.cmj ../stdlib/array.cmj
-a_list_test.cmo : mt.cmi ext_list.cmo
 a_list_test.cmj : mt.cmj ext_list.cmj
-a_recursive_type.cmo : a_recursive_type.cmi
 a_recursive_type.cmj : a_recursive_type.cmi
-a_scope_bug.cmo :
 a_scope_bug.cmj :
-a_string_test.cmo : mt.cmi ../stdlib/list.cmi ext_string.cmo
 a_string_test.cmj : mt.cmj ../stdlib/list.cmj ext_string.cmj
-abstract_type.cmo : abstract_type.cmi
 abstract_type.cmj : abstract_type.cmi
-and_or_tailcall_test.cmo : mt.cmi
 and_or_tailcall_test.cmj : mt.cmj
-app_root_finder.cmo : ../others/node.cmo ../runtime/js.cmo
 app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
-ari_regress_test.cmo : mt.cmi ari_regress_test.cmi
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
-arith_lexer.cmo : ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo
 arith_lexer.cmj : ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj
-arith_parser.cmo : ../stdlib/parsing.cmi ../stdlib/obj.cmi \
-    ../stdlib/lexing.cmi arith_syntax.cmo
 arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj
-arith_syntax.cmo :
 arith_syntax.cmj :
-array_subtle_test.cmo : mt.cmi ../runtime/js.cmo ../stdlib/array.cmi
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
-array_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/array.cmi array_test.cmi
 array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj array_test.cmi
-attr_test.cmo :
 attr_test.cmj :
-b.cmo :
 b.cmj :
-basic_module_test.cmo : ../stdlib/set.cmi pr6726.cmo offset.cmo \
-    mt_global.cmi mt.cmi basic_module_test.cmi
 basic_module_test.cmj : ../stdlib/set.cmj pr6726.cmj offset.cmj \
     mt_global.cmj mt.cmj basic_module_test.cmi
-bdd.cmo : ../stdlib/array.cmi
 bdd.cmj : ../stdlib/array.cmj
-bench.cmo : ../stdlib/array.cmi
 bench.cmj : ../stdlib/array.cmj
-bigarray_test.cmo : ../stdlib/int32.cmi ../stdlib/complex.cmi \
-    ../stdlib/bigarray.cmi
 bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
-boolean_test.cmo : test_bool_equal.cmo mt.cmi
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
-bs_array_test.cmo : ../runtime/js.cmo
 bs_array_test.cmj : ../runtime/js.cmj
-bs_ignore_effect.cmo : mt.cmi
 bs_ignore_effect.cmj : mt.cmj
-bs_ignore_test.cmo : ../runtime/js.cmo
 bs_ignore_test.cmj : ../runtime/js.cmj
-bs_node_string_buffer_test.cmo : ../others/node.cmo ../runtime/js.cmo
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
-bs_rest_test.cmo :
 bs_rest_test.cmj :
-bs_string_test.cmo : ../runtime/js.cmo
 bs_string_test.cmj : ../runtime/js.cmj
-buffer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi \
-    ../stdlib/buffer.cmi
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
-bytes_split_gpr_743_test.cmo : mt.cmi ../runtime/js.cmo ../stdlib/bytes.cmi
 bytes_split_gpr_743_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/bytes.cmj
-caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmj : mt.cmj
-caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
-chain_code_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
 chain_code_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
-class3_test.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo \
-    ../stdlib/array.cmi
 class3_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj
-class4_test.cmo : mt.cmi
 class4_test.cmj : mt.cmj
-class5_test.cmo : mt.cmi ../stdlib/list.cmi
 class5_test.cmj : mt.cmj ../stdlib/list.cmj
-class6_test.cmo : mt.cmi
 class6_test.cmj : mt.cmj
-class7_test.cmo : ../stdlib/oo.cmi mt.cmi
 class7_test.cmj : ../stdlib/oo.cmj mt.cmj
-class8_test.cmo : mt.cmi
 class8_test.cmj : mt.cmj
-class_repr.cmo : ../stdlib/oo.cmi
 class_repr.cmj : ../stdlib/oo.cmj
-class_setter_getter.cmo : ../runtime/js.cmo class_setter_getter.cmi
 class_setter_getter.cmj : ../runtime/js.cmj class_setter_getter.cmi
-class_test.cmo : mt.cmi
 class_test.cmj : mt.cmj
-class_type_ffi_test.cmo : ../runtime/js.cmo
 class_type_ffi_test.cmj : ../runtime/js.cmj
-complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
 complex_if_test.cmj : mt.cmj ../stdlib/bytes.cmj
-complex_test.cmo : mt.cmi ../stdlib/complex.cmi
 complex_test.cmj : mt.cmj ../stdlib/complex.cmj
-complex_while_loop.cmo :
 complex_while_loop.cmj :
-condition_compilation_test.cmo : ../stdlib/unix.cmi mt.cmi
 condition_compilation_test.cmj : ../stdlib/unix.cmj mt.cmj
-config1_test.cmo :
 config1_test.cmj :
-config2_test.cmo : ../runtime/js.cmo config2_test.cmi
 config2_test.cmj : ../runtime/js.cmj config2_test.cmi
-const_block_test.cmo : mt.cmi ../stdlib/array.cmi const_block_test.cmi
 const_block_test.cmj : mt.cmj ../stdlib/array.cmj const_block_test.cmi
-const_defs.cmo :
 const_defs.cmj :
-const_defs_test.cmo : const_defs.cmo
 const_defs_test.cmj : const_defs.cmj
-const_test.cmo :
 const_test.cmj :
-cont_int_fold_test.cmo :
 cont_int_fold_test.cmj :
-cps_test.cmo : mt.cmi ../stdlib/array.cmi
 cps_test.cmj : mt.cmj ../stdlib/array.cmj
-cross_module_inline_test.cmo :
 cross_module_inline_test.cmj :
-debug_keep_test.cmo :
 debug_keep_test.cmj :
-debugger_test.cmo : ../runtime/js.cmo
 debugger_test.cmj : ../runtime/js.cmj
-demo.cmo : ../runtime/js.cmo demo_binding.cmo
 demo.cmj : ../runtime/js.cmj demo_binding.cmj
-demo_binding.cmo : ../runtime/js.cmo
 demo_binding.cmj : ../runtime/js.cmj
-demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
-demo_page.cmo :
 demo_page.cmj :
-demo_pipe.cmo : ../runtime/js.cmo
 demo_pipe.cmj : ../runtime/js.cmj
-derive_dyntype.cmo : ../others/bs_dyn.cmi
 derive_dyntype.cmj : ../others/bs_dyn.cmj
-derive_projector_test.cmo : derive_projector_test.cmi
 derive_projector_test.cmj : derive_projector_test.cmi
-derive_type_test.cmo :
 derive_type_test.cmj :
-digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
-    ext_array.cmo ../stdlib/digest.cmi ../stdlib/array.cmi
 digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
-div_by_zero_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
 div_by_zero_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
-earger_curry_test.cmo : ../stdlib/array.cmi
 earger_curry_test.cmj : ../stdlib/array.cmj
-empty_obj.cmo :
 empty_obj.cmj :
-epsilon_test.cmo : mt.cmi
 epsilon_test.cmj : mt.cmj
-equal_exception_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi
 equal_exception_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj
-equal_test.cmo :
 equal_test.cmj :
-es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmj : mt.cmj ../stdlib/list.cmj
-event_ffi.cmo : ../stdlib/list.cmi ../runtime/js_unsafe.cmo \
-    ../runtime/js.cmo
 event_ffi.cmj : ../stdlib/list.cmj ../runtime/js_unsafe.cmj \
     ../runtime/js.cmj
-exception_raise_test.cmo : mt.cmi
 exception_raise_test.cmj : mt.cmj
-exception_value_test.cmo :
 exception_value_test.cmj :
-ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
-ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
-ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi literals.cmi \
-    ../stdlib/list.cmi ../stdlib/lazy.cmi ../stdlib/filename.cmi \
-    ext_string.cmo ext_pervasives.cmi
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj literals.cmj \
     ../stdlib/list.cmj ../stdlib/lazy.cmj ../stdlib/filename.cmj \
     ext_string.cmj ext_pervasives.cmj
-ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
-ext_log.cmo : ../stdlib/format.cmi
 ext_log.cmj : ../stdlib/format.cmj
-ext_pervasives.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/obj.cmi ../stdlib/list.cmi ../stdlib/int32.cmi \
-    ../stdlib/format.cmi ../stdlib/char.cmi ../stdlib/array.cmi \
-    ../stdlib/arg.cmi ext_pervasives.cmi
 ext_pervasives.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/obj.cmj ../stdlib/list.cmj ../stdlib/int32.cmj \
     ../stdlib/format.cmj ../stdlib/char.cmj ../stdlib/array.cmj \
     ../stdlib/arg.cmj ext_pervasives.cmi
-ext_string.cmo : ../stdlib/string.cmi ../stdlib/list.cmi ext_bytes.cmo \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ../stdlib/list.cmj ext_bytes.cmj \
     ../stdlib/char.cmj ../stdlib/bytes.cmj
-ext_sys.cmo : ../stdlib/sys.cmi ext_sys.cmi
 ext_sys.cmj : ../stdlib/sys.cmj ext_sys.cmi
-extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
-external_ppx.cmo :
 external_ppx.cmj :
-fail_comp.cmo :
 fail_comp.cmj :
-ffi_arity_test.cmo : mt.cmi ../runtime/js_unsafe.cmo
 ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
-ffi_array_test.cmo : mt.cmi ../others/js_array.cmo
 ffi_array_test.cmj : mt.cmj ../others/js_array.cmj
-ffi_js_test.cmo : ../stdlib/obj.cmi mt.cmi ../others/js_obj.cmo \
-    ../runtime/js.cmo ../stdlib/array.cmi
 ffi_js_test.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_obj.cmj \
     ../runtime/js.cmj ../stdlib/array.cmj
-ffi_splice_test.cmo : mt.cmi
 ffi_splice_test.cmj : mt.cmj
-ffi_test.cmo : ../runtime/js.cmo
 ffi_test.cmj : ../runtime/js.cmj
-fib.cmo :
 fib.cmj :
-float_array.cmo :
 float_array.cmj :
-float_of_bits_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
 float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/array.cmj
-float_record.cmo : float_record.cmi
 float_record.cmj : float_record.cmi
-float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
-    mt.cmi ../runtime/js_float.cmo ../runtime/js.cmo ../stdlib/int64.cmi \
-    ../stdlib/array.cmi
 float_test.cmj : ../stdlib/printf.cmj ../stdlib/pervasives.cmj mt_global.cmj \
     mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj ../stdlib/int64.cmj \
     ../stdlib/array.cmj
-flow_parser_reg_test.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi \
-    ../stdlib/set.cmi ../stdlib/queue.cmi ../stdlib/printf.cmi \
-    ../stdlib/pervasives.cmi ../stdlib/obj.cmi ../others/node.cmo mt.cmi \
-    ../stdlib/map.cmi ../stdlib/list.cmi ../stdlib/lexing.cmi \
-    ../runtime/js.cmo ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi \
-    ../stdlib/array.cmi flow_parser_reg_test.cmi
 flow_parser_reg_test.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj \
     ../stdlib/set.cmj ../stdlib/queue.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/obj.cmj ../others/node.cmj mt.cmj \
@@ -1160,627 +161,315 @@ flow_parser_reg_test.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj \
     ../runtime/js.cmj ../stdlib/hashtbl.cmj ../stdlib/filename.cmj \
     ../stdlib/char.cmj ../stdlib/bytes.cmj ../stdlib/buffer.cmj \
     ../stdlib/array.cmj flow_parser_reg_test.cmi
-for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/array.cmj
-for_side_effect_test.cmo : mt.cmi
 for_side_effect_test.cmj : mt.cmj
-format_regression.cmo :
 format_regression.cmj :
-format_test.cmo : mt.cmi ../stdlib/format.cmi
 format_test.cmj : mt.cmj ../stdlib/format.cmj
-fs_test.cmo : ../others/node.cmo mt.cmi ../runtime/js.cmo
 fs_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj
-genlex_test.cmo : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/genlex.cmi
 genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/genlex.cmj
-global_exception_regression_test.cmo : mt.cmi
 global_exception_regression_test.cmj : mt.cmj
-google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
-gpr496_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../runtime/js.cmo
 gpr496_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../runtime/js.cmj
-gpr_405_test.cmo : ../stdlib/hashtbl.cmi gpr_405_test.cmi
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
-gpr_441.cmo :
 gpr_441.cmj :
-gpr_459_test.cmo : mt.cmi
 gpr_459_test.cmj : mt.cmj
-gpr_627_test.cmo : mt.cmi
 gpr_627_test.cmj : mt.cmj
-gpr_658.cmo : ../runtime/js.cmo
 gpr_658.cmj : ../runtime/js.cmj
-gpr_858_test.cmo : ../stdlib/list.cmi
 gpr_858_test.cmj : ../stdlib/list.cmj
-gpr_858_unit2_test.cmo :
 gpr_858_unit2_test.cmj :
-gpr_904_test.cmo : mt.cmi
 gpr_904_test.cmj : mt.cmj
-guide_for_ext.cmo :
 guide_for_ext.cmj :
-hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
-    ../stdlib/int64.cmi ../stdlib/buffer.cmi
 hamming_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/lazy.cmj \
     ../stdlib/int64.cmj ../stdlib/buffer.cmj
-hash_test.cmo : ../stdlib/string.cmi mt_global.cmi mt.cmi \
-    ../stdlib/hashtbl.cmi ../stdlib/char.cmi ../stdlib/array.cmi
 hash_test.cmj : ../stdlib/string.cmj mt_global.cmj mt.cmj \
     ../stdlib/hashtbl.cmj ../stdlib/char.cmj ../stdlib/array.cmj
-hashtbl_test.cmo : mt.cmi ../stdlib/moreLabels.cmi ../stdlib/list.cmi \
-    ../stdlib/hashtbl.cmi ../stdlib/array.cmi
 hashtbl_test.cmj : mt.cmj ../stdlib/moreLabels.cmj ../stdlib/list.cmj \
     ../stdlib/hashtbl.cmj ../stdlib/array.cmj
-hello.foo.cmo : ../runtime/js.cmo
 hello.foo.cmj : ../runtime/js.cmj
-http_types.cmo : ../runtime/js.cmo
 http_types.cmj : ../runtime/js.cmj
-ignore_test.cmo : mt.cmi ../runtime/js.cmo
 ignore_test.cmj : mt.cmj ../runtime/js.cmj
-infer_type_test.cmo : ../runtime/js.cmo infer_type_test.cmi
 infer_type_test.cmj : ../runtime/js.cmj infer_type_test.cmi
-inline_edge_cases.cmo : inline_edge_cases.cmi
 inline_edge_cases.cmj : inline_edge_cases.cmi
-inline_map2_test.cmo : mt.cmi ../stdlib/list.cmi
 inline_map2_test.cmj : mt.cmj ../stdlib/list.cmj
-inline_map_test.cmo : mt.cmi ../stdlib/list.cmi inline_map_test.cmi
 inline_map_test.cmj : mt.cmj ../stdlib/list.cmj inline_map_test.cmi
-inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
-    ../stdlib/filename.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
-inline_string_test.cmo : ../runtime/js.cmo
 inline_string_test.cmj : ../runtime/js.cmj
-installation_test.cmo : ../others/node.cmo mt.cmi ../runtime/js.cmo \
-    app_root_finder.cmo
 installation_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
     app_root_finder.cmj
-int32_test.cmo : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ext_array.cmo ../stdlib/array.cmi
 int32_test.cmj : mt.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \
     ext_array.cmj ../stdlib/array.cmj
-int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/array.cmi
 int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/array.cmj
-int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
-    ../runtime/js_int64.cmo ../stdlib/int64.cmi ../stdlib/int32.cmi \
-    ../stdlib/format.cmi ext_array.cmo ../stdlib/array.cmi
 int64_test.cmj : ../stdlib/pervasives.cmj ../stdlib/nativeint.cmj mt.cmj \
     ../runtime/js_int64.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
     ../stdlib/format.cmj ext_array.cmj ../stdlib/array.cmj
-int_hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
-    ../stdlib/array.cmi
 int_hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
     ../stdlib/array.cmj
-int_map.cmo : ../stdlib/map.cmi
 int_map.cmj : ../stdlib/map.cmj
-int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
-    ../stdlib/char.cmi
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/int32.cmj \
     ../stdlib/char.cmj
-io_test.cmo : ../runtime/js.cmo
 io_test.cmj : ../runtime/js.cmj
-js_bool_test.cmo : mt.cmi ../runtime/js.cmo
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
-js_date.cmo : ../runtime/js.cmo
 js_date.cmj : ../runtime/js.cmj
-js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
-js_json_test.cmo : mt.cmi ../runtime/js.cmo
 js_json_test.cmj : mt.cmj ../runtime/js.cmj
-js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
-js_string_test.cmo : mt.cmi ../runtime/js.cmo
 js_string_test.cmj : mt.cmj ../runtime/js.cmj
-js_val.cmo :
 js_val.cmj :
-jsoo_400_test.cmo : ../stdlib/string.cmi mt.cmi
 jsoo_400_test.cmj : ../stdlib/string.cmj mt.cmj
-jsoo_485.cmo :
 jsoo_485.cmj :
-jsoo_485_test.cmo :
 jsoo_485_test.cmj :
-largest_int_flow.cmo :
 largest_int_flow.cmj :
-lazy_test.cmo : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmj : mt.cmj ../stdlib/lazy.cmj
-lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
-    ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo arith_lexer.cmo
 lexer_test.cmj : number_lexer.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
-lib_js_test.cmo : mt.cmi ../runtime/js.cmo ../runtime/bs_string.cmo
 lib_js_test.cmj : mt.cmj ../runtime/js.cmj ../runtime/bs_string.cmj
-libarg_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/arg.cmi
 libarg_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/arg.cmj
-libqueue_test.cmo : ../stdlib/queue.cmi ../stdlib/list.cmi
 libqueue_test.cmj : ../stdlib/queue.cmj ../stdlib/list.cmj
-limits_test.cmo : mt.cmi ../stdlib/int32.cmi
 limits_test.cmj : mt.cmj ../stdlib/int32.cmj
-list_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/array.cmi
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj
-literals.cmo : ../stdlib/string.cmi literals.cmi
 literals.cmj : ../stdlib/string.cmj literals.cmi
-local_class_type.cmo : ../runtime/js.cmo
 local_class_type.cmj : ../runtime/js.cmj
-local_exception_test.cmo :
 local_exception_test.cmj :
-loop_regression_test.cmo : mt.cmi
 loop_regression_test.cmj : mt.cmj
-loop_suites_test.cmo : mt.cmi for_loop_test.cmo
 loop_suites_test.cmj : mt.cmj for_loop_test.cmj
-map_find_test.cmo : mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 map_find_test.cmj : mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj
-map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
-    ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
     ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
-method_chain.cmo :
 method_chain.cmj :
-method_name_test.cmo : mt.cmi
 method_name_test.cmj : mt.cmj
-mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo
 mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj
-module_alias.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 module_alias.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj
-module_as_class_ffi.cmo :
 module_as_class_ffi.cmj :
-module_as_function.cmo :
 module_as_function.cmj :
-module_missing_conversion.cmo : ../stdlib/string.cmi \
-    ../stdlib/moreLabels.cmi ../stdlib/hashtbl.cmi ../stdlib/array.cmi
 module_missing_conversion.cmj : ../stdlib/string.cmj \
     ../stdlib/moreLabels.cmj ../stdlib/hashtbl.cmj ../stdlib/array.cmj
-module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
-module_splice_test.cmo : mt.cmi ../runtime/js.cmo
 module_splice_test.cmj : mt.cmj ../runtime/js.cmj
-more_uncurry.cmo :
 more_uncurry.cmj :
-mt.cmo : ../others/node.cmo ../stdlib/list.cmi ../stdlib/array.cmi mt.cmi
 mt.cmj : ../others/node.cmj ../stdlib/list.cmj ../stdlib/array.cmj mt.cmi
-mt_global.cmo : mt.cmi mt_global.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
-mutable_obj_test.cmo : ../runtime/js.cmo
 mutable_obj_test.cmj : ../runtime/js.cmj
-mutual_non_recursive_type.cmo :
 mutual_non_recursive_type.cmj :
-nested_include.cmo :
 nested_include.cmj :
-nested_module_alias.cmo : ../stdlib/list.cmi
 nested_module_alias.cmj : ../stdlib/list.cmj
-nested_obj_literal.cmo :
 nested_obj_literal.cmj :
-nested_obj_test.cmo :
 nested_obj_test.cmj :
-noassert.cmo :
 noassert.cmj :
-node_fs_test.cmo : ../others/node.cmo ../runtime/js.cmo
 node_fs_test.cmj : ../others/node.cmj ../runtime/js.cmj
-node_path_test.cmo : ../runtime/js.cmo
 node_path_test.cmj : ../runtime/js.cmj
-number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi
 number_lexer.cmj : ../stdlib/sys.cmj ../stdlib/lexing.cmj
-obj_literal_ppx.cmo : ../stdlib/array.cmi
 obj_literal_ppx.cmj : ../stdlib/array.cmj
-obj_literal_ppx_test.cmo : ../runtime/js.cmo
 obj_literal_ppx_test.cmj : ../runtime/js.cmj
-obj_magic_test.cmo : ../stdlib/obj.cmi mt.cmi
 obj_magic_test.cmj : ../stdlib/obj.cmj mt.cmj
-obj_test.cmo : mt.cmi
 obj_test.cmj : mt.cmj
-obj_type_test.cmo : ../runtime/js.cmo
 obj_type_test.cmj : ../runtime/js.cmj
-ocaml_proto_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/printexc.cmi ../stdlib/pervasives.cmi ../stdlib/parsing.cmi \
-    ../stdlib/obj.cmi mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi \
-    ../stdlib/lexing.cmi ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
-    ../stdlib/char.cmi ocaml_proto_test.cmi
 ocaml_proto_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/printexc.cmj ../stdlib/pervasives.cmj ../stdlib/parsing.cmj \
     ../stdlib/obj.cmj mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj \
     ../stdlib/lexing.cmj ../stdlib/hashtbl.cmj ../stdlib/filename.cmj \
     ../stdlib/char.cmj ocaml_proto_test.cmi
-of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
-offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
-optional_ffi_test.cmo : mt.cmi
 optional_ffi_test.cmj : mt.cmj
-pipe_send_readline.cmo : ../runtime/js.cmo
 pipe_send_readline.cmj : ../runtime/js.cmj
-poly_type.cmo : ../runtime/js.cmo
 poly_type.cmj : ../runtime/js.cmj
-poly_variant_test.cmo : mt.cmi ../runtime/js.cmo poly_variant_test.cmi
 poly_variant_test.cmj : mt.cmj ../runtime/js.cmj poly_variant_test.cmi
-polymorphism_test.cmo : polymorphism_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
-polyvar_test.cmo : ../runtime/js.cmo
 polyvar_test.cmj : ../runtime/js.cmj
-ppx_apply_test.cmo : mt.cmi
 ppx_apply_test.cmj : mt.cmj
-ppx_this_obj_field.cmo : mt.cmi ../runtime/js.cmo
 ppx_this_obj_field.cmj : mt.cmj ../runtime/js.cmj
-ppx_this_obj_test.cmo : mt.cmi
 ppx_this_obj_test.cmj : mt.cmj
-pq_test.cmo :
 pq_test.cmj :
-pr6726.cmo :
 pr6726.cmj :
-pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmj : mt.cmj
-primitive_reg_test.cmo :
 primitive_reg_test.cmj :
-print_alpha_test.cmo : mt.cmi ../runtime/js.cmo
 print_alpha_test.cmj : mt.cmj ../runtime/js.cmj
-printf_sim.cmo : ../stdlib/printf.cmi
 printf_sim.cmj : ../stdlib/printf.cmj
-printf_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
 printf_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj
-promise.cmo : ../runtime/js.cmo
 promise.cmj : ../runtime/js.cmj
-qcc.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
-    ../stdlib/array.cmi
 qcc.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/list.cmj ../stdlib/char.cmj ../stdlib/bytes.cmj \
     ../stdlib/array.cmj
-queue_test.cmo : ../stdlib/queue.cmi mt.cmi ../stdlib/array.cmi
 queue_test.cmj : ../stdlib/queue.cmj mt.cmj ../stdlib/array.cmj
-random_test.cmo : ../stdlib/random.cmi ../stdlib/printf.cmi mt_global.cmi \
-    mt.cmi ../stdlib/int64.cmi ../stdlib/array.cmi
 random_test.cmj : ../stdlib/random.cmj ../stdlib/printf.cmj mt_global.cmj \
     mt.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
-rec_module_test.cmo : ../stdlib/set.cmi ../stdlib/pervasives.cmi mt.cmi
 rec_module_test.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj mt.cmj
-rec_value_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi
 rec_value_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj
-record_with_test.cmo : mt.cmi
 record_with_test.cmj : mt.cmj
-recursive_module.cmo :
 recursive_module.cmj :
-recursive_module_test.cmo : mt.cmi
 recursive_module_test.cmj : mt.cmj
-regression_print.cmo :
 regression_print.cmj :
-runtime_encoding_test.cmo :
 runtime_encoding_test.cmj :
-scanf_io.cmo : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
-    ../stdlib/printf.cmi ../stdlib/list.cmi ../stdlib/digest.cmi \
-    ../stdlib/buffer.cmi
 scanf_io.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj ../stdlib/list.cmj ../stdlib/digest.cmj \
     ../stdlib/buffer.cmj
-scanf_reference_error_regression_test.cmo : ../stdlib/scanf.cmi \
-    ../stdlib/printf.cmi mt_global.cmi mt.cmi ../stdlib/list.cmi \
-    scanf_reference_error_regression_test.cmi
 scanf_reference_error_regression_test.cmj : ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj mt_global.cmj mt.cmj ../stdlib/list.cmj \
     scanf_reference_error_regression_test.cmi
-scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
 scanf_test.cmj : ../stdlib/scanf.cmj mt_global.cmj mt.cmj
-sexp.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
-    sexp.cmi
 sexp.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
     sexp.cmi
-sexpm.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/printexc.cmi ../stdlib/list.cmi ../stdlib/format.cmi \
-    ../stdlib/char.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi sexpm.cmi
 sexpm.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/printexc.cmj ../stdlib/list.cmj ../stdlib/format.cmj \
     ../stdlib/char.cmj ../stdlib/bytes.cmj ../stdlib/buffer.cmj sexpm.cmi
-sexpm_test.cmo : sexpm.cmi mt.cmi ../runtime/js.cmo ../stdlib/format.cmi
 sexpm_test.cmj : sexpm.cmj mt.cmj ../runtime/js.cmj ../stdlib/format.cmj
-shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmj : ../stdlib/nativeint.cmj
-simple_derive_test.cmo : ../runtime/js.cmo ../others/bs.cmo \
-    simple_derive_test.cmi
 simple_derive_test.cmj : ../runtime/js.cmj ../others/bs.cmj \
     simple_derive_test.cmi
-simple_derive_use.cmo : simple_derive_test.cmi simple_derive_use.cmi
 simple_derive_use.cmj : simple_derive_test.cmj simple_derive_use.cmi
-simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
-simplify_lambda_632o.cmo :
 simplify_lambda_632o.cmj :
-single_module_alias.cmo : ../stdlib/list.cmi
 single_module_alias.cmj : ../stdlib/list.cmj
-small_inline_test.cmo :
 small_inline_test.cmj :
-sprintf_reg_test.cmo : ../stdlib/printf.cmi mt_global.cmi mt.cmi
 sprintf_reg_test.cmj : ../stdlib/printf.cmj mt_global.cmj mt.cmj
-stack_comp_test.cmo : ../stdlib/stack.cmi mt_global.cmi mt.cmi
 stack_comp_test.cmj : ../stdlib/stack.cmj mt_global.cmj mt.cmj
-stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
-stream_parser_test.cmo : ../stdlib/stream.cmi ../stdlib/queue.cmi mt.cmi \
-    ../stdlib/genlex.cmi
 stream_parser_test.cmj : ../stdlib/stream.cmj ../stdlib/queue.cmj mt.cmj \
     ../stdlib/genlex.cmj
-string_bound_get_test.cmo : ../stdlib/string.cmi ../stdlib/bytes.cmi
 string_bound_get_test.cmj : ../stdlib/string.cmj ../stdlib/bytes.cmj
-string_get_set_test.cmo : mt.cmi
 string_get_set_test.cmj : mt.cmj
-string_literal_print_test.cmo : mt.cmi
 string_literal_print_test.cmj : mt.cmj
-string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
-    ../runtime/caml_string.cmi ../stdlib/bytes.cmi
 string_runtime_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ../runtime/caml_string.cmj ../stdlib/bytes.cmj
-string_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
-    ext_string.cmo ../stdlib/bytes.cmi
 string_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ext_string.cmj ../stdlib/bytes.cmj
-string_unicode_test.cmo : ../runtime/js.cmo
 string_unicode_test.cmj : ../runtime/js.cmj
-stringmatch_test.cmo : ../stdlib/string.cmi
 stringmatch_test.cmj : ../stdlib/string.cmj
-swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ../stdlib/array.cmi
 swap_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \
     ../stdlib/array.cmj
-tailcall_inline_test.cmo : mt.cmi ../stdlib/array.cmi
 tailcall_inline_test.cmj : mt.cmj ../stdlib/array.cmj
-test_alias.cmo : test_global_print.cmo
 test_alias.cmj : test_global_print.cmj
-test_ari.cmo : ../stdlib/list.cmi
 test_ari.cmj : ../stdlib/list.cmj
-test_array.cmo : ../stdlib/array.cmi
 test_array.cmj : ../stdlib/array.cmj
-test_array_append.cmo : ../stdlib/array.cmi
 test_array_append.cmj : ../stdlib/array.cmj
-test_array_primitive.cmo : ../stdlib/array.cmi
 test_array_primitive.cmj : ../stdlib/array.cmj
-test_bool_equal.cmo :
 test_bool_equal.cmj :
-test_bs_this.cmo : ../runtime/js.cmo
 test_bs_this.cmj : ../runtime/js.cmj
-test_bug.cmo : ../stdlib/bytes.cmi
 test_bug.cmj : ../stdlib/bytes.cmj
-test_bytes.cmo : ../stdlib/bytes.cmi
 test_bytes.cmj : ../stdlib/bytes.cmj
-test_case_set.cmo :
 test_case_set.cmj :
-test_char.cmo :
 test_char.cmj :
-test_closure.cmo : ../stdlib/array.cmi
 test_closure.cmj : ../stdlib/array.cmj
-test_common.cmo :
 test_common.cmj :
-test_const_elim.cmo :
 test_const_elim.cmj :
-test_const_propogate.cmo :
 test_const_propogate.cmj :
-test_cps.cmo : ../stdlib/array.cmi
 test_cps.cmj : ../stdlib/array.cmj
-test_demo.cmo : ../stdlib/list.cmi
 test_demo.cmj : ../stdlib/list.cmj
-test_dup_param.cmo :
 test_dup_param.cmj :
-test_eq.cmo :
 test_eq.cmj :
-test_exception.cmo : test_common.cmo
 test_exception.cmj : test_common.cmj
-test_exception_escape.cmo :
 test_exception_escape.cmj :
-test_export2.cmo :
 test_export2.cmj :
-test_external.cmo :
 test_external.cmj :
-test_external_unit.cmo :
 test_external_unit.cmj :
-test_ffi.cmo :
 test_ffi.cmj :
-test_fib.cmo :
 test_fib.cmj :
-test_filename.cmo : ../stdlib/list.cmi ../stdlib/filename.cmi
 test_filename.cmj : ../stdlib/list.cmj ../stdlib/filename.cmj
-test_for_loop.cmo : ../stdlib/array.cmi
 test_for_loop.cmj : ../stdlib/array.cmj
-test_for_map.cmo : ../stdlib/map.cmi
 test_for_map.cmj : ../stdlib/map.cmj
-test_for_map2.cmo : int_map.cmo test_for_map2.cmi
 test_for_map2.cmj : int_map.cmj test_for_map2.cmi
-test_format.cmo : ../stdlib/format.cmi
 test_format.cmj : ../stdlib/format.cmj
-test_formatter.cmo :
 test_formatter.cmj :
-test_functor_dead_code.cmo : ../stdlib/string.cmi ../stdlib/map.cmi
 test_functor_dead_code.cmj : ../stdlib/string.cmj ../stdlib/map.cmj
-test_generative_module.cmo :
 test_generative_module.cmj :
-test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmj : ../stdlib/list.cmj ../stdlib/hashtbl.cmj
-test_google_closure.cmo : ../runtime/js.cmo ../stdlib/array.cmi
 test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmj
-test_http_server.cmo : ../runtime/js.cmo http_types.cmo test_http_server.cmi
 test_http_server.cmj : ../runtime/js.cmj http_types.cmj test_http_server.cmi
-test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
-    ../stdlib/list.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
     ../stdlib/list.cmj
-test_incomplete.cmo :
 test_incomplete.cmj :
-test_incr_ref.cmo :
 test_incr_ref.cmj :
-test_index.cmo : ../runtime/js.cmo
 test_index.cmj : ../runtime/js.cmj
-test_int_map_find.cmo : ../stdlib/map.cmi ../stdlib/list.cmi
 test_int_map_find.cmj : ../stdlib/map.cmj ../stdlib/list.cmj
-test_internalOO.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi \
-    ../stdlib/obj.cmi ../stdlib/map.cmi ../stdlib/list.cmi ../stdlib/char.cmi \
-    ../stdlib/array.cmi
 test_internalOO.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj \
     ../stdlib/obj.cmj ../stdlib/map.cmj ../stdlib/list.cmj ../stdlib/char.cmj \
     ../stdlib/array.cmj
-test_is_js.cmo : test_is_js.cmi
 test_is_js.cmj : test_is_js.cmi
-test_js_ffi.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 test_js_ffi.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
-test_let.cmo :
 test_let.cmj :
-test_list.cmo : ../stdlib/list.cmi
 test_list.cmj : ../stdlib/list.cmj
-test_literal.cmo :
 test_literal.cmj :
-test_match_exception.cmo :
 test_match_exception.cmj :
-test_mutliple.cmo : ../stdlib/list.cmi
 test_mutliple.cmj : ../stdlib/list.cmj
-test_nat64.cmo :
 test_nat64.cmj :
-test_nested_let.cmo :
 test_nested_let.cmj :
-test_nested_print.cmo :
 test_nested_print.cmj :
-test_non_export.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 test_non_export.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
-test_nullary.cmo :
 test_nullary.cmj :
-test_obj.cmo :
 test_obj.cmj :
-test_obj_simple_ffi.cmo : ../runtime/js.cmo
 test_obj_simple_ffi.cmj : ../runtime/js.cmj
-test_order.cmo : ../stdlib/pervasives.cmi
 test_order.cmj : ../stdlib/pervasives.cmj
-test_order_tailcall.cmo :
 test_order_tailcall.cmj :
-test_pack.cmo :
 test_pack.cmj :
-test_per.cmo : ../stdlib/camlinternalFormatBasics.cmi
 test_per.cmj : ../stdlib/camlinternalFormatBasics.cmj
-test_pervasive.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 test_pervasive.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj
-test_pervasives2.cmo : ../stdlib/stack.cmi ../stdlib/pervasives.cmi \
-    ../stdlib/list.cmi
 test_pervasives2.cmj : ../stdlib/stack.cmj ../stdlib/pervasives.cmj \
     ../stdlib/list.cmj
-test_pervasives3.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 test_pervasives3.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj
-test_primitive.cmo : ../stdlib/string.cmi ../stdlib/lazy.cmi \
-    ../stdlib/array.cmi
 test_primitive.cmj : ../stdlib/string.cmj ../stdlib/lazy.cmj \
     ../stdlib/array.cmj
-test_ramification.cmo :
 test_ramification.cmj :
-test_react.cmo : ../runtime/js.cmo
 test_react.cmj : ../runtime/js.cmj
-test_react_case.cmo :
 test_react_case.cmj :
-test_regex.cmo :
 test_regex.cmj :
-test_require.cmo : ../runtime/js.cmo
 test_require.cmj : ../runtime/js.cmj
-test_runtime_encoding.cmo : ../stdlib/array.cmi
 test_runtime_encoding.cmj : ../stdlib/array.cmj
-test_scope.cmo :
 test_scope.cmj :
-test_seq.cmo : ../stdlib/printf.cmi
 test_seq.cmj : ../stdlib/printf.cmj
-test_set.cmo : ../stdlib/list.cmi
 test_set.cmj : ../stdlib/list.cmj
-test_side_effect_functor.cmo :
 test_side_effect_functor.cmj :
-test_simple_include.cmo : ../stdlib/array.cmi
 test_simple_include.cmj : ../stdlib/array.cmj
-test_simple_obj.cmo :
 test_simple_obj.cmj :
-test_simple_pattern_match.cmo : ../stdlib/sys.cmi
 test_simple_pattern_match.cmj : ../stdlib/sys.cmj
-test_simple_ref.cmo :
 test_simple_ref.cmj :
-test_simple_tailcall.cmo :
 test_simple_tailcall.cmj :
-test_small.cmo :
 test_small.cmj :
-test_sprintf.cmo : ../stdlib/printf.cmi
 test_sprintf.cmj : ../stdlib/printf.cmj
-test_stack.cmo : ../stdlib/stack.cmi
 test_stack.cmj : ../stdlib/stack.cmj
-test_static_catch_ident.cmo :
 test_static_catch_ident.cmj :
-test_string.cmo : ../stdlib/string.cmi ../stdlib/bytes.cmi
 test_string.cmj : ../stdlib/string.cmj ../stdlib/bytes.cmj
-test_string_case.cmo :
 test_string_case.cmj :
-test_string_const.cmo : ../stdlib/string.cmi
 test_string_const.cmj : ../stdlib/string.cmj
-test_string_map.cmo : ../stdlib/map.cmi
 test_string_map.cmj : ../stdlib/map.cmj
-test_string_switch.cmo : ../stdlib/sys.cmi
 test_string_switch.cmj : ../stdlib/sys.cmj
-test_switch.cmo :
 test_switch.cmj :
-test_trywith.cmo :
 test_trywith.cmj :
-test_tuple.cmo :
 test_tuple.cmj :
-test_tuple_destructring.cmo :
 test_tuple_destructring.cmj :
-test_type_based_arity.cmo : abstract_type.cmi
 test_type_based_arity.cmj : abstract_type.cmj
-test_u.cmo :
 test_u.cmj :
-test_unsafe_cmp.cmo : ../runtime/js.cmo
 test_unsafe_cmp.cmj : ../runtime/js.cmj
-test_unsafe_obj_ffi.cmo : ../runtime/js_unsafe.cmo test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi.cmj : ../runtime/js_unsafe.cmj test_unsafe_obj_ffi.cmi
-test_unsafe_obj_ffi_ppx.cmo : ../runtime/js.cmo test_unsafe_obj_ffi_ppx.cmi
 test_unsafe_obj_ffi_ppx.cmj : ../runtime/js.cmj test_unsafe_obj_ffi_ppx.cmi
-test_unsupported_primitive.cmo : ../stdlib/bytes.cmi
 test_unsupported_primitive.cmj : ../stdlib/bytes.cmj
-test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmj : ../stdlib/array.cmj
-test_while_side_effect.cmo :
 test_while_side_effect.cmj :
-test_zero_nullable.cmo : mt.cmi ../runtime/js.cmo
 test_zero_nullable.cmj : mt.cmj ../runtime/js.cmj
-testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
 testing.cmj : ../stdlib/scanf.cmj ../stdlib/printf.cmj testing.cmi
-tfloat_record_test.cmo : mt_global.cmi mt.cmi ../stdlib/format.cmi \
-    float_record.cmi float_array.cmo ../stdlib/buffer.cmi ../stdlib/array.cmi
 tfloat_record_test.cmj : mt_global.cmj mt.cmj ../stdlib/format.cmj \
     float_record.cmj float_array.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
-ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
-    ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
-to_string_test.cmo : mt.cmi
 to_string_test.cmj : mt.cmj
-tscanf_test.cmo : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
-    ../stdlib/printf.cmi ../stdlib/nativeint.cmi mt_global.cmi mt.cmi \
-    ../stdlib/list.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
-    ../stdlib/buffer.cmi
 tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj ../stdlib/nativeint.cmj mt_global.cmj mt.cmj \
     ../stdlib/list.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
     ../stdlib/buffer.cmj
-tuple_alloc.cmo :
 tuple_alloc.cmj :
-typeof_test.cmo : mt.cmi ../runtime/js.cmo
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
-uncurry_glob_test.cmo : ../runtime/caml_utils.cmi
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
-undef_regression_test.cmo : ../runtime/js.cmo ../runtime/bs_obj.cmo
 undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
-unitest_string.cmo :
 unitest_string.cmj :
-unsafe_obj_external.cmo : ../runtime/js.cmo
 unsafe_obj_external.cmj : ../runtime/js.cmj
-unsafe_ppx_test.cmo : mt.cmi ffi_js_test.cmo
 unsafe_ppx_test.cmj : mt.cmj ffi_js_test.cmj
-unsafe_this.cmo : ../runtime/js.cmo unsafe_this.cmi
 unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
-update_record_test.cmo : ../stdlib/obj.cmi mt.cmi ../runtime/js.cmo
 update_record_test.cmj : ../stdlib/obj.cmj mt.cmj ../runtime/js.cmj
-utf8_decode_test.cmo : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
-    ../runtime/js.cmo ../stdlib/bytes.cmi
 utf8_decode_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
     ../runtime/js.cmj ../stdlib/bytes.cmj
-watch_test.cmo : ../others/node.cmo ../runtime/js.cmo
 watch_test.cmj : ../others/node.cmj ../runtime/js.cmj
