@@ -91,7 +91,7 @@ external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
 (**  [unsafe_ge a b] will be compiled as [a >= b] *)
 (* end::utility_functions[]*)
 
-(** {4 nested modules} *experimental* API, please refer to
+(** {8 nested modules} *experimental* API, please refer to
   {!Js_dict} {!Js_array} {!Js_string} {!Js_re} for more details *)
 module Dict = Js_dict
 module Array = Js_array
@@ -100,3 +100,4 @@ module Re = Js_re
 module Types = Js_types
 module Json = Js_json
 module Obj  = Js_obj
+module Boolean = Js_boolean
