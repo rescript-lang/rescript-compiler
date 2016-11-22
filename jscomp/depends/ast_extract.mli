@@ -26,8 +26,8 @@
 
 
 type _ kind =
-  | Ml_kind : Parsetree.structure kind
-  | Mli_kind : Parsetree.signature kind
+  | Ml : Parsetree.structure kind
+  | Mli : Parsetree.signature kind
 
 
 
@@ -105,5 +105,4 @@ val build_lazy_queue :
   (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
   (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
 
-val handle_depfile : 
-  string option -> string -> unit
+

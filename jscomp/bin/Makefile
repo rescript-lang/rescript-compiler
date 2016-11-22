@@ -18,6 +18,9 @@ bsdep.exe: config_bsdep.mli config_bsdep.ml bsdep.mli bsdep.ml
 bsb.exe:  bsb.mli bsb.ml
 	$(NATIVE) -g -inline 1000  -linkall unix.cmxa str.cmxa -w -a $^ -o $@
 
+bsb_helper.exe:  bsb_helper.mli bsb_helper.ml
+	$(NATIVE) -g -inline 1000  -linkall unix.cmxa str.cmxa -w -a $^ -o $@
+
 config_whole_compiler.ml:config_whole_compiler.mlp ../config.js
 	node ../config.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
@@ -27,4 +30,4 @@ bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
 	$(NATIVE) -w -a unix.cmxa  $^ -o $@
 
 
-all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe
+all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe

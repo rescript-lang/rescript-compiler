@@ -16,10 +16,10 @@
         // [
         //     "reason/bin/ppx_lwt"
         // ],
-        "js-post-build" : 
-        {
-            "cmd" : "cat"
-        },
+        // "js-post-build" : 
+        // {
+        //     "cmd" : "cat"
+        // },
     "sources" : 
     [ 
 

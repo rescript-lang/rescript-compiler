@@ -1,4 +1,13 @@
 module Config = Config_bsdep
+module Bs_version : sig 
+#1 "bs_version.mli"
+val version : string
+
+end = struct
+#1 "bs_version.ml"
+let version = "1.3.0"
+
+end
 module Terminfo : sig 
 #1 "terminfo.mli"
 (***********************************************************************)
@@ -2680,4089 +2689,6 @@ and directive_argument =
   | Pdir_bool of bool
 
 end
-module Binary_ast : sig 
-#1 "binary_ast.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind 
-
-val read_ast : 'a kind -> string -> 'a 
-
-(**
-   The [.ml] file can be recognized as an ast directly, the format
-   is
-   {
-   magic number;
-   filename;
-   ast
-   }
-   when [fname] is "-" it means the file is from an standard input or pipe.
-   An empty name would marshallized.
-
-   Use case cat - | fan -printer -impl -
-   redirect the standard input to fan
- *)
-val write_ast : fname:string -> output:string -> 'a kind -> 'a -> unit
-
-
-end = struct
-#1 "binary_ast.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind 
-
-
-let read_ast (type t ) (kind : t kind) fn : t  =
-  let magic =
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in 
-  let ic = open_in_bin fn in
-  try
-    let buffer = really_input_string ic (String.length magic) in
-    assert(buffer = magic); (* already checked by apply_rewriter *)
-    Location.input_name := input_value ic;
-    let ast = input_value ic in
-    close_in ic;
-    ast
-  with exn ->
-    close_in ic;
-    raise exn
-
-
-let write_ast (type t) ~(fname : string) ~output (kind : t kind) ( pt : t) : unit =
-  let magic = 
-    match kind with 
-    | Ml -> Config.ast_impl_magic_number
-    | Mli -> Config.ast_intf_magic_number in
-  let oc = open_out_bin output in 
-  (* FIX for windows: output_value: not a binary channel*)
-  output_string oc magic ;
-  output_value oc fname;
-  output_value oc pt;
-  close_out oc 
-
-
-end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-
-let rec dump r =
-  if Obj.is_int r then
-    string_of_int (Obj.magic r : int)
-  else (* Block. *)
-    let rec get_fields acc = function
-      | 0 -> acc
-      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
-    in
-    let rec is_list r =
-      if Obj.is_int r then
-        r = Obj.repr 0 (* [] *)
-      else
-        let s = Obj.size r and t = Obj.tag r in
-        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
-    in
-    let rec get_list r =
-      if Obj.is_int r then
-        []
-      else
-        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
-        h :: t
-    in
-    let opaque name =
-      (* XXX In future, print the address of value 'r'.  Not possible
-       * in pure OCaml at the moment.  *)
-      "<" ^ name ^ ">"
-    in
-    let s = Obj.size r and t = Obj.tag r in
-    (* From the tag, determine the type of block. *)
-    match t with
-    | _ when is_list r ->
-      let fields = get_list r in
-      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
-    | 0 ->
-      let fields = get_fields [] s in
-      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.lazy_tag ->
-      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
-         * clear if very large constructed values could have the same
-         * tag. XXX *)
-      opaque "lazy"
-    | x when x = Obj.closure_tag ->
-      opaque "closure"
-    | x when x = Obj.object_tag ->
-      let fields = get_fields [] s in
-      let _clasz, id, slots =
-        match fields with
-        | h::h'::t -> h, h', t
-        | _ -> assert false
-      in
-      (* No information on decoding the class (first field).  So just print
-         * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
-    | x when x = Obj.infix_tag ->
-      opaque "infix"
-    | x when x = Obj.forward_tag ->
-      opaque "forward"
-    | x when x < Obj.no_scan_tag ->
-      let fields = get_fields [] s in
-      "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.string_tag ->
-      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
-      string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
-      opaque "abstract"
-    | x when x = Obj.custom_tag ->
-      opaque "custom"
-    | x when x = Obj.custom_tag ->
-      opaque "final"
-    | x when x = Obj.double_array_tag ->
-      "[|"^
-      String.concat ";"
-        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
-      "|]"
-    | _ ->
-      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
-
-let dump v = dump (Obj.repr v)
-
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
-
-end
-module Ext_bytes : sig 
-#1 "ext_bytes.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
-
-val escaped : bytes -> bytes
-
-end = struct
-#1 "ext_bytes.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
-
-let escaped s =
-  let n = ref 0 in
-  for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
-    let s' = Bytes.create !n in
-    n := 0;
-    for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
-      | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
-      | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
-      | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
-      | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
-      | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
-      incr n
-    done;
-    s'
-  end
-
-end
-module Ext_string : sig 
-#1 "ext_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [String] module, avoid locale sensitivity *) 
-
-
-val trim : string -> string 
-
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
-
-val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
-
-val starts_with : string -> string -> bool
-
-(**
-   return [-1] when not found, the returned index is useful 
-   see [ends_with_then_chop]
-*)
-val ends_with_index : string -> string -> int
-
-val ends_with : string -> string -> bool
-
-(**
-   {[
-     ends_with_then_chop "a.cmj" ".cmj"
-     "a"
-   ]}
-   This is useful in controlled or file case sensitve system
-*)
-val ends_with_then_chop : string -> string -> string option
-
-
-val escaped : string -> string
-
-val for_all : (char -> bool) -> string -> bool
-
-val is_empty : string -> bool
-
-val repeat : int -> string -> string 
-
-val equal : string -> string -> bool
-
-val find : ?start:int -> sub:string -> string -> int
-
-val rfind : sub:string -> string -> int
-
-val tail_from : string -> int -> string
-
-val digits_of_str : string -> offset:int -> int -> int
-
-val starts_with_and_number : string -> offset:int -> string -> int
-
-val unsafe_concat_with_length : int -> string -> string list -> string
-
-end = struct
-#1 "ext_string.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let split_by ?(keep_empty=false) is_delim str =
-  let len = String.length str in
-  let rec loop acc last_pos pos =
-    if pos = -1 then
-      if last_pos = 0 && not keep_empty then
-        (*
-           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
-        *)
-        acc
-      else 
-        String.sub str 0 last_pos :: acc
-    else
-      if is_delim str.[pos] then
-        let new_len = (last_pos - pos - 1) in
-        if new_len <> 0 || keep_empty then 
-          let v = String.sub str (pos + 1) new_len in
-          loop ( v :: acc)
-            pos (pos - 1)
-        else loop acc pos (pos - 1)
-    else loop acc last_pos (pos - 1)
-  in
-  loop [] len (len - 1)
-
-let trim s = 
-  let i = ref 0  in
-  let j = String.length s in 
-  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
-    incr i;
-  done;
-  let k = ref (j - 1)  in 
-  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
-    decr k ;
-  done;
-  String.sub s !i (!k - !i + 1)
-
-let split ?keep_empty  str on = 
-  if str = "" then [] else 
-  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
-
-let starts_with s beg = 
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-   beg_len <=  s_len &&
-  (let i = ref 0 in
-    while !i <  beg_len 
-          && String.unsafe_get s !i =
-             String.unsafe_get beg !i do 
-      incr i 
-    done;
-    !i = beg_len
-  )
-
-
-
-let ends_with_index s beg = 
-  let s_finish = String.length s - 1 in
-  let s_beg = String.length beg - 1 in
-  if s_beg > s_finish then -1
-  else
-    let rec aux j k = 
-      if k < 0 then (j + 1)
-      else if String.unsafe_get s j = String.unsafe_get beg k then 
-        aux (j - 1) (k - 1)
-      else  -1 in 
-    aux s_finish s_beg
-
-let ends_with s beg = ends_with_index s beg >= 0 
-
-
-let ends_with_then_chop s beg = 
-  let i =  ends_with_index s beg in 
-  if i >= 0 then Some (String.sub s 0 i) 
-  else None
-
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
-
-
-let for_all (p : char -> bool) s = 
-  let len = String.length s in
-  let rec aux i = 
-    if i >= len then true 
-    else  p (String.unsafe_get s i) && aux (i + 1)
-  in aux 0 
-
-let is_empty s = String.length s = 0
-
-
-let repeat n s  =
-  let len = String.length s in
-  let res = Bytes.create(n * len) in
-  for i = 0 to pred n do
-    String.blit s 0 res (i * len) len
-  done;
-  Bytes.to_string res
-
-let equal (x : string) y  = x = y
-
-
-
-let _is_sub ~sub i s j ~len =
-  let rec check k =
-    if k = len
-    then true
-    else 
-      String.unsafe_get sub (i+k) = 
-      String.unsafe_get s (j+k) && check (k+1)
-  in
-  j+len <= String.length s && check 0
-
-
-
-let find ?(start=0) ~sub s =
-  let n = String.length sub in
-  let i = ref start in
-  let module M = struct exception Exit end  in
-  try
-    while !i + n <= String.length s do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
-      incr i
-    done;
-    -1
-  with M.Exit ->
-    !i
-
-
-let rfind ~sub s =
-  let n = String.length sub in
-  let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
-  try
-    while !i >= 0 do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
-      decr i
-    done;
-    -1
-  with M.Exit ->
-    !i
-
-let tail_from s x = 
-  let len = String.length s  in 
-  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
-  else String.sub s x (len - x)
-
-
-(**
-   {[ 
-     digits_of_str "11_js" 2 == 11     
-   ]}
-*)
-let digits_of_str s ~offset x = 
-  let rec aux i acc s x  = 
-    if i >= x then acc 
-    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
-  aux 0 0 s x 
-
-
-
-(*
-   {[
-     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
-     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
-     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
-     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
-     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
-     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
-   ]}
-*)
-let starts_with_and_number s ~offset beg =
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-  let finish_delim = offset + beg_len in 
-
-   if finish_delim >  s_len  then -1 
-   else 
-     let i = ref offset  in
-      while !i <  finish_delim
-            && String.unsafe_get s !i =
-               String.unsafe_get beg (!i - offset) do 
-        incr i 
-      done;
-      if !i = finish_delim then 
-        digits_of_str ~offset:finish_delim s 2 
-      else 
-        -1 
-
-let equal (x : string) y  = x = y
-
-let unsafe_concat_with_length len sep l =
-  match l with 
-  | [] -> ""
-  | hd :: tl -> (* num is positive *)
-  let r = Bytes.create len in
-  let hd_len = String.length hd in 
-  let sep_len = String.length sep in 
-  String.unsafe_blit hd 0 r 0 hd_len;
-  let pos = ref hd_len in
-  List.iter
-    (fun s ->
-       let s_len = String.length s in
-       String.unsafe_blit sep 0 r !pos sep_len;
-       pos := !pos +  sep_len;
-       String.unsafe_blit s 0 r !pos s_len;
-       pos := !pos + s_len)
-    tl;
-  Bytes.unsafe_to_string r
-
-end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string
-val bsconfig_json : string
-val build_ninja : string
-val suffix_cmj : string
-val suffix_cmi : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mliast : string
-val suffix_mll : string
-val suffix_d : string
-val suffix_mlastd : string
-val suffix_mliastd : string
-val suffix_js : string
-
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
-
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-let bsconfig_json = "bsconfig.json"
-let build_ninja = "build.ninja"
-
-let suffix_cmj = ".cmj"
-let suffix_cmi = ".cmi"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mlast = ".mlast"
-let suffix_mliast = ".mliast"
-let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
-
-
-end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-type t = 
-  [ `File of string 
-  | `Dir of string ]
-
-val combine : string -> string -> string 
-val path_as_directory : string -> string
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
- *)
-
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
- *)
-
-val node_relative_path : t -> [`File of string] -> string
-
-val chop_extension : ?loc:string -> string -> string
-
-
-
-
-
-
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
-val replace_backward_slash : string -> string
-
-val module_name_of_file : string -> string
-
-val chop_extension_if_any : string -> string
-
-val absolute_path : string -> string
-
-val module_name_of_file_if_any : string -> string
-
-(**
-   1. add some simplifications when concatenating
-   2. when the second one is absolute, drop the first one
-*)
-val combine : string -> string -> string
-
-val normalize_absolute_path : string -> string
-
-(** 
-TODO: could be highly optimized
-if [from] and [to] resolve to the same path, a zero-length string is returned 
-Given that two paths are directory
-
-A typical use case is 
-{[
-Filename.concat 
-  (rel_normalized_absolute_path cwd (Filename.dirname a))
-  (Filename.basename a)
-]}
-*)
-val rel_normalized_absolute_path : string -> string -> string 
-
-
-
-(**
-{[
-get_extension "a.txt" = ".txt"
-get_extension "a" = ""
-]}
-*)
-val get_extension : string -> string
-
-val replace_backward_slash : string -> string
-
-(*
-[no_slash s i len]
-*)
-val no_slash : string -> int -> int -> bool
-(** if no conversion happens, reference equality holds *)
-val replace_slash_backward : string -> string 
-
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Used when produce node compatible paths *)
-let node_sep = "/"
-let node_parent = ".."
-let node_current = "."
-
-type t = 
-  [ `File of string 
-  | `Dir of string ]
-
-let cwd = lazy (Sys.getcwd ())
-
-let (//) = Filename.concat 
-
-let combine path1 path2 =
-  if path1 = "" then
-    path2
-  else if path2 = "" then path1
-  else 
-  if Filename.is_relative path2 then
-    path1// path2 
-  else
-    path2
-
-(* Note that [.//] is the same as [./] *)
-let path_as_directory x =
-  if x = "" then x
-  else
-  if Ext_string.ends_with x  Filename.dir_sep then
-    x 
-  else 
-    x ^ Filename.dir_sep
-
-let absolute_path s = 
-  let process s = 
-    let s = 
-      if Filename.is_relative s then
-        Lazy.force cwd // s 
-      else s in
-    (* Now simplify . and .. components *)
-    let rec aux s =
-      let base,dir  = Filename.basename s, Filename.dirname s  in
-      if dir = s then dir
-      else if base = Filename.current_dir_name then aux dir
-      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
-      else aux dir // base
-    in aux s  in 
-  process s 
-
-
-let chop_extension ?(loc="") name =
-  try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
-
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
-
-
-
-
-
-let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
-
-
-(** example
-    {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-    ]}
-
-    The other way
-    {[
-
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-    ]}
-    {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
-    ]}
-    {[
-      /a/b
-      /c/d
-    ]}
-*)
-let relative_path file_or_dir_1 file_or_dir_2 = 
-  let sep_char = os_path_separator_char in
-  let relevant_dir1 = 
-    (match file_or_dir_1 with 
-     | `Dir x -> x 
-     | `File file1 ->  Filename.dirname file1) in
-  let relevant_dir2 = 
-    (match file_or_dir_2 with 
-     |`Dir x -> x 
-     |`File file2 -> Filename.dirname file2 ) in
-  let dir1 = Ext_string.split relevant_dir1 sep_char   in
-  let dir2 = Ext_string.split relevant_dir2 sep_char  in
-  let rec go (dir1 : string list) (dir2 : string list) = 
-    match dir1, dir2 with 
-    | x::xs , y :: ys when x = y
-      -> go xs ys 
-    | _, _
-      -> 
-      List.map (fun _ -> node_parent) dir2 @ dir1 
-  in
-  match go dir1 dir2 with
-  | (x :: _ ) as ys when x = node_parent -> 
-    String.concat node_sep ys
-  | ys -> 
-    String.concat node_sep  @@ node_current :: ys
-
-
-(** path2: a/b 
-    path1: a 
-    result:  ./b 
-    TODO: [Filename.concat] with care
-
-    [file1] is currently compilation file 
-    [file2] is the dependency
-*)
-let node_relative_path (file1 : t) 
-    (`File file2 as dep_file : [`File of string]) = 
-  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
-  let len = String.length file2 in 
-  if v >= 0 then
-    let rec skip  i =       
-      if i >= len then
-        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
-      else 
-        (* https://en.wikipedia.org/wiki/Path_(computing))
-           most path separator are a single char 
-        *)
-        let curr_char = String.unsafe_get file2 i  in 
-        if curr_char = os_path_separator_char || curr_char = '.' then 
-          skip (i + 1) 
-        else i
-        (*
-          TODO: we need do more than this suppose user 
-          input can be
-           {[
-             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
-           ]}
-           This seems weird though
-        *)
-    in 
-    Ext_string.tail_from file2
-      (skip (v + Literals.node_modules_length)) 
-  else 
-    relative_path 
-      (  match dep_file with 
-         | `File x -> `File (absolute_path x)
-         | `Dir x -> `Dir (absolute_path x))
-
-      (match file1 with 
-       | `File x -> `File (absolute_path x)
-       | `Dir x -> `Dir(absolute_path x))
-    ^ node_sep ^
-    chop_extension_if_any (Filename.basename file2)
-
-
-
-
-
-let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-
-let rec no_slash x i len = 
-  i >= len  || 
-  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
-
-let replace_backward_slash (x : string)=
-  let len = String.length x in
-  if no_slash x 0 len then x 
-  else  
-    String.map (function 
-        |'\\'-> '/'
-        | x -> x) x
-
-
-let replace_slash_backward (x : string ) = 
-  let len = String.length x in 
-  if no_slash x 0 len then x 
-  else 
-    String.map (function 
-        | '/' -> '\\'
-        | x -> x ) x 
-
-let module_name_of_file file =
-  String.capitalize 
-    (Filename.chop_extension @@ Filename.basename file)  
-
-let module_name_of_file_if_any file = 
-  String.capitalize 
-    (chop_extension_if_any @@ Filename.basename file)  
-
-
-(** For win32 or case insensitve OS 
-    [".cmj"] is the same as [".CMJ"]
-*)
-(* let has_exact_suffix_then_chop fname suf =  *)
-
-let combine p1 p2 = 
-  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
-  if p2 = "" || p2 = Filename.current_dir_name then p1 
-  else 
-  if Filename.is_relative p2 then 
-    Filename.concat p1 p2 
-  else p2 
-
-
-
-(**
-   {[
-     split_aux "//ghosg//ghsogh/";;
-     - : string * string list = ("/", ["ghosg"; "ghsogh"])
-   ]}
-*)
-let split_aux p =
-  let rec go p acc =
-    let dir = Filename.dirname p in
-    if dir = p then dir, acc
-    else go dir (Filename.basename p :: acc)
-  in go p []
-
-(** 
-   TODO: optimization
-   if [from] and [to] resolve to the same path, a zero-length string is returned 
-*)
-let rel_normalized_absolute_path from to_ =
-  let root1, paths1 = split_aux from in 
-  let root2, paths2 = split_aux to_ in 
-  if root1 <> root2 then root2 else
-    let rec go xss yss =
-      match xss, yss with 
-      | x::xs, y::ys -> 
-        if x = y then go xs ys 
-        else 
-          let start = 
-            List.fold_left (fun acc _ -> acc // ".." ) ".." xs in 
-          List.fold_left (fun acc v -> acc // v) start yss
-      | [], [] -> ""
-      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
-      | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
-    go paths1 paths2
-
-(*TODO: could be hgighly optimized later 
-  {[
-    normalize_absolute_path "/gsho/./..";;
-
-    normalize_absolute_path "/a/b/../c../d/e/f";;
-
-    normalize_absolute_path "/gsho/./..";;
-
-    normalize_absolute_path "/gsho/./../..";;
-
-    normalize_absolute_path "/a/b/c/d";;
-
-    normalize_absolute_path "/a/b/c/d/";;
-
-    normalize_absolute_path "/a/";;
-
-    normalize_absolute_path "/a";;
-  ]}
-*)
-let normalize_absolute_path x =
-  let drop_if_exist xs =
-    match xs with 
-    | [] -> []
-    | _ :: xs -> xs in 
-  let rec normalize_list acc paths =
-    match paths with 
-    | [] -> acc 
-    | "." :: xs -> normalize_list acc xs
-    | ".." :: xs -> 
-      normalize_list (drop_if_exist acc ) xs 
-    | x :: xs -> 
-      normalize_list (x::acc) xs 
-  in
-  let root, paths = split_aux x in
-  let rev_paths =  normalize_list [] paths in 
-  let rec go acc rev_paths =
-    match rev_paths with 
-    | [] -> Filename.concat root acc 
-    | last::rest ->  go (Filename.concat last acc ) rest  in 
-  match rev_paths with 
-  | [] -> root 
-  | last :: rest -> go last rest 
-
-
-let get_extension x =
-  try
-    let pos = String.rindex x '.' in
-    Ext_string.tail_from x pos
-  with Not_found -> ""
-
-
-
-end
-module String_map : sig 
-#1 "string_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.S with type key = string 
-
-val of_list : (string * 'a) list -> 'a t
-
-val add_list : (string * 'b) list -> 'b t -> 'b t
-
-val find_opt : string -> 'a t -> 'a option
-
-val find_default : string -> 'a -> 'a t -> 'a
-
-val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
-
-end = struct
-#1 "string_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Map.Make(String)
-
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
-
-let add_list (xs : ('a * 'b) list ) init = 
-  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
-
-
-let find_opt k m =
-  match find k m with 
-  | exception v -> None
-  | u -> Some u
-
-let find_default k default m =
-  match find k m with 
-  | exception v -> default 
-  | u -> u
-
-let print p_v fmt  m =
-  iter (fun k v -> 
-      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
-    ) m
-
-
-
-end
-module Binary_cache : sig 
-#1 "binary_cache.mli"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option 
-  }
-
-type t =
-  module_info String_map.t 
-val write_build_cache : string -> t -> unit
-
-val read_build_cache : string -> t
-
-val bsbuild_cache : string
-
-
-
-
-
-(** if not added, it is guaranteed the reference equality will 
-    be held
-*)
-val map_update : ?dir:string -> t -> string -> t
-
-end = struct
-#1 "binary_cache.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type ml_kind =
-  | Ml of string 
-  | Re of string 
-  | Ml_empty
-type mli_kind = 
-  | Mli of string 
-  | Rei of string
-  | Mli_empty
-
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-    mll : string option ;
-  }
-
-type t = 
-      module_info String_map.t 
-
-
-let module_info_magic_number = "BSBUILD20161012"
-
-let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
-  let oc = open_out_bin bsbuild in 
-  output_string oc module_info_magic_number ;
-  output_value oc bs_files ;
-  close_out oc 
-
-let read_build_cache bsbuild : module_info String_map.t = 
-  let ic = open_in_bin bsbuild in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : module_info String_map.t = input_value ic in 
-  close_in ic ;
-  data 
-
-
-let bsbuild_cache = ".bsbuild"
-
-
-(* TODO check duplication *)
-let module_info_of_ml exist ml : module_info =
-  match exist with 
-  | None -> { ml  = Ml ml ; mli = Mli_empty ; mll = None }
-  | Some x -> { x with ml = Ml ml}
-
-let module_info_of_re exist ml : module_info =
-  match exist with 
-  | None -> { ml  = Re ml ; mli = Mli_empty ; mll = None }
-  | Some x -> { x with ml = Re ml} 
-
-let module_info_of_mli exist mli : module_info = 
-  match exist with 
-  | None -> { mli  = Mli mli ; ml = Ml_empty ; mll = None }
-  | Some x -> { x with mli = Mli mli} 
-
-let module_info_of_rei exist mli : module_info = 
-  match exist with 
-  | None -> { mli  = Rei mli ; ml = Ml_empty ; mll = None }
-  | Some x -> { x with mli = Rei mli} 
-
-let module_info_of_mll exist mll : module_info = 
-  match exist with 
-  | None -> { mll  = Some mll ; ml = Ml_empty ; mli = Mli_empty }
-  | Some x -> { x with mll = Some mll} 
-
-
-let map_update ?dir (map : t)  name : t  = 
-  let prefix   = 
-    match dir with
-    | None -> fun x ->  x
-    | Some v -> fun x ->  Ext_filename.combine v x in
-  let module_name = Ext_filename.module_name_of_file_if_any name in 
-  let handle name v cb =
-    String_map.add module_name
-      (cb v (prefix name ) ) map 
-  in 
-  let aux v name = 
-    if Filename.check_suffix name ".ml" then handle name  v  module_info_of_ml  else
-    if Filename.check_suffix name ".mll" then handle name  v  module_info_of_mll  else 
-    if Filename.check_suffix name ".mli" then handle name  v  module_info_of_mli else 
-    if Filename.check_suffix name ".re" then handle name v module_info_of_re else 
-    if Filename.check_suffix name ".rei" then handle name v module_info_of_rei else 
-      map    in 
-  match String_map.find module_name map with 
-  | exception Not_found 
-    -> aux None name 
-  | v -> 
-    aux (Some v ) name
-
-end
-module Bs_exception : sig 
-#1 "bs_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error =
-  | Cmj_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_package_not_found of string                                                        
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-(*
-TODO: In the futrue, we should refine dependency [bsb] 
-should not rely on such exception, it should have its own exception handling
-*)
-
-(* exception Error of error *)
-
-(* val report_error : Format.formatter -> error -> unit *)
-
-val error : error -> 'a 
-
-end = struct
-#1 "bs_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type error =
-  | Cmj_not_found of string
-  | Bs_cyclic_depends of string  list
-  | Bs_duplicated_module of string * string
-  | Bs_package_not_found of string                            
-  | Bs_main_not_exist of string 
-  | Bs_invalid_path of string
-      
-exception Error of error
-
-let error err = raise (Error err)
-
-let report_error ppf = function
-  | Cmj_not_found s ->
-    Format.fprintf ppf "%s not found, cmj format is generated by BuckleScript" s
-  | Bs_cyclic_depends  str
-    ->
-    Format.fprintf ppf "Cyclic depends : @[%a@]"
-      (Format.pp_print_list ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      str
-  | Bs_duplicated_module (a,b)
-    ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
-  | Bs_main_not_exist main
-    ->
-    Format.fprintf ppf "File %s not found " main
-
-  | Bs_package_not_found package
-    ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
-      package package
-  | Bs_invalid_path path
-    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
-
-
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
-
-end
-module Clflags : sig 
-#1 "clflags.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-val objfiles : string list ref
-val ccobjs : string list ref
-val dllibs : string list ref
-val compile_only : bool ref
-val output_name : string option ref
-val include_dirs : string list ref
-val no_std_include : bool ref
-val print_types : bool ref
-val make_archive : bool ref
-val debug : bool ref
-val fast : bool ref
-val link_everything : bool ref
-val custom_runtime : bool ref
-val no_check_prims : bool ref
-val bytecode_compatible_32 : bool ref
-val output_c_object : bool ref
-val output_complete_object : bool ref
-val all_ccopts : string list ref
-val classic : bool ref
-val nopervasives : bool ref
-val open_modules : string list ref
-val preprocessor : string option ref
-val all_ppx : string list ref
-val annotations : bool ref
-val binary_annotations : bool ref
-val use_threads : bool ref
-val use_vmthreads : bool ref
-val noassert : bool ref
-val verbose : bool ref
-val noprompt : bool ref
-val nopromptcont : bool ref
-val init_file : string option ref
-val noinit : bool ref
-val use_prims : string ref
-val use_runtime : string ref
-val principal : bool ref
-val real_paths : bool ref
-val recursive_types : bool ref
-val strict_sequence : bool ref
-val strict_formats : bool ref
-val applicative_functors : bool ref
-val make_runtime : bool ref
-val gprofile : bool ref
-val c_compiler : string option ref
-val no_auto_link : bool ref
-val dllpaths : string list ref
-val make_package : bool ref
-val for_package : string option ref
-val error_size : int ref
-val float_const_prop : bool ref
-val transparent_modules : bool ref
-val dump_source : bool ref
-val dump_parsetree : bool ref
-val dump_typedtree : bool ref
-val dump_rawlambda : bool ref
-val dump_lambda : bool ref
-val dump_clambda : bool ref
-val dump_instr : bool ref
-val keep_asm_file : bool ref
-val optimize_for_speed : bool ref
-val dump_cmm : bool ref
-val dump_selection : bool ref
-val dump_cse : bool ref
-val dump_live : bool ref
-val dump_spill : bool ref
-val dump_split : bool ref
-val dump_interf : bool ref
-val dump_prefer : bool ref
-val dump_regalloc : bool ref
-val dump_reload : bool ref
-val dump_scheduling : bool ref
-val dump_linear : bool ref
-val keep_startup_file : bool ref
-val dump_combine : bool ref
-val native_code : bool ref
-val inline_threshold : int ref
-val dont_write_files : bool ref
-val std_include_flag : string -> string
-val std_include_dir : unit -> string list
-val shared : bool ref
-val dlcode : bool ref
-val runtime_variant : string ref
-val force_slash : bool ref
-val keep_docs : bool ref
-val keep_locs : bool ref
-val unsafe_string : bool ref
-val opaque : bool ref
-
- 
-val no_implicit_current_dir : bool ref
-val assume_no_mli : bool ref 
-
-
-end = struct
-#1 "clflags.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Command-line parameters *)
-
-let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
-and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
-and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
-
-let compile_only = ref false            (* -c *)
-and output_name = ref (None : string option) (* -o *)
-and include_dirs = ref ([] : string list)(* -I *)
-and no_std_include = ref false          (* -nostdlib *)
-and print_types = ref false             (* -i *)
-and make_archive = ref false            (* -a *)
-and debug = ref false                   (* -g *)
-and fast = ref false                    (* -unsafe *)
-and link_everything = ref false         (* -linkall *)
-and custom_runtime = ref false          (* -custom *)
-and no_check_prims = ref false          (* -no-check-prims *)
-and bytecode_compatible_32 = ref false  (* -compat-32 *)
-and output_c_object = ref false         (* -output-obj *)
-and output_complete_object = ref false  (* -output-complete-obj *)
-and all_ccopts = ref ([] : string list)     (* -ccopt *)
-and classic = ref false                 (* -nolabels *)
-and nopervasives = ref false            (* -nopervasives *)
-and preprocessor = ref(None : string option) (* -pp *)
-and all_ppx = ref ([] : string list)        (* -ppx *)
-let annotations = ref false             (* -annot *)
-let binary_annotations = ref false      (* -annot *)
-and use_threads = ref false             (* -thread *)
-and use_vmthreads = ref false           (* -vmthread *)
-and noassert = ref false                (* -noassert *)
-and verbose = ref false                 (* -verbose *)
-and noprompt = ref false                (* -noprompt *)
-and nopromptcont = ref false            (* -nopromptcont *)
-and init_file = ref (None : string option)   (* -init *)
-and noinit = ref false                  (* -noinit *)
-and open_modules = ref []               (* -open *)
-and use_prims = ref ""                  (* -use-prims ... *)
-and use_runtime = ref ""                (* -use-runtime ... *)
-and principal = ref false               (* -principal *)
-and real_paths = ref true               (* -short-paths *)
-and recursive_types = ref false         (* -rectypes *)
-and strict_sequence = ref false         (* -strict-sequence *)
-and strict_formats = ref false          (* -strict-formats *)
-and applicative_functors = ref true     (* -no-app-funct *)
-and make_runtime = ref false            (* -make-runtime *)
-and gprofile = ref false                (* -p *)
-and c_compiler = ref (None: string option) (* -cc *)
-and no_auto_link = ref false            (* -noautolink *)
-and dllpaths = ref ([] : string list)   (* -dllpath *)
-and make_package = ref false            (* -pack *)
-and for_package = ref (None: string option) (* -for-pack *)
-and error_size = ref 500                (* -error-size *)
-and float_const_prop = ref true         (* -no-float-const-prop *)
-and transparent_modules = ref false     (* -trans-mod *)
-let dump_source = ref false             (* -dsource *)
-let dump_parsetree = ref false          (* -dparsetree *)
-and dump_typedtree = ref false          (* -dtypedtree *)
-and dump_rawlambda = ref false          (* -drawlambda *)
-and dump_lambda = ref false             (* -dlambda *)
-and dump_clambda = ref false            (* -dclambda *)
-and dump_instr = ref false              (* -dinstr *)
-
-let keep_asm_file = ref false           (* -S *)
-let optimize_for_speed = ref true       (* -compact *)
-and opaque = ref false                  (* -opaque *)
-
-and dump_cmm = ref false                (* -dcmm *)
-let dump_selection = ref false          (* -dsel *)
-let dump_cse = ref false                (* -dcse *)
-let dump_live = ref false               (* -dlive *)
-let dump_spill = ref false              (* -dspill *)
-let dump_split = ref false              (* -dsplit *)
-let dump_interf = ref false             (* -dinterf *)
-let dump_prefer = ref false             (* -dprefer *)
-let dump_regalloc = ref false           (* -dalloc *)
-let dump_reload = ref false             (* -dreload *)
-let dump_scheduling = ref false         (* -dscheduling *)
-let dump_linear = ref false             (* -dlinear *)
-let keep_startup_file = ref false       (* -dstartup *)
-let dump_combine = ref false            (* -dcombine *)
-let native_code = ref false             (* set to true under ocamlopt *)
-let inline_threshold = ref 10
-let force_slash = ref false             (* for ocamldep *)
-
-let dont_write_files = ref false        (* set to true under ocamldoc *)
-
-let std_include_flag prefix =
-  if !no_std_include then ""
-  else (prefix ^ (Filename.quote Config.standard_library))
-;;
-
-let std_include_dir () =
-  if !no_std_include then [] else [Config.standard_library]
-;;
-
-let shared = ref false (* -shared *)
-let dlcode = ref true (* not -nodynlink *)
-
-let runtime_variant = ref "";;      (* -runtime-variant *)
-
-let keep_docs = ref false              (* -keep-docs *)
-let keep_locs = ref false              (* -keep-locs *)
-let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
-
- 
-let no_implicit_current_dir = ref false
-let assume_no_mli = ref false 
-
-
-end
-module Depend : sig 
-#1 "depend.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(** Module dependencies. *)
-
-module StringSet : Set.S with type elt = string
-
-val free_structure_names : StringSet.t ref
-
-val open_module : StringSet.t -> Longident.t -> unit
-
-val add_use_file : StringSet.t -> Parsetree.toplevel_phrase list -> unit
-
-val add_signature : StringSet.t -> Parsetree.signature -> unit
-
-val add_implementation : StringSet.t -> Parsetree.structure -> unit
-
-end = struct
-#1 "depend.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Asttypes
-open Location
-open Longident
-open Parsetree
-
-module StringSet = Set.Make(struct type t = string let compare = compare end)
-
-(* Collect free module identifiers in the a.s.t. *)
-
-let free_structure_names = ref StringSet.empty
-
-let rec add_path bv = function
-  | Lident s ->
-      if not (StringSet.mem s bv)
-      then free_structure_names := StringSet.add s !free_structure_names
-  | Ldot(l, _s) -> add_path bv l
-  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
-
-let open_module bv lid = add_path bv lid
-
-let add bv lid =
-  match lid.txt with
-    Ldot(l, _s) -> add_path bv l
-  | _ -> ()
-
-let addmodule bv lid = add_path bv lid.txt
-
-let rec add_type bv ty =
-  match ty.ptyp_desc with
-    Ptyp_any -> ()
-  | Ptyp_var _ -> ()
-  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
-  | Ptyp_tuple tl -> List.iter (add_type bv) tl
-  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_object (fl, _) -> List.iter (fun (_, _, t) -> add_type bv t) fl
-  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
-  | Ptyp_alias(t, _) -> add_type bv t
-  | Ptyp_variant(fl, _, _) ->
-      List.iter
-        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
-          | Rinherit sty -> add_type bv sty)
-        fl
-  | Ptyp_poly(_, t) -> add_type bv t
-  | Ptyp_package pt -> add_package_type bv pt
-  | Ptyp_extension _ -> ()
-
-and add_package_type bv (lid, l) =
-  add bv lid;
-  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
-
-let add_opt add_fn bv = function
-    None -> ()
-  | Some x -> add_fn bv x
-
-let add_constructor_decl bv pcd =
-  List.iter (add_type bv) pcd.pcd_args; Misc.may (add_type bv) pcd.pcd_res
-
-let add_type_declaration bv td =
-  List.iter
-    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
-    td.ptype_cstrs;
-  add_opt add_type bv td.ptype_manifest;
-  let add_tkind = function
-    Ptype_abstract -> ()
-  | Ptype_variant cstrs ->
-      List.iter (add_constructor_decl bv) cstrs
-  | Ptype_record lbls ->
-      List.iter (fun pld -> add_type bv pld.pld_type) lbls
-  | Ptype_open -> () in
-  add_tkind td.ptype_kind
-
-let add_extension_constructor bv ext =
-  match ext.pext_kind with
-      Pext_decl(args, rty) ->
-        List.iter (add_type bv) args; Misc.may (add_type bv) rty
-    | Pext_rebind lid -> add bv lid
-
-let add_type_extension bv te =
-  add bv te.ptyext_path;
-  List.iter (add_extension_constructor bv) te.ptyext_constructors
-
-let rec add_class_type bv cty =
-  match cty.pcty_desc with
-    Pcty_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
-      add_type bv ty;
-      List.iter (add_class_type_field bv) fieldl
-  | Pcty_arrow(_, ty1, cty2) ->
-      add_type bv ty1; add_class_type bv cty2
-  | Pcty_extension _ -> ()
-
-and add_class_type_field bv pctf =
-  match pctf.pctf_desc with
-    Pctf_inherit cty -> add_class_type bv cty
-  | Pctf_val(_, _, _, ty) -> add_type bv ty
-  | Pctf_method(_, _, _, ty) -> add_type bv ty
-  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pctf_attribute _ -> ()
-  | Pctf_extension _ -> ()
-
-let add_class_description bv infos =
-  add_class_type bv infos.pci_expr
-
-let add_class_type_declaration = add_class_description
-
-let pattern_bv = ref StringSet.empty
-
-let rec add_pattern bv pat =
-  match pat.ppat_desc with
-    Ppat_any -> ()
-  | Ppat_var _ -> ()
-  | Ppat_alias(p, _) -> add_pattern bv p
-  | Ppat_interval _
-  | Ppat_constant _ -> ()
-  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
-  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
-  | Ppat_record(pl, _) ->
-      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
-  | Ppat_array pl -> List.iter (add_pattern bv) pl
-  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
-  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
-  | Ppat_variant(_, op) -> add_opt add_pattern bv op
-  | Ppat_type li -> add bv li
-  | Ppat_lazy p -> add_pattern bv p
-  | Ppat_unpack id -> pattern_bv := StringSet.add id.txt !pattern_bv
-  | Ppat_exception p -> add_pattern bv p
-  | Ppat_extension _ -> ()
-
-let add_pattern bv pat =
-  pattern_bv := bv;
-  add_pattern bv pat;
-  !pattern_bv
-
-let rec add_expr bv exp =
-  match exp.pexp_desc with
-    Pexp_ident l -> add bv l
-  | Pexp_constant _ -> ()
-  | Pexp_let(rf, pel, e) ->
-      let bv = add_bindings rf bv pel in add_expr bv e
-  | Pexp_fun (_, opte, p, e) ->
-      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
-  | Pexp_function pel ->
-      add_cases bv pel
-  | Pexp_apply(e, el) ->
-      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
-  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
-  | Pexp_tuple el -> List.iter (add_expr bv) el
-  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
-  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
-  | Pexp_record(lblel, opte) ->
-      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
-      add_opt add_expr bv opte
-  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
-  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
-  | Pexp_array el -> List.iter (add_expr bv) el
-  | Pexp_ifthenelse(e1, e2, opte3) ->
-      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
-  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
-  | Pexp_for( _, e1, e2, _, e3) ->
-      add_expr bv e1; add_expr bv e2; add_expr bv e3
-  | Pexp_coerce(e1, oty2, ty3) ->
-      add_expr bv e1;
-      add_opt add_type bv oty2;
-      add_type bv ty3
-  | Pexp_constraint(e1, ty2) ->
-      add_expr bv e1;
-      add_type bv ty2
-  | Pexp_send(e, _m) -> add_expr bv e
-  | Pexp_new li -> add bv li
-  | Pexp_setinstvar(_v, e) -> add_expr bv e
-  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
-  | Pexp_letmodule(id, m, e) ->
-      add_module bv m; add_expr (StringSet.add id.txt bv) e
-  | Pexp_assert (e) -> add_expr bv e
-  | Pexp_lazy (e) -> add_expr bv e
-  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
-  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pexp_newtype (_, e) -> add_expr bv e
-  | Pexp_pack m -> add_module bv m
-  | Pexp_open (_ovf, m, e) -> open_module bv m.txt; add_expr bv e
-  | Pexp_extension _ -> ()
-
-and add_cases bv cases =
-  List.iter (add_case bv) cases
-
-and add_case bv {pc_lhs; pc_guard; pc_rhs} =
-  let bv = add_pattern bv pc_lhs in
-  add_opt add_expr bv pc_guard;
-  add_expr bv pc_rhs
-
-and add_bindings recf bv pel =
-  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
-  let bv = if recf = Recursive then bv' else bv in
-  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
-  bv'
-
-and add_modtype bv mty =
-  match mty.pmty_desc with
-    Pmty_ident l -> add bv l
-  | Pmty_alias l -> addmodule bv l
-  | Pmty_signature s -> add_signature bv s
-  | Pmty_functor(id, mty1, mty2) ->
-      Misc.may (add_modtype bv) mty1;
-      add_modtype (StringSet.add id.txt bv) mty2
-  | Pmty_with(mty, cstrl) ->
-      add_modtype bv mty;
-      List.iter
-        (function
-          | Pwith_type (_, td) -> add_type_declaration bv td
-          | Pwith_module (_, lid) -> addmodule bv lid
-          | Pwith_typesubst td -> add_type_declaration bv td
-          | Pwith_modsubst (_, lid) -> addmodule bv lid
-        )
-        cstrl
-  | Pmty_typeof m -> add_module bv m
-  | Pmty_extension _ -> ()
-
-and add_signature bv = function
-    [] -> ()
-  | item :: rem -> add_signature (add_sig_item bv item) rem
-
-and add_sig_item bv item =
-  match item.psig_desc with
-    Psig_value vd ->
-      add_type bv vd.pval_type; bv
-  | Psig_type dcls ->
-      List.iter (add_type_declaration bv) dcls; bv
-  | Psig_typext te ->
-      add_type_extension bv te; bv
-  | Psig_exception pext ->
-      add_extension_constructor bv pext; bv
-  | Psig_module pmd ->
-      add_modtype bv pmd.pmd_type; StringSet.add pmd.pmd_name.txt bv
-  | Psig_recmodule decls ->
-      let bv' =
-        List.fold_right StringSet.add
-                        (List.map (fun pmd -> pmd.pmd_name.txt) decls) bv
-      in
-      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
-      bv'
-  | Psig_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      bv
-  | Psig_open od ->
-      open_module bv od.popen_lid.txt; bv
-  | Psig_include incl ->
-      add_modtype bv incl.pincl_mod; bv
-  | Psig_class cdl ->
-      List.iter (add_class_description bv) cdl; bv
-  | Psig_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; bv
-  | Psig_attribute _ | Psig_extension _ ->
-      bv
-
-and add_module bv modl =
-  match modl.pmod_desc with
-    Pmod_ident l -> addmodule bv l
-  | Pmod_structure s -> ignore (add_structure bv s)
-  | Pmod_functor(id, mty, modl) ->
-      Misc.may (add_modtype bv) mty;
-      add_module (StringSet.add id.txt bv) modl
-  | Pmod_apply(mod1, mod2) ->
-      add_module bv mod1; add_module bv mod2
-  | Pmod_constraint(modl, mty) ->
-      add_module bv modl; add_modtype bv mty
-  | Pmod_unpack(e) ->
-      add_expr bv e
-  | Pmod_extension _ ->
-      ()
-
-and add_structure bv item_list =
-  List.fold_left add_struct_item bv item_list
-
-and add_struct_item bv item =
-  match item.pstr_desc with
-    Pstr_eval (e, _attrs) ->
-      add_expr bv e; bv
-  | Pstr_value(rf, pel) ->
-      let bv = add_bindings rf bv pel in bv
-  | Pstr_primitive vd ->
-      add_type bv vd.pval_type; bv
-  | Pstr_type dcls ->
-      List.iter (add_type_declaration bv) dcls; bv
-  | Pstr_typext te ->
-      add_type_extension bv te;
-      bv
-  | Pstr_exception pext ->
-      add_extension_constructor bv pext; bv
-  | Pstr_module x ->
-      add_module bv x.pmb_expr; StringSet.add x.pmb_name.txt bv
-  | Pstr_recmodule bindings ->
-      let bv' =
-        List.fold_right StringSet.add
-          (List.map (fun x -> x.pmb_name.txt) bindings) bv in
-      List.iter
-        (fun x -> add_module bv' x.pmb_expr)
-        bindings;
-      bv'
-  | Pstr_modtype x ->
-      begin match x.pmtd_type with
-        None -> ()
-      | Some mty -> add_modtype bv mty
-      end;
-      bv
-  | Pstr_open od ->
-      open_module bv od.popen_lid.txt; bv
-  | Pstr_class cdl ->
-      List.iter (add_class_declaration bv) cdl; bv
-  | Pstr_class_type cdtl ->
-      List.iter (add_class_type_declaration bv) cdtl; bv
-  | Pstr_include incl ->
-      add_module bv incl.pincl_mod; bv
-  | Pstr_attribute _ | Pstr_extension _ ->
-      bv
-
-and add_use_file bv top_phrs =
-  ignore (List.fold_left add_top_phrase bv top_phrs)
-
-and add_implementation bv l =
-  ignore (add_structure bv l)
-
-and add_top_phrase bv = function
-  | Ptop_def str -> add_structure bv str
-  | Ptop_dir (_, _) -> bv
-
-and add_class_expr bv ce =
-  match ce.pcl_desc with
-    Pcl_constr(l, tyl) ->
-      add bv l; List.iter (add_type bv) tyl
-  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
-      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
-  | Pcl_fun(_, opte, pat, ce) ->
-      add_opt add_expr bv opte;
-      let bv = add_pattern bv pat in add_class_expr bv ce
-  | Pcl_apply(ce, exprl) ->
-      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
-  | Pcl_let(rf, pel, ce) ->
-      let bv = add_bindings rf bv pel in add_class_expr bv ce
-  | Pcl_constraint(ce, ct) ->
-      add_class_expr bv ce; add_class_type bv ct
-  | Pcl_extension _ -> ()
-
-and add_class_field bv pcf =
-  match pcf.pcf_desc with
-    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
-  | Pcf_val(_, _, Cfk_concrete (_, e))
-  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
-  | Pcf_val(_, _, Cfk_virtual ty)
-  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
-  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
-  | Pcf_initializer e -> add_expr bv e
-  | Pcf_attribute _ | Pcf_extension _ -> ()
-
-and add_class_declaration bv decl =
-  add_class_expr bv decl.pci_expr
-
-end
-module Ext_format : sig 
-#1 "ext_format.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Simplified wrapper module for the standard library [Format] module. 
-  *) 
-
-type t = private Format.formatter
-
-val string : t -> string -> unit
-
-val break : t -> unit
-
-val break1 : t -> unit
-
-val space :  t -> unit
-
-val group : t -> int -> (unit -> 'a) -> 'a
-(** [group] will record current indentation 
-    and indent futher
- *)
-
-val vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val paren : t -> (unit -> 'a) -> 'a
-
-val paren_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_group : t -> int -> (unit -> 'a) -> 'a
-
-val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
-
-val bracket_group : t -> int -> (unit -> 'a) -> 'a
-
-val newline : t -> unit
-
-val to_out_channel : out_channel -> t
-
-val flush : t -> unit -> unit
-
-val pp_print_queue :
-  ?pp_sep:(Format.formatter -> unit -> unit) ->
-  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
-
-end = struct
-#1 "ext_format.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-open Format
-
-type t = formatter
-
-let string = pp_print_string
-
-let break = fun fmt -> pp_print_break fmt 0 0
-
-let break1 =
-  fun fmt -> pp_print_break fmt 0 1 
-
-let space  fmt  = 
-  pp_print_break fmt 1 0
-
-let vgroup fmt indent u = 
-  pp_open_vbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-
-let group fmt indent u = 
-  pp_open_hovbox fmt indent; 
-  let v = u () in
-  pp_close_box fmt ();
-  v
-  
-let paren fmt u = 
-  string fmt "(";
-  let v = u () in
-  string fmt ")";
-  v
-
-let brace fmt u = 
-  string fmt "{";
-  (* break1 fmt ; *)
-  let v = u () in
-  string fmt "}";
-  v 
-
-let bracket fmt u = 
-  string fmt "[";
-  let v = u () in
-  string fmt "]";
-  v 
-
-let paren_group st n action = 
-  group st n (fun _ -> paren st action)
-
-let brace_group st n action = 
-  group st n (fun _ -> brace st action )
-
-let brace_vgroup st n action = 
-  vgroup st n (fun _ -> 
-    string st "{";
-    pp_print_break st 0 2;
-    let v = vgroup st 0 action in
-    pp_print_break st 0 0;
-    string st "}";
-    v
-              )
-let bracket_group st n action = 
-  group st n (fun _ -> bracket st action)
-
-let newline fmt = pp_print_newline fmt ()
-
-let to_out_channel = formatter_of_out_channel
-
-(* let non_breaking_space  fmt = string fmt " " *)
-(* let set_needed_space_function _ _ = () *)
-let flush = pp_print_flush
-
-let list = pp_print_list
-
-let rec pp_print_queue ?(pp_sep = pp_print_cut) pp_v ppf q =
-  Queue.iter (fun q -> pp_v ppf q ;  pp_sep ppf ()) q 
-
-end
-module Ext_list : sig 
-#1 "ext_list.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [List] module *)
-    
-(** TODO some function are no efficiently implemented. *) 
-
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
-
-val excludes : ('a -> bool) -> 'a list -> bool * 'a list
-val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
-val exclude_with_fact2 : 
-  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
-val same_length : 'a list -> 'b list -> bool
-
-val init : int -> (int -> 'a) -> 'a list
-
-val take : int -> 'a list -> 'a list * 'a list
-val try_take : int -> 'a list -> 'a list * int * 'a list 
-
-val exclude_tail : 'a list -> 'a * 'a list
-
-val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
-
-val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
-
-val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
-
-val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
-
-(** for the last element the first element will be passed [true] *)
-
-val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
-
-val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
-
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
-
-val drop : int -> 'a list -> 'a list 
-
-val for_all_ret : ('a -> bool) -> 'a list -> 'a option
-
-val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
-(** [for_all_opt f l] returns [None] if all return [None],  
-    otherwise returns the first one. 
- *)
-
-val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-(** same as [List.fold_left]. 
-    Provide an api so that list can be easily swapped by other containers  
- *)
-
-val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
-
-val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
-
-val rev_iter : ('a -> unit) -> 'a list -> unit
-
-val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
-
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option
-
-(** [f] is applied follow the list order *)
-val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
-
-
-val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
-
-(** [fn] is applied from left to right *)
-val reduce_from_left : ('a -> 'a -> 'a) -> 'a list -> 'a
-
-
-type 'a t = 'a list ref
-
-val create_ref_empty : unit -> 'a t
-
-val ref_top : 'a t -> 'a 
-
-val ref_empty : 'a t -> bool
-
-val ref_push : 'a -> 'a t -> unit
-
-val ref_pop : 'a t -> 'a
-
-val rev_except_last : 'a list -> 'a list * 'a
-
-val sort_via_array :
-  ('a -> 'a -> int) -> 'a list -> 'a list
-
-val last : 'a list -> 'a
-
-
-
-end = struct
-#1 "ext_list.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let rec filter_map (f: 'a -> 'b option) xs = 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-      begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
-      end
-
-let excludes (p : 'a -> bool ) l : bool * 'a list=
-  let excluded = ref false in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := true ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  if !excluded then true, v else false,l
-
-let exclude_with_fact p l =
-  let excluded = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := Some x ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded , if !excluded <> None then v else l 
-
-
-(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
-let exclude_with_fact2 p1 p2 l =
-  let excluded1 = ref None in 
-  let excluded2 = ref None in 
-  let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p1 x then 
-      begin 
-        excluded1 := Some x ;
-        aux accu l
-      end
-    else if p2 x then 
-      begin 
-        excluded2 := Some x ; 
-        aux accu l 
-      end
-    else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
-
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
-  | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
-
-let  filter_mapi (f: int -> 'a -> 'b option) xs = 
-  let rec aux i xs = 
-    match xs with 
-    | [] -> []
-    | y :: ys -> 
-        begin match f i y with 
-        | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-        end in
-  aux 0 xs 
-
-let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f u v with 
-      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2 f us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2"
-
-let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
-  let rec aux i xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-      begin match f i u v with 
-      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: aux (i + 1) us vs
-      end
-  | _ -> invalid_arg "Ext_list.filter_map2i" in
-  aux 0 xs ys
-
-let rec rev_map_append  f l1 l2 =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append f l (f a :: l2)
-
-let flat_map2 f lx ly = 
-  let rec aux acc lx ly = 
-    match lx, ly with 
-    | [], [] 
-      -> List.rev acc
-    | x::xs, y::ys 
-      ->  aux (List.rev_append (f x y) acc) xs ys
-    | _, _ -> invalid_arg "Ext_list.flat_map2" in
-  aux [] lx ly
-        
-let flat_map f lx =
-  let rec aux acc lx =
-    match lx with
-    | [] -> List.rev acc
-    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
-  aux [] lx
-
-let rec map2_last f l1 l2 =
-  match (l1, l2) with
-  | ([], []) -> []
-  | [u], [v] -> [f true u v ]
-  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
-  | (_, _) -> invalid_arg "List.map2_last"
-
-let rec map_last f l1 =
-  match l1 with
-  | [] -> []
-  | [u]-> [f true u ]
-  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
-
-
-let rec fold_right2_last f l1 l2 accu  = 
-  match (l1, l2) with
-  | ([], []) -> accu
-  | [last1], [last2] -> f true  last1 last2 accu
-  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2"
-
-
-let init n f = 
-  Array.to_list (Array.init n f)
-
-let take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  < n then invalid_arg "Ext_list.take"
-  else (Array.to_list (Array.sub arr 0 n ), 
-        Array.to_list (Array.sub arr n (arr_length - n)))
-
-let try_take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  <= n then 
-    l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
-
-let exclude_tail (x : 'a list) = 
-  let rec aux acc x = 
-    match x with 
-    | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ x ] ->  x, List.rev acc
-    | y0::ys -> aux (y0::acc) ys in
-  aux [] x
-
-(* For small list, only need partial equality 
-   {[
-   group (=) [1;2;3;4;3]
-   ;;
-   - : int list list = [[3; 3]; [4]; [2]; [1]]
-   # group (=) [];;
-   - : 'a list list = []
-   ]}
- *)
-let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-      aux cmp x (group cmp xs )
-
-and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | y::ys -> 
-      if cmp x (List.hd y) (* cannot be null*) then
-        (x::y) :: ys 
-      else
-        y :: aux cmp x ys                                 
-  
-let stable_group cmp lst =  group cmp lst |> List.rev 
-
-let rec drop n h = 
-  if n < 0 then invalid_arg "Ext_list.drop"
-  else if n = 0 then h 
-  else if h = [] then invalid_arg "Ext_list.drop"
-  else 
-    drop (n - 1) (List.tl h)
-
-let rec for_all_ret  p = function
-  | [] -> None
-  | a::l -> 
-      if p a 
-      then for_all_ret p l
-      else Some a 
-
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-      match p a with
-      | None -> for_all_opt p l
-      | v -> v 
-
-let fold f l init = 
-  List.fold_left (fun acc i -> f  i init) init l 
-
-let rev_map_acc  acc f l = 
-  let rec rmap_f accu = function
-    | [] -> accu
-    | a::l -> rmap_f (f a :: accu) l
-  in
-  rmap_f acc l
-
-let rec rev_iter f xs =
-    match xs with    
-    | [] -> ()
-    | y :: ys -> 
-      rev_iter f ys ;
-      f y      
-      
-let rec for_all2_no_exn p l1 l2 = 
-  match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
-  | (_, _) -> false
-
-
-let rec find_no_exn p = function
-  | [] -> None
-  | x :: l -> if p x then Some x else find_no_exn p l
-
-
-let rec find_opt p = function
-  | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt p l
-
-
-let split_map 
-    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
-  let rec aux bs cs xs =
-    match xs with 
-    | [] -> List.rev bs, List.rev cs 
-    | u::us -> 
-      let b,c =  f u in aux (b::bs) (c ::cs) us in 
-
-  aux [] [] xs 
-
-
-(*
-   {[
-     reduce_from_right (-) [1;2;3];;
-     - : int = 2
-               # reduce_from_right (-) [1;2;3; 4];;
-     - : int = -2
-                # reduce_from_right (-) [1];;
-     - : int = 1
-               # reduce_from_right (-) [1;2;3; 4; 5];;
-     - : int = 3
-   ]} 
-*)
-let reduce_from_right fn lst = 
-  begin match List.rev lst with
-    | last :: rest -> 
-      List.fold_left  (fun x y -> fn y x) last rest 
-    | _ -> invalid_arg "Ext_list.reduce" 
-  end
-let reduce_from_left fn lst = 
-  match lst with 
-  | first :: rest ->  List.fold_left fn first rest 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
-
-
-type 'a t = 'a list ref
-
-let create_ref_empty () = ref []
-
-let ref_top x = 
-  match !x with 
-  | y::_ -> y 
-  | _ -> invalid_arg "Ext_list.ref_top"
-
-let ref_empty x = 
-  match !x with [] -> true | _ -> false 
-
-let ref_push x refs = 
-  refs := x :: !refs
-
-let ref_pop refs = 
-  match !refs with 
-  | [] -> invalid_arg "Ext_list.ref_pop"
-  | x::rest -> 
-    refs := rest ; 
-    x     
-
-let rev_except_last xs =
-  let rec aux acc xs =
-    match xs with
-    | [ ] -> invalid_arg "Ext_list.rev_except_last"
-    | [ x ] -> acc ,x
-    | x :: xs -> aux (x::acc) xs in
-  aux [] xs   
-
-let sort_via_array cmp lst =
-  let arr = Array.of_list lst  in
-  Array.sort cmp arr;
-  Array.to_list arr
-
-let rec last xs =
-  match xs with 
-  | [x] -> x 
-  | _ :: tl -> last tl 
-  | [] -> invalid_arg "Ext_list.last"
-
-
-end
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type module_system = 
-  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
-
-
-type package_info = 
- (module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty 
-  | NonBrowser of (package_name * package_info  list)
-
-
-
-val cmj_ext : string 
-
-
-(* val is_browser : unit -> bool  *)
-(* val set_browser : unit -> unit *)
-
-
-val get_ext : unit -> string
-
-(** depends on [package_infos], used in {!Js_program_loader} *)
-val get_output_dir : pkg_dir:string -> module_system -> string -> string
-
-
-(** used by command line option *)
-val set_npm_package_path : string -> unit 
-val get_packages_info : unit -> packages_info
-
-type info_query = 
-  [ `Empty 
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound 
-  ]
-
-val query_package_infos : 
-  packages_info ->
-  module_system ->
-  info_query
-
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-val get_current_package_name_and_path : 
-  module_system -> info_query
-
-
-val set_package_name : string -> unit 
-val get_package_name : unit -> string option
-
-(** corss module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** generate tds option *)
-val default_gen_tds : bool ref
-
-(** options for builtion ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-val no_warn_ffi_type : bool ref 
-val no_warn_unused_bs_attribute : bool ref 
-
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-(* It will imply [-noassert] be set too, note from the implmentation point of view, 
-   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
-   [if (3<>2) then assert false]
- *)
-val no_any_assert : bool ref 
-val set_no_any_assert : unit -> unit
-val get_no_any_assert : unit -> bool 
-
-
-val block : string
-val int32 : string
-val gc : string 
-val backtrace : string
-
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string
-val bytes : string  
-val float : string 
-val curry : string 
-(* val bigarray : string *)
-(* val unix : string *)
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
-val js_primitive : string
-val module_ : string
-
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-val get_module_name : unit -> string
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-val is_windows : bool 
-
-val better_errors : bool ref
-val sort_imports : bool ref 
-val dump_js : bool ref
-val syntax_only  : bool ref
-val binary_ast : bool ref
-
-val lib_ocaml_dir : string
-
-end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-type env =
-  | NodeJS
-  | AmdJS
-  | Goog (* of string option *)
-
-
-
-type path = string
-type module_system =
-  [ `NodeJS | `AmdJS | `Goog ]
-type package_info =
- ( module_system * string )
-
-type package_name  = string
-type packages_info =
-  | Empty (* No set *)
-  | NonBrowser of (package_name * package_info  list)
-(** we don't force people to use package *)
-
-
-
-let ext = ref ".js"
-let cmj_ext = ".cmj"
-
-
-
-let get_ext () = !ext
-
-
-let packages_info : packages_info ref = ref Empty
-
-
-let get_package_name () =
-  match !packages_info with
-  | Empty  -> None
-  | NonBrowser(n,_) -> Some n
-
-let no_version_header = ref false
-
-let set_package_name name =
-  match !packages_info with
-  | Empty -> packages_info := NonBrowser(name,  [])
-  |  _ ->
-    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
-
-
-let set_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match package_name with
-         | "commonjs" -> `NodeJS
-         | "amdjs" -> `AmdJS
-         | "goog" -> `Goog
-         | _ ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        `NodeJS, path
-      | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs))
-   (** Browser is not set via command line only for internal use *)
-
-
-
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-let get_packages_info () = !packages_info
-
-type info_query =
-  [ `Empty
-  | `Package_script of string
-  | `Found of package_name * string
-  | `NotFound ]
-let query_package_infos package_infos module_system =
-  match package_infos with
-  | Empty -> `Empty
-  | NonBrowser (name, []) -> `Package_script name
-  | NonBrowser (name, paths) ->
-    begin match List.find (fun (k, _) -> k = module_system) paths with
-      | (_, x) -> `Found (name, x)
-      | exception _ -> `NotFound
-    end
-
-let get_current_package_name_and_path   module_system =
-  query_package_infos !packages_info module_system
-
-
-(* for a single pass compilation, [output_dir]
-   can be cached
-*)
-let get_output_dir ~pkg_dir module_system filename =
-  match !packages_info with
-  | Empty | NonBrowser (_, [])->
-    if Filename.is_relative filename then
-      Lazy.force Ext_filename.cwd //
-      Filename.dirname filename
-    else
-      Filename.dirname filename
-  | NonBrowser (_,  modules) ->
-    begin match List.find (fun (k,_) -> k = module_system) modules with
-      | (_, _path) -> pkg_dir // _path
-      |  exception _ -> assert false
-    end
-
-
-
-
-let default_gen_tds = ref false
-
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unused_bs_attribute = ref false
-
-
-let builtin_exceptions = "Caml_builtin_exceptions"
-let exceptions = "Caml_exceptions"
-let io = "Caml_io"
-let sys = "Caml_sys"
-let lexer = "Caml_lexer"
-let parser = "Caml_parser"
-let obj_runtime = "Caml_obj"
-let array = "Caml_array"
-let format = "Caml_format"
-let string = "Caml_string"
-let bytes = "Caml_bytes"
-let float = "Caml_float"
-let hash = "Caml_hash"
-let oo = "Caml_oo"
-let curry = "Curry"
-let int64 = "Caml_int64"
-let md5 = "Caml_md5"
-let weak = "Caml_weak"
-let backtrace = "Caml_backtrace"
-let gc = "Caml_gc"
-let int32 = "Caml_int32"
-let block = "Block"
-let js_primitive = "Js_primitive"
-let module_ = "Caml_module"
-let current_file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
-let get_module_name () =
-  Filename.chop_extension
-    (Filename.basename (String.uncapitalize !current_file))
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-let no_any_assert = ref false
-
-let set_no_any_assert () = no_any_assert := true
-let get_no_any_assert () = !no_any_assert
-
-let better_errors = ref false
-let sort_imports = ref false
-let dump_js = ref false
-
-let is_windows =
-  match Sys.os_type with
-  | "Win32"
-  | "Cygwin"-> true
-  | _ -> false
-
-let syntax_only = ref false
-let binary_ast = ref false
-
-(** The installation directory, it will affect 
-    [-bs-package-include] and [bsb] on how to install it and look it up
-*)
-let lib_ocaml_dir = Filename.concat "lib" "ocaml"
-
-end
-module Ast_extract : sig 
-#1 "ast_extract.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type _ kind =
-  | Ml_kind : Parsetree.structure kind
-  | Mli_kind : Parsetree.signature kind
-
-
-
-
-
-
-module String_set = Depend.StringSet
-
-val read_parse_and_extract : 'a kind -> 'a -> String_set.t
-
-type ('a,'b) t 
-
-val sort_files_by_dependencies :
-  domain:String_set.t -> String_set.t String_map.t -> string Queue.t
-
-
-val sort :
-  ('a -> Parsetree.structure) ->
-  ('b -> Parsetree.signature) ->
-  ('a, 'b) t String_map.t -> string Queue.t  
-
-
-
-(**
-   [build fmt files parse_implementation parse_interface]
-   Given a list of files return an ast table 
-*)
-val collect_ast_map :
-  Format.formatter ->
-  string list ->
-  (Format.formatter -> string -> 'a) ->
-  (Format.formatter -> string -> 'b) ->
-  ('a, 'b) t String_map.t
-
-type dir_spec = 
-  { dir : string ;
-    mutable  excludes : string list 
-  }
-
-(** If the genereated queue is empty, it means 
-    1. The main module  does not exist (does not exist due to typo)
-    2. It does exist but not in search path
-    The order matters from head to tail 
-*)
-val collect_from_main :
-  ?extra_dirs:dir_spec list -> 
-  ?excludes : string list -> 
-  Format.formatter ->
-  (Format.formatter -> string -> 'a) ->
-  (Format.formatter -> string -> 'b) ->
-  ('a -> Parsetree.structure) ->
-  ('b -> Parsetree.signature) ->
-  string -> ('a, 'b) t String_map.t * string Queue.t
-
-val build_queue :
-  Format.formatter ->
-  string Queue.t ->
-  ('b, 'c) t String_map.t ->
-  (Format.formatter -> string -> string -> 'b -> unit) ->
-  (Format.formatter -> string -> string -> 'c -> unit) -> unit
-  
-val handle_queue :
-  Format.formatter ->
-  String_map.key Queue.t ->
-  ('a, 'b) t String_map.t ->
-  (string -> string -> 'a -> unit) ->
-  (string -> string -> 'b  -> unit) ->
-  (string -> string -> string -> 'b -> 'a -> unit) -> unit
-
-
-val build_lazy_queue :
-  Format.formatter ->
-  string Queue.t ->
-  (Parsetree.structure lazy_t, Parsetree.signature lazy_t) t String_map.t ->
-  (Format.formatter -> string -> string -> Parsetree.structure -> unit) ->
-  (Format.formatter -> string -> string -> Parsetree.signature -> unit) -> unit  
-
-val handle_depfile : 
-  string option -> string -> unit
-
-end = struct
-#1 "ast_extract.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type module_name = private string
-
-module String_set = Depend.StringSet
-
-type _ kind =
-  | Ml_kind : Parsetree.structure kind
-  | Mli_kind : Parsetree.signature kind
-        
-let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
-  Depend.free_structure_names := String_set.empty;
-  let bound_vars = String_set.empty in
-  List.iter
-    (fun modname  ->
-       Depend.open_module bound_vars (Longident.Lident modname))
-    (!Clflags.open_modules);
-  (match k with
-   | Ml_kind  -> Depend.add_implementation bound_vars ast
-   | Mli_kind  -> Depend.add_signature bound_vars ast  ); 
-  !Depend.free_structure_names
-
-
-type ('a,'b) ast_info =
-  | Ml of
-      string * (* sourcefile *)
-      'a *
-      string (* opref *)      
-  | Mli of string * (* sourcefile *)
-           'b *
-           string (* opref *)
-  | Ml_mli of
-      string * (* sourcefile *)
-      'a *
-      string  * (* opref1 *)
-      string * (* sourcefile *)      
-      'b *
-      string (* opref2*)
-
-type ('a,'b) t =
-  { module_name : string ; ast_info : ('a,'b) ast_info }
-
-
-(* only visit nodes that are currently in the domain *)
-(* https://en.wikipedia.org/wiki/Topological_sorting *)
-(* dfs   *)
-let sort_files_by_dependencies ~domain dependency_graph =
-  let next current =
-    (String_map.find  current dependency_graph) in    
-  let worklist = ref domain in
-  let result = Queue.create () in
-  let rec visit visiting path current =
-    if String_set.mem current visiting then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
-    else if String_set.mem current !worklist then
-      begin
-        next current |>        
-        String_set.iter
-          (fun node ->
-             if  String_map.mem node  dependency_graph then
-               visit (String_set.add current visiting) (current::path) node)
-        ;
-        worklist := String_set.remove  current !worklist;
-        Queue.push current result ;
-      end in        
-  while not (String_set.is_empty !worklist) do 
-    visit String_set.empty []  (String_set.choose !worklist)
-  done;
-  if Js_config.get_diagnose () then
-    Format.fprintf Format.err_formatter
-      "Order: @[%a@]@."    
-      (Ext_format.pp_print_queue
-         ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      result ;       
-  result
-;;
-
-
-
-let sort  project_ml project_mli (ast_table : _ t String_map.t) = 
-  let domain =
-    String_map.fold
-      (fun k _ acc -> String_set.add k acc)
-      ast_table String_set.empty in
-  let h =
-    String_map.map
-      (fun
-        ({ast_info})
-        ->
-          match ast_info with
-          | Ml (_, ast,  _)
-            ->
-            read_parse_and_extract Ml_kind (project_ml ast)            
-          | Mli (_, ast, _)
-            ->
-            read_parse_and_extract Mli_kind (project_mli ast)
-          | Ml_mli (_, impl, _, _, intf, _)
-            ->
-            String_set.union
-              (read_parse_and_extract Ml_kind (project_ml impl))
-              (read_parse_and_extract Mli_kind (project_mli intf))              
-      ) ast_table in    
-  sort_files_by_dependencies  domain h
-
-(** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
-let check_suffix  name  = 
-  if Filename.check_suffix name ".ml"
-  || Filename.check_suffix name ".mlt" then 
-    `Ml,
-    Ext_filename.chop_extension_if_any  name 
-  else if Filename.check_suffix name !Config.interface_suffix then 
-    `Mli,   Ext_filename.chop_extension_if_any  name 
-  else 
-    raise(Arg.Bad("don't know what to do with " ^ name))
-
-
-let collect_ast_map ppf files parse_implementation parse_interface  =
-  List.fold_left
-    (fun (acc : _ t String_map.t)
-      source_file ->
-      match check_suffix source_file with
-      | `Ml, opref ->
-        let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
-          | exception Not_found ->
-            String_map.add module_name
-              {ast_info =
-                 (Ml (source_file, parse_implementation
-                        ppf source_file, opref));
-               module_name ;
-              } acc
-          | {ast_info = (Ml (source_file2, _, _)
-                        | Ml_mli(source_file2, _, _,_,_,_))} ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info =  Mli (source_file2, intf, opref2)}
-            ->
-            String_map.add module_name
-              {ast_info =
-                 Ml_mli (source_file,
-                         parse_implementation ppf source_file,
-                         opref,
-                         source_file2,
-                         intf,
-                         opref2
-                        );
-               module_name} acc
-        end
-      | `Mli, opref ->
-        let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
-          | exception Not_found ->
-            String_map.add module_name
-              {ast_info = (Mli (source_file, parse_interface
-                                              ppf source_file, opref));
-               module_name } acc
-          | {ast_info =
-               (Mli (source_file2, _, _) |
-                Ml_mli(_,_,_,source_file2,_,_)) } ->
-            Bs_exception.error
-              (Bs_duplicated_module (source_file, source_file2))
-          | {ast_info = Ml (source_file2, impl, opref2)}
-            ->
-            String_map.add module_name
-              {ast_info =
-                 Ml_mli
-                   (source_file2,
-                    impl,
-                    opref2,
-                    source_file,
-                    parse_interface ppf source_file,
-                    opref
-                   );
-               module_name} acc
-        end
-    ) String_map.empty files
-;;
-type dir_spec = 
-  { dir : string ;
-    mutable  excludes : string list 
-  }
-
-let collect_from_main 
-    ?(extra_dirs=[])
-    ?(excludes=[])
-    (ppf : Format.formatter)
-    parse_implementation
-    parse_interface
-    project_impl 
-    project_intf 
-    main_module =
-  let files = 
-    List.fold_left (fun acc dir_spec -> 
-        let  dirname, excludes = 
-          match dir_spec with 
-          | { dir =  dirname; excludes = dir_excludes} ->
-          (*   dirname, excludes *)
-          (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
-            dirname,
-            Ext_list.flat_map 
-              (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
-              dir_excludes @ excludes
-        in 
-        Array.fold_left (fun acc source_file -> 
-            if (Ext_string.ends_with source_file ".ml" ||
-               Ext_string.ends_with source_file ".mli" )
-               && (* not_excluded source_file *) (not (List.mem source_file excludes))
-            then 
-              (Filename.concat dirname source_file) :: acc else acc
-          ) acc (Sys.readdir dirname))
-      [] extra_dirs in
-  let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
-  let visited = Hashtbl.create 31 in
-  let result = Queue.create () in  
-  let next module_name =
-    match String_map.find module_name ast_table with
-    | exception _ -> String_set.empty
-    | {ast_info = Ml (_,  impl, _)} ->
-      read_parse_and_extract Ml_kind (project_impl impl)
-    | {ast_info = Mli (_,  intf,_)} ->
-      read_parse_and_extract Mli_kind (project_intf intf)
-    | {ast_info = Ml_mli(_, impl, _, _,  intf, _)}
-      -> 
-      String_set.union
-        (read_parse_and_extract Ml_kind (project_impl impl))
-        (read_parse_and_extract Mli_kind (project_intf intf))
-  in
-  let rec visit visiting path current =
-    if String_set.mem current visiting  then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
-    else
-    if not (Hashtbl.mem visited current)
-    && String_map.mem current ast_table then
-      begin
-        String_set.iter
-          (visit
-             (String_set.add current visiting)
-             (current::path))
-          (next current) ;
-        Queue.push current result;
-        Hashtbl.add visited current ();
-      end in
-  visit (String_set.empty) [] main_module ;
-  ast_table, result   
-
-
-let build_queue ppf queue
-    (ast_table : _ t String_map.t)
-    after_parsing_impl
-    after_parsing_sig    
-  =
-  queue
-  |> Queue.iter
-    (fun modname -> 
-      match String_map.find modname ast_table  with
-      | {ast_info = Ml(source_file,ast, opref)}
-        -> 
-        after_parsing_impl ppf source_file 
-          opref ast 
-      | {ast_info = Mli (source_file,ast,opref) ; }  
-        ->
-        after_parsing_sig ppf source_file 
-          opref ast 
-      | {ast_info = Ml_mli(source_file1,impl,opref1,source_file2,intf,opref2)}
-        -> 
-        after_parsing_sig ppf source_file1 opref1 intf ;
-        after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
-    )
-
-
-let handle_queue ppf queue ast_table decorate_module_only decorate_interface_only decorate_module = 
-  queue 
-  |> Queue.iter
-    (fun base ->
-       match (String_map.find  base ast_table).ast_info with
-       | exception Not_found -> assert false
-       | Ml (ml_name,  ml_content, _)
-         ->
-         decorate_module_only  base ml_name ml_content
-       | Mli (mli_name , mli_content, _) ->
-         decorate_interface_only base  mli_name mli_content
-       | Ml_mli (ml_name, ml_content, _, mli_name,   mli_content, _)
-         ->
-         decorate_module  base mli_name ml_name mli_content ml_content
-
-    )
-
-
-
-let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
-    after_parsing_impl
-    after_parsing_sig    
-  =
-  queue |> Queue.iter (fun modname -> 
-      match String_map.find modname ast_table  with
-      | {ast_info = Ml(source_file,lazy ast, opref)}
-        -> 
-        after_parsing_impl ppf source_file opref ast 
-      | {ast_info = Mli (source_file,lazy ast,opref) ; }  
-        ->
-        after_parsing_sig ppf source_file opref ast 
-      | {ast_info = Ml_mli(source_file1,lazy impl,opref1,source_file2,lazy intf,opref2)}
-        -> 
-        after_parsing_sig ppf source_file1 opref1 intf ;
-        after_parsing_impl ppf source_file2 opref2 impl
-      | exception Not_found -> assert false 
-    )
-
-
-let dep_lit = " :"
-let space = " "
-let (//) = Filename.concat
-let length_space = String.length space 
-let handle_depfile oprefix  (fn : string) : unit = 
-  let op_concat s = match oprefix with None -> s | Some v -> v // s in 
-  let data =
-    Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
-  let deps = 
-    match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
-    | Some  input_file -> 
-      let stru  = Binary_ast.read_ast Ml  fn in 
-      let set = read_parse_and_extract Ml_kind stru in 
-      let dependent_file = (input_file ^ Literals.suffix_cmj) ^ dep_lit in
-      let (files, len) = 
-      String_set.fold
-        (fun k ((acc, len) as v) -> 
-           match String_map.find k data with
-           | {ml = Ml s | Re s  } 
-           | {mll = Some s } 
-             -> 
-             let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
-             in (new_file :: acc , len + String.length new_file + length_space)
-           | {mli = Mli s | Rei s } -> 
-             let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
-             (new_file :: acc , len + String.length new_file + length_space)
-           | _ -> assert false
-           | exception Not_found -> v
-        ) set ([],String.length dependent_file)in
-      Ext_string.unsafe_concat_with_length len
-        space
-        (dependent_file :: files)
-    | None -> 
-      begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
-      | Some input_file -> 
-        let stri = Binary_ast.read_ast Mli  fn in 
-        let s = read_parse_and_extract Mli_kind stri in 
-        let dependent_file = (input_file ^ Literals.suffix_cmi) ^ dep_lit in
-        let (files, len) = 
-          String_set.fold
-            (fun k ((acc, len) as v) ->
-               match String_map.find k data with 
-               | { ml = Ml f | Re f  }
-               | { mll = Some f }
-               | { mli = Mli f | Rei f } -> 
-                 let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
-                 (new_file :: acc , len + String.length new_file + length_space)
-               | _ -> assert false
-               | exception Not_found -> v
-            ) s  ([], String.length dependent_file) in 
-        Ext_string.unsafe_concat_with_length len
-          space 
-          (dependent_file :: files) 
-      | None -> 
-        raise (Arg.Bad ("don't know what to do with  " ^ fn))
-      end
-  in 
-  let output = fn ^ Literals.suffix_d in
-  Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
-
-end
-module Bs_version : sig 
-#1 "bs_version.mli"
-val version : string
-
-end = struct
-#1 "bs_version.ml"
-let version = "1.3.0"
-
-end
 module Docstrings : sig 
 #1 "docstrings.mli"
 (***********************************************************************)
@@ -8138,6 +4064,237 @@ module Cstr = struct
      pcstr_fields = fields;
     }
 end
+
+
+end
+module Clflags : sig 
+#1 "clflags.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2005 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+val objfiles : string list ref
+val ccobjs : string list ref
+val dllibs : string list ref
+val compile_only : bool ref
+val output_name : string option ref
+val include_dirs : string list ref
+val no_std_include : bool ref
+val print_types : bool ref
+val make_archive : bool ref
+val debug : bool ref
+val fast : bool ref
+val link_everything : bool ref
+val custom_runtime : bool ref
+val no_check_prims : bool ref
+val bytecode_compatible_32 : bool ref
+val output_c_object : bool ref
+val output_complete_object : bool ref
+val all_ccopts : string list ref
+val classic : bool ref
+val nopervasives : bool ref
+val open_modules : string list ref
+val preprocessor : string option ref
+val all_ppx : string list ref
+val annotations : bool ref
+val binary_annotations : bool ref
+val use_threads : bool ref
+val use_vmthreads : bool ref
+val noassert : bool ref
+val verbose : bool ref
+val noprompt : bool ref
+val nopromptcont : bool ref
+val init_file : string option ref
+val noinit : bool ref
+val use_prims : string ref
+val use_runtime : string ref
+val principal : bool ref
+val real_paths : bool ref
+val recursive_types : bool ref
+val strict_sequence : bool ref
+val strict_formats : bool ref
+val applicative_functors : bool ref
+val make_runtime : bool ref
+val gprofile : bool ref
+val c_compiler : string option ref
+val no_auto_link : bool ref
+val dllpaths : string list ref
+val make_package : bool ref
+val for_package : string option ref
+val error_size : int ref
+val float_const_prop : bool ref
+val transparent_modules : bool ref
+val dump_source : bool ref
+val dump_parsetree : bool ref
+val dump_typedtree : bool ref
+val dump_rawlambda : bool ref
+val dump_lambda : bool ref
+val dump_clambda : bool ref
+val dump_instr : bool ref
+val keep_asm_file : bool ref
+val optimize_for_speed : bool ref
+val dump_cmm : bool ref
+val dump_selection : bool ref
+val dump_cse : bool ref
+val dump_live : bool ref
+val dump_spill : bool ref
+val dump_split : bool ref
+val dump_interf : bool ref
+val dump_prefer : bool ref
+val dump_regalloc : bool ref
+val dump_reload : bool ref
+val dump_scheduling : bool ref
+val dump_linear : bool ref
+val keep_startup_file : bool ref
+val dump_combine : bool ref
+val native_code : bool ref
+val inline_threshold : int ref
+val dont_write_files : bool ref
+val std_include_flag : string -> string
+val std_include_dir : unit -> string list
+val shared : bool ref
+val dlcode : bool ref
+val runtime_variant : string ref
+val force_slash : bool ref
+val keep_docs : bool ref
+val keep_locs : bool ref
+val unsafe_string : bool ref
+val opaque : bool ref
+
+ 
+val no_implicit_current_dir : bool ref
+val assume_no_mli : bool ref 
+
+
+end = struct
+#1 "clflags.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Command-line parameters *)
+
+let objfiles = ref ([] : string list)   (* .cmo and .cma files *)
+and ccobjs = ref ([] : string list)     (* .o, .a, .so and -cclib -lxxx *)
+and dllibs = ref ([] : string list)     (* .so and -dllib -lxxx *)
+
+let compile_only = ref false            (* -c *)
+and output_name = ref (None : string option) (* -o *)
+and include_dirs = ref ([] : string list)(* -I *)
+and no_std_include = ref false          (* -nostdlib *)
+and print_types = ref false             (* -i *)
+and make_archive = ref false            (* -a *)
+and debug = ref false                   (* -g *)
+and fast = ref false                    (* -unsafe *)
+and link_everything = ref false         (* -linkall *)
+and custom_runtime = ref false          (* -custom *)
+and no_check_prims = ref false          (* -no-check-prims *)
+and bytecode_compatible_32 = ref false  (* -compat-32 *)
+and output_c_object = ref false         (* -output-obj *)
+and output_complete_object = ref false  (* -output-complete-obj *)
+and all_ccopts = ref ([] : string list)     (* -ccopt *)
+and classic = ref false                 (* -nolabels *)
+and nopervasives = ref false            (* -nopervasives *)
+and preprocessor = ref(None : string option) (* -pp *)
+and all_ppx = ref ([] : string list)        (* -ppx *)
+let annotations = ref false             (* -annot *)
+let binary_annotations = ref false      (* -annot *)
+and use_threads = ref false             (* -thread *)
+and use_vmthreads = ref false           (* -vmthread *)
+and noassert = ref false                (* -noassert *)
+and verbose = ref false                 (* -verbose *)
+and noprompt = ref false                (* -noprompt *)
+and nopromptcont = ref false            (* -nopromptcont *)
+and init_file = ref (None : string option)   (* -init *)
+and noinit = ref false                  (* -noinit *)
+and open_modules = ref []               (* -open *)
+and use_prims = ref ""                  (* -use-prims ... *)
+and use_runtime = ref ""                (* -use-runtime ... *)
+and principal = ref false               (* -principal *)
+and real_paths = ref true               (* -short-paths *)
+and recursive_types = ref false         (* -rectypes *)
+and strict_sequence = ref false         (* -strict-sequence *)
+and strict_formats = ref false          (* -strict-formats *)
+and applicative_functors = ref true     (* -no-app-funct *)
+and make_runtime = ref false            (* -make-runtime *)
+and gprofile = ref false                (* -p *)
+and c_compiler = ref (None: string option) (* -cc *)
+and no_auto_link = ref false            (* -noautolink *)
+and dllpaths = ref ([] : string list)   (* -dllpath *)
+and make_package = ref false            (* -pack *)
+and for_package = ref (None: string option) (* -for-pack *)
+and error_size = ref 500                (* -error-size *)
+and float_const_prop = ref true         (* -no-float-const-prop *)
+and transparent_modules = ref false     (* -trans-mod *)
+let dump_source = ref false             (* -dsource *)
+let dump_parsetree = ref false          (* -dparsetree *)
+and dump_typedtree = ref false          (* -dtypedtree *)
+and dump_rawlambda = ref false          (* -drawlambda *)
+and dump_lambda = ref false             (* -dlambda *)
+and dump_clambda = ref false            (* -dclambda *)
+and dump_instr = ref false              (* -dinstr *)
+
+let keep_asm_file = ref false           (* -S *)
+let optimize_for_speed = ref true       (* -compact *)
+and opaque = ref false                  (* -opaque *)
+
+and dump_cmm = ref false                (* -dcmm *)
+let dump_selection = ref false          (* -dsel *)
+let dump_cse = ref false                (* -dcse *)
+let dump_live = ref false               (* -dlive *)
+let dump_spill = ref false              (* -dspill *)
+let dump_split = ref false              (* -dsplit *)
+let dump_interf = ref false             (* -dinterf *)
+let dump_prefer = ref false             (* -dprefer *)
+let dump_regalloc = ref false           (* -dalloc *)
+let dump_reload = ref false             (* -dreload *)
+let dump_scheduling = ref false         (* -dscheduling *)
+let dump_linear = ref false             (* -dlinear *)
+let keep_startup_file = ref false       (* -dstartup *)
+let dump_combine = ref false            (* -dcombine *)
+let native_code = ref false             (* set to true under ocamlopt *)
+let inline_threshold = ref 10
+let force_slash = ref false             (* for ocamldep *)
+
+let dont_write_files = ref false        (* set to true under ocamldoc *)
+
+let std_include_flag prefix =
+  if !no_std_include then ""
+  else (prefix ^ (Filename.quote Config.standard_library))
+;;
+
+let std_include_dir () =
+  if !no_std_include then [] else [Config.standard_library]
+;;
+
+let shared = ref false (* -shared *)
+let dlcode = ref true (* not -nodynlink *)
+
+let runtime_variant = ref "";;      (* -runtime-variant *)
+
+let keep_docs = ref false              (* -keep-docs *)
+let keep_locs = ref false              (* -keep-locs *)
+let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
+
+ 
+let no_implicit_current_dir = ref false
+let assume_no_mli = ref false 
 
 
 end
@@ -20642,7 +16799,7 @@ val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
 
 end = struct
 #1 "lexer.ml"
-# 15 "parsing/lexer.mll"
+# 15 "../ocaml/parsing/lexer.mll"
  
 open Lexing
 open Misc
@@ -21302,7 +17459,7 @@ let () =
     )
 
 
-# 666 "parsing/lexer.ml"
+# 666 "../ocaml/parsing/lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\164\255\165\255\224\000\003\001\038\001\073\001\108\001\
@@ -22545,123 +18702,123 @@ let rec token lexbuf =
 and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 706 "parsing/lexer.mll"
+# 706 "../ocaml/parsing/lexer.mll"
                  (
       if not !escaped_newlines then
         raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf));
       update_loc lexbuf None 1 false 0;
       token lexbuf )
-# 1916 "parsing/lexer.ml"
+# 1916 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 713 "parsing/lexer.mll"
+# 713 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         EOL )
-# 1922 "parsing/lexer.ml"
+# 1922 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 716 "parsing/lexer.mll"
+# 716 "../ocaml/parsing/lexer.mll"
       ( token lexbuf )
-# 1927 "parsing/lexer.ml"
+# 1927 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 718 "parsing/lexer.mll"
+# 718 "../ocaml/parsing/lexer.mll"
       ( UNDERSCORE )
-# 1932 "parsing/lexer.ml"
+# 1932 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 720 "parsing/lexer.mll"
+# 720 "../ocaml/parsing/lexer.mll"
       ( TILDE )
-# 1937 "parsing/lexer.ml"
+# 1937 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 722 "parsing/lexer.mll"
+# 722 "../ocaml/parsing/lexer.mll"
       ( LABEL (get_label_name lexbuf) )
-# 1942 "parsing/lexer.ml"
+# 1942 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 724 "parsing/lexer.mll"
+# 724 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; LABEL (get_label_name lexbuf) )
-# 1947 "parsing/lexer.ml"
+# 1947 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 726 "parsing/lexer.mll"
+# 726 "../ocaml/parsing/lexer.mll"
       ( QUESTION )
-# 1952 "parsing/lexer.ml"
+# 1952 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 728 "parsing/lexer.mll"
+# 728 "../ocaml/parsing/lexer.mll"
       ( OPTLABEL (get_label_name lexbuf) )
-# 1957 "parsing/lexer.ml"
+# 1957 "../ocaml/parsing/lexer.ml"
 
   | 9 ->
-# 730 "parsing/lexer.mll"
+# 730 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; OPTLABEL (get_label_name lexbuf) )
-# 1962 "parsing/lexer.ml"
+# 1962 "../ocaml/parsing/lexer.ml"
 
   | 10 ->
-# 732 "parsing/lexer.mll"
+# 732 "../ocaml/parsing/lexer.mll"
       ( let s = Lexing.lexeme lexbuf in
         try Hashtbl.find keyword_table s
         with Not_found -> LIDENT s )
-# 1969 "parsing/lexer.ml"
+# 1969 "../ocaml/parsing/lexer.ml"
 
   | 11 ->
-# 736 "parsing/lexer.mll"
+# 736 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; LIDENT (Lexing.lexeme lexbuf) )
-# 1974 "parsing/lexer.ml"
+# 1974 "../ocaml/parsing/lexer.ml"
 
   | 12 ->
-# 738 "parsing/lexer.mll"
+# 738 "../ocaml/parsing/lexer.mll"
       ( UIDENT(Lexing.lexeme lexbuf) )
-# 1979 "parsing/lexer.ml"
+# 1979 "../ocaml/parsing/lexer.ml"
 
   | 13 ->
-# 740 "parsing/lexer.mll"
+# 740 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; UIDENT(Lexing.lexeme lexbuf) )
-# 1984 "parsing/lexer.ml"
+# 1984 "../ocaml/parsing/lexer.ml"
 
   | 14 ->
-# 742 "parsing/lexer.mll"
+# 742 "../ocaml/parsing/lexer.mll"
       ( try
           INT (cvt_int_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int", Location.curr lexbuf))
       )
-# 1993 "parsing/lexer.ml"
+# 1993 "../ocaml/parsing/lexer.ml"
 
   | 15 ->
-# 748 "parsing/lexer.mll"
+# 748 "../ocaml/parsing/lexer.mll"
       ( FLOAT (remove_underscores(Lexing.lexeme lexbuf)) )
-# 1998 "parsing/lexer.ml"
+# 1998 "../ocaml/parsing/lexer.ml"
 
   | 16 ->
-# 750 "parsing/lexer.mll"
+# 750 "../ocaml/parsing/lexer.mll"
       ( try
           INT32 (cvt_int32_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int32", Location.curr lexbuf)) )
-# 2006 "parsing/lexer.ml"
+# 2006 "../ocaml/parsing/lexer.ml"
 
   | 17 ->
-# 755 "parsing/lexer.mll"
+# 755 "../ocaml/parsing/lexer.mll"
       ( try
           INT64 (cvt_int64_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int64", Location.curr lexbuf)) )
-# 2014 "parsing/lexer.ml"
+# 2014 "../ocaml/parsing/lexer.ml"
 
   | 18 ->
-# 760 "parsing/lexer.mll"
+# 760 "../ocaml/parsing/lexer.mll"
       ( try
           NATIVEINT (cvt_nativeint_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "nativeint", Location.curr lexbuf)) )
-# 2022 "parsing/lexer.ml"
+# 2022 "../ocaml/parsing/lexer.ml"
 
   | 19 ->
-# 765 "parsing/lexer.mll"
+# 765 "../ocaml/parsing/lexer.mll"
       ( reset_string_buffer();
         is_in_string := true;
         let string_start = lexbuf.lex_start_p in
@@ -22670,10 +18827,10 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), None) )
-# 2034 "parsing/lexer.ml"
+# 2034 "../ocaml/parsing/lexer.ml"
 
   | 20 ->
-# 774 "parsing/lexer.mll"
+# 774 "../ocaml/parsing/lexer.mll"
       ( reset_string_buffer();
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -22684,64 +18841,64 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), Some delim) )
-# 2048 "parsing/lexer.ml"
+# 2048 "../ocaml/parsing/lexer.ml"
 
   | 21 ->
-# 785 "parsing/lexer.mll"
+# 785 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         CHAR (Lexing.lexeme_char lexbuf 1) )
-# 2054 "parsing/lexer.ml"
+# 2054 "../ocaml/parsing/lexer.ml"
 
   | 22 ->
-# 788 "parsing/lexer.mll"
+# 788 "../ocaml/parsing/lexer.mll"
       ( CHAR(Lexing.lexeme_char lexbuf 1) )
-# 2059 "parsing/lexer.ml"
+# 2059 "../ocaml/parsing/lexer.ml"
 
   | 23 ->
-# 790 "parsing/lexer.mll"
+# 790 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_backslash (Lexing.lexeme_char lexbuf 2)) )
-# 2064 "parsing/lexer.ml"
+# 2064 "../ocaml/parsing/lexer.ml"
 
   | 24 ->
-# 792 "parsing/lexer.mll"
+# 792 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_decimal_code lexbuf 2) )
-# 2069 "parsing/lexer.ml"
+# 2069 "../ocaml/parsing/lexer.ml"
 
   | 25 ->
-# 794 "parsing/lexer.mll"
+# 794 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_hexadecimal_code lexbuf 3) )
-# 2074 "parsing/lexer.ml"
+# 2074 "../ocaml/parsing/lexer.ml"
 
   | 26 ->
-# 796 "parsing/lexer.mll"
+# 796 "../ocaml/parsing/lexer.mll"
       ( let l = Lexing.lexeme lexbuf in
         let esc = String.sub l 1 (String.length l - 1) in
         raise (Error(Illegal_escape esc, Location.curr lexbuf))
       )
-# 2082 "parsing/lexer.ml"
+# 2082 "../ocaml/parsing/lexer.ml"
 
   | 27 ->
-# 801 "parsing/lexer.mll"
+# 801 "../ocaml/parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2088 "parsing/lexer.ml"
+# 2088 "../ocaml/parsing/lexer.ml"
 
   | 28 ->
-# 804 "parsing/lexer.mll"
+# 804 "../ocaml/parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
 
         DOCSTRING (Docstrings.docstring s loc) 
 
 )
-# 2099 "parsing/lexer.ml"
+# 2099 "../ocaml/parsing/lexer.ml"
 
   | 29 ->
 let
-# 811 "parsing/lexer.mll"
+# 811 "../ocaml/parsing/lexer.mll"
                     stars
-# 2105 "parsing/lexer.ml"
+# 2105 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 812 "parsing/lexer.mll"
+# 812 "../ocaml/parsing/lexer.mll"
       ( let s, loc =
           with_comment_buffer
             (fun lexbuf ->
@@ -22750,28 +18907,28 @@ let
             lexbuf
         in
         COMMENT (s, loc) )
-# 2116 "parsing/lexer.ml"
+# 2116 "../ocaml/parsing/lexer.ml"
 
   | 30 ->
-# 821 "parsing/lexer.mll"
+# 821 "../ocaml/parsing/lexer.mll"
       ( if !print_warnings then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Comment_start;
         let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2124 "parsing/lexer.ml"
+# 2124 "../ocaml/parsing/lexer.ml"
 
   | 31 ->
 let
-# 825 "parsing/lexer.mll"
+# 825 "../ocaml/parsing/lexer.mll"
                    stars
-# 2130 "parsing/lexer.ml"
+# 2130 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_curr_pos + -2) in
-# 826 "parsing/lexer.mll"
+# 826 "../ocaml/parsing/lexer.mll"
       ( COMMENT (stars, Location.curr lexbuf) )
-# 2134 "parsing/lexer.ml"
+# 2134 "../ocaml/parsing/lexer.ml"
 
   | 32 ->
-# 828 "parsing/lexer.mll"
+# 828 "../ocaml/parsing/lexer.mll"
       ( let loc = Location.curr lexbuf in
         Location.prerr_warning loc Warnings.Comment_not_end;
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
@@ -22779,307 +18936,307 @@ let
         lexbuf.lex_curr_p <- { curpos with pos_cnum = curpos.pos_cnum - 1 };
         STAR
       )
-# 2145 "parsing/lexer.ml"
+# 2145 "../ocaml/parsing/lexer.ml"
 
   | 33 ->
 let
-# 835 "parsing/lexer.mll"
+# 835 "../ocaml/parsing/lexer.mll"
                                    num
-# 2151 "parsing/lexer.ml"
+# 2151 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_mem.(1)
 and
-# 836 "parsing/lexer.mll"
+# 836 "../ocaml/parsing/lexer.mll"
                                            name
-# 2156 "parsing/lexer.ml"
+# 2156 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme_opt lexbuf lexbuf.Lexing.lex_mem.(3) lexbuf.Lexing.lex_mem.(2) in
-# 838 "parsing/lexer.mll"
+# 838 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf name (int_of_string num) true 0;
         token lexbuf
       )
-# 2162 "parsing/lexer.ml"
+# 2162 "../ocaml/parsing/lexer.ml"
 
   | 34 ->
-# 841 "parsing/lexer.mll"
+# 841 "../ocaml/parsing/lexer.mll"
          ( SHARP )
-# 2167 "parsing/lexer.ml"
+# 2167 "../ocaml/parsing/lexer.ml"
 
   | 35 ->
-# 842 "parsing/lexer.mll"
+# 842 "../ocaml/parsing/lexer.mll"
          ( AMPERSAND )
-# 2172 "parsing/lexer.ml"
+# 2172 "../ocaml/parsing/lexer.ml"
 
   | 36 ->
-# 843 "parsing/lexer.mll"
+# 843 "../ocaml/parsing/lexer.mll"
          ( AMPERAMPER )
-# 2177 "parsing/lexer.ml"
+# 2177 "../ocaml/parsing/lexer.ml"
 
   | 37 ->
-# 844 "parsing/lexer.mll"
+# 844 "../ocaml/parsing/lexer.mll"
          ( BACKQUOTE )
-# 2182 "parsing/lexer.ml"
+# 2182 "../ocaml/parsing/lexer.ml"
 
   | 38 ->
-# 845 "parsing/lexer.mll"
+# 845 "../ocaml/parsing/lexer.mll"
          ( QUOTE )
-# 2187 "parsing/lexer.ml"
+# 2187 "../ocaml/parsing/lexer.ml"
 
   | 39 ->
-# 846 "parsing/lexer.mll"
+# 846 "../ocaml/parsing/lexer.mll"
          ( LPAREN )
-# 2192 "parsing/lexer.ml"
+# 2192 "../ocaml/parsing/lexer.ml"
 
   | 40 ->
-# 847 "parsing/lexer.mll"
+# 847 "../ocaml/parsing/lexer.mll"
          ( RPAREN )
-# 2197 "parsing/lexer.ml"
+# 2197 "../ocaml/parsing/lexer.ml"
 
   | 41 ->
-# 848 "parsing/lexer.mll"
+# 848 "../ocaml/parsing/lexer.mll"
          ( STAR )
-# 2202 "parsing/lexer.ml"
+# 2202 "../ocaml/parsing/lexer.ml"
 
   | 42 ->
-# 849 "parsing/lexer.mll"
+# 849 "../ocaml/parsing/lexer.mll"
          ( COMMA )
-# 2207 "parsing/lexer.ml"
+# 2207 "../ocaml/parsing/lexer.ml"
 
   | 43 ->
-# 850 "parsing/lexer.mll"
+# 850 "../ocaml/parsing/lexer.mll"
          ( MINUSGREATER )
-# 2212 "parsing/lexer.ml"
+# 2212 "../ocaml/parsing/lexer.ml"
 
   | 44 ->
-# 851 "parsing/lexer.mll"
+# 851 "../ocaml/parsing/lexer.mll"
          ( DOT )
-# 2217 "parsing/lexer.ml"
+# 2217 "../ocaml/parsing/lexer.ml"
 
   | 45 ->
-# 852 "parsing/lexer.mll"
+# 852 "../ocaml/parsing/lexer.mll"
          ( DOTDOT )
-# 2222 "parsing/lexer.ml"
+# 2222 "../ocaml/parsing/lexer.ml"
 
   | 46 ->
-# 853 "parsing/lexer.mll"
+# 853 "../ocaml/parsing/lexer.mll"
          ( COLON )
-# 2227 "parsing/lexer.ml"
+# 2227 "../ocaml/parsing/lexer.ml"
 
   | 47 ->
-# 854 "parsing/lexer.mll"
+# 854 "../ocaml/parsing/lexer.mll"
          ( COLONCOLON )
-# 2232 "parsing/lexer.ml"
+# 2232 "../ocaml/parsing/lexer.ml"
 
   | 48 ->
-# 855 "parsing/lexer.mll"
+# 855 "../ocaml/parsing/lexer.mll"
          ( COLONEQUAL )
-# 2237 "parsing/lexer.ml"
+# 2237 "../ocaml/parsing/lexer.ml"
 
   | 49 ->
-# 856 "parsing/lexer.mll"
+# 856 "../ocaml/parsing/lexer.mll"
          ( COLONGREATER )
-# 2242 "parsing/lexer.ml"
+# 2242 "../ocaml/parsing/lexer.ml"
 
   | 50 ->
-# 857 "parsing/lexer.mll"
+# 857 "../ocaml/parsing/lexer.mll"
          ( SEMI )
-# 2247 "parsing/lexer.ml"
+# 2247 "../ocaml/parsing/lexer.ml"
 
   | 51 ->
-# 858 "parsing/lexer.mll"
+# 858 "../ocaml/parsing/lexer.mll"
          ( SEMISEMI )
-# 2252 "parsing/lexer.ml"
+# 2252 "../ocaml/parsing/lexer.ml"
 
   | 52 ->
-# 859 "parsing/lexer.mll"
+# 859 "../ocaml/parsing/lexer.mll"
          ( LESS )
-# 2257 "parsing/lexer.ml"
+# 2257 "../ocaml/parsing/lexer.ml"
 
   | 53 ->
-# 860 "parsing/lexer.mll"
+# 860 "../ocaml/parsing/lexer.mll"
          ( LESSMINUS )
-# 2262 "parsing/lexer.ml"
+# 2262 "../ocaml/parsing/lexer.ml"
 
   | 54 ->
-# 861 "parsing/lexer.mll"
+# 861 "../ocaml/parsing/lexer.mll"
          ( EQUAL )
-# 2267 "parsing/lexer.ml"
+# 2267 "../ocaml/parsing/lexer.ml"
 
   | 55 ->
-# 862 "parsing/lexer.mll"
+# 862 "../ocaml/parsing/lexer.mll"
          ( LBRACKET )
-# 2272 "parsing/lexer.ml"
+# 2272 "../ocaml/parsing/lexer.ml"
 
   | 56 ->
-# 863 "parsing/lexer.mll"
+# 863 "../ocaml/parsing/lexer.mll"
          ( LBRACKETBAR )
-# 2277 "parsing/lexer.ml"
+# 2277 "../ocaml/parsing/lexer.ml"
 
   | 57 ->
-# 864 "parsing/lexer.mll"
+# 864 "../ocaml/parsing/lexer.mll"
          ( LBRACKETLESS )
-# 2282 "parsing/lexer.ml"
+# 2282 "../ocaml/parsing/lexer.ml"
 
   | 58 ->
-# 865 "parsing/lexer.mll"
+# 865 "../ocaml/parsing/lexer.mll"
          ( LBRACKETGREATER )
-# 2287 "parsing/lexer.ml"
+# 2287 "../ocaml/parsing/lexer.ml"
 
   | 59 ->
-# 866 "parsing/lexer.mll"
+# 866 "../ocaml/parsing/lexer.mll"
          ( RBRACKET )
-# 2292 "parsing/lexer.ml"
+# 2292 "../ocaml/parsing/lexer.ml"
 
   | 60 ->
-# 867 "parsing/lexer.mll"
+# 867 "../ocaml/parsing/lexer.mll"
          ( LBRACE )
-# 2297 "parsing/lexer.ml"
+# 2297 "../ocaml/parsing/lexer.ml"
 
   | 61 ->
-# 868 "parsing/lexer.mll"
+# 868 "../ocaml/parsing/lexer.mll"
          ( LBRACELESS )
-# 2302 "parsing/lexer.ml"
+# 2302 "../ocaml/parsing/lexer.ml"
 
   | 62 ->
-# 869 "parsing/lexer.mll"
+# 869 "../ocaml/parsing/lexer.mll"
          ( BAR )
-# 2307 "parsing/lexer.ml"
+# 2307 "../ocaml/parsing/lexer.ml"
 
   | 63 ->
-# 870 "parsing/lexer.mll"
+# 870 "../ocaml/parsing/lexer.mll"
          ( BARBAR )
-# 2312 "parsing/lexer.ml"
+# 2312 "../ocaml/parsing/lexer.ml"
 
   | 64 ->
-# 871 "parsing/lexer.mll"
+# 871 "../ocaml/parsing/lexer.mll"
          ( BARRBRACKET )
-# 2317 "parsing/lexer.ml"
+# 2317 "../ocaml/parsing/lexer.ml"
 
   | 65 ->
-# 872 "parsing/lexer.mll"
+# 872 "../ocaml/parsing/lexer.mll"
          ( GREATER )
-# 2322 "parsing/lexer.ml"
+# 2322 "../ocaml/parsing/lexer.ml"
 
   | 66 ->
-# 873 "parsing/lexer.mll"
+# 873 "../ocaml/parsing/lexer.mll"
          ( GREATERRBRACKET )
-# 2327 "parsing/lexer.ml"
+# 2327 "../ocaml/parsing/lexer.ml"
 
   | 67 ->
-# 874 "parsing/lexer.mll"
+# 874 "../ocaml/parsing/lexer.mll"
          ( RBRACE )
-# 2332 "parsing/lexer.ml"
+# 2332 "../ocaml/parsing/lexer.ml"
 
   | 68 ->
-# 875 "parsing/lexer.mll"
+# 875 "../ocaml/parsing/lexer.mll"
          ( GREATERRBRACE )
-# 2337 "parsing/lexer.ml"
+# 2337 "../ocaml/parsing/lexer.ml"
 
   | 69 ->
-# 876 "parsing/lexer.mll"
+# 876 "../ocaml/parsing/lexer.mll"
          ( LBRACKETAT )
-# 2342 "parsing/lexer.ml"
+# 2342 "../ocaml/parsing/lexer.ml"
 
   | 70 ->
-# 877 "parsing/lexer.mll"
+# 877 "../ocaml/parsing/lexer.mll"
          ( LBRACKETPERCENT )
-# 2347 "parsing/lexer.ml"
+# 2347 "../ocaml/parsing/lexer.ml"
 
   | 71 ->
-# 878 "parsing/lexer.mll"
+# 878 "../ocaml/parsing/lexer.mll"
           ( LBRACKETPERCENTPERCENT )
-# 2352 "parsing/lexer.ml"
+# 2352 "../ocaml/parsing/lexer.ml"
 
   | 72 ->
-# 879 "parsing/lexer.mll"
+# 879 "../ocaml/parsing/lexer.mll"
           ( LBRACKETATAT )
-# 2357 "parsing/lexer.ml"
+# 2357 "../ocaml/parsing/lexer.ml"
 
   | 73 ->
-# 880 "parsing/lexer.mll"
+# 880 "../ocaml/parsing/lexer.mll"
            ( LBRACKETATATAT )
-# 2362 "parsing/lexer.ml"
+# 2362 "../ocaml/parsing/lexer.ml"
 
   | 74 ->
-# 881 "parsing/lexer.mll"
+# 881 "../ocaml/parsing/lexer.mll"
          ( BANG )
-# 2367 "parsing/lexer.ml"
+# 2367 "../ocaml/parsing/lexer.ml"
 
   | 75 ->
-# 882 "parsing/lexer.mll"
+# 882 "../ocaml/parsing/lexer.mll"
          ( INFIXOP0 "!=" )
-# 2372 "parsing/lexer.ml"
+# 2372 "../ocaml/parsing/lexer.ml"
 
   | 76 ->
-# 883 "parsing/lexer.mll"
+# 883 "../ocaml/parsing/lexer.mll"
          ( PLUS )
-# 2377 "parsing/lexer.ml"
+# 2377 "../ocaml/parsing/lexer.ml"
 
   | 77 ->
-# 884 "parsing/lexer.mll"
+# 884 "../ocaml/parsing/lexer.mll"
          ( PLUSDOT )
-# 2382 "parsing/lexer.ml"
+# 2382 "../ocaml/parsing/lexer.ml"
 
   | 78 ->
-# 885 "parsing/lexer.mll"
+# 885 "../ocaml/parsing/lexer.mll"
          ( PLUSEQ )
-# 2387 "parsing/lexer.ml"
+# 2387 "../ocaml/parsing/lexer.ml"
 
   | 79 ->
-# 886 "parsing/lexer.mll"
+# 886 "../ocaml/parsing/lexer.mll"
          ( MINUS )
-# 2392 "parsing/lexer.ml"
+# 2392 "../ocaml/parsing/lexer.ml"
 
   | 80 ->
-# 887 "parsing/lexer.mll"
+# 887 "../ocaml/parsing/lexer.mll"
          ( MINUSDOT )
-# 2397 "parsing/lexer.ml"
+# 2397 "../ocaml/parsing/lexer.ml"
 
   | 81 ->
-# 890 "parsing/lexer.mll"
+# 890 "../ocaml/parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2402 "parsing/lexer.ml"
+# 2402 "../ocaml/parsing/lexer.ml"
 
   | 82 ->
-# 892 "parsing/lexer.mll"
+# 892 "../ocaml/parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2407 "parsing/lexer.ml"
+# 2407 "../ocaml/parsing/lexer.ml"
 
   | 83 ->
-# 894 "parsing/lexer.mll"
+# 894 "../ocaml/parsing/lexer.mll"
             ( INFIXOP0(Lexing.lexeme lexbuf) )
-# 2412 "parsing/lexer.ml"
+# 2412 "../ocaml/parsing/lexer.ml"
 
   | 84 ->
-# 896 "parsing/lexer.mll"
+# 896 "../ocaml/parsing/lexer.mll"
             ( INFIXOP1(Lexing.lexeme lexbuf) )
-# 2417 "parsing/lexer.ml"
+# 2417 "../ocaml/parsing/lexer.ml"
 
   | 85 ->
-# 898 "parsing/lexer.mll"
+# 898 "../ocaml/parsing/lexer.mll"
             ( INFIXOP2(Lexing.lexeme lexbuf) )
-# 2422 "parsing/lexer.ml"
+# 2422 "../ocaml/parsing/lexer.ml"
 
   | 86 ->
-# 900 "parsing/lexer.mll"
+# 900 "../ocaml/parsing/lexer.mll"
             ( INFIXOP4(Lexing.lexeme lexbuf) )
-# 2427 "parsing/lexer.ml"
+# 2427 "../ocaml/parsing/lexer.ml"
 
   | 87 ->
-# 901 "parsing/lexer.mll"
+# 901 "../ocaml/parsing/lexer.mll"
             ( PERCENT )
-# 2432 "parsing/lexer.ml"
+# 2432 "../ocaml/parsing/lexer.ml"
 
   | 88 ->
-# 903 "parsing/lexer.mll"
+# 903 "../ocaml/parsing/lexer.mll"
             ( INFIXOP3(Lexing.lexeme lexbuf) )
-# 2437 "parsing/lexer.ml"
+# 2437 "../ocaml/parsing/lexer.ml"
 
   | 89 ->
-# 905 "parsing/lexer.mll"
+# 905 "../ocaml/parsing/lexer.mll"
             ( SHARPOP(Lexing.lexeme lexbuf) )
-# 2442 "parsing/lexer.ml"
+# 2442 "../ocaml/parsing/lexer.ml"
 
   | 90 ->
-# 906 "parsing/lexer.mll"
+# 906 "../ocaml/parsing/lexer.mll"
         (
       if !if_then_else <> Dir_out then
         if !if_then_else = Dir_if_true then
@@ -23089,14 +19246,14 @@ and
         EOF
         
     )
-# 2455 "parsing/lexer.ml"
+# 2455 "../ocaml/parsing/lexer.ml"
 
   | 91 ->
-# 916 "parsing/lexer.mll"
+# 916 "../ocaml/parsing/lexer.mll"
       ( raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf))
       )
-# 2462 "parsing/lexer.ml"
+# 2462 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_token_rec lexbuf __ocaml_lex_state
@@ -23106,15 +19263,15 @@ and comment lexbuf =
 and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 922 "parsing/lexer.mll"
+# 922 "../ocaml/parsing/lexer.mll"
       ( comment_start_loc := (Location.curr lexbuf) :: !comment_start_loc;
         store_lexeme lexbuf;
         comment lexbuf;
       )
-# 2477 "parsing/lexer.ml"
+# 2477 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 927 "parsing/lexer.mll"
+# 927 "../ocaml/parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | [_] -> comment_start_loc := []; Location.curr lexbuf
@@ -23122,10 +19279,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
                   store_lexeme lexbuf;
                   comment lexbuf;
        )
-# 2488 "parsing/lexer.ml"
+# 2488 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 935 "parsing/lexer.mll"
+# 935 "../ocaml/parsing/lexer.mll"
       (
         string_start_loc := Location.curr lexbuf;
         store_string_char '"';
@@ -23143,10 +19300,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         store_string_char '"';
         comment lexbuf )
-# 2509 "parsing/lexer.ml"
+# 2509 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 953 "parsing/lexer.mll"
+# 953 "../ocaml/parsing/lexer.mll"
       (
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -23168,43 +19325,43 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         store_string delim;
         store_string_char '}';
         comment lexbuf )
-# 2534 "parsing/lexer.ml"
+# 2534 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 976 "parsing/lexer.mll"
+# 976 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2539 "parsing/lexer.ml"
+# 2539 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 978 "parsing/lexer.mll"
+# 978 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2547 "parsing/lexer.ml"
+# 2547 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 983 "parsing/lexer.mll"
+# 983 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2552 "parsing/lexer.ml"
+# 2552 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 985 "parsing/lexer.mll"
+# 985 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2557 "parsing/lexer.ml"
+# 2557 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 987 "parsing/lexer.mll"
+# 987 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2562 "parsing/lexer.ml"
+# 2562 "../ocaml/parsing/lexer.ml"
 
   | 9 ->
-# 989 "parsing/lexer.mll"
+# 989 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2567 "parsing/lexer.ml"
+# 2567 "../ocaml/parsing/lexer.ml"
 
   | 10 ->
-# 991 "parsing/lexer.mll"
+# 991 "../ocaml/parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | loc :: _ ->
@@ -23212,20 +19369,20 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
           comment_start_loc := [];
           raise (Error (Unterminated_comment start, loc))
       )
-# 2578 "parsing/lexer.ml"
+# 2578 "../ocaml/parsing/lexer.ml"
 
   | 11 ->
-# 999 "parsing/lexer.mll"
+# 999 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2586 "parsing/lexer.ml"
+# 2586 "../ocaml/parsing/lexer.ml"
 
   | 12 ->
-# 1004 "parsing/lexer.mll"
+# 1004 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2591 "parsing/lexer.ml"
+# 2591 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec lexbuf __ocaml_lex_state
@@ -23235,42 +19392,42 @@ and string lexbuf =
 and __ocaml_lex_string_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1008 "parsing/lexer.mll"
+# 1008 "../ocaml/parsing/lexer.mll"
       ( () )
-# 2603 "parsing/lexer.ml"
+# 2603 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
 let
-# 1009 "parsing/lexer.mll"
+# 1009 "../ocaml/parsing/lexer.mll"
                                   space
-# 2609 "parsing/lexer.ml"
+# 2609 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_curr_pos in
-# 1010 "parsing/lexer.mll"
+# 1010 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false (String.length space);
         string lexbuf
       )
-# 2615 "parsing/lexer.ml"
+# 2615 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1014 "parsing/lexer.mll"
+# 1014 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
         string lexbuf )
-# 2621 "parsing/lexer.ml"
+# 2621 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 1017 "parsing/lexer.mll"
+# 1017 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_decimal_code lexbuf 1);
          string lexbuf )
-# 2627 "parsing/lexer.ml"
+# 2627 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 1020 "parsing/lexer.mll"
+# 1020 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_hexadecimal_code lexbuf 2);
          string lexbuf )
-# 2633 "parsing/lexer.ml"
+# 2633 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 1023 "parsing/lexer.mll"
+# 1023 "../ocaml/parsing/lexer.mll"
       ( if in_comment ()
         then string lexbuf
         else begin
@@ -23285,29 +19442,29 @@ let
           string lexbuf
         end
       )
-# 2651 "parsing/lexer.ml"
+# 2651 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 1038 "parsing/lexer.mll"
+# 1038 "../ocaml/parsing/lexer.mll"
       ( if not (in_comment ()) then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Eol_in_string;
         update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         string lexbuf
       )
-# 2661 "parsing/lexer.ml"
+# 2661 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 1045 "parsing/lexer.mll"
+# 1045 "../ocaml/parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2667 "parsing/lexer.ml"
+# 2667 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 1048 "parsing/lexer.mll"
+# 1048 "../ocaml/parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         string lexbuf )
-# 2673 "parsing/lexer.ml"
+# 2673 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_string_rec lexbuf __ocaml_lex_state
@@ -23317,34 +19474,34 @@ and quoted_string delim lexbuf =
 and __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1053 "parsing/lexer.mll"
+# 1053 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         quoted_string delim lexbuf
       )
-# 2688 "parsing/lexer.ml"
+# 2688 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 1058 "parsing/lexer.mll"
+# 1058 "../ocaml/parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2694 "parsing/lexer.ml"
+# 2694 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1061 "parsing/lexer.mll"
+# 1061 "../ocaml/parsing/lexer.mll"
       (
         let edelim = Lexing.lexeme lexbuf in
         let edelim = String.sub edelim 1 (String.length edelim - 2) in
         if delim = edelim then ()
         else (store_lexeme lexbuf; quoted_string delim lexbuf)
       )
-# 2704 "parsing/lexer.ml"
+# 2704 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 1068 "parsing/lexer.mll"
+# 1068 "../ocaml/parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         quoted_string delim lexbuf )
-# 2710 "parsing/lexer.ml"
+# 2710 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state
@@ -23354,26 +19511,26 @@ and skip_sharp_bang lexbuf =
 and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1073 "parsing/lexer.mll"
+# 1073 "../ocaml/parsing/lexer.mll"
        ( update_loc lexbuf None 3 false 0 )
-# 2722 "parsing/lexer.ml"
+# 2722 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 1075 "parsing/lexer.mll"
+# 1075 "../ocaml/parsing/lexer.mll"
        ( update_loc lexbuf None 1 false 0 )
-# 2727 "parsing/lexer.ml"
+# 2727 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1076 "parsing/lexer.mll"
+# 1076 "../ocaml/parsing/lexer.mll"
        ( () )
-# 2732 "parsing/lexer.ml"
+# 2732 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 1078 "parsing/lexer.mll"
+# 1078 "../ocaml/parsing/lexer.mll"
  
 
   let at_bol lexbuf = 
@@ -23608,7 +19765,7 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     preprocessor := Some (init, preprocess)
 
 
-# 2974 "parsing/lexer.ml"
+# 2974 "../ocaml/parsing/lexer.ml"
 
 end
 module Bs_conditional_initial : sig 
@@ -24015,6 +20172,412 @@ let readenv ppf position =
 
 let get_objfiles () =
   List.rev (!last_objfiles @ !objfiles @ !first_objfiles)
+
+end
+module Depend : sig 
+#1 "depend.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Module dependencies. *)
+
+module StringSet : Set.S with type elt = string
+
+val free_structure_names : StringSet.t ref
+
+val open_module : StringSet.t -> Longident.t -> unit
+
+val add_use_file : StringSet.t -> Parsetree.toplevel_phrase list -> unit
+
+val add_signature : StringSet.t -> Parsetree.signature -> unit
+
+val add_implementation : StringSet.t -> Parsetree.structure -> unit
+
+end = struct
+#1 "depend.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1999 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Asttypes
+open Location
+open Longident
+open Parsetree
+
+module StringSet = Set.Make(struct type t = string let compare = compare end)
+
+(* Collect free module identifiers in the a.s.t. *)
+
+let free_structure_names = ref StringSet.empty
+
+let rec add_path bv = function
+  | Lident s ->
+      if not (StringSet.mem s bv)
+      then free_structure_names := StringSet.add s !free_structure_names
+  | Ldot(l, _s) -> add_path bv l
+  | Lapply(l1, l2) -> add_path bv l1; add_path bv l2
+
+let open_module bv lid = add_path bv lid
+
+let add bv lid =
+  match lid.txt with
+    Ldot(l, _s) -> add_path bv l
+  | _ -> ()
+
+let addmodule bv lid = add_path bv lid.txt
+
+let rec add_type bv ty =
+  match ty.ptyp_desc with
+    Ptyp_any -> ()
+  | Ptyp_var _ -> ()
+  | Ptyp_arrow(_, t1, t2) -> add_type bv t1; add_type bv t2
+  | Ptyp_tuple tl -> List.iter (add_type bv) tl
+  | Ptyp_constr(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_object (fl, _) -> List.iter (fun (_, _, t) -> add_type bv t) fl
+  | Ptyp_class(c, tl) -> add bv c; List.iter (add_type bv) tl
+  | Ptyp_alias(t, _) -> add_type bv t
+  | Ptyp_variant(fl, _, _) ->
+      List.iter
+        (function Rtag(_,_,_,stl) -> List.iter (add_type bv) stl
+          | Rinherit sty -> add_type bv sty)
+        fl
+  | Ptyp_poly(_, t) -> add_type bv t
+  | Ptyp_package pt -> add_package_type bv pt
+  | Ptyp_extension _ -> ()
+
+and add_package_type bv (lid, l) =
+  add bv lid;
+  List.iter (add_type bv) (List.map (fun (_, e) -> e) l)
+
+let add_opt add_fn bv = function
+    None -> ()
+  | Some x -> add_fn bv x
+
+let add_constructor_decl bv pcd =
+  List.iter (add_type bv) pcd.pcd_args; Misc.may (add_type bv) pcd.pcd_res
+
+let add_type_declaration bv td =
+  List.iter
+    (fun (ty1, ty2, _) -> add_type bv ty1; add_type bv ty2)
+    td.ptype_cstrs;
+  add_opt add_type bv td.ptype_manifest;
+  let add_tkind = function
+    Ptype_abstract -> ()
+  | Ptype_variant cstrs ->
+      List.iter (add_constructor_decl bv) cstrs
+  | Ptype_record lbls ->
+      List.iter (fun pld -> add_type bv pld.pld_type) lbls
+  | Ptype_open -> () in
+  add_tkind td.ptype_kind
+
+let add_extension_constructor bv ext =
+  match ext.pext_kind with
+      Pext_decl(args, rty) ->
+        List.iter (add_type bv) args; Misc.may (add_type bv) rty
+    | Pext_rebind lid -> add bv lid
+
+let add_type_extension bv te =
+  add bv te.ptyext_path;
+  List.iter (add_extension_constructor bv) te.ptyext_constructors
+
+let rec add_class_type bv cty =
+  match cty.pcty_desc with
+    Pcty_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcty_signature { pcsig_self = ty; pcsig_fields = fieldl } ->
+      add_type bv ty;
+      List.iter (add_class_type_field bv) fieldl
+  | Pcty_arrow(_, ty1, cty2) ->
+      add_type bv ty1; add_class_type bv cty2
+  | Pcty_extension _ -> ()
+
+and add_class_type_field bv pctf =
+  match pctf.pctf_desc with
+    Pctf_inherit cty -> add_class_type bv cty
+  | Pctf_val(_, _, _, ty) -> add_type bv ty
+  | Pctf_method(_, _, _, ty) -> add_type bv ty
+  | Pctf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pctf_attribute _ -> ()
+  | Pctf_extension _ -> ()
+
+let add_class_description bv infos =
+  add_class_type bv infos.pci_expr
+
+let add_class_type_declaration = add_class_description
+
+let pattern_bv = ref StringSet.empty
+
+let rec add_pattern bv pat =
+  match pat.ppat_desc with
+    Ppat_any -> ()
+  | Ppat_var _ -> ()
+  | Ppat_alias(p, _) -> add_pattern bv p
+  | Ppat_interval _
+  | Ppat_constant _ -> ()
+  | Ppat_tuple pl -> List.iter (add_pattern bv) pl
+  | Ppat_construct(c, op) -> add bv c; add_opt add_pattern bv op
+  | Ppat_record(pl, _) ->
+      List.iter (fun (lbl, p) -> add bv lbl; add_pattern bv p) pl
+  | Ppat_array pl -> List.iter (add_pattern bv) pl
+  | Ppat_or(p1, p2) -> add_pattern bv p1; add_pattern bv p2
+  | Ppat_constraint(p, ty) -> add_pattern bv p; add_type bv ty
+  | Ppat_variant(_, op) -> add_opt add_pattern bv op
+  | Ppat_type li -> add bv li
+  | Ppat_lazy p -> add_pattern bv p
+  | Ppat_unpack id -> pattern_bv := StringSet.add id.txt !pattern_bv
+  | Ppat_exception p -> add_pattern bv p
+  | Ppat_extension _ -> ()
+
+let add_pattern bv pat =
+  pattern_bv := bv;
+  add_pattern bv pat;
+  !pattern_bv
+
+let rec add_expr bv exp =
+  match exp.pexp_desc with
+    Pexp_ident l -> add bv l
+  | Pexp_constant _ -> ()
+  | Pexp_let(rf, pel, e) ->
+      let bv = add_bindings rf bv pel in add_expr bv e
+  | Pexp_fun (_, opte, p, e) ->
+      add_opt add_expr bv opte; add_expr (add_pattern bv p) e
+  | Pexp_function pel ->
+      add_cases bv pel
+  | Pexp_apply(e, el) ->
+      add_expr bv e; List.iter (fun (_,e) -> add_expr bv e) el
+  | Pexp_match(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_try(e, pel) -> add_expr bv e; add_cases bv pel
+  | Pexp_tuple el -> List.iter (add_expr bv) el
+  | Pexp_construct(c, opte) -> add bv c; add_opt add_expr bv opte
+  | Pexp_variant(_, opte) -> add_opt add_expr bv opte
+  | Pexp_record(lblel, opte) ->
+      List.iter (fun (lbl, e) -> add bv lbl; add_expr bv e) lblel;
+      add_opt add_expr bv opte
+  | Pexp_field(e, fld) -> add_expr bv e; add bv fld
+  | Pexp_setfield(e1, fld, e2) -> add_expr bv e1; add bv fld; add_expr bv e2
+  | Pexp_array el -> List.iter (add_expr bv) el
+  | Pexp_ifthenelse(e1, e2, opte3) ->
+      add_expr bv e1; add_expr bv e2; add_opt add_expr bv opte3
+  | Pexp_sequence(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_while(e1, e2) -> add_expr bv e1; add_expr bv e2
+  | Pexp_for( _, e1, e2, _, e3) ->
+      add_expr bv e1; add_expr bv e2; add_expr bv e3
+  | Pexp_coerce(e1, oty2, ty3) ->
+      add_expr bv e1;
+      add_opt add_type bv oty2;
+      add_type bv ty3
+  | Pexp_constraint(e1, ty2) ->
+      add_expr bv e1;
+      add_type bv ty2
+  | Pexp_send(e, _m) -> add_expr bv e
+  | Pexp_new li -> add bv li
+  | Pexp_setinstvar(_v, e) -> add_expr bv e
+  | Pexp_override sel -> List.iter (fun (_s, e) -> add_expr bv e) sel
+  | Pexp_letmodule(id, m, e) ->
+      add_module bv m; add_expr (StringSet.add id.txt bv) e
+  | Pexp_assert (e) -> add_expr bv e
+  | Pexp_lazy (e) -> add_expr bv e
+  | Pexp_poly (e, t) -> add_expr bv e; add_opt add_type bv t
+  | Pexp_object { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pexp_newtype (_, e) -> add_expr bv e
+  | Pexp_pack m -> add_module bv m
+  | Pexp_open (_ovf, m, e) -> open_module bv m.txt; add_expr bv e
+  | Pexp_extension _ -> ()
+
+and add_cases bv cases =
+  List.iter (add_case bv) cases
+
+and add_case bv {pc_lhs; pc_guard; pc_rhs} =
+  let bv = add_pattern bv pc_lhs in
+  add_opt add_expr bv pc_guard;
+  add_expr bv pc_rhs
+
+and add_bindings recf bv pel =
+  let bv' = List.fold_left (fun bv x -> add_pattern bv x.pvb_pat) bv pel in
+  let bv = if recf = Recursive then bv' else bv in
+  List.iter (fun x -> add_expr bv x.pvb_expr) pel;
+  bv'
+
+and add_modtype bv mty =
+  match mty.pmty_desc with
+    Pmty_ident l -> add bv l
+  | Pmty_alias l -> addmodule bv l
+  | Pmty_signature s -> add_signature bv s
+  | Pmty_functor(id, mty1, mty2) ->
+      Misc.may (add_modtype bv) mty1;
+      add_modtype (StringSet.add id.txt bv) mty2
+  | Pmty_with(mty, cstrl) ->
+      add_modtype bv mty;
+      List.iter
+        (function
+          | Pwith_type (_, td) -> add_type_declaration bv td
+          | Pwith_module (_, lid) -> addmodule bv lid
+          | Pwith_typesubst td -> add_type_declaration bv td
+          | Pwith_modsubst (_, lid) -> addmodule bv lid
+        )
+        cstrl
+  | Pmty_typeof m -> add_module bv m
+  | Pmty_extension _ -> ()
+
+and add_signature bv = function
+    [] -> ()
+  | item :: rem -> add_signature (add_sig_item bv item) rem
+
+and add_sig_item bv item =
+  match item.psig_desc with
+    Psig_value vd ->
+      add_type bv vd.pval_type; bv
+  | Psig_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Psig_typext te ->
+      add_type_extension bv te; bv
+  | Psig_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Psig_module pmd ->
+      add_modtype bv pmd.pmd_type; StringSet.add pmd.pmd_name.txt bv
+  | Psig_recmodule decls ->
+      let bv' =
+        List.fold_right StringSet.add
+                        (List.map (fun pmd -> pmd.pmd_name.txt) decls) bv
+      in
+      List.iter (fun pmd -> add_modtype bv' pmd.pmd_type) decls;
+      bv'
+  | Psig_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Psig_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Psig_include incl ->
+      add_modtype bv incl.pincl_mod; bv
+  | Psig_class cdl ->
+      List.iter (add_class_description bv) cdl; bv
+  | Psig_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Psig_attribute _ | Psig_extension _ ->
+      bv
+
+and add_module bv modl =
+  match modl.pmod_desc with
+    Pmod_ident l -> addmodule bv l
+  | Pmod_structure s -> ignore (add_structure bv s)
+  | Pmod_functor(id, mty, modl) ->
+      Misc.may (add_modtype bv) mty;
+      add_module (StringSet.add id.txt bv) modl
+  | Pmod_apply(mod1, mod2) ->
+      add_module bv mod1; add_module bv mod2
+  | Pmod_constraint(modl, mty) ->
+      add_module bv modl; add_modtype bv mty
+  | Pmod_unpack(e) ->
+      add_expr bv e
+  | Pmod_extension _ ->
+      ()
+
+and add_structure bv item_list =
+  List.fold_left add_struct_item bv item_list
+
+and add_struct_item bv item =
+  match item.pstr_desc with
+    Pstr_eval (e, _attrs) ->
+      add_expr bv e; bv
+  | Pstr_value(rf, pel) ->
+      let bv = add_bindings rf bv pel in bv
+  | Pstr_primitive vd ->
+      add_type bv vd.pval_type; bv
+  | Pstr_type dcls ->
+      List.iter (add_type_declaration bv) dcls; bv
+  | Pstr_typext te ->
+      add_type_extension bv te;
+      bv
+  | Pstr_exception pext ->
+      add_extension_constructor bv pext; bv
+  | Pstr_module x ->
+      add_module bv x.pmb_expr; StringSet.add x.pmb_name.txt bv
+  | Pstr_recmodule bindings ->
+      let bv' =
+        List.fold_right StringSet.add
+          (List.map (fun x -> x.pmb_name.txt) bindings) bv in
+      List.iter
+        (fun x -> add_module bv' x.pmb_expr)
+        bindings;
+      bv'
+  | Pstr_modtype x ->
+      begin match x.pmtd_type with
+        None -> ()
+      | Some mty -> add_modtype bv mty
+      end;
+      bv
+  | Pstr_open od ->
+      open_module bv od.popen_lid.txt; bv
+  | Pstr_class cdl ->
+      List.iter (add_class_declaration bv) cdl; bv
+  | Pstr_class_type cdtl ->
+      List.iter (add_class_type_declaration bv) cdtl; bv
+  | Pstr_include incl ->
+      add_module bv incl.pincl_mod; bv
+  | Pstr_attribute _ | Pstr_extension _ ->
+      bv
+
+and add_use_file bv top_phrs =
+  ignore (List.fold_left add_top_phrase bv top_phrs)
+
+and add_implementation bv l =
+  ignore (add_structure bv l)
+
+and add_top_phrase bv = function
+  | Ptop_def str -> add_structure bv str
+  | Ptop_dir (_, _) -> bv
+
+and add_class_expr bv ce =
+  match ce.pcl_desc with
+    Pcl_constr(l, tyl) ->
+      add bv l; List.iter (add_type bv) tyl
+  | Pcl_structure { pcstr_self = pat; pcstr_fields = fieldl } ->
+      let bv = add_pattern bv pat in List.iter (add_class_field bv) fieldl
+  | Pcl_fun(_, opte, pat, ce) ->
+      add_opt add_expr bv opte;
+      let bv = add_pattern bv pat in add_class_expr bv ce
+  | Pcl_apply(ce, exprl) ->
+      add_class_expr bv ce; List.iter (fun (_,e) -> add_expr bv e) exprl
+  | Pcl_let(rf, pel, ce) ->
+      let bv = add_bindings rf bv pel in add_class_expr bv ce
+  | Pcl_constraint(ce, ct) ->
+      add_class_expr bv ce; add_class_type bv ct
+  | Pcl_extension _ -> ()
+
+and add_class_field bv pcf =
+  match pcf.pcf_desc with
+    Pcf_inherit(_, ce, _) -> add_class_expr bv ce
+  | Pcf_val(_, _, Cfk_concrete (_, e))
+  | Pcf_method(_, _, Cfk_concrete (_, e)) -> add_expr bv e
+  | Pcf_val(_, _, Cfk_virtual ty)
+  | Pcf_method(_, _, Cfk_virtual ty) -> add_type bv ty
+  | Pcf_constraint(ty1, ty2) -> add_type bv ty1; add_type bv ty2
+  | Pcf_initializer e -> add_expr bv e
+  | Pcf_attribute _ | Pcf_extension _ -> ()
+
+and add_class_declaration bv decl =
+  add_class_expr bv decl.pci_expr
 
 end
 module Parse : sig 
@@ -25637,6 +22200,111 @@ let parse_interface ppf ~tool_name sourcefile =
     Config.ast_intf_magic_number ppf sourcefile
 
 end
+module String_map : sig 
+#1 "string_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.S with type key = string 
+
+val of_list : (string * 'a) list -> 'a t
+
+val add_list : (string * 'b) list -> 'b t -> 'b t
+
+val find_opt : string -> 'a t -> 'a option
+
+val find_default : string -> 'a -> 'a t -> 'a
+
+val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
+
+end = struct
+#1 "string_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Map.Make(String)
+
+let of_list (xs : ('a * 'b) list ) = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
+
+let add_list (xs : ('a * 'b) list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
+
+let find_opt k m =
+  match find k m with 
+  | exception v -> None
+  | u -> Some u
+
+let find_default k default m =
+  match find k m with 
+  | exception v -> default 
+  | u -> u
+
+let print p_v fmt  m =
+  iter (fun k v -> 
+      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
+    ) m
+
+
+
+end
 module Ast_payload : sig 
 #1 "ast_payload.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -25903,6 +22571,460 @@ let table_dispatch table (action : action)
       | fn -> fn y
       | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
+
+end
+module Ext_bytes : sig 
+#1 "ext_bytes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
+
+val escaped : bytes -> bytes
+
+end = struct
+#1 "ext_bytes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+external char_code: char -> int = "%identity"
+external char_chr: int -> char = "%identity"
+
+let escaped s =
+  let n = ref 0 in
+  for i = 0 to Bytes.length s - 1 do
+    n := !n +
+      (match Bytes.unsafe_get s i with
+       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+       | ' ' .. '~' -> 1
+       | _ -> 4)
+  done;
+  if !n = Bytes.length s then Bytes.copy s else begin
+    let s' = Bytes.create !n in
+    n := 0;
+    for i = 0 to Bytes.length s - 1 do
+      begin match Bytes.unsafe_get s i with
+      | ('"' | '\\') as c ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
+      | '\n' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
+      | '\t' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
+      | '\r' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
+      | '\b' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
+      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+      | c ->
+          let a = char_code c in
+          Bytes.unsafe_set s' !n '\\';
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
+      end;
+      incr n
+    done;
+    s'
+  end
+
+end
+module Ext_string : sig 
+#1 "ext_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [String] module, avoid locale sensitivity *) 
+
+
+val trim : string -> string 
+
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
+(** default is false *)
+
+val split : ?keep_empty:bool -> string -> char -> string list
+(** default is false *)
+
+val starts_with : string -> string -> bool
+
+(**
+   return [-1] when not found, the returned index is useful 
+   see [ends_with_then_chop]
+*)
+val ends_with_index : string -> string -> int
+
+val ends_with : string -> string -> bool
+
+(**
+   {[
+     ends_with_then_chop "a.cmj" ".cmj"
+     "a"
+   ]}
+   This is useful in controlled or file case sensitve system
+*)
+val ends_with_then_chop : string -> string -> string option
+
+
+val escaped : string -> string
+
+val for_all : (char -> bool) -> string -> bool
+
+val is_empty : string -> bool
+
+val repeat : int -> string -> string 
+
+val equal : string -> string -> bool
+
+val find : ?start:int -> sub:string -> string -> int
+
+val rfind : sub:string -> string -> int
+
+val tail_from : string -> int -> string
+
+val digits_of_str : string -> offset:int -> int -> int
+
+val starts_with_and_number : string -> offset:int -> string -> int
+
+val unsafe_concat_with_length : int -> string -> string list -> string
+
+end = struct
+#1 "ext_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let split_by ?(keep_empty=false) is_delim str =
+  let len = String.length str in
+  let rec loop acc last_pos pos =
+    if pos = -1 then
+      if last_pos = 0 && not keep_empty then
+        (*
+           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+        *)
+        acc
+      else 
+        String.sub str 0 last_pos :: acc
+    else
+      if is_delim str.[pos] then
+        let new_len = (last_pos - pos - 1) in
+        if new_len <> 0 || keep_empty then 
+          let v = String.sub str (pos + 1) new_len in
+          loop ( v :: acc)
+            pos (pos - 1)
+        else loop acc pos (pos - 1)
+    else loop acc last_pos (pos - 1)
+  in
+  loop [] len (len - 1)
+
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
+
+let split ?keep_empty  str on = 
+  if str = "" then [] else 
+  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+
+let starts_with s beg = 
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+   beg_len <=  s_len &&
+  (let i = ref 0 in
+    while !i <  beg_len 
+          && String.unsafe_get s !i =
+             String.unsafe_get beg !i do 
+      incr i 
+    done;
+    !i = beg_len
+  )
+
+
+
+let ends_with_index s beg = 
+  let s_finish = String.length s - 1 in
+  let s_beg = String.length beg - 1 in
+  if s_beg > s_finish then -1
+  else
+    let rec aux j k = 
+      if k < 0 then (j + 1)
+      else if String.unsafe_get s j = String.unsafe_get beg k then 
+        aux (j - 1) (k - 1)
+      else  -1 in 
+    aux s_finish s_beg
+
+let ends_with s beg = ends_with_index s beg >= 0 
+
+
+let ends_with_then_chop s beg = 
+  let i =  ends_with_index s beg in 
+  if i >= 0 then Some (String.sub s 0 i) 
+  else None
+
+(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
+     this version try to make it not locale senstive, this bug is fixed
+     in the compiler trunk     
+*)
+let escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+  else
+    s
+
+
+let for_all (p : char -> bool) s = 
+  let len = String.length s in
+  let rec aux i = 
+    if i >= len then true 
+    else  p (String.unsafe_get s i) && aux (i + 1)
+  in aux 0 
+
+let is_empty s = String.length s = 0
+
+
+let repeat n s  =
+  let len = String.length s in
+  let res = Bytes.create(n * len) in
+  for i = 0 to pred n do
+    String.blit s 0 res (i * len) len
+  done;
+  Bytes.to_string res
+
+let equal (x : string) y  = x = y
+
+
+
+let _is_sub ~sub i s j ~len =
+  let rec check k =
+    if k = len
+    then true
+    else 
+      String.unsafe_get sub (i+k) = 
+      String.unsafe_get s (j+k) && check (k+1)
+  in
+  j+len <= String.length s && check 0
+
+
+
+let find ?(start=0) ~sub s =
+  let n = String.length sub in
+  let i = ref start in
+  let module M = struct exception Exit end  in
+  try
+    while !i + n <= String.length s do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      incr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+
+let rfind ~sub s =
+  let n = String.length sub in
+  let i = ref (String.length s - n) in
+  let module M = struct exception Exit end in 
+  try
+    while !i >= 0 do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      decr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+let tail_from s x = 
+  let len = String.length s  in 
+  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  else String.sub s x (len - x)
+
+
+(**
+   {[ 
+     digits_of_str "11_js" 2 == 11     
+   ]}
+*)
+let digits_of_str s ~offset x = 
+  let rec aux i acc s x  = 
+    if i >= x then acc 
+    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
+  aux 0 0 s x 
+
+
+
+(*
+   {[
+     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
+     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
+     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
+     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
+     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
+     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
+   ]}
+*)
+let starts_with_and_number s ~offset beg =
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+  let finish_delim = offset + beg_len in 
+
+   if finish_delim >  s_len  then -1 
+   else 
+     let i = ref offset  in
+      while !i <  finish_delim
+            && String.unsafe_get s !i =
+               String.unsafe_get beg (!i - offset) do 
+        incr i 
+      done;
+      if !i = finish_delim then 
+        digits_of_str ~offset:finish_delim s 2 
+      else 
+        -1 
+
+let equal (x : string) y  = x = y
+
+let unsafe_concat_with_length len sep l =
+  match l with 
+  | [] -> ""
+  | hd :: tl -> (* num is positive *)
+  let r = Bytes.create len in
+  let hd_len = String.length hd in 
+  let sep_len = String.length sep in 
+  String.unsafe_blit hd 0 r 0 hd_len;
+  let pos = ref hd_len in
+  List.iter
+    (fun s ->
+       let s_len = String.length s in
+       String.unsafe_blit sep 0 r !pos sep_len;
+       pos := !pos +  sep_len;
+       String.unsafe_blit s 0 r !pos s_len;
+       pos := !pos + s_len)
+    tl;
+  Bytes.unsafe_to_string r
 
 end
 module Ast_attributes : sig 
@@ -26348,6 +23470,495 @@ let pat_unit ?loc () =
     Pat.construct ~loc {txt = Lid.val_unit; loc} None
 
 end
+module Ext_list : sig 
+#1 "ext_list.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [List] module *)
+    
+(** TODO some function are no efficiently implemented. *) 
+
+val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
+
+val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+val exclude_with_fact2 : 
+  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+val same_length : 'a list -> 'b list -> bool
+
+val init : int -> (int -> 'a) -> 'a list
+
+val take : int -> 'a list -> 'a list * 'a list
+val try_take : int -> 'a list -> 'a list * int * 'a list 
+
+val exclude_tail : 'a list -> 'a * 'a list
+
+val filter_map2 : ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_map2i : (int -> 'a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+
+val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
+
+val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
+
+val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
+
+(** for the last element the first element will be passed [true] *)
+
+val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+
+val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
+
+val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
+
+val drop : int -> 'a list -> 'a list 
+
+val for_all_ret : ('a -> bool) -> 'a list -> 'a option
+
+val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
+(** [for_all_opt f l] returns [None] if all return [None],  
+    otherwise returns the first one. 
+ *)
+
+val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+(** same as [List.fold_left]. 
+    Provide an api so that list can be easily swapped by other containers  
+ *)
+
+val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
+
+val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
+val rev_iter : ('a -> unit) -> 'a list -> unit
+
+val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** [f] is applied follow the list order *)
+val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
+
+
+val reduce_from_right : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+(** [fn] is applied from left to right *)
+val reduce_from_left : ('a -> 'a -> 'a) -> 'a list -> 'a
+
+
+type 'a t = 'a list ref
+
+val create_ref_empty : unit -> 'a t
+
+val ref_top : 'a t -> 'a 
+
+val ref_empty : 'a t -> bool
+
+val ref_push : 'a -> 'a t -> unit
+
+val ref_pop : 'a t -> 'a
+
+val rev_except_last : 'a list -> 'a list * 'a
+
+val sort_via_array :
+  ('a -> 'a -> int) -> 'a list -> 'a list
+
+val last : 'a list -> 'a
+
+
+
+end = struct
+#1 "ext_list.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let rec filter_map (f: 'a -> 'b option) xs = 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+      begin match f y with 
+      | None -> filter_map f ys
+      | Some z -> z :: filter_map f ys
+      end
+
+let excludes (p : 'a -> bool ) l : bool * 'a list=
+  let excluded = ref false in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := true ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  if !excluded then true, v else false,l
+
+let exclude_with_fact p l =
+  let excluded = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := Some x ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded , if !excluded <> None then v else l 
+
+
+(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
+let exclude_with_fact2 p1 p2 l =
+  let excluded1 = ref None in 
+  let excluded2 = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p1 x then 
+      begin 
+        excluded1 := Some x ;
+        aux accu l
+      end
+    else if p2 x then 
+      begin 
+        excluded2 := Some x ; 
+        aux accu l 
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
+
+
+
+let rec same_length xs ys = 
+  match xs, ys with 
+  | [], [] -> true
+  | _::xs, _::ys -> same_length xs ys 
+  | _, _ -> false 
+
+let  filter_mapi (f: int -> 'a -> 'b option) xs = 
+  let rec aux i xs = 
+    match xs with 
+    | [] -> []
+    | y :: ys -> 
+        begin match f i y with 
+        | None -> aux (i + 1) ys
+        | Some z -> z :: aux (i + 1) ys
+        end in
+  aux 0 xs 
+
+let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f u v with 
+      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2 f us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2"
+
+let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
+  let rec aux i xs ys = 
+  match xs,ys with 
+  | [],[] -> []
+  | u::us, v :: vs -> 
+      begin match f i u v with 
+      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
+      | Some z -> z :: aux (i + 1) us vs
+      end
+  | _ -> invalid_arg "Ext_list.filter_map2i" in
+  aux 0 xs ys
+
+let rec rev_map_append  f l1 l2 =
+  match l1 with
+  | [] -> l2
+  | a :: l -> rev_map_append f l (f a :: l2)
+
+let flat_map2 f lx ly = 
+  let rec aux acc lx ly = 
+    match lx, ly with 
+    | [], [] 
+      -> List.rev acc
+    | x::xs, y::ys 
+      ->  aux (List.rev_append (f x y) acc) xs ys
+    | _, _ -> invalid_arg "Ext_list.flat_map2" in
+  aux [] lx ly
+        
+let flat_map f lx =
+  let rec aux acc lx =
+    match lx with
+    | [] -> List.rev acc
+    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
+  aux [] lx
+
+let rec map2_last f l1 l2 =
+  match (l1, l2) with
+  | ([], []) -> []
+  | [u], [v] -> [f true u v ]
+  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
+  | (_, _) -> invalid_arg "List.map2_last"
+
+let rec map_last f l1 =
+  match l1 with
+  | [] -> []
+  | [u]-> [f true u ]
+  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
+
+
+let rec fold_right2_last f l1 l2 accu  = 
+  match (l1, l2) with
+  | ([], []) -> accu
+  | [last1], [last2] -> f true  last1 last2 accu
+  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
+  | (_, _) -> invalid_arg "List.fold_right2"
+
+
+let init n f = 
+  Array.to_list (Array.init n f)
+
+let take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  < n then invalid_arg "Ext_list.take"
+  else (Array.to_list (Array.sub arr 0 n ), 
+        Array.to_list (Array.sub arr n (arr_length - n)))
+
+let try_take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  <= n then 
+    l,  arr_length, []
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+
+let exclude_tail (x : 'a list) = 
+  let rec aux acc x = 
+    match x with 
+    | [] -> invalid_arg "Ext_list.exclude_tail"
+    | [ x ] ->  x, List.rev acc
+    | y0::ys -> aux (y0::acc) ys in
+  aux [] x
+
+(* For small list, only need partial equality 
+   {[
+   group (=) [1;2;3;4;3]
+   ;;
+   - : int list list = [[3; 3]; [4]; [2]; [1]]
+   # group (=) [];;
+   - : 'a list list = []
+   ]}
+ *)
+let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
+  match lst with 
+  | [] -> []
+  | x::xs -> 
+      aux cmp x (group cmp xs )
+
+and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
+  match xss with 
+  | [] -> [[x]]
+  | y::ys -> 
+      if cmp x (List.hd y) (* cannot be null*) then
+        (x::y) :: ys 
+      else
+        y :: aux cmp x ys                                 
+  
+let stable_group cmp lst =  group cmp lst |> List.rev 
+
+let rec drop n h = 
+  if n < 0 then invalid_arg "Ext_list.drop"
+  else if n = 0 then h 
+  else if h = [] then invalid_arg "Ext_list.drop"
+  else 
+    drop (n - 1) (List.tl h)
+
+let rec for_all_ret  p = function
+  | [] -> None
+  | a::l -> 
+      if p a 
+      then for_all_ret p l
+      else Some a 
+
+let rec for_all_opt  p = function
+  | [] -> None
+  | a::l -> 
+      match p a with
+      | None -> for_all_opt p l
+      | v -> v 
+
+let fold f l init = 
+  List.fold_left (fun acc i -> f  i init) init l 
+
+let rev_map_acc  acc f l = 
+  let rec rmap_f accu = function
+    | [] -> accu
+    | a::l -> rmap_f (f a :: accu) l
+  in
+  rmap_f acc l
+
+let rec rev_iter f xs =
+    match xs with    
+    | [] -> ()
+    | y :: ys -> 
+      rev_iter f ys ;
+      f y      
+      
+let rec for_all2_no_exn p l1 l2 = 
+  match (l1, l2) with
+  | ([], []) -> true
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
+  | (_, _) -> false
+
+
+let rec find_no_exn p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_no_exn p l
+
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt p l
+
+
+let split_map 
+    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
+  let rec aux bs cs xs =
+    match xs with 
+    | [] -> List.rev bs, List.rev cs 
+    | u::us -> 
+      let b,c =  f u in aux (b::bs) (c ::cs) us in 
+
+  aux [] [] xs 
+
+
+(*
+   {[
+     reduce_from_right (-) [1;2;3];;
+     - : int = 2
+               # reduce_from_right (-) [1;2;3; 4];;
+     - : int = -2
+                # reduce_from_right (-) [1];;
+     - : int = 1
+               # reduce_from_right (-) [1;2;3; 4; 5];;
+     - : int = 3
+   ]} 
+*)
+let reduce_from_right fn lst = 
+  begin match List.rev lst with
+    | last :: rest -> 
+      List.fold_left  (fun x y -> fn y x) last rest 
+    | _ -> invalid_arg "Ext_list.reduce" 
+  end
+let reduce_from_left fn lst = 
+  match lst with 
+  | first :: rest ->  List.fold_left fn first rest 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
+
+
+type 'a t = 'a list ref
+
+let create_ref_empty () = ref []
+
+let ref_top x = 
+  match !x with 
+  | y::_ -> y 
+  | _ -> invalid_arg "Ext_list.ref_top"
+
+let ref_empty x = 
+  match !x with [] -> true | _ -> false 
+
+let ref_push x refs = 
+  refs := x :: !refs
+
+let ref_pop refs = 
+  match !refs with 
+  | [] -> invalid_arg "Ext_list.ref_pop"
+  | x::rest -> 
+    refs := rest ; 
+    x     
+
+let rev_except_last xs =
+  let rec aux acc xs =
+    match xs with
+    | [ ] -> invalid_arg "Ext_list.rev_except_last"
+    | [ x ] -> acc ,x
+    | x :: xs -> aux (x::acc) xs in
+  aux [] xs   
+
+let sort_via_array cmp lst =
+  let arr = Array.of_list lst  in
+  Array.sort cmp arr;
+  Array.to_list arr
+
+let rec last xs =
+  match xs with 
+  | [x] -> x 
+  | _ :: tl -> last tl 
+  | [] -> invalid_arg "Ext_list.last"
+
+
+end
 module Ast_comb : sig 
 #1 "ast_comb.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -26642,6 +24253,193 @@ let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) =
   Str.include_ ~loc
     (Incl.mk ~loc 
        (Mod.constraint_ ~loc (Mod.structure ~loc stru) (Mty.signature ~loc sign)))
+
+end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+val suffix_cmj : string
+val suffix_cmi : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mliast : string
+val suffix_mll : string
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+val suffix_js : string
+
+
+
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+let suffix_cmj = ".cmj"
+let suffix_cmi = ".cmi"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mlast = ".mlast"
+let suffix_mliast = ".mliast"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
+let suffix_js = ".js"
 
 end
 module Ast_derive : sig 
@@ -27591,6 +25389,1109 @@ let merge (l: t) (r : t) =
     {loc_start ;loc_end; loc_ghost = false}
 
 let none = Location.none
+
+end
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+val dump : 'a -> string 
+
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
+
+end = struct
+#1 "ext_pervasives.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let with_file_as_chan filename f = 
+  finally (open_out_bin filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out_bin filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+
+let rec dump r =
+  if Obj.is_int r then
+    string_of_int (Obj.magic r : int)
+  else (* Block. *)
+    let rec get_fields acc = function
+      | 0 -> acc
+      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
+    in
+    let rec is_list r =
+      if Obj.is_int r then
+        r = Obj.repr 0 (* [] *)
+      else
+        let s = Obj.size r and t = Obj.tag r in
+        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
+    in
+    let rec get_list r =
+      if Obj.is_int r then
+        []
+      else
+        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
+        h :: t
+    in
+    let opaque name =
+      (* XXX In future, print the address of value 'r'.  Not possible
+       * in pure OCaml at the moment.  *)
+      "<" ^ name ^ ">"
+    in
+    let s = Obj.size r and t = Obj.tag r in
+    (* From the tag, determine the type of block. *)
+    match t with
+    | _ when is_list r ->
+      let fields = get_list r in
+      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+    | 0 ->
+      let fields = get_fields [] s in
+      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.lazy_tag ->
+      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
+         * clear if very large constructed values could have the same
+         * tag. XXX *)
+      opaque "lazy"
+    | x when x = Obj.closure_tag ->
+      opaque "closure"
+    | x when x = Obj.object_tag ->
+      let fields = get_fields [] s in
+      let _clasz, id, slots =
+        match fields with
+        | h::h'::t -> h, h', t
+        | _ -> assert false
+      in
+      (* No information on decoding the class (first field).  So just print
+         * out the ID and the slots. *)
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+    | x when x = Obj.infix_tag ->
+      opaque "infix"
+    | x when x = Obj.forward_tag ->
+      opaque "forward"
+    | x when x < Obj.no_scan_tag ->
+      let fields = get_fields [] s in
+      "Tag" ^ string_of_int t ^
+      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.string_tag ->
+      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
+    | x when x = Obj.double_tag ->
+      string_of_float (Obj.magic r : float)
+    | x when x = Obj.abstract_tag ->
+      opaque "abstract"
+    | x when x = Obj.custom_tag ->
+      opaque "custom"
+    | x when x = Obj.custom_tag ->
+      opaque "final"
+    | x when x = Obj.double_array_tag ->
+      "[|"^
+      String.concat ";"
+        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
+      "|]"
+    | _ ->
+      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
+
+let dump v = dump (Obj.repr v)
+
+external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+
+end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+type t = 
+  [ `File of string 
+  | `Dir of string ]
+
+val combine : string -> string -> string 
+val path_as_directory : string -> string
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+ *)
+
+(** Js_output is node style, which means 
+    separator is only '/'
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
+ *)
+
+val node_relative_path : t -> [`File of string] -> string
+
+val chop_extension : ?loc:string -> string -> string
+
+
+
+
+
+
+val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t
+
+val replace_backward_slash : string -> string
+
+val module_name_of_file : string -> string
+
+val chop_extension_if_any : string -> string
+
+val absolute_path : string -> string
+
+val module_name_of_file_if_any : string -> string
+
+(**
+   1. add some simplifications when concatenating
+   2. when the second one is absolute, drop the first one
+*)
+val combine : string -> string -> string
+
+val normalize_absolute_path : string -> string
+
+(** 
+TODO: could be highly optimized
+if [from] and [to] resolve to the same path, a zero-length string is returned 
+Given that two paths are directory
+
+A typical use case is 
+{[
+Filename.concat 
+  (rel_normalized_absolute_path cwd (Filename.dirname a))
+  (Filename.basename a)
+]}
+*)
+val rel_normalized_absolute_path : string -> string -> string 
+
+
+
+(**
+{[
+get_extension "a.txt" = ".txt"
+get_extension "a" = ""
+]}
+*)
+val get_extension : string -> string
+
+val replace_backward_slash : string -> string
+
+(*
+[no_slash s i len]
+*)
+val no_slash : string -> int -> int -> bool
+(** if no conversion happens, reference equality holds *)
+val replace_slash_backward : string -> string 
+
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Used when produce node compatible paths *)
+let node_sep = "/"
+let node_parent = ".."
+let node_current = "."
+
+type t = 
+  [ `File of string 
+  | `Dir of string ]
+
+let cwd = lazy (Sys.getcwd ())
+
+let (//) = Filename.concat 
+
+let combine path1 path2 =
+  if path1 = "" then
+    path2
+  else if path2 = "" then path1
+  else 
+  if Filename.is_relative path2 then
+    path1// path2 
+  else
+    path2
+
+(* Note that [.//] is the same as [./] *)
+let path_as_directory x =
+  if x = "" then x
+  else
+  if Ext_string.ends_with x  Filename.dir_sep then
+    x 
+  else 
+    x ^ Filename.dir_sep
+
+let absolute_path s = 
+  let process s = 
+    let s = 
+      if Filename.is_relative s then
+        Lazy.force cwd // s 
+      else s in
+    (* Now simplify . and .. components *)
+    let rec aux s =
+      let base,dir  = Filename.basename s, Filename.dirname s  in
+      if dir = s then dir
+      else if base = Filename.current_dir_name then aux dir
+      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
+      else aux dir // base
+    in aux s  in 
+  process s 
+
+
+let chop_extension ?(loc="") name =
+  try Filename.chop_extension name 
+  with Invalid_argument _ -> 
+    Ext_pervasives.invalid_argf 
+      "Filename.chop_extension ( %s : %s )"  loc name
+
+let chop_extension_if_any fname =
+  try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+
+
+
+
+let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
+
+
+(** example
+    {[
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+    ]}
+
+    The other way
+    {[
+
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+    ]}
+    {[
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
+    ]}
+    {[
+      /a/b
+      /c/d
+    ]}
+*)
+let relative_path file_or_dir_1 file_or_dir_2 = 
+  let sep_char = os_path_separator_char in
+  let relevant_dir1 = 
+    (match file_or_dir_1 with 
+     | `Dir x -> x 
+     | `File file1 ->  Filename.dirname file1) in
+  let relevant_dir2 = 
+    (match file_or_dir_2 with 
+     |`Dir x -> x 
+     |`File file2 -> Filename.dirname file2 ) in
+  let dir1 = Ext_string.split relevant_dir1 sep_char   in
+  let dir2 = Ext_string.split relevant_dir2 sep_char  in
+  let rec go (dir1 : string list) (dir2 : string list) = 
+    match dir1, dir2 with 
+    | x::xs , y :: ys when x = y
+      -> go xs ys 
+    | _, _
+      -> 
+      List.map (fun _ -> node_parent) dir2 @ dir1 
+  in
+  match go dir1 dir2 with
+  | (x :: _ ) as ys when x = node_parent -> 
+    String.concat node_sep ys
+  | ys -> 
+    String.concat node_sep  @@ node_current :: ys
+
+
+(** path2: a/b 
+    path1: a 
+    result:  ./b 
+    TODO: [Filename.concat] with care
+
+    [file1] is currently compilation file 
+    [file2] is the dependency
+*)
+let node_relative_path (file1 : t) 
+    (`File file2 as dep_file : [`File of string]) = 
+  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
+  let len = String.length file2 in 
+  if v >= 0 then
+    let rec skip  i =       
+      if i >= len then
+        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
+      else 
+        (* https://en.wikipedia.org/wiki/Path_(computing))
+           most path separator are a single char 
+        *)
+        let curr_char = String.unsafe_get file2 i  in 
+        if curr_char = os_path_separator_char || curr_char = '.' then 
+          skip (i + 1) 
+        else i
+        (*
+          TODO: we need do more than this suppose user 
+          input can be
+           {[
+             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
+           ]}
+           This seems weird though
+        *)
+    in 
+    Ext_string.tail_from file2
+      (skip (v + Literals.node_modules_length)) 
+  else 
+    relative_path 
+      (  match dep_file with 
+         | `File x -> `File (absolute_path x)
+         | `Dir x -> `Dir (absolute_path x))
+
+      (match file1 with 
+       | `File x -> `File (absolute_path x)
+       | `Dir x -> `Dir(absolute_path x))
+    ^ node_sep ^
+    chop_extension_if_any (Filename.basename file2)
+
+
+
+
+
+let find_package_json_dir cwd  = 
+  let rec aux cwd  = 
+    if Sys.file_exists (cwd // Literals.package_json) then cwd
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux cwd'
+      else 
+        Ext_pervasives.failwithf 
+          ~loc:__LOC__
+          "package.json not found from %s" cwd
+  in
+  aux cwd 
+
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
+
+let rec no_slash x i len = 
+  i >= len  || 
+  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+
+let replace_backward_slash (x : string)=
+  let len = String.length x in
+  if no_slash x 0 len then x 
+  else  
+    String.map (function 
+        |'\\'-> '/'
+        | x -> x) x
+
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if no_slash x 0 len then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
+
+let module_name_of_file file =
+  String.capitalize 
+    (Filename.chop_extension @@ Filename.basename file)  
+
+let module_name_of_file_if_any file = 
+  String.capitalize 
+    (chop_extension_if_any @@ Filename.basename file)  
+
+
+(** For win32 or case insensitve OS 
+    [".cmj"] is the same as [".CMJ"]
+*)
+(* let has_exact_suffix_then_chop fname suf =  *)
+
+let combine p1 p2 = 
+  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
+  if p2 = "" || p2 = Filename.current_dir_name then p1 
+  else 
+  if Filename.is_relative p2 then 
+    Filename.concat p1 p2 
+  else p2 
+
+
+
+(**
+   {[
+     split_aux "//ghosg//ghsogh/";;
+     - : string * string list = ("/", ["ghosg"; "ghsogh"])
+   ]}
+*)
+let split_aux p =
+  let rec go p acc =
+    let dir = Filename.dirname p in
+    if dir = p then dir, acc
+    else go dir (Filename.basename p :: acc)
+  in go p []
+
+(** 
+   TODO: optimization
+   if [from] and [to] resolve to the same path, a zero-length string is returned 
+*)
+let rel_normalized_absolute_path from to_ =
+  let root1, paths1 = split_aux from in 
+  let root2, paths2 = split_aux to_ in 
+  if root1 <> root2 then root2 else
+    let rec go xss yss =
+      match xss, yss with 
+      | x::xs, y::ys -> 
+        if x = y then go xs ys 
+        else 
+          let start = 
+            List.fold_left (fun acc _ -> acc // ".." ) ".." xs in 
+          List.fold_left (fun acc v -> acc // v) start yss
+      | [], [] -> ""
+      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
+      | x::xs, [] ->
+        List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
+    go paths1 paths2
+
+(*TODO: could be hgighly optimized later 
+  {[
+    normalize_absolute_path "/gsho/./..";;
+
+    normalize_absolute_path "/a/b/../c../d/e/f";;
+
+    normalize_absolute_path "/gsho/./..";;
+
+    normalize_absolute_path "/gsho/./../..";;
+
+    normalize_absolute_path "/a/b/c/d";;
+
+    normalize_absolute_path "/a/b/c/d/";;
+
+    normalize_absolute_path "/a/";;
+
+    normalize_absolute_path "/a";;
+  ]}
+*)
+let normalize_absolute_path x =
+  let drop_if_exist xs =
+    match xs with 
+    | [] -> []
+    | _ :: xs -> xs in 
+  let rec normalize_list acc paths =
+    match paths with 
+    | [] -> acc 
+    | "." :: xs -> normalize_list acc xs
+    | ".." :: xs -> 
+      normalize_list (drop_if_exist acc ) xs 
+    | x :: xs -> 
+      normalize_list (x::acc) xs 
+  in
+  let root, paths = split_aux x in
+  let rev_paths =  normalize_list [] paths in 
+  let rec go acc rev_paths =
+    match rev_paths with 
+    | [] -> Filename.concat root acc 
+    | last::rest ->  go (Filename.concat last acc ) rest  in 
+  match rev_paths with 
+  | [] -> root 
+  | last :: rest -> go last rest 
+
+
+let get_extension x =
+  try
+    let pos = String.rindex x '.' in
+    Ext_string.tail_from x pos
+  with Not_found -> ""
+
+
+
+end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type module_system = 
+  [ `NodeJS | `AmdJS | `Goog ] (* This will be serliazed *)
+
+
+type package_info = 
+ (module_system * string )
+
+type package_name  = string
+type packages_info =
+  | Empty 
+  | NonBrowser of (package_name * package_info  list)
+
+
+
+val cmj_ext : string 
+
+
+(* val is_browser : unit -> bool  *)
+(* val set_browser : unit -> unit *)
+
+
+val get_ext : unit -> string
+
+(** depends on [package_infos], used in {!Js_program_loader} *)
+val get_output_dir : pkg_dir:string -> module_system -> string -> string
+
+
+(** used by command line option *)
+val set_npm_package_path : string -> unit 
+val get_packages_info : unit -> packages_info
+
+type info_query = 
+  [ `Empty 
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound 
+  ]
+
+val query_package_infos : 
+  packages_info ->
+  module_system ->
+  info_query
+
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+val get_current_package_name_and_path : 
+  module_system -> info_query
+
+
+val set_package_name : string -> unit 
+val get_package_name : unit -> string option
+
+(** corss module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** generate tds option *)
+val default_gen_tds : bool ref
+
+(** options for builtion ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+val no_warn_ffi_type : bool ref 
+val no_warn_unused_bs_attribute : bool ref 
+
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
+
+val block : string
+val int32 : string
+val gc : string 
+val backtrace : string
+
+val builtin_exceptions : string
+val exceptions : string
+val io : string
+val oo : string
+val sys : string
+val lexer : string 
+val parser : string
+val obj_runtime : string
+val array : string
+val format : string
+val string : string
+val bytes : string  
+val float : string 
+val curry : string 
+(* val bigarray : string *)
+(* val unix : string *)
+val int64 : string
+val md5 : string
+val hash : string
+val weak : string
+val js_primitive : string
+val module_ : string
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+val is_windows : bool 
+
+val better_errors : bool ref
+val sort_imports : bool ref 
+val dump_js : bool ref
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+val lib_ocaml_dir : string
+
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+type env =
+  | NodeJS
+  | AmdJS
+  | Goog (* of string option *)
+
+
+
+type path = string
+type module_system =
+  [ `NodeJS | `AmdJS | `Goog ]
+type package_info =
+ ( module_system * string )
+
+type package_name  = string
+type packages_info =
+  | Empty (* No set *)
+  | NonBrowser of (package_name * package_info  list)
+(** we don't force people to use package *)
+
+
+
+let ext = ref ".js"
+let cmj_ext = ".cmj"
+
+
+
+let get_ext () = !ext
+
+
+let packages_info : packages_info ref = ref Empty
+
+
+let get_package_name () =
+  match !packages_info with
+  | Empty  -> None
+  | NonBrowser(n,_) -> Some n
+
+let no_version_header = ref false
+
+let set_package_name name =
+  match !packages_info with
+  | Empty -> packages_info := NonBrowser(name,  [])
+  |  _ ->
+    Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
+
+
+let set_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match package_name with
+         | "commonjs" -> `NodeJS
+         | "amdjs" -> `AmdJS
+         | "goog" -> `Goog
+         | _ ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        `NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs))
+   (** Browser is not set via command line only for internal use *)
+
+
+
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+let (//) = Filename.concat
+
+let get_packages_info () = !packages_info
+
+type info_query =
+  [ `Empty
+  | `Package_script of string
+  | `Found of package_name * string
+  | `NotFound ]
+let query_package_infos package_infos module_system =
+  match package_infos with
+  | Empty -> `Empty
+  | NonBrowser (name, []) -> `Package_script name
+  | NonBrowser (name, paths) ->
+    begin match List.find (fun (k, _) -> k = module_system) paths with
+      | (_, x) -> `Found (name, x)
+      | exception _ -> `NotFound
+    end
+
+let get_current_package_name_and_path   module_system =
+  query_package_infos !packages_info module_system
+
+
+(* for a single pass compilation, [output_dir]
+   can be cached
+*)
+let get_output_dir ~pkg_dir module_system filename =
+  match !packages_info with
+  | Empty | NonBrowser (_, [])->
+    if Filename.is_relative filename then
+      Lazy.force Ext_filename.cwd //
+      Filename.dirname filename
+    else
+      Filename.dirname filename
+  | NonBrowser (_,  modules) ->
+    begin match List.find (fun (k,_) -> k = module_system) modules with
+      | (_, _path) -> pkg_dir // _path
+      |  exception _ -> assert false
+    end
+
+
+
+
+let default_gen_tds = ref false
+
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+let no_warn_ffi_type = ref false
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unused_bs_attribute = ref false
+
+
+let builtin_exceptions = "Caml_builtin_exceptions"
+let exceptions = "Caml_exceptions"
+let io = "Caml_io"
+let sys = "Caml_sys"
+let lexer = "Caml_lexer"
+let parser = "Caml_parser"
+let obj_runtime = "Caml_obj"
+let array = "Caml_array"
+let format = "Caml_format"
+let string = "Caml_string"
+let bytes = "Caml_bytes"
+let float = "Caml_float"
+let hash = "Caml_hash"
+let oo = "Caml_oo"
+let curry = "Curry"
+let int64 = "Caml_int64"
+let md5 = "Caml_md5"
+let weak = "Caml_weak"
+let backtrace = "Caml_backtrace"
+let gc = "Caml_gc"
+let int32 = "Caml_int32"
+let block = "Block"
+let js_primitive = "Js_primitive"
+let module_ = "Caml_module"
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f
+let get_current_file () = !current_file
+let get_module_name () =
+  Filename.chop_extension
+    (Filename.basename (String.uncapitalize !current_file))
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+let no_any_assert = ref false
+
+let set_no_any_assert () = no_any_assert := true
+let get_no_any_assert () = !no_any_assert
+
+let better_errors = ref false
+let sort_imports = ref false
+let dump_js = ref false
+
+let is_windows =
+  match Sys.os_type with
+  | "Win32"
+  | "Cygwin"-> true
+  | _ -> false
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+(** The installation directory, it will affect 
+    [-bs-package-include] and [bsb] on how to install it and look it up
+*)
+let lib_ocaml_dir = Filename.concat "lib" "ocaml"
 
 end
 module Bs_warnings : sig 
@@ -30975,9 +29876,6 @@ let print_version_num () =
 ;;
 
 
-let output_prefix = ref None
-
-
 let _ =
 
   native_only := true;
@@ -30991,12 +29889,6 @@ let _ =
 
   Compenv.readenv ppf Before_args;
   Arg.parse [
-
-    "-bs-oprefix", Arg.String (fun x -> output_prefix := Some x),
-    " Set output prefix for -bs-MD (internal use)";
-    "-bs-MD", Arg.String (fun x -> Ast_extract.handle_depfile !output_prefix x),
-    " Generate dep file for ninja format";
-
      "-absname", Arg.Set Location.absname,
         " Show absolute filenames in error messages";
      "-all", Arg.Set all_dependencies,

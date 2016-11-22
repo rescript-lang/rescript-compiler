@@ -80,7 +80,7 @@ let convert_and_resolve_file =
 let get_bsc_bsdep cwd = 
   let dir = 
     Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))in 
-  dir // "bsc.exe", dir // "bsdep.exe"
+  dir // "bsc.exe", dir // "bsb_helper.exe"
 
 (** 
 {[
