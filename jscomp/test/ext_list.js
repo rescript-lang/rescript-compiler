@@ -350,22 +350,28 @@ function flat_map2(f, lx, ly) {
   };
 }
 
-function flat_map(f, lx) {
-  var _acc = /* [] */0;
-  var _lx = lx;
+function flat_map_aux(f, _acc, append, _lx) {
   while(true) {
-    var lx$1 = _lx;
+    var lx = _lx;
     var acc = _acc;
-    if (lx$1) {
-      _lx = lx$1[1];
-      _acc = List.rev_append(Curry._1(f, lx$1[0]), acc);
+    if (lx) {
+      _lx = lx[1];
+      _acc = List.rev_append(Curry._1(f, lx[0]), acc);
       continue ;
       
     }
     else {
-      return List.rev(acc);
+      return List.rev_append(acc, append);
     }
   };
+}
+
+function flat_map(f, lx) {
+  return flat_map_aux(f, /* [] */0, /* [] */0, lx);
+}
+
+function flat_map_acc(f, append, lx) {
+  return flat_map_aux(f, /* [] */0, append, lx);
 }
 
 function map2_last(f, l1, l2) {
@@ -964,7 +970,9 @@ exports.filter_map2        = filter_map2;
 exports.filter_map2i       = filter_map2i;
 exports.rev_map_append     = rev_map_append;
 exports.flat_map2          = flat_map2;
+exports.flat_map_aux       = flat_map_aux;
 exports.flat_map           = flat_map;
+exports.flat_map_acc       = flat_map_acc;
 exports.map2_last          = map2_last;
 exports.map_last           = map_last;
 exports.fold_right2_last   = fold_right2_last;

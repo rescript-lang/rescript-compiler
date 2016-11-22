@@ -48,7 +48,7 @@ common/bs_version.ml: build_version.js ../package.json
 ### list files
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_array_tests ounit_path_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_array_tests ounit_list_test ounit_path_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec int_vec int_vec_vec ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
@@ -65,7 +65,7 @@ SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
-CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util idents_analysis bs_conditional_initial ocaml_options ocaml_parse lam\
+CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util bs_conditional_initial ocaml_options ocaml_parse lam\
 	lam_iter lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
 	lam_exit_code j lam_module_ident lam_compile_util lam_stats config_util lam_compile_defs js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\

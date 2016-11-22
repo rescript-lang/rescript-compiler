@@ -22,6 +22,7 @@ let suites =
     Ounit_path_tests.suites;
     Ounit_array_tests.suites;    
     Ounit_scc_tests.suites;
+    Ounit_list_test.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites
