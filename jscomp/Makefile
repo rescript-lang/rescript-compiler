@@ -52,7 +52,7 @@ OUNIT_TESTS_SRCS =  ounit_array_tests ounit_list_test ounit_path_tests ounit_has
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec int_vec int_vec_vec ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
-	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ident_set int_map literals string_map \
+	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ordered_hash_set ident_set int_map literals string_map \
 	string_set ext_scc ext_pp_scope ext_io ext_ident ext_filename
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))

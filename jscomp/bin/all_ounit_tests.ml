@@ -2114,7 +2114,7 @@ let remove h key =
   let i = key_index h key in
   h.data.(i) <- remove_bucket h.data.(i)
 
-let small_bucket_mem key lst =
+let rec small_bucket_mem key lst =
   match lst with 
   | [] -> false 
   | key1::rest -> 
@@ -2127,7 +2127,7 @@ let small_bucket_mem key lst =
       | [] -> false 
       | key3 :: rest -> 
          key = key3 ||
-         List.mem key rest 
+         small_bucket_mem key rest 
 let add h key =
   let i = key_index h key  in 
   if not (small_bucket_mem key  h.data.(i)) then 
@@ -2240,7 +2240,7 @@ module Make(H: HashedType): (S with type key = H.t) =
       let i = key_index h key in
       h.data.(i) <- remove_bucket h.data.(i)
 
-    let small_bucket_mem key lst =
+    let rec small_bucket_mem key lst =
       match lst with 
       | [] -> false 
       | key1::rest -> 
@@ -2253,7 +2253,7 @@ module Make(H: HashedType): (S with type key = H.t) =
           | [] -> false 
           | key3 :: rest -> 
             H.equal key  key3 ||
-            List.exists (fun x -> H.equal key x) rest 
+            small_bucket_mem key rest 
 
     let add h key =
       let i = key_index h key  in 
@@ -2285,11 +2285,377 @@ module Make(H: HashedType): (S with type key = H.t) =
 
 
 end
+module Ordered_hash_set : sig 
+#1 "ordered_hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(* does not support [remove], 
+    so that the adding order is strict and continous  
+ *)
+
+module type S =
+sig
+  type key
+  type t
+  val create: int ->  t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy: t -> t
+  val add :  t -> key -> unit
+  val mem :  t -> key -> bool
+  val iter: (key -> int -> unit) ->  t -> unit
+  val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
+  val length:  t -> int
+  val stats:  t -> Hashtbl.statistics
+  val elements : t -> key list 
+  val choose : t -> key 
+  val to_sorted_array: t -> key array
+end
+
+
+
+
+module type HashedType =
+  sig
+    type t
+    val equal: t -> t -> bool
+    val hash: t -> int
+  end
+
+module Make ( H : HashedType) : (S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
+
+type   'a t 
+
+val create : int -> 'a t
+
+val clear : 'a t -> unit
+
+val reset : 'a t -> unit
+
+val copy : 'a t -> 'a t
+
+val add : 'a t -> 'a  -> unit
+
+
+val mem : 'a t -> 'a -> bool
+
+val iter : ('a -> int ->  unit) -> 'a t -> unit
+
+val elements : 'a t -> 'a list
+
+val length : 'a t -> int 
+
+val stats:  'a t -> Hashtbl.statistics
+
+val to_sorted_array : 'a t -> 'a array
+ 
+end = struct
+#1 "ordered_hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+type 'a bucket = 
+  | Empty 
+  | Cons of 'a * int * 'a bucket
+
+type 'a t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: 'a bucket array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+
+
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+let create  initial_size =
+  let s = power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s Empty }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  Empty
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size Empty
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons(key,info,rest) ->
+        let nidx = indexfun h key in
+        ndata.(nidx) <- Cons(key,info, ndata.(nidx));
+        insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let key_index h key =
+  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
+
+
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | Empty -> false 
+  | Cons(key1,_,rest) -> 
+    key = key1 ||
+    match rest with 
+    | Empty -> false 
+    | Cons(key2,_,  rest) -> 
+      key = key2 ||
+      match rest with 
+      | Empty -> false 
+      | Cons(key3,_, rest) -> 
+        key = key3 ||
+        small_bucket_mem key rest 
+
+let add h key =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- Cons(key, h.size, h.data.(i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then resize key_index h
+    end
+let mem h key =
+  small_bucket_mem key h.data.(key_index h key) 
+
+let iter f h =
+  let rec do_bucket = function
+    | Empty ->
+      ()
+    | Cons(k ,i,  rest) ->
+      f k i ; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let choose h = 
+  let rec aux arr offset len = 
+    if offset >= len then raise Not_found
+    else 
+      match Array.unsafe_get arr offset with 
+      | Empty -> aux arr (offset + 1) len 
+      | Cons (k,_,rest) -> k 
+  in
+  aux h.data 0 (Array.length h.data)
+
+let to_sorted_array h = 
+  if h.size = 0 then [||]
+  else 
+    let v = choose h in 
+    let arr = Array.make h.size v in
+    iter (fun k i -> Array.unsafe_set arr i k) h;
+    arr 
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      Empty ->
+      accu
+    | Cons( k , i,  rest) ->
+      do_bucket rest (f k i  accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+  done;
+  !accu
+
+let elements set = 
+  fold  (fun k i  acc ->  k :: acc) set []
+
+
+let rec bucket_length acc (x : _ bucket) = 
+  match x with 
+  | Empty -> 0
+  | Cons(_,_,rest) -> bucket_length (acc + 1) rest  
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+       let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
+    h.data;
+  { Hashtbl.num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+module type S =
+sig
+  type key
+  type t
+  val create: int ->  t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy: t -> t
+  val add :  t -> key -> unit
+  val mem :  t -> key -> bool
+  val iter: (key -> int -> unit) ->  t -> unit
+  val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
+  val length:  t -> int
+  val stats:  t -> Hashtbl.statistics
+  val elements : t -> key list 
+  val choose : t -> key 
+  val to_sorted_array: t -> key array
+end
+
+module type HashedType =
+sig
+  type t
+  val equal: t -> t -> bool
+  val hash: t -> int
+end
+
+module Make(H: HashedType): (S with type key = H.t) =
+struct
+  type key = H.t
+
+  type nonrec  t = key t
+  let create = create
+  let clear = clear
+  let reset = reset
+  let copy = copy
+
+  let key_index h key =
+    (H.hash  key) land (Array.length h.data - 1)
+
+
+  let rec small_bucket_mem key lst =
+    match lst with 
+    | Empty -> false 
+    | Cons(key1,_, rest) -> 
+      H.equal key key1 ||
+      match rest with 
+      | Empty -> false 
+      | Cons(key2 , _, rest) -> 
+        H.equal key  key2 ||
+        match rest with 
+        | Empty -> false 
+        | Cons(key3,_,  rest) -> 
+          H.equal key  key3 ||
+          small_bucket_mem key rest 
+
+
+  let add h key =
+    let i = key_index h key  in 
+    if not (small_bucket_mem key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- Cons(key,h.size, h.data.(i));
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then resize key_index h
+      end
+
+  let mem h key =
+    small_bucket_mem key h.data.(key_index h key) 
+
+  let iter = iter
+  let fold = fold
+  let length = length
+  let stats = stats
+  let elements = elements
+  let choose = choose
+  let to_sorted_array = to_sorted_array
+end
+
+
+
+
+
+
+
+
+
+
+
+end
 module Ounit_hash_set_tests
 = struct
 #1 "ounit_hash_set_tests.ml"
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) = OUnit.assert_equal
 
@@ -2300,70 +2666,88 @@ module Id_hash_set = Hash_set.Make(struct
     let equal x y = x.stamp = y.stamp && x.name = y.name 
     let hash x = Hashtbl.hash x.stamp
   end
-)
+  )
 
 let suites = 
-    __FILE__
-    >:::
-    [
-        __LOC__ >:: begin fun _ ->
-            let v = Hash_set.create 31 in
-            for i = 0 to 1000 do
-                Hash_set.add v i  
-            done  ;
-            OUnit.assert_equal (Hash_set.length v) 1001
-        end ;
-        __LOC__ >:: begin fun _ ->
-            let v = Hash_set.create 31 in
-            for i = 0 to 1_0_000 do
-                Hash_set.add v 0
-            done  ;
-            OUnit.assert_equal (Hash_set.length v) 1
-        end ;
-        __LOC__ >:: begin fun _ -> 
-          let v = Hash_set.create 30 in 
-          for i = 0 to 2_000 do 
-            Hash_set.add v {name = "x" ; stamp = i}
-          done ;
-          for i = 0 to 2_000 do 
-            Hash_set.add v {name = "x" ; stamp = i}
-          done  ; 
-          for i = 0 to 2_000 do 
-            assert (Hash_set.mem v {name = "x"; stamp = i})
-          done;  
-          OUnit.assert_equal (Hash_set.length v)  2_001;
-          for i =  1990 to 3_000 do 
-            Hash_set.remove v {name = "x"; stamp = i}
-          done ;
-          OUnit.assert_equal (Hash_set.length v) 1990;
-          OUnit.assert_equal (Hash_set.stats v)
-            {Hash_set.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7;
-             bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]}
-        end ;
-        __LOC__ >:: begin fun _ -> 
-          let module Hash_set = Id_hash_set in 
-          let v = Hash_set.create 30 in 
-          for i = 0 to 2_000 do 
-            Hash_set.add v {name = "x" ; stamp = i}
-          done ;
-          for i = 0 to 2_000 do 
-            Hash_set.add v {name = "x" ; stamp = i}
-          done  ; 
-          for i = 0 to 2_000 do 
-            assert (Hash_set.mem v {name = "x"; stamp = i})
-          done;  
-          OUnit.assert_equal (Hash_set.length v)  2_001;
-          for i =  1990 to 3_000 do 
-            Hash_set.remove v {name = "x"; stamp = i}
-          done ;
-          OUnit.assert_equal (Hash_set.length v) 1990;
-          OUnit.assert_equal (Hash_set.stats v)
-            {num_bindings = 1990; num_buckets = 1024; max_bucket_length = 8;
-             bucket_histogram = [|148; 275; 285; 182; 95; 21; 14; 2; 2|]}
-            
-        end 
+  __FILE__
+  >:::
+  [
+    __LOC__ >:: begin fun _ ->
+      let v = Hash_set.create 31 in
+      for i = 0 to 1000 do
+        Hash_set.add v i  
+      done  ;
+      OUnit.assert_equal (Hash_set.length v) 1001
+    end ;
+    __LOC__ >:: begin fun _ ->
+      let v = Hash_set.create 31 in
+      for i = 0 to 1_0_000 do
+        Hash_set.add v 0
+      done  ;
+      OUnit.assert_equal (Hash_set.length v) 1
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      let v = Hash_set.create 30 in 
+      for i = 0 to 2_000 do 
+        Hash_set.add v {name = "x" ; stamp = i}
+      done ;
+      for i = 0 to 2_000 do 
+        Hash_set.add v {name = "x" ; stamp = i}
+      done  ; 
+      for i = 0 to 2_000 do 
+        assert (Hash_set.mem v {name = "x"; stamp = i})
+      done;  
+      OUnit.assert_equal (Hash_set.length v)  2_001;
+      for i =  1990 to 3_000 do 
+        Hash_set.remove v {name = "x"; stamp = i}
+      done ;
+      OUnit.assert_equal (Hash_set.length v) 1990;
+      OUnit.assert_equal (Hash_set.stats v)
+        {Hash_set.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7;
+         bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]}
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      let module Hash_set = Id_hash_set in 
+      let v = Hash_set.create 30 in 
+      for i = 0 to 2_000 do 
+        Hash_set.add v {name = "x" ; stamp = i}
+      done ;
+      for i = 0 to 2_000 do 
+        Hash_set.add v {name = "x" ; stamp = i}
+      done  ; 
+      for i = 0 to 2_000 do 
+        assert (Hash_set.mem v {name = "x"; stamp = i})
+      done;  
+      OUnit.assert_equal (Hash_set.length v)  2_001;
+      for i =  1990 to 3_000 do 
+        Hash_set.remove v {name = "x"; stamp = i}
+      done ;
+      OUnit.assert_equal (Hash_set.length v) 1990;
+      OUnit.assert_equal (Hash_set.stats v)
+        {num_bindings = 1990; num_buckets = 1024; max_bucket_length = 8;
+         bucket_histogram = [|148; 275; 285; 182; 95; 21; 14; 2; 2|]}
 
-    ]
+    end 
+    ;
+    __LOC__ >:: begin fun _ ->
+      let v = Ordered_hash_set.create 3 in 
+      for i =  0 to 10 do
+        Ordered_hash_set.add v (string_of_int i) 
+      done; 
+      for i = 100 downto 2 do
+        Ordered_hash_set.add v (string_of_int i)
+      done;
+      OUnit.assert_equal (Ordered_hash_set.to_sorted_array v )
+        [|"0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"; "100"; "99"; "98";
+          "97"; "96"; "95"; "94"; "93"; "92"; "91"; "90"; "89"; "88"; "87"; "86"; "85";
+          "84"; "83"; "82"; "81"; "80"; "79"; "78"; "77"; "76"; "75"; "74"; "73"; "72";
+          "71"; "70"; "69"; "68"; "67"; "66"; "65"; "64"; "63"; "62"; "61"; "60"; "59";
+          "58"; "57"; "56"; "55"; "54"; "53"; "52"; "51"; "50"; "49"; "48"; "47"; "46";
+          "45"; "44"; "43"; "42"; "41"; "40"; "39"; "38"; "37"; "36"; "35"; "34"; "33";
+          "32"; "31"; "30"; "29"; "28"; "27"; "26"; "25"; "24"; "23"; "22"; "21"; "20";
+          "19"; "18"; "17"; "16"; "15"; "14"; "13"; "12"; "11"|]
+    end;
+  ]
 
 end
 module String_map : sig 

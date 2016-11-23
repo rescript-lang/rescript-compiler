@@ -63671,7 +63671,7 @@ let remove h key =
   let i = key_index h key in
   h.data.(i) <- remove_bucket h.data.(i)
 
-let small_bucket_mem key lst =
+let rec small_bucket_mem key lst =
   match lst with 
   | [] -> false 
   | key1::rest -> 
@@ -63684,7 +63684,7 @@ let small_bucket_mem key lst =
       | [] -> false 
       | key3 :: rest -> 
          key = key3 ||
-         List.mem key rest 
+         small_bucket_mem key rest 
 let add h key =
   let i = key_index h key  in 
   if not (small_bucket_mem key  h.data.(i)) then 
@@ -63797,7 +63797,7 @@ module Make(H: HashedType): (S with type key = H.t) =
       let i = key_index h key in
       h.data.(i) <- remove_bucket h.data.(i)
 
-    let small_bucket_mem key lst =
+    let rec small_bucket_mem key lst =
       match lst with 
       | [] -> false 
       | key1::rest -> 
@@ -63810,7 +63810,7 @@ module Make(H: HashedType): (S with type key = H.t) =
           | [] -> false 
           | key3 :: rest -> 
             H.equal key  key3 ||
-            List.exists (fun x -> H.equal key x) rest 
+            small_bucket_mem key rest 
 
     let add h key =
       let i = key_index h key  in 
