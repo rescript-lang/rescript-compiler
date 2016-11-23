@@ -36,13 +36,13 @@ let transitive_closure
     (initial_idents : Ident.t list) 
     (ident_freevars : (Ident.t, Ident_set.t) Hashtbl.t) 
   =
-  let visited = Hashtbl.create 31 in 
+  let visited = Hash_set.create 31 in 
   let rec dfs (id : Ident.t) =
-    if Hashtbl.mem visited id || Ext_ident.is_js_or_global id  
+    if Hash_set.mem visited id || Ext_ident.is_js_or_global id  
     then ()
     else 
       begin 
-        Hashtbl.add visited id ();
+        Hash_set.add visited id;
         match Hashtbl.find ident_freevars id with 
         | exception Not_found -> assert false 
         | e -> Ident_set.iter (fun id -> dfs id) e
@@ -84,14 +84,14 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
     List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
       match x with 
       | Single(_,id,_) -> 
-        if Hashtbl.mem visited id  then 
+        if Hash_set.mem visited id  then 
           x :: acc 
         else acc 
       | Nop _ -> x :: acc  
       | Recursive bindings ->
         let b = 
           List.fold_right (fun ((id,_) as v) acc ->
-              if Hashtbl.mem visited id then 
+              if Hash_set.mem visited id then 
                 v :: acc 
               else
                 acc  

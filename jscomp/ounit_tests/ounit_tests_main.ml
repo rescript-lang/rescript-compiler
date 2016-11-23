@@ -23,6 +23,7 @@ let suites =
     Ounit_array_tests.suites;    
     Ounit_scc_tests.suites;
     Ounit_list_test.suites;
+    Ounit_hash_set_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

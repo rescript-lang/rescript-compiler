@@ -239,7 +239,7 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
 (* TODO: [env] is not hard dependency *)
 
 let get_requried_modules env (extras : module_id list ) (hard_dependencies 
-  : _ Hash_set.hashset) : module_id list =  
+  : _ Hash_set.t) : module_id list =  
 
   let mem (x : Lam_module_ident.t) = 
     not (is_pure x ) || Hash_set.mem hard_dependencies  x 

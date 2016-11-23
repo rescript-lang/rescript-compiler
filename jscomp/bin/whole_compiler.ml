@@ -63501,34 +63501,72 @@ module Hash_set : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Ideas are based on {!Hashtbl}, 
+    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
+    This module fixes the semantics of [add].
+    [remove] is not optimized since it is not used too much 
+*)
+
+
+type statistics = {
+  num_bindings: int;
+  num_buckets: int;
+  max_bucket_length: int;
+  bucket_histogram: int array
+}
+
+module type S =
+  sig
+    type key
+    type t
+    val create: int ->  t
+    val clear : t -> unit
+    val reset : t -> unit
+    val copy: t -> t
+    val remove:  t -> key -> unit
+    val add :  t -> key -> unit
+    val mem :  t -> key -> bool
+    val iter: (key -> unit) ->  t -> unit
+    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+    val length:  t -> int
+    val stats:  t -> statistics
+    val elements : t -> key list 
+  end
 
 
 
+module type HashedType =
+  sig
+    type t
+    val equal: t -> t -> bool
+    val hash: t -> int
+  end
 
+module Make ( H : HashedType) : (S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
 
+type   'a t 
 
+val create : int -> 'a t
 
-(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
+val clear : 'a t -> unit
 
-type   'a hashset 
+val reset : 'a t -> unit
 
-val create : ?random: bool -> int -> 'a hashset
+val copy : 'a t -> 'a t
 
-val clear : 'a hashset -> unit
+val add : 'a t -> 'a  -> unit
+val remove : 'a t -> 'a -> unit
 
-val reset : 'a hashset -> unit
+val mem : 'a t -> 'a -> bool
 
-val copy : 'a hashset -> 'a hashset
+val iter : ('a -> unit) -> 'a t -> unit
 
-val add : 'a hashset -> 'a  -> unit
+val elements : 'a t -> 'a list
 
-val mem : 'a hashset -> 'a -> bool
+val length : 'a t -> int 
 
-val iter : ('a -> unit) -> 'a hashset -> unit
-
-val elements : 'a hashset -> 'a list
-
-val length : 'a hashset -> int 
+val stats:  'a t -> statistics
 
 end = struct
 #1 "hash_set.ml"
@@ -63559,24 +63597,249 @@ end = struct
 
 
 
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type 'a t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: 'a list array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
 
 
 
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
 
-include Hashtbl 
+let create  initial_size =
+  let s = power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s [] }
 
-(* type nonrec t = unit t  *)
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  []
+  done
 
-type  'a hashset = ('a,unit) Hashtbl.t
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size [ ]
 
-let add tbl k  = replace tbl k ()
-(* use [Hashtbl.replace] instead  *)
 
-(* let replace tbl k  = replace tbl k () *)
-let iter f = iter (fun k _ -> f k )
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize [ ] in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        [ ] -> ()
+      | key :: rest ->
+          let nidx = indexfun h key in
+          ndata.(nidx) <- key :: ndata.(nidx);
+          insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let key_index h key =
+  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
+
+
+let remove h key =
+  let rec remove_bucket = function
+    | [ ] ->
+        [ ]
+    | k :: next ->
+        if compare k key = 0
+        then begin h.size <- h.size - 1; next end
+        else k :: remove_bucket next in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let small_bucket_mem key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    key = key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+      key = key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+         key = key3 ||
+         List.mem key rest 
+let add h key =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then resize key_index h
+    end
+let mem h key =
+  small_bucket_mem key h.data.(key_index h key) 
+
+let iter f h =
+  let rec do_bucket = function
+    | [ ] ->
+        ()
+    | k ::  rest ->
+        f k ; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      [ ] ->
+        accu
+    | k ::  rest ->
+        do_bucket rest (f k  accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+   done;
+  !accu
 
 let elements set = 
-  fold  (fun k _ acc ->  k :: acc) set []
+  fold  (fun k  acc ->  k :: acc) set []
+
+type statistics = {
+  num_bindings: int;
+  num_buckets: int;
+  max_bucket_length: int;
+  bucket_histogram: int array
+}
+
+
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+      let l = List.length b in
+      histo.(l) <- histo.(l) + 1)
+    h.data;
+  { num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+module type S =
+  sig
+    type key
+    type t
+    val create: int ->  t
+    val clear : t -> unit
+    val reset : t -> unit
+    val copy: t -> t
+    val remove:  t -> key -> unit
+    val add :  t -> key -> unit
+    val mem :  t -> key -> bool
+    val iter: (key -> unit) ->  t -> unit
+    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+    val length:  t -> int
+    val stats:  t -> statistics
+    val elements : t -> key list 
+  end
+
+module type HashedType =
+  sig
+    type t
+    val equal: t -> t -> bool
+    val hash: t -> int
+  end
+
+module Make(H: HashedType): (S with type key = H.t) =
+  struct
+    type key = H.t
+    
+    type nonrec  t = key t
+    let create = create
+    let clear = clear
+    let reset = reset
+    let copy = copy
+
+    let key_index h key =
+      (H.hash  key) land (Array.length h.data - 1)
+
+    let remove h key =
+      let rec remove_bucket = function
+        | [ ] ->
+            [ ]
+        | k :: next ->
+            if H.equal k key
+            then begin h.size <- h.size - 1; next end
+            else k :: remove_bucket next in
+      let i = key_index h key in
+      h.data.(i) <- remove_bucket h.data.(i)
+
+    let small_bucket_mem key lst =
+      match lst with 
+      | [] -> false 
+      | key1::rest -> 
+        H.equal key key1 ||
+        match rest with 
+        | [] -> false 
+        | key2 :: rest -> 
+          H.equal key  key2 ||
+          match rest with 
+          | [] -> false 
+          | key3 :: rest -> 
+            H.equal key  key3 ||
+            List.exists (fun x -> H.equal key x) rest 
+
+    let add h key =
+      let i = key_index h key  in 
+      if not (small_bucket_mem key  h.data.(i)) then 
+        begin 
+          h.data.(i) <- key :: h.data.(i);
+          h.size <- h.size + 1 ;
+          if h.size > Array.length h.data lsl 1 then resize key_index h
+        end
+
+    let mem h key =
+      small_bucket_mem key h.data.(key_index h key) 
+
+    let iter = iter
+    let fold = fold
+    let length = length
+    let stats = stats
+    let elements = elements
+  end
+
+
+
+
+
+
+
+
+
+
 
 end
 module Lam_module_ident : sig 
@@ -63729,7 +63992,7 @@ module Js_fold_basic : sig
 
 val depends_j : J.expression -> Ident_set.t -> Ident_set.t
 
-val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set.hashset
+val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set.t
 
 end = struct
 #1 "js_fold_basic.ml"
@@ -65277,7 +65540,7 @@ type meta = {
   export_idents : Ident_set.t ;
   exports : Ident.t list ;
   alias_tbl : alias_tbl; 
-  exit_codes : int Hash_set.hashset;
+  exit_codes : int Hash_set.t;
 
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
@@ -65409,7 +65672,7 @@ type meta = {
   exports : Ident.t list ;
 
   alias_tbl : alias_tbl; 
-  exit_codes : int Hash_set.hashset;
+  exit_codes : int Hash_set.t;
 
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
@@ -66700,7 +66963,7 @@ val get_package_path_from_cmj :
 val get_requried_modules : 
   Env.t ->
   Lam_module_ident.t list ->
-  Lam_module_ident.t Hash_set.hashset -> 
+  Lam_module_ident.t Hash_set.t -> 
   Lam_module_ident.t list
 
 end = struct
@@ -66946,7 +67209,7 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
 (* TODO: [env] is not hard dependency *)
 
 let get_requried_modules env (extras : module_id list ) (hard_dependencies 
-  : _ Hash_set.hashset) : module_id list =  
+  : _ Hash_set.t) : module_id list =  
 
   let mem (x : Lam_module_ident.t) = 
     not (is_pure x ) || Hash_set.mem hard_dependencies  x 
@@ -80639,13 +80902,13 @@ let transitive_closure
     (initial_idents : Ident.t list) 
     (ident_freevars : (Ident.t, Ident_set.t) Hashtbl.t) 
   =
-  let visited = Hashtbl.create 31 in 
+  let visited = Hash_set.create 31 in 
   let rec dfs (id : Ident.t) =
-    if Hashtbl.mem visited id || Ext_ident.is_js_or_global id  
+    if Hash_set.mem visited id || Ext_ident.is_js_or_global id  
     then ()
     else 
       begin 
-        Hashtbl.add visited id ();
+        Hash_set.add visited id;
         match Hashtbl.find ident_freevars id with 
         | exception Not_found -> assert false 
         | e -> Ident_set.iter (fun id -> dfs id) e
@@ -80687,14 +80950,14 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
     List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
       match x with 
       | Single(_,id,_) -> 
-        if Hashtbl.mem visited id  then 
+        if Hash_set.mem visited id  then 
           x :: acc 
         else acc 
       | Nop _ -> x :: acc  
       | Recursive bindings ->
         let b = 
           List.fold_right (fun ((id,_) as v) acc ->
-              if Hashtbl.mem visited id then 
+              if Hash_set.mem visited id then 
                 v :: acc 
               else
                 acc  
@@ -80705,6 +80968,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
     ) [] rest |> List.rev   
 
   
+
 end
 module Lam_stats_util : sig 
 #1 "lam_stats_util.mli"

@@ -332,8 +332,8 @@ core/lam_compile_primitive.cmx : core/lam_util.cmx \
     core/lam_compile_primitive.cmi
 core/lam_compile_util.cmx : core/js_op.cmx core/lam_compile_util.cmi
 core/lam_dce.cmx : core/lam_util.cmx core/lam_group.cmx \
-    core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx ext/ext_ident.cmx \
-    core/lam_dce.cmi
+    core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx ext/hash_set.cmx \
+    ext/ext_ident.cmx core/lam_dce.cmi
 core/lam_dispatch_primitive.cmx : core/js_stmt_make.cmx \
     core/js_of_lam_tuple.cmx core/js_of_lam_option.cmx \
     core/js_of_lam_exception.cmx core/js_of_lam_array.cmx core/js_long.cmx \
@@ -537,6 +537,7 @@ ounit/oUnitTypes.cmx :
 ounit/oUnitUtils.cmx : ounit/oUnitTypes.cmx
 ounit_tests/ounit_array_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
     ext/ext_array.cmx
+ounit_tests/ounit_hash_set_tests.cmx : ounit/oUnit.cmx ext/hash_set.cmx
 ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \
     bsb/bsb_json.cmx
 ounit_tests/ounit_list_test.cmx : ounit/oUnit.cmx ext/ext_list.cmx
@@ -546,8 +547,9 @@ ounit_tests/ounit_scc_tests.cmx : ounit/oUnit.cmx ext/int_vec_vec.cmx \
 ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_scc_tests.cmx \
     ounit_tests/ounit_path_tests.cmx ounit_tests/ounit_list_test.cmx \
-    ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_array_tests.cmx \
-    ounit/oUnit.cmx ounit_tests/ounit_tests_main.cmi
+    ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_hash_set_tests.cmx \
+    ounit_tests/ounit_array_tests.cmx ounit/oUnit.cmx \
+    ounit_tests/ounit_tests_main.cmi
 ounit_tests/ounit_vec_test.cmx : ounit/oUnit.cmx ext/int_vec.cmx \
     bsb/bsb_json.cmx
 ounit_tests/ounit_tests_main.cmi :
