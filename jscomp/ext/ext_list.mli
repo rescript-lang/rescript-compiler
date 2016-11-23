@@ -56,7 +56,9 @@ val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
 
 val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
 
-val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
+val flat_map_acc : ('a -> 'b list) -> 'b list -> 'a list ->  'b list
+val flat_map : ('a -> 'b list) -> 'a list -> 'b list
+
 
 (** for the last element the first element will be passed [true] *)
 

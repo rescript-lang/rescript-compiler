@@ -22816,7 +22816,9 @@ val filter_mapi : (int -> 'a -> 'b option) -> 'a list -> 'b list
 
 val flat_map2 : ('a -> 'b -> 'c list) -> 'a list -> 'b list -> 'c list
 
-val flat_map : ('a -> 'b list) -> 'a list -> 'b list 
+val flat_map_acc : ('a -> 'b list) -> 'b list -> 'a list ->  'b list
+val flat_map : ('a -> 'b list) -> 'a list -> 'b list
+
 
 (** for the last element the first element will be passed [true] *)
 
@@ -22918,36 +22920,36 @@ let rec filter_map (f: 'a -> 'b option) xs =
   match xs with 
   | [] -> []
   | y :: ys -> 
-      begin match f y with 
+    begin match f y with 
       | None -> filter_map f ys
       | Some z -> z :: filter_map f ys
-      end
+    end
 
 let excludes (p : 'a -> bool ) l : bool * 'a list=
   let excluded = ref false in 
   let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := true ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
+    | [] -> List.rev accu
+    | x :: l -> 
+      if p x then 
+        begin 
+          excluded := true ;
+          aux accu l
+        end
+      else aux (x :: accu) l in
   let v = aux [] l in 
   if !excluded then true, v else false,l
 
 let exclude_with_fact p l =
   let excluded = ref None in 
   let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := Some x ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
+    | [] -> List.rev accu
+    | x :: l -> 
+      if p x then 
+        begin 
+          excluded := Some x ;
+          aux accu l
+        end
+      else aux (x :: accu) l in
   let v = aux [] l in 
   !excluded , if !excluded <> None then v else l 
 
@@ -22957,19 +22959,19 @@ let exclude_with_fact2 p1 p2 l =
   let excluded1 = ref None in 
   let excluded2 = ref None in 
   let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p1 x then 
-      begin 
-        excluded1 := Some x ;
-        aux accu l
-      end
-    else if p2 x then 
-      begin 
-        excluded2 := Some x ; 
-        aux accu l 
-      end
-    else aux (x :: accu) l in
+    | [] -> List.rev accu
+    | x :: l -> 
+      if p1 x then 
+        begin 
+          excluded1 := Some x ;
+          aux accu l
+        end
+      else if p2 x then 
+        begin 
+          excluded2 := Some x ; 
+          aux accu l 
+        end
+      else aux (x :: accu) l in
   let v = aux [] l in 
   !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
 
@@ -22986,32 +22988,32 @@ let  filter_mapi (f: int -> 'a -> 'b option) xs =
     match xs with 
     | [] -> []
     | y :: ys -> 
-        begin match f i y with 
+      begin match f i y with 
         | None -> aux (i + 1) ys
         | Some z -> z :: aux (i + 1) ys
-        end in
+      end in
   aux 0 xs 
 
 let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
   match xs,ys with 
   | [],[] -> []
   | u::us, v :: vs -> 
-      begin match f u v with 
+    begin match f u v with 
       | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
       | Some z -> z :: filter_map2 f us vs
-      end
+    end
   | _ -> invalid_arg "Ext_list.filter_map2"
 
 let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
   let rec aux i xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
+    match xs,ys with 
+    | [],[] -> []
+    | u::us, v :: vs -> 
       begin match f i u v with 
-      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: aux (i + 1) us vs
+        | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
+        | Some z -> z :: aux (i + 1) us vs
       end
-  | _ -> invalid_arg "Ext_list.filter_map2i" in
+    | _ -> invalid_arg "Ext_list.filter_map2i" in
   aux 0 xs ys
 
 let rec rev_map_append  f l1 l2 =
@@ -23028,13 +23030,16 @@ let flat_map2 f lx ly =
       ->  aux (List.rev_append (f x y) acc) xs ys
     | _, _ -> invalid_arg "Ext_list.flat_map2" in
   aux [] lx ly
-        
+
+let rec flat_map_aux f acc append lx =
+  match lx with
+  | [] -> List.rev_append acc append
+  | y::ys -> flat_map_aux f (List.rev_append ( f y)  acc ) append ys 
+
 let flat_map f lx =
-  let rec aux acc lx =
-    match lx with
-    | [] -> List.rev acc
-    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
-  aux [] lx
+  flat_map_aux f [] [] lx
+
+let flat_map_acc f append lx = flat_map_aux f [] append lx  
 
 let rec map2_last f l1 l2 =
   match (l1, l2) with
@@ -23085,28 +23090,28 @@ let exclude_tail (x : 'a list) =
 
 (* For small list, only need partial equality 
    {[
-   group (=) [1;2;3;4;3]
-   ;;
-   - : int list list = [[3; 3]; [4]; [2]; [1]]
-   # group (=) [];;
-   - : 'a list list = []
+     group (=) [1;2;3;4;3]
+     ;;
+     - : int list list = [[3; 3]; [4]; [2]; [1]]
+                         # group (=) [];;
+     - : 'a list list = []
    ]}
- *)
+*)
 let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
   match lst with 
   | [] -> []
   | x::xs -> 
-      aux cmp x (group cmp xs )
+    aux cmp x (group cmp xs )
 
 and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
   match xss with 
   | [] -> [[x]]
   | y::ys -> 
-      if cmp x (List.hd y) (* cannot be null*) then
-        (x::y) :: ys 
-      else
-        y :: aux cmp x ys                                 
-  
+    if cmp x (List.hd y) (* cannot be null*) then
+      (x::y) :: ys 
+    else
+      y :: aux cmp x ys                                 
+
 let stable_group cmp lst =  group cmp lst |> List.rev 
 
 let rec drop n h = 
@@ -23119,16 +23124,16 @@ let rec drop n h =
 let rec for_all_ret  p = function
   | [] -> None
   | a::l -> 
-      if p a 
-      then for_all_ret p l
-      else Some a 
+    if p a 
+    then for_all_ret p l
+    else Some a 
 
 let rec for_all_opt  p = function
   | [] -> None
   | a::l -> 
-      match p a with
-      | None -> for_all_opt p l
-      | v -> v 
+    match p a with
+    | None -> for_all_opt p l
+    | v -> v 
 
 let fold f l init = 
   List.fold_left (fun acc i -> f  i init) init l 
@@ -23141,12 +23146,12 @@ let rev_map_acc  acc f l =
   rmap_f acc l
 
 let rec rev_iter f xs =
-    match xs with    
-    | [] -> ()
-    | y :: ys -> 
-      rev_iter f ys ;
-      f y      
-      
+  match xs with    
+  | [] -> ()
+  | y :: ys -> 
+    rev_iter f ys ;
+    f y      
+
 let rec for_all2_no_exn p l1 l2 = 
   match (l1, l2) with
   | ([], []) -> true
@@ -80146,121 +80151,6 @@ and
   end
 
 end
-module Idents_analysis : sig 
-#1 "idents_analysis.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A simple algorithm to calcuate [used] idents given its dependencies and 
-    initial list.
-
-    TODO needs improvement
- *)
-
-val calculate_used_idents :
-    (Ident.t, Ident_set.t) Hashtbl.t -> Ident.t list -> Ident_set.t
-
-end = struct
-#1 "idents_analysis.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-(* 
-    We have a current ident set 
-    (mostly exports and variables held by side effect calls) and there is a data set,
-    for each variable, its dependency 
-    -- 
- *)
-let calculate_used_idents 
-    (ident_free_vars : (Ident.t, Ident_set.t) Hashtbl.t)
-    (initial_idents : Ident.t list) = 
-  let s = Ident_set.of_list initial_idents in
-  let current_ident_sets = ref s in
-  let delta = ref s in
-  while 
-    Ident_set.(
-    delta := 
-      diff (fold (fun  id acc  ->
-
-          if Ext_ident.is_js_or_global id  then
-            acc (* will not pull in dependencies  any more *)             
-          else
-            union acc (
-              begin match Hashtbl.find ident_free_vars id with 
-                | exception Not_found -> 
-                  Ext_log.err __LOC__ "%s/%d when compiling %s" 
-                    id.name id.stamp (Js_config.get_current_file ()); 
-                  assert false 
-                | e -> e 
-              end
-            )
-
-        )  !delta empty)
-        !current_ident_sets;
-     not (is_empty !delta)) do
-    current_ident_sets := Ident_set.(union !current_ident_sets !delta)
-  done;
-  !current_ident_sets
-
-end
 module Lam_group : sig 
 #1 "lam_group.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -80744,59 +80634,77 @@ end = struct
 
 module I = Ident_set
 
+
+let transitive_closure 
+    (initial_idents : Ident.t list) 
+    (ident_freevars : (Ident.t, Ident_set.t) Hashtbl.t) 
+  =
+  let visited = Hashtbl.create 31 in 
+  let rec dfs (id : Ident.t) =
+    if Hashtbl.mem visited id || Ext_ident.is_js_or_global id  
+    then ()
+    else 
+      begin 
+        Hashtbl.add visited id ();
+        match Hashtbl.find ident_freevars id with 
+        | exception Not_found -> assert false 
+        | e -> Ident_set.iter (fun id -> dfs id) e
+      end  in 
+  List.iter dfs initial_idents;
+  visited
+
 let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
   let ident_free_vars = Hashtbl.create 17 in
-
+  (* calculate initial required idents, 
+     at the same time, populate dependency set [ident_free_vars]
+  *)
   let initial_idents =
-    Ext_list.flat_map (fun (x : Lam_group.t) ->
-      match x with
-      | Single(kind, id,lam) -> (* assert false *)
+    List.fold_left (fun acc (x : Lam_group.t) -> 
+        match x with
+        | Single(kind, id,lam) -> 
+          (* FIXME: assume no side effect, which might be wrong  *)        
           begin
             Hashtbl.add ident_free_vars id 
               (Lam_util.free_variables  lam);
             match kind with
-            | Alias | StrictOpt -> []
-            | Strict | Variable -> [id]
+            | Alias | StrictOpt -> acc
+            | Strict | Variable -> id :: acc 
           end
-      | Recursive bindings ->
-          begin
-            bindings |> Ext_list.flat_map (fun (id,lam) ->
-              begin
-                Hashtbl.add ident_free_vars id (Lam_util.free_variables lam);
-                match (lam : Lam.t) with
-                | Lfunction _ -> []
-                | _ -> [id]
-              end)
-          end
-      | Nop lam ->
-          if Lam_analysis.no_side_effects lam then []
+        | Recursive bindings -> (* FIXME: assume no side effect, which might be wrong  *)
+          List.fold_left (fun acc (id,lam) -> 
+              Hashtbl.add ident_free_vars id (Lam_util.free_variables lam);
+              match (lam : Lam.t) with
+              | Lfunction _ -> acc 
+              | _ -> id :: acc
+            ) acc bindings 
+        | Nop lam ->
+          if Lam_analysis.no_side_effects lam then acc
           else 
             (** its free varaibles here will be defined above *)
-            I.elements ( Lam_util.free_variables lam)) rest  @ export_idents
-  in
-  let current_ident_sets = 
-    Idents_analysis.calculate_used_idents ident_free_vars 
-      initial_idents in
-
-
-  rest |> Ext_list.filter_map (fun ( x : Lam_group.t) ->
-    match x with 
-    | Single(_,id,_) -> 
-        if I.mem id current_ident_sets then 
-          Some x else None
-    | Nop _ -> Some x 
-    | Recursive bindings -> 
-        let b = bindings
-    |> Ext_list.filter_map (fun  ((id,_) as v) ->
-        if I.mem id current_ident_sets then 
-          Some v 
-        else None
-                         )
-        in
+            I.fold (fun x acc -> x :: acc )  ( Lam_util.free_variables lam) acc                
+      )  export_idents rest in 
+  let visited = transitive_closure initial_idents ident_free_vars in 
+    List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
+      match x with 
+      | Single(_,id,_) -> 
+        if Hashtbl.mem visited id  then 
+          x :: acc 
+        else acc 
+      | Nop _ -> x :: acc  
+      | Recursive bindings ->
+        let b = 
+          List.fold_right (fun ((id,_) as v) acc ->
+              if Hashtbl.mem visited id then 
+                v :: acc 
+              else
+                acc  
+            ) bindings [] in            
         match b with 
-        | [] -> None 
-        | _ -> Some (Recursive b)) 
+        | [] -> acc  
+        | _ -> (Recursive b) :: acc
+    ) [] rest |> List.rev   
 
+  
 end
 module Lam_stats_util : sig 
 #1 "lam_stats_util.mli"

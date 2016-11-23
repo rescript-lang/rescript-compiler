@@ -31,55 +31,74 @@
 
 module I = Ident_set
 
+
+let transitive_closure 
+    (initial_idents : Ident.t list) 
+    (ident_freevars : (Ident.t, Ident_set.t) Hashtbl.t) 
+  =
+  let visited = Hashtbl.create 31 in 
+  let rec dfs (id : Ident.t) =
+    if Hashtbl.mem visited id || Ext_ident.is_js_or_global id  
+    then ()
+    else 
+      begin 
+        Hashtbl.add visited id ();
+        match Hashtbl.find ident_freevars id with 
+        | exception Not_found -> assert false 
+        | e -> Ident_set.iter (fun id -> dfs id) e
+      end  in 
+  List.iter dfs initial_idents;
+  visited
+
 let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
   let ident_free_vars = Hashtbl.create 17 in
-
+  (* calculate initial required idents, 
+     at the same time, populate dependency set [ident_free_vars]
+  *)
   let initial_idents =
-    Ext_list.flat_map (fun (x : Lam_group.t) ->
-      match x with
-      | Single(kind, id,lam) -> (* assert false *)
+    List.fold_left (fun acc (x : Lam_group.t) -> 
+        match x with
+        | Single(kind, id,lam) -> 
+          (* FIXME: assume no side effect, which might be wrong  *)        
           begin
             Hashtbl.add ident_free_vars id 
               (Lam_util.free_variables  lam);
             match kind with
-            | Alias | StrictOpt -> []
-            | Strict | Variable -> [id]
+            | Alias | StrictOpt -> acc
+            | Strict | Variable -> id :: acc 
           end
-      | Recursive bindings ->
-          begin
-            bindings |> Ext_list.flat_map (fun (id,lam) ->
-              begin
-                Hashtbl.add ident_free_vars id (Lam_util.free_variables lam);
-                match (lam : Lam.t) with
-                | Lfunction _ -> []
-                | _ -> [id]
-              end)
-          end
-      | Nop lam ->
-          if Lam_analysis.no_side_effects lam then []
+        | Recursive bindings -> (* FIXME: assume no side effect, which might be wrong  *)
+          List.fold_left (fun acc (id,lam) -> 
+              Hashtbl.add ident_free_vars id (Lam_util.free_variables lam);
+              match (lam : Lam.t) with
+              | Lfunction _ -> acc 
+              | _ -> id :: acc
+            ) acc bindings 
+        | Nop lam ->
+          if Lam_analysis.no_side_effects lam then acc
           else 
             (** its free varaibles here will be defined above *)
-            I.elements ( Lam_util.free_variables lam)) rest  @ export_idents
-  in
-  let current_ident_sets = 
-    Idents_analysis.calculate_used_idents ident_free_vars 
-      initial_idents in
-
-
-  rest |> Ext_list.filter_map (fun ( x : Lam_group.t) ->
-    match x with 
-    | Single(_,id,_) -> 
-        if I.mem id current_ident_sets then 
-          Some x else None
-    | Nop _ -> Some x 
-    | Recursive bindings -> 
-        let b = bindings
-    |> Ext_list.filter_map (fun  ((id,_) as v) ->
-        if I.mem id current_ident_sets then 
-          Some v 
-        else None
-                         )
-        in
+            I.fold (fun x acc -> x :: acc )  ( Lam_util.free_variables lam) acc                
+      )  export_idents rest in 
+  let visited = transitive_closure initial_idents ident_free_vars in 
+    List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
+      match x with 
+      | Single(_,id,_) -> 
+        if Hashtbl.mem visited id  then 
+          x :: acc 
+        else acc 
+      | Nop _ -> x :: acc  
+      | Recursive bindings ->
+        let b = 
+          List.fold_right (fun ((id,_) as v) acc ->
+              if Hashtbl.mem visited id then 
+                v :: acc 
+              else
+                acc  
+            ) bindings [] in            
         match b with 
-        | [] -> None 
-        | _ -> Some (Recursive b)) 
+        | [] -> acc  
+        | _ -> (Recursive b) :: acc
+    ) [] rest |> List.rev   
+
+  

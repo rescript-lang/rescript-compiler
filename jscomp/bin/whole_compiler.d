@@ -277,8 +277,6 @@ bin/whole_compiler.ml : core/lam_exit_code.ml
 bin/whole_compiler.ml : core/lam_exit_code.mli
 bin/whole_compiler.ml : core/lam_compile.ml
 bin/whole_compiler.ml : core/lam_compile.mli
-bin/whole_compiler.ml : core/idents_analysis.ml
-bin/whole_compiler.ml : core/idents_analysis.mli
 bin/whole_compiler.ml : core/lam_group.ml
 bin/whole_compiler.ml : core/lam_group.mli
 bin/whole_compiler.ml : core/lam_dce.ml

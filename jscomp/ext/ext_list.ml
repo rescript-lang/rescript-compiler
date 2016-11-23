@@ -33,36 +33,36 @@ let rec filter_map (f: 'a -> 'b option) xs =
   match xs with 
   | [] -> []
   | y :: ys -> 
-      begin match f y with 
+    begin match f y with 
       | None -> filter_map f ys
       | Some z -> z :: filter_map f ys
-      end
+    end
 
 let excludes (p : 'a -> bool ) l : bool * 'a list=
   let excluded = ref false in 
   let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := true ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
+    | [] -> List.rev accu
+    | x :: l -> 
+      if p x then 
+        begin 
+          excluded := true ;
+          aux accu l
+        end
+      else aux (x :: accu) l in
   let v = aux [] l in 
   if !excluded then true, v else false,l
 
 let exclude_with_fact p l =
   let excluded = ref None in 
   let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p x then 
-      begin 
-        excluded := Some x ;
-        aux accu l
-      end
-    else aux (x :: accu) l in
+    | [] -> List.rev accu
+    | x :: l -> 
+      if p x then 
+        begin 
+          excluded := Some x ;
+          aux accu l
+        end
+      else aux (x :: accu) l in
   let v = aux [] l in 
   !excluded , if !excluded <> None then v else l 
 
@@ -72,19 +72,19 @@ let exclude_with_fact2 p1 p2 l =
   let excluded1 = ref None in 
   let excluded2 = ref None in 
   let rec aux accu = function
-  | [] -> List.rev accu
-  | x :: l -> 
-    if p1 x then 
-      begin 
-        excluded1 := Some x ;
-        aux accu l
-      end
-    else if p2 x then 
-      begin 
-        excluded2 := Some x ; 
-        aux accu l 
-      end
-    else aux (x :: accu) l in
+    | [] -> List.rev accu
+    | x :: l -> 
+      if p1 x then 
+        begin 
+          excluded1 := Some x ;
+          aux accu l
+        end
+      else if p2 x then 
+        begin 
+          excluded2 := Some x ; 
+          aux accu l 
+        end
+      else aux (x :: accu) l in
   let v = aux [] l in 
   !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
 
@@ -101,32 +101,32 @@ let  filter_mapi (f: int -> 'a -> 'b option) xs =
     match xs with 
     | [] -> []
     | y :: ys -> 
-        begin match f i y with 
+      begin match f i y with 
         | None -> aux (i + 1) ys
         | Some z -> z :: aux (i + 1) ys
-        end in
+      end in
   aux 0 xs 
 
 let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
   match xs,ys with 
   | [],[] -> []
   | u::us, v :: vs -> 
-      begin match f u v with 
+    begin match f u v with 
       | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
       | Some z -> z :: filter_map2 f us vs
-      end
+    end
   | _ -> invalid_arg "Ext_list.filter_map2"
 
 let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
   let rec aux i xs ys = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
+    match xs,ys with 
+    | [],[] -> []
+    | u::us, v :: vs -> 
       begin match f i u v with 
-      | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: aux (i + 1) us vs
+        | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
+        | Some z -> z :: aux (i + 1) us vs
       end
-  | _ -> invalid_arg "Ext_list.filter_map2i" in
+    | _ -> invalid_arg "Ext_list.filter_map2i" in
   aux 0 xs ys
 
 let rec rev_map_append  f l1 l2 =
@@ -143,13 +143,16 @@ let flat_map2 f lx ly =
       ->  aux (List.rev_append (f x y) acc) xs ys
     | _, _ -> invalid_arg "Ext_list.flat_map2" in
   aux [] lx ly
-        
+
+let rec flat_map_aux f acc append lx =
+  match lx with
+  | [] -> List.rev_append acc append
+  | y::ys -> flat_map_aux f (List.rev_append ( f y)  acc ) append ys 
+
 let flat_map f lx =
-  let rec aux acc lx =
-    match lx with
-    | [] -> List.rev acc
-    | y::ys -> aux (List.rev_append ( f y)  acc ) ys in
-  aux [] lx
+  flat_map_aux f [] [] lx
+
+let flat_map_acc f append lx = flat_map_aux f [] append lx  
 
 let rec map2_last f l1 l2 =
   match (l1, l2) with
@@ -200,28 +203,28 @@ let exclude_tail (x : 'a list) =
 
 (* For small list, only need partial equality 
    {[
-   group (=) [1;2;3;4;3]
-   ;;
-   - : int list list = [[3; 3]; [4]; [2]; [1]]
-   # group (=) [];;
-   - : 'a list list = []
+     group (=) [1;2;3;4;3]
+     ;;
+     - : int list list = [[3; 3]; [4]; [2]; [1]]
+                         # group (=) [];;
+     - : 'a list list = []
    ]}
- *)
+*)
 let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
   match lst with 
   | [] -> []
   | x::xs -> 
-      aux cmp x (group cmp xs )
+    aux cmp x (group cmp xs )
 
 and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
   match xss with 
   | [] -> [[x]]
   | y::ys -> 
-      if cmp x (List.hd y) (* cannot be null*) then
-        (x::y) :: ys 
-      else
-        y :: aux cmp x ys                                 
-  
+    if cmp x (List.hd y) (* cannot be null*) then
+      (x::y) :: ys 
+    else
+      y :: aux cmp x ys                                 
+
 let stable_group cmp lst =  group cmp lst |> List.rev 
 
 let rec drop n h = 
@@ -234,16 +237,16 @@ let rec drop n h =
 let rec for_all_ret  p = function
   | [] -> None
   | a::l -> 
-      if p a 
-      then for_all_ret p l
-      else Some a 
+    if p a 
+    then for_all_ret p l
+    else Some a 
 
 let rec for_all_opt  p = function
   | [] -> None
   | a::l -> 
-      match p a with
-      | None -> for_all_opt p l
-      | v -> v 
+    match p a with
+    | None -> for_all_opt p l
+    | v -> v 
 
 let fold f l init = 
   List.fold_left (fun acc i -> f  i init) init l 
@@ -256,12 +259,12 @@ let rev_map_acc  acc f l =
   rmap_f acc l
 
 let rec rev_iter f xs =
-    match xs with    
-    | [] -> ()
-    | y :: ys -> 
-      rev_iter f ys ;
-      f y      
-      
+  match xs with    
+  | [] -> ()
+  | y :: ys -> 
+    rev_iter f ys ;
+    f y      
+
 let rec for_all2_no_exn p l1 l2 = 
   match (l1, l2) with
   | ([], []) -> true

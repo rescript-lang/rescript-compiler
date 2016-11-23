@@ -16,6 +16,9 @@ bin/all_ounit_tests.ml : ext/string_map.mli
 bin/all_ounit_tests.ml : bsb/bsb_json.ml
 bin/all_ounit_tests.ml : bsb/bsb_json.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_json_tests.ml
+bin/all_ounit_tests.ml : ext/ext_list.ml
+bin/all_ounit_tests.ml : ext/ext_list.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_list_test.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.mli
 bin/all_ounit_tests.ml : ext/literals.ml
