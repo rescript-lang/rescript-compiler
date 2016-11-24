@@ -40,6 +40,9 @@ bin/all_ounit_tests.ml : ext/int_vec_vec.mli
 bin/all_ounit_tests.ml : ext/ext_scc.ml
 bin/all_ounit_tests.ml : ext/ext_scc.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_scc_tests.ml
+bin/all_ounit_tests.ml : ext/union_find.ml
+bin/all_ounit_tests.ml : ext/union_find.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_union_find_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_vec_test.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_tests_main.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_tests_main.mli

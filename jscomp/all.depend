@@ -32,6 +32,7 @@ ext/resize_array.cmx : ext/resize_array.cmi
 ext/string_map.cmx : ext/string_map.cmi
 ext/string_set.cmx : ext/string_set.cmi
 ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
+ext/union_find.cmx : ext/union_find.cmi
 ext/ext_array.cmi :
 ext/ext_bytes.cmi :
 ext/ext_char.cmi :
@@ -63,6 +64,7 @@ ext/resize_array.cmi :
 ext/string_map.cmi :
 ext/string_set.cmi :
 ext/string_vec.cmi : ext/resize_array.cmi
+ext/union_find.cmi :
 common/binary_cache.cmx : ext/string_map.cmx ext/ext_filename.cmx \
     common/binary_cache.cmi
 common/bs_loc.cmx : common/bs_loc.cmi
@@ -553,6 +555,8 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_hash_set_tests.cmx \
     ounit_tests/ounit_array_tests.cmx ounit/oUnit.cmx \
     ounit_tests/ounit_tests_main.cmi
+ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \
+    ext/ext_string.cmx
 ounit_tests/ounit_vec_test.cmx : ounit/oUnit.cmx ext/int_vec.cmx \
     bsb/bsb_json.cmx
 ounit_tests/ounit_tests_main.cmi :

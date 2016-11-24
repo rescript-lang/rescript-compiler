@@ -68,6 +68,9 @@ let split ?keep_empty  str on =
   if str = "" then [] else 
   split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
 
+let quick_split_by_ws str : string list = 
+  split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
+
 let starts_with s beg = 
   let beg_len = String.length beg in
   let s_len = String.length s in
