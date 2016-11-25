@@ -26,7 +26,7 @@
 
 
 
-
+(** This is not a recursive type definition *)
 type t = 
   | Single of Lambda.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
@@ -244,7 +244,7 @@ let deep_flatten
             | Single (_, id, ( Lvar bid)) -> 
               (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
             | Single (_, id, lam) ->
-              let variables = Lam_util.free_variables  lam in
+              let variables = Lam.free_variables  lam in
               if Ident_set.(is_empty (inter variables collections)) 
               then 
                 (acc, set, g :: wrap )

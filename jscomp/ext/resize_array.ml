@@ -45,7 +45,7 @@ sig
   val is_empty : t -> bool
   val of_array : elt array -> t
   val of_sub_array : elt array -> int -> int -> t
-  
+
   (** Exposed for some APIs which only take array as input, 
       when exposed   
   *)
@@ -64,6 +64,7 @@ sig
   val to_array : t -> elt array 
   val of_array : elt array -> t
   val copy : t -> t 
+  val reverse : t -> t 
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
   val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
@@ -71,6 +72,7 @@ sig
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array
+  val map_into_list : (elt -> 'f) -> t -> 'f list 
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
@@ -80,6 +82,7 @@ sig
   val unsafe_get : t -> int -> elt
   val last : t -> elt
   val capacity : t -> int
+  val exists : (elt -> bool) -> t -> bool
 end
 
 module Make ( Resize : ResizeType) = struct
@@ -104,7 +107,7 @@ module Make ( Resize : ResizeType) = struct
       len = 1 ; 
       arr = [|v|]
     }
-    
+
   let empty () =
     {
       len = 0;
@@ -211,8 +214,8 @@ module Make ( Resize : ResizeType) = struct
     d.len <- d.len - len; 
     {len = len ; arr = value}
 
-  
-(** Below are simple wrapper around normal Array operations *)  
+
+  (** Below are simple wrapper around normal Array operations *)  
 
   let clear d =
     for i = 0 to d.len - 1 do 
@@ -224,7 +227,7 @@ module Make ( Resize : ResizeType) = struct
     d.len <- 0; 
     d.arr <- [||]
 
-  
+
   (* For [to_*] operations, we should be careful to call {!Array.*} function 
      in case we operate on the whole array
   *)
@@ -239,7 +242,7 @@ module Make ( Resize : ResizeType) = struct
     let arr = Array.of_list lst in 
     { arr ; len = Array.length arr}
 
-    
+
   let to_array d = 
     Array.sub d.arr 0 d.len
 
@@ -262,7 +265,10 @@ module Make ( Resize : ResizeType) = struct
       len ;
       arr = Array.sub src.arr 0 len ;
     }
-
+  let reverse src = 
+    { len = src.len ;
+      arr = Ext_array.reverse src.arr 
+    } 
   let sub src start len =
     { len ; 
       arr = Array.sub src.arr start len }
@@ -294,7 +300,7 @@ module Make ( Resize : ResizeType) = struct
       for i = from to to_ do 
         f i (Array.unsafe_get d_arr i)
       done
-    
+
   let map f src =
     let src_len = src.len in 
     let arr = Array.make  src_len Resize.null in
@@ -318,6 +324,16 @@ module Make ( Resize : ResizeType) = struct
         Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
       done;
       arr 
+  let map_into_list f src = 
+    let src_len = src.len in 
+    let src_arr = src.arr in 
+    if src_len = 0 then []
+    else 
+      let acc = ref [] in         
+      for i =  src_len - 1 downto 0 do
+        acc := f (Array.unsafe_get src_arr i) :: !acc
+      done;
+      !acc
 
   let mapi f src =
     let len = src.len in 
@@ -347,9 +363,9 @@ module Make ( Resize : ResizeType) = struct
     in
     loop a.arr (a.len - 1) x
 
-(**  
-   [filter] and [inplace_filter]
-*)
+  (**  
+     [filter] and [inplace_filter]
+  *)
   let filter f d =
     let new_d = copy d in 
     let new_d_arr = new_d.arr in 
@@ -376,7 +392,7 @@ module Make ( Resize : ResizeType) = struct
         begin 
           let curr_p = !p in 
           (if curr_p <> i then 
-            Array.unsafe_set d_arr curr_p x) ;
+             Array.unsafe_set d_arr curr_p x) ;
           incr p
         end
     done ;
@@ -403,4 +419,14 @@ module Make ( Resize : ResizeType) = struct
     else Array.unsafe_get d.arr (d.len - 1)
 
   let capacity d = Array.length d.arr
+
+  (* Attention can not use {!Array.exists} since the bound is not the same *)  
+  let exists p d = 
+    let a = d.arr in 
+    let n = d.len in   
+    let rec loop i =
+      if i = n then false
+      else if p (Array.unsafe_get a i) then true
+      else loop (succ i) in
+    loop 0
 end

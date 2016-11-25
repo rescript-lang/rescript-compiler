@@ -40,6 +40,14 @@ let reverse_in_place a =
   in
   aux a 0 (Array.length a)
 
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+  let b = Array.copy a in  
+  for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+  done;
+  b  
 
 let reverse_of_list =  function
   | [] -> [||]
@@ -142,3 +150,13 @@ let find_and_split arr cmp v : _ split =
     `No_split
   else
     `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0

@@ -58737,6 +58737,1024 @@ and deps_program =
   }
 
 end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+
+val reverse_in_place : 'a array -> unit
+val reverse : 'a array -> 'a array 
+val reverse_of_list : 'a list -> 'a array
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
+
+val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+
+val rfind_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val exists : ('a -> bool) -> 'a array -> bool 
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let reverse_in_place a =
+  let aux a i len =
+    if len=0 then ()
+    else
+      for k = 0 to (len-1)/2 do
+        let t = Array.unsafe_get a (i+k) in
+        Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+        Array.unsafe_set a (i+len-1-k) t;
+      done
+  in
+  aux a 0 (Array.length a)
+
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+  let b = Array.copy a in  
+  for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+  done;
+  b  
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map (f : _ -> _ option) a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+let to_list_map f a =
+  let rec tolist i res =
+    if i < 0 then res else
+      let v = Array.unsafe_get a i in
+      tolist (i - 1)
+        (match f v with
+         | Some v -> v :: res
+         | None -> res) in
+  tolist (Array.length a - 1) []
+
+(**
+{[
+# rfind_with_index [|1;2;3|] (=) 2;;
+- : int = 1
+# rfind_with_index [|1;2;3|] (=) 1;;
+- : int = 0
+# rfind_with_index [|1;2;3|] (=) 3;;
+- : int = 2
+# rfind_with_index [|1;2;3|] (=) 4;;
+- : int = -1
+]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+let rfind_and_split arr cmp v : _ split = 
+  let i = rfind_with_index arr cmp v in 
+  if  i < 0 then 
+    `No_split 
+  else 
+    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    `No_split
+  else
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+end
+module Resize_array : sig 
+#1 "resize_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+module type ResizeType = 
+sig 
+  type t 
+  val null : t (* used to populate new allocated array checkout {!Obj.new_block} for more performance *)
+end
+
+
+module type S = 
+sig 
+  type elt 
+  type t
+  val length : t -> int 
+  val compact : t -> unit
+  val singleton : elt -> t 
+  val empty : unit -> t 
+  val make : int -> t 
+  val init : int -> (int -> elt) -> t
+  val is_empty : t -> bool
+  val of_array : elt array -> t
+  val of_sub_array : elt array -> int -> int -> t
+  
+  (** Exposed for some APIs which only take array as input, 
+      when exposed   
+  *)
+  val unsafe_internal_array : t -> elt array
+  val reserve : t -> int -> unit
+  val push : elt -> t  -> unit
+  val delete : t -> int -> unit 
+  val pop : t -> unit
+  val get_last_and_pop : t -> elt
+  val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t 
+  val clear : t -> unit 
+  val reset : t -> unit 
+  val to_list : t -> elt list 
+  val of_list : elt list -> t
+  val to_array : t -> elt array 
+  val of_array : elt array -> t
+  val copy : t -> t
+  val reverse : t -> t  
+  val iter : (elt -> unit) -> t -> unit 
+  val iteri : (int -> elt -> unit ) -> t -> unit 
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
+  val map : (elt -> elt) -> t ->  t
+  val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
+  val map_into_list : (elt -> 'f) -> t -> 'f list
+  val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
+  val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
+  val filter : (elt -> bool) -> t -> t
+  val inplace_filter : (elt -> bool) -> t -> unit
+  val equal : (elt -> elt -> bool) -> t -> t -> bool 
+  val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt 
+  val last : t -> elt
+  val capacity : t -> int
+  val exists : (elt -> bool) -> t -> bool
+end
+module Make ( Resize : ResizeType) : S with type elt = Resize.t 
+
+
+
+end = struct
+#1 "resize_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+external unsafe_blit :
+  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
+
+module type ResizeType = 
+sig 
+  type t 
+  val null : t (* used to populate new allocated array checkout {!Obj.new_block} for more performance *)
+end
+
+module type S = 
+sig 
+  type elt 
+  type t
+  val length : t -> int 
+  val compact : t -> unit
+  val singleton : elt -> t 
+  val empty : unit -> t 
+  val make : int -> t 
+  val init : int -> (int -> elt) -> t
+  val is_empty : t -> bool
+  val of_array : elt array -> t
+  val of_sub_array : elt array -> int -> int -> t
+
+  (** Exposed for some APIs which only take array as input, 
+      when exposed   
+  *)
+  val unsafe_internal_array : t -> elt array
+  val reserve : t -> int -> unit
+  val push :  elt -> t -> unit
+  val delete : t -> int -> unit 
+  val pop : t -> unit
+  val get_last_and_pop : t -> elt
+  val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t
+  val clear : t -> unit 
+  val reset : t -> unit 
+  val to_list : t -> elt list 
+  val of_list : elt list -> t
+  val to_array : t -> elt array 
+  val of_array : elt array -> t
+  val copy : t -> t 
+  val reverse : t -> t 
+  val iter : (elt -> unit) -> t -> unit 
+  val iteri : (int -> elt -> unit ) -> t -> unit 
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
+  val map : (elt -> elt) -> t ->  t
+  val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
+  val map_into_list : (elt -> 'f) -> t -> 'f list 
+  val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
+  val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
+  val filter : (elt -> bool) -> t -> t
+  val inplace_filter : (elt -> bool) -> t -> unit
+  val equal : (elt -> elt -> bool) -> t -> t -> bool 
+  val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt
+  val last : t -> elt
+  val capacity : t -> int
+  val exists : (elt -> bool) -> t -> bool
+end
+
+module Make ( Resize : ResizeType) = struct
+  type elt = Resize.t 
+
+  type t = {
+    mutable arr : elt array; (* changed when resizing*)
+    mutable len : int;
+  }
+
+  let length d = d.len
+
+  let compact d =
+    let d_arr = d.arr in 
+    if d.len <> Array.length d_arr then 
+      begin
+        let newarr = Array.sub d_arr 0 d.len in 
+        d.arr <- newarr
+      end
+  let singleton v = 
+    {
+      len = 1 ; 
+      arr = [|v|]
+    }
+
+  let empty () =
+    {
+      len = 0;
+      arr = [||];
+    }
+
+  let make initsize =
+    if initsize < 0 then invalid_arg  "Resize_array.make" ;
+    {
+
+      len = 0;
+      arr = Array.make  initsize Resize.null ;
+    }
+
+  let init len f =
+    if len < 0 then invalid_arg  "Resize_array.init";
+    let arr = Array.make  len Resize.null in
+    for i = 0 to len - 1 do
+      Array.unsafe_set arr i (f i)
+    done;
+    {
+
+      len ;
+      arr 
+    }
+
+  let is_empty d =
+    d.len = 0
+
+  let reserve d s = 
+    let d_len = d.len in 
+    let d_arr = d.arr in 
+    if s < d_len || s < Array.length d_arr then ()
+    else 
+      let new_capacity = min Sys.max_array_length s in 
+      let new_d_arr = Array.make new_capacity Resize.null in 
+      unsafe_blit d_arr 0 new_d_arr 0 d_len;
+      d.arr <- new_d_arr 
+
+  let push v d =
+    let d_len = d.len in
+    let d_arr = d.arr in 
+    let d_arr_len = Array.length d_arr in
+    if d_arr_len = 0 then
+      begin 
+        d.len <- 1 ;
+        d.arr <- [| v |]
+      end
+    else  
+      begin 
+        if d_len = d_arr_len then 
+          begin
+            if d_len >= Sys.max_array_length then 
+              failwith "exceeds max_array_length";
+            let new_capacity = min Sys.max_array_length d_len * 2 
+            (* [d_len] can not be zero, so [*2] will enlarge   *)
+            in
+            let new_d_arr = Array.make new_capacity Resize.null in 
+            d.arr <- new_d_arr;
+            unsafe_blit d_arr 0 new_d_arr 0 d_len ;
+          end;
+        d.len <- d_len + 1;
+        Array.unsafe_set d.arr d_len v
+      end
+
+  let delete d idx =
+    if idx < 0 || idx >= d.len then invalid_arg "Resize_array.delete" ;
+    let arr = d.arr in 
+    unsafe_blit arr (idx + 1) arr idx  (d.len - idx - 1);
+    Array.unsafe_set arr (d.len - 1) Resize.null;
+    d.len <- d.len - 1
+
+  let pop d = 
+    let idx  = d.len - 1  in
+    if idx < 0 then invalid_arg "Resize_array.pop";
+    Array.unsafe_set d.arr idx Resize.null;
+    d.len <- idx
+  let get_last_and_pop d = 
+    let idx  = d.len - 1  in
+    if idx < 0 then invalid_arg "Resize_array.get_last_and_pop";
+    let last = Array.unsafe_get d.arr idx in 
+    Array.unsafe_set d.arr idx Resize.null;
+    d.len <- idx; 
+    last 
+
+  let delete_range d idx len =
+    if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.delete_range"  ;
+    let arr = d.arr in 
+    unsafe_blit arr (idx + len) arr idx (d.len  - idx - len);
+    for i = d.len - len to d.len - 1 do
+      Array.unsafe_set d.arr i Resize.null
+    done;
+    d.len <- d.len - len
+
+
+  let get_and_delete_range d idx len = 
+    if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.get_and_delete_range"  ;
+    let arr = d.arr in 
+    let value = Array.sub arr idx len in
+    unsafe_blit arr (idx + len) arr idx (d.len  - idx - len);
+    for i = d.len - len to d.len - 1 do
+      Array.unsafe_set d.arr i Resize.null
+    done;
+    d.len <- d.len - len; 
+    {len = len ; arr = value}
+
+
+  (** Below are simple wrapper around normal Array operations *)  
+
+  let clear d =
+    for i = 0 to d.len - 1 do 
+      Array.unsafe_set d.arr i Resize.null
+    done;
+    d.len <- 0
+
+  let reset d = 
+    d.len <- 0; 
+    d.arr <- [||]
+
+
+  (* For [to_*] operations, we should be careful to call {!Array.*} function 
+     in case we operate on the whole array
+  *)
+  let to_list d =
+    let rec loop d_arr idx accum =
+      if idx < 0 then accum else loop d_arr (idx - 1) (Array.unsafe_get d_arr idx :: accum)
+    in
+    loop d.arr (d.len - 1) []
+
+
+  let of_list lst =
+    let arr = Array.of_list lst in 
+    { arr ; len = Array.length arr}
+
+
+  let to_array d = 
+    Array.sub d.arr 0 d.len
+
+  let of_array src =
+    {
+      len = Array.length src;
+      arr = Array.copy src;
+      (* okay to call {!Array.copy}*)
+    }
+  let of_sub_array arr off len = 
+    { 
+      len = len ; 
+      arr = Array.sub arr off len  
+    }  
+  let unsafe_internal_array v = v.arr  
+  (* we can not call {!Array.copy} *)
+  let copy src =
+    let len = src.len in
+    {
+      len ;
+      arr = Array.sub src.arr 0 len ;
+    }
+  let reverse src = 
+    { len = src.len ;
+      arr = Ext_array.reverse src.arr 
+    } 
+  let sub src start len =
+    { len ; 
+      arr = Array.sub src.arr start len }
+
+  let iter f d = 
+    let arr = d.arr in 
+    for i = 0 to d.len - 1 do
+      f (Array.unsafe_get arr i)
+    done
+
+  let iteri f d =
+    let arr = d.arr in
+    for i = 0 to d.len - 1 do
+      f i (Array.unsafe_get arr i)
+    done
+
+  let iter_range ~from ~to_ f d =
+    if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
+    else 
+      let d_arr = d.arr in 
+      for i = from to to_ do 
+        f  (Array.unsafe_get d_arr i)
+      done
+
+  let iteri_range ~from ~to_ f d =
+    if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
+    else 
+      let d_arr = d.arr in 
+      for i = from to to_ do 
+        f i (Array.unsafe_get d_arr i)
+      done
+
+  let map f src =
+    let src_len = src.len in 
+    let arr = Array.make  src_len Resize.null in
+    let src_arr = src.arr in 
+    for i = 0 to src_len - 1 do
+      Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+    done;
+    {
+      len = src_len;
+      arr = arr;
+    }
+
+  let map_into_array f src =
+    let src_len = src.len in 
+    let src_arr = src.arr in 
+    if src_len = 0 then [||]
+    else 
+      let first_one = f (Array.unsafe_get src_arr 0) in 
+      let arr = Array.make  src_len  first_one in
+      for i = 1 to src_len - 1 do
+        Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+      done;
+      arr 
+  let map_into_list f src = 
+    let src_len = src.len in 
+    let src_arr = src.arr in 
+    if src_len = 0 then []
+    else 
+      let acc = ref [] in         
+      for i =  src_len - 1 downto 0 do
+        acc := f (Array.unsafe_get src_arr i) :: !acc
+      done;
+      !acc
+
+  let mapi f src =
+    let len = src.len in 
+    if len = 0 then { len ; arr = [| |] }
+    else 
+      let src_arr = src.arr in 
+      let arr = Array.make len (Array.unsafe_get src_arr 0) in
+      for i = 1 to len - 1 do
+        Array.unsafe_set arr i (f i (Array.unsafe_get src_arr i))
+      done;
+      {
+        len ;
+        arr ;
+      }
+
+  let fold_left f x a =
+    let rec loop a_len a_arr idx x =
+      if idx >= a_len then x else 
+        loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
+    in
+    loop a.len a.arr 0 x
+
+  let fold_right f a x =
+    let rec loop a_arr idx x =
+      if idx < 0 then x
+      else loop a_arr (idx - 1) (f (Array.unsafe_get a_arr idx) x)
+    in
+    loop a.arr (a.len - 1) x
+
+  (**  
+     [filter] and [inplace_filter]
+  *)
+  let filter f d =
+    let new_d = copy d in 
+    let new_d_arr = new_d.arr in 
+    let d_arr = d.arr in
+    let p = ref 0 in
+    for i = 0 to d.len  - 1 do
+      let x = Array.unsafe_get d_arr i in
+      (* TODO: can be optimized for segments blit *)
+      if f x  then
+        begin
+          Array.unsafe_set new_d_arr !p x;
+          incr p;
+        end;
+    done;
+    new_d.len <- !p;
+    new_d 
+
+  let inplace_filter f d = 
+    let d_arr = d.arr in 
+    let p = ref 0 in
+    for i = 0 to d.len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    delete_range d last  (d.len - last)
+
+
+  let equal eq x y : bool = 
+    if x.len <> y.len then false 
+    else 
+      let rec aux x_arr y_arr i =
+        if i < 0 then true else  
+        if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
+          aux x_arr y_arr (i - 1)
+        else false in 
+      aux x.arr y.arr (x.len - 1)
+
+  let get d i = 
+    if i < 0 || i >= d.len then invalid_arg "Resize_array.get"
+    else Array.unsafe_get d.arr i
+  let unsafe_get d i = Array.unsafe_get d.arr i 
+  let last d = 
+    if d.len <= 0 then invalid_arg   "Resize_array.last"
+    else Array.unsafe_get d.arr (d.len - 1)
+
+  let capacity d = Array.length d.arr
+
+  (* Attention can not use {!Array.exists} since the bound is not the same *)  
+  let exists p d = 
+    let a = d.arr in 
+    let n = d.len in   
+    let rec loop i =
+      if i = n then false
+      else if p (Array.unsafe_get a i) then true
+      else loop (succ i) in
+    loop 0
+end
+
+end
+module Int_vec : sig 
+#1 "int_vec.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Resize_array.S with type elt = int
+end = struct
+#1 "int_vec.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Resize_array.Make(struct type t = int let null = 0 end)
+end
+module Int_vec_vec : sig 
+#1 "int_vec_vec.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Resize_array.S with type elt = Int_vec.t
+
+end = struct
+#1 "int_vec_vec.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Resize_array.Make(struct type t = Int_vec.t let null = Int_vec.empty () end)
+
+end
+module Ext_scc : sig 
+#1 "ext_scc.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ 
+
+
+
+type node = Int_vec.t
+(** Assume input is int array with offset from 0 
+    Typical input 
+    {[
+      [|
+        [ 1 ; 2 ]; // 0 -> 1,  0 -> 2 
+        [ 1 ];   // 0 -> 1 
+        [ 2 ]  // 0 -> 2 
+      |]
+    ]}
+    Note that we can tell how many nodes by calculating 
+    [Array.length] of the input 
+*)
+val graph : Int_vec.t array -> Int_vec_vec.t
+
+
+(** Used for unit test *)
+val graph_check : node array -> int * int list 
+
+end = struct
+#1 "ext_scc.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ 
+type node = Int_vec.t 
+(** 
+   [int] as data for this algorithm
+   Pros:
+   1. Easy to eoncode algorithm (especially given that the capacity of node is known)
+   2. Algorithms itself are much more efficient
+   3. Node comparison semantics is clear
+   4. Easy to print output
+   Cons:
+   1. post processing input data  
+ *)
+let min_int (x : int) y = if x < y then x else y  
+
+
+let graph  e =
+  let index = ref 0 in 
+  let s = Int_vec.empty () in
+
+  let output = Int_vec_vec.empty () in (* collect output *)
+  let node_numes = Array.length e in
+  
+  let on_stack_array = Array.make node_numes false in
+  let index_array = Array.make node_numes (-1) in 
+  let lowlink_array = Array.make node_numes (-1) in
+  
+  let rec scc v_data  =
+    let new_index = !index + 1 in 
+    index := new_index ;
+    Int_vec.push  v_data s ; 
+
+    index_array.(v_data) <- new_index ;  
+    lowlink_array.(v_data) <- new_index ; 
+    on_stack_array.(v_data) <- true ;
+    
+    let v = e.(v_data) in 
+    v
+    |> Int_vec.iter (fun w_data  ->
+        if Array.unsafe_get index_array w_data < 0 then (* not processed *)
+          begin  
+            scc w_data;
+            Array.unsafe_set lowlink_array v_data  
+              (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
+          end  
+        else if Array.unsafe_get on_stack_array w_data then 
+          (* successor is in stack and hence in current scc *)
+          begin 
+            Array.unsafe_set lowlink_array v_data  
+              (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
+          end
+      ) ; 
+
+    if Array.unsafe_get lowlink_array v_data = Array.unsafe_get index_array v_data then
+      (* start a new scc *)
+      begin
+        let s_len = Int_vec.length s in
+        let last_index = ref (s_len - 1) in 
+        let u = ref (Int_vec.unsafe_get s !last_index) in
+        while  !u <> v_data do 
+          Array.unsafe_set on_stack_array (!u)  false ; 
+          last_index := !last_index - 1;
+          u := Int_vec.unsafe_get s !last_index
+        done ;
+        on_stack_array.(v_data) <- false; (* necessary *)
+        Int_vec_vec.push   (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index)) output;
+      end   
+  in
+  for i = 0 to node_numes - 1 do 
+    if Array.unsafe_get index_array i < 0 then scc i
+  done ;
+  output 
+
+let graph_check v = 
+  let v = graph v in 
+  Int_vec_vec.length v, 
+  Int_vec_vec.fold_left (fun acc x -> Int_vec.length x :: acc ) [] v  
+
+end
 module Ocaml_stdlib_slots
 = struct
 #1 "ocaml_stdlib_slots.ml"
@@ -58749,6 +59767,415 @@ let string = [| "make";"init";"copy";"sub";"fill";"blit";"concat";"iter";"iteri"
 let array = [| "init";"make_matrix";"create_matrix";"append";"concat";"sub";"copy";"fill";"blit";"to_list";"of_list";"iter";"map";"iteri";"mapi";"fold_left";"fold_right";"sort";"stable_sort";"fast_sort" |]
 let list = [| "length";"hd";"tl";"nth";"rev";"append";"rev_append";"concat";"flatten";"iter";"iteri";"map";"mapi";"rev_map";"fold_left";"fold_right";"iter2";"map2";"rev_map2";"fold_left2";"fold_right2";"for_all";"exists";"for_all2";"exists2";"mem";"memq";"find";"filter";"find_all";"partition";"assoc";"assq";"mem_assoc";"mem_assq";"remove_assoc";"remove_assq";"split";"combine";"sort";"stable_sort";"fast_sort";"sort_uniq";"merge" |]
     
+
+end
+module Ordered_hash_map : sig 
+#1 "ordered_hash_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(* does not support [remove], 
+    so that the adding order is strict and continous  
+ *)
+
+module type S =
+sig
+  type key
+  type 'value t
+  val create: int ->  'value t
+  val clear : 'vaulue t -> unit
+  val reset : 'value t -> unit
+  val copy: 'value t -> 'value t
+  val add : 'value t -> key -> 'value -> unit
+  val mem : 'value t -> key -> bool
+  val find : 'value t -> key -> int (* -1 if not found*)
+  val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
+  val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b
+  val length:  'value t -> int
+  val stats: 'value t -> Hashtbl.statistics
+  val elements : 'value t -> key list 
+  val choose : 'value t -> key 
+  val to_sorted_array: 'value t -> key array
+end
+
+
+
+module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
+
+type   ('a,'value) t 
+
+val create : int -> ('a,'value) t
+
+val clear : ('a, 'value) t -> unit
+
+val reset : ('a, 'value) t -> unit
+
+val copy : ('a, 'value) t -> ('a, 'value) t
+
+val add : ('a, 'value) t -> 'a  -> 'value -> unit
+
+
+val mem : ('a, 'value) t -> 'a -> bool
+
+val find : ('a, 'value) t -> 'a -> int
+
+val find_value : ('a, 'value) t -> 'a -> 'value 
+
+val iter : ('a -> 'value -> int ->  unit) -> ('a, 'value) t -> unit
+
+val elements : ('a, 'value) t -> 'a list
+
+val length : ('a, 'value) t -> int 
+
+val stats:  ('a, 'value) t -> Hashtbl.statistics
+
+val to_sorted_array : ('a,'value) t -> 'a array
+ 
+
+end = struct
+#1 "ordered_hash_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+type ('a,'b) bucket = 
+  | Empty 
+  | Cons of 'a * int * 'b  * ('a,'b) bucket
+
+type ('a,'b) t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: ('a,'b) bucket array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+
+
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+let create  initial_size =
+  let s = power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s Empty }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  Empty
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size Empty
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons(key,info,data,rest) ->
+        let nidx = indexfun h key in
+        ndata.(nidx) <- Cons(key,info,data, ndata.(nidx));
+        insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let key_index h key =
+  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
+
+
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | Empty -> false 
+  | Cons(key1,_,_,rest) -> 
+    key = key1 ||
+    match rest with 
+    | Empty -> false 
+    | Cons(key2,_, _,  rest) -> 
+      key = key2 ||
+      match rest with 
+      | Empty -> false 
+      | Cons(key3,_,_, rest) -> 
+        key = key3 ||
+        small_bucket_mem key rest 
+
+let rec small_bucket_find key lst =
+  match lst with 
+  | Empty -> -1
+  | Cons(key1,i,_, rest) -> 
+    if key = key1 then i 
+    else match rest with 
+      | Empty -> -1 
+      | Cons(key2,i2,_, rest) -> 
+        if key = key2 then i2 else
+          match rest with 
+          | Empty -> -1 
+          | Cons(key3,i3,_, rest) -> 
+            if key = key3 then i3 else
+              small_bucket_find key rest 
+
+let rec small_bucket_find_value  key (lst : (_,_) bucket)   =
+  match lst with 
+  | Empty -> raise Not_found
+  | Cons(key1,_,value, rest) -> 
+    if key = key1 then value 
+    else match rest with 
+      | Empty -> raise Not_found 
+      | Cons(key2,_,value, rest) -> 
+        if key = key2 then value else
+          match rest with 
+          | Empty -> raise Not_found 
+          | Cons(key3, _ , value, rest) -> 
+            if key = key3 then value else
+              small_bucket_find_value key rest 
+
+let add h key value =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- Cons(key, h.size,value, h.data.(i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then resize key_index h
+    end
+let mem h key =
+  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
+let find h key = 
+  small_bucket_find key (Array.unsafe_get h.data (key_index h key))
+
+let find_value h key =
+  small_bucket_find_value key (Array.unsafe_get h.data (key_index h key))
+
+let iter f h =
+  let rec do_bucket = function
+    | Empty ->
+      ()
+    | Cons(k ,i, value, rest) ->
+      f k value i; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let choose h = 
+  let rec aux arr offset len = 
+    if offset >= len then raise Not_found
+    else 
+      match Array.unsafe_get arr offset with 
+      | Empty -> aux arr (offset + 1) len 
+      | Cons (k,_,_,rest) -> k 
+  in
+  aux h.data 0 (Array.length h.data)
+
+let to_sorted_array h = 
+  if h.size = 0 then [||]
+  else 
+    let v = choose h in 
+    let arr = Array.make h.size v in
+    iter (fun k _ i -> Array.unsafe_set arr i k) h;
+    arr 
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      Empty ->
+      accu
+    | Cons( k , i,  value, rest) ->
+      do_bucket rest (f k  value i  accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+  done;
+  !accu
+
+let elements set = 
+  fold  (fun k  _  _ acc  ->  k :: acc) set []
+
+
+let rec bucket_length acc (x : _ bucket) = 
+  match x with 
+  | Empty -> 0
+  | Cons(_,_,_,rest) -> bucket_length (acc + 1) rest  
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+       let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
+    h.data;
+  { Hashtbl.num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+module type S =
+sig
+  type key
+  type 'value t
+  val create: int ->  'value t
+  val clear : 'vaulue t -> unit
+  val reset : 'value t -> unit
+  val copy: 'value t -> 'value t
+  val add : 'value t -> key -> 'value -> unit
+  val mem : 'value t -> key -> bool
+  val find : 'value t -> key -> int (* -1 if not found*)
+  val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
+  val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b
+  val length:  'value t -> int
+  val stats: 'value t -> Hashtbl.statistics
+  val elements : 'value t -> key list 
+  val choose : 'value t -> key 
+  val to_sorted_array: 'value t -> key array
+end
+
+
+module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
+struct
+  type key = H.t
+
+  type nonrec  'value t = (key,'value) t
+  let create = create
+  let clear = clear
+  let reset = reset
+  let copy = copy
+
+  let key_index h key =
+    (H.hash  key) land (Array.length h.data - 1)
+
+
+  let rec small_bucket_mem key lst =
+    match lst with 
+    | Empty -> false 
+    | Cons(key1,_, _, rest) -> 
+      H.equal key key1 ||
+      match rest with 
+      | Empty -> false 
+      | Cons(key2 , _,_, rest) -> 
+        H.equal key  key2 ||
+        match rest with 
+        | Empty -> false 
+        | Cons(key3,_, _, rest) -> 
+          H.equal key  key3 ||
+          small_bucket_mem key rest 
+
+  let rec small_bucket_find key lst =
+    match lst with 
+    | Empty -> -1
+    | Cons(key1,i,_, rest) -> 
+      if H.equal key key1 then i 
+      else match rest with 
+        | Empty -> -1 
+        | Cons(key2,i2, _, rest) -> 
+          if H.equal key  key2 then i2 else
+            match rest with 
+            | Empty -> -1 
+            | Cons(key3,i3, _, rest) -> 
+              if H.equal key  key3 then i3 else
+                small_bucket_find key rest 
+  let add h key value =
+    let i = key_index h key  in 
+    if not (small_bucket_mem key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- Cons(key,h.size, value, h.data.(i));
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then resize key_index h
+      end
+
+  let mem h key =
+    small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
+  let find h key = 
+    small_bucket_find key (Array.unsafe_get h.data (key_index h key))  
+  let iter = iter
+  let fold = fold
+  let length = length
+  let stats = stats
+  let elements = elements
+  let choose = choose
+  let to_sorted_array = to_sorted_array
+end
+
+
+
+
+
+
+
+
+
+
+
 
 end
 module Lam : sig 
@@ -58969,6 +60396,13 @@ type binop = t -> t -> t
 type triop = t -> t -> t -> t 
 
 type unop = t ->  t
+
+val inner_map : (t -> t) -> t -> t
+val free_variables : t -> Ident_set.t
+
+type bindings = (Ident.t * t) list
+
+val scc : bindings -> t -> t  -> t 
 
 val var : ident -> t
 val const : Lambda.structured_constant -> t
@@ -59229,7 +60663,80 @@ and t =
      we should use record for trivial debugger info
   *)
 
-
+(** apply [f] to direct successor which has type [Lam.t] *)
+let inner_map f l : t = 
+  match (l : t) with 
+    Lvar _
+  | Lconst _ -> l
+  | Lapply ({fn; args; _} as app)  ->
+    let fn = f fn in
+    let args = List.map f args in 
+    Lapply {app with  fn ; args}
+  | Lfunction({body;_} as app) ->
+      let body = f body in 
+      Lfunction {app with body}
+  | Llet(str, id, arg, body) ->
+      let arg = f arg in let body =  f body in
+      Llet(str,id,arg,body)
+  | Lletrec(decl, body) ->
+      let body = f body in 
+      let decl = List.map (fun (id, exp) -> id, f exp) decl in 
+      Lletrec(decl,body)
+  | Lprim ({args; _} as app) ->
+      let args = List.map f args in 
+      Lprim {app with args}
+  | Lswitch(arg, sw) ->
+      let arg = f arg in 
+      let sw_consts = List.map (fun (key, case) -> key , f case) sw.sw_consts in 
+      let sw_blocks = List.map (fun (key, case) -> key, f case) sw.sw_blocks in 
+      let sw_failaction = begin match sw.sw_failaction with 
+      | None -> None
+      | Some a -> Some (f a) 
+      end in 
+      Lswitch(arg, {sw with sw_consts; sw_blocks; sw_failaction})
+  | Lstringswitch (arg,cases,default) ->
+      let arg = f arg  in 
+      let cases = List.map (fun (k,act) -> k,f act) cases  in
+      let default = begin match default with 
+      | None -> None
+      | Some a -> Some (f a) 
+      end in 
+      Lstringswitch(arg,cases,default)
+  | Lstaticraise (id,args) ->
+      let args = List.map f args in 
+      Lstaticraise(id,args)
+  | Lstaticcatch(e1, vars , e2) ->
+      let e1 = f e1 in 
+      let e2 = f e2 in 
+      Lstaticcatch(e1, vars, e2)
+  | Ltrywith(e1, exn, e2) ->
+      let e1  = f e1 in 
+      let e2 =  f e2 in 
+      Ltrywith(e1,exn,e2)
+  | Lifthenelse(e1, e2, e3) ->
+      let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+      Lifthenelse(e1,e2,e3)
+  | Lsequence(e1, e2) ->
+      let e1 = f e1 in let e2 =  f e2 in 
+      Lsequence(e1,e2)
+  | Lwhile(e1, e2) ->
+      let e1 = f e1 in let e2 =  f e2 in 
+      Lwhile(e1,e2)
+  | Lfor(v, e1, e2, dir, e3) ->
+      let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+      Lfor(v,e1,e2,dir,e3)
+  | Lassign(id, e) ->
+      let e = f e in 
+      Lassign(id,e)
+  | Lsend (k, met, obj, args, loc) ->
+      let met = f met in 
+      let obj = f obj in 
+      let args = List.map f args in 
+      Lsend(k,met,obj,args,loc)
+      
+  | Lifused (v, e) ->
+      let e = f e in 
+      Lifused(v,e)
 
 module Prim = struct 
   type t = primitive
@@ -59739,6 +61246,108 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
   | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc 
   | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc 
 
+let free_variables l =
+  let fv = ref Ident_set.empty in
+  let rec free (l : t) =
+    begin
+      match (l : t) with 
+        Lvar id -> fv := Ident_set.add id !fv
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        free fn; List.iter free args
+      | Lfunction{body;params} ->
+        free body;
+        List.iter (fun param -> fv := Ident_set.remove param !fv) params
+      | Llet(str, id, arg, body) ->
+        free arg; free body;
+        fv := Ident_set.remove id !fv
+      | Lletrec(decl, body) ->
+        free body;
+        List.iter (fun (id, exp) -> free exp) decl;
+        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      | Lprim {args; _} ->
+        List.iter free args
+      | Lswitch(arg, sw) ->
+        free arg;
+        List.iter (fun (key, case) -> free case) sw.sw_consts;
+        List.iter (fun (key, case) -> free case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        free arg ;
+        List.iter (fun (_,act) -> free act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter free args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        free e1; free e2;
+        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      | Ltrywith(e1, exn, e2) ->
+        free e1; free e2;
+         fv := Ident_set.remove exn !fv
+      | Lifthenelse(e1, e2, e3) ->
+        free e1; free e2; free e3
+      | Lsequence(e1, e2) ->
+        free e1; free e2
+      | Lwhile(e1, e2) ->
+        free e1; free e2
+      | Lfor(v, e1, e2, dir, e3) ->
+        free e1; free e2; free e3;
+        fv := Ident_set.remove v !fv
+      | Lassign(id, e) ->
+        free e;
+        fv := Ident_set.add id !fv
+      | Lsend (k, met, obj, args, _) ->
+        List.iter free (met::obj::args)
+      | Lifused (v, e) ->
+        free e
+    end;
+  in free l; 
+  !fv
+
+
+type bindings = (Ident.t * t) list
+let scc  (groups :  bindings)  
+    (lam : t)
+    (body : t)
+     =     
+  let domain : (Ident.t, t) Ordered_hash_map.t = Ordered_hash_map.create 3 in 
+  List.iter (fun (x,lam) -> Ordered_hash_map.add domain x lam) groups ;
+  let int_mapping = Ordered_hash_map.to_sorted_array domain in 
+  let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
+  Ordered_hash_map.iter ( fun id lam key_index ->        
+      let base_key =  node_vec.(key_index) in 
+      let free_vars = free_variables lam in
+      Ident_set.iter (fun x ->
+          let key = Ordered_hash_map.find domain x in 
+          if key >= 0 then 
+            Int_vec.push key base_key 
+        ) free_vars
+    ) domain;
+  let clusters = Ext_scc.graph node_vec in 
+  if Int_vec_vec.length clusters <= 1 then lam 
+  else          
+    Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+      let bindings =
+        Int_vec.map_into_list (fun i -> 
+            let id = int_mapping.(i) in 
+            let lam  = Ordered_hash_map.find_value domain  id in  
+            (id,lam)
+        ) v  in 
+        match bindings with 
+        | [ id,(Lfunction _ as lam) ] ->
+          let base_key = Ordered_hash_map.find domain id in          
+          if true || Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
+            letrec bindings acc 
+          else  let_ StrictOpt  id lam body    
+        | _ ->  
+            letrec bindings  acc 
+      )  clusters body 
 
 let rec convert (lam : Lambda.lambda) : t = 
   match lam with 
@@ -59798,7 +61407,11 @@ let rec convert (lam : Lambda.lambda) : t =
     -> Llet(kind,id,convert e, convert body)
   | Lletrec (bindings,body)
     -> 
-    Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
+    let bindings = List.map (fun (id, e) -> id, convert e) bindings in
+    let body = convert body in 
+    let lam = Lletrec (bindings, body) in 
+    scc bindings lam body  
+    (* inlining will affect how mututal recursive behave *)
   | Lprim (primitive,args, loc) 
     -> convert_primitive loc primitive args 
     (* Lprim {primitive ; args = List.map convert args } *)
@@ -64752,114 +66365,6 @@ let safe_to_inline (lam : Lam.t) =
   | _ -> false
 
 end
-module Lam_iter : sig 
-#1 "lam_iter.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val inner_iter : (Lam.t -> unit) -> Lam.t -> unit
-
-end = struct
-#1 "lam_iter.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let inner_iter f l = 
-  match (l : Lam.t) with 
-    Lvar _
-  | Lconst _ -> ()
-  | Lapply{fn; args; _} ->
-      f fn; List.iter f args
-  | Lfunction{body;_} ->
-      f body
-  | Llet(str, id, arg, body) ->
-      f arg; f body
-  | Lletrec(decl, body) ->
-      f body;
-      List.iter (fun (id, exp) -> f exp) decl
-  | Lprim {args; _} ->
-      List.iter f args
-  | Lswitch(arg, sw) ->
-      f arg;
-      List.iter (fun (key, case) -> f case) sw.sw_consts;
-      List.iter (fun (key, case) -> f case) sw.sw_blocks;
-      begin match sw.sw_failaction with 
-      | None -> ()
-      | Some a -> f a 
-      end
-  | Lstringswitch (arg,cases,default) ->
-      f arg ;
-      List.iter (fun (_,act) -> f act) cases ;
-      begin match default with 
-      | None -> ()
-      | Some a -> f a 
-      end
-  | Lstaticraise (_,args) ->
-      List.iter f args
-  | Lstaticcatch(e1, (_,vars), e2) ->
-      f e1; f e2
-  | Ltrywith(e1, exn, e2) ->
-      f e1; f e2
-  | Lifthenelse(e1, e2, e3) ->
-      f e1; f e2; f e3
-  | Lsequence(e1, e2) ->
-      f e1; f e2
-  | Lwhile(e1, e2) ->
-      f e1; f e2
-  | Lfor(v, e1, e2, dir, e3) ->
-      f e1; f e2; f e3
-  | Lassign(id, e) ->
-      f e
-  | Lsend (k, met, obj, args, _) ->
-      List.iter f (met::obj::args)
-  | Lifused (v, e) ->
-      f e
-
-
-end
 module Lam_print : sig 
 #1 "lam_print.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -65776,8 +67281,7 @@ val eta_conversion :
 val subst_lambda : Lam.t Ident_map.t -> Lam.t -> Lam.t
 
 
-(* TODO; check {!Lam_analysis.free_variables} *)
-val free_variables : Lam.t -> Ident_set.t
+
 
 end = struct
 #1 "lam_util.ml"
@@ -65819,19 +67323,19 @@ let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 (* TODO: not very efficient .. *)
 exception Cyclic 
-      
+
 let toplogical (get_deps : Ident.t -> Ident_set.t) (libs : Ident.t list) : Ident.t list =
   let rec aux acc later todo round_progress =
     match todo, later with
     | [], [] ->  acc
     | [], _ ->
-        if round_progress
-        then aux acc todo later false
-        else raise Cyclic
+      if round_progress
+      then aux acc todo later false
+      else raise Cyclic
     | x::xs, _ ->
-        if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x)
-        then aux (x::acc) later xs true
-        else aux acc (x::later) xs round_progress
+      if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x)
+      then aux (x::acc) later xs true
+      else aux acc (x::later) xs round_progress
   in
   let starts, todo = List.partition (fun lib -> Ident_set.is_empty @@ get_deps lib) libs in
   aux starts [] todo false
@@ -65931,7 +67435,7 @@ let refine_let
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
-                                 &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
+                                                          &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
     ->  Lam.prim ~primitive ~args:[arg]  loc 
   (* we can not do this substitution when capttured *)
@@ -65966,10 +67470,10 @@ let refine_let
     (*It can be promoted to [Alias], however, 
         we don't want to do this, since we don't want the 
         function to be inlined to a block, for example
-        {[
-          let f = fun _ -> 1 in
-          [0, f]
-        ]}
+      {[
+        let f = fun _ -> 1 in
+        [0, f]
+      ]}
         TODO: punish inliner to inline functions 
         into a block 
     *)
@@ -66091,18 +67595,18 @@ let log_counter = ref 0
 
 let dump env ext  lam = 
     
-  if Js_config.is_same_file ()
-  then 
-    (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
-    begin 
-      incr log_counter;
-      Lam_print.seriaize env 
-        (Ext_filename.chop_extension 
-           ~loc:__LOC__ 
-           (Js_config.get_current_file ()) ^ 
-         (Printf.sprintf ".%02d%s.lam" !log_counter ext)
-        ) lam;
-    end;
+   if Js_config.is_same_file ()
+    then 
+      (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
+      begin 
+        incr log_counter;
+        Lam_print.seriaize env 
+          (Ext_filename.chop_extension 
+             ~loc:__LOC__ 
+             (Js_config.get_current_file ()) ^ 
+           (Printf.sprintf ".%02d%s.lam" !log_counter ext)
+          ) lam;
+      end;
   lam
 
 
@@ -66167,10 +67671,10 @@ let eta_conversion n loc status fn args =
 
     let rest : Lam.t = 
       Lam.function_ ~arity:n ~kind:Curried ~params:extra_args
-                ~body:(Lam.apply fn (args @ extra_lambdas) 
-                   loc 
-                   status
-                ) in
+        ~body:(Lam.apply fn (args @ extra_lambdas) 
+                 loc 
+                 status
+              ) in
     List.fold_left (fun lam (id,x) ->
         Lam.let_ Strict id x lam
       ) rest bindings
@@ -66180,31 +67684,7 @@ let eta_conversion n loc status fn args =
 
 
 
-let free_variables l =
-  let fv = ref Ident_set.empty in
-  let rec free (l : Lam.t) =
-    Lam_iter.inner_iter free l;
-    match l with
-    | Lvar id -> fv := Ident_set.add id !fv
-    | Lfunction{ params;} -> 
-      List.iter (fun param -> fv := Ident_set.remove param !fv) params
-    | Llet(str, id, arg, body) ->
-      fv := Ident_set.remove id !fv
-    | Lletrec(decl, body) ->
-      List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
-    | Lstaticcatch(e1, (_,vars), e2) ->
-      List.iter (fun id -> fv := Ident_set.remove id !fv) vars
-    | Ltrywith(e1, exn, e2) ->
-      fv := Ident_set.remove exn !fv
-    | Lfor(v, e1, e2, dir, e3) ->
-      fv := Ident_set.remove v !fv
-    | Lassign(id, e) ->
-      fv := Ident_set.add id !fv
-    | Lconst _ | Lapply _
-    | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
-    | Lifthenelse _ | Lsequence _ | Lwhile _
-    | Lsend _  | Lifused _ -> ()
-  in free l; !fv
+
 
 end
 module Js_stmt_make : sig 
@@ -80497,7 +81977,7 @@ end = struct
 
 
 
-
+(** This is not a recursive type definition *)
 type t = 
   | Single of Lambda.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
@@ -80715,7 +82195,7 @@ let deep_flatten
             | Single (_, id, ( Lvar bid)) -> 
               (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
             | Single (_, id, lam) ->
-              let variables = Lam_util.free_variables  lam in
+              let variables = Lam.free_variables  lam in
               if Ident_set.(is_empty (inter variables collections)) 
               then 
                 (acc, set, g :: wrap )
@@ -80902,7 +82382,7 @@ end = struct
 
 
 
-module I = Ident_set
+
 
 
 let transitive_closure 
@@ -80917,7 +82397,8 @@ let transitive_closure
       begin 
         Hash_set.add visited id;
         match Hashtbl.find ident_freevars id with 
-        | exception Not_found -> assert false 
+        | exception Not_found -> 
+          Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
         | e -> Ident_set.iter (fun id -> dfs id) e
       end  in 
   List.iter dfs initial_idents;
@@ -80931,18 +82412,17 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
   let initial_idents =
     List.fold_left (fun acc (x : Lam_group.t) -> 
         match x with
-        | Single(kind, id,lam) -> 
-          (* FIXME: assume no side effect, which might be wrong  *)        
+        | Single(kind, id,lam) ->                   
           begin
             Hashtbl.add ident_free_vars id 
-              (Lam_util.free_variables  lam);
+              (Lam.free_variables  lam);
             match kind with
             | Alias | StrictOpt -> acc
             | Strict | Variable -> id :: acc 
           end
-        | Recursive bindings -> (* FIXME: assume no side effect, which might be wrong  *)
+        | Recursive bindings -> 
           List.fold_left (fun acc (id,lam) -> 
-              Hashtbl.add ident_free_vars id (Lam_util.free_variables lam);
+              Hashtbl.add ident_free_vars id (Lam.free_variables lam);
               match (lam : Lam.t) with
               | Lfunction _ -> acc 
               | _ -> id :: acc
@@ -80951,10 +82431,10 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           if Lam_analysis.no_side_effects lam then acc
           else 
             (** its free varaibles here will be defined above *)
-            I.fold (fun x acc -> x :: acc )  ( Lam_util.free_variables lam) acc                
+            Ident_set.fold (fun x acc -> x :: acc )  ( Lam.free_variables lam) acc                
       )  export_idents rest in 
   let visited = transitive_closure initial_idents ident_free_vars in 
-    List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
+  List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
       match x with 
       | Single(_,id,_) -> 
         if Hash_set.mem visited id  then 
@@ -82131,7 +83611,7 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->
     Lam.var id
   | Lfunction{ kind; params; body} as lam ->
-    if Ident_set.mem id (Lam_util.free_variables  lam)
+    if Ident_set.mem id (Lam.free_variables  lam)
     then raise Real_reference
     else lam
   (* In Javascript backend, its okay, we can reify it later
@@ -91895,9 +93375,12 @@ let compile  ~filename output_prefix no_export env _sigs
     |> _d "simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
+     
     |> _d "simplify_lets"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
+    (* |> Lam_group_pass.scc_pass
+    |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
 
@@ -92092,7 +93575,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-    Js_config.iset_debug_file "jsoo_400_test.ml";
+    Js_config.iset_debug_file "camlinternalFormat.ml";
     let lambda_output = compile ~filename output_prefix false env sigs lam in
     let (//) = Filename.concat in 
     let basename =  

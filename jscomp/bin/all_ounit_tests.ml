@@ -1255,7 +1255,7 @@ module Ext_array : sig
 (** Some utilities for {!Array} operations *)
 
 val reverse_in_place : 'a array -> unit
-
+val reverse : 'a array -> 'a array 
 val reverse_of_list : 'a list -> 'a array
 
 val filter : ('a -> bool) -> 'a array -> 'a array
@@ -1283,6 +1283,7 @@ val find_and_split :
   ('a -> 'b -> bool) ->
   'b -> 'a split
 
+val exists : ('a -> bool) -> 'a array -> bool 
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1327,6 +1328,14 @@ let reverse_in_place a =
   in
   aux a 0 (Array.length a)
 
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+  let b = Array.copy a in  
+  for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+  done;
+  b  
 
 let reverse_of_list =  function
   | [] -> [||]
@@ -1430,6 +1439,15 @@ let find_and_split arr cmp v : _ split =
   else
     `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
 
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -1923,6 +1941,10 @@ let suites =
             [| "u"; "g"; "--"; "a"; "b";"c";"--"|]
             Ext_string.equal "--" =~ `Split ([|"u";"g"|], [|"a";"b";"c";"--"|])
      end;
+    __LOC__ >:: begin fun _ ->
+        Ext_array.reverse [|1;2|] =~ [|2;1|];
+        Ext_array.reverse [||] =~ [||]  
+    end     ;
     ]
 end
 module Hash_set : sig 
@@ -2334,6 +2356,7 @@ sig
   val copy: t -> t
   val add :  t -> key -> unit
   val mem :  t -> key -> bool
+  val find : t -> key -> int 
   val iter: (key -> int -> unit) ->  t -> unit
   val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
   val length:  t -> int
@@ -2370,7 +2393,7 @@ val add : 'a t -> 'a  -> unit
 
 
 val mem : 'a t -> 'a -> bool
-
+val find : 'a t -> 'a -> int 
 val iter : ('a -> int ->  unit) -> 'a t -> unit
 
 val elements : 'a t -> 'a list
@@ -2492,6 +2515,21 @@ let rec small_bucket_mem key lst =
         key = key3 ||
         small_bucket_mem key rest 
 
+let rec small_bucket_find key lst =
+  match lst with 
+  | Empty -> -1
+  | Cons(key1,i,rest) -> 
+    if key = key1 then i 
+    else match rest with 
+      | Empty -> -1 
+      | Cons(key2,i2,  rest) -> 
+        if key = key2 then i2 else
+          match rest with 
+          | Empty -> -1 
+          | Cons(key3,i3, rest) -> 
+            if key = key3 then i3 else
+              small_bucket_find key rest 
+
 let add h key =
   let i = key_index h key  in 
   if not (small_bucket_mem key  h.data.(i)) then 
@@ -2501,7 +2539,9 @@ let add h key =
       if h.size > Array.length h.data lsl 1 then resize key_index h
     end
 let mem h key =
-  small_bucket_mem key h.data.(key_index h key) 
+  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
+let find h key = 
+  small_bucket_find key (Array.unsafe_get h.data (key_index h key))
 
 let iter f h =
   let rec do_bucket = function
@@ -2580,6 +2620,7 @@ sig
   val copy: t -> t
   val add :  t -> key -> unit
   val mem :  t -> key -> bool
+  val find : t -> key -> int (* -1 if not found*)
   val iter: (key -> int -> unit) ->  t -> unit
   val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
   val length:  t -> int
@@ -2625,7 +2666,20 @@ struct
           H.equal key  key3 ||
           small_bucket_mem key rest 
 
-
+  let rec small_bucket_find key lst =
+    match lst with 
+    | Empty -> -1
+    | Cons(key1,i,rest) -> 
+      if H.equal key key1 then i 
+      else match rest with 
+        | Empty -> -1 
+        | Cons(key2,i2,  rest) -> 
+          if H.equal key  key2 then i2 else
+            match rest with 
+            | Empty -> -1 
+            | Cons(key3,i3, rest) -> 
+              if H.equal key  key3 then i3 else
+                small_bucket_find key rest 
   let add h key =
     let i = key_index h key  in 
     if not (small_bucket_mem key  h.data.(i)) then 
@@ -2636,8 +2690,9 @@ struct
       end
 
   let mem h key =
-    small_bucket_mem key h.data.(key_index h key) 
-
+    small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
+  let find h key = 
+    small_bucket_find key (Array.unsafe_get h.data (key_index h key))  
   let iter = iter
   let fold = fold
   let length = length
@@ -2646,6 +2701,7 @@ struct
   let choose = choose
   let to_sorted_array = to_sorted_array
 end
+
 
 
 
@@ -5263,7 +5319,8 @@ sig
   val of_list : elt list -> t
   val to_array : t -> elt array 
   val of_array : elt array -> t
-  val copy : t -> t 
+  val copy : t -> t
+  val reverse : t -> t  
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
   val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
@@ -5271,6 +5328,7 @@ sig
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array
+  val map_into_list : (elt -> 'f) -> t -> 'f list
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
@@ -5280,6 +5338,7 @@ sig
   val unsafe_get : t -> int -> elt 
   val last : t -> elt
   val capacity : t -> int
+  val exists : (elt -> bool) -> t -> bool
 end
 module Make ( Resize : ResizeType) : S with type elt = Resize.t 
 
@@ -5334,7 +5393,7 @@ sig
   val is_empty : t -> bool
   val of_array : elt array -> t
   val of_sub_array : elt array -> int -> int -> t
-  
+
   (** Exposed for some APIs which only take array as input, 
       when exposed   
   *)
@@ -5353,6 +5412,7 @@ sig
   val to_array : t -> elt array 
   val of_array : elt array -> t
   val copy : t -> t 
+  val reverse : t -> t 
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
   val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
@@ -5360,6 +5420,7 @@ sig
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array
+  val map_into_list : (elt -> 'f) -> t -> 'f list 
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
@@ -5369,6 +5430,7 @@ sig
   val unsafe_get : t -> int -> elt
   val last : t -> elt
   val capacity : t -> int
+  val exists : (elt -> bool) -> t -> bool
 end
 
 module Make ( Resize : ResizeType) = struct
@@ -5393,7 +5455,7 @@ module Make ( Resize : ResizeType) = struct
       len = 1 ; 
       arr = [|v|]
     }
-    
+
   let empty () =
     {
       len = 0;
@@ -5500,8 +5562,8 @@ module Make ( Resize : ResizeType) = struct
     d.len <- d.len - len; 
     {len = len ; arr = value}
 
-  
-(** Below are simple wrapper around normal Array operations *)  
+
+  (** Below are simple wrapper around normal Array operations *)  
 
   let clear d =
     for i = 0 to d.len - 1 do 
@@ -5513,7 +5575,7 @@ module Make ( Resize : ResizeType) = struct
     d.len <- 0; 
     d.arr <- [||]
 
-  
+
   (* For [to_*] operations, we should be careful to call {!Array.*} function 
      in case we operate on the whole array
   *)
@@ -5528,7 +5590,7 @@ module Make ( Resize : ResizeType) = struct
     let arr = Array.of_list lst in 
     { arr ; len = Array.length arr}
 
-    
+
   let to_array d = 
     Array.sub d.arr 0 d.len
 
@@ -5551,7 +5613,10 @@ module Make ( Resize : ResizeType) = struct
       len ;
       arr = Array.sub src.arr 0 len ;
     }
-
+  let reverse src = 
+    { len = src.len ;
+      arr = Ext_array.reverse src.arr 
+    } 
   let sub src start len =
     { len ; 
       arr = Array.sub src.arr start len }
@@ -5583,7 +5648,7 @@ module Make ( Resize : ResizeType) = struct
       for i = from to to_ do 
         f i (Array.unsafe_get d_arr i)
       done
-    
+
   let map f src =
     let src_len = src.len in 
     let arr = Array.make  src_len Resize.null in
@@ -5607,6 +5672,16 @@ module Make ( Resize : ResizeType) = struct
         Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
       done;
       arr 
+  let map_into_list f src = 
+    let src_len = src.len in 
+    let src_arr = src.arr in 
+    if src_len = 0 then []
+    else 
+      let acc = ref [] in         
+      for i =  src_len - 1 downto 0 do
+        acc := f (Array.unsafe_get src_arr i) :: !acc
+      done;
+      !acc
 
   let mapi f src =
     let len = src.len in 
@@ -5636,9 +5711,9 @@ module Make ( Resize : ResizeType) = struct
     in
     loop a.arr (a.len - 1) x
 
-(**  
-   [filter] and [inplace_filter]
-*)
+  (**  
+     [filter] and [inplace_filter]
+  *)
   let filter f d =
     let new_d = copy d in 
     let new_d_arr = new_d.arr in 
@@ -5665,7 +5740,7 @@ module Make ( Resize : ResizeType) = struct
         begin 
           let curr_p = !p in 
           (if curr_p <> i then 
-            Array.unsafe_set d_arr curr_p x) ;
+             Array.unsafe_set d_arr curr_p x) ;
           incr p
         end
     done ;
@@ -5692,6 +5767,16 @@ module Make ( Resize : ResizeType) = struct
     else Array.unsafe_get d.arr (d.len - 1)
 
   let capacity d = Array.length d.arr
+
+  (* Attention can not use {!Array.exists} since the bound is not the same *)  
+  let exists p d = 
+    let a = d.arr in 
+    let n = d.len in   
+    let rec loop i =
+      if i = n then false
+      else if p (Array.unsafe_get a i) then true
+      else loop (succ i) in
+    loop 0
 end
 
 end
@@ -6271,6 +6356,19 @@ let suites =
             "d", [];
             "e", []
           ])  (4, [1;1;2;1])
+          (*  {[
+              a -> b
+              a -> c 
+              b -> c 
+              b -> d 
+              c -> b 
+              d 
+              e
+              ]}
+              {[
+              [d ; e ; [b;c] [a] ]
+              ]}  
+          *)
       end ;
       __LOC__ >:: begin fun _ ->
         OUnit.assert_equal (test [
@@ -7431,6 +7529,7 @@ let process_file file =
         aux ((i+1) mod 10000);
       end
   in aux 0;
+  (* indeed, [unsafe_internal_array] is necessary for real performnace *)
   let internal = Int_vec_vec.unsafe_internal_array edges in
   for i = 0 to Array.length internal - 1 do
      let i = Int_vec.unsafe_internal_array (Array.unsafe_get internal i) in 
@@ -7449,9 +7548,11 @@ let suites =
     __LOC__ >:: begin fun _ ->
       OUnit.assert_equal (process_str mediumUF) 3
     end;
-    __LOC__ >:: begin fun _ ->
+(*
+   __LOC__ >:: begin fun _ ->
       OUnit.assert_equal (process_file "largeUF.txt") 6
     end;
+  *)  
 
   ]
 end
@@ -7517,6 +7618,14 @@ let suites =
       Int_vec.push   3 empty;
       empty =~~ [|3|];
 
+    end
+    ;
+    __LOC__ >:: begin fun _ ->
+      let lst = [1;2;3;4] in 
+      let v = Int_vec.of_list lst in 
+      OUnit.assert_equal 
+        (Int_vec.map_into_list (fun x -> x + 1) v)
+        (List.map (fun x -> x + 1) lst)  
     end
   ]
 

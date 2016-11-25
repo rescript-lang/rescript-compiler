@@ -97,9 +97,22 @@ let suites = Mt.[
   assert false
         )));
   "rec_sum", (fun _ -> Eq(55, sum 0 10));
+  (* TODO: FIXME *)
   "fake_rec", (fun _ -> 
     Eq (([1;2], [2;3], [1;2;3], [1;55;2;3], [2;3], 3), (fake_v, fake_y, fake_z, fake_z2, fake_y2,v)))
 ]
 
-open Mt
-(* ;; from_pair_suites __FILE__ suites *)
+
+let rec
+fake_odd n = fake_minus n 
+and fake_minus n =
+  Js.log n; 
+  n + 1
+  
+let rec 
+fake_inline n = fake_inline_minus n 
+and fake_inline_minus n = 
+   n + 1
+
+let fake_inline_inlie2 = fake_inline_minus 3 
+(* ;; Mt.from_pair_suites __FILE__ suites *)

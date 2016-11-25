@@ -92,6 +92,13 @@ function fib(n) {
   }
 }
 
+function _zs() {
+  return /* tuple */[
+          List.hd(ys),
+          List.hd(xs[0])
+        ];
+}
+
 var ys = { };
 
 var xs = { };
@@ -100,13 +107,6 @@ Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
       ys
     ]);
-
-function _zs() {
-  return /* tuple */[
-          List.hd(ys),
-          List.hd(xs[0])
-        ];
-}
 
 Caml_obj.caml_update_dummy(xs, /* tuple */[
       /* :: */[
@@ -382,26 +382,48 @@ var suites = /* :: */[
   suites_001
 ];
 
-exports.x       = x;
-exports.a       = a;
-exports.b       = b;
-exports.c       = c;
-exports.xx      = xx;
-exports.naive   = naive;
-exports.fib     = fib;
-exports.xs      = xs$1;
-exports.fib2    = fib2;
-exports.two     = two;
-exports.fib3    = fib3;
-exports.even    = even;
-exports.even2   = even2;
-exports.lazy_v  = lazy_v;
-exports.sum     = sum;
-exports.fake_v  = fake_v;
-exports.fake_y  = fake_y;
-exports.fake_z  = fake_z;
-exports.fake_z2 = fake_z2;
-exports.fake_y2 = fake_y2;
-exports.v       = v$1;
-exports.suites  = suites;
+function fake_minus(n) {
+  console.log(n);
+  return n + 1 | 0;
+}
+
+var fake_odd = fake_minus;
+
+function fake_inline_minus(n) {
+  return n + 1 | 0;
+}
+
+function fake_inline(n) {
+  return n + 1 | 0;
+}
+
+var fake_inline_inlie2 = 4;
+
+exports.x                  = x;
+exports.a                  = a;
+exports.b                  = b;
+exports.c                  = c;
+exports.xx                 = xx;
+exports.naive              = naive;
+exports.fib                = fib;
+exports.xs                 = xs$1;
+exports.fib2               = fib2;
+exports.two                = two;
+exports.fib3               = fib3;
+exports.even               = even;
+exports.even2              = even2;
+exports.lazy_v             = lazy_v;
+exports.sum                = sum;
+exports.fake_v             = fake_v;
+exports.fake_y             = fake_y;
+exports.fake_z             = fake_z;
+exports.fake_z2            = fake_z2;
+exports.fake_y2            = fake_y2;
+exports.v                  = v$1;
+exports.suites             = suites;
+exports.fake_odd           = fake_odd;
+exports.fake_minus         = fake_minus;
+exports.fake_inline        = fake_inline;
+exports.fake_inline_minus  = fake_inline_minus;
+exports.fake_inline_inlie2 = fake_inline_inlie2;
 /* xs Not a pure module */

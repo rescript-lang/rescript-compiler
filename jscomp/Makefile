@@ -52,7 +52,7 @@ OUNIT_TESTS_SRCS =  ounit_array_tests ounit_list_test ounit_path_tests ounit_uni
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec int_vec int_vec_vec ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
-	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ordered_hash_set union_find ident_set int_map literals string_map \
+	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ordered_hash_set ordered_hash_map union_find ident_set int_map literals string_map \
 	string_set ext_scc ext_pp_scope ext_io ext_ident ext_filename
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
@@ -66,11 +66,12 @@ SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util bs_conditional_initial ocaml_options ocaml_parse lam\
-	lam_iter lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
+	lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
 	lam_exit_code j lam_module_ident lam_compile_util lam_stats config_util lam_compile_defs js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\
-	js_of_lam_tuple js_of_lam_record js_of_lam_float_record js_arr lam_compile_const lam_util lam_group js_stmt_make js_pass_flatten\
-	js_pass_tailcall_inline js_of_lam_variant js_pass_flatten_and_mark_dead js_ast_util lam_dce lam_compile_env lam_stats_util\
+	js_of_lam_tuple js_of_lam_record js_of_lam_float_record js_arr lam_compile_const \
+	lam_inner lam_util lam_group js_stmt_make js_pass_flatten\
+	js_pass_tailcall_inline js_of_lam_variant js_pass_flatten_and_mark_dead js_ast_util lam_dce lam_group_pass lam_compile_env lam_stats_util\
 	lam_stats_export lam_pass_alpha_conversion lam_pass_collect js_program_loader js_dump js_pass_debug\
 	js_of_lam_option js_output lam_compile_global lam_dispatch_primitive lam_beta_reduce\
 	lam_compile_external_call lam_compile_primitive lam_compile lam_pass_exits\

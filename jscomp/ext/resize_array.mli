@@ -60,7 +60,8 @@ sig
   val of_list : elt list -> t
   val to_array : t -> elt array 
   val of_array : elt array -> t
-  val copy : t -> t 
+  val copy : t -> t
+  val reverse : t -> t  
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
   val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
@@ -68,6 +69,7 @@ sig
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array
+  val map_into_list : (elt -> 'f) -> t -> 'f list
   val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
@@ -77,6 +79,7 @@ sig
   val unsafe_get : t -> int -> elt 
   val last : t -> elt
   val capacity : t -> int
+  val exists : (elt -> bool) -> t -> bool
 end
 module Make ( Resize : ResizeType) : S with type elt = Resize.t 
 

@@ -203,7 +203,80 @@ and t =
      we should use record for trivial debugger info
   *)
 
-
+(** apply [f] to direct successor which has type [Lam.t] *)
+let inner_map f l : t = 
+  match (l : t) with 
+    Lvar _
+  | Lconst _ -> l
+  | Lapply ({fn; args; _} as app)  ->
+    let fn = f fn in
+    let args = List.map f args in 
+    Lapply {app with  fn ; args}
+  | Lfunction({body;_} as app) ->
+      let body = f body in 
+      Lfunction {app with body}
+  | Llet(str, id, arg, body) ->
+      let arg = f arg in let body =  f body in
+      Llet(str,id,arg,body)
+  | Lletrec(decl, body) ->
+      let body = f body in 
+      let decl = List.map (fun (id, exp) -> id, f exp) decl in 
+      Lletrec(decl,body)
+  | Lprim ({args; _} as app) ->
+      let args = List.map f args in 
+      Lprim {app with args}
+  | Lswitch(arg, sw) ->
+      let arg = f arg in 
+      let sw_consts = List.map (fun (key, case) -> key , f case) sw.sw_consts in 
+      let sw_blocks = List.map (fun (key, case) -> key, f case) sw.sw_blocks in 
+      let sw_failaction = begin match sw.sw_failaction with 
+      | None -> None
+      | Some a -> Some (f a) 
+      end in 
+      Lswitch(arg, {sw with sw_consts; sw_blocks; sw_failaction})
+  | Lstringswitch (arg,cases,default) ->
+      let arg = f arg  in 
+      let cases = List.map (fun (k,act) -> k,f act) cases  in
+      let default = begin match default with 
+      | None -> None
+      | Some a -> Some (f a) 
+      end in 
+      Lstringswitch(arg,cases,default)
+  | Lstaticraise (id,args) ->
+      let args = List.map f args in 
+      Lstaticraise(id,args)
+  | Lstaticcatch(e1, vars , e2) ->
+      let e1 = f e1 in 
+      let e2 = f e2 in 
+      Lstaticcatch(e1, vars, e2)
+  | Ltrywith(e1, exn, e2) ->
+      let e1  = f e1 in 
+      let e2 =  f e2 in 
+      Ltrywith(e1,exn,e2)
+  | Lifthenelse(e1, e2, e3) ->
+      let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+      Lifthenelse(e1,e2,e3)
+  | Lsequence(e1, e2) ->
+      let e1 = f e1 in let e2 =  f e2 in 
+      Lsequence(e1,e2)
+  | Lwhile(e1, e2) ->
+      let e1 = f e1 in let e2 =  f e2 in 
+      Lwhile(e1,e2)
+  | Lfor(v, e1, e2, dir, e3) ->
+      let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+      Lfor(v,e1,e2,dir,e3)
+  | Lassign(id, e) ->
+      let e = f e in 
+      Lassign(id,e)
+  | Lsend (k, met, obj, args, loc) ->
+      let met = f met in 
+      let obj = f obj in 
+      let args = List.map f args in 
+      Lsend(k,met,obj,args,loc)
+      
+  | Lifused (v, e) ->
+      let e = f e in 
+      Lifused(v,e)
 
 module Prim = struct 
   type t = primitive
@@ -713,6 +786,108 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
   | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc 
   | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc 
 
+let free_variables l =
+  let fv = ref Ident_set.empty in
+  let rec free (l : t) =
+    begin
+      match (l : t) with 
+        Lvar id -> fv := Ident_set.add id !fv
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        free fn; List.iter free args
+      | Lfunction{body;params} ->
+        free body;
+        List.iter (fun param -> fv := Ident_set.remove param !fv) params
+      | Llet(str, id, arg, body) ->
+        free arg; free body;
+        fv := Ident_set.remove id !fv
+      | Lletrec(decl, body) ->
+        free body;
+        List.iter (fun (id, exp) -> free exp) decl;
+        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      | Lprim {args; _} ->
+        List.iter free args
+      | Lswitch(arg, sw) ->
+        free arg;
+        List.iter (fun (key, case) -> free case) sw.sw_consts;
+        List.iter (fun (key, case) -> free case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        free arg ;
+        List.iter (fun (_,act) -> free act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter free args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        free e1; free e2;
+        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      | Ltrywith(e1, exn, e2) ->
+        free e1; free e2;
+         fv := Ident_set.remove exn !fv
+      | Lifthenelse(e1, e2, e3) ->
+        free e1; free e2; free e3
+      | Lsequence(e1, e2) ->
+        free e1; free e2
+      | Lwhile(e1, e2) ->
+        free e1; free e2
+      | Lfor(v, e1, e2, dir, e3) ->
+        free e1; free e2; free e3;
+        fv := Ident_set.remove v !fv
+      | Lassign(id, e) ->
+        free e;
+        fv := Ident_set.add id !fv
+      | Lsend (k, met, obj, args, _) ->
+        List.iter free (met::obj::args)
+      | Lifused (v, e) ->
+        free e
+    end;
+  in free l; 
+  !fv
+
+
+type bindings = (Ident.t * t) list
+let scc  (groups :  bindings)  
+    (lam : t)
+    (body : t)
+     =     
+  let domain : (Ident.t, t) Ordered_hash_map.t = Ordered_hash_map.create 3 in 
+  List.iter (fun (x,lam) -> Ordered_hash_map.add domain x lam) groups ;
+  let int_mapping = Ordered_hash_map.to_sorted_array domain in 
+  let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
+  Ordered_hash_map.iter ( fun id lam key_index ->        
+      let base_key =  node_vec.(key_index) in 
+      let free_vars = free_variables lam in
+      Ident_set.iter (fun x ->
+          let key = Ordered_hash_map.find domain x in 
+          if key >= 0 then 
+            Int_vec.push key base_key 
+        ) free_vars
+    ) domain;
+  let clusters = Ext_scc.graph node_vec in 
+  if Int_vec_vec.length clusters <= 1 then lam 
+  else          
+    Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+      let bindings =
+        Int_vec.map_into_list (fun i -> 
+            let id = int_mapping.(i) in 
+            let lam  = Ordered_hash_map.find_value domain  id in  
+            (id,lam)
+        ) v  in 
+        match bindings with 
+        | [ id,(Lfunction _ as lam) ] ->
+          let base_key = Ordered_hash_map.find domain id in          
+          if Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
+            letrec bindings acc 
+          else  let_ StrictOpt  id lam body    
+        | _ ->  
+            letrec bindings  acc 
+      )  clusters body 
 
 let rec convert (lam : Lambda.lambda) : t = 
   match lam with 
@@ -772,7 +947,11 @@ let rec convert (lam : Lambda.lambda) : t =
     -> Llet(kind,id,convert e, convert body)
   | Lletrec (bindings,body)
     -> 
-    Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
+    let bindings = List.map (fun (id, e) -> id, convert e) bindings in
+    let body = convert body in 
+    let lam = Lletrec (bindings, body) in 
+    scc bindings lam body  
+    (* inlining will affect how mututal recursive behave *)
   | Lprim (primitive,args, loc) 
     -> convert_primitive loc primitive args 
     (* Lprim {primitive ; args = List.map convert args } *)

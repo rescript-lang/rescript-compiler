@@ -31,58 +31,54 @@
 module type S =
 sig
   type key
-  type t
-  val create: int ->  t
-  val clear : t -> unit
-  val reset : t -> unit
-  val copy: t -> t
-  val add :  t -> key -> unit
-  val mem :  t -> key -> bool
-  val find : t -> key -> int 
-  val iter: (key -> int -> unit) ->  t -> unit
-  val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
-  val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
-  val elements : t -> key list 
-  val choose : t -> key 
-  val to_sorted_array: t -> key array
+  type 'value t
+  val create: int ->  'value t
+  val clear : 'vaulue t -> unit
+  val reset : 'value t -> unit
+  val copy: 'value t -> 'value t
+  val add : 'value t -> key -> 'value -> unit
+  val mem : 'value t -> key -> bool
+  val find : 'value t -> key -> int (* -1 if not found*)
+  val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
+  val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b
+  val length:  'value t -> int
+  val stats: 'value t -> Hashtbl.statistics
+  val elements : 'value t -> key list 
+  val choose : 'value t -> key 
+  val to_sorted_array: 'value t -> key array
 end
 
 
 
-
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
-
-module Make ( H : HashedType) : (S with type key = H.t)
+module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
 (** A naive t implementation on top of [hashtbl], the value is [unit]*)
 
-type   'a t 
+type   ('a,'value) t 
 
-val create : int -> 'a t
+val create : int -> ('a,'value) t
 
-val clear : 'a t -> unit
+val clear : ('a, 'value) t -> unit
 
-val reset : 'a t -> unit
+val reset : ('a, 'value) t -> unit
 
-val copy : 'a t -> 'a t
+val copy : ('a, 'value) t -> ('a, 'value) t
 
-val add : 'a t -> 'a  -> unit
+val add : ('a, 'value) t -> 'a  -> 'value -> unit
 
 
-val mem : 'a t -> 'a -> bool
-val find : 'a t -> 'a -> int 
-val iter : ('a -> int ->  unit) -> 'a t -> unit
+val mem : ('a, 'value) t -> 'a -> bool
 
-val elements : 'a t -> 'a list
+val find : ('a, 'value) t -> 'a -> int
 
-val length : 'a t -> int 
+val find_value : ('a, 'value) t -> 'a -> 'value 
 
-val stats:  'a t -> Hashtbl.statistics
+val iter : ('a -> 'value -> int ->  unit) -> ('a, 'value) t -> unit
 
-val to_sorted_array : 'a t -> 'a array
+val elements : ('a, 'value) t -> 'a list
+
+val length : ('a, 'value) t -> int 
+
+val stats:  ('a, 'value) t -> Hashtbl.statistics
+
+val to_sorted_array : ('a,'value) t -> 'a array
  

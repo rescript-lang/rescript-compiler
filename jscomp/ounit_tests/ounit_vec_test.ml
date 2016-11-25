@@ -58,4 +58,12 @@ let suites =
       empty =~~ [|3|];
 
     end
+    ;
+    __LOC__ >:: begin fun _ ->
+      let lst = [1;2;3;4] in 
+      let v = Int_vec.of_list lst in 
+      OUnit.assert_equal 
+        (Int_vec.map_into_list (fun x -> x + 1) v)
+        (List.map (fun x -> x + 1) lst)  
+    end
   ]

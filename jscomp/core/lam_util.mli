@@ -81,5 +81,4 @@ val eta_conversion :
 val subst_lambda : Lam.t Ident_map.t -> Lam.t -> Lam.t
 
 
-(* TODO; check {!Lam_analysis.free_variables} *)
-val free_variables : Lam.t -> Ident_set.t
+
