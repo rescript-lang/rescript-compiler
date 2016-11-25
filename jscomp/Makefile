@@ -48,11 +48,11 @@ common/bs_version.ml: build_version.js ../package.json
 ### list files
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_array_tests ounit_list_test ounit_path_tests ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_array_tests ounit_list_test ounit_path_tests ounit_union_find_tests ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec int_vec int_vec_vec ext_file_pp ext_format ext_hashtbl ext_list ext_map ext_marshal ext_option \
-	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ordered_hash_set ident_set int_map literals string_map \
+	ext_pervasives ext_pp ext_ref ext_string ext_sys hash_set ordered_hash_set union_find ident_set int_map literals string_map \
 	string_set ext_scc ext_pp_scope ext_io ext_ident ext_filename
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
@@ -208,10 +208,11 @@ bin/js_compiler.ml:./bin/bspack.exe
 bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD   -I ounit -I ounit_tests  -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
 -include bin/all_ounit_tests.d
-bin/all_ounit_tests.byte:bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	ocamlc.opt -g -I bin -w -a unix.cma $^ -o $@
 
-test:bin/all_ounit_tests.byte
+bin/all_ounit_tests.exe:bin/all_ounit_tests.mli bin/all_ounit_tests.ml
+	ocamlopt.opt -g -I bin -w -a unix.cmxa $^ -o $@
+
+test:bin/all_ounit_tests.exe
 	$^
 .PHONY:ounit_test
 # TODO: Fix Me use its own configuration

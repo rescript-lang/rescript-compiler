@@ -22730,6 +22730,10 @@ val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 val split : ?keep_empty:bool -> string -> char -> string list
 (** default is false *)
 
+val quick_split_by_ws : string -> string list 
+(** split by space chars for quick scripting *)
+
+
 val starts_with : string -> string -> bool
 
 (**
@@ -22843,6 +22847,9 @@ let trim s =
 let split ?keep_empty  str on = 
   if str = "" then [] else 
   split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+
+let quick_split_by_ws str : string list = 
+  split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
 
 let starts_with s beg = 
   let beg_len = String.length beg in

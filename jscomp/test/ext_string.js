@@ -89,6 +89,17 @@ function split(keep_empty, str, on) {
   }
 }
 
+function quick_split_by_ws(str) {
+  return split_by(/* Some */[/* false */0], function (x) {
+              if (x === /* "\t" */9 || x === /* "\n" */10) {
+                return /* true */1;
+              }
+              else {
+                return +(x === /* " " */32);
+              }
+            }, str);
+}
+
 function starts_with(s, beg) {
   var beg_len = beg.length;
   var s_len = s.length;
@@ -377,6 +388,7 @@ function unsafe_concat_with_length(len, sep, l) {
 exports.split_by                  = split_by;
 exports.trim                      = trim;
 exports.split                     = split;
+exports.quick_split_by_ws         = quick_split_by_ws;
 exports.starts_with               = starts_with;
 exports.ends_with_index           = ends_with_index;
 exports.ends_with                 = ends_with;

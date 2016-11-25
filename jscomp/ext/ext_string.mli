@@ -40,6 +40,10 @@ val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 val split : ?keep_empty:bool -> string -> char -> string list
 (** default is false *)
 
+val quick_split_by_ws : string -> string list 
+(** split by space chars for quick scripting *)
+
+
 val starts_with : string -> string -> bool
 
 (**
