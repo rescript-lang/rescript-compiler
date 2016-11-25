@@ -215,6 +215,13 @@ type triop = t -> t -> t -> t
 
 type unop = t ->  t
 
+val inner_map : (t -> t) -> t -> t
+val free_variables : t -> Ident_set.t
+
+type bindings = (Ident.t * t) list
+
+val scc : bindings -> t -> t  -> t 
+
 val var : ident -> t
 val const : Lambda.structured_constant -> t
 

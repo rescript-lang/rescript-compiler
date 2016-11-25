@@ -1670,7 +1670,7 @@ function test17() {
 
 test('File "tscanf_test.ml", line 406, characters 5-12', test17(/* () */0));
 
-function scan_elems$4(ib, accu) {
+function scan_rest(ib, accu) {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Char_literal */Block.__(12, [
                       /* " " */32,
@@ -1681,17 +1681,16 @@ function scan_elems$4(ib, accu) {
                     ]),
                   " %c "
                 ]), function (c) {
-              if (c !== 91) {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "scan_elems"
-                    ];
-              }
-              else if (accu) {
-                throw [
-                      Caml_builtin_exceptions.failure,
-                      "scan_elems"
-                    ];
+              if (c !== 59) {
+                if (c !== 93) {
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_rest"
+                      ];
+                }
+                else {
+                  return accu;
+                }
               }
               else {
                 return Curry._1(Scanf.bscanf(ib, /* Format */[
@@ -1732,7 +1731,7 @@ function scan_elems$4(ib, accu) {
             });
 }
 
-function scan_rest(ib, accu) {
+function scan_elems$4(ib, accu) {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Char_literal */Block.__(12, [
                       /* " " */32,
@@ -1743,16 +1742,17 @@ function scan_rest(ib, accu) {
                     ]),
                   " %c "
                 ]), function (c) {
-              if (c !== 59) {
-                if (c !== 93) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_rest"
-                      ];
-                }
-                else {
-                  return accu;
-                }
+              if (c !== 91) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "scan_elems"
+                    ];
+              }
+              else if (accu) {
+                throw [
+                      Caml_builtin_exceptions.failure,
+                      "scan_elems"
+                    ];
               }
               else {
                 return Curry._1(Scanf.bscanf(ib, /* Format */[

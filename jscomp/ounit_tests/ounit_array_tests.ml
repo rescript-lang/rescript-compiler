@@ -26,4 +26,8 @@ let suites =
             [| "u"; "g"; "--"; "a"; "b";"c";"--"|]
             Ext_string.equal "--" =~ `Split ([|"u";"g"|], [|"a";"b";"c";"--"|])
      end;
+    __LOC__ >:: begin fun _ ->
+        Ext_array.reverse [|1;2|] =~ [|2;1|];
+        Ext_array.reverse [||] =~ [||]  
+    end     ;
     ]

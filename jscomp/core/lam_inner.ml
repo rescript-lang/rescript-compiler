@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let inner_iter f l = 
+let iter f l = 
   match (l : Lam.t) with 
     Lvar _
   | Lconst _ -> ()

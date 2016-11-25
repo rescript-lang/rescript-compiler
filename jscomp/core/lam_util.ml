@@ -36,19 +36,19 @@ let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 (* TODO: not very efficient .. *)
 exception Cyclic 
-      
+
 let toplogical (get_deps : Ident.t -> Ident_set.t) (libs : Ident.t list) : Ident.t list =
   let rec aux acc later todo round_progress =
     match todo, later with
     | [], [] ->  acc
     | [], _ ->
-        if round_progress
-        then aux acc todo later false
-        else raise Cyclic
+      if round_progress
+      then aux acc todo later false
+      else raise Cyclic
     | x::xs, _ ->
-        if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x)
-        then aux (x::acc) later xs true
-        else aux acc (x::later) xs round_progress
+      if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x)
+      then aux (x::acc) later xs true
+      else aux acc (x::later) xs round_progress
   in
   let starts, todo = List.partition (fun lib -> Ident_set.is_empty @@ get_deps lib) libs in
   aux starts [] todo false
@@ -148,7 +148,7 @@ let refine_let
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
-                                 &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
+                                                          &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
     ->  Lam.prim ~primitive ~args:[arg]  loc 
   (* we can not do this substitution when capttured *)
@@ -183,10 +183,10 @@ let refine_let
     (*It can be promoted to [Alias], however, 
         we don't want to do this, since we don't want the 
         function to be inlined to a block, for example
-        {[
-          let f = fun _ -> 1 in
-          [0, f]
-        ]}
+      {[
+        let f = fun _ -> 1 in
+        [0, f]
+      ]}
         TODO: punish inliner to inline functions 
         into a block 
     *)
@@ -308,20 +308,20 @@ let log_counter = ref 0
 
 let dump env ext  lam = 
 #if BS_COMPILER_IN_BROWSER then
-    lam
+      lam
 #else    
-  if Js_config.is_same_file ()
-  then 
-    (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
-    begin 
-      incr log_counter;
-      Lam_print.seriaize env 
-        (Ext_filename.chop_extension 
-           ~loc:__LOC__ 
-           (Js_config.get_current_file ()) ^ 
-         (Printf.sprintf ".%02d%s.lam" !log_counter ext)
-        ) lam;
-    end;
+   if Js_config.is_same_file ()
+    then 
+      (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
+      begin 
+        incr log_counter;
+        Lam_print.seriaize env 
+          (Ext_filename.chop_extension 
+             ~loc:__LOC__ 
+             (Js_config.get_current_file ()) ^ 
+           (Printf.sprintf ".%02d%s.lam" !log_counter ext)
+          ) lam;
+      end;
   lam
 #end
 
@@ -386,10 +386,10 @@ let eta_conversion n loc status fn args =
 
     let rest : Lam.t = 
       Lam.function_ ~arity:n ~kind:Curried ~params:extra_args
-                ~body:(Lam.apply fn (args @ extra_lambdas) 
-                   loc 
-                   status
-                ) in
+        ~body:(Lam.apply fn (args @ extra_lambdas) 
+                 loc 
+                 status
+              ) in
     List.fold_left (fun lam (id,x) ->
         Lam.let_ Strict id x lam
       ) rest bindings
@@ -399,28 +399,4 @@ let eta_conversion n loc status fn args =
 
 
 
-let free_variables l =
-  let fv = ref Ident_set.empty in
-  let rec free (l : Lam.t) =
-    Lam_iter.inner_iter free l;
-    match l with
-    | Lvar id -> fv := Ident_set.add id !fv
-    | Lfunction{ params;} -> 
-      List.iter (fun param -> fv := Ident_set.remove param !fv) params
-    | Llet(str, id, arg, body) ->
-      fv := Ident_set.remove id !fv
-    | Lletrec(decl, body) ->
-      List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
-    | Lstaticcatch(e1, (_,vars), e2) ->
-      List.iter (fun id -> fv := Ident_set.remove id !fv) vars
-    | Ltrywith(e1, exn, e2) ->
-      fv := Ident_set.remove exn !fv
-    | Lfor(v, e1, e2, dir, e3) ->
-      fv := Ident_set.remove v !fv
-    | Lassign(id, e) ->
-      fv := Ident_set.add id !fv
-    | Lconst _ | Lapply _
-    | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
-    | Lifthenelse _ | Lsequence _ | Lwhile _
-    | Lsend _  | Lifused _ -> ()
-  in free l; !fv
+

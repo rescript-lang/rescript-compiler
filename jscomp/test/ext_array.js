@@ -23,6 +23,20 @@ function reverse_in_place(a) {
   }
 }
 
+function reverse(a) {
+  var b_len = a.length;
+  if (b_len) {
+    var b = $$Array.copy(a);
+    for(var i = 0 ,i_finish = b_len - 1 | 0; i <= i_finish; ++i){
+      b[i] = a[(b_len - 1 | 0) - i | 0];
+    }
+    return b;
+  }
+  else {
+    return /* array */[];
+  }
+}
+
 function reverse_of_list(l) {
   if (l) {
     var len = List.length(l);
@@ -232,7 +246,27 @@ function find_and_split(arr, cmp, v) {
   }
 }
 
+function exists(p, a) {
+  var n = a.length;
+  var _i = 0;
+  while(true) {
+    var i = _i;
+    if (i === n) {
+      return /* false */0;
+    }
+    else if (Curry._1(p, a[i])) {
+      return /* true */1;
+    }
+    else {
+      _i = i + 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
 exports.reverse_in_place = reverse_in_place;
+exports.reverse          = reverse;
 exports.reverse_of_list  = reverse_of_list;
 exports.filter           = filter;
 exports.filter_map       = filter_map;
@@ -243,4 +277,5 @@ exports.rfind_with_index = rfind_with_index;
 exports.rfind_and_split  = rfind_and_split;
 exports.find_with_index  = find_with_index;
 exports.find_and_split   = find_and_split;
+exports.exists           = exists;
 /* No side effect */

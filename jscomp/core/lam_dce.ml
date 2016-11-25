@@ -29,7 +29,7 @@
 
 
 
-module I = Ident_set
+
 
 
 let transitive_closure 
@@ -44,7 +44,8 @@ let transitive_closure
       begin 
         Hash_set.add visited id;
         match Hashtbl.find ident_freevars id with 
-        | exception Not_found -> assert false 
+        | exception Not_found -> 
+          Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
         | e -> Ident_set.iter (fun id -> dfs id) e
       end  in 
   List.iter dfs initial_idents;
@@ -58,18 +59,17 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
   let initial_idents =
     List.fold_left (fun acc (x : Lam_group.t) -> 
         match x with
-        | Single(kind, id,lam) -> 
-          (* FIXME: assume no side effect, which might be wrong  *)        
+        | Single(kind, id,lam) ->                   
           begin
             Hashtbl.add ident_free_vars id 
-              (Lam_util.free_variables  lam);
+              (Lam.free_variables  lam);
             match kind with
             | Alias | StrictOpt -> acc
             | Strict | Variable -> id :: acc 
           end
-        | Recursive bindings -> (* FIXME: assume no side effect, which might be wrong  *)
+        | Recursive bindings -> 
           List.fold_left (fun acc (id,lam) -> 
-              Hashtbl.add ident_free_vars id (Lam_util.free_variables lam);
+              Hashtbl.add ident_free_vars id (Lam.free_variables lam);
               match (lam : Lam.t) with
               | Lfunction _ -> acc 
               | _ -> id :: acc
@@ -78,10 +78,10 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           if Lam_analysis.no_side_effects lam then acc
           else 
             (** its free varaibles here will be defined above *)
-            I.fold (fun x acc -> x :: acc )  ( Lam_util.free_variables lam) acc                
+            Ident_set.fold (fun x acc -> x :: acc )  ( Lam.free_variables lam) acc                
       )  export_idents rest in 
   let visited = transitive_closure initial_idents ident_free_vars in 
-    List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
+  List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
       match x with 
       | Single(_,id,_) -> 
         if Hash_set.mem visited id  then 

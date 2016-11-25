@@ -31,13 +31,13 @@ external seeded_hash_param :
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
-type 'a bucket = 
+type ('a,'b) bucket = 
   | Empty 
-  | Cons of 'a * int * 'a bucket
+  | Cons of 'a * int * 'b  * ('a,'b) bucket
 
-type 'a t =
+type ('a,'b) t =
   { mutable size: int;                        (* number of entries *)
-    mutable data: 'a bucket array;  (* the buckets *)
+    mutable data: ('a,'b) bucket array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
 
@@ -77,9 +77,9 @@ let resize indexfun h =
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
         Empty -> ()
-      | Cons(key,info,rest) ->
+      | Cons(key,info,data,rest) ->
         let nidx = indexfun h key in
-        ndata.(nidx) <- Cons(key,info, ndata.(nidx));
+        ndata.(nidx) <- Cons(key,info,data, ndata.(nidx));
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
@@ -95,38 +95,53 @@ let key_index h key =
 let rec small_bucket_mem key lst =
   match lst with 
   | Empty -> false 
-  | Cons(key1,_,rest) -> 
+  | Cons(key1,_,_,rest) -> 
     key = key1 ||
     match rest with 
     | Empty -> false 
-    | Cons(key2,_,  rest) -> 
+    | Cons(key2,_, _,  rest) -> 
       key = key2 ||
       match rest with 
       | Empty -> false 
-      | Cons(key3,_, rest) -> 
+      | Cons(key3,_,_, rest) -> 
         key = key3 ||
         small_bucket_mem key rest 
 
 let rec small_bucket_find key lst =
   match lst with 
   | Empty -> -1
-  | Cons(key1,i,rest) -> 
+  | Cons(key1,i,_, rest) -> 
     if key = key1 then i 
     else match rest with 
       | Empty -> -1 
-      | Cons(key2,i2,  rest) -> 
+      | Cons(key2,i2,_, rest) -> 
         if key = key2 then i2 else
           match rest with 
           | Empty -> -1 
-          | Cons(key3,i3, rest) -> 
+          | Cons(key3,i3,_, rest) -> 
             if key = key3 then i3 else
               small_bucket_find key rest 
 
-let add h key =
+let rec small_bucket_find_value  key (lst : (_,_) bucket)   =
+  match lst with 
+  | Empty -> raise Not_found
+  | Cons(key1,_,value, rest) -> 
+    if key = key1 then value 
+    else match rest with 
+      | Empty -> raise Not_found 
+      | Cons(key2,_,value, rest) -> 
+        if key = key2 then value else
+          match rest with 
+          | Empty -> raise Not_found 
+          | Cons(key3, _ , value, rest) -> 
+            if key = key3 then value else
+              small_bucket_find_value key rest 
+
+let add h key value =
   let i = key_index h key  in 
   if not (small_bucket_mem key  h.data.(i)) then 
     begin 
-      h.data.(i) <- Cons(key, h.size, h.data.(i));
+      h.data.(i) <- Cons(key, h.size,value, h.data.(i));
       h.size <- h.size + 1 ;
       if h.size > Array.length h.data lsl 1 then resize key_index h
     end
@@ -135,12 +150,15 @@ let mem h key =
 let find h key = 
   small_bucket_find key (Array.unsafe_get h.data (key_index h key))
 
+let find_value h key =
+  small_bucket_find_value key (Array.unsafe_get h.data (key_index h key))
+
 let iter f h =
   let rec do_bucket = function
     | Empty ->
       ()
-    | Cons(k ,i,  rest) ->
-      f k i ; do_bucket rest in
+    | Cons(k ,i, value, rest) ->
+      f k value i; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -152,7 +170,7 @@ let choose h =
     else 
       match Array.unsafe_get arr offset with 
       | Empty -> aux arr (offset + 1) len 
-      | Cons (k,_,rest) -> k 
+      | Cons (k,_,_,rest) -> k 
   in
   aux h.data 0 (Array.length h.data)
 
@@ -161,7 +179,7 @@ let to_sorted_array h =
   else 
     let v = choose h in 
     let arr = Array.make h.size v in
-    iter (fun k i -> Array.unsafe_set arr i k) h;
+    iter (fun k _ i -> Array.unsafe_set arr i k) h;
     arr 
 
 let fold f h init =
@@ -169,8 +187,8 @@ let fold f h init =
     match b with
       Empty ->
       accu
-    | Cons( k , i,  rest) ->
-      do_bucket rest (f k i  accu) in
+    | Cons( k , i,  value, rest) ->
+      do_bucket rest (f k  value i  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -179,13 +197,13 @@ let fold f h init =
   !accu
 
 let elements set = 
-  fold  (fun k i  acc ->  k :: acc) set []
+  fold  (fun k  _  _ acc  ->  k :: acc) set []
 
 
 let rec bucket_length acc (x : _ bucket) = 
   match x with 
   | Empty -> 0
-  | Cons(_,_,rest) -> bucket_length (acc + 1) rest  
+  | Cons(_,_,_,rest) -> bucket_length (acc + 1) rest  
 
 let stats h =
   let mbl =
@@ -205,35 +223,29 @@ let stats h =
 module type S =
 sig
   type key
-  type t
-  val create: int ->  t
-  val clear : t -> unit
-  val reset : t -> unit
-  val copy: t -> t
-  val add :  t -> key -> unit
-  val mem :  t -> key -> bool
-  val find : t -> key -> int (* -1 if not found*)
-  val iter: (key -> int -> unit) ->  t -> unit
-  val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
-  val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
-  val elements : t -> key list 
-  val choose : t -> key 
-  val to_sorted_array: t -> key array
+  type 'value t
+  val create: int ->  'value t
+  val clear : 'vaulue t -> unit
+  val reset : 'value t -> unit
+  val copy: 'value t -> 'value t
+  val add : 'value t -> key -> 'value -> unit
+  val mem : 'value t -> key -> bool
+  val find : 'value t -> key -> int (* -1 if not found*)
+  val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
+  val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b
+  val length:  'value t -> int
+  val stats: 'value t -> Hashtbl.statistics
+  val elements : 'value t -> key list 
+  val choose : 'value t -> key 
+  val to_sorted_array: 'value t -> key array
 end
 
-module type HashedType =
-sig
-  type t
-  val equal: t -> t -> bool
-  val hash: t -> int
-end
 
-module Make(H: HashedType): (S with type key = H.t) =
+module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
 struct
   type key = H.t
 
-  type nonrec  t = key t
+  type nonrec  'value t = (key,'value) t
   let create = create
   let clear = clear
   let reset = reset
@@ -246,37 +258,37 @@ struct
   let rec small_bucket_mem key lst =
     match lst with 
     | Empty -> false 
-    | Cons(key1,_, rest) -> 
+    | Cons(key1,_, _, rest) -> 
       H.equal key key1 ||
       match rest with 
       | Empty -> false 
-      | Cons(key2 , _, rest) -> 
+      | Cons(key2 , _,_, rest) -> 
         H.equal key  key2 ||
         match rest with 
         | Empty -> false 
-        | Cons(key3,_,  rest) -> 
+        | Cons(key3,_, _, rest) -> 
           H.equal key  key3 ||
           small_bucket_mem key rest 
 
   let rec small_bucket_find key lst =
     match lst with 
     | Empty -> -1
-    | Cons(key1,i,rest) -> 
+    | Cons(key1,i,_, rest) -> 
       if H.equal key key1 then i 
       else match rest with 
         | Empty -> -1 
-        | Cons(key2,i2,  rest) -> 
+        | Cons(key2,i2, _, rest) -> 
           if H.equal key  key2 then i2 else
             match rest with 
             | Empty -> -1 
-            | Cons(key3,i3, rest) -> 
+            | Cons(key3,i3, _, rest) -> 
               if H.equal key  key3 then i3 else
                 small_bucket_find key rest 
-  let add h key =
+  let add h key value =
     let i = key_index h key  in 
     if not (small_bucket_mem key  h.data.(i)) then 
       begin 
-        h.data.(i) <- Cons(key,h.size, h.data.(i));
+        h.data.(i) <- Cons(key,h.size, value, h.data.(i));
         h.size <- h.size + 1 ;
         if h.size > Array.length h.data lsl 1 then resize key_index h
       end
