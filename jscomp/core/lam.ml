@@ -39,7 +39,7 @@ type ident = Ident.t
 type function_arities = 
   | Determin of bool * (int * Ident.t list option) list  * bool
   | NA 
-               
+
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -174,9 +174,9 @@ and apply_info =
   }
 and function_info = 
   { arity : int ; 
-   kind : Lambda.function_kind ; 
-   params : ident list ;
-   body : t 
+    kind : Lambda.function_kind ; 
+    params : ident list ;
+    body : t 
   }
 and t = 
   | Lvar of ident
@@ -213,70 +213,70 @@ let inner_map f l : t =
     let args = List.map f args in 
     Lapply {app with  fn ; args}
   | Lfunction({body;_} as app) ->
-      let body = f body in 
-      Lfunction {app with body}
+    let body = f body in 
+    Lfunction {app with body}
   | Llet(str, id, arg, body) ->
-      let arg = f arg in let body =  f body in
-      Llet(str,id,arg,body)
+    let arg = f arg in let body =  f body in
+    Llet(str,id,arg,body)
   | Lletrec(decl, body) ->
-      let body = f body in 
-      let decl = List.map (fun (id, exp) -> id, f exp) decl in 
-      Lletrec(decl,body)
+    let body = f body in 
+    let decl = List.map (fun (id, exp) -> id, f exp) decl in 
+    Lletrec(decl,body)
   | Lprim ({args; _} as app) ->
-      let args = List.map f args in 
-      Lprim {app with args}
+    let args = List.map f args in 
+    Lprim {app with args}
   | Lswitch(arg, sw) ->
-      let arg = f arg in 
-      let sw_consts = List.map (fun (key, case) -> key , f case) sw.sw_consts in 
-      let sw_blocks = List.map (fun (key, case) -> key, f case) sw.sw_blocks in 
-      let sw_failaction = begin match sw.sw_failaction with 
+    let arg = f arg in 
+    let sw_consts = List.map (fun (key, case) -> key , f case) sw.sw_consts in 
+    let sw_blocks = List.map (fun (key, case) -> key, f case) sw.sw_blocks in 
+    let sw_failaction = begin match sw.sw_failaction with 
       | None -> None
       | Some a -> Some (f a) 
-      end in 
-      Lswitch(arg, {sw with sw_consts; sw_blocks; sw_failaction})
+    end in 
+    Lswitch(arg, {sw with sw_consts; sw_blocks; sw_failaction})
   | Lstringswitch (arg,cases,default) ->
-      let arg = f arg  in 
-      let cases = List.map (fun (k,act) -> k,f act) cases  in
-      let default = begin match default with 
+    let arg = f arg  in 
+    let cases = List.map (fun (k,act) -> k,f act) cases  in
+    let default = begin match default with 
       | None -> None
       | Some a -> Some (f a) 
-      end in 
-      Lstringswitch(arg,cases,default)
+    end in 
+    Lstringswitch(arg,cases,default)
   | Lstaticraise (id,args) ->
-      let args = List.map f args in 
-      Lstaticraise(id,args)
+    let args = List.map f args in 
+    Lstaticraise(id,args)
   | Lstaticcatch(e1, vars , e2) ->
-      let e1 = f e1 in 
-      let e2 = f e2 in 
-      Lstaticcatch(e1, vars, e2)
+    let e1 = f e1 in 
+    let e2 = f e2 in 
+    Lstaticcatch(e1, vars, e2)
   | Ltrywith(e1, exn, e2) ->
-      let e1  = f e1 in 
-      let e2 =  f e2 in 
-      Ltrywith(e1,exn,e2)
+    let e1  = f e1 in 
+    let e2 =  f e2 in 
+    Ltrywith(e1,exn,e2)
   | Lifthenelse(e1, e2, e3) ->
-      let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
-      Lifthenelse(e1,e2,e3)
+    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+    Lifthenelse(e1,e2,e3)
   | Lsequence(e1, e2) ->
-      let e1 = f e1 in let e2 =  f e2 in 
-      Lsequence(e1,e2)
+    let e1 = f e1 in let e2 =  f e2 in 
+    Lsequence(e1,e2)
   | Lwhile(e1, e2) ->
-      let e1 = f e1 in let e2 =  f e2 in 
-      Lwhile(e1,e2)
+    let e1 = f e1 in let e2 =  f e2 in 
+    Lwhile(e1,e2)
   | Lfor(v, e1, e2, dir, e3) ->
-      let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
-      Lfor(v,e1,e2,dir,e3)
+    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+    Lfor(v,e1,e2,dir,e3)
   | Lassign(id, e) ->
-      let e = f e in 
-      Lassign(id,e)
+    let e = f e in 
+    Lassign(id,e)
   | Lsend (k, met, obj, args, loc) ->
-      let met = f met in 
-      let obj = f obj in 
-      let args = List.map f args in 
-      Lsend(k,met,obj,args,loc)
-      
+    let met = f met in 
+    let obj = f obj in 
+    let args = List.map f args in 
+    Lsend(k,met,obj,args,loc)
+
   | Lifused (v, e) ->
-      let e = f e in 
-      Lifused(v,e)
+    let e = f e in 
+    Lifused(v,e)
 
 module Prim = struct 
   type t = primitive
@@ -324,21 +324,21 @@ let if_ (a : t) (b : t) c =
   match a with
   | Lconst v ->
     begin match v with
-    | Const_pointer (x, _)  | Const_base(Const_int x)
-      ->
-      if x <> 0 then b else c
-    | Const_base (Const_char x) ->
-      if Char.code x <> 0 then b else c
-    | Const_base (Const_int32 x) ->
-      if x <> 0l then b else c
-    | Const_base (Const_int64 x) ->
-      if x <> 0L then b else c
-    | Const_base (Const_nativeint x) ->
-      if x <> 0n then b else c
-    | Const_base (Const_string _ | Const_float _ ) -> b
-    | Const_block _
-    | Const_float_array _
-    | Const_immstring _ -> b
+      | Const_pointer (x, _)  | Const_base(Const_int x)
+        ->
+        if x <> 0 then b else c
+      | Const_base (Const_char x) ->
+        if Char.code x <> 0 then b else c
+      | Const_base (Const_int32 x) ->
+        if x <> 0l then b else c
+      | Const_base (Const_int64 x) ->
+        if x <> 0L then b else c
+      | Const_base (Const_nativeint x) ->
+        if x <> 0n then b else c
+      | Const_base (Const_string _ | Const_float _ ) -> b
+      | Const_block _
+      | Const_float_array _
+      | Const_immstring _ -> b
     end
   | _ ->  Lifthenelse (a,b,c)
 
@@ -471,8 +471,8 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
       | Pintoffloat, (Const_base (Const_float a))
         -> 
         Lift.int (int_of_float (float_of_string a))
-        (* | Pnegfloat -> Lift.float (-. a) *)
-        (* | Pabsfloat -> Lift.float (abs_float a) *)
+      (* | Pnegfloat -> Lift.float (-. a) *)
+      (* | Pabsfloat -> Lift.float (abs_float a) *)
       | Pstringlength, (Const_base (Const_string (a,_)) ) 
         -> 
         Lift.int (String.length a)
@@ -517,27 +517,27 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
         | Plsrint
         | Pasrint),Const_base (Const_int a),  Const_base (Const_int b)
         ->
-            (* WE SHOULD keep it as [int], to preserve types *)
-            let aa,bb = Int32.of_int a, Int32.of_int  b in 
-            let int_ v = Lift.int (Int32.to_int v ) in 
-            begin match prim with 
-              | Paddint -> int_ (Int32.add aa bb)
-              | Psubint -> int_ (Int32.sub aa bb)
-              | Pmulint -> int_ (Int32.mul aa  bb)
-              | Pdivint -> 
-                if bb = 0l then default ()
-                else int_ (Int32.div aa bb)
-              | Pmodint ->
-                if bb = 0l then default ()
-                else int_ (Int32.rem aa bb)
-              | Pandint -> int_ (Int32.logand aa bb)
-              | Porint -> int_ (Int32.logor aa bb)
-              | Pxorint -> int_ (Int32.logxor aa bb)
-              | Plslint -> int_ (Int32.shift_left  aa b )
-              | Plsrint -> int_ (Int32.shift_right_logical aa  b)
-              | Pasrint -> int_ (Int32.shift_right aa b)
-              | _ -> default ()
-            end
+        (* WE SHOULD keep it as [int], to preserve types *)
+        let aa,bb = Int32.of_int a, Int32.of_int  b in 
+        let int_ v = Lift.int (Int32.to_int v ) in 
+        begin match prim with 
+          | Paddint -> int_ (Int32.add aa bb)
+          | Psubint -> int_ (Int32.sub aa bb)
+          | Pmulint -> int_ (Int32.mul aa  bb)
+          | Pdivint -> 
+            if bb = 0l then default ()
+            else int_ (Int32.div aa bb)
+          | Pmodint ->
+            if bb = 0l then default ()
+            else int_ (Int32.rem aa bb)
+          | Pandint -> int_ (Int32.logand aa bb)
+          | Porint -> int_ (Int32.logor aa bb)
+          | Pxorint -> int_ (Int32.logxor aa bb)
+          | Plslint -> int_ (Int32.shift_left  aa b )
+          | Plsrint -> int_ (Int32.shift_right_logical aa  b)
+          | Pasrint -> int_ (Int32.shift_right aa b)
+          | _ -> default ()
+        end
       | (Paddbint Pint32
         | Psubbint Pint32
         | Pmulbint Pint32
@@ -631,19 +631,19 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
   | Prevapply 
     -> 
     begin match args with 
-    | [x ; Lapply{fn; args}]
-      -> apply fn (args @[x]) loc App_na
-    | [x; f] ->  apply f [x] loc App_na
-    | _ -> assert false 
+      | [x ; Lapply{fn; args}]
+        -> apply fn (args @[x]) loc App_na
+      | [x; f] ->  apply f [x] loc App_na
+      | _ -> assert false 
     end
 
   | Pdirapply ->
     begin match args with 
-    | [Lapply{fn ; args }; x ] 
-      -> 
+      | [Lapply{fn ; args }; x ] 
+        -> 
         apply fn (args @ [x]) loc App_na
-    | [f;x] -> apply f [x] loc App_na
-    | _ -> assert false 
+      | [f;x] -> apply f [x] loc App_na
+      | _ -> assert false 
     end
   | Ploc loc -> assert false (* already compiled away here*)
   | Pgetglobal id ->
@@ -829,7 +829,7 @@ let free_variables l =
         List.iter (fun id -> fv := Ident_set.remove id !fv) vars
       | Ltrywith(e1, exn, e2) ->
         free e1; free e2;
-         fv := Ident_set.remove exn !fv
+        fv := Ident_set.remove exn !fv
       | Lifthenelse(e1, e2, e3) ->
         free e1; free e2; free e3
       | Lsequence(e1, e2) ->
@@ -855,40 +855,48 @@ type bindings = (Ident.t * t) list
 let scc  (groups :  bindings)  
     (lam : t)
     (body : t)
-     =     
-  let domain : (Ident.t, t) Ordered_hash_map.t = Ordered_hash_map.create 3 in 
-  List.iter (fun (x,lam) -> Ordered_hash_map.add domain x lam) groups ;
-  let int_mapping = Ordered_hash_map.to_sorted_array domain in 
-  let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
-  Ordered_hash_map.iter ( fun id lam key_index ->        
-      let base_key =  node_vec.(key_index) in 
-      let free_vars = free_variables lam in
-      Ident_set.iter (fun x ->
-          let key = Ordered_hash_map.find domain x in 
-          if key >= 0 then 
-            Int_vec.push key base_key 
-        ) free_vars
-    ) domain;
-  let clusters = Ext_scc.graph node_vec in 
-  if Int_vec_vec.length clusters <= 1 then lam 
-  else          
-    Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
-      let bindings =
-        Int_vec.map_into_list (fun i -> 
-            let id = int_mapping.(i) in 
-            let lam  = Ordered_hash_map.find_value domain  id in  
-            (id,lam)
-        ) v  in 
-        match bindings with 
-        | [ id,(Lfunction _ as lam) ] ->
-          let base_key = Ordered_hash_map.find domain id in          
-          if Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
-            letrec bindings acc 
-          else  let_ StrictOpt  id lam body    
-        | _ ->  
-            letrec bindings  acc 
-      )  clusters body 
+  =     
+  begin match groups with 
+    | [ _ ] ->
+       lam  
+    (* single binding, it does not make sense to do scc,
+       we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
+     *)
+    | _ ->    
+      let domain : (Ident.t, t) Ordered_hash_map.t = Ordered_hash_map.create 3 in 
+      List.iter (fun (x,lam) -> Ordered_hash_map.add domain x lam) groups ;
+      let int_mapping = Ordered_hash_map.to_sorted_array domain in 
+      let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
+      Ordered_hash_map.iter ( fun id lam key_index ->        
+          let base_key =  node_vec.(key_index) in 
+          let free_vars = free_variables lam in
+          Ident_set.iter (fun x ->
+              let key = Ordered_hash_map.find domain x in 
+              if key >= 0 then 
+                Int_vec.push key base_key 
+            ) free_vars
+        ) domain;
+      let clusters = Ext_scc.graph node_vec in 
+      if Int_vec_vec.length clusters <= 1 then lam 
+      else          
+        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+            let bindings =
+              Int_vec.map_into_list (fun i -> 
+                  let id = int_mapping.(i) in 
+                  let lam  = Ordered_hash_map.find_value domain  id in  
+                  (id,lam)
+                ) v  in 
+            match bindings with 
+            | [ id,(Lfunction _ as lam) ] ->
+              let base_key = Ordered_hash_map.find domain id in          
 
+              if  Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
+                letrec bindings acc 
+              else  let_ StrictOpt id lam acc    
+            | _ ->  
+              letrec bindings  acc 
+          )  clusters body 
+  end
 let rec convert (lam : Lambda.lambda) : t = 
   match lam with 
   | Lvar x -> Lvar x 
@@ -897,45 +905,45 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lapply (fn,args,loc) 
     ->  
     begin match fn with 
-    | Lprim (
-         Pfield (id, _),
-         [
-          Lprim (
-            Pgetglobal { name = "CamlinternalMod" },
-            _,_
-          )
-        ],loc
-      ) -> (* replace all {!CamlinternalMod} function *)
-      let args = List.map convert args in
-      begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
-      | "init_mod" ,  [_loc ; shape]  -> 
-          begin match shape with 
-            | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
-              -> unit  (* see {!Translmod.init_shape}*)
-            | _ ->  prim ~primitive:Pinit_mod ~args loc 
-          end
-      | "update_mod", [shape ;  _obj1; _obj2] -> 
+      | Lprim (
+          Pfield (id, _),
+          [
+            Lprim (
+              Pgetglobal { name = "CamlinternalMod" },
+              _,_
+            )
+          ],loc
+        ) -> (* replace all {!CamlinternalMod} function *)
+        let args = List.map convert args in
+        begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
+          | "init_mod" ,  [_loc ; shape]  -> 
+            begin match shape with 
+              | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
+                -> unit  (* see {!Translmod.init_shape}*)
+              | _ ->  prim ~primitive:Pinit_mod ~args loc 
+            end
+          | "update_mod", [shape ;  _obj1; _obj2] -> 
             (* here array access will have side effect .. *)
             begin match shape with 
-            | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
-              -> unit (* see {!Translmod.init_shape}*)
-            | _ -> prim ~primitive:Pupdate_mod ~args loc
+              | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
+                -> unit (* see {!Translmod.init_shape}*)
+              | _ -> prim ~primitive:Pupdate_mod ~args loc
             end
-      | _ -> assert false
-      end
+          | _ -> assert false
+        end
 
-    | Lprim ( Pfield (id, _),
-              [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
-            )
-      ->
-      let args = List.map convert args in
-      begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
-        | "^", [ l; r ] 
-          ->
-          prim ~primitive:Pstringadd ~args:[l;r] loc 
-        | _ ->  apply (convert fn) args loc  App_na
-      end
-    | _ -> 
+      | Lprim ( Pfield (id, _),
+                [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
+              )
+        ->
+        let args = List.map convert args in
+        begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
+          | "^", [ l; r ] 
+            ->
+            prim ~primitive:Pstringadd ~args:[l;r] loc 
+          | _ ->  apply (convert fn) args loc  App_na
+        end
+      | _ -> 
         apply (convert fn) (List.map convert args) 
           loc App_na
     end
@@ -951,10 +959,10 @@ let rec convert (lam : Lambda.lambda) : t =
     let body = convert body in 
     let lam = Lletrec (bindings, body) in 
     scc bindings lam body  
-    (* inlining will affect how mututal recursive behave *)
+  (* inlining will affect how mututal recursive behave *)
   | Lprim (primitive,args, loc) 
     -> convert_primitive loc primitive args 
-    (* Lprim {primitive ; args = List.map convert args } *)
+  (* Lprim {primitive ; args = List.map convert args } *)
   | Lswitch (e,s) -> 
     Lswitch (convert e, convert_switch s)
   | Lstringswitch (e, cases, default,_) -> 

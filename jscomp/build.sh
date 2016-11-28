@@ -27,9 +27,9 @@ TARGET=a
 echo ">>EACH FILE TESTING" >> build.compile
 make -C test $TARGET.cmj 2>> ../build.compile
 
-cat test/$TARGET.js >> ../build.compile
-make -C test -j30 all 2>>../build.compile
-echo "<<Test finished" >> ../build.compile
+cat test/$TARGET.js >> ./build.compile
+make -C test -j30 all 2>> ./build.compile
+echo "<<Test finished" >> ./build.compile
 
 
 

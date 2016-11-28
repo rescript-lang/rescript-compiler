@@ -43,9 +43,8 @@ module Rules = struct
         rule_names := String_set.add new_name  !rule_names ;
         new_name
       end
-
-  type t = < name : out_channel -> string >
-  let get_name (x : t) oc = x # name oc
+  type t = { mutable used : bool; rule_name : string  ; name : out_channel -> string }
+  let get_name (x : t) oc = x.name oc
   let print_rule oc ~description ?restat ?depfile ~command   name  = 
     output_string oc "rule "; output_string oc name ; output_string oc "\n";
     output_string oc "  command = "; output_string oc command; output_string oc "\n";
@@ -62,24 +61,26 @@ module Rules = struct
 
     output_string oc "  description = " ; output_string oc description; output_string oc "\n"
 
+
   let define
       ~command
       ?depfile
       ?restat
       ?(description = "Building ${out}")
       name
-    =
-    object(self)
-      val mutable used = false
-      val rule_name = ask_name name 
-      method name oc  =
-        if not used then
-          begin
+    = 
+    let rec self = {
+      used  = false;
+      rule_name = ask_name name ; 
+      name = fun oc -> 
+        if not self.used then 
+          begin 
             print_rule oc ~description ?depfile ?restat ~command name; 
-            used <- true
-          end;
-        rule_name
-    end
+            self.used <- true
+          end ;
+          self.rule_name
+    } in self
+
 
   let build_ast_and_deps = 
     define
