@@ -28,14 +28,42 @@
 
 
 
-
 (** Set with key specialized as [Ident.t] type
- *)
+*)
 
 (** Original set module enhanced with some utilities, 
     note that it's incompatible with [Lambda.IdentSet] 
- *)
+*)
 
-include Set.S with type elt = Ident.t
+ 
 
+type elt = Ident.t
+
+(***********************************************************************)             
+type t
+val empty: t
+val is_empty: t -> bool
+val iter: (elt -> unit) -> t -> unit
+val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
+val for_all: (elt -> bool) -> t -> bool
+val exists: (elt -> bool) -> t -> bool
+val singleton: elt -> t
+val cardinal: t -> int
+val elements: t -> elt list
+val min_elt: t -> elt
+val max_elt: t -> elt
+val choose: t -> elt
+val of_sorted_list : elt list -> t 
+val of_sorted_array : elt array -> t
+val partition: (elt -> bool) -> t -> t * t
+
+val mem: elt -> t -> bool
+val add: elt -> t -> t
+val remove : elt -> t -> t
+val of_list : elt list -> t
+
+val union : t -> t -> t
+val inter : t -> t -> t   
+val diff : t -> t -> t 
+(***********************************************************************)             
 val print : Ext_format.t -> t -> unit

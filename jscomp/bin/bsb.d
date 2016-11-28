@@ -31,6 +31,8 @@ bin/bsb.ml : ext/ext_file_pp.ml
 bin/bsb.ml : ext/ext_file_pp.mli
 bin/bsb.ml : ext/resize_array.ml
 bin/bsb.ml : ext/resize_array.mli
+bin/bsb.ml : ext/bal_tree.ml
+bin/bsb.ml : ext/bal_tree.mli
 bin/bsb.ml : ext/string_set.ml
 bin/bsb.ml : ext/string_set.mli
 bin/bsb.ml : bsb/bsb_build_ui.ml

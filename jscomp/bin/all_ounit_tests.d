@@ -11,6 +11,9 @@ bin/all_ounit_tests.ml : ext/ext_bytes.mli
 bin/all_ounit_tests.ml : ext/ext_string.ml
 bin/all_ounit_tests.ml : ext/ext_string.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_array_tests.ml
+bin/all_ounit_tests.ml : ext/bal_tree.ml
+bin/all_ounit_tests.ml : ext/bal_tree.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_bal_tree_tests.ml
 bin/all_ounit_tests.ml : ext/hash_set.ml
 bin/all_ounit_tests.ml : ext/hash_set.mli
 bin/all_ounit_tests.ml : ext/ordered_hash_set.ml
