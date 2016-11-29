@@ -117,7 +117,7 @@ function find(x, _tree) {
   };
 }
 
-var compare = $$String.compare;
+var compare_elt = $$String.compare;
 
 var empty = /* Empty */0;
 
@@ -151,7 +151,7 @@ var of_sorted_list = Bal_tree.of_sorted_list;
 
 var of_sorted_array = Bal_tree.of_sorted_array;
 
-exports.compare         = compare;
+exports.compare_elt     = compare_elt;
 exports.empty           = empty;
 exports.is_empty        = is_empty;
 exports.iter            = iter;

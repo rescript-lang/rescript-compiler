@@ -19,6 +19,8 @@ bin/all_ounit_tests.ml : ext/hash_set.mli
 bin/all_ounit_tests.ml : ext/ordered_hash_set.ml
 bin/all_ounit_tests.ml : ext/ordered_hash_set.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_set_tests.ml
+bin/all_ounit_tests.ml : ext/bal_map.ml
+bin/all_ounit_tests.ml : ext/bal_map.mli
 bin/all_ounit_tests.ml : ext/string_map.ml
 bin/all_ounit_tests.ml : ext/string_map.mli
 bin/all_ounit_tests.ml : bsb/bsb_json.ml

@@ -26,7 +26,7 @@
 
 
 type elt = String.t
-
+val compare_elt : elt -> elt -> int 
 (***********************************************************************)             
 type t
 val empty: t

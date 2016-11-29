@@ -1,3 +1,4 @@
+ext/bal_map.cmx : ext/bal_map.cmi
 ext/bal_tree.cmx : ext/bal_tree.cmi
 ext/ext_array.cmx : ext/ext_array.cmi
 ext/ext_bytes.cmx : ext/ext_bytes.cmi
@@ -31,10 +32,11 @@ ext/literals.cmx : ext/literals.cmi
 ext/ordered_hash_map.cmx : ext/ordered_hash_map.cmi
 ext/ordered_hash_set.cmx : ext/ordered_hash_set.cmi
 ext/resize_array.cmx : ext/ext_array.cmx ext/resize_array.cmi
-ext/string_map.cmx : ext/string_map.cmi
+ext/string_map.cmx : ext/bal_map.cmx ext/string_map.cmi
 ext/string_set.cmx : ext/bal_tree.cmx ext/string_set.cmi
 ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
 ext/union_find.cmx : ext/union_find.cmi
+ext/bal_map.cmi :
 ext/bal_tree.cmi :
 ext/ext_array.cmi :
 ext/ext_bytes.cmi :

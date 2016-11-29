@@ -3868,6 +3868,398 @@ let suites =
   ]
 
 end
+module Bal_map : sig 
+#1 "bal_map.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+
+type ('key, 'a) t =
+  | Empty
+  | Node of ('key, 'a) t * 'key * 'a * ('key, 'a) t * int
+
+
+val cardinal : ('a, 'b) t -> int
+
+val bindings : ('a, 'b) t -> ('a * 'b) list
+
+val height : ('a, 'b) t -> int
+
+val create : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+
+val singleton : 'a -> 'b -> ('a, 'b) t
+
+val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+
+val empty : ('a, 'b) t
+
+val is_empty : ('a, 'b) t -> bool
+
+
+val choose : ('a, 'b) t -> 'a * 'b
+
+val remove_min_binding : ('a, 'b) t -> ('a, 'b) t
+
+val iter : ('a -> 'b -> 'c) -> ('a, 'b) t -> unit
+
+val map : ('a -> 'b) -> ('c, 'a) t -> ('c, 'b) t
+
+val mapi : ('a -> 'b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
+
+val fold : ('a -> 'b -> 'c -> 'c) -> ('a, 'b) t -> 'c -> 'c
+
+val for_all : ('a -> 'b -> bool) -> ('a, 'b) t -> bool
+
+val exists : ('a -> 'b -> bool) -> ('a, 'b) t -> bool
+
+val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+
+val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
+
+val concat_or_join :
+  ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
+    
+val filter : ('a -> 'b -> bool) -> ('a, 'b) t -> ('a, 'b) t
+
+val partition : ('a -> 'b -> bool) -> ('a, 'b) t -> ('a, 'b) t * ('a, 'b) t
+
+
+(*******************************************************************)
+val add : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+val find : 'a -> ('a, 'b) t -> 'b
+val mem : 'a -> ('a, 'b) t -> bool
+val remove : 'a -> ('a, 'b) t -> ('a, 'b) t
+val split : 'a -> ('a, 'b) t -> ('a, 'b) t * 'b option * ('a, 'b) t
+val merge :
+  ('a -> 'b option -> 'c option -> 'd option) ->
+  ('a, 'b) t -> ('a, 'c) t -> ('a, 'd) t
+val compare : ('a -> 'b -> int) -> ('c, 'a) t -> ('c, 'b) t -> int
+val equal : ('a -> 'b -> bool) -> ('c, 'a) t -> ('c, 'b) t -> bool
+
+end = struct
+#1 "bal_map.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** adapted from stdlib *)
+
+type ('key,'a) t =
+  | Empty
+  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+
+type ('key,'a) enumeration = End | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
+
+let rec cardinal = function
+    Empty -> 0
+  | Node(l, _, _, r, _) -> cardinal l + 1 + cardinal r
+
+let rec bindings_aux accu = function
+        Empty -> accu
+      | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+
+    let bindings s =
+      bindings_aux [] s
+
+
+
+
+
+let rec cons_enum m e =
+  match m with
+    Empty -> e
+  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
+
+
+let height = function
+  | Empty -> 0
+  | Node(_,_,_,_,h) -> h
+
+let create l x d r =
+  let hl = height l and hr = height r in
+  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let singleton x d = Node(Empty, x, d, Empty, 1)
+
+let bal l x d r =
+  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  if hl > hr + 2 then begin
+    match l with
+      Empty -> invalid_arg "Map.bal"
+    | Node(ll, lv, ld, lr, _) ->
+      if height ll >= height lr then
+        create ll lv ld (create lr x d r)
+      else begin
+        match lr with
+          Empty -> invalid_arg "Map.bal"
+        | Node(lrl, lrv, lrd, lrr, _)->
+          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+      end
+  end else if hr > hl + 2 then begin
+    match r with
+      Empty -> invalid_arg "Map.bal"
+    | Node(rl, rv, rd, rr, _) ->
+      if height rr >= height rl then
+        create (create l x d rl) rv rd rr
+      else begin
+        match rl with
+          Empty -> invalid_arg "Map.bal"
+        | Node(rll, rlv, rld, rlr, _) ->
+          create (create l x d rll) rlv rld (create rlr rv rd rr)
+      end
+  end else
+    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let empty = Empty
+
+let is_empty = function Empty -> true | _ -> false
+
+let rec min_binding = function
+    Empty -> raise Not_found
+  | Node(Empty, x, d, r, _) -> (x, d)
+  | Node(l, x, d, r, _) -> min_binding l
+
+let choose = min_binding
+
+let rec max_binding = function
+    Empty -> raise Not_found
+  | Node(l, x, d, Empty, _) -> (x, d)
+  | Node(l, x, d, r, _) -> max_binding r
+
+let rec remove_min_binding = function
+    Empty -> invalid_arg "Map.remove_min_elt"
+  | Node(Empty, x, d, r, _) -> r
+  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+
+let merge t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding t2 in
+    bal t1 x d (remove_min_binding t2)
+
+
+let rec iter f = function
+    Empty -> ()
+  | Node(l, v, d, r, _) ->
+    iter f l; f v d; iter f r
+
+let rec map f = function
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = map f l in
+    let d' = f d in
+    let r' = map f r in
+    Node(l', v, d', r', h)
+
+let rec mapi f = function
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = mapi f l in
+    let d' = f v d in
+    let r' = mapi f r in
+    Node(l', v, d', r', h)
+
+let rec fold f m accu =
+  match m with
+    Empty -> accu
+  | Node(l, v, d, r, _) ->
+    fold f r (f v d (fold f l accu))
+
+let rec for_all p = function
+    Empty -> true
+  | Node(l, v, d, r, _) -> p v d && for_all p l && for_all p r
+
+let rec exists p = function
+    Empty -> false
+  | Node(l, v, d, r, _) -> p v d || exists p l || exists p r
+
+(* Beware: those two functions assume that the added k is *strictly*
+   smaller (or bigger) than all the present keys in the tree; it
+   does not test for equality with the current min (or max) key.
+
+   Indeed, they are only used during the "join" operation which
+   respects this precondition.
+*)
+
+let rec add_min_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal (add_min_binding k v l) x d r
+
+let rec add_max_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal l x d (add_max_binding k v r)
+
+(* Same as create and bal, but no assumptions are made on the
+   relative heights of l and r. *)
+
+let rec join l v d r =
+  match (l, r) with
+    (Empty, _) -> add_min_binding v d r
+  | (_, Empty) -> add_max_binding v d l
+  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
+    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
+    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
+      create l v d r
+
+(* Merge two trees l and r into one.
+   All elements of l must precede the elements of r.
+   No assumption on the heights of l and r. *)
+
+let concat t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding t2 in
+    join t1 x d (remove_min_binding t2)
+
+let concat_or_join t1 v d t2 =
+  match d with
+  | Some d -> join t1 v d t2
+  | None -> concat t1 t2
+
+let rec filter p = function
+    Empty -> Empty
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let l' = filter p l in
+    let pvd = p v d in
+    let r' = filter p r in
+    if pvd then join l' v d r' else concat l' r'
+
+let rec partition p = function
+    Empty -> (Empty, Empty)
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition p l in
+    let pvd = p v d in
+    let (rt, rf) = partition p r in
+    if pvd
+    then (join lt v d rt, concat lf rf)
+    else (concat lt rt, join lf v d rf)
+
+(**********************************************************************)
+
+let rec add x data (tree : _ t) : _ t =
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add x data l) v d r
+    else
+      bal l v d (add x data r)
+
+let rec find x (tree : _ t) =
+  match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then d
+    else find x (if c < 0 then l else r)
+
+let rec mem x  (tree : _ t) =
+  match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = Pervasives.compare x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x (tree : _ t) : _ t =
+  match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then
+      merge l r
+    else if c < 0 then
+      bal (remove x l) v d r
+    else
+      bal l v d (remove x r)
+
+let rec split x (tree : _ t) : _ t * _ option * _ t  =
+  match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
+    else
+      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
+
+let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split v1 s2 in
+    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split v2 s1 in
+    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
+
+
+let compare cmp m1 m2 =
+  let rec compare_aux e1 e2 =
+    match (e1, e2) with
+    | (End, End) -> 0
+    | (End, _)  -> -1
+    | (_, End) -> 1
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      let c = Pervasives.compare v1 v2 in
+      if c <> 0 then c else
+        let c = cmp d1 d2 in
+        if c <> 0 then c else
+          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
+
+let equal cmp m1 m2 =
+  let rec equal_aux e1 e2 =
+    match (e1, e2) with
+      (End, End) -> true
+    | (End, _)  -> false
+    | (_, End) -> false
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      Pervasives.compare v1 v2 = 0 && cmp d1 d2 &&
+      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
+
+
+end
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3894,22 +4286,42 @@ module String_map : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type key = string 
+val compare_key : key -> key -> int 
 
+(*************************************************)
+type + 'a t 
+val empty: 'a t
+val is_empty: 'a t -> bool
+val iter: (key -> 'a ->  unit) -> 'a t -> unit
+val fold: (key -> 'a -> 'b ->  'b) -> 'a t -> 'b -> 'b
+val for_all: (key -> 'a  -> bool) -> 'a t -> bool
+val exists: (key -> 'a -> bool) -> 'a t -> bool
+val singleton: key -> 'a  -> 'a t
+val cardinal: 'a t -> int
+(* val elements: 'a t -> (key * 'a) list *)
+val choose: 'a t -> key * 'a 
+(* val partition: (key -> bool) -> 'a t -> 'a t * 'a t *)
 
+val mem: key -> 'a t -> bool
+val add: key -> 'a -> 'a t -> 'a t
+val find : key -> 'a t -> 'a
+val map : ('a -> 'b) -> 'a t -> 'b t
+val merge : 
+    (string -> 'b option -> 'c option -> 'd option)
+    -> 'b t
+    -> 'c t 
+    -> 'd t 
+(*************************************************)
+ 
 
+val of_list : (key * 'a) list -> 'a t 
 
+val add_list : (key * 'b) list -> 'b t -> 'b t
 
+val find_opt : key -> 'a t -> 'a option
 
-
-include Map.S with type key = string 
-
-val of_list : (string * 'a) list -> 'a t
-
-val add_list : (string * 'b) list -> 'b t -> 'b t
-
-val find_opt : string -> 'a t -> 'a option
-
-val find_default : string -> 'a -> 'a t -> 'a
+val find_default : key -> 'a -> 'a t -> 'a
 
 val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
 
@@ -3939,21 +4351,92 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type key = string 
+let compare_key = String.compare 
+
+(**********************************************************************************)
+type 'a t = (key,'a) Bal_map.t 
+let empty = Bal_map.empty 
+let is_empty = Bal_map.is_empty
+let iter = Bal_map.iter
+let fold = Bal_map.fold
+let for_all = Bal_map.for_all 
+let exists = Bal_map.exists 
+let singleton = Bal_map.singleton 
+let cardinal = Bal_map.cardinal
+let bindings = Bal_map.bindings
+let choose = Bal_map.choose 
+let partition = Bal_map.partition 
+let filter = Bal_map.filter 
+let map = Bal_map.map 
 
 
+let bal = Bal_map.bal 
+let height = Bal_map.height 
+let join = Bal_map.join 
+let concat_or_join = Bal_map.concat_or_join 
+
+let rec add x data (tree : _ t) : _ t =
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add x data l) v d r
+    else
+      bal l v d (add x data r)
+
+let rec find x (tree : _ t) =
+  match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then d
+    else find x (if c < 0 then l else r)
+
+let rec mem x  (tree : _ t) =
+  match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = Pervasives.compare x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec split x (tree : _ t) : _ t * _ option * _ t  =
+  match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
+    else
+      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
+
+let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split v1 s2 in
+    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split v2 s1 in
+    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
 
 
+(* include Map.Make(String) *)
 
-
-
-include Map.Make(String)
-
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
-
-let add_list (xs : ('a * 'b) list ) init = 
+let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add k v acc) init xs 
 
+let of_list xs = add_list xs empty
 
 let find_opt k m =
   match find k m with 

@@ -25,7 +25,7 @@
 
 
 type elt = string
-let compare = String.compare 
+let compare_elt = String.compare 
 
 type  t = elt Bal_tree.t 
 let empty = Bal_tree.empty 
@@ -51,7 +51,7 @@ let rec add x (tree : _ Bal_tree.t) : _ Bal_tree.t =
   match tree with  
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
-    let c = compare x v in
+    let c = compare_elt x v in
     if c = 0 then t else
     if c < 0 then Bal_tree.internal_bal (add x l) v r else Bal_tree.internal_bal l v (add x r) 
 
@@ -60,7 +60,7 @@ let rec mem x (tree : _ Bal_tree.t) =
   match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
-    let c = compare x v in
+    let c = compare_elt x v in
     c = 0 || mem x (if c < 0 then l else r)
 
 let of_list l =
@@ -71,13 +71,13 @@ let of_list l =
   | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
   | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
   | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq compare l)
+  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
 let rec find x (tree : t) = 
   match tree with 
   | Empty -> raise Not_found
   | Node(l, v, r, _) ->
-    let c = compare x v in
+    let c = compare_elt x v in
     if c = 0 then v
     else find x (if c < 0 then l else r)
 

@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type elt = Ident.t
-let compare (x : elt) (y : elt) = 
+let compare_elt (x : elt) (y : elt) = 
   let a =  Pervasives.compare (x.stamp : int) y.stamp in 
   if a <> 0 then a 
   else 
@@ -57,7 +57,7 @@ let rec add x (tree : _ Bal_tree.t) : _ Bal_tree.t =
   match tree with  
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
-    let c = compare x v in
+    let c = compare_elt x v in
     if c = 0 then t else
     if c < 0 then Bal_tree.internal_bal (add x l) v r else Bal_tree.internal_bal l v (add x r) 
 
@@ -66,7 +66,7 @@ let rec mem x (tree : _ Bal_tree.t) =
   match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
-    let c = compare x v in
+    let c = compare_elt x v in
     c = 0 || mem x (if c < 0 then l else r)
 
 let of_list l =
@@ -77,13 +77,13 @@ let of_list l =
   | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
   | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
   | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq compare l)
+  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
 let rec remove x (tree : t ) : t = 
   match tree with 
   | Empty -> Empty
   | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
+    let c = compare_elt x v in
     if c = 0 then Bal_tree.internal_merge l r else
     if c < 0 then Bal_tree.internal_bal (remove x l) v r else Bal_tree.internal_bal l v (remove x r)
 

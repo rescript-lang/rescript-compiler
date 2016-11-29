@@ -8,6 +8,8 @@ bin/bsb_helper.ml : ext/literals.ml
 bin/bsb_helper.ml : ext/literals.mli
 bin/bsb_helper.ml : ext/ext_filename.ml
 bin/bsb_helper.ml : ext/ext_filename.mli
+bin/bsb_helper.ml : ext/bal_map.ml
+bin/bsb_helper.ml : ext/bal_map.mli
 bin/bsb_helper.ml : ext/string_map.ml
 bin/bsb_helper.ml : ext/string_map.mli
 bin/bsb_helper.ml : common/binary_cache.ml

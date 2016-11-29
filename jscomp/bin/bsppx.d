@@ -14,6 +14,8 @@ bin/bsppx.ml : ../ocaml/parsing/docstrings.ml
 bin/bsppx.ml : ../ocaml/parsing/docstrings.mli
 bin/bsppx.ml : ../ocaml/parsing/ast_helper.ml
 bin/bsppx.ml : ../ocaml/parsing/ast_helper.mli
+bin/bsppx.ml : ext/bal_map.ml
+bin/bsppx.ml : ext/bal_map.mli
 bin/bsppx.ml : ext/string_map.ml
 bin/bsppx.ml : ext/string_map.mli
 bin/bsppx.ml : syntax/ast_payload.ml
