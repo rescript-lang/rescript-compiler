@@ -44,7 +44,7 @@ val add: key -> 'a -> 'a t -> 'a t
 val find : key -> 'a t -> 'a
 val map : ('a -> 'b) -> 'a t -> 'b t
 val merge : 
-    (string -> 'b option -> 'c option -> 'd option)
+    (key -> 'b option -> 'c option -> 'd option)
     -> 'b t
     -> 'c t 
     -> 'd t 

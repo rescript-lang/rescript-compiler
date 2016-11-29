@@ -38,8 +38,7 @@ bin/bsdep.ml : ../ocaml/utils/ccomp.ml
 bin/bsdep.ml : ../ocaml/utils/ccomp.mli
 bin/bsdep.ml : ../ocaml/driver/pparse.ml
 bin/bsdep.ml : ../ocaml/driver/pparse.mli
-bin/bsdep.ml : ext/bal_map.ml
-bin/bsdep.ml : ext/bal_map.mli
+bin/bsdep.ml : ext/bal_map_common.ml
 bin/bsdep.ml : ext/string_map.ml
 bin/bsdep.ml : ext/string_map.mli
 bin/bsdep.ml : syntax/ast_payload.ml

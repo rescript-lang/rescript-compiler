@@ -9,8 +9,7 @@ bin/bsb.ml : ext/literals.ml
 bin/bsb.ml : ext/literals.mli
 bin/bsb.ml : ext/ext_filename.ml
 bin/bsb.ml : ext/ext_filename.mli
-bin/bsb.ml : ext/bal_map.ml
-bin/bsb.ml : ext/bal_map.mli
+bin/bsb.ml : ext/bal_map_common.ml
 bin/bsb.ml : ext/string_map.ml
 bin/bsb.ml : ext/string_map.mli
 bin/bsb.ml : common/binary_cache.ml

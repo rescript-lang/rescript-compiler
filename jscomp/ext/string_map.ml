@@ -26,33 +26,33 @@ type key = string
 let compare_key = String.compare 
 
 (**********************************************************************************)
-type 'a t = (key,'a) Bal_map.t 
-let empty = Bal_map.empty 
-let is_empty = Bal_map.is_empty
-let iter = Bal_map.iter
-let fold = Bal_map.fold
-let for_all = Bal_map.for_all 
-let exists = Bal_map.exists 
-let singleton = Bal_map.singleton 
-let cardinal = Bal_map.cardinal
-let bindings = Bal_map.bindings
-let choose = Bal_map.choose 
-let partition = Bal_map.partition 
-let filter = Bal_map.filter 
-let map = Bal_map.map 
+type 'a t = (key,'a) Bal_map_common.t 
+let empty = Bal_map_common.empty 
+let is_empty = Bal_map_common.is_empty
+let iter = Bal_map_common.iter
+let fold = Bal_map_common.fold
+let for_all = Bal_map_common.for_all 
+let exists = Bal_map_common.exists 
+let singleton = Bal_map_common.singleton 
+let cardinal = Bal_map_common.cardinal
+let bindings = Bal_map_common.bindings
+let choose = Bal_map_common.choose 
+let partition = Bal_map_common.partition 
+let filter = Bal_map_common.filter 
+let map = Bal_map_common.map 
 
 
-let bal = Bal_map.bal 
-let height = Bal_map.height 
-let join = Bal_map.join 
-let concat_or_join = Bal_map.concat_or_join 
+let bal = Bal_map_common.bal 
+let height = Bal_map_common.height 
+let join = Bal_map_common.join 
+let concat_or_join = Bal_map_common.concat_or_join 
 
 let rec add x data (tree : _ t) : _ t =
   match tree with 
   | Empty ->
     Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
-    let c = Pervasives.compare x v in
+    let c = compare_key x v in
     if c = 0 then
       Node(l, x, data, r, h)
     else if c < 0 then
@@ -65,7 +65,7 @@ let rec find x (tree : _ t) =
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
-    let c = Pervasives.compare x v in
+    let c = compare_key x v in
     if c = 0 then d
     else find x (if c < 0 then l else r)
 
@@ -74,7 +74,7 @@ let rec mem x  (tree : _ t) =
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
-    let c = Pervasives.compare x v in
+    let c = compare_key x v in
     c = 0 || mem x (if c < 0 then l else r)
 
 let rec split x (tree : _ t) : _ t * _ option * _ t  =
@@ -82,7 +82,7 @@ let rec split x (tree : _ t) : _ t * _ option * _ t  =
   | Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
-    let c = Pervasives.compare x v in
+    let c = compare_key x v in
     if c = 0 then (l, Some d, r)
     else if c < 0 then
       let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)

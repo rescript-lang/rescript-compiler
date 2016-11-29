@@ -1,4 +1,5 @@
-ext/bal_map.cmx : ext/bal_map.cmi
+ext/bal_map.cmx : ext/bal_map_common.cmx ext/bal_map.cmi
+ext/bal_map_common.cmx :
 ext/bal_tree.cmx : ext/bal_tree.cmi
 ext/ext_array.cmx : ext/ext_array.cmi
 ext/ext_bytes.cmx : ext/ext_bytes.cmi
@@ -32,11 +33,11 @@ ext/literals.cmx : ext/literals.cmi
 ext/ordered_hash_map.cmx : ext/ordered_hash_map.cmi
 ext/ordered_hash_set.cmx : ext/ordered_hash_set.cmi
 ext/resize_array.cmx : ext/ext_array.cmx ext/resize_array.cmi
-ext/string_map.cmx : ext/bal_map.cmx ext/string_map.cmi
+ext/string_map.cmx : ext/bal_map_common.cmx ext/string_map.cmi
 ext/string_set.cmx : ext/bal_tree.cmx ext/string_set.cmi
 ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
 ext/union_find.cmx : ext/union_find.cmi
-ext/bal_map.cmi :
+ext/bal_map.cmi : ext/bal_map_common.cmx
 ext/bal_tree.cmi :
 ext/ext_array.cmi :
 ext/ext_bytes.cmi :
@@ -181,7 +182,7 @@ core/bspp_main.cmx : core/bspp_main.cmi
 core/bsppx_main.cmx : syntax/ppx_entry.cmx
 core/config_util.cmx : core/js_cmj_format.cmx depends/bs_exception.cmx \
     core/config_util.cmi
-core/ident_map.cmx : core/ident_map.cmi
+core/ident_map.cmx : ext/bal_map_common.cmx core/ident_map.cmi
 core/ident_util.cmx : common/ext_log.cmx
 core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
     core/js_call_info.cmx ext/ident_set.cmx

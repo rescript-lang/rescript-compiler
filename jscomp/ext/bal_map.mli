@@ -11,58 +11,8 @@
 (*                                                                     *)
 (***********************************************************************)
 
-
-type ('key, 'a) t =
-  | Empty
-  | Node of ('key, 'a) t * 'key * 'a * ('key, 'a) t * int
-
-
-val cardinal : ('a, 'b) t -> int
-
-val bindings : ('a, 'b) t -> ('a * 'b) list
-
-val height : ('a, 'b) t -> int
-
-val create : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
-
-val singleton : 'a -> 'b -> ('a, 'b) t
-
-val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
-
-val empty : ('a, 'b) t
-
-val is_empty : ('a, 'b) t -> bool
-
-
-val choose : ('a, 'b) t -> 'a * 'b
-
-val remove_min_binding : ('a, 'b) t -> ('a, 'b) t
-
-val iter : ('a -> 'b -> 'c) -> ('a, 'b) t -> unit
-
-val map : ('a -> 'b) -> ('c, 'a) t -> ('c, 'b) t
-
-val mapi : ('a -> 'b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
-
-val fold : ('a -> 'b -> 'c -> 'c) -> ('a, 'b) t -> 'c -> 'c
-
-val for_all : ('a -> 'b -> bool) -> ('a, 'b) t -> bool
-
-val exists : ('a -> 'b -> bool) -> ('a, 'b) t -> bool
-
-val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
-
-val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
-
-val concat_or_join :
-  ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
-    
-val filter : ('a -> 'b -> bool) -> ('a, 'b) t -> ('a, 'b) t
-
-val partition : ('a -> 'b -> bool) -> ('a, 'b) t -> ('a, 'b) t * ('a, 'b) t
-
-
 (*******************************************************************)
+type ('key,'value) t =  ('key,'value) Bal_map_common.t 
 val add : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
 val find : 'a -> ('a, 'b) t -> 'b
 val mem : 'a -> ('a, 'b) t -> bool

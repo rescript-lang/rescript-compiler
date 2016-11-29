@@ -52,8 +52,7 @@ bin/whole_compiler.ml : ext/ext_format.ml
 bin/whole_compiler.ml : ext/ext_format.mli
 bin/whole_compiler.ml : ext/ext_list.ml
 bin/whole_compiler.ml : ext/ext_list.mli
-bin/whole_compiler.ml : ext/bal_map.ml
-bin/whole_compiler.ml : ext/bal_map.mli
+bin/whole_compiler.ml : ext/bal_map_common.ml
 bin/whole_compiler.ml : ext/string_map.ml
 bin/whole_compiler.ml : ext/string_map.mli
 bin/whole_compiler.ml : depends/ast_extract.ml
