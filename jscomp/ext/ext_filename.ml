@@ -289,6 +289,51 @@ let rel_normalized_absolute_path from to_ =
         List.fold_left (fun acc _ -> acc // ".." ) ".." xs in
     go paths1 paths2
 
+
+
+module IntInt_array = Resize_array.Make(struct type t = int * int 
+  let null = (0, -1) end)
+
+let dir_sep_char = Filename.dir_sep.[0]
+
+let is_slash chr = chr = '/' || chr = dir_sep_char
+
+let is_dot chr = chr = '.'
+
+let get_root path = 
+  if String.length path = 0 then "." 
+  else if dir_sep_char = '/' && path.[0] = dir_sep_char then "/"
+  else if dir_sep_char = '\\' && String.length path >= 2 && path.[1] = ':' then 
+    String.sub path 0 2
+  else "."
+
+let has_absolute_root str = 
+  get_root str <> "."
+
+let split_index path = 
+  let idxs = IntInt_array.make (1 + String.length path / 2) in
+  let rec splitter idx len start =
+    begin
+      if idx >= String.length path then (
+        (if len > 0 then IntInt_array.push idxs (start, idx-1));
+        idxs
+      )
+      else
+        begin
+          if len = 0 then (
+            if is_slash path.[idx] then splitter (idx+1) 0 0
+            else splitter (idx+1) 1 idx)
+          else (
+            if is_slash path.[idx] then 
+              (IntInt_array.push idxs (start, idx); 
+               splitter (idx+1) 0 0)
+            else splitter (idx+1) (len+1) start
+          )
+        end
+    end
+  in
+  splitter 0 0 0
+
 (*TODO: could be hgighly optimized later 
   {[
     normalize_absolute_path "/gsho/./..";;
@@ -308,30 +353,58 @@ let rel_normalized_absolute_path from to_ =
     normalize_absolute_path "/a";;
   ]}
 *)
-let normalize_absolute_path x =
-  let drop_if_exist xs =
-    match xs with 
-    | [] -> []
-    | _ :: xs -> xs in 
-  let rec normalize_list acc paths =
-    match paths with 
-    | [] -> acc 
-    | "." :: xs -> normalize_list acc xs
-    | ".." :: xs -> 
-      normalize_list (drop_if_exist acc ) xs 
-    | x :: xs -> 
-      normalize_list (x::acc) xs 
-  in
-  let root, paths = split_aux x in
-  let rev_paths =  normalize_list [] paths in 
-  let rec go acc rev_paths =
-    match rev_paths with 
-    | [] -> Filename.concat root acc 
-    | last::rest ->  go (Filename.concat last acc ) rest  in 
-  match rev_paths with 
-  | [] -> root 
-  | last :: rest -> go last rest 
-
+let normalize_absolute_path path =
+  let root = get_root path in 
+  let rootl = String.length root in
+  let len (st,ed) = ed - st + 1 in
+  let sdot (st,ed) = 
+    (2 = len (st,ed) && is_dot path.[st] && is_slash path.[st+1])
+    || (1 = len (st,ed) && is_dot path.[st]) in
+  let ddot (st,ed) = 
+    (3 = len (st,ed) && is_dot path.[st] && is_dot path.[st+1] 
+    && is_slash path.[st+2]) 
+    || (2 = len (st,ed) && is_dot path.[st] && is_dot path.[st+1]) in
+  (* Remove single dot immediately *)
+  let idxs = split_index path 
+  |> IntInt_array.filter (fun elt -> not (sdot elt)) in
+  let i = ref 0 in 
+  (* Remove double dots *)
+  while !i < IntInt_array.length idxs do
+  begin
+    let at_i = IntInt_array.get idxs !i in 
+    if ddot at_i then (
+      IntInt_array.delete idxs !i;
+      if !i > 0 && IntInt_array.length idxs > 0 then 
+        (IntInt_array.delete idxs (!i-1); decr i);
+    )
+    else incr i
+  end
+  done;
+  (* Create the string *)
+  i := 0;
+  let fbytes = IntInt_array.fold_left (fun accum elt -> accum + len elt) 0 idxs 
+    |> Bytes.create in
+  IntInt_array.iter
+    (fun (st,ed) -> 
+       let length = len (st,ed) in
+       Bytes.blit_string path st fbytes !i length;
+       i := !i + length)
+    idxs;
+  (* Rest is root calculation *)
+  let fbl = Bytes.length fbytes in
+  let fbytes = Bytes.to_string fbytes in 
+  let nroot = if root = Filename.dir_sep then root else root^Filename.dir_sep in
+  if fbl = 0 then root
+  else if fbl < rootl then nroot ^ fbytes
+  else if fbl = rootl then (if root = fbytes then fbytes else nroot ^ fbytes)
+  else (
+    if has_absolute_root root then 
+      (if root = String.sub fbytes 0 rootl then fbytes else nroot ^ fbytes)
+    else (
+      if root ^ Filename.dir_sep = String.sub fbytes 0 (rootl+1) then fbytes
+      else nroot ^ fbytes
+    )
+  )
 
 let get_extension x =
   try

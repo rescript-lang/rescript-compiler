@@ -76,6 +76,7 @@ sig
   val inplace_filter : (elt -> bool) -> t -> unit
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
+  val set : t -> int -> elt -> unit
   val unsafe_get : t -> int -> elt 
   val last : t -> elt
   val capacity : t -> int
