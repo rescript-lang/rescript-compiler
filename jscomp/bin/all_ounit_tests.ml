@@ -5984,7 +5984,9 @@ val suffix_mliastd : string
 val suffix_js : string
 
 
-
+val commonjs : string 
+val amdjs : string 
+val goog : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6077,6 +6079,9 @@ let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let goog = "goog"
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"

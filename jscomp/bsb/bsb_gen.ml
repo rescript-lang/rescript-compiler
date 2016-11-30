@@ -28,6 +28,7 @@ let output_ninja
     ~builddir
     ~cwd
     ~js_post_build_cmd
+    ~package_specs
     bsc
     bsdep
     package_name
@@ -43,16 +44,16 @@ let output_ninja
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bs_groups, source_dirs,static_resources  =
     List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
-      String_map.merge (fun modname k1 k2 ->
-          match k1 , k2 with
-          | None , None ->
-            assert false
-          | Some a, Some b  ->
-            failwith ("conflict files found: " ^ modname)
-          | Some v, None  -> Some v
-          | None, Some v ->  Some v
-        ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
-    ) (String_map.empty,[],[]) bs_file_groups in
+        String_map.merge (fun modname k1 k2 ->
+            match k1 , k2 with
+            | None , None ->
+              assert false
+            | Some a, Some b  ->
+              failwith ("conflict files found: " ^ modname)
+            | Some v, None  -> Some v
+            | None, Some v ->  Some v
+          ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
+      ) (String_map.empty,[],[]) bs_file_groups in
   Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
   let bsc_flags =
     String.concat " " bsc_flags
@@ -64,9 +65,13 @@ let output_ninja
   begin
     let () =
       output_string oc "ninja_required_version = 1.7.1 \n" ;
-      match package_name with
-      | None -> output_string oc ("bs_package_flags = \n")
-      | Some x -> output_string oc ("bs_package_flags = -bs-package-name "  ^ x ^ " \n" )
+      output_string oc "bs_package_flags = ";
+      begin match package_name with
+        | None -> ()
+        | Some x -> 
+          output_string oc ("-bs-package-name "  ^ x  )
+      end;
+      output_string oc "\n"
     in
     let bs_package_includes =
       Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in
@@ -91,7 +96,8 @@ let output_ninja
         ]
     in
     let all_deps, all_cmis =
-      Bsb_ninja.handle_file_groups oc ~js_post_build_cmd  bs_file_groups ([],[]) in
+      Bsb_ninja.handle_file_groups oc       
+        ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
     let all_deps =
       (* we need copy package.json into [_build] since it does affect build output *)
       (* Literals.package_json ::

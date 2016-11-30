@@ -8,24 +8,12 @@
                 "goog"
             ]
         },
-        "module-output": {
-            "type": "array",
-            "items": [
-                {
-                    "$ref": "#/definitions/module-format"
-                },
-                {
-                    "type": "string",
-                    "description": "output path, if not set, it will be `lib/js/commonjs`, `lib/js/amdjs` or `lib/js/goog` "
-                }
-            ]
-        },
-        "package-spec": {
+        "package-specs": {
             "oneOf": [
                 {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/module-output"
+                        "$ref": "#/definitions/module-format"
                     },
                     "description": "package output"
                 },
@@ -196,8 +184,8 @@
                     "$ref": "#/definitions/stringArray",
                     "description": "A list of flags for bsc.exe"
                 },
-                "package-spec": {
-                    "$ref": "#/definitions/package-spec",
+                "package-specs": {
+                    "$ref": "#/definitions/package-specs",
                     "description": "TODO: currently only support commonjs"
                 },
                 "ocamllex": {

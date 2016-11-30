@@ -24,6 +24,8 @@
 
 
 val common_js_prefix : string -> string
+val amd_js_prefix : string -> string 
+val goog_prefix : string -> string 
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 val lib_bs : string

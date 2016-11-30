@@ -509,8 +509,9 @@ bsb/bsb_build_util.cmx : ext/ext_list.cmx ext/ext_filename.cmx \
     bsb/bsb_build_util.cmi
 bsb/bsb_config.cmx : common/js_config.cmx ext/ext_filename.cmx \
     bsb/bsb_config.cmi
-bsb/bsb_default.cmx : ext/ext_filename.cmx bsb/bsb_build_util.cmx \
-    common/bs_pkg.cmx bsb/bsb_default.cmi
+bsb/bsb_default.cmx : ext/string_set.cmx ext/literals.cmx \
+    ext/ext_filename.cmx bsb/bsb_build_util.cmx common/bs_pkg.cmx \
+    bsb/bsb_default.cmi
 bsb/bsb_dep_infos.cmx : bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
 bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_filename.cmx \
@@ -533,14 +534,14 @@ bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/ext_file_pp.cmi \
     bsb/bsb_json.cmi common/binary_cache.cmi
 bsb/bsb_build_util.cmi : bsb/bsb_json.cmi
 bsb/bsb_config.cmi :
-bsb/bsb_default.cmi : bsb/bsb_json.cmi
+bsb/bsb_default.cmi : ext/string_set.cmi bsb/bsb_json.cmi
 bsb/bsb_dep_infos.cmi :
 bsb/bsb_dir.cmi :
-bsb/bsb_gen.cmi : bsb/bsb_build_ui.cmi
+bsb/bsb_gen.cmi : bsb/bsb_default.cmi bsb/bsb_build_ui.cmi
 bsb/bsb_helper_main.cmi :
 bsb/bsb_json.cmi : ext/string_map.cmi
 bsb/bsb_main.cmi :
-bsb/bsb_ninja.cmi : bsb/bsb_build_ui.cmi
+bsb/bsb_ninja.cmi : bsb/bsb_default.cmi bsb/bsb_build_ui.cmi
 bsb/sexp_lexer.cmi :
 ounit/oUnit.cmi :
 ounit/oUnitDiff.cmi :
