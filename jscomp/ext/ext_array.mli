@@ -28,7 +28,7 @@
 
 
 (** Some utilities for {!Array} operations *)
-
+val reverse_range : 'a array -> int -> int -> unit
 val reverse_in_place : 'a array -> unit
 val reverse : 'a array -> 'a array 
 val reverse_of_list : 'a list -> 'a array

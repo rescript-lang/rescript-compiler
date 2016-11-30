@@ -65,5 +65,13 @@ let suites =
       OUnit.assert_equal 
         (Int_vec.map_into_list (fun x -> x + 1) v)
         (List.map (fun x -> x + 1) lst)  
+    end;
+    __LOC__ >:: begin fun _ ->
+      let v = Int_vec.make 4 in 
+      Int_vec.push 1 v;
+      Int_vec.push 2 v;
+      Int_vec.reverse_in_place v;
+      v =~~ [|2;1|]
     end
+    ;
   ]

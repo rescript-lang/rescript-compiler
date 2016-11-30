@@ -27,36 +27,36 @@
 type elt = string
 let compare_elt = String.compare 
 
-type  t = elt Bal_tree.t 
-let empty = Bal_tree.empty 
-let is_empty = Bal_tree.is_empty
-let iter = Bal_tree.iter
-let fold = Bal_tree.fold
-let for_all = Bal_tree.for_all 
-let exists = Bal_tree.exists 
-let singleton = Bal_tree.singleton 
-let cardinal = Bal_tree.cardinal
-let elements = Bal_tree.elements
-let min_elt = Bal_tree.min_elt
-let max_elt = Bal_tree.max_elt
-let choose = Bal_tree.choose 
-let of_sorted_list = Bal_tree.of_sorted_list
-let of_sorted_array = Bal_tree.of_sorted_array
-let partition = Bal_tree.partition 
-let filter = Bal_tree.filter 
-let of_sorted_list = Bal_tree.of_sorted_list
-let of_sorted_array = Bal_tree.of_sorted_array
+type  t = elt Bal_set_common.t 
+let empty = Bal_set_common.empty 
+let is_empty = Bal_set_common.is_empty
+let iter = Bal_set_common.iter
+let fold = Bal_set_common.fold
+let for_all = Bal_set_common.for_all 
+let exists = Bal_set_common.exists 
+let singleton = Bal_set_common.singleton 
+let cardinal = Bal_set_common.cardinal
+let elements = Bal_set_common.elements
+let min_elt = Bal_set_common.min_elt
+let max_elt = Bal_set_common.max_elt
+let choose = Bal_set_common.choose 
+let of_sorted_list = Bal_set_common.of_sorted_list
+let of_sorted_array = Bal_set_common.of_sorted_array
+let partition = Bal_set_common.partition 
+let filter = Bal_set_common.filter 
+let of_sorted_list = Bal_set_common.of_sorted_list
+let of_sorted_array = Bal_set_common.of_sorted_array
 
-let rec add x (tree : _ Bal_tree.t) : _ Bal_tree.t =
+let rec add x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
   match tree with  
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_elt x v in
     if c = 0 then t else
-    if c < 0 then Bal_tree.internal_bal (add x l) v r else Bal_tree.internal_bal l v (add x r) 
+    if c < 0 then Bal_set_common.internal_bal (add x l) v r else Bal_set_common.internal_bal l v (add x r) 
 
 
-let rec mem x (tree : _ Bal_tree.t) = 
+let rec mem x (tree : _ Bal_set_common.t) = 
   match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->

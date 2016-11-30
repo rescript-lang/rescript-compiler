@@ -6,21 +6,22 @@ var Caml_array              = require("../../lib/js/caml_array");
 var $$Array                 = require("../../lib/js/array");
 var List                    = require("../../lib/js/list");
 
-function reverse_in_place(a) {
-  var a$1 = a;
-  var i = 0;
-  var len = a.length;
+function reverse_range(a, i, len) {
   if (len) {
     for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
-      var t = a$1[i + k | 0];
-      a$1[i + k | 0] = a$1[((i + len | 0) - 1 | 0) - k | 0];
-      a$1[((i + len | 0) - 1 | 0) - k | 0] = t;
+      var t = a[i + k | 0];
+      a[i + k | 0] = a[((i + len | 0) - 1 | 0) - k | 0];
+      a[((i + len | 0) - 1 | 0) - k | 0] = t;
     }
     return /* () */0;
   }
   else {
     return /* () */0;
   }
+}
+
+function reverse_in_place(a) {
+  return reverse_range(a, 0, a.length);
 }
 
 function reverse(a) {
@@ -265,6 +266,7 @@ function exists(p, a) {
   };
 }
 
+exports.reverse_range    = reverse_range;
 exports.reverse_in_place = reverse_in_place;
 exports.reverse          = reverse;
 exports.reverse_of_list  = reverse_of_list;
