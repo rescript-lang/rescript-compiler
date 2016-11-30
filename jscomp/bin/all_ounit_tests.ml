@@ -1253,7 +1253,7 @@ module Ext_array : sig
 
 
 (** Some utilities for {!Array} operations *)
-
+val reverse_range : 'a array -> int -> int -> unit
 val reverse_in_place : 'a array -> unit
 val reverse : 'a array -> 'a array 
 val reverse_of_list : 'a list -> 'a array
@@ -1284,6 +1284,7 @@ val find_and_split :
   'b -> 'a split
 
 val exists : ('a -> bool) -> 'a array -> bool 
+
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1314,19 +1315,18 @@ end = struct
 
 
 
+let reverse_range a i len =
+  if len=0 then ()
+  else
+    for k = 0 to (len-1)/2 do
+      let t = Array.unsafe_get a (i+k) in
+      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+      Array.unsafe_set a (i+len-1-k) t;
+    done
 
 
 let reverse_in_place a =
-  let aux a i len =
-    if len=0 then ()
-    else
-      for k = 0 to (len-1)/2 do
-        let t = Array.unsafe_get a (i+k) in
-        Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-        Array.unsafe_set a (i+len-1-k) t;
-      done
-  in
-  aux a 0 (Array.length a)
+  reverse_range a 0 (Array.length a)
 
 let reverse a =
   let b_len = Array.length a in
@@ -1448,6 +1448,7 @@ let exists p a =
     else if p (Array.unsafe_get a i) then true
     else loop (succ i) in
   loop 0
+
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -1947,8 +1948,9 @@ let suites =
     end     ;
     ]
 end
-module Bal_tree : sig 
-#1 "bal_tree.mli"
+module Bal_set_common
+= struct
+#1 "bal_set_common.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -1962,173 +1964,8 @@ module Bal_tree : sig
 (*                                                                     *)
 (***********************************************************************)
 
-(** Balanced tree based on stdlib distribution *)
-
-
-type 'a t = 
-    | Empty 
-    | Node of 'a t * 'a * 'a t * int 
-(** this operation is exposed intentionally , so that
-    users can whip up a specialized collection quickly
-*)
-
-(** operations does not depend on ordering, given the set is already ordered *)
-
-val empty: 'a t
-
-val singleton: 'a -> 'a t
-
-
-val is_empty: 'a t -> bool
-
-val cardinal: 'a t -> int
-
-val min_elt: 'a t -> 'a
-(**  raise [Not_found] if the set is empty. *)
-
-val max_elt: 'a t -> 'a
-(** raise [Not_found] *)
-
-val choose: 'a t -> 'a
-(** raise [Not_found] if the set is empty. Which element is chosen is unspecified,
-    but equal elements will be chosen for equal sets. *)
-
-val elements: 'a t -> 'a list
-(** Return the list of all elements of the given set.
-    The returned list is sorted in increasing order with respect
-*)
-
-val iter: ('a -> unit) -> 'a t -> unit
-(** [iter f s] applies [f] in turn to all elements of [s].
-    The elements of [s] are presented to [f] in increasing order
-    with respect to the ordering over the type of the elements. *)
-
-val fold: ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-(** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
-    where [x1 ... xN] are the elements of [s], in increasing order. *)
-
-val for_all: ('a -> bool) -> 'a t -> bool
-(** [for_all p s] checks if all elements of the set
-    satisfy the predicate [p]. *)
-
-val exists: ('a -> bool) -> 'a t -> bool
-
-val of_sorted_list : 'a list -> 'a t
-val of_sorted_array : 'a array -> 'a t
-
-val internal_bal : 'a t -> 'a -> 'a t -> 'a t 
-val internal_merge : 'a t -> 'a t -> 'a t
-val internal_join : 'a t -> 'a ->  'a t -> 'a t 
-val internal_concat : 'a t -> 'a t -> 'a t   
-(** operations depend on ordering *)
-
-val mem: 'a -> 'a t -> bool
-(** [mem x s] tests whether [x] belongs to the set [s]. *)
-
-val add: 'a -> 'a t -> 'a t
-(** [add x s] returns a set containing all elements of [s],
-    plus [x]. If [x] was already in [s], [s] is returned unchanged. *)
-
-val remove: 'a -> 'a t -> 'a t
-(** [remove x s] returns a set containing all elements of [s],
-    except [x]. If [x] was not in [s], [s] is returned unchanged. *)
-
-val union: 'a t -> 'a t -> 'a t
-
-val inter: 'a t -> 'a t -> 'a t
-
-val diff: 'a t -> 'a t -> 'a t
-
-
-val compare: 'a t -> 'a t -> int
-
-val equal: 'a t -> 'a t -> bool
-
-val subset: 'a t -> 'a t -> bool
-
-val filter: ('a -> bool) -> 'a t -> 'a t
-
-val partition: ('a -> bool) -> 'a t -> 'a t * 'a t
-(** [partition p s] returns a pair of sets [(s1, s2)], where
-    [s1] is the set of all the elements of [s] that satisfy the
-    predicate [p], and [s2] is the set of all the elements of
-    [s] that do not satisfy [p]. *)
-
-
-val split: 'a -> 'a t -> 'a t * bool * 'a t
-(** [split x s] returns a triple [(l, present, r)], where
-      [l] is the set of elements of [s] that are
-      strictly less than [x];
-      [r] is the set of elements of [s] that are
-      strictly greater than [x];
-      [present] is [false] if [s] contains no element equal to [x],
-      or [true] if [s] contains an element equal to [x]. *)
-
-val find: 'a -> 'a t -> 'a
-(** [find x s] returns the element of [s] equal to [x] (according
-    to [Ord.compare]), or raise [Not_found] if no such element
-    exists.
-*)
-
-val of_list: 'a list -> 'a t
-
-val of_array : 'a array -> 'a t
-
-val invariant : 'a t -> bool
-
-
-module Make (Ord : Set.OrderedType) : sig
-  type elt = Ord.t
-  type t
-  val empty: t
-  val is_empty: t -> bool
-  val iter: (elt -> unit) -> t -> unit
-  val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-  val for_all: (elt -> bool) -> t -> bool
-  val exists: (elt -> bool) -> t -> bool
-  val singleton: elt -> t
-  val cardinal: t -> int
-  val elements: t -> elt list
-  val min_elt: t -> elt
-  val max_elt: t -> elt
-  val choose: t -> elt
-  val of_sorted_list : elt list -> t 
-  val of_sorted_array : elt array -> t
-  val partition: (elt -> bool) -> t -> t * t
-
-  val mem: elt -> t -> bool
-  val add: elt -> t -> t
-  val remove: elt -> t -> t
-  val union: t -> t -> t
-  val inter: t -> t -> t
-  val diff: t -> t -> t
-  val compare: t -> t -> int
-  val equal: t -> t -> bool
-  val subset: t -> t -> bool
-  val filter: (elt -> bool) -> t -> t
-  
-  val split: elt -> t -> t * bool * t
-  val find: elt -> t -> elt
-  val of_list: elt list -> t
-
-
-end 
-
-end = struct
-#1 "bal_tree.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
 (** balanced tree based on stdlib distribution *)
+
 
 type 'a t = 
   | Empty 
@@ -2504,10 +2341,187 @@ let of_sorted_array l =
   in
   sub 0 (Array.length l) l 
 
+let is_ordered cmp tree =
+  let rec is_ordered_min_max tree =
+    match tree with
+    | Empty -> `Empty
+    | Node(l,v,r,_) -> 
+      begin match is_ordered_min_max l with
+        | `No -> `No 
+        | `Empty ->
+          begin match is_ordered_min_max r with
+            | `No  -> `No
+            | `Empty -> `V (v,v)
+            | `V(l,r) ->
+              if cmp v l < 0 then
+                `V(v,r)
+              else
+                `No
+          end
+        | `V(min_v,max_v)->
+          begin match is_ordered_min_max r with
+            | `No -> `No
+            | `Empty -> 
+              if cmp max_v v < 0 then 
+                `V(min_v,v)
+              else
+                `No 
+            | `V(min_v_r, max_v_r) ->
+              if cmp max_v min_v_r < 0 then
+                `V(min_v,max_v_r)
+              else `No
+          end
+      end  in 
+  is_ordered_min_max tree <> `No 
+
+let invariant cmp t = 
+  check t ; 
+  is_ordered cmp t 
+
+let rec compare_aux cmp e1 e2 =
+  match (e1, e2) with
+    (End, End) -> 0
+  | (End, _)  -> -1
+  | (_, End) -> 1
+  | (More(v1, r1, e1), More(v2, r2, e2)) ->
+    let c = cmp v1 v2 in
+    if c <> 0
+    then c
+    else compare_aux cmp (cons_enum r1 e1) (cons_enum r2 e2)
+
+let compare cmp s1 s2 =
+  compare_aux cmp (cons_enum s1 End) (cons_enum s2 End)
+
+end
+module Bal_tree : sig 
+#1 "bal_tree.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Balanced tree based on stdlib distribution *)
 
 
-(******************************************************************)
-(* Functions below require ordering *)
+type 'a t = 'a Bal_set_common.t 
+(** this operation is exposed intentionally , so that
+    users can whip up a specialized collection quickly
+*)
+
+
+
+val mem: 'a -> 'a t -> bool
+(** [mem x s] tests whether [x] belongs to the set [s]. *)
+
+val add: 'a -> 'a t -> 'a t
+(** [add x s] returns a set containing all elements of [s],
+    plus [x]. If [x] was already in [s], [s] is returned unchanged. *)
+
+val remove: 'a -> 'a t -> 'a t
+(** [remove x s] returns a set containing all elements of [s],
+    except [x]. If [x] was not in [s], [s] is returned unchanged. *)
+
+val union: 'a t -> 'a t -> 'a t
+
+val inter: 'a t -> 'a t -> 'a t
+
+val diff: 'a t -> 'a t -> 'a t
+
+
+val compare: 'a t -> 'a t -> int
+
+val equal: 'a t -> 'a t -> bool
+
+val subset: 'a t -> 'a t -> bool
+
+
+
+val split: 'a -> 'a t -> 'a t * bool * 'a t
+(** [split x s] returns a triple [(l, present, r)], where
+      [l] is the set of elements of [s] that are
+      strictly less than [x];
+      [r] is the set of elements of [s] that are
+      strictly greater than [x];
+      [present] is [false] if [s] contains no element equal to [x],
+      or [true] if [s] contains an element equal to [x]. *)
+
+val find: 'a -> 'a t -> 'a
+(** [find x s] returns the element of [s] equal to [x] (according
+    to [Ord.compare]), or raise [Not_found] if no such element
+    exists.
+*)
+
+val of_list: 'a list -> 'a t
+
+val of_array : 'a array -> 'a t
+
+val invariant : 'a t -> bool
+
+
+module Make (Ord : Set.OrderedType) : sig
+  type elt = Ord.t
+  type t
+  val empty: t
+  val is_empty: t -> bool
+  val iter: (elt -> unit) -> t -> unit
+  val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
+  val for_all: (elt -> bool) -> t -> bool
+  val exists: (elt -> bool) -> t -> bool
+  val singleton: elt -> t
+  val cardinal: t -> int
+  val elements: t -> elt list
+  val min_elt: t -> elt
+  val max_elt: t -> elt
+  val choose: t -> elt
+  val of_sorted_list : elt list -> t 
+  val of_sorted_array : elt array -> t
+  val partition: (elt -> bool) -> t -> t * t
+
+  val mem: elt -> t -> bool
+  val add: elt -> t -> t
+  val remove: elt -> t -> t
+  val union: t -> t -> t
+  val inter: t -> t -> t
+  val diff: t -> t -> t
+  val compare: t -> t -> int
+  val equal: t -> t -> bool
+  val subset: t -> t -> bool
+  val filter: (elt -> bool) -> t -> t
+  
+  val split: elt -> t -> t * bool * t
+  val find: elt -> t -> elt
+  val of_list: elt list -> t
+
+
+end 
+
+end = struct
+#1 "bal_tree.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** balanced tree based on stdlib distribution *)
+
+type 'a t  = 'a Bal_set_common.t 
+open Bal_set_common
+
 
 (* Splitting.  
     split x s returns a triple (l, present, r) where
@@ -2517,7 +2531,8 @@ let of_sorted_array l =
           or true if s contains an element equal to x.
 *)
 
-let rec split x = function
+let rec split x (tree : _ t ) : _ t  *  bool * _ t =
+  match tree with 
   | Empty ->
     (Empty, false, Empty)
   | Node(l, v, r, _) ->
@@ -2528,14 +2543,15 @@ let rec split x = function
     else
       let (lr, pres, rr) = split x r in (internal_join l v lr, pres, rr)
 
-let rec add x = function
-    Empty -> Node(Empty, x, Empty, 1)
+let rec add x (tree : _ t) : _ t  =
+  match tree with 
+  | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = Pervasives.compare x v in
     if c = 0 then t else
     if c < 0 then internal_bal (add x l) v r else internal_bal l v (add x r)
 
-let rec union s1 s2 =
+let rec union (s1 : _ t) (s2 : _ t) =
   match (s1, s2) with
   | (Empty, t2) -> t2
   | (t1, Empty) -> t1
@@ -2576,8 +2592,9 @@ let rec diff s1 s2 =
     end
 
 
-let rec mem x = function
-    Empty -> false
+let rec mem x (tree : _ t) =
+  match tree with 
+  | Empty -> false
   | Node(l, v, r, _) ->
     let c = Pervasives.compare x v in
     c = 0 || mem x (if c < 0 then l else r)
@@ -2590,29 +2607,10 @@ let rec remove x = function
     if c < 0 then internal_bal (remove x l) v r else internal_bal l v (remove x r)
 
 
-let rec compare_aux e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = Pervasives.compare v1 v2 in
-    if c <> 0
-    then c
-    else compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-
-let compare s1 s2 =
-  compare_aux (cons_enum s1 End) (cons_enum s2 End)
-
-let equal s1 s2 =
-  compare s1 s2 = 0
-
-let rec subset s1 s2 =
+let rec subset (s1 : _ t) (s2 : _ t) =
   match (s1, s2) with
-    Empty, _ ->
-    true
-  | _, Empty ->
-    false
+  | Empty, _ -> true
+  | _, Empty -> false
   | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
     let c = Pervasives.compare v1 v2 in
     if c = 0 then
@@ -2622,8 +2620,9 @@ let rec subset s1 s2 =
     else
       subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
 
+let compare s1 s2 = Bal_set_common.compare Pervasives.compare s1 s2 
 
-
+let equal s1 s2 = compare s1 s2 = 0
 
 let rec find x = function
     Empty -> raise Not_found
@@ -2646,66 +2645,34 @@ let of_list l =
 
 let of_array l = 
   Array.fold_left (fun  acc x -> add x acc) empty l
-let is_ordered cmp tree =
-  let rec is_ordered_min_max tree =
-    match tree with
-    | Empty -> `Empty
-    | Node(l,v,r,_) -> 
-      begin match is_ordered_min_max l with
-        | `No -> `No 
-        | `Empty ->
-          begin match is_ordered_min_max r with
-            | `No  -> `No
-            | `Empty -> `V (v,v)
-            | `V(l,r) ->
-              if cmp v l < 0 then
-                `V(v,r)
-              else
-                `No
-          end
-        | `V(min_v,max_v)->
-          begin match is_ordered_min_max r with
-            | `No -> `No
-            | `Empty -> 
-              if Pervasives.compare max_v v < 0 then 
-                `V(min_v,v)
-              else
-                `No 
-            | `V(min_v_r, max_v_r) ->
-              if Pervasives.compare max_v min_v_r < 0 then
-                `V(min_v,max_v_r)
-              else `No
-          end
-      end  in 
-  is_ordered_min_max tree <> `No 
 
 
-(* also check order *)
+
+
 let invariant t =
-  check t; 
-  is_ordered Pervasives.compare t
+  Bal_set_common.invariant Pervasives.compare t 
 
 module Make ( S : Set.OrderedType) = struct
   type elt = S.t
   type nonrec t = elt t 
-  let empty = empty 
-  let is_empty = is_empty
-  let iter = iter 
-  let fold = fold 
-  let for_all = for_all 
-  let exists = exists 
-  let singleton = singleton 
-  let cardinal = cardinal
-  let elements = elements
-  let min_elt = min_elt
-  let max_elt = max_elt
-  let choose = choose 
-  let of_sorted_list = of_sorted_list
-  let of_sorted_array = of_sorted_array
-  let partition = partition 
-  let filter = filter 
-  let of_sorted_list = of_sorted_list
-  let of_sorted_array = of_sorted_array
+  let empty = Bal_set_common.empty 
+  let is_empty = Bal_set_common.is_empty
+  let iter = Bal_set_common.iter 
+  let fold = Bal_set_common.fold 
+  let for_all = Bal_set_common.for_all 
+  let exists = Bal_set_common.exists 
+  let singleton = Bal_set_common.singleton 
+  let cardinal = Bal_set_common.cardinal
+  let elements = Bal_set_common.elements
+  let min_elt = Bal_set_common.min_elt
+  let max_elt = Bal_set_common.max_elt
+  let choose = Bal_set_common.choose 
+  let of_sorted_list = Bal_set_common.of_sorted_list
+  let of_sorted_array = Bal_set_common.of_sorted_array
+  let partition = Bal_set_common.partition 
+  let filter = Bal_set_common.filter 
+  let of_sorted_list = Bal_set_common.of_sorted_list
+  let of_sorted_array = Bal_set_common.of_sorted_array
   let rec split x = function
     | Empty ->
       (Empty, false, Empty)
@@ -2777,20 +2744,8 @@ module Make ( S : Set.OrderedType) = struct
       if c = 0 then internal_merge l r else
       if c < 0 then internal_bal (remove x l) v r else internal_bal l v (remove x r)
 
+  let compare s1 s2 = Bal_set_common.compare Pervasives.compare s1 s2 
 
-  let rec compare_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, r1, e1), More(v2, r2, e2)) ->
-      let c = S.compare v1 v2 in
-      if c <> 0
-      then c
-      else compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-
-  let compare s1 s2 =
-    compare_aux (cons_enum s1 End) (cons_enum s2 End)
 
   let equal s1 s2 =
     compare s1 s2 = 0
@@ -2842,6 +2797,27 @@ module Make ( S : Set.OrderedType) = struct
 end 
 
 end
+module Ext_int
+= struct
+#1 "ext_int.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+type t = int
+
+let compare (x : t) (y : t) = Pervasives.compare x y 
+
+end
 module Ounit_bal_tree_tests
 = struct
 #1 "ounit_bal_tree_tests.ml"
@@ -2850,14 +2826,14 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal
 
-let rec add_int x (tree : _ Bal_tree.t) : _ Bal_tree.t =
+let rec add_int x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
   match tree with  
     | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
-    let c = Pervasives.compare (x : int) v in
+    let c = Ext_int.compare (x : int) v in
     if c = 0 then t else
-    if c < 0 then Bal_tree.internal_bal (add_int x l) v r 
-    else Bal_tree.internal_bal l v (add_int x r)
+    if c < 0 then Bal_set_common.internal_bal (add_int x l) v r 
+    else Bal_set_common.internal_bal l v (add_int x r)
 
 let suites = 
   __FILE__ >:::
@@ -2880,39 +2856,39 @@ let suites =
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
         (Bal_tree.invariant 
-           (Bal_tree.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> n)))))
+           (Bal_set_common.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> n)))))
     end;
     __LOC__ >:: begin fun _ ->
       let arr = Array.init 1000 (fun n -> n) in
-      let set = (Bal_tree.of_sorted_array arr) in
+      let set = (Bal_set_common.of_sorted_array arr) in
       OUnit.assert_bool __LOC__
         (Bal_tree.invariant set );
-      OUnit.assert_equal 1000 (Bal_tree.cardinal set)    
+      OUnit.assert_equal 1000 (Bal_set_common.cardinal set)    
     end;
     __LOC__ >:: begin fun _ ->
       for i = 0 to 200 do 
         let arr = Array.init i (fun n -> n) in
-        let set = (Bal_tree.of_sorted_array arr) in
+        let set = (Bal_set_common.of_sorted_array arr) in
         OUnit.assert_bool __LOC__
           (Bal_tree.invariant set );
-        OUnit.assert_equal i (Bal_tree.cardinal set)
+        OUnit.assert_equal i (Bal_set_common.cardinal set)
       done    
     end;
     __LOC__ >:: begin fun _ ->
       let arr_size = 200 in
-      let arr_sets = Array.make 200 Bal_tree.empty in  
+      let arr_sets = Array.make 200 Bal_set_common.empty in  
       for i = 0 to arr_size - 1 do
         let size = Random.int 1000 in  
         let arr = Array.init size (fun n -> n) in
-        arr_sets.(i)<- (Bal_tree.of_sorted_array arr)            
+        arr_sets.(i)<- (Bal_set_common.of_sorted_array arr)            
       done;
-      let large = Array.fold_left Bal_tree.union Bal_tree.empty arr_sets in 
+      let large = Array.fold_left Bal_tree.union Bal_set_common.empty arr_sets in 
       OUnit.assert_bool __LOC__ (Bal_tree.invariant large)
     end;
 
      __LOC__ >:: begin fun _ ->
       let arr_size = 1_000_000 in
-      let v = ref Bal_tree.empty in 
+      let v = ref Bal_set_common.empty in 
       for i = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
          v := add_int size !v                      
@@ -2941,15 +2917,15 @@ let compare_ident x y =
     if b <> 0 then b 
     else compare (x.flags : int) y.flags     
 
-let rec add x (tree : _ Bal_tree.t) : _ Bal_tree.t =
+let rec add x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
   match tree with  
     | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Bal_tree.internal_bal (add x l) v r else Bal_tree.internal_bal l v (add x r)
+    if c < 0 then Bal_set_common.internal_bal (add x l) v r else Bal_set_common.internal_bal l v (add x r)
 
-let rec mem x (tree : _ Bal_tree.t) = 
+let rec mem x (tree : _ Bal_set_common.t) = 
   match tree with 
    | Empty -> false
    | Node(l, v, r, _) ->
@@ -2960,7 +2936,7 @@ module Ident_set2 = Set.Make(struct type t = ident
     let compare  = compare_ident            
   end)
 
-let () = 
+let bench () = 
   let times = 1_000_000 in
   time "functor set" begin fun _ -> 
     let v = ref Ident_set.empty in  
@@ -2982,16 +2958,16 @@ let () =
   end ;
 
   time "poly set" begin fun _ -> 
-    let v = ref Bal_tree.empty in  
+    let v = ref Bal_set_common.empty in  
     for i = 0 to  times do
       v := Bal_tree.add   {stamp = i ; name = "name"; flags = -1 } !v 
     done;
     for i = 0 to times do
       ignore @@ Bal_tree.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done;
-end;
- time "poly set (specialized)" begin fun _ -> 
-    let v = ref Bal_tree.empty in  
+  end;
+  time "poly set (specialized)" begin fun _ -> 
+    let v = ref Bal_set_common.empty in  
     for i = 0 to  times do
       v := add   {stamp = i ; name = "name"; flags = -1 } !v 
     done;
@@ -6685,7 +6661,7 @@ sig
   val to_array : t -> elt array 
   val of_array : elt array -> t
   val copy : t -> t
-  val reverse : t -> t  
+  val reverse_in_place : t -> unit
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
   val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
@@ -6777,7 +6753,7 @@ sig
   val to_array : t -> elt array 
   val of_array : elt array -> t
   val copy : t -> t 
-  val reverse : t -> t 
+  val reverse_in_place : t -> unit
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
   val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
@@ -6798,34 +6774,290 @@ sig
   val exists : (elt -> bool) -> t -> bool
 end
 
+type 'a t = {
+  mutable arr : 'a array ;
+  mutable len : int ;  
+}
+
+let length d = d.len
+
+let compact d =
+  let d_arr = d.arr in 
+  if d.len <> Array.length d_arr then 
+    begin
+      let newarr = Array.sub d_arr 0 d.len in 
+      d.arr <- newarr
+    end
+let singleton v = 
+  {
+    len = 1 ; 
+    arr = [|v|]
+  }
+
+let empty () =
+  {
+    len = 0;
+    arr = [||];
+  }
+
+let is_empty d =
+  d.len = 0
+
+let reset d = 
+  d.len <- 0; 
+  d.arr <- [||]
+
+
+(* For [to_*] operations, we should be careful to call {!Array.*} function 
+   in case we operate on the whole array
+*)
+let to_list d =
+  let rec loop d_arr idx accum =
+    if idx < 0 then accum else loop d_arr (idx - 1) (Array.unsafe_get d_arr idx :: accum)
+  in
+  loop d.arr (d.len - 1) []
+
+
+let of_list lst =
+  let arr = Array.of_list lst in 
+  { arr ; len = Array.length arr}
+
+
+let to_array d = 
+  Array.sub d.arr 0 d.len
+
+let of_array src =
+  {
+    len = Array.length src;
+    arr = Array.copy src;
+    (* okay to call {!Array.copy}*)
+  }
+let of_sub_array arr off len = 
+  { 
+    len = len ; 
+    arr = Array.sub arr off len  
+  }  
+let unsafe_internal_array v = v.arr  
+(* we can not call {!Array.copy} *)
+let copy src =
+  let len = src.len in
+  {
+    len ;
+    arr = Array.sub src.arr 0 len ;
+  }
+(* FIXME *)
+let reverse_in_place src = 
+  Ext_array.reverse_range src.arr 0 src.len 
+
+let sub src start len =
+  { len ; 
+    arr = Array.sub src.arr start len }
+
+let iter f d = 
+  let arr = d.arr in 
+  for i = 0 to d.len - 1 do
+    f (Array.unsafe_get arr i)
+  done
+
+let iteri f d =
+  let arr = d.arr in
+  for i = 0 to d.len - 1 do
+    f i (Array.unsafe_get arr i)
+  done
+
+let iter_range ~from ~to_ f d =
+  if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
+  else 
+    let d_arr = d.arr in 
+    for i = from to to_ do 
+      f  (Array.unsafe_get d_arr i)
+    done
+
+let iteri_range ~from ~to_ f d =
+  if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
+  else 
+    let d_arr = d.arr in 
+    for i = from to to_ do 
+      f i (Array.unsafe_get d_arr i)
+    done
+
+let map_into_array f src =
+  let src_len = src.len in 
+  let src_arr = src.arr in 
+  if src_len = 0 then [||]
+  else 
+    let first_one = f (Array.unsafe_get src_arr 0) in 
+    let arr = Array.make  src_len  first_one in
+    for i = 1 to src_len - 1 do
+      Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+    done;
+    arr 
+let map_into_list f src = 
+  let src_len = src.len in 
+  let src_arr = src.arr in 
+  if src_len = 0 then []
+  else 
+    let acc = ref [] in         
+    for i =  src_len - 1 downto 0 do
+      acc := f (Array.unsafe_get src_arr i) :: !acc
+    done;
+    !acc
+
+let mapi f src =
+  let len = src.len in 
+  if len = 0 then { len ; arr = [| |] }
+  else 
+    let src_arr = src.arr in 
+    let arr = Array.make len (Array.unsafe_get src_arr 0) in
+    for i = 1 to len - 1 do
+      Array.unsafe_set arr i (f i (Array.unsafe_get src_arr i))
+    done;
+    {
+      len ;
+      arr ;
+    }
+
+let fold_left f x a =
+  let rec loop a_len a_arr idx x =
+    if idx >= a_len then x else 
+      loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
+  in
+  loop a.len a.arr 0 x
+
+let fold_right f a x =
+  let rec loop a_arr idx x =
+    if idx < 0 then x
+    else loop a_arr (idx - 1) (f (Array.unsafe_get a_arr idx) x)
+  in
+  loop a.arr (a.len - 1) x
+
+(**  
+   [filter] and [inplace_filter]
+*)
+let filter f d =
+  let new_d = copy d in 
+  let new_d_arr = new_d.arr in 
+  let d_arr = d.arr in
+  let p = ref 0 in
+  for i = 0 to d.len  - 1 do
+    let x = Array.unsafe_get d_arr i in
+    (* TODO: can be optimized for segments blit *)
+    if f x  then
+      begin
+        Array.unsafe_set new_d_arr !p x;
+        incr p;
+      end;
+  done;
+  new_d.len <- !p;
+  new_d 
+
+let equal eq x y : bool = 
+  if x.len <> y.len then false 
+  else 
+    let rec aux x_arr y_arr i =
+      if i < 0 then true else  
+      if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
+        aux x_arr y_arr (i - 1)
+      else false in 
+    aux x.arr y.arr (x.len - 1)
+
+let get d i = 
+  if i < 0 || i >= d.len then invalid_arg "Resize_array.get"
+  else Array.unsafe_get d.arr i
+let unsafe_get d i = Array.unsafe_get d.arr i 
+let last d = 
+  if d.len <= 0 then invalid_arg   "Resize_array.last"
+  else Array.unsafe_get d.arr (d.len - 1)
+
+let capacity d = Array.length d.arr
+
+(* Attention can not use {!Array.exists} since the bound is not the same *)  
+let exists p d = 
+  let a = d.arr in 
+  let n = d.len in   
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+
+let map f src =
+  let src_len = src.len in 
+  if src_len = 0 then { len = 0 ; arr = [||]}
+  (* TODO: we may share the empty array 
+     but sharing mutable state is very challenging, 
+     the tricky part is to avoid mutating the immutable array,
+     here it looks fine -- 
+     invariant: whenever [.arr] mutated, make sure  it is not an empty array
+     Actually no: since starting from an empty array 
+     {[
+       push v (* the address of v should not be changed *)
+     ]}
+  *)
+  else 
+    let src_arr = src.arr in 
+    let first = f (Array.unsafe_get src_arr 0 ) in 
+    let arr = Array.make  src_len first in
+    for i = 1 to src_len - 1 do
+      Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+    done;
+    {
+      len = src_len;
+      arr = arr;
+    }
+
+let init len f =
+  if len < 0 then invalid_arg  "Resize_array.init"
+  else if len = 0 then { len = 0 ; arr = [||] }
+  else 
+    let first = f 0 in 
+    let arr = Array.make len first in
+    for i = 1 to len - 1 do
+      Array.unsafe_set arr i (f i)
+    done;
+    {
+
+      len ;
+      arr 
+    }
+
 module Make ( Resize : ResizeType) = struct
   type elt = Resize.t 
 
-  type t = {
-    mutable arr : elt array; (* changed when resizing*)
-    mutable len : int;
-  }
-
-  let length d = d.len
-
-  let compact d =
-    let d_arr = d.arr in 
-    if d.len <> Array.length d_arr then 
-      begin
-        let newarr = Array.sub d_arr 0 d.len in 
-        d.arr <- newarr
-      end
-  let singleton v = 
-    {
-      len = 1 ; 
-      arr = [|v|]
-    }
-
-  let empty () =
-    {
-      len = 0;
-      arr = [||];
-    }
+  type nonrec t = elt t
+  let length = length 
+  let compact = compact 
+  let singleton = singleton
+  let empty = empty 
+  let is_empty = is_empty 
+  let reset = reset 
+  let to_list = to_list 
+  let of_list = of_list 
+  let to_array = to_array
+  let of_array = of_array 
+  let of_sub_array = of_sub_array 
+  let unsafe_internal_array = unsafe_internal_array 
+  let copy = copy 
+  let reverse_in_place = reverse_in_place 
+  let sub = sub 
+  let iter = iter 
+  let iteri = iteri 
+  let iter_range = iter_range 
+  let iteri_range = iteri_range  
+  let filter = filter 
+  let fold_right = fold_right 
+  let fold_left = fold_left 
+  let map_into_list = map_into_list 
+  let map_into_array = map_into_array 
+  let mapi = mapi 
+  let equal = equal 
+  let get = get 
+  let exists = exists 
+  let capacity = capacity 
+  let last = last 
+  let unsafe_get = unsafe_get 
+  let map = map 
+  let init = init 
 
   let make initsize =
     if initsize < 0 then invalid_arg  "Resize_array.make" ;
@@ -6835,20 +7067,7 @@ module Make ( Resize : ResizeType) = struct
       arr = Array.make  initsize Resize.null ;
     }
 
-  let init len f =
-    if len < 0 then invalid_arg  "Resize_array.init";
-    let arr = Array.make  len Resize.null in
-    for i = 0 to len - 1 do
-      Array.unsafe_set arr i (f i)
-    done;
-    {
 
-      len ;
-      arr 
-    }
-
-  let is_empty d =
-    d.len = 0
 
   let reserve d s = 
     let d_len = d.len in 
@@ -6936,165 +7155,7 @@ module Make ( Resize : ResizeType) = struct
     done;
     d.len <- 0
 
-  let reset d = 
-    d.len <- 0; 
-    d.arr <- [||]
 
-
-  (* For [to_*] operations, we should be careful to call {!Array.*} function 
-     in case we operate on the whole array
-  *)
-  let to_list d =
-    let rec loop d_arr idx accum =
-      if idx < 0 then accum else loop d_arr (idx - 1) (Array.unsafe_get d_arr idx :: accum)
-    in
-    loop d.arr (d.len - 1) []
-
-
-  let of_list lst =
-    let arr = Array.of_list lst in 
-    { arr ; len = Array.length arr}
-
-
-  let to_array d = 
-    Array.sub d.arr 0 d.len
-
-  let of_array src =
-    {
-      len = Array.length src;
-      arr = Array.copy src;
-      (* okay to call {!Array.copy}*)
-    }
-  let of_sub_array arr off len = 
-    { 
-      len = len ; 
-      arr = Array.sub arr off len  
-    }  
-  let unsafe_internal_array v = v.arr  
-  (* we can not call {!Array.copy} *)
-  let copy src =
-    let len = src.len in
-    {
-      len ;
-      arr = Array.sub src.arr 0 len ;
-    }
-  let reverse src = 
-    { len = src.len ;
-      arr = Ext_array.reverse src.arr 
-    } 
-  let sub src start len =
-    { len ; 
-      arr = Array.sub src.arr start len }
-
-  let iter f d = 
-    let arr = d.arr in 
-    for i = 0 to d.len - 1 do
-      f (Array.unsafe_get arr i)
-    done
-
-  let iteri f d =
-    let arr = d.arr in
-    for i = 0 to d.len - 1 do
-      f i (Array.unsafe_get arr i)
-    done
-
-  let iter_range ~from ~to_ f d =
-    if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
-    else 
-      let d_arr = d.arr in 
-      for i = from to to_ do 
-        f  (Array.unsafe_get d_arr i)
-      done
-
-  let iteri_range ~from ~to_ f d =
-    if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
-    else 
-      let d_arr = d.arr in 
-      for i = from to to_ do 
-        f i (Array.unsafe_get d_arr i)
-      done
-
-  let map f src =
-    let src_len = src.len in 
-    let arr = Array.make  src_len Resize.null in
-    let src_arr = src.arr in 
-    for i = 0 to src_len - 1 do
-      Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
-    done;
-    {
-      len = src_len;
-      arr = arr;
-    }
-
-  let map_into_array f src =
-    let src_len = src.len in 
-    let src_arr = src.arr in 
-    if src_len = 0 then [||]
-    else 
-      let first_one = f (Array.unsafe_get src_arr 0) in 
-      let arr = Array.make  src_len  first_one in
-      for i = 1 to src_len - 1 do
-        Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
-      done;
-      arr 
-  let map_into_list f src = 
-    let src_len = src.len in 
-    let src_arr = src.arr in 
-    if src_len = 0 then []
-    else 
-      let acc = ref [] in         
-      for i =  src_len - 1 downto 0 do
-        acc := f (Array.unsafe_get src_arr i) :: !acc
-      done;
-      !acc
-
-  let mapi f src =
-    let len = src.len in 
-    if len = 0 then { len ; arr = [| |] }
-    else 
-      let src_arr = src.arr in 
-      let arr = Array.make len (Array.unsafe_get src_arr 0) in
-      for i = 1 to len - 1 do
-        Array.unsafe_set arr i (f i (Array.unsafe_get src_arr i))
-      done;
-      {
-        len ;
-        arr ;
-      }
-
-  let fold_left f x a =
-    let rec loop a_len a_arr idx x =
-      if idx >= a_len then x else 
-        loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
-    in
-    loop a.len a.arr 0 x
-
-  let fold_right f a x =
-    let rec loop a_arr idx x =
-      if idx < 0 then x
-      else loop a_arr (idx - 1) (f (Array.unsafe_get a_arr idx) x)
-    in
-    loop a.arr (a.len - 1) x
-
-  (**  
-     [filter] and [inplace_filter]
-  *)
-  let filter f d =
-    let new_d = copy d in 
-    let new_d_arr = new_d.arr in 
-    let d_arr = d.arr in
-    let p = ref 0 in
-    for i = 0 to d.len  - 1 do
-      let x = Array.unsafe_get d_arr i in
-      (* TODO: can be optimized for segments blit *)
-      if f x  then
-        begin
-          Array.unsafe_set new_d_arr !p x;
-          incr p;
-        end;
-    done;
-    new_d.len <- !p;
-    new_d 
 
   let inplace_filter f d = 
     let d_arr = d.arr in 
@@ -7113,35 +7174,6 @@ module Make ( Resize : ResizeType) = struct
     delete_range d last  (d.len - last)
 
 
-  let equal eq x y : bool = 
-    if x.len <> y.len then false 
-    else 
-      let rec aux x_arr y_arr i =
-        if i < 0 then true else  
-        if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
-          aux x_arr y_arr (i - 1)
-        else false in 
-      aux x.arr y.arr (x.len - 1)
-
-  let get d i = 
-    if i < 0 || i >= d.len then invalid_arg "Resize_array.get"
-    else Array.unsafe_get d.arr i
-  let unsafe_get d i = Array.unsafe_get d.arr i 
-  let last d = 
-    if d.len <= 0 then invalid_arg   "Resize_array.last"
-    else Array.unsafe_get d.arr (d.len - 1)
-
-  let capacity d = Array.length d.arr
-
-  (* Attention can not use {!Array.exists} since the bound is not the same *)  
-  let exists p d = 
-    let a = d.arr in 
-    let n = d.len in   
-    let rec loop i =
-      if i = n then false
-      else if p (Array.unsafe_get a i) then true
-      else loop (succ i) in
-    loop 0
 end
 
 end
@@ -8991,7 +9023,15 @@ let suites =
       OUnit.assert_equal 
         (Int_vec.map_into_list (fun x -> x + 1) v)
         (List.map (fun x -> x + 1) lst)  
+    end;
+    __LOC__ >:: begin fun _ ->
+      let v = Int_vec.make 4 in 
+      Int_vec.push 1 v;
+      Int_vec.push 2 v;
+      Int_vec.reverse_in_place v;
+      v =~~ [|2;1|]
     end
+    ;
   ]
 
 end

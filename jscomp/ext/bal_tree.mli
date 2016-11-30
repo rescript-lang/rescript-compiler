@@ -14,62 +14,12 @@
 (** Balanced tree based on stdlib distribution *)
 
 
-type 'a t = 
-    | Empty 
-    | Node of 'a t * 'a * 'a t * int 
+type 'a t = 'a Bal_set_common.t 
 (** this operation is exposed intentionally , so that
     users can whip up a specialized collection quickly
 *)
 
-(** operations does not depend on ordering, given the set is already ordered *)
 
-val empty: 'a t
-
-val singleton: 'a -> 'a t
-
-
-val is_empty: 'a t -> bool
-
-val cardinal: 'a t -> int
-
-val min_elt: 'a t -> 'a
-(**  raise [Not_found] if the set is empty. *)
-
-val max_elt: 'a t -> 'a
-(** raise [Not_found] *)
-
-val choose: 'a t -> 'a
-(** raise [Not_found] if the set is empty. Which element is chosen is unspecified,
-    but equal elements will be chosen for equal sets. *)
-
-val elements: 'a t -> 'a list
-(** Return the list of all elements of the given set.
-    The returned list is sorted in increasing order with respect
-*)
-
-val iter: ('a -> unit) -> 'a t -> unit
-(** [iter f s] applies [f] in turn to all elements of [s].
-    The elements of [s] are presented to [f] in increasing order
-    with respect to the ordering over the type of the elements. *)
-
-val fold: ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-(** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
-    where [x1 ... xN] are the elements of [s], in increasing order. *)
-
-val for_all: ('a -> bool) -> 'a t -> bool
-(** [for_all p s] checks if all elements of the set
-    satisfy the predicate [p]. *)
-
-val exists: ('a -> bool) -> 'a t -> bool
-
-val of_sorted_list : 'a list -> 'a t
-val of_sorted_array : 'a array -> 'a t
-
-val internal_bal : 'a t -> 'a -> 'a t -> 'a t 
-val internal_merge : 'a t -> 'a t -> 'a t
-val internal_join : 'a t -> 'a ->  'a t -> 'a t 
-val internal_concat : 'a t -> 'a t -> 'a t   
-(** operations depend on ordering *)
 
 val mem: 'a -> 'a t -> bool
 (** [mem x s] tests whether [x] belongs to the set [s]. *)
@@ -95,13 +45,6 @@ val equal: 'a t -> 'a t -> bool
 
 val subset: 'a t -> 'a t -> bool
 
-val filter: ('a -> bool) -> 'a t -> 'a t
-
-val partition: ('a -> bool) -> 'a t -> 'a t * 'a t
-(** [partition p s] returns a pair of sets [(s1, s2)], where
-    [s1] is the set of all the elements of [s] that satisfy the
-    predicate [p], and [s2] is the set of all the elements of
-    [s] that do not satisfy [p]. *)
 
 
 val split: 'a -> 'a t -> 'a t * bool * 'a t

@@ -61,7 +61,7 @@ sig
   val to_array : t -> elt array 
   val of_array : elt array -> t
   val copy : t -> t
-  val reverse : t -> t  
+  val reverse_in_place : t -> unit
   val iter : (elt -> unit) -> t -> unit 
   val iteri : (int -> elt -> unit ) -> t -> unit 
   val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 

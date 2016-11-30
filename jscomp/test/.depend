@@ -56,8 +56,9 @@ array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj array_test.cmi
 attr_test.cmj :
 b.cmj :
+bal_set_common.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 bal_tree.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj ../stdlib/list.cmj \
-    ../stdlib/array.cmj
+    bal_set_common.cmj ../stdlib/array.cmj
 basic_module_test.cmj : ../stdlib/set.cmj pr6726.cmj offset.cmj \
     mt_global.cmj mt.cmj basic_module_test.cmi
 bdd.cmj : ../stdlib/array.cmj
@@ -341,7 +342,7 @@ string_get_set_test.cmj : mt.cmj
 string_literal_print_test.cmj : mt.cmj
 string_runtime_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ../runtime/caml_string.cmj ../stdlib/bytes.cmj
-string_set.cmj : ../stdlib/string.cmj ../stdlib/list.cmj bal_tree.cmj
+string_set.cmj : ../stdlib/string.cmj ../stdlib/list.cmj bal_set_common.cmj
 string_set_test.cmj : string_set.cmj mt.cmj
 string_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ext_string.cmj ../stdlib/bytes.cmj

@@ -1,7 +1,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Bal_tree                = require("./bal_tree");
+var Bal_set_common          = require("./bal_set_common");
 var $$String                = require("../../lib/js/string");
 var Caml_string             = require("../../lib/js/caml_string");
 var List                    = require("../../lib/js/list");
@@ -14,10 +14,10 @@ function add(x, tree) {
     var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
-        return Bal_tree.internal_bal(add(x, l), v, r);
+        return Bal_set_common.internal_bal(add(x, l), v, r);
       }
       else {
-        return Bal_tree.internal_bal(l, v, add(x, r));
+        return Bal_set_common.internal_bal(l, v, add(x, r));
       }
     }
     else {
@@ -69,26 +69,26 @@ function of_list(l) {
           var x3 = match$2[0];
           if (match$3) {
             if (match$3[1]) {
-              return Bal_tree.of_sorted_list(List.sort_uniq($$String.compare, l));
+              return Bal_set_common.of_sorted_list(List.sort_uniq($$String.compare, l));
             }
             else {
-              return add(match$3[0], add(x3, add(x2, add(x1, Bal_tree.singleton(x0)))));
+              return add(match$3[0], add(x3, add(x2, add(x1, Bal_set_common.singleton(x0)))));
             }
           }
           else {
-            return add(x3, add(x2, add(x1, Bal_tree.singleton(x0))));
+            return add(x3, add(x2, add(x1, Bal_set_common.singleton(x0))));
           }
         }
         else {
-          return add(x2, add(x1, Bal_tree.singleton(x0)));
+          return add(x2, add(x1, Bal_set_common.singleton(x0)));
         }
       }
       else {
-        return add(x1, Bal_tree.singleton(x0));
+        return add(x1, Bal_set_common.singleton(x0));
       }
     }
     else {
-      return Bal_tree.singleton(x0);
+      return Bal_set_common.singleton(x0);
     }
   }
   else {
@@ -121,35 +121,35 @@ var compare_elt = $$String.compare;
 
 var empty = /* Empty */0;
 
-var is_empty = Bal_tree.is_empty;
+var is_empty = Bal_set_common.is_empty;
 
-var iter = Bal_tree.iter;
+var iter = Bal_set_common.iter;
 
-var fold = Bal_tree.fold;
+var fold = Bal_set_common.fold;
 
-var for_all = Bal_tree.for_all;
+var for_all = Bal_set_common.for_all;
 
-var exists = Bal_tree.exists;
+var exists = Bal_set_common.exists;
 
-var singleton = Bal_tree.singleton;
+var singleton = Bal_set_common.singleton;
 
-var cardinal = Bal_tree.cardinal;
+var cardinal = Bal_set_common.cardinal;
 
-var elements = Bal_tree.elements;
+var elements = Bal_set_common.elements;
 
-var min_elt = Bal_tree.min_elt;
+var min_elt = Bal_set_common.min_elt;
 
-var max_elt = Bal_tree.max_elt;
+var max_elt = Bal_set_common.max_elt;
 
-var choose = Bal_tree.choose;
+var choose = Bal_set_common.choose;
 
-var partition = Bal_tree.partition;
+var partition = Bal_set_common.partition;
 
-var filter = Bal_tree.filter;
+var filter = Bal_set_common.filter;
 
-var of_sorted_list = Bal_tree.of_sorted_list;
+var of_sorted_list = Bal_set_common.of_sorted_list;
 
-var of_sorted_array = Bal_tree.of_sorted_array;
+var of_sorted_array = Bal_set_common.of_sorted_array;
 
 exports.compare_elt     = compare_elt;
 exports.empty           = empty;
