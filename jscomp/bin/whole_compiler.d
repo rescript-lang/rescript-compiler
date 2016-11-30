@@ -52,6 +52,7 @@ bin/whole_compiler.ml : ext/ext_format.ml
 bin/whole_compiler.ml : ext/ext_format.mli
 bin/whole_compiler.ml : ext/ext_list.ml
 bin/whole_compiler.ml : ext/ext_list.mli
+bin/whole_compiler.ml : ext/bal_map_common.ml
 bin/whole_compiler.ml : ext/string_map.ml
 bin/whole_compiler.ml : ext/string_map.mli
 bin/whole_compiler.ml : depends/ast_extract.ml
@@ -129,6 +130,8 @@ bin/whole_compiler.ml : ../ocaml/driver/compmisc.ml
 bin/whole_compiler.ml : ../ocaml/driver/compmisc.mli
 bin/whole_compiler.ml : common/ext_log.ml
 bin/whole_compiler.ml : common/ext_log.mli
+bin/whole_compiler.ml : ext/bal_tree.ml
+bin/whole_compiler.ml : ext/bal_tree.mli
 bin/whole_compiler.ml : ext/string_set.ml
 bin/whole_compiler.ml : ext/string_set.mli
 bin/whole_compiler.ml : ext/ext_ident.ml

@@ -1947,6 +1947,1061 @@ let suites =
     end     ;
     ]
 end
+module Bal_tree : sig 
+#1 "bal_tree.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Balanced tree based on stdlib distribution *)
+
+
+type 'a t = 
+    | Empty 
+    | Node of 'a t * 'a * 'a t * int 
+(** this operation is exposed intentionally , so that
+    users can whip up a specialized collection quickly
+*)
+
+(** operations does not depend on ordering, given the set is already ordered *)
+
+val empty: 'a t
+
+val singleton: 'a -> 'a t
+
+
+val is_empty: 'a t -> bool
+
+val cardinal: 'a t -> int
+
+val min_elt: 'a t -> 'a
+(**  raise [Not_found] if the set is empty. *)
+
+val max_elt: 'a t -> 'a
+(** raise [Not_found] *)
+
+val choose: 'a t -> 'a
+(** raise [Not_found] if the set is empty. Which element is chosen is unspecified,
+    but equal elements will be chosen for equal sets. *)
+
+val elements: 'a t -> 'a list
+(** Return the list of all elements of the given set.
+    The returned list is sorted in increasing order with respect
+*)
+
+val iter: ('a -> unit) -> 'a t -> unit
+(** [iter f s] applies [f] in turn to all elements of [s].
+    The elements of [s] are presented to [f] in increasing order
+    with respect to the ordering over the type of the elements. *)
+
+val fold: ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+(** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
+    where [x1 ... xN] are the elements of [s], in increasing order. *)
+
+val for_all: ('a -> bool) -> 'a t -> bool
+(** [for_all p s] checks if all elements of the set
+    satisfy the predicate [p]. *)
+
+val exists: ('a -> bool) -> 'a t -> bool
+
+val of_sorted_list : 'a list -> 'a t
+val of_sorted_array : 'a array -> 'a t
+
+val internal_bal : 'a t -> 'a -> 'a t -> 'a t 
+val internal_merge : 'a t -> 'a t -> 'a t
+val internal_join : 'a t -> 'a ->  'a t -> 'a t 
+val internal_concat : 'a t -> 'a t -> 'a t   
+(** operations depend on ordering *)
+
+val mem: 'a -> 'a t -> bool
+(** [mem x s] tests whether [x] belongs to the set [s]. *)
+
+val add: 'a -> 'a t -> 'a t
+(** [add x s] returns a set containing all elements of [s],
+    plus [x]. If [x] was already in [s], [s] is returned unchanged. *)
+
+val remove: 'a -> 'a t -> 'a t
+(** [remove x s] returns a set containing all elements of [s],
+    except [x]. If [x] was not in [s], [s] is returned unchanged. *)
+
+val union: 'a t -> 'a t -> 'a t
+
+val inter: 'a t -> 'a t -> 'a t
+
+val diff: 'a t -> 'a t -> 'a t
+
+
+val compare: 'a t -> 'a t -> int
+
+val equal: 'a t -> 'a t -> bool
+
+val subset: 'a t -> 'a t -> bool
+
+val filter: ('a -> bool) -> 'a t -> 'a t
+
+val partition: ('a -> bool) -> 'a t -> 'a t * 'a t
+(** [partition p s] returns a pair of sets [(s1, s2)], where
+    [s1] is the set of all the elements of [s] that satisfy the
+    predicate [p], and [s2] is the set of all the elements of
+    [s] that do not satisfy [p]. *)
+
+
+val split: 'a -> 'a t -> 'a t * bool * 'a t
+(** [split x s] returns a triple [(l, present, r)], where
+      [l] is the set of elements of [s] that are
+      strictly less than [x];
+      [r] is the set of elements of [s] that are
+      strictly greater than [x];
+      [present] is [false] if [s] contains no element equal to [x],
+      or [true] if [s] contains an element equal to [x]. *)
+
+val find: 'a -> 'a t -> 'a
+(** [find x s] returns the element of [s] equal to [x] (according
+    to [Ord.compare]), or raise [Not_found] if no such element
+    exists.
+*)
+
+val of_list: 'a list -> 'a t
+
+val of_array : 'a array -> 'a t
+
+val invariant : 'a t -> bool
+
+
+module Make (Ord : Set.OrderedType) : sig
+  type elt = Ord.t
+  type t
+  val empty: t
+  val is_empty: t -> bool
+  val iter: (elt -> unit) -> t -> unit
+  val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
+  val for_all: (elt -> bool) -> t -> bool
+  val exists: (elt -> bool) -> t -> bool
+  val singleton: elt -> t
+  val cardinal: t -> int
+  val elements: t -> elt list
+  val min_elt: t -> elt
+  val max_elt: t -> elt
+  val choose: t -> elt
+  val of_sorted_list : elt list -> t 
+  val of_sorted_array : elt array -> t
+  val partition: (elt -> bool) -> t -> t * t
+
+  val mem: elt -> t -> bool
+  val add: elt -> t -> t
+  val remove: elt -> t -> t
+  val union: t -> t -> t
+  val inter: t -> t -> t
+  val diff: t -> t -> t
+  val compare: t -> t -> int
+  val equal: t -> t -> bool
+  val subset: t -> t -> bool
+  val filter: (elt -> bool) -> t -> t
+  
+  val split: elt -> t -> t * bool * t
+  val find: elt -> t -> elt
+  val of_list: elt list -> t
+
+
+end 
+
+end = struct
+#1 "bal_tree.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** balanced tree based on stdlib distribution *)
+
+type 'a t = 
+  | Empty 
+  | Node of 'a t * 'a * 'a t * int 
+
+type 'a enumeration = 
+  | End | More of 'a * 'a t * 'a enumeration
+
+
+let rec cons_enum s e = 
+  match s with 
+  | Empty -> e 
+  | Node(l,v,r,_) -> cons_enum l (More(v,r,e))
+
+let rec height = function
+  | Empty -> 0 
+  | Node(_,_,_,h) -> h   
+
+(* Smallest and greatest element of a set *)
+
+let rec min_elt = function
+    Empty -> raise Not_found
+  | Node(Empty, v, r, _) -> v
+  | Node(l, v, r, _) -> min_elt l
+
+let rec max_elt = function
+    Empty -> raise Not_found
+  | Node(l, v, Empty, _) -> v
+  | Node(l, v, r, _) -> max_elt r
+
+
+
+
+let empty = Empty
+
+let is_empty = function Empty -> true | _ -> false
+
+let rec cardinal = function
+    Empty -> 0
+  | Node(l, v, r, _) -> cardinal l + 1 + cardinal r
+
+let rec elements_aux accu = function
+    Empty -> accu
+  | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
+
+let elements s =
+  elements_aux [] s
+
+let choose = min_elt
+
+let rec iter f = function
+  | Empty -> ()
+  | Node(l, v, r, _) -> iter f l; f v; iter f r
+
+let rec fold f s accu =
+  match s with
+  | Empty -> accu
+  | Node(l, v, r, _) -> fold f r (f v (fold f l accu))
+
+let rec for_all p = function
+  | Empty -> true
+  | Node(l, v, r, _) -> p v && for_all p l && for_all p r
+
+let rec exists p = function
+  | Empty -> false
+  | Node(l, v, r, _) -> p v || exists p l || exists p r
+
+
+let max_int3 (a : int) b c = 
+  if a >= b then 
+    if a >= c then a 
+    else c
+  else 
+  if b >=c then b
+  else c     
+let max_int_2 (a : int) b =  
+  if a >= b then a else b 
+
+
+
+exception Height_invariant_broken
+exception Height_diff_borken 
+
+let rec check_height_and_diff = 
+  function 
+  | Empty -> 0
+  | Node(l,_,r,h) -> 
+    let hl = check_height_and_diff l in
+    let hr = check_height_and_diff r in
+    if h <>  max_int_2 hl hr + 1 then raise Height_invariant_broken
+    else  
+      let diff = (abs (hl - hr)) in  
+      if  diff > 2 then raise Height_diff_borken 
+      else h     
+
+let check tree = 
+  ignore (check_height_and_diff tree)
+(* 
+    Invariants: 
+    1. {[ l < v < r]}
+    2. l and r balanced 
+    3. [height l] - [height r] <= 2
+*)
+let create l v r = 
+  let hl = match l with Empty -> 0 | Node (_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node (_,_,_,h) -> h in
+  Node(l,v,r, if hl >= hr then hl + 1 else hr + 1)         
+
+(* Same as create, but performs one step of rebalancing if necessary.
+    Invariants:
+    1. {[ l < v < r ]}
+    2. l and r balanced 
+    3. | height l - height r | <= 3.
+
+    Proof by indunction
+
+    Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
+*)
+(*
+let internal_bal l v r =
+  match l with
+  | Empty ->
+    begin match r with 
+      | Empty -> Node(Empty,v,Empty,1)
+      | Node(rl,rv,rr,hr) -> 
+        if hr > 2 then
+          begin match rl with
+            | Empty -> create (* create l v rl *) (Node (Empty,v,Empty,1)) rv rr 
+            | Node(rll,rlv,rlr,hrl) -> 
+              let hrr = height rr in 
+              if hrr >= hrl then 
+                Node  
+                  ((Node (Empty,v,rl,hrl+1))(* create l v rl *),
+                   rv, rr, if hrr = hrl then hrr + 2 else hrr + 1) 
+              else 
+                let hrll = height rll in 
+                let hrlr = height rlr in 
+                create
+                  (Node(Empty,v,rll,hrll + 1)) 
+                  (* create l v rll *) 
+                  rlv 
+                  (Node (rlr,rv,rr, if hrlr > hrr then hrlr + 1 else hrr + 1))
+                  (* create rlr rv rr *)    
+          end 
+        else Node (l,v,r, hr + 1)  
+    end
+  | Node(ll,lv,lr,hl) ->
+    begin match r with 
+      | Empty ->
+        if hl > 2 then 
+          (*if height ll >= height lr then create ll lv (create lr v r)
+            else*)
+          begin match lr with 
+            | Empty -> 
+              create ll lv (Node (Empty,v,Empty, 1)) 
+            (* create lr v r *)  
+            | Node(lrl,lrv,lrr,hlr) -> 
+              if height ll >= hlr then 
+                create ll lv
+                  (Node(lr,v,Empty,hlr+1)) 
+                  (*create lr v r*)
+              else 
+                let hlrr = height lrr in  
+                create 
+                  (create ll lv lrl)
+                  lrv
+                  (Node(lrr,v,Empty,hlrr + 1)) 
+                  (*create lrr v r*)
+          end 
+        else Node(l,v,r, hl+1)    
+      | Node(rl,rv,rr,hr) ->
+        if hl > hr + 2 then           
+          begin match lr with 
+            | Empty ->   create ll lv (create lr v r)
+            | Node(lrl,lrv,lrr,_) ->
+              if height ll >= height lr then create ll lv (create lr v r)
+              else 
+                create (create ll lv lrl) lrv (create lrr v r)
+          end 
+        else
+        if hr > hl + 2 then             
+          begin match rl with 
+            | Empty ->
+              let hrr = height rr in   
+              Node(
+                (Node (l,v,Empty,hl + 1))
+                (*create l v rl*)
+                ,
+                rv,
+                rr,
+                if hrr > hr then hrr + 1 else hl + 2 
+              )
+            | Node(rll,rlv,rlr,_) ->
+              let hrr = height rr in 
+              let hrl = height rl in 
+              if hrr >= hrl then create (create l v rl) rv rr else 
+                create (create l v rll) rlv (create rlr rv rr)
+          end
+        else  
+          Node(l,v,r, if hl >= hr then hl+1 else hr + 1)
+    end
+*)
+let internal_bal l v r =
+  let hl = match l with Empty -> 0 | Node(_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node(_,_,_,h) -> h in
+  if hl > hr + 2 then begin
+    match l with
+      Empty -> assert false
+    | Node(ll, lv, lr, _) ->   
+      if height ll >= height lr then
+        (* [ll] >~ [lr] 
+           [ll] >~ [r] 
+           [ll] ~~ [ lr ^ r]  
+        *)
+        create ll lv (create lr v r)
+      else begin
+        match lr with
+          Empty -> assert false
+        | Node(lrl, lrv, lrr, _)->
+          (* [lr] >~ [ll]
+             [lr] >~ [r]
+             [ll ^ lrl] ~~ [lrr ^ r]   
+          *)
+          create (create ll lv lrl) lrv (create lrr v r)
+      end
+  end else if hr > hl + 2 then begin
+    match r with
+      Empty -> assert false
+    | Node(rl, rv, rr, _) ->
+      if height rr >= height rl then
+        create (create l v rl) rv rr
+      else begin
+        match rl with
+          Empty -> assert false
+        | Node(rll, rlv, rlr, _) ->
+          create (create l v rll) rlv (create rlr rv rr)
+      end
+  end else
+    Node(l, v, r, (if hl >= hr then hl + 1 else hr + 1))    
+
+let rec remove_min_elt = function
+    Empty -> invalid_arg "Set.remove_min_elt"
+  | Node(Empty, v, r, _) -> r
+  | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
+
+let singleton x = Node(Empty, x, Empty, 1)    
+
+(* 
+   All elements of l must precede the elements of r.
+       Assume | height l - height r | <= 2.
+   weak form of [concat] 
+*)
+
+let internal_merge l r =
+  match (l, r) with
+  | (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
+
+(* Beware: those two functions assume that the added v is *strictly*
+    smaller (or bigger) than all the present elements in the tree; it
+    does not test for equality with the current min (or max) element.
+    Indeed, they are only used during the "join" operation which
+    respects this precondition.
+*)
+
+let rec add_min_element v = function
+  | Empty -> singleton v
+  | Node (l, x, r, h) ->
+    internal_bal (add_min_element v l) x r
+
+let rec add_max_element v = function
+  | Empty -> singleton v
+  | Node (l, x, r, h) ->
+    internal_bal l x (add_max_element v r)
+
+(** 
+    Invariants:
+    1. l < v < r 
+    2. l and r are balanced 
+
+    Proof by induction
+    The height of output will be ~~ (max (height l) (height r) + 2)
+    Also use the lemma from [bal]
+*)
+let rec internal_join l v r =
+  match (l, r) with
+    (Empty, _) -> add_min_element v r
+  | (_, Empty) -> add_max_element v l
+  | (Node(ll, lv, lr, lh), Node(rl, rv, rr, rh)) ->
+    if lh > rh + 2 then 
+      (* proof by induction:
+         now [height of ll] is [lh - 1] 
+      *)
+      internal_bal ll lv (internal_join lr v r) 
+    else
+    if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
+    else create l v r
+
+
+(*
+    Required Invariants: 
+    [t1] < [t2]  
+*)
+let internal_concat t1 t2 =
+  match (t1, t2) with
+  | (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
+
+let rec filter p = function
+  | Empty -> Empty
+  | Node(l, v, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let l' = filter p l in
+    let pv = p v in
+    let r' = filter p r in
+    if pv then internal_join l' v r' else internal_concat l' r'
+
+
+let rec partition p = function
+  | Empty -> (Empty, Empty)
+  | Node(l, v, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition p l in
+    let pv = p v in
+    let (rt, rf) = partition p r in
+    if pv
+    then (internal_join lt v rt, internal_concat lf rf)
+    else (internal_concat lt rt, internal_join lf v rf)
+
+let of_sorted_list l =
+  let rec sub n l =
+    match n, l with
+    | 0, l -> Empty, l
+    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
+    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
+    | 3, x0 :: x1 :: x2 :: l ->
+      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
+    | n, l ->
+      let nl = n / 2 in
+      let left, l = sub nl l in
+      match l with
+      | [] -> assert false
+      | mid :: l ->
+        let right, l = sub (n - nl - 1) l in
+        create left mid right, l
+  in
+  fst (sub (List.length l) l)
+
+let of_sorted_array l =   
+  let rec sub start n l  =
+    if n = 0 then Empty else 
+    if n = 1 then 
+      let x0 = Array.unsafe_get l start in
+      Node (Empty, x0, Empty, 1)
+    else if n = 2 then     
+      let x0 = Array.unsafe_get l start in 
+      let x1 = Array.unsafe_get l (start + 1) in 
+      Node (Node(Empty, x0, Empty, 1), x1, Empty, 2) else
+    if n = 3 then 
+      let x0 = Array.unsafe_get l start in 
+      let x1 = Array.unsafe_get l (start + 1) in
+      let x2 = Array.unsafe_get l (start + 2) in
+      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2)
+    else 
+      let nl = n / 2 in
+      let left = sub start nl l in
+      let mid = start + nl in 
+      let v = Array.unsafe_get l mid in 
+      let right = sub (mid + 1) (n - nl - 1) l in        
+      create left v right
+  in
+  sub 0 (Array.length l) l 
+
+
+
+(******************************************************************)
+(* Functions below require ordering *)
+
+(* Splitting.  
+    split x s returns a triple (l, present, r) where
+        - l is the set of elements of s that are < x
+        - r is the set of elements of s that are > x
+        - present is false if s contains no element equal to x,
+          or true if s contains an element equal to x.
+*)
+
+let rec split x = function
+  | Empty ->
+    (Empty, false, Empty)
+  | Node(l, v, r, _) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then (l, true, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, internal_join rl v r)
+    else
+      let (lr, pres, rr) = split x r in (internal_join l v lr, pres, rr)
+
+let rec add x = function
+    Empty -> Node(Empty, x, Empty, 1)
+  | Node(l, v, r, _) as t ->
+    let c = Pervasives.compare x v in
+    if c = 0 then t else
+    if c < 0 then internal_bal (add x l) v r else internal_bal l v (add x r)
+
+let rec union s1 s2 =
+  match (s1, s2) with
+  | (Empty, t2) -> t2
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+    if h1 >= h2 then
+      if h2 = 1 then add v2 s1 else begin
+        let (l2, _, r2) = split v1 s2 in
+        internal_join (union l1 l2) v1 (union r1 r2)
+      end
+    else
+    if h1 = 1 then add v1 s2 else begin
+      let (l1, _, r1) = split v2 s1 in
+      internal_join (union l1 l2) v2 (union r1 r2)
+    end    
+
+let rec inter s1 s2 =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> Empty
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        internal_concat (inter l1 l2) (inter r1 r2)
+      | (l2, true, r2) ->
+        internal_join (inter l1 l2) v1 (inter r1 r2)
+    end 
+
+let rec diff s1 s2 =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        internal_join (diff l1 l2) v1 (diff r1 r2)
+      | (l2, true, r2) ->
+        internal_concat (diff l1 l2) (diff r1 r2)    
+    end
+
+
+let rec mem x = function
+    Empty -> false
+  | Node(l, v, r, _) ->
+    let c = Pervasives.compare x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x = function
+    Empty -> Empty
+  | Node(l, v, r, _) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then internal_merge l r else
+    if c < 0 then internal_bal (remove x l) v r else internal_bal l v (remove x r)
+
+
+let rec compare_aux e1 e2 =
+  match (e1, e2) with
+    (End, End) -> 0
+  | (End, _)  -> -1
+  | (_, End) -> 1
+  | (More(v1, r1, e1), More(v2, r2, e2)) ->
+    let c = Pervasives.compare v1 v2 in
+    if c <> 0
+    then c
+    else compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+
+let compare s1 s2 =
+  compare_aux (cons_enum s1 End) (cons_enum s2 End)
+
+let equal s1 s2 =
+  compare s1 s2 = 0
+
+let rec subset s1 s2 =
+  match (s1, s2) with
+    Empty, _ ->
+    true
+  | _, Empty ->
+    false
+  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
+    let c = Pervasives.compare v1 v2 in
+    if c = 0 then
+      subset l1 l2 && subset r1 r2
+    else if c < 0 then
+      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
+    else
+      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
+
+
+
+
+let rec find x = function
+    Empty -> raise Not_found
+  | Node(l, v, r, _) ->
+    let c = Pervasives.compare x v in
+    if c = 0 then v
+    else find x (if c < 0 then l else r)
+
+
+
+let of_list l =
+  match l with
+  | [] -> empty
+  | [x0] -> singleton x0
+  | [x0; x1] -> add x1 (singleton x0)
+  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
+  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
+  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
+  | _ -> of_sorted_list (List.sort_uniq Pervasives.compare l)
+
+let of_array l = 
+  Array.fold_left (fun  acc x -> add x acc) empty l
+let is_ordered cmp tree =
+  let rec is_ordered_min_max tree =
+    match tree with
+    | Empty -> `Empty
+    | Node(l,v,r,_) -> 
+      begin match is_ordered_min_max l with
+        | `No -> `No 
+        | `Empty ->
+          begin match is_ordered_min_max r with
+            | `No  -> `No
+            | `Empty -> `V (v,v)
+            | `V(l,r) ->
+              if cmp v l < 0 then
+                `V(v,r)
+              else
+                `No
+          end
+        | `V(min_v,max_v)->
+          begin match is_ordered_min_max r with
+            | `No -> `No
+            | `Empty -> 
+              if Pervasives.compare max_v v < 0 then 
+                `V(min_v,v)
+              else
+                `No 
+            | `V(min_v_r, max_v_r) ->
+              if Pervasives.compare max_v min_v_r < 0 then
+                `V(min_v,max_v_r)
+              else `No
+          end
+      end  in 
+  is_ordered_min_max tree <> `No 
+
+
+(* also check order *)
+let invariant t =
+  check t; 
+  is_ordered Pervasives.compare t
+
+module Make ( S : Set.OrderedType) = struct
+  type elt = S.t
+  type nonrec t = elt t 
+  let empty = empty 
+  let is_empty = is_empty
+  let iter = iter 
+  let fold = fold 
+  let for_all = for_all 
+  let exists = exists 
+  let singleton = singleton 
+  let cardinal = cardinal
+  let elements = elements
+  let min_elt = min_elt
+  let max_elt = max_elt
+  let choose = choose 
+  let of_sorted_list = of_sorted_list
+  let of_sorted_array = of_sorted_array
+  let partition = partition 
+  let filter = filter 
+  let of_sorted_list = of_sorted_list
+  let of_sorted_array = of_sorted_array
+  let rec split x = function
+    | Empty ->
+      (Empty, false, Empty)
+    | Node(l, v, r, _) ->
+      let c = S.compare x v in
+      if c = 0 then (l, true, r)
+      else if c < 0 then
+        let (ll, pres, rl) = split x l in (ll, pres, internal_join rl v r)
+      else
+        let (lr, pres, rr) = split x r in (internal_join l v lr, pres, rr)
+  let rec add x = function
+      Empty -> Node(Empty, x, Empty, 1)
+    | Node(l, v, r, _) as t ->
+      let c = S.compare x v in
+      if c = 0 then t else
+      if c < 0 then internal_bal (add x l) v r else internal_bal l v (add x r)
+
+  let rec union s1 s2 =
+    match (s1, s2) with
+    | (Empty, t2) -> t2
+    | (t1, Empty) -> t1
+    | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+      if h1 >= h2 then
+        if h2 = 1 then add v2 s1 else begin
+          let (l2, _, r2) = split v1 s2 in
+          internal_join (union l1 l2) v1 (union r1 r2)
+        end
+      else
+      if h1 = 1 then add v1 s2 else begin
+        let (l1, _, r1) = split v2 s1 in
+        internal_join (union l1 l2) v2 (union r1 r2)
+      end    
+
+  let rec inter s1 s2 =
+    match (s1, s2) with
+    | (Empty, t2) -> Empty
+    | (t1, Empty) -> Empty
+    | (Node(l1, v1, r1, _), t2) ->
+      begin match split v1 t2 with
+        | (l2, false, r2) ->
+          internal_concat (inter l1 l2) (inter r1 r2)
+        | (l2, true, r2) ->
+          internal_join (inter l1 l2) v1 (inter r1 r2)
+      end 
+
+  let rec diff s1 s2 =
+    match (s1, s2) with
+    | (Empty, t2) -> Empty
+    | (t1, Empty) -> t1
+    | (Node(l1, v1, r1, _), t2) ->
+      begin match split v1 t2 with
+        | (l2, false, r2) ->
+          internal_join (diff l1 l2) v1 (diff r1 r2)
+        | (l2, true, r2) ->
+          internal_concat (diff l1 l2) (diff r1 r2)    
+      end
+
+
+  let rec mem x = function
+      Empty -> false
+    | Node(l, v, r, _) ->
+      let c = S.compare x v in
+      c = 0 || mem x (if c < 0 then l else r)
+
+  let rec remove x = function
+      Empty -> Empty
+    | Node(l, v, r, _) ->
+      let c = S.compare x v in
+      if c = 0 then internal_merge l r else
+      if c < 0 then internal_bal (remove x l) v r else internal_bal l v (remove x r)
+
+
+  let rec compare_aux e1 e2 =
+    match (e1, e2) with
+      (End, End) -> 0
+    | (End, _)  -> -1
+    | (_, End) -> 1
+    | (More(v1, r1, e1), More(v2, r2, e2)) ->
+      let c = S.compare v1 v2 in
+      if c <> 0
+      then c
+      else compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+
+  let compare s1 s2 =
+    compare_aux (cons_enum s1 End) (cons_enum s2 End)
+
+  let equal s1 s2 =
+    compare s1 s2 = 0
+
+  let rec subset s1 s2 =
+    match (s1, s2) with
+      Empty, _ ->
+      true
+    | _, Empty ->
+      false
+    | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
+      let c = S.compare v1 v2 in
+      if c = 0 then
+        subset l1 l2 && subset r1 r2
+      else if c < 0 then
+        subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
+      else
+        subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
+
+
+
+
+  let rec find x = function
+      Empty -> raise Not_found
+    | Node(l, v, r, _) ->
+      let c = S.compare x v in
+      if c = 0 then v
+      else find x (if c < 0 then l else r)
+
+
+
+  let of_list l =
+    match l with
+    | [] -> empty
+    | [x0] -> singleton x0
+    | [x0; x1] -> add x1 (singleton x0)
+    | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
+    | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
+    | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
+    | _ -> of_sorted_list (List.sort_uniq S.compare l)
+
+  let of_array l = 
+    Array.fold_left (fun  acc x -> add x acc) empty l
+
+  (* also check order *)
+  let invariant t =
+    check t ;
+    is_ordered S.compare t          
+end 
+
+end
+module Ounit_bal_tree_tests
+= struct
+#1 "ounit_bal_tree_tests.ml"
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+let rec add_int x (tree : _ Bal_tree.t) : _ Bal_tree.t =
+  match tree with  
+    | Empty -> Node(Empty, x, Empty, 1)
+  | Node(l, v, r, _) as t ->
+    let c = Pervasives.compare (x : int) v in
+    if c = 0 then t else
+    if c < 0 then Bal_tree.internal_bal (add_int x l) v r 
+    else Bal_tree.internal_bal l v (add_int x r)
+
+let suites = 
+  __FILE__ >:::
+  [
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
+        (Bal_tree.invariant 
+           (Bal_tree.of_array (Array.init 1000 (fun n -> n))))
+    end;
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
+        (Bal_tree.invariant 
+           (Bal_tree.of_array (Array.init 1000 (fun n -> 1000-n))))
+    end;
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
+        (Bal_tree.invariant 
+           (Bal_tree.of_array (Array.init 1000 (fun n -> Random.int 1000))))
+    end;
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
+        (Bal_tree.invariant 
+           (Bal_tree.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> n)))))
+    end;
+    __LOC__ >:: begin fun _ ->
+      let arr = Array.init 1000 (fun n -> n) in
+      let set = (Bal_tree.of_sorted_array arr) in
+      OUnit.assert_bool __LOC__
+        (Bal_tree.invariant set );
+      OUnit.assert_equal 1000 (Bal_tree.cardinal set)    
+    end;
+    __LOC__ >:: begin fun _ ->
+      for i = 0 to 200 do 
+        let arr = Array.init i (fun n -> n) in
+        let set = (Bal_tree.of_sorted_array arr) in
+        OUnit.assert_bool __LOC__
+          (Bal_tree.invariant set );
+        OUnit.assert_equal i (Bal_tree.cardinal set)
+      done    
+    end;
+    __LOC__ >:: begin fun _ ->
+      let arr_size = 200 in
+      let arr_sets = Array.make 200 Bal_tree.empty in  
+      for i = 0 to arr_size - 1 do
+        let size = Random.int 1000 in  
+        let arr = Array.init size (fun n -> n) in
+        arr_sets.(i)<- (Bal_tree.of_sorted_array arr)            
+      done;
+      let large = Array.fold_left Bal_tree.union Bal_tree.empty arr_sets in 
+      OUnit.assert_bool __LOC__ (Bal_tree.invariant large)
+    end;
+
+     __LOC__ >:: begin fun _ ->
+      let arr_size = 1_000_000 in
+      let v = ref Bal_tree.empty in 
+      for i = 0 to arr_size - 1 do
+        let size = Random.int 0x3FFFFFFF in  
+         v := add_int size !v                      
+      done;       
+      OUnit.assert_bool __LOC__ (Bal_tree.invariant !v)
+    end;
+
+  ]
+
+let time description f  =
+  let start = Unix.gettimeofday () in 
+  f ();
+  let finish = Unix.gettimeofday () in
+  Printf.printf "%s elapsed %f\n" description (finish -. start)  
+
+type ident = { stamp : int ; name : string ; mutable flags : int}
+
+module Ident_set = Set.Make(struct type t = ident 
+    let compare = Pervasives.compare end)
+
+let compare_ident x y = 
+  let a =  compare (x.stamp : int) y.stamp in 
+  if a <> 0 then a 
+  else 
+    let b = compare (x.name : string) y.name in 
+    if b <> 0 then b 
+    else compare (x.flags : int) y.flags     
+
+let rec add x (tree : _ Bal_tree.t) : _ Bal_tree.t =
+  match tree with  
+    | Empty -> Node(Empty, x, Empty, 1)
+  | Node(l, v, r, _) as t ->
+    let c = compare_ident x v in
+    if c = 0 then t else
+    if c < 0 then Bal_tree.internal_bal (add x l) v r else Bal_tree.internal_bal l v (add x r)
+
+let rec mem x (tree : _ Bal_tree.t) = 
+  match tree with 
+   | Empty -> false
+   | Node(l, v, r, _) ->
+    let c = compare_ident x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+module Ident_set2 = Set.Make(struct type t = ident 
+    let compare  = compare_ident            
+  end)
+
+let () = 
+  let times = 1_000_000 in
+  time "functor set" begin fun _ -> 
+    let v = ref Ident_set.empty in  
+    for i = 0 to  times do
+      v := Ident_set.add   {stamp = i ; name = "name"; flags = -1 } !v 
+    done;
+    for i = 0 to times do
+      ignore @@ Ident_set.mem   {stamp = i; name = "name" ; flags = -1} !v 
+    done 
+  end ;
+  time "functor set (specialized)" begin fun _ -> 
+    let v = ref Ident_set2.empty in  
+    for i = 0 to  times do
+      v := Ident_set2.add   {stamp = i ; name = "name"; flags = -1 } !v 
+    done;
+    for i = 0 to times do
+      ignore @@ Ident_set2.mem   {stamp = i; name = "name" ; flags = -1} !v 
+    done 
+  end ;
+
+  time "poly set" begin fun _ -> 
+    let v = ref Bal_tree.empty in  
+    for i = 0 to  times do
+      v := Bal_tree.add   {stamp = i ; name = "name"; flags = -1 } !v 
+    done;
+    for i = 0 to times do
+      ignore @@ Bal_tree.mem   {stamp = i; name = "name" ; flags = -1} !v 
+    done;
+end;
+ time "poly set (specialized)" begin fun _ -> 
+    let v = ref Bal_tree.empty in  
+    for i = 0 to  times do
+      v := add   {stamp = i ; name = "name"; flags = -1 } !v 
+    done;
+    for i = 0 to times do
+      ignore @@ mem   {stamp = i; name = "name" ; flags = -1} !v 
+    done 
+
+  end ; 
+
+end
 module Hash_set : sig 
 #1 "hash_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2813,6 +3868,225 @@ let suites =
   ]
 
 end
+module Bal_map_common
+= struct
+#1 "bal_map_common.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** adapted from stdlib *)
+
+type ('key,'a) t =
+  | Empty
+  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+
+type ('key,'a) enumeration = End | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
+
+let rec cardinal = function
+    Empty -> 0
+  | Node(l, _, _, r, _) -> cardinal l + 1 + cardinal r
+
+let rec bindings_aux accu = function
+        Empty -> accu
+      | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+
+    let bindings s =
+      bindings_aux [] s
+
+
+
+
+
+let rec cons_enum m e =
+  match m with
+    Empty -> e
+  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
+
+
+let height = function
+  | Empty -> 0
+  | Node(_,_,_,_,h) -> h
+
+let create l x d r =
+  let hl = height l and hr = height r in
+  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let singleton x d = Node(Empty, x, d, Empty, 1)
+
+let bal l x d r =
+  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  if hl > hr + 2 then begin
+    match l with
+      Empty -> invalid_arg "Map.bal"
+    | Node(ll, lv, ld, lr, _) ->
+      if height ll >= height lr then
+        create ll lv ld (create lr x d r)
+      else begin
+        match lr with
+          Empty -> invalid_arg "Map.bal"
+        | Node(lrl, lrv, lrd, lrr, _)->
+          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+      end
+  end else if hr > hl + 2 then begin
+    match r with
+      Empty -> invalid_arg "Map.bal"
+    | Node(rl, rv, rd, rr, _) ->
+      if height rr >= height rl then
+        create (create l x d rl) rv rd rr
+      else begin
+        match rl with
+          Empty -> invalid_arg "Map.bal"
+        | Node(rll, rlv, rld, rlr, _) ->
+          create (create l x d rll) rlv rld (create rlr rv rd rr)
+      end
+  end else
+    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let empty = Empty
+
+let is_empty = function Empty -> true | _ -> false
+
+let rec min_binding = function
+    Empty -> raise Not_found
+  | Node(Empty, x, d, r, _) -> (x, d)
+  | Node(l, x, d, r, _) -> min_binding l
+
+let choose = min_binding
+
+let rec max_binding = function
+    Empty -> raise Not_found
+  | Node(l, x, d, Empty, _) -> (x, d)
+  | Node(l, x, d, r, _) -> max_binding r
+
+let rec remove_min_binding = function
+    Empty -> invalid_arg "Map.remove_min_elt"
+  | Node(Empty, x, d, r, _) -> r
+  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+
+let merge t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding t2 in
+    bal t1 x d (remove_min_binding t2)
+
+
+let rec iter f = function
+    Empty -> ()
+  | Node(l, v, d, r, _) ->
+    iter f l; f v d; iter f r
+
+let rec map f = function
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = map f l in
+    let d' = f d in
+    let r' = map f r in
+    Node(l', v, d', r', h)
+
+let rec mapi f = function
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = mapi f l in
+    let d' = f v d in
+    let r' = mapi f r in
+    Node(l', v, d', r', h)
+
+let rec fold f m accu =
+  match m with
+    Empty -> accu
+  | Node(l, v, d, r, _) ->
+    fold f r (f v d (fold f l accu))
+
+let rec for_all p = function
+    Empty -> true
+  | Node(l, v, d, r, _) -> p v d && for_all p l && for_all p r
+
+let rec exists p = function
+    Empty -> false
+  | Node(l, v, d, r, _) -> p v d || exists p l || exists p r
+
+(* Beware: those two functions assume that the added k is *strictly*
+   smaller (or bigger) than all the present keys in the tree; it
+   does not test for equality with the current min (or max) key.
+
+   Indeed, they are only used during the "join" operation which
+   respects this precondition.
+*)
+
+let rec add_min_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal (add_min_binding k v l) x d r
+
+let rec add_max_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal l x d (add_max_binding k v r)
+
+(* Same as create and bal, but no assumptions are made on the
+   relative heights of l and r. *)
+
+let rec join l v d r =
+  match (l, r) with
+    (Empty, _) -> add_min_binding v d r
+  | (_, Empty) -> add_max_binding v d l
+  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
+    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
+    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
+      create l v d r
+
+(* Merge two trees l and r into one.
+   All elements of l must precede the elements of r.
+   No assumption on the heights of l and r. *)
+
+let concat t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding t2 in
+    join t1 x d (remove_min_binding t2)
+
+let concat_or_join t1 v d t2 =
+  match d with
+  | Some d -> join t1 v d t2
+  | None -> concat t1 t2
+
+let rec filter p = function
+    Empty -> Empty
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let l' = filter p l in
+    let pvd = p v d in
+    let r' = filter p r in
+    if pvd then join l' v d r' else concat l' r'
+
+let rec partition p = function
+    Empty -> (Empty, Empty)
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition p l in
+    let pvd = p v d in
+    let (rt, rf) = partition p r in
+    if pvd
+    then (join lt v d rt, concat lf rf)
+    else (concat lt rt, join lf v d rf)
+
+end
 module String_map : sig 
 #1 "string_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2839,22 +4113,42 @@ module String_map : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type key = string 
+val compare_key : key -> key -> int 
 
+(*************************************************)
+type + 'a t 
+val empty: 'a t
+val is_empty: 'a t -> bool
+val iter: (key -> 'a ->  unit) -> 'a t -> unit
+val fold: (key -> 'a -> 'b ->  'b) -> 'a t -> 'b -> 'b
+val for_all: (key -> 'a  -> bool) -> 'a t -> bool
+val exists: (key -> 'a -> bool) -> 'a t -> bool
+val singleton: key -> 'a  -> 'a t
+val cardinal: 'a t -> int
+(* val elements: 'a t -> (key * 'a) list *)
+val choose: 'a t -> key * 'a 
+(* val partition: (key -> bool) -> 'a t -> 'a t * 'a t *)
 
+val mem: key -> 'a t -> bool
+val add: key -> 'a -> 'a t -> 'a t
+val find : key -> 'a t -> 'a
+val map : ('a -> 'b) -> 'a t -> 'b t
+val merge : 
+    (key -> 'b option -> 'c option -> 'd option)
+    -> 'b t
+    -> 'c t 
+    -> 'd t 
+(*************************************************)
+ 
 
+val of_list : (key * 'a) list -> 'a t 
 
+val add_list : (key * 'b) list -> 'b t -> 'b t
 
+val find_opt : key -> 'a t -> 'a option
 
-
-include Map.S with type key = string 
-
-val of_list : (string * 'a) list -> 'a t
-
-val add_list : (string * 'b) list -> 'b t -> 'b t
-
-val find_opt : string -> 'a t -> 'a option
-
-val find_default : string -> 'a -> 'a t -> 'a
+val find_default : key -> 'a -> 'a t -> 'a
 
 val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
 
@@ -2884,21 +4178,92 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type key = string 
+let compare_key = String.compare 
+
+(**********************************************************************************)
+type 'a t = (key,'a) Bal_map_common.t 
+let empty = Bal_map_common.empty 
+let is_empty = Bal_map_common.is_empty
+let iter = Bal_map_common.iter
+let fold = Bal_map_common.fold
+let for_all = Bal_map_common.for_all 
+let exists = Bal_map_common.exists 
+let singleton = Bal_map_common.singleton 
+let cardinal = Bal_map_common.cardinal
+let bindings = Bal_map_common.bindings
+let choose = Bal_map_common.choose 
+let partition = Bal_map_common.partition 
+let filter = Bal_map_common.filter 
+let map = Bal_map_common.map 
 
 
+let bal = Bal_map_common.bal 
+let height = Bal_map_common.height 
+let join = Bal_map_common.join 
+let concat_or_join = Bal_map_common.concat_or_join 
+
+let rec add x data (tree : _ t) : _ t =
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add x data l) v d r
+    else
+      bal l v d (add x data r)
+
+let rec find x (tree : _ t) =
+  match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then d
+    else find x (if c < 0 then l else r)
+
+let rec mem x  (tree : _ t) =
+  match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec split x (tree : _ t) : _ t * _ option * _ t  =
+  match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
+    else
+      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
+
+let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split v1 s2 in
+    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split v2 s1 in
+    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
 
 
+(* include Map.Make(String) *)
 
-
-
-include Map.Make(String)
-
-let of_list (xs : ('a * 'b) list ) = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty xs 
-
-let add_list (xs : ('a * 'b) list ) init = 
+let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add k v acc) init xs 
 
+let of_list xs = add_list xs empty
 
 let find_opt k m =
   match find k m with 
@@ -7662,6 +9027,7 @@ let suites =
     Ounit_list_test.suites;
     Ounit_hash_set_tests.suites;
     Ounit_union_find_tests.suites;
+    Ounit_bal_tree_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

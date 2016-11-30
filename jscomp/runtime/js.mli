@@ -101,3 +101,4 @@ module Types = Js_types
 module Json = Js_json
 module Obj  = Js_obj
 module Boolean = Js_boolean
+module Math = Js_math

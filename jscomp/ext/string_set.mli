@@ -25,8 +25,32 @@
 
 
 
+type elt = String.t
+val compare_elt : elt -> elt -> int 
+(***********************************************************************)             
+type t
+val empty: t
+val is_empty: t -> bool
+val iter: (elt -> unit) -> t -> unit
+val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
+val for_all: (elt -> bool) -> t -> bool
+val exists: (elt -> bool) -> t -> bool
+val singleton: elt -> t
+val cardinal: t -> int
+val elements: t -> elt list
+val min_elt: t -> elt
+val max_elt: t -> elt
+val choose: t -> elt
+val of_sorted_list : elt list -> t 
+val of_sorted_array : elt array -> t
+val partition: (elt -> bool) -> t -> t * t
+
+val mem: elt -> t -> bool
+val add: elt -> t -> t
+
+val of_list : elt list -> t
+val find : elt -> t -> elt 
+(***********************************************************************) 
 
 
 
-
-include Set.S with type elt = string

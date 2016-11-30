@@ -23,47 +23,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** it may return values not representable by [int] *)
+external unsafe_ceil : float -> int = "Math.ceil" [@@bs.val]
 
+external unsafe_floor : float -> int = "Math.floor" [@@bs.val]
 
+type t = unit -> float [@bs]
 
+(** [0,1) *)
+external random :  t  = "Math.random" [@@bs.val]
 
+let floor f =
+  if f > float max_int then max_int
+  else if f < float min_int then min_int
+  else unsafe_floor f 
 
-(** Set with key specialized as [Ident.t] type
+let ceil f =
+  if f > float max_int then max_int
+  else if f < float min_int then min_int
+  else unsafe_ceil f 
+
+(** [min,max)
 *)
+let random_int min max = 
+  floor ((random () [@bs]) *. (float (max - min))) + min 
 
-(** Original set module enhanced with some utilities, 
-    note that it's incompatible with [Lambda.IdentSet] 
-*)
-
- 
-
-type elt = Ident.t
-val compare_elt : elt -> elt -> int 
-(***********************************************************************)             
-type t
-val empty: t
-val is_empty: t -> bool
-val iter: (elt -> unit) -> t -> unit
-val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-val for_all: (elt -> bool) -> t -> bool
-val exists: (elt -> bool) -> t -> bool
-val singleton: elt -> t
-val cardinal: t -> int
-val elements: t -> elt list
-val min_elt: t -> elt
-val max_elt: t -> elt
-val choose: t -> elt
-val of_sorted_list : elt list -> t 
-val of_sorted_array : elt array -> t
-val partition: (elt -> bool) -> t -> t * t
-
-val mem: elt -> t -> bool
-val add: elt -> t -> t
-val remove : elt -> t -> t
-val of_list : elt list -> t
-
-val union : t -> t -> t
-val inter : t -> t -> t   
-val diff : t -> t -> t 
-(***********************************************************************)             
-val print : Ext_format.t -> t -> unit
