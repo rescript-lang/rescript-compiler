@@ -56,3 +56,7 @@ val set_js_post_build_cmd : cwd:string -> string -> unit
 
 val get_ninja : unit -> string 
 val set_ninja : cwd:string -> string -> unit
+
+type package_specs = String_set.t
+val get_package_specs : unit -> package_specs
+val set_package_specs_from_array : Bsb_json.t array -> unit  

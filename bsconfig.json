@@ -3,6 +3,10 @@
     "version": "1.2.2",
     "ocaml-config" : 
     {
+        "package-specs": [
+            "commonjs"
+            // ,"amdjs"
+        ],
         "bs-external-includes" : [
             "jscomp/runtime", 
             "jscomp/stdlib", 

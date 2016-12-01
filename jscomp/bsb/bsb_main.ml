@@ -55,10 +55,11 @@ let write_ninja_file cwd =
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
+          |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
           |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
               m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-                )
-            |> ignore 
+                   )
+              |> ignore 
             end)
           |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
           |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
@@ -93,19 +94,23 @@ let write_ninja_file cwd =
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
 
-  Bsb_gen.output_ninja ~builddir ~cwd ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
-             bsc
-             bsdep
-             (Bsb_default.get_package_name ())
-             (Bsb_default.get_ocamllex ())
-             (Bsb_default.get_bs_external_includes ())
-             !bs_file_groups
-             Bsb_default.(get_bsc_flags ())
-             Bsb_default.(get_ppx_flags ())
-             Bsb_default.(get_bs_dependencies ())
-             Bsb_default.(get_refmt ())
+  Bsb_gen.output_ninja 
+    ~builddir 
+    ~cwd 
+    ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
+    ~package_specs:(Bsb_default.get_package_specs())
+    bsc
+    bsdep
+    (Bsb_default.get_package_name ())
+    (Bsb_default.get_ocamllex ())
+    (Bsb_default.get_bs_external_includes ())
+    !bs_file_groups
+    Bsb_default.(get_bsc_flags ())
+    Bsb_default.(get_ppx_flags ())
+    Bsb_default.(get_bs_dependencies ())
+    Bsb_default.(get_refmt ())
 
-          ;
+  ;
   !globbed_dirs
 
 
@@ -165,10 +170,10 @@ let regenerate_ninja cwd forced =
    ninja -C _build
 *)
 let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
-For ninja options, try ninja -h \n\
-ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
-It is always recommended to run ninja via bsb.exe \n\
-Bsb options are:"
+             For ninja options, try ninja -h \n\
+             ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
+             It is always recommended to run ninja via bsb.exe \n\
+             Bsb options are:"
 
 let () =
   let cwd = Sys.getcwd () in

@@ -74,6 +74,7 @@ val output_kvs : (string * string) list -> out_channel -> unit
 
 type info = string list  * string list 
 val handle_file_groups : out_channel ->
+  package_specs:Bsb_default.package_specs ->  
   js_post_build_cmd:string option -> 
   Bsb_build_ui.file_group list ->
   info -> info

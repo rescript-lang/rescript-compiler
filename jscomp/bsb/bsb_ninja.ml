@@ -273,7 +273,7 @@ let (++) (us : info) (vs : info) =
 
 
 
-let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
+let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       bs_dependencies
@@ -294,16 +294,34 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
       let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
       let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
-      let output_js = Bsb_config.proj_rel @@ Bsb_config.common_js_prefix
-          output_file_sans_extension ^ Literals.suffix_js in
+      let output_js =
+        String_set.fold (fun s acc ->
+          let prefix  = 
+              if s = Literals.commonjs then
+                Bsb_config.common_js_prefix
+              else if s = Literals.amdjs then 
+                Bsb_config.amd_js_prefix 
+              else Bsb_config.goog_prefix    
+            in 
+          (Bsb_config.proj_rel @@ prefix  
+          output_file_sans_extension ^ Literals.suffix_js) :: acc 
+        ) package_specs []
+      in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
         let package_flags =
           [ "bs_package_flags",
-            `Append ("-bs-package-output commonjs:"^
-                     Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
-            (* FIXME: assume that output is calculated correctly*)
+            `Append 
+            (String_set.fold (fun s acc ->
+              acc ^ " -bs-package-output " ^ s ^ ":" ^
+                if s = Literals.amdjs then
+                  (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
+                else if s = Literals.commonjs then
+                  (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
+                else   
+                  (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
+               ) package_specs "")              
           ]
         in
 
@@ -356,12 +374,12 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
               | None -> shadows 
               | Some cmd -> 
                 ("postbuild", 
-                `Overwrite ("&& " ^ cmd ^ " " ^ output_js)) :: shadows
+                `Overwrite ("&& " ^ cmd ^ " " ^ String.concat " " output_js)) :: shadows
             in 
             output_build oc
               ~output:output_cmj
               ~shadows
-              ~outputs:  (output_js:: cm_outputs)
+              ~outputs:  (output_js @ cm_outputs)
               ~input:output_mlast 
               ~implicit_deps:deps
               ~rule:rule_name ;
@@ -441,5 +459,5 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
     ) group.sources  acc
 
 
-let handle_file_groups oc ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
-      List.fold_left (handle_file_group oc ~js_post_build_cmd ) st  file_groups
+let handle_file_groups oc ~package_specs ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
+      List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd ) st  file_groups

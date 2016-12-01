@@ -24,11 +24,15 @@
 let (//) = Ext_filename.combine 
 
 let lib_js = "lib"//"js"
+let lib_amd = "lib"//"amdjs"
+let lib_goog = "lib" // "goog"
 let lib_ocaml = Js_config.lib_ocaml_dir
 let lib_bs = "lib" // "bs"
 let rev_lib_bs = ".."// ".."
 let rev_lib_bs_prefix p = rev_lib_bs // p 
-let common_js_prefix p  =  lib_js  // p 
+let common_js_prefix p  =  lib_js  // p
+let amd_js_prefix p = lib_amd // p 
+let goog_prefix p = lib_goog // p  
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
 let lazy_src_root_dir = "$src_root_dir" 

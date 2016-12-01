@@ -89,3 +89,6 @@ val suffix_mliastd : string
 val suffix_js : string
 
 
+val commonjs : string 
+val amdjs : string 
+val goog : string 

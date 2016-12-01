@@ -24,3 +24,5 @@ let public = "public"
 let js_post_build = "js-post-build"
 let cmd = "cmd"
 let ninja = "ninja" 
+let package_specs = "package-specs"
+

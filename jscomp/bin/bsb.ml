@@ -27,6 +27,8 @@ let public = "public"
 let js_post_build = "js-post-build"
 let cmd = "cmd"
 let ninja = "ninja" 
+let package_specs = "package-specs"
+
 
 end
 module Ext_pervasives : sig 
@@ -813,7 +815,9 @@ val suffix_mliastd : string
 val suffix_js : string
 
 
-
+val commonjs : string 
+val amdjs : string 
+val goog : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -906,6 +910,9 @@ let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let goog = "goog"
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -2402,6 +2409,8 @@ module Bsb_config : sig
 
 
 val common_js_prefix : string -> string
+val amd_js_prefix : string -> string 
+val goog_prefix : string -> string 
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 val lib_bs : string
@@ -2436,11 +2445,15 @@ end = struct
 let (//) = Ext_filename.combine 
 
 let lib_js = "lib"//"js"
+let lib_amd = "lib"//"amdjs"
+let lib_goog = "lib" // "goog"
 let lib_ocaml = Js_config.lib_ocaml_dir
 let lib_bs = "lib" // "bs"
 let rev_lib_bs = ".."// ".."
 let rev_lib_bs_prefix p = rev_lib_bs // p 
-let common_js_prefix p  =  lib_js  // p 
+let common_js_prefix p  =  lib_js  // p
+let amd_js_prefix p = lib_amd // p 
+let goog_prefix p = lib_goog // p  
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
 let lazy_src_root_dir = "$src_root_dir" 
@@ -6088,6 +6101,10 @@ val set_js_post_build_cmd : cwd:string -> string -> unit
 val get_ninja : unit -> string 
 val set_ninja : cwd:string -> string -> unit
 
+type package_specs = String_set.t
+val get_package_specs : unit -> package_specs
+val set_package_specs_from_array : Bsb_json.t array -> unit  
+
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6205,6 +6222,28 @@ let get_ninja () = !ninja
 *)
 let set_ninja ~cwd p  =
   ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p 
+
+
+type package_specs = String_set.t
+
+let package_specs = ref (String_set.singleton Literals.commonjs)
+
+let get_package_specs () = !package_specs
+
+let set_package_specs_from_array arr = 
+    let new_package_specs = 
+      arr 
+      |> get_list_string
+      |> List.fold_left (fun acc x ->
+          let v = 
+            if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
+            else   
+              failwith ("Unkonwn package spec" ^ x) in 
+          v
+        ) String_set.empty in 
+   package_specs := new_package_specs
+
+
 
 end
 module Bsb_dep_infos : sig 
@@ -6431,6 +6470,7 @@ val output_kvs : (string * string) list -> out_channel -> unit
 
 type info = string list  * string list 
 val handle_file_groups : out_channel ->
+  package_specs:Bsb_default.package_specs ->  
   js_post_build_cmd:string option -> 
   Bsb_build_ui.file_group list ->
   info -> info
@@ -6712,7 +6752,7 @@ let (++) (us : info) (vs : info) =
 
 
 
-let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
+let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       bs_dependencies
@@ -6733,16 +6773,34 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
       let output_mliastd = output_file_sans_extension ^ Literals.suffix_mliastd in
       let output_cmi = output_file_sans_extension ^ Literals.suffix_cmi in
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
-      let output_js = Bsb_config.proj_rel @@ Bsb_config.common_js_prefix
-          output_file_sans_extension ^ Literals.suffix_js in
+      let output_js =
+        String_set.fold (fun s acc ->
+          let prefix  = 
+              if s = Literals.commonjs then
+                Bsb_config.common_js_prefix
+              else if s = Literals.amdjs then 
+                Bsb_config.amd_js_prefix 
+              else Bsb_config.goog_prefix    
+            in 
+          (Bsb_config.proj_rel @@ prefix  
+          output_file_sans_extension ^ Literals.suffix_js) :: acc 
+        ) package_specs []
+      in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
         let package_flags =
           [ "bs_package_flags",
-            `Append ("-bs-package-output commonjs:"^
-                     Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
-            (* FIXME: assume that output is calculated correctly*)
+            `Append 
+            (String_set.fold (fun s acc ->
+              acc ^ " -bs-package-output " ^ s ^ ":" ^
+                if s = Literals.amdjs then
+                  (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
+                else if s = Literals.commonjs then
+                  (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
+                else   
+                  (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
+               ) package_specs "")              
           ]
         in
 
@@ -6795,12 +6853,12 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
               | None -> shadows 
               | Some cmd -> 
                 ("postbuild", 
-                `Overwrite ("&& " ^ cmd ^ " " ^ output_js)) :: shadows
+                `Overwrite ("&& " ^ cmd ^ " " ^ String.concat " " output_js)) :: shadows
             in 
             output_build oc
               ~output:output_cmj
               ~shadows
-              ~outputs:  (output_js:: cm_outputs)
+              ~outputs:  (output_js @ cm_outputs)
               ~input:output_mlast 
               ~implicit_deps:deps
               ~rule:rule_name ;
@@ -6880,8 +6938,8 @@ let handle_file_group oc ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group
     ) group.sources  acc
 
 
-let handle_file_groups oc ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
-      List.fold_left (handle_file_group oc ~js_post_build_cmd ) st  file_groups
+let handle_file_groups oc ~package_specs ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
+      List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd ) st  file_groups
 
 end
 module Bsb_gen : sig 
@@ -6915,6 +6973,7 @@ val output_ninja :
   builddir:string ->
   cwd:string ->
   js_post_build_cmd:string option -> 
+  package_specs:Bsb_default.package_specs ->
   string ->
   string ->
   string option ->
@@ -6959,6 +7018,7 @@ let output_ninja
     ~builddir
     ~cwd
     ~js_post_build_cmd
+    ~package_specs
     bsc
     bsdep
     package_name
@@ -6974,16 +7034,16 @@ let output_ninja
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
   let bs_groups, source_dirs,static_resources  =
     List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
-      String_map.merge (fun modname k1 k2 ->
-          match k1 , k2 with
-          | None , None ->
-            assert false
-          | Some a, Some b  ->
-            failwith ("conflict files found: " ^ modname)
-          | Some v, None  -> Some v
-          | None, Some v ->  Some v
-        ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
-    ) (String_map.empty,[],[]) bs_file_groups in
+        String_map.merge (fun modname k1 k2 ->
+            match k1 , k2 with
+            | None , None ->
+              assert false
+            | Some a, Some b  ->
+              failwith ("conflict files found: " ^ modname)
+            | Some v, None  -> Some v
+            | None, Some v ->  Some v
+          ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
+      ) (String_map.empty,[],[]) bs_file_groups in
   Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
   let bsc_flags =
     String.concat " " bsc_flags
@@ -6995,9 +7055,13 @@ let output_ninja
   begin
     let () =
       output_string oc "ninja_required_version = 1.7.1 \n" ;
-      match package_name with
-      | None -> output_string oc ("bs_package_flags = \n")
-      | Some x -> output_string oc ("bs_package_flags = -bs-package-name "  ^ x ^ " \n" )
+      output_string oc "bs_package_flags = ";
+      begin match package_name with
+        | None -> ()
+        | Some x -> 
+          output_string oc ("-bs-package-name "  ^ x  )
+      end;
+      output_string oc "\n"
     in
     let bs_package_includes =
       Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in
@@ -7022,7 +7086,8 @@ let output_ninja
         ]
     in
     let all_deps, all_cmis =
-      Bsb_ninja.handle_file_groups oc ~js_post_build_cmd  bs_file_groups ([],[]) in
+      Bsb_ninja.handle_file_groups oc       
+        ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
     let all_deps =
       (* we need copy package.json into [_build] since it does affect build output *)
       (* Literals.package_json ::
@@ -7163,10 +7228,11 @@ let write_ninja_file cwd =
       |?
       (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
           m
+          |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
           |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
               m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-                )
-            |> ignore 
+                   )
+              |> ignore 
             end)
           |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
           |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
@@ -7201,19 +7267,23 @@ let write_ninja_file cwd =
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
 
-  Bsb_gen.output_ninja ~builddir ~cwd ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
-             bsc
-             bsdep
-             (Bsb_default.get_package_name ())
-             (Bsb_default.get_ocamllex ())
-             (Bsb_default.get_bs_external_includes ())
-             !bs_file_groups
-             Bsb_default.(get_bsc_flags ())
-             Bsb_default.(get_ppx_flags ())
-             Bsb_default.(get_bs_dependencies ())
-             Bsb_default.(get_refmt ())
+  Bsb_gen.output_ninja 
+    ~builddir 
+    ~cwd 
+    ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
+    ~package_specs:(Bsb_default.get_package_specs())
+    bsc
+    bsdep
+    (Bsb_default.get_package_name ())
+    (Bsb_default.get_ocamllex ())
+    (Bsb_default.get_bs_external_includes ())
+    !bs_file_groups
+    Bsb_default.(get_bsc_flags ())
+    Bsb_default.(get_ppx_flags ())
+    Bsb_default.(get_bs_dependencies ())
+    Bsb_default.(get_refmt ())
 
-          ;
+  ;
   !globbed_dirs
 
 
@@ -7273,10 +7343,10 @@ let regenerate_ninja cwd forced =
    ninja -C _build
 *)
 let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
-For ninja options, try ninja -h \n\
-ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
-It is always recommended to run ninja via bsb.exe \n\
-Bsb options are:"
+             For ninja options, try ninja -h \n\
+             ninja will be loaded either by just running `bsb.exe' or `bsb.exe .. -- ..`\n\
+             It is always recommended to run ninja via bsb.exe \n\
+             Bsb options are:"
 
 let () =
   let cwd = Sys.getcwd () in

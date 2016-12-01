@@ -87,3 +87,7 @@ let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
+
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let goog = "goog"

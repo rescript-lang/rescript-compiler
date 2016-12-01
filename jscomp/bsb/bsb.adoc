@@ -120,3 +120,34 @@ let () =
 *)
 
 --------------
+
+# package-flags
+
+ when designing bsc commandline flags, we ask user to specify the output path of package output 
+ instead of calculating, 
+ the reason is that the user input can be absolute path or relative path, to calculate 
+ we also need the location of package.json.
+
+ ## TODO: seems we can do it 
+ 
+ ```
+-bs-package-output commonjs:+lib/js -bs-package-output amdjs:+lib/amdjs xx.mlast
+ ```   
+
+ With this we would simplify the build a lot.
+
+ on Windows
+ ```
+ -bs-package-output commonjs:+lib\js -bs-package-output:+lib\amdjs xx.ml a/b/c/xx.mlast
+ ``` 
+
+ so when the user input is relative path, we do the concat,
+ if it is absolute path, we calculate the relative path first.
+
+ This is complicated vs  
+ 
+ ```
+ -bs-package-output commonjs -bs-package-output amdjs
+ ```
+
+ however, the bsc is almost sitting in `lib/bs`
