@@ -77,9 +77,11 @@ let convert_and_resolve_file =
    The first should also not be touched
    Only the latter need be adapted based on project root  
 *)
+
+let get_bsc_dir cwd = 
+  Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))
 let get_bsc_bsdep cwd = 
-  let dir = 
-    Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))in 
+  let dir = get_bsc_dir cwd in    
   dir // "bsc.exe", dir // "bsb_helper.exe"
 
 (** 

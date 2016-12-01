@@ -4061,7 +4061,7 @@ val mkp : string -> unit
    [bsdep.exe] [bsc.exe] etc.
 *)
 val get_bsc_bsdep : string -> string * string
-                              
+val get_bsc_dir : string -> string                               
 val get_list_string : Bsb_json.t array -> string list
 
 end = struct
@@ -4145,9 +4145,11 @@ let convert_and_resolve_file =
    The first should also not be touched
    Only the latter need be adapted based on project root  
 *)
+
+let get_bsc_dir cwd = 
+  Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))
 let get_bsc_bsdep cwd = 
-  let dir = 
-    Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))in 
+  let dir = get_bsc_dir cwd in    
   dir // "bsc.exe", dir // "bsb_helper.exe"
 
 (** 
@@ -7220,6 +7222,7 @@ let write_ninja_file cwd =
   let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
+  
   let () =
     match global_data with
     | `Obj map ->
@@ -7243,7 +7246,13 @@ let write_ninja_file cwd =
           |?  (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
           |?  (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
           |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
+              
               let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
+              let ochan = open_out_bin (builddir // ".sourcedirs") in
+              res.files |> List.iter 
+                (fun (x : Bsb_build_ui.file_group) -> 
+                  output_string ochan x.dir; output_string ochan "\n" ) ; 
+              close_out ochan; 
               bs_file_groups := res.files ;
               update_queue := res.intervals;
               globbed_dirs := res.globbed_dirs
@@ -7295,13 +7304,21 @@ let force_regenerate = ref false
 let exec = ref false
 let targets = String_vec.make 5
 
+let cwd = Sys.getcwd () 
+
 let create_bs_config () = 
   ()
+let watch () = 
+  Unix.execvp "node" 
+  [| "node" ; Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" |]
+
 
 let annoymous filename = 
   String_vec.push  filename targets
 let bsb_main_flags = 
   [
+    "-w", Arg.Unit watch, 
+    " watch mode" ;  
     (*    "-init", Arg.Unit create_bs_config , 
           " Create an simple bsconfig.json"
           ;
@@ -7349,7 +7366,6 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
              Bsb options are:"
 
 let () =
-  let cwd = Sys.getcwd () in
   try
     (* see discussion #929 *)
     if Array.length Sys.argv <= 1 then
