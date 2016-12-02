@@ -140,8 +140,7 @@
                 }
             },
             "required": [
-                "dir",
-                "files"
+                "dir"
             ]
         },
         "stringArray": {

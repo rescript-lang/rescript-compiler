@@ -62,6 +62,7 @@ type callback =
   | `Arr of (t array -> unit )
   | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
   ]
 
 val test:
