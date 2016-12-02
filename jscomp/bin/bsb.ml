@@ -2760,6 +2760,7 @@ type callback =
   | `Arr of (t array -> unit )
   | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
   ]
 
 val test:
@@ -3462,13 +3463,17 @@ type callback =
   | `Arr of (t array -> unit )
   | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
   ]
 
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) m 
      =
      begin match String_map.find key m, cb with 
-       | exception Not_found -> fail ()
+       | exception Not_found  ->
+        begin match cb with `Not_found f ->  f ()
+        | _ -> fail ()
+        end
        | `True, `Bool cb -> cb true
        | `False, `Bool cb  -> cb false 
        | `Flo s , `Flo cb  -> cb s 
@@ -3497,7 +3502,7 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 729 "bsb/bsb_json.ml"
+# 733 "bsb/bsb_json.ml"
 
 end
 module Ext_list : sig 
@@ -5718,7 +5723,7 @@ type public =
   | Export_all 
   | Export_set of String_set.t 
   | Export_none
-    
+
 type  file_group = 
   { dir : string ;
     sources : Binary_cache.t ; 
@@ -5730,12 +5735,12 @@ type  file_group =
 let (//) = Ext_filename.combine
 
 let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb 
+  m  |> Bsb_json.test key cb 
 
 let get_list_string  =  Bsb_build_util.get_list_string
 
 module String_vect = Resize_array.Make(struct type t = string let null = "" end)
-    
+
 let print_arrays file_array oc offset  =
   let indent = String.make offset ' ' in 
   let p_str s = 
@@ -5759,7 +5764,7 @@ let print_arrays file_array oc offset  =
 
 
 
-    
+
 let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
   if Array.length s  = 0 then 
     begin 
@@ -5773,14 +5778,14 @@ let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_p
             new_acc
 
           ) String_map.empty files_array in 
-        [{Ext_file_pp.loc_start ;
-         loc_end; action = (`print (print_arrays dyn_file_array))}],
-       files
+      [{Ext_file_pp.loc_start ;
+        loc_end; action = (`print (print_arrays dyn_file_array))}],
+      files
     end
 
   else 
     [],
-     Array.fold_left (fun acc (s : Bsb_json.t) ->
+    Array.fold_left (fun acc (s : Bsb_json.t) ->
         match s with 
         | `Str {str = s} -> 
           Binary_cache.map_update ~dir acc s
@@ -5838,25 +5843,32 @@ let  parsing_sources cwd (file_groups : Bsb_json.t array)  =
                sources := files
 
              ))
-      |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
-      |?  (Bsb_build_schemas.resources ,
-           `Arr (fun s  ->
-               resources := get_list_string s
-             ))
-      |? (Bsb_build_schemas.public, `Str (fun s -> 
-          if s = "all" then public := Export_all else 
-          if s = "none" then public := Export_none else 
-            failwith ("invalid str for" ^ s )
-        ))
-      |? (Bsb_build_schemas.public, `Arr (fun s -> 
-          public := Export_set (String_set.of_list (get_list_string s ) )
-        ) )
+      |? (Bsb_build_schemas.files,
+          `Not_found (fun _ ->
+              let dir = !dir in 
+              let file_array = Bsb_dir.readdir dir in 
+              sources := 
+                Array.fold_left (fun acc name -> 
+                    if Filename.check_suffix name ".ml"  
+                    || Filename.check_suffix name ".mli"
+                    || Filename.check_suffix name ".mll"
+                    || Filename.check_suffix name ".re"
+                    || Filename.check_suffix name ".rei"
+                    then 
+                      Binary_cache.map_update  ~dir acc name 
+                    else acc
+                  ) String_map.empty file_array;
+              globbed_dirs :=  [dir]
+            )
+         )     
       |? (Bsb_build_schemas.files, 
           `Obj (fun m -> 
               let excludes = ref [] in 
               m
-              |? (Bsb_build_schemas.excludes, `Arr (fun arr ->  excludes := get_list_string arr))
-              |? (Bsb_build_schemas.slow_re, `Str 
+              |? (Bsb_build_schemas.excludes,
+                  `Arr (fun arr ->  excludes := get_list_string arr))
+              |? (Bsb_build_schemas.slow_re, 
+                  `Str 
                     (fun s -> 
                        let re = Str.regexp s in 
                        let dir = !dir in 
@@ -5871,16 +5883,29 @@ let  parsing_sources cwd (file_groups : Bsb_json.t array)  =
                              else acc
                            ) String_map.empty file_array;
                        globbed_dirs :=  [dir]
-                ))
+                    ))
               |> ignore
             )
-         )
+         )             
+      |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := get_list_string s ))
+      |?  (Bsb_build_schemas.resources ,
+           `Arr (fun s  ->
+               resources := get_list_string s
+             ))
+      |? (Bsb_build_schemas.public, `Str (fun s -> 
+          if s = "all" then public := Export_all else 
+          if s = "none" then public := Export_none else 
+            failwith ("invalid str for" ^ s )
+        ))
+      |? (Bsb_build_schemas.public, `Arr (fun s -> 
+          public := Export_set (String_set.of_list (get_list_string s ) )
+        ) )
       |? (Bsb_build_schemas.subdirs, `Arr (fun s -> 
           let res  = 
             Array.fold_left (fun  origin json ->
                 match json with 
                 | `Obj m -> 
-                   expect_file_group !dir  m  ++ origin
+                  expect_file_group !dir  m  ++ origin
                 | _ -> origin ) empty s in 
           children :=  res.files ; 
           children_update_queue := res.intervals;
@@ -5898,7 +5923,7 @@ let  parsing_sources cwd (file_groups : Bsb_json.t array)  =
         } 
         :: !children;
       intervals = !update_queue @ !children_update_queue ;
-     globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
+      globbed_dirs = !globbed_dirs @ !children_globbed_dirs;
     } in 
   Array.fold_left (fun  origin x ->
       match x with 
@@ -7222,7 +7247,6 @@ let write_ninja_file cwd =
   let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
-  
   let () =
     match global_data with
     | `Obj map ->

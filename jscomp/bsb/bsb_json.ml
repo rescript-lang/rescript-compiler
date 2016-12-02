@@ -690,13 +690,17 @@ type callback =
   | `Arr of (t array -> unit )
   | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
   ]
 
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) m 
      =
      begin match String_map.find key m, cb with 
-       | exception Not_found -> fail ()
+       | exception Not_found  ->
+        begin match cb with `Not_found f ->  f ()
+        | _ -> fail ()
+        end
        | `True, `Bool cb -> cb true
        | `False, `Bool cb  -> cb false 
        | `Flo s , `Flo cb  -> cb s 
@@ -725,4 +729,4 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 729 "bsb/bsb_json.ml"
+# 733 "bsb/bsb_json.ml"
