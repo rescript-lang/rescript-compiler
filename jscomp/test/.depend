@@ -57,6 +57,7 @@ array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
 attr_test.cmj :
 b.cmj :
 bal_set_common.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
+bal_set_mini.cmj : ../runtime/js.cmj
 bal_tree.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj ../stdlib/list.cmj \
     bal_set_common.cmj ../stdlib/array.cmj
 basic_module_test.cmj : ../stdlib/set.cmj pr6726.cmj offset.cmj \
