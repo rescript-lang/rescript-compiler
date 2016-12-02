@@ -66,5 +66,9 @@
     "Functor_collections" : {
       "file" : "functor_set.ml",
       "eval" : true 
+    },
+    "Balanced_tree" : {
+      "file" : "balanced_tree.ml",
+      "eval" : false
     }
 }
