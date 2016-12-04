@@ -43,6 +43,9 @@ type t =
   }
 
 
+val parsing_source : 
+  string -> Bsb_json.t String_map.t -> t
+
 (** entry is to the 
     [sources] in the schema
 *)

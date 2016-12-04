@@ -52,37 +52,45 @@ let write_ninja_file cwd =
     | `Obj map ->
       map
       |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
-      |?
-      (Bsb_build_schemas.ocaml_config,   `Obj  begin fun m ->
-          m
-          |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
-          |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
-              m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
-                   )
-              |> ignore 
-            end)
-          |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
-          |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
-          |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
-          (* More design *)
-          |?  (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
-          |?  (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
-          |?  (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
-          |?  (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
-          |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
-              
-              let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
-              let ochan = open_out_bin (builddir // ".sourcedirs") in
-              res.files |> List.iter 
-                (fun (x : Bsb_build_ui.file_group) -> 
-                  output_string ochan x.dir; output_string ochan "\n" ) ; 
-              close_out ochan; 
-              bs_file_groups := res.files ;
-              update_queue := res.intervals;
-              globbed_dirs := res.globbed_dirs
-            ))
-          |> ignore
+      |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
+      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
+          m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
+               )
+          |> ignore 
         end)
+      |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
+      |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
+      |? (Bsb_build_schemas.bs_dependencies, `Arr Bsb_default.set_bs_dependencies)
+      (* More design *)
+      |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
+      |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
+      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
+      |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
+      |? (Bsb_build_schemas.sources, `Obj (fun x ->
+          let res =  Bsb_build_ui.parsing_source Filename.current_dir_name x in 
+          let ochan = open_out_bin (builddir // ".sourcedirs") in
+          res.files |> List.iter 
+            (fun (x : Bsb_build_ui.file_group) -> 
+               output_string ochan x.dir; output_string ochan "\n" ) ; 
+          close_out ochan; 
+          bs_file_groups := res.files ;
+          update_queue := res.intervals;
+          globbed_dirs := res.globbed_dirs 
+        ))
+      |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
+
+          let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
+          let ochan = open_out_bin (builddir // ".sourcedirs") in
+          res.files |> List.iter 
+            (fun (x : Bsb_build_ui.file_group) -> 
+               output_string ochan x.dir; output_string ochan "\n" ) ; 
+          close_out ochan; 
+          bs_file_groups := res.files ;
+          update_queue := res.intervals;
+          globbed_dirs := res.globbed_dirs
+        ))
+
+
       |> ignore
     | _ -> ()
   in
@@ -134,7 +142,7 @@ let create_bs_config () =
   ()
 let watch () = 
   Unix.execvp "node" 
-  [| "node" ; Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" |]
+    [| "node" ; Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" |]
 
 
 let annoymous filename = 

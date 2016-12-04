@@ -530,8 +530,8 @@ bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx ext/literals.cmx \
     bsb/bsb_build_ui.cmx common/binary_cache.cmx bsb/bsb_ninja.cmi
 bsb/sexp_eval.cmx : bsb/sexp_lexer.cmx ext/ext_list.cmx
 bsb/sexp_lexer.cmx : bsb/sexp_lexer.cmi
-bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/ext_file_pp.cmi \
-    bsb/bsb_json.cmi common/binary_cache.cmi
+bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/string_map.cmi \
+    ext/ext_file_pp.cmi bsb/bsb_json.cmi common/binary_cache.cmi
 bsb/bsb_build_util.cmi : bsb/bsb_json.cmi
 bsb/bsb_config.cmi :
 bsb/bsb_default.cmi : ext/string_set.cmi bsb/bsb_json.cmi

@@ -1,7 +1,7 @@
 let files = "files"
 let version = "version"
 let name = "name"
-let ocaml_config = "ocaml-config"
+(* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
 
