@@ -195,14 +195,14 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
 type eq = Obj.t -> Obj.t -> bool
 
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
-  let type_ = Js.typeof a in
-  if type_ = "string"
-  || type_ = "number"
-  || type_ = "boolean"
-  || type_ = "undefined"
-  || type_ = "null"
-  then a == b
-  else if a == b then true
+  (* first, check using reference equality *)
+  if a == b then true
+  else if Js.typeof a = "string"
+  || Js.typeof a = "number"
+  || Js.typeof a = "boolean"
+  || Js.typeof a = "undefined"
+  || Js.typeof a = "null"
+  then false
   else
     let tag_a = Bs_obj.tag a in
     let tag_b = Bs_obj.tag b in
