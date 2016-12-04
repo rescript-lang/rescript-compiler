@@ -1,3 +1,4 @@
+[@@@bs.config{no_export}]
 type 'a t = 
   | Empty 
   | Node of 'a t * 'a * 'a t * int 
@@ -88,7 +89,7 @@ let rec mem x  = function
  
 let () =
     let v  = ref Empty in  
-    let iter = 1_00_000 in
+    let iter = 2_000_000 in
     for i = 0 to  iter do
         v := add i !v
     done;
