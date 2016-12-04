@@ -7347,7 +7347,7 @@ let create_bs_config () =
   ()
 let watch () = 
   Unix.execvp "node" 
-    [| "node" ; Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" |]
+    [| "node" ; Filename.quote (Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" )|]
 
 
 let annoymous filename = 
