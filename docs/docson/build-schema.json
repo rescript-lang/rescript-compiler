@@ -25,11 +25,11 @@
                 }
             ]
         },
-        "single-ppx-spec" : {
-            "type" : "string",
+        "single-ppx-spec": {
+            "type": "string",
             "description": "the path to ppx binary"
         },
-        "ppx-specs" : {
+        "ppx-specs": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/single-ppx-spec"
@@ -48,8 +48,8 @@
                 "dir": {
                     "type": "string"
                 },
-                "ppx-specs" : {
-                    "$ref" : "#/definitions/ppx-specs"
+                "ppx-specs": {
+                    "$ref": "#/definitions/ppx-specs"
                 },
                 "files": {
                     "oneOf": [
@@ -162,67 +162,65 @@
             "type": "string",
             "description": "Package name"
         },
-        "ocaml-config": {
-            "title": "OCaml Configuration format",
-            "bs-dependencies": {
-                "$ref": "#/definitions/bs-dependencies",
-                "description" : "OCaml dependencies applied to all modules inside"
-            },            
-            "properties": {
-                "js-post-build" : {
-                    "cmd" : {
-                        "type" : "string"
-                    },
-                    "description": "Experimental, the build system will invoke `cmd ${file}` whenever a ${file} is generated"
-                },
-                "ppx-flags": {                    
-                    "$ref": "#/definitions/ppx-specs",
-                    "description": "TODO: ppx flags"
-                },
-                "bsc-flags": {
-                    "$ref": "#/definitions/stringArray",
-                    "description": "A list of flags for bsc.exe"
-                },
-                "package-specs": {
-                    "$ref": "#/definitions/package-specs",
-                    "description": "TODO: currently only support commonjs"
-                },
-                "ocamllex": {
-                    "type": "string",
-                    "description": "Path to ocamllex"
-                },
-                "ocamlyacc": {
-                    "type": "string",
-                    "description": "TODO path to ocamlyacc, mly"
-                },
-                "menhir": {
-                    "type": "string",
-                    "description": "TODO"
-                },
-                "refmt": {
-                    "type": "string",
-                    "description": "Path to refmt"
-                },
-                "bs-external-includes": {
-                    "$ref": "#/definitions/stringArray",
-                    "description": "external include directories, which will be applied -I to all compilation units, it is not needed in most cases"
-                },
-                "sources": {
+        "bs-dependencies": {
+            "$ref": "#/definitions/bs-dependencies",
+            "description": "OCaml dependencies applied to all modules inside"
+        },
+        "js-post-build": {
+            "cmd": {
+                "type": "string"
+            },
+            "description": "Experimental, the build system will invoke `cmd ${file}` whenever a ${file} is generated"
+        },
+        "ppx-flags": {
+            "$ref": "#/definitions/ppx-specs",
+            "description": "TODO: ppx flags"
+        },
+        "bsc-flags": {
+            "$ref": "#/definitions/stringArray",
+            "description": "A list of flags for bsc.exe"
+        },
+        "package-specs": {
+            "$ref": "#/definitions/package-specs",
+            "description": "TODO: currently only support commonjs"
+        },
+        "ocamllex": {
+            "type": "string",
+            "description": "Path to ocamllex"
+        },
+        "ocamlyacc": {
+            "type": "string",
+            "description": "TODO path to ocamlyacc, mly"
+        },
+        "menhir": {
+            "type": "string",
+            "description": "TODO"
+        },
+        "refmt": {
+            "type": "string",
+            "description": "Path to refmt"
+        },
+        "bs-external-includes": {
+            "$ref": "#/definitions/stringArray",
+            "description": "external include directories, which will be applied -I to all compilation units, it is not needed in most cases"
+        },
+        "sources": {
+            "oneOf": [
+                {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/sourceItem"
                     }
+                },
+                {
+                    "$ref": "#/definitions/sourceItem"
                 }
-            },
-            "required": [
-                "sources"
-            ],
-            "additionalProperties": false
+            ]
         }
     },
+    "additionalProperties": false,
     "required": [
-        "version",
         "name",
-        "ocaml-config"
+        "sources"
     ]
 }
