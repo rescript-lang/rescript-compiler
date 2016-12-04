@@ -20,7 +20,7 @@ Surface Syntax Tree
 Typedtree
   |
   | (Reuse OCaml pattern match compiler and erase types)
-  |
+  | (Patches to pass more information down to Lambda )
   |
 OCaml Lambda IR
   |
@@ -28,7 +28,7 @@ OCaml Lambda IR
   v
 Buckle Lambda IR ------------------+
   |   ^                            |
-  |   |                     Lambda Passes (lam_* files)
+  |   |                     6 Lambda Passes (lam_* files)
   |   |             Optimization/inlining/dead code elimination
   |   \                            |
   |    \ --------------------------+
@@ -38,7 +38,7 @@ Buckle Lambda IR ------------------+
   V
 JS IR (J.ml)  ---------------------+
   |   ^                            |
-  |   |                     JS Passes (js_* files)
+  |   |                     6 JS Passes (js_* files)
   |   |            Optimization/inlining/dead code elimination
   |   \                            |
   |    \  -------------------------+
