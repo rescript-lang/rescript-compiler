@@ -143,21 +143,6 @@ function remove_min_elt(l, v, r) {
   }
 }
 
-function internal_merge(l, r) {
-  if (l) {
-    if (r) {
-      var rv = r[1];
-      return bal(l, min_elt(rv, r), remove_min_elt(r[0], rv, r[2]));
-    }
-    else {
-      return l;
-    }
-  }
-  else {
-    return r;
-  }
-}
-
 function remove(x, tree) {
   if (tree) {
     var r = tree[2];
@@ -173,7 +158,20 @@ function remove(x, tree) {
       }
     }
     else {
-      return internal_merge(l, r);
+      var l$1 = l;
+      var r$1 = r;
+      if (l$1) {
+        if (r$1) {
+          var rv = r$1[1];
+          return bal(l$1, min_elt(rv, r$1), remove_min_elt(r$1[0], rv, r$1[2]));
+        }
+        else {
+          return l$1;
+        }
+      }
+      else {
+        return r$1;
+      }
     }
   }
   else {
@@ -203,18 +201,18 @@ function mem(x, _param) {
 
 var v = /* Empty */0;
 
-for(var i = 0; i <= 100000; ++i){
+for(var i = 0; i <= 2000000; ++i){
   v = add(i, v);
 }
 
-for(var i$1 = 0; i$1 <= 100000; ++i$1){
+for(var i$1 = 0; i$1 <= 2000000; ++i$1){
   if (!mem(i$1, v)) {
     console.log("impossible");
   }
   
 }
 
-for(var i$2 = 0; i$2 <= 100000; ++i$2){
+for(var i$2 = 0; i$2 <= 2000000; ++i$2){
   v = remove(i$2, v);
 }
 
@@ -224,14 +222,4 @@ if (match) {
   console.log("impossible");
 }
 
-exports.height         = height;
-exports.create         = create;
-exports.bal            = bal;
-exports.compare_int    = compare_int;
-exports.add            = add;
-exports.min_elt        = min_elt;
-exports.remove_min_elt = remove_min_elt;
-exports.internal_merge = internal_merge;
-exports.remove         = remove;
-exports.mem            = mem;
 /*  Not a pure module */

@@ -56,6 +56,7 @@ The `Printf.print` implementation in BuckleScript requires a newline
 buffered behavior of native OCaml. The only potential problem we foresee
 is that if the program terminates with no newline character, the text
 will never be printed.
+
 ### Obj module
 
 We do our best to mimic the native compiler, but we have no guarantee

@@ -614,6 +614,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_weak_map">Weak map</a></li>
 <li><a href="#_integers">Integers</a></li>
 <li><a href="#_printf_printf">Printf.printf</a></li>
+<li><a href="#_obj_module">Obj module</a></li>
 <li><a href="#_hashtbl_hash_algorithm">Hashtbl hash algorithm</a></li>
 <li><a href="#_marshall">Marshall</a></li>
 <li><a href="#_sys_argv_sys_max_array_length_sys_max_string_length">Sys.argv, Sys.max_array_length, Sys.max_string_length</a></li>
@@ -3495,9 +3496,11 @@ replaced by a strict pointer.</p>
 (<code>\n</code>) to trigger the printing. This behavior is not consistent with the
 buffered behavior of native OCaml. The only potential problem we foresee
 is that if the program terminates with no newline character, the text
-will never be printed.
-<mark>#</mark> Obj module</p>
+will never be printed.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_obj_module"><a class="anchor" href="#_obj_module"></a>Obj module</h3>
 <div class="paragraph">
 <p>We do our best to mimic the native compiler, but we have no guarantee
 and there are differences.</p>

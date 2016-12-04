@@ -79,3 +79,6 @@ jscomp/bin/bsc
 jscomp/bin/config_whole_compiler.ml
 lib/bs
 lib/js/jscomp/test
+
+*.goog.js
+*.jsoo.js

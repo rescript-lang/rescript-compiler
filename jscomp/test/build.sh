@@ -1,4 +1,4 @@
 #!/bin/sh
 set -e
-gmake -r -j30 all 
-gmake depend
+make -r -j30 all 
+make depend
