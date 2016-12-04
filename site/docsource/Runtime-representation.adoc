@@ -73,10 +73,39 @@ For example:
 * `[]` -> `0`
 * `x::y` -> `[x,y]`
 * `1::2::[3]` -> `[ 1, [ 2, [ 3, 0 ] ] ]`
-| Variant | *internal*
+| Variant a| *internal* (subject to change)
 
-| Polymorphic variant | *internal*
+Simple Variants: (Variants with only one non-nullary constructor)
 
+[source,ocaml]
+--------------
+type tree =
+  \| Leaf 
+  \| Node of int * tree * tree
+(* Leaf --> 0 *)
+(* Node(a,b,c) --> [a,b,c]*)
+--------------
+
+Complex Variants: (Variants with more than one non-nullary constructor)
+
+[source,ocaml]
+-------------
+type u = 
+     \| A of string
+     \| B of int
+(* A a -->  [a].tag=0 -- tag 0 assignment is optional *)
+(* B b -->  [b].tag=1 *)
+-------------
+
+
+
+| Polymorphic variant a| *internal*
+
+[source,ocaml]
+-------------
+`a (* 97 *)
+`a 1 2 (* [97, [1,2] ]*)
+-------------
 | exception |  *internal*
 | extension | *internal*
 

@@ -4086,7 +4086,7 @@ Surface Syntax Tree
 Typedtree
   |
   | (Reuse OCaml pattern match compiler and erase types)
-  |
+  | (Patches to pass more information down to Lambda )
   |
 OCaml Lambda IR
   |
@@ -4094,7 +4094,7 @@ OCaml Lambda IR
   v
 Buckle Lambda IR ------------------+
   |   ^                            |
-  |   |                     Lambda Passes (lam_* files)
+  |   |                     6 Lambda Passes (lam_* files)
   |   |             Optimization/inlining/dead code elimination
   |   \                            |
   |    \ --------------------------+
@@ -4104,7 +4104,7 @@ Buckle Lambda IR ------------------+
   V
 JS IR (J.ml)  ---------------------+
   |   ^                            |
-  |   |                     JS Passes (js_* files)
+  |   |                     6 JS Passes (js_* files)
   |   |            Optimization/inlining/dead code elimination
   |   \                            |
   |    \  -------------------------+
@@ -4368,11 +4368,45 @@ We might encode it as buffer  in NodeJS.
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Variant</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>internal</strong></p></td>
+<td class="tableblock halign-left valign-top"><div><div class="paragraph">
+<p><strong>internal</strong> (subject to change)</p>
+</div>
+<div class="paragraph">
+<p>Simple Variants: (Variants with only one non-nullary constructor)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">tree</span> <span class="tok-o">=</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Leaf</span>
+  <span class="tok-o">|</span> <span class="tok-nc">Node</span> <span class="tok-k">of</span> <span class="tok-kt">int</span> <span class="tok-o">*</span> <span class="tok-n">tree</span> <span class="tok-o">*</span> <span class="tok-n">tree</span>
+<span class="tok-c">(* Leaf --&gt; 0 *)</span>
+<span class="tok-c">(* Node(a,b,c) --&gt; [a,b,c]*)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Complex Variants: (Variants with more than one non-nullary constructor)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">u</span> <span class="tok-o">=</span>
+     <span class="tok-o">|</span> <span class="tok-nc">A</span> <span class="tok-k">of</span> <span class="tok-kt">string</span>
+     <span class="tok-o">|</span> <span class="tok-nc">B</span> <span class="tok-k">of</span> <span class="tok-kt">int</span>
+<span class="tok-c">(* A a --&gt;  [a].tag=0 -- tag 0 assignment is optional *)</span>
+<span class="tok-c">(* B b --&gt;  [b].tag=1 *)</span></code></pre>
+</div>
+</div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Polymorphic variant</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>internal</strong></p></td>
+<td class="tableblock halign-left valign-top"><div><div class="paragraph">
+<p><strong>internal</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-o">`</span><span class="tok-n">a</span> <span class="tok-c">(* 97 *)</span>
+<span class="tok-o">`</span><span class="tok-n">a</span> <span class="tok-mi">1</span> <span class="tok-mi">2</span> <span class="tok-c">(* [97, [1,2] ]*)</span></code></pre>
+</div>
+</div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">exception</p></td>

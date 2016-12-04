@@ -4,7 +4,7 @@ ocamlc.opt -g bal_set_mini.ml -o bal_set_mini.byte && js_of_ocaml bal_set_mini.b
 ocamlopt.opt -g bal_set_mini.ml -o bal_set_mini.native
 bscc -c bal_set_mini.ml
 java -jar /usr/local/lib/node_modules/google-closure-compiler/compiler.jar  --compilation_level ADVANCED --js bal_set_mini.js --js_output_file bal_set_mini.goog.js
-# time node bal_set_mini.js
+time node immutable_set_min.js
 time node bal_set_mini.goog.js
 time node bal_set_mini.jsoo.js
 time bal_set_mini.byte
