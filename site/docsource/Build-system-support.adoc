@@ -13,7 +13,7 @@ files with the extension `.cmj` which are later used for cross module
 inlining, arity inference and other information.
 ======
 
-=== Build with bsb (experimental)
+=== Build with bsb 
 
 BuckleScript proivdes a native build tool using https://github.com/ninja-build/ninja/releases[ninja], 
 it is designed for fast feedback loop (typically 100ms feedback loop). 
@@ -31,46 +31,26 @@ we create a JS wrapper (which is accessible in `.bin` too), so the user can call
 either `bsb`(slightly higher latency but symlinked into `.bin`) or `bsb.exe` 
 
 
-Here is a typical configuration:
+Here is a *minimal* configuration:
 
 .bsconfig.json
 [source,js]
 -----------  
-{
-    "name": "bs-string",
-    "version": "0.1.2",    
-    "ocaml-config": {
-      //  "bs-dependencies": ["bs-mocha"], // <1>
-        "sources": [
-            {
-                "dir": "src",
-                "public" : "all", // <2>
-                "files": [
-                    "bs_string.ml",
-                    "bs_nativeint.ml",
-                    "bs_math.ml",
-                    "bs_array.ml"
-                ]
-            },
-            { "dir" : "test",
-              "files": [ 
-                         "bs_string_test.ml"
-                         ]
-                         ,
-              "bs-dependencies" : ["bs-mocha"] // <3>  
-            }
-        ]
-    }
+{ 
+  "name": "test", // package name, required <1>  
+  "sources": 
+     { "dir": "src"} // <2>
 }
 -----------
 <1> It is an extension to JSON with comment support
-<2> List interfaces to be exposed to client
-<3> Add more dependencies for some TARGETS
+<2> Here we did not list files, so all `.ml`, `.mli`, `.re`, `.rei` will be considered as source files
+
 
 The entry point is `bsb.exe`,
 it will check if there is already `build.ninja` in the build directory, 
 if not or need regenerated it will generate a file  `build.ninja` 
 and delegate the hard work to `ninja`.
+
 
 The directory layout (after building) would be
 
@@ -87,7 +67,7 @@ The directory layout (after building) would be
 │   │   ├── src                                                                                                      
 │   │   └── test
 │   ├── goog  // <2>                                                                                                
-│   │   ├── src                                                                                                      
+│   │   ├── src                       
 │   │   └── test
 │   └── ocaml                                                                                                        
 ├── scripts                                                                                                          
@@ -96,6 +76,15 @@ The directory layout (after building) would be
 -----------  
 <1> Will generate amdjs modules if flags are turned on
 <2> Will generate goog modules if flags are turned on 
+
+We wrap `bsb.exe` as `bsb` so that it will work across different platform.
+
+.Watch mode
+[source,sh]
+--------------------
+bsb -w 
+--------------------
+
 
 === Build using Make
 BuckleScript distribution has `bsdep.exe` which has the same interface as `ocamldep`
