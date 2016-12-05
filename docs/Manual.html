@@ -632,7 +632,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_build_system_support">Build system support</a>
 <ul class="sectlevel2">
-<li><a href="#_build_with_bsb_experimental">Build with bsb (experimental)</a></li>
+<li><a href="#_build_with_bsb">Build with bsb</a></li>
 <li><a href="#_build_using_make">Build using Make</a></li>
 </ul>
 </li>
@@ -665,6 +665,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_changes">Appendix A: CHANGES</a>
 <ul class="sectlevel2">
+<li><a href="#_1_3_2">1.3.2</a></li>
 <li><a href="#_1_2_1_dev">1.2.1 + dev</a></li>
 <li><a href="#_1_1_2">1.1.2</a></li>
 <li><a href="#_1_1_1">1.1.1</a></li>
@@ -3761,7 +3762,7 @@ inlining, arity inference and other information.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_build_with_bsb_experimental"><a class="anchor" href="#_build_with_bsb_experimental"></a>Build with bsb (experimental)</h3>
+<h3 id="_build_with_bsb"><a class="anchor" href="#_build_with_bsb"></a>Build with bsb</h3>
 <div class="paragraph">
 <p>BuckleScript proivdes a native build tool using <a href="https://github.com/ninja-build/ninja/releases">ninja</a>,
 it is designed for fast feedback loop (typically 100ms feedback loop).</p>
@@ -3790,36 +3791,15 @@ we create a JS wrapper (which is accessible in <code>.bin</code> too), so the us
 either <code>bsb</code>(slightly higher latency but symlinked into <code>.bin</code>) or <code>bsb.exe</code></p>
 </div>
 <div class="paragraph">
-<p>Here is a typical configuration:</p>
+<p>Here is a <strong>minimal</strong> configuration:</p>
 </div>
 <div class="listingblock">
 <div class="title">bsconfig.json</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
-    <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bs-string&quot;</span><span class="tok-p">,</span>
-    <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.2&quot;</span><span class="tok-p">,</span>
-    <span class="tok-s2">&quot;ocaml-config&quot;</span><span class="tok-o">:</span> <span class="tok-p">{</span>
-      <span class="tok-c1">//  &quot;bs-dependencies&quot;: [&quot;bs-mocha&quot;], </span><b class="conum">(1)</b>
-        <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
-            <span class="tok-p">{</span>
-                <span class="tok-s2">&quot;dir&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">,</span>
-                <span class="tok-s2">&quot;public&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;all&quot;</span><span class="tok-p">,</span> <b class="conum">(2)</b>
-                <span class="tok-s2">&quot;files&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
-                    <span class="tok-s2">&quot;bs_string.ml&quot;</span><span class="tok-p">,</span>
-                    <span class="tok-s2">&quot;bs_nativeint.ml&quot;</span><span class="tok-p">,</span>
-                    <span class="tok-s2">&quot;bs_math.ml&quot;</span><span class="tok-p">,</span>
-                    <span class="tok-s2">&quot;bs_array.ml&quot;</span>
-                <span class="tok-p">]</span>
-            <span class="tok-p">},</span>
-            <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;test&quot;</span><span class="tok-p">,</span>
-              <span class="tok-s2">&quot;files&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
-                         <span class="tok-s2">&quot;bs_string_test.ml&quot;</span>
-                         <span class="tok-p">]</span>
-                         <span class="tok-p">,</span>
-              <span class="tok-s2">&quot;bs-dependencies&quot;</span> <span class="tok-o">:</span> <span class="tok-p">[</span><span class="tok-s2">&quot;bs-mocha&quot;</span><span class="tok-p">]</span> <b class="conum">(3)</b>
-            <span class="tok-p">}</span>
-        <span class="tok-p">]</span>
-    <span class="tok-p">}</span>
+  <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;test&quot;</span><span class="tok-p">,</span> <span class="tok-c1">// package name, required </span><b class="conum">(1)</b>
+  <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span>
+     <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span> <b class="conum">(2)</b>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
@@ -3829,10 +3809,7 @@ either <code>bsb</code>(slightly higher latency but symlinked into <code>.bin</c
 <p>It is an extension to JSON with comment support</p>
 </li>
 <li>
-<p>List interfaces to be exposed to client</p>
-</li>
-<li>
-<p>Add more dependencies for some TARGETS</p>
+<p>Here we did not list files, so all <code>.ml</code>, <code>.mli</code>, <code>.re</code>, <code>.rei</code> will be considered as source files</p>
 </li>
 </ol>
 </div>
@@ -3876,6 +3853,15 @@ and delegate the hard work to <code>ninja</code>.</p>
 <p>Will generate goog modules if flags are turned on</p>
 </li>
 </ol>
+</div>
+<div class="paragraph">
+<p>We wrap <code>bsb.exe</code> as <code>bsb</code> so that it will work across different platform.</p>
+</div>
+<div class="listingblock">
+<div class="title">Watch mode</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">bsb -w</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -4783,6 +4769,23 @@ Array while js_of_ocaml requires its index 0 to be of value 0.</p>
 <div class="sect1">
 <h2 id="_changes"><a class="anchor" href="#_changes"></a>Appendix A: CHANGES</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_3_2"><a class="anchor" href="#_1_3_2"></a>1.3.2</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Features</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Significantly improve <code>bsb</code> experience (TODO: install instruction)</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_1_2_1_dev"><a class="anchor" href="#_1_2_1_dev"></a>1.2.1 + dev</h3>
 <div class="ulist">

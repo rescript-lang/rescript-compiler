@@ -2,7 +2,10 @@
 
 
 == CHANGES
-
+=== 1.3.2
+* Features
+- Significantly improve `bsb` experience (TODO: install instruction)
+  
 === 1.2.1 + dev
 
 * Features
