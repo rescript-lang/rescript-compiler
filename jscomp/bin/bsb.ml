@@ -29,6 +29,7 @@ let cmd = "cmd"
 let ninja = "ninja" 
 let package_specs = "package-specs"
 
+let generate_merlin = "generate-merlin"
 
 end
 module Ext_pervasives : sig 
@@ -6137,6 +6138,9 @@ type package_specs = String_set.t
 val get_package_specs : unit -> package_specs
 val set_package_specs_from_array : Bsb_json.t array -> unit  
 
+val get_generate_merlin : unit -> bool 
+val set_generate_merlin : bool -> unit 
+
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6275,7 +6279,12 @@ let set_package_specs_from_array arr =
         ) String_set.empty in 
    package_specs := new_package_specs
 
+let generate_merlin = ref false
 
+let get_generate_merlin () = !generate_merlin 
+
+let set_generate_merlin b = 
+  generate_merlin := b
 
 end
 module Bsb_dep_infos : sig 
@@ -7242,20 +7251,92 @@ let (//) = Ext_filename.combine
 
 let bs_file_groups = ref []
 
+let sourcedirs_meta = ".sourcedirs"
+let merlin = ".merlin"
+let merlin_header = "\n####{BSB GENERATED: NO EDIT\n"
+let merlin_trailer = "\n####BSB GENERATED: NO EDIT}\n"
+let merlin_trailer_length = String.length merlin_trailer
+let revise_merlin new_content = 
+  if Sys.file_exists merlin then 
+    let merlin_chan = open_in_bin merlin in 
+    let size = in_channel_length merlin_chan in 
+    let s = really_input_string merlin_chan size in 
+    let () =  close_in merlin_chan in 
+
+    let header =  Ext_string.find s ~sub:merlin_header  in
+    let tail = Ext_string.find s ~sub:merlin_trailer in 
+    if header < 0  && tail < 0 then 
+      let ochan = open_out_bin merlin in 
+      output_string ochan s ; 
+      output_string ochan merlin_header;
+      Buffer.output_buffer ochan new_content;
+      output_string ochan merlin_trailer ; 
+      close_out ochan 
+    else if header >=0 && tail >= 0  then 
+      let ochan = open_out_bin merlin in 
+      output_string ochan (String.sub s 0 header) ; 
+      output_string ochan merlin_header;
+      Buffer.output_buffer ochan new_content;
+      output_string ochan merlin_trailer ; 
+      output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
+      close_out ochan 
+    else assert false
+  else 
+    let ochan = open_out_bin merlin in 
+    output_string ochan merlin_header ;
+    Buffer.output_buffer ochan new_content;
+    output_string ochan merlin_trailer ;
+    close_out ochan
+(*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 (** *)
 let write_ninja_file cwd =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
-  let bsc, bsdep = Bsb_build_util.get_bsc_bsdep cwd  in
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
+  let bsc, bsdep, bsppx =
+    bsc_dir // "bsc.exe", 
+    bsc_dir // "bsb_helper.exe",
+    bsc_dir // "bsppx.exe" in 
 
-  let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
+  let handle_bsb_build_ui (res : Bsb_build_ui.t) = 
+    let ochan = open_out_bin (builddir // sourcedirs_meta) in
+    let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in 
+    let buffer = Buffer.create 100 in 
+    let () = Buffer.add_string buffer
+        (Printf.sprintf "S %s\n\
+                         B %s\n\
+                         PPX %s\n
+                       " lib_ocaml_dir lib_ocaml_dir bsppx
+        ) in 
+    res.files |> List.iter 
+      (fun (x : Bsb_build_ui.file_group) -> 
+         output_string ochan x.dir;
+         output_string ochan "\n" ;
+         Buffer.add_string buffer "\nS ";
+         Buffer.add_string buffer x.dir ;
+         Buffer.add_string buffer "\nB ";
+         Buffer.add_string buffer ("lib"//"bs"//x.dir) ;
+         Buffer.add_string buffer "\n"
+      ) ; 
+    close_out ochan; 
+    bs_file_groups := res.files ;
+    update_queue := res.intervals;
+    globbed_dirs := res.globbed_dirs;
+    if Bsb_default.get_generate_merlin () then 
+      revise_merlin buffer ; 
+  in 
+  let config_json_chan = open_in_bin Literals.bsconfig_json in
+  let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
+
   let () =
     match global_data with
     | `Obj map ->
       map
+      |? (Bsb_build_schemas.generate_merlin, `Bool (fun b -> 
+          Bsb_default.set_generate_merlin b
+        ))
       |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
       |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
       |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
@@ -7271,30 +7352,19 @@ let write_ninja_file cwd =
       |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
       |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
+
       |? (Bsb_build_schemas.sources, `Obj (fun x ->
-          let res =  Bsb_build_ui.parsing_source Filename.current_dir_name x in 
-          let ochan = open_out_bin (builddir // ".sourcedirs") in
-          res.files |> List.iter 
-            (fun (x : Bsb_build_ui.file_group) -> 
-               output_string ochan x.dir; output_string ochan "\n" ) ; 
-          close_out ochan; 
-          bs_file_groups := res.files ;
-          update_queue := res.intervals;
-          globbed_dirs := res.globbed_dirs 
+          let res : Bsb_build_ui.t =  Bsb_build_ui.parsing_source 
+              Filename.current_dir_name x in 
+          handle_bsb_build_ui res
         ))
       |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
 
-          let res =  Bsb_build_ui.parsing_sources Filename.current_dir_name xs  in
-          let ochan = open_out_bin (builddir // ".sourcedirs") in
-          res.files |> List.iter 
-            (fun (x : Bsb_build_ui.file_group) -> 
-               output_string ochan x.dir; output_string ochan "\n" ) ; 
-          close_out ochan; 
-          bs_file_groups := res.files ;
-          update_queue := res.intervals;
-          globbed_dirs := res.globbed_dirs
+          let res : Bsb_build_ui.t  =  
+            Bsb_build_ui.parsing_sources Filename.current_dir_name xs  
+          in
+          handle_bsb_build_ui res
         ))
-
 
       |> ignore
     | _ -> ()
@@ -7346,8 +7416,16 @@ let cwd = Sys.getcwd ()
 let create_bs_config () = 
   ()
 let watch () = 
+  let bsb_watcher =
+    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in 
+  let bsb_watcher =
+    (*FIXME *)
+    if Sys.win32 then Filename.quote bsb_watcher 
+    else bsb_watcher in 
   Unix.execvp "node" 
-    [| "node" ; Filename.quote (Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" )|]
+    [| "node" ; 
+       bsb_watcher 
+    |]
 
 
 let annoymous filename = 

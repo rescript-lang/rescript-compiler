@@ -7583,7 +7583,7 @@ val version : string
 
 end = struct
 #1 "bs_version.ml"
-let version = "1.3.2"
+let version = "1.3.3"
 
 end
 module Ext_pervasives : sig 
