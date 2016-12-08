@@ -9,5 +9,6 @@ node_js:
 # This delays notification
 
 # Not a very reliable service..  
-script: npm run coveralls
+# script: npm run coveralls
+# FIXME: instrumentation takes too much time
 
