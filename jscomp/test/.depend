@@ -183,6 +183,7 @@ gpr_658.cmj : ../runtime/js.cmj
 gpr_858_test.cmj : ../stdlib/list.cmj
 gpr_858_unit2_test.cmj :
 gpr_904_test.cmj : mt.cmj
+gpr_974_test.cmj : ../runtime/js.cmj
 guide_for_ext.cmj :
 hamming_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/lazy.cmj \
     ../stdlib/int64.cmj ../stdlib/buffer.cmj

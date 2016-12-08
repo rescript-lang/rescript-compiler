@@ -40,6 +40,9 @@ There are two things we need consider:
 2.  For some standard library functions, we prefer to replace with javascript primitives
     For example [Pervasives["^"] -> ^]
     We can collect all mli files in OCaml and replace it with an efficient javascript runtime
+
+TODO: return type to be expression is ugly, 
+   we should allow return block    
 *)
 let translate (prim_name : string) 
     (args : J.expression list) : J.expression  =
@@ -1004,10 +1007,13 @@ let translate (prim_name : string)
         | Var _ -> 
           E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
         | _ -> 
+          call Js_config.js_primitive  
+        (* # GPR 974
           let id = Ext_ident.create "v" in
           let tmp = E.var id in
           E.(seq (assign tmp e ) 
                (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+        *)
         end
 
       | _ -> assert false 
@@ -1019,11 +1025,14 @@ let translate (prim_name : string)
         begin match e.expression_desc with 
         | Var _ -> 
           E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
-        | _ -> 
+        | _ ->
+          call Js_config.js_primitive
+         (* GPR #974
           let id = Ext_ident.create "v" in
           let tmp = E.var id in
           E.(seq (assign tmp e ) 
                (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+          *)
         end
 
       | _ -> assert false 

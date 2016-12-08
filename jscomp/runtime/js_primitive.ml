@@ -35,6 +35,13 @@ let js_from_nullable_def ( x : 'a Js.null_undefined) =
     None 
   else Some (Obj.magic x : 'a)
 
+let js_from_def ( x : 'a Js.undefined) = 
+    if (Obj.magic x) == Js.undefined then None 
+    else Some (Obj.magic x : 'a)
+
+let js_from_nullable ( x : 'a Js.null) = 
+  if (Obj.magic x) == Js.null then None 
+  else Some (Obj.magic x : 'a) 
 
 let option_get (x : 'a option) : 'a Js_undefined.t = 
   match x with 
