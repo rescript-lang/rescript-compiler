@@ -29,4 +29,8 @@ val js_is_nil_undef : 'a Js.null_undefined -> bool
 
 val js_from_nullable_def : 'a Js.null_undefined -> 'a option
 
+val js_from_def : 'a Js.undefined -> 'a option 
+
+val js_from_nullable : 'a Js.null -> 'a option
+
 val option_get : 'a option -> 'a Js_undefined.t 

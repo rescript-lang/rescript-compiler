@@ -30,7 +30,7 @@ let int_map_suites = let open Mt in Int_map.[
 
   "iteration", (fun _ -> 
     let m = ref String_map.empty in
-    let count = 10000 in
+    let count = 1_0000 in
     for i = 0 to count do 
       m := String_map.add (string_of_int i) (string_of_int i) !m
     done;
