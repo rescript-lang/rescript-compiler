@@ -218,6 +218,10 @@
             ]
         }
     },
+    "generate-merlin" : { 
+        "type" : "boolean",
+        "description" : "default false"   
+        },
     "additionalProperties": false,
     "required": [
         "name",

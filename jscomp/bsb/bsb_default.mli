@@ -60,3 +60,6 @@ val set_ninja : cwd:string -> string -> unit
 type package_specs = String_set.t
 val get_package_specs : unit -> package_specs
 val set_package_specs_from_array : Bsb_json.t array -> unit  
+
+val get_generate_merlin : unit -> bool 
+val set_generate_merlin : bool -> unit 

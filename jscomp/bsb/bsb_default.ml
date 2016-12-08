@@ -134,4 +134,9 @@ let set_package_specs_from_array arr =
         ) String_set.empty in 
    package_specs := new_package_specs
 
+let generate_merlin = ref false
 
+let get_generate_merlin () = !generate_merlin 
+
+let set_generate_merlin b = 
+  generate_merlin := b
