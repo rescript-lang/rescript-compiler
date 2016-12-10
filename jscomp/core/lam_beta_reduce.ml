@@ -68,12 +68,12 @@
    2. number of invoked times
    3. arguments are const or not   
 *)
-let rewrite (map :   (Ident.t, _) Hashtbl.t) 
+let rewrite (map :   _ Ident_hashtbl.t) 
     (lam : Lam.t) : Lam.t = 
 
   let rebind i = 
     let i' = Ident.rename i in 
-    Hashtbl.add map i (Lam.var i');
+    Ident_hashtbl.add map i (Lam.var i');
     i' in
   (* order matters, especially for let bindings *)
   let rec 
@@ -85,7 +85,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     match lam with 
     | Lvar v -> 
       begin 
-        try (* Lvar *) (Hashtbl.find map v) 
+        try (* Lvar *) (Ident_hashtbl.find map v) 
         with Not_found -> lam 
       end
     | Llet(str, v, l1, l2) ->
@@ -176,7 +176,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
   aux lam
 
 
-let refresh lam = rewrite (Hashtbl.create 17 ) lam
+let refresh lam = rewrite (Ident_hashtbl.create 17 : Lam.t Ident_hashtbl.t ) lam
 
 
 
@@ -218,17 +218,17 @@ let propogate_beta_reduce
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
-  let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
            begin 
-             match Hashtbl.find meta.ident_tbl v with 
+             match Ident_hashtbl.find meta.ident_tbl v with 
              | exception Not_found -> ()
              | ident_info -> 
-               Hashtbl.add meta.ident_tbl param ident_info 
+               Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
          | Lprim {primitive = Pgetglobal ident;  args = [];  _} -> 
@@ -238,7 +238,7 @@ let propogate_beta_reduce
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
-           Hashtbl.replace meta.ident_tbl param 
+           Ident_hashtbl.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
@@ -278,17 +278,17 @@ let propogate_beta_reduce_with_map
              let p = Ident.rename old_param in 
              (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
-  let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
            begin 
-             match Hashtbl.find meta.ident_tbl v with 
+             match Ident_hashtbl.find meta.ident_tbl v with 
              | exception Not_found -> ()
              | ident_info -> 
-               Hashtbl.add meta.ident_tbl param ident_info 
+               Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
          | Lprim {primitive = Pgetglobal ident; args =  []} -> 
@@ -296,7 +296,7 @@ let propogate_beta_reduce_with_map
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
-           Hashtbl.replace meta.ident_tbl param 
+           Ident_hashtbl.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in

@@ -47,7 +47,7 @@ let suites =
       done ;
       OUnit.assert_equal (Hash_set.length v) 1990;
       OUnit.assert_equal (Hash_set.stats v)
-        {Hash_set.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7;
+        {Hashtbl.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7;
          bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]}
     end ;
     __LOC__ >:: begin fun _ -> 

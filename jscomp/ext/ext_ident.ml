@@ -62,7 +62,7 @@ let make_js_object (i : Ident.t) =
 let create_js (name : string) : Ident.t  = 
   { name = name; flags = js_flag ; stamp = 0}
 
-let js_module_table = Hashtbl.create 31 
+let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
 
 (* This is for a js exeternal module, we can change it when printing
    for example
@@ -83,11 +83,11 @@ let create_js_module (name : string) : Ident.t =
       react--dom
       check collision later
    *)
-  match Hashtbl.find js_module_table name  with 
+  match String_hashtbl.find js_module_table name  with 
   | exception Not_found -> 
       let v = Ident.create name in
       let ans = { v with flags = js_module_flag} in 
-      Hashtbl.add js_module_table name ans;
+      String_hashtbl.add js_module_table name ans;
       ans
   | v -> v 
 
@@ -96,7 +96,7 @@ let create = Ident.create
 let gen_js ?(name="$js") () = create name 
 
 let reserved_words = 
-  [
+  [|
     (* keywork *)
     "break";
     "case"; "catch"; "continue";
@@ -188,11 +188,15 @@ let reserved_words =
    "require";
    "exports";
    "module"
-]
+  |]
 
 let reserved_map = 
-  List.fold_left (fun acc x -> String_set.add x acc) String_set.empty 
-    reserved_words
+  let len = Array.length reserved_words in 
+  let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
+  for i = 0 to len - 1 do 
+    String_hash_set.add set reserved_words.(i);
+  done ;
+  set 
 
 
 
@@ -206,7 +210,7 @@ let reserved_map =
     ]}
  *)
 let convert keyword (name : string) = 
-   if keyword && String_set.mem name reserved_map then "$$" ^ name 
+   if keyword && String_hash_set.mem reserved_map name  then "$$" ^ name 
    else 
      let module E = struct exception Not_normal_letter of int end in
      let len = String.length name  in
@@ -255,9 +259,17 @@ let make_unused () = create "_"
 let is_unused_ident i = Ident.name i = "_"
 
 let reset () = 
-  begin
-    Hashtbl.clear js_module_table
-  end
+  String_hashtbl.clear js_module_table
+
 
 let undefined = create_js "undefined"
 let nil = create_js "null"
+
+let compare (x : Ident.t ) ( y : Ident.t) = 
+  let u = x.stamp - y.stamp in
+  if u = 0 then 
+    let u = String.compare x.name y.name in 
+    if u = 0 then 
+      x.flags - y.flags 
+    else  u 
+  else u 

@@ -24,7 +24,7 @@ bsb_helper.exe:  bsb_helper.mli bsb_helper.ml
 config_whole_compiler.ml:config_whole_compiler.mlp ../config.js
 	node ../config.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
-	$(NATIVE) -w -a $^  -o $@
+	$(NATIVE) -w -a ../stubs/ext_basic_hash_stubs.c $^  -o $@
 
 bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
 	$(NATIVE) -w -a unix.cmxa  $^ -o $@

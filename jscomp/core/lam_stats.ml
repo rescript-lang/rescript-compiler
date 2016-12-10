@@ -45,7 +45,7 @@
 
 type function_arities = Lam.function_arities
 
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
+type alias_tbl =  Ident.t Ident_hashtbl.t
 
 type function_kind = 
   | Functor 
@@ -99,7 +99,7 @@ type kind =
        so that [Pfield v/2 0] will be replaced by [v/1], 
        [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
     *)
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
+type ident_tbl = kind Ident_hashtbl.t 
 
 type state = 
   | Live (** Globals are always live *)

@@ -2818,6 +2818,16 @@ type t = int
 let compare (x : t) (y : t) = Pervasives.compare x y 
 
 end
+module Ounit_tests_util
+= struct
+#1 "ounit_tests_util.ml"
+let time description f  =
+  let start = Unix.gettimeofday () in 
+  f ();
+  let finish = Unix.gettimeofday () in
+  Printf.printf "%s elapsed %f\n" description (finish -. start)  
+
+end
 module Ounit_bal_tree_tests
 = struct
 #1 "ounit_bal_tree_tests.ml"
@@ -2898,11 +2908,6 @@ let suites =
 
   ]
 
-let time description f  =
-  let start = Unix.gettimeofday () in 
-  f ();
-  let finish = Unix.gettimeofday () in
-  Printf.printf "%s elapsed %f\n" description (finish -. start)  
 
 type ident = { stamp : int ; name : string ; mutable flags : int}
 
@@ -2938,7 +2943,7 @@ module Ident_set2 = Set.Make(struct type t = ident
 
 let bench () = 
   let times = 1_000_000 in
-  time "functor set" begin fun _ -> 
+  Ounit_tests_util.time "functor set" begin fun _ -> 
     let v = ref Ident_set.empty in  
     for i = 0 to  times do
       v := Ident_set.add   {stamp = i ; name = "name"; flags = -1 } !v 
@@ -2947,7 +2952,7 @@ let bench () =
       ignore @@ Ident_set.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done 
   end ;
-  time "functor set (specialized)" begin fun _ -> 
+  Ounit_tests_util.time "functor set (specialized)" begin fun _ -> 
     let v = ref Ident_set2.empty in  
     for i = 0 to  times do
       v := Ident_set2.add   {stamp = i ; name = "name"; flags = -1 } !v 
@@ -2957,7 +2962,7 @@ let bench () =
     done 
   end ;
 
-  time "poly set" begin fun _ -> 
+  Ounit_tests_util.time "poly set" begin fun _ -> 
     let v = ref Bal_set_common.empty in  
     for i = 0 to  times do
       v := Bal_tree.add   {stamp = i ; name = "name"; flags = -1 } !v 
@@ -2966,7 +2971,7 @@ let bench () =
       ignore @@ Bal_tree.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done;
   end;
-  time "poly set (specialized)" begin fun _ -> 
+  Ounit_tests_util.time "poly set (specialized)" begin fun _ -> 
     let v = ref Bal_set_common.empty in  
     for i = 0 to  times do
       v := add   {stamp = i ; name = "name"; flags = -1 } !v 
@@ -2978,8 +2983,9 @@ let bench () =
   end ; 
 
 end
-module Hash_set : sig 
-#1 "hash_set.mli"
+module Hash_set_gen
+= struct
+#1 "hash_set_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3003,105 +3009,6 @@ module Hash_set : sig
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Ideas are based on {!Hashtbl}, 
-    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
-    This module fixes the semantics of [add].
-    [remove] is not optimized since it is not used too much 
-*)
-
-
-type statistics = {
-  num_bindings: int;
-  num_buckets: int;
-  max_bucket_length: int;
-  bucket_histogram: int array
-}
-
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> statistics
-    val elements : t -> key list 
-  end
-
-
-
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
-
-module Make ( H : HashedType) : (S with type key = H.t)
-(** A naive t implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a t 
-
-val create : int -> 'a t
-
-val clear : 'a t -> unit
-
-val reset : 'a t -> unit
-
-val copy : 'a t -> 'a t
-
-val add : 'a t -> 'a  -> unit
-val remove : 'a t -> 'a -> unit
-
-val mem : 'a t -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a t -> unit
-
-val elements : 'a t -> 'a list
-
-val length : 'a t -> int 
-
-val stats:  'a t -> statistics
-
-end = struct
-#1 "hash_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 
 
 (* We do dynamic hashing, and resize the table and rehash the elements
@@ -3140,65 +3047,6 @@ let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize [ ] in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        [ ] -> ()
-      | key :: rest ->
-          let nidx = indexfun h key in
-          ndata.(nidx) <- key :: ndata.(nidx);
-          insert_bucket rest
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
-
-let key_index h key =
-  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
-
-
-let remove h key =
-  let rec remove_bucket = function
-    | [ ] ->
-        [ ]
-    | k :: next ->
-        if compare k key = 0
-        then begin h.size <- h.size - 1; next end
-        else k :: remove_bucket next in
-  let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
-
-let rec small_bucket_mem key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    key = key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-      key = key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-         key = key3 ||
-         small_bucket_mem key rest 
-let add h key =
-  let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
-    begin 
-      h.data.(i) <- key :: h.data.(i);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then resize key_index h
-    end
-let mem h key =
-  small_bucket_mem key h.data.(key_index h key) 
-
 let iter f h =
   let rec do_bucket = function
     | [ ] ->
@@ -3224,15 +3072,28 @@ let fold f h init =
    done;
   !accu
 
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize [ ] in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        [ ] -> ()
+      | key :: rest ->
+          let nidx = indexfun h key in
+          ndata.(nidx) <- key :: ndata.(nidx);
+          insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
 let elements set = 
   fold  (fun k  acc ->  k :: acc) set []
 
-type statistics = {
-  num_bindings: int;
-  num_buckets: int;
-  max_bucket_length: int;
-  bucket_histogram: int array
-}
 
 
 
@@ -3245,10 +3106,45 @@ let stats h =
       let l = List.length b in
       histo.(l) <- histo.(l) + 1)
     h.data;
-  { num_bindings = h.size;
+  {Hashtbl.num_bindings = h.size;
     num_buckets = Array.length h.data;
     max_bucket_length = mbl;
     bucket_histogram = histo }
+
+
+end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Ideas are based on {!Hashtbl}, 
+    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
+    This module fixes the semantics of [add].
+    [remove] is not optimized since it is not used too much 
+*)
+
 
 
 module type S =
@@ -3265,31 +3161,159 @@ module type S =
     val iter: (key -> unit) ->  t -> unit
     val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
     val length:  t -> int
-    val stats:  t -> statistics
+    val stats:  t -> Hashtbl.statistics
     val elements : t -> key list 
   end
 
-module type HashedType =
+
+
+
+module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
+
+type   'a t 
+
+val create : int -> 'a t
+
+val clear : 'a t -> unit
+
+val reset : 'a t -> unit
+
+val copy : 'a t -> 'a t
+
+val add : 'a t -> 'a  -> unit
+val remove : 'a t -> 'a -> unit
+
+val mem : 'a t -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a t -> unit
+
+val elements : 'a t -> 'a list
+
+val length : 'a t -> int 
+
+val stats:  'a t -> Hashtbl.statistics
+
+end = struct
+#1 "hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type 'a t = 'a  Hash_set_gen.t 
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+
+let key_index (h : _ Hash_set_gen.t) key =
+  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
+
+
+let remove (h : _ Hash_set_gen.t ) key =
+  let rec remove_bucket = function
+    | [ ] ->
+        [ ]
+    | k :: next ->
+        if compare k key = 0
+        then begin h.size <- h.size - 1; next end
+        else k :: remove_bucket next in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    key = key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+      key = key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+         key = key3 ||
+         small_bucket_mem key rest 
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+    end
+let mem (h : _ Hash_set_gen.t ) key =
+  small_bucket_mem key h.data.(key_index h key) 
+
+
+
+module type S =
   sig
+    type key
     type t
-    val equal: t -> t -> bool
-    val hash: t -> int
+    val create: int ->  t
+    val clear : t -> unit
+    val reset : t -> unit
+    val copy: t -> t
+    val remove:  t -> key -> unit
+    val add :  t -> key -> unit
+    val mem :  t -> key -> bool
+    val iter: (key -> unit) ->  t -> unit
+    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+    val length:  t -> int
+    val stats:  t -> Hashtbl.statistics
+    val elements : t -> key list 
   end
 
-module Make(H: HashedType): (S with type key = H.t) =
+
+module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
   struct
     type key = H.t
-    
     type nonrec  t = key t
-    let create = create
-    let clear = clear
-    let reset = reset
-    let copy = copy
+    let create = Hash_set_gen.create
+    let clear = Hash_set_gen.clear
+    let reset = Hash_set_gen.reset
+    let copy = Hash_set_gen.copy
+    let iter = Hash_set_gen.iter
+    let fold = Hash_set_gen.fold
+    let length = Hash_set_gen.length
+    let stats = Hash_set_gen.stats
+    let elements = Hash_set_gen.elements
 
-    let key_index h key =
+    let key_index (h :  t ) key =
       (H.hash  key) land (Array.length h.data - 1)
 
-    let remove h key =
+    let remove (h : t) key =
       let rec remove_bucket = function
         | [ ] ->
             [ ]
@@ -3315,23 +3339,18 @@ module Make(H: HashedType): (S with type key = H.t) =
             H.equal key  key3 ||
             small_bucket_mem key rest 
 
-    let add h key =
+    let add (h : t) key =
       let i = key_index h key  in 
       if not (small_bucket_mem key  h.data.(i)) then 
         begin 
           h.data.(i) <- key :: h.data.(i);
           h.size <- h.size + 1 ;
-          if h.size > Array.length h.data lsl 1 then resize key_index h
+          if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
         end
 
-    let mem h key =
+    let mem (h :  t) key =
       small_bucket_mem key h.data.(key_index h key) 
 
-    let iter = iter
-    let fold = fold
-    let length = length
-    let stats = stats
-    let elements = elements
   end
 
 
@@ -3797,7 +3816,7 @@ let suites =
       done ;
       OUnit.assert_equal (Hash_set.length v) 1990;
       OUnit.assert_equal (Hash_set.stats v)
-        {Hash_set.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7;
+        {Hashtbl.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7;
          bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]}
     end ;
     __LOC__ >:: begin fun _ -> 
@@ -3842,6 +3861,153 @@ let suites =
           "19"; "18"; "17"; "16"; "15"; "14"; "13"; "12"; "11"|]
     end;
   ]
+
+end
+module Bs_hash_stubs
+= struct
+#1 "bs_hash_stubs.ml"
+external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
+
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
+
+external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
+
+end
+module Int_hash_set : sig 
+#1 "int_hash_set.mli"
+
+
+include Hash_set.S with type key = int
+
+end = struct
+#1 "int_hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type key = int
+type  t = key  Hash_set_gen.t 
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+let key_index (h :  t ) key =
+  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
+
+let remove (h : t) key =
+  let rec remove_bucket = function
+    | [ ] ->
+      [ ]
+    | k :: next ->
+      if  (k : key)  = key
+      then begin h.size <- h.size - 1; next end
+      else k :: remove_bucket next in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+     (key : key) = key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+       (key : key) = key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+         (key : key) = key3 ||
+         small_bucket_mem key rest 
+
+let add (h : t) key =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let mem (h :  t) key =
+  small_bucket_mem key h.data.(key_index h key) 
+
+end
+module Ounit_hash_stubs_test
+= struct
+#1 "ounit_hash_stubs_test.ml"
+let ((>::),
+    (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+let count = 2_000_000
+
+let bench () = 
+  Ounit_tests_util.time "int hash set" begin fun _ -> 
+    let v = Int_hash_set.create 2_000_000 in 
+    for i = 0 to  count do 
+      Int_hash_set.add  v i
+    done ;
+    for i = 0 to 3 do 
+      for i = 0 to count do 
+        assert (Int_hash_set.mem v i)
+      done
+    done
+  end;
+  Ounit_tests_util.time "int hash set" begin fun _ -> 
+    let v = Hash_set.create 2_000_000 in 
+    for i = 0 to  count do 
+      Hash_set.add  v i
+    done ;
+    for i = 0 to 3 do 
+      for i = 0 to count do 
+        assert (Hash_set.mem v i)
+     done
+    done
+  end
+
+let suites = 
+    __FILE__
+    >:::
+    [
+      __LOC__ >:: begin fun _ -> 
+        Bs_hash_stubs.hash_int 0 =~ Hashtbl.hash 0
+      end;
+      __LOC__ >:: begin fun _ -> 
+        Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
+      end;
+      __LOC__ >:: begin fun _ -> 
+        Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
+      end
+
+    ]
 
 end
 module Bal_map_common
@@ -9078,6 +9244,7 @@ let suites =
     Ounit_hash_set_tests.suites;
     Ounit_union_find_tests.suites;
     Ounit_bal_tree_tests.suites;
+    Ounit_hash_stubs_test.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

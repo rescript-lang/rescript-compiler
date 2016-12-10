@@ -38,7 +38,7 @@ let simplify_alias
     match lam with 
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
-      (try Lam.var (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
+      (try Lam.var (Ident_hashtbl.find meta.alias_tbl v) with Not_found -> lam )
     | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
            l ) -> 
       (* This is detection of MODULE ALIAS 
@@ -62,7 +62,7 @@ let simplify_alias
       Lam_util.get lam v  i meta.ident_tbl 
     | Lifthenelse(Lvar id as l1, l2, l3) 
       -> 
-      begin match Hashtbl.find meta.ident_tbl id with 
+      begin match Ident_hashtbl.find meta.ident_tbl id with 
       | ImmutableBlock ( _, Normal)
       | MutableBlock _  
         -> simpl l2 
@@ -124,7 +124,7 @@ let simplify_alias
                         match arg with 
                         | Lvar p -> 
                           begin 
-                            try Hashtbl.find meta.ident_tbl p <> Parameter
+                            try Ident_hashtbl.find meta.ident_tbl p <> Parameter
                             with Not_found -> true
                           end
                         |  _ -> true 
@@ -149,7 +149,7 @@ let simplify_alias
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
       let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
       begin 
-        match Hashtbl.find meta.ident_tbl v with
+        match Ident_hashtbl.find meta.ident_tbl v with
         | Function {lambda = Lfunction {params; body} as _m;
                     rec_flag;                     
                     _ }

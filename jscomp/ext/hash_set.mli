@@ -29,12 +29,6 @@
 *)
 
 
-type statistics = {
-  num_bindings: int;
-  num_buckets: int;
-  max_bucket_length: int;
-  bucket_histogram: int array
-}
 
 module type S =
   sig
@@ -50,20 +44,14 @@ module type S =
     val iter: (key -> unit) ->  t -> unit
     val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
     val length:  t -> int
-    val stats:  t -> statistics
+    val stats:  t -> Hashtbl.statistics
     val elements : t -> key list 
   end
 
 
 
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
 
-module Make ( H : HashedType) : (S with type key = H.t)
+module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
 (** A naive t implementation on top of [hashtbl], the value is [unit]*)
 
 type   'a t 
@@ -87,4 +75,4 @@ val elements : 'a t -> 'a list
 
 val length : 'a t -> int 
 
-val stats:  'a t -> statistics
+val stats:  'a t -> Hashtbl.statistics

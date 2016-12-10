@@ -31,8 +31,8 @@
 
 (** Types defined for lambda analysis *)
 
+type alias_tbl =  Ident.t Ident_hashtbl.t
 
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
 (** Keep track of which identifiers are aliased
   *)
 
@@ -86,8 +86,8 @@ type kind =
            if you only associate a property to an identifier 
            we should consider [Lassign]
         *)
+type ident_tbl = kind Ident_hashtbl.t 
 
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
 
 type ident_info = {
   kind : kind ; 

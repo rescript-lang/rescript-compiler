@@ -61,3 +61,6 @@ val property_no_need_convert : string -> bool
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
 val nil : Ident.t
+
+
+val compare : Ident.t -> Ident.t -> int

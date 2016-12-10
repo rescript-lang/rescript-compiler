@@ -57,13 +57,13 @@ let rec eval env (x : Sexp_lexer.t) : Sexp_lexer.t =
 
 let eval_file s = 
   let sexps = Sexp_lexer.from_file s in 
-  let env = Hashtbl.create 64 in 
+  let env : (string, Sexp_lexer.t) Hashtbl.t= Hashtbl.create 64 in 
   List.iter (fun x -> ignore (eval env x )) sexps ; 
   env 
 
 let eval_string s = 
   let sexps = Sexp_lexer.token (Lexing.from_string s) in 
-  let env = Hashtbl.create 64 in 
+  let env : (string, Sexp_lexer.t) Hashtbl.t = Hashtbl.create 64 in 
   List.iter (fun x -> ignore (eval env x )) sexps ; 
   env 
 

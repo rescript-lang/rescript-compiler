@@ -223,11 +223,11 @@ let process_include s : Ast_extract.dir_spec =
           ','}
 
 let deduplicate_dirs (xs : Ast_extract.dir_spec list) =
-  let set : (string, Ast_extract.dir_spec) Hashtbl.t = Hashtbl.create 64 in 
+  let set :  Ast_extract.dir_spec String_hashtbl.t = String_hashtbl.create 64 in 
   List.filter (fun ({Ast_extract.dir ; excludes = new_excludes } as y) -> 
-      match Hashtbl.find set dir with
+      match String_hashtbl.find set dir with
       | exception Not_found -> 
-        Hashtbl.add set dir y;
+        String_hashtbl.add set dir y;
         true 
       | x ->  x.excludes <- new_excludes @ x.excludes ; false
     ) xs 

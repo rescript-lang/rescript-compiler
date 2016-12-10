@@ -16800,7 +16800,7 @@ val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
 
 end = struct
 #1 "lexer.ml"
-# 15 "parsing/lexer.mll"
+# 15 "../ocaml/parsing/lexer.mll"
  
 open Lexing
 open Misc
@@ -17460,7 +17460,7 @@ let () =
     )
 
 
-# 666 "parsing/lexer.ml"
+# 666 "../ocaml/parsing/lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\164\255\165\255\224\000\003\001\038\001\073\001\108\001\
@@ -18703,123 +18703,123 @@ let rec token lexbuf =
 and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 706 "parsing/lexer.mll"
+# 706 "../ocaml/parsing/lexer.mll"
                  (
       if not !escaped_newlines then
         raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf));
       update_loc lexbuf None 1 false 0;
       token lexbuf )
-# 1916 "parsing/lexer.ml"
+# 1916 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 713 "parsing/lexer.mll"
+# 713 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         EOL )
-# 1922 "parsing/lexer.ml"
+# 1922 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 716 "parsing/lexer.mll"
+# 716 "../ocaml/parsing/lexer.mll"
       ( token lexbuf )
-# 1927 "parsing/lexer.ml"
+# 1927 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 718 "parsing/lexer.mll"
+# 718 "../ocaml/parsing/lexer.mll"
       ( UNDERSCORE )
-# 1932 "parsing/lexer.ml"
+# 1932 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 720 "parsing/lexer.mll"
+# 720 "../ocaml/parsing/lexer.mll"
       ( TILDE )
-# 1937 "parsing/lexer.ml"
+# 1937 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 722 "parsing/lexer.mll"
+# 722 "../ocaml/parsing/lexer.mll"
       ( LABEL (get_label_name lexbuf) )
-# 1942 "parsing/lexer.ml"
+# 1942 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 724 "parsing/lexer.mll"
+# 724 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; LABEL (get_label_name lexbuf) )
-# 1947 "parsing/lexer.ml"
+# 1947 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 726 "parsing/lexer.mll"
+# 726 "../ocaml/parsing/lexer.mll"
       ( QUESTION )
-# 1952 "parsing/lexer.ml"
+# 1952 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 728 "parsing/lexer.mll"
+# 728 "../ocaml/parsing/lexer.mll"
       ( OPTLABEL (get_label_name lexbuf) )
-# 1957 "parsing/lexer.ml"
+# 1957 "../ocaml/parsing/lexer.ml"
 
   | 9 ->
-# 730 "parsing/lexer.mll"
+# 730 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; OPTLABEL (get_label_name lexbuf) )
-# 1962 "parsing/lexer.ml"
+# 1962 "../ocaml/parsing/lexer.ml"
 
   | 10 ->
-# 732 "parsing/lexer.mll"
+# 732 "../ocaml/parsing/lexer.mll"
       ( let s = Lexing.lexeme lexbuf in
         try Hashtbl.find keyword_table s
         with Not_found -> LIDENT s )
-# 1969 "parsing/lexer.ml"
+# 1969 "../ocaml/parsing/lexer.ml"
 
   | 11 ->
-# 736 "parsing/lexer.mll"
+# 736 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; LIDENT (Lexing.lexeme lexbuf) )
-# 1974 "parsing/lexer.ml"
+# 1974 "../ocaml/parsing/lexer.ml"
 
   | 12 ->
-# 738 "parsing/lexer.mll"
+# 738 "../ocaml/parsing/lexer.mll"
       ( UIDENT(Lexing.lexeme lexbuf) )
-# 1979 "parsing/lexer.ml"
+# 1979 "../ocaml/parsing/lexer.ml"
 
   | 13 ->
-# 740 "parsing/lexer.mll"
+# 740 "../ocaml/parsing/lexer.mll"
       ( warn_latin1 lexbuf; UIDENT(Lexing.lexeme lexbuf) )
-# 1984 "parsing/lexer.ml"
+# 1984 "../ocaml/parsing/lexer.ml"
 
   | 14 ->
-# 742 "parsing/lexer.mll"
+# 742 "../ocaml/parsing/lexer.mll"
       ( try
           INT (cvt_int_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int", Location.curr lexbuf))
       )
-# 1993 "parsing/lexer.ml"
+# 1993 "../ocaml/parsing/lexer.ml"
 
   | 15 ->
-# 748 "parsing/lexer.mll"
+# 748 "../ocaml/parsing/lexer.mll"
       ( FLOAT (remove_underscores(Lexing.lexeme lexbuf)) )
-# 1998 "parsing/lexer.ml"
+# 1998 "../ocaml/parsing/lexer.ml"
 
   | 16 ->
-# 750 "parsing/lexer.mll"
+# 750 "../ocaml/parsing/lexer.mll"
       ( try
           INT32 (cvt_int32_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int32", Location.curr lexbuf)) )
-# 2006 "parsing/lexer.ml"
+# 2006 "../ocaml/parsing/lexer.ml"
 
   | 17 ->
-# 755 "parsing/lexer.mll"
+# 755 "../ocaml/parsing/lexer.mll"
       ( try
           INT64 (cvt_int64_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "int64", Location.curr lexbuf)) )
-# 2014 "parsing/lexer.ml"
+# 2014 "../ocaml/parsing/lexer.ml"
 
   | 18 ->
-# 760 "parsing/lexer.mll"
+# 760 "../ocaml/parsing/lexer.mll"
       ( try
           NATIVEINT (cvt_nativeint_literal (Lexing.lexeme lexbuf))
         with Failure _ ->
           raise (Error(Literal_overflow "nativeint", Location.curr lexbuf)) )
-# 2022 "parsing/lexer.ml"
+# 2022 "../ocaml/parsing/lexer.ml"
 
   | 19 ->
-# 765 "parsing/lexer.mll"
+# 765 "../ocaml/parsing/lexer.mll"
       ( reset_string_buffer();
         is_in_string := true;
         let string_start = lexbuf.lex_start_p in
@@ -18828,10 +18828,10 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), None) )
-# 2034 "parsing/lexer.ml"
+# 2034 "../ocaml/parsing/lexer.ml"
 
   | 20 ->
-# 774 "parsing/lexer.mll"
+# 774 "../ocaml/parsing/lexer.mll"
       ( reset_string_buffer();
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -18842,64 +18842,64 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), Some delim) )
-# 2048 "parsing/lexer.ml"
+# 2048 "../ocaml/parsing/lexer.ml"
 
   | 21 ->
-# 785 "parsing/lexer.mll"
+# 785 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         CHAR (Lexing.lexeme_char lexbuf 1) )
-# 2054 "parsing/lexer.ml"
+# 2054 "../ocaml/parsing/lexer.ml"
 
   | 22 ->
-# 788 "parsing/lexer.mll"
+# 788 "../ocaml/parsing/lexer.mll"
       ( CHAR(Lexing.lexeme_char lexbuf 1) )
-# 2059 "parsing/lexer.ml"
+# 2059 "../ocaml/parsing/lexer.ml"
 
   | 23 ->
-# 790 "parsing/lexer.mll"
+# 790 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_backslash (Lexing.lexeme_char lexbuf 2)) )
-# 2064 "parsing/lexer.ml"
+# 2064 "../ocaml/parsing/lexer.ml"
 
   | 24 ->
-# 792 "parsing/lexer.mll"
+# 792 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_decimal_code lexbuf 2) )
-# 2069 "parsing/lexer.ml"
+# 2069 "../ocaml/parsing/lexer.ml"
 
   | 25 ->
-# 794 "parsing/lexer.mll"
+# 794 "../ocaml/parsing/lexer.mll"
       ( CHAR(char_for_hexadecimal_code lexbuf 3) )
-# 2074 "parsing/lexer.ml"
+# 2074 "../ocaml/parsing/lexer.ml"
 
   | 26 ->
-# 796 "parsing/lexer.mll"
+# 796 "../ocaml/parsing/lexer.mll"
       ( let l = Lexing.lexeme lexbuf in
         let esc = String.sub l 1 (String.length l - 1) in
         raise (Error(Illegal_escape esc, Location.curr lexbuf))
       )
-# 2082 "parsing/lexer.ml"
+# 2082 "../ocaml/parsing/lexer.ml"
 
   | 27 ->
-# 801 "parsing/lexer.mll"
+# 801 "../ocaml/parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2088 "parsing/lexer.ml"
+# 2088 "../ocaml/parsing/lexer.ml"
 
   | 28 ->
-# 804 "parsing/lexer.mll"
+# 804 "../ocaml/parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
 
         DOCSTRING (Docstrings.docstring s loc) 
 
 )
-# 2099 "parsing/lexer.ml"
+# 2099 "../ocaml/parsing/lexer.ml"
 
   | 29 ->
 let
-# 811 "parsing/lexer.mll"
+# 811 "../ocaml/parsing/lexer.mll"
                     stars
-# 2105 "parsing/lexer.ml"
+# 2105 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 812 "parsing/lexer.mll"
+# 812 "../ocaml/parsing/lexer.mll"
       ( let s, loc =
           with_comment_buffer
             (fun lexbuf ->
@@ -18908,28 +18908,28 @@ let
             lexbuf
         in
         COMMENT (s, loc) )
-# 2116 "parsing/lexer.ml"
+# 2116 "../ocaml/parsing/lexer.ml"
 
   | 30 ->
-# 821 "parsing/lexer.mll"
+# 821 "../ocaml/parsing/lexer.mll"
       ( if !print_warnings then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Comment_start;
         let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2124 "parsing/lexer.ml"
+# 2124 "../ocaml/parsing/lexer.ml"
 
   | 31 ->
 let
-# 825 "parsing/lexer.mll"
+# 825 "../ocaml/parsing/lexer.mll"
                    stars
-# 2130 "parsing/lexer.ml"
+# 2130 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_curr_pos + -2) in
-# 826 "parsing/lexer.mll"
+# 826 "../ocaml/parsing/lexer.mll"
       ( COMMENT (stars, Location.curr lexbuf) )
-# 2134 "parsing/lexer.ml"
+# 2134 "../ocaml/parsing/lexer.ml"
 
   | 32 ->
-# 828 "parsing/lexer.mll"
+# 828 "../ocaml/parsing/lexer.mll"
       ( let loc = Location.curr lexbuf in
         Location.prerr_warning loc Warnings.Comment_not_end;
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
@@ -18937,307 +18937,307 @@ let
         lexbuf.lex_curr_p <- { curpos with pos_cnum = curpos.pos_cnum - 1 };
         STAR
       )
-# 2145 "parsing/lexer.ml"
+# 2145 "../ocaml/parsing/lexer.ml"
 
   | 33 ->
 let
-# 835 "parsing/lexer.mll"
+# 835 "../ocaml/parsing/lexer.mll"
                                    num
-# 2151 "parsing/lexer.ml"
+# 2151 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_mem.(1)
 and
-# 836 "parsing/lexer.mll"
+# 836 "../ocaml/parsing/lexer.mll"
                                            name
-# 2156 "parsing/lexer.ml"
+# 2156 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme_opt lexbuf lexbuf.Lexing.lex_mem.(3) lexbuf.Lexing.lex_mem.(2) in
-# 838 "parsing/lexer.mll"
+# 838 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf name (int_of_string num) true 0;
         token lexbuf
       )
-# 2162 "parsing/lexer.ml"
+# 2162 "../ocaml/parsing/lexer.ml"
 
   | 34 ->
-# 841 "parsing/lexer.mll"
+# 841 "../ocaml/parsing/lexer.mll"
          ( SHARP )
-# 2167 "parsing/lexer.ml"
+# 2167 "../ocaml/parsing/lexer.ml"
 
   | 35 ->
-# 842 "parsing/lexer.mll"
+# 842 "../ocaml/parsing/lexer.mll"
          ( AMPERSAND )
-# 2172 "parsing/lexer.ml"
+# 2172 "../ocaml/parsing/lexer.ml"
 
   | 36 ->
-# 843 "parsing/lexer.mll"
+# 843 "../ocaml/parsing/lexer.mll"
          ( AMPERAMPER )
-# 2177 "parsing/lexer.ml"
+# 2177 "../ocaml/parsing/lexer.ml"
 
   | 37 ->
-# 844 "parsing/lexer.mll"
+# 844 "../ocaml/parsing/lexer.mll"
          ( BACKQUOTE )
-# 2182 "parsing/lexer.ml"
+# 2182 "../ocaml/parsing/lexer.ml"
 
   | 38 ->
-# 845 "parsing/lexer.mll"
+# 845 "../ocaml/parsing/lexer.mll"
          ( QUOTE )
-# 2187 "parsing/lexer.ml"
+# 2187 "../ocaml/parsing/lexer.ml"
 
   | 39 ->
-# 846 "parsing/lexer.mll"
+# 846 "../ocaml/parsing/lexer.mll"
          ( LPAREN )
-# 2192 "parsing/lexer.ml"
+# 2192 "../ocaml/parsing/lexer.ml"
 
   | 40 ->
-# 847 "parsing/lexer.mll"
+# 847 "../ocaml/parsing/lexer.mll"
          ( RPAREN )
-# 2197 "parsing/lexer.ml"
+# 2197 "../ocaml/parsing/lexer.ml"
 
   | 41 ->
-# 848 "parsing/lexer.mll"
+# 848 "../ocaml/parsing/lexer.mll"
          ( STAR )
-# 2202 "parsing/lexer.ml"
+# 2202 "../ocaml/parsing/lexer.ml"
 
   | 42 ->
-# 849 "parsing/lexer.mll"
+# 849 "../ocaml/parsing/lexer.mll"
          ( COMMA )
-# 2207 "parsing/lexer.ml"
+# 2207 "../ocaml/parsing/lexer.ml"
 
   | 43 ->
-# 850 "parsing/lexer.mll"
+# 850 "../ocaml/parsing/lexer.mll"
          ( MINUSGREATER )
-# 2212 "parsing/lexer.ml"
+# 2212 "../ocaml/parsing/lexer.ml"
 
   | 44 ->
-# 851 "parsing/lexer.mll"
+# 851 "../ocaml/parsing/lexer.mll"
          ( DOT )
-# 2217 "parsing/lexer.ml"
+# 2217 "../ocaml/parsing/lexer.ml"
 
   | 45 ->
-# 852 "parsing/lexer.mll"
+# 852 "../ocaml/parsing/lexer.mll"
          ( DOTDOT )
-# 2222 "parsing/lexer.ml"
+# 2222 "../ocaml/parsing/lexer.ml"
 
   | 46 ->
-# 853 "parsing/lexer.mll"
+# 853 "../ocaml/parsing/lexer.mll"
          ( COLON )
-# 2227 "parsing/lexer.ml"
+# 2227 "../ocaml/parsing/lexer.ml"
 
   | 47 ->
-# 854 "parsing/lexer.mll"
+# 854 "../ocaml/parsing/lexer.mll"
          ( COLONCOLON )
-# 2232 "parsing/lexer.ml"
+# 2232 "../ocaml/parsing/lexer.ml"
 
   | 48 ->
-# 855 "parsing/lexer.mll"
+# 855 "../ocaml/parsing/lexer.mll"
          ( COLONEQUAL )
-# 2237 "parsing/lexer.ml"
+# 2237 "../ocaml/parsing/lexer.ml"
 
   | 49 ->
-# 856 "parsing/lexer.mll"
+# 856 "../ocaml/parsing/lexer.mll"
          ( COLONGREATER )
-# 2242 "parsing/lexer.ml"
+# 2242 "../ocaml/parsing/lexer.ml"
 
   | 50 ->
-# 857 "parsing/lexer.mll"
+# 857 "../ocaml/parsing/lexer.mll"
          ( SEMI )
-# 2247 "parsing/lexer.ml"
+# 2247 "../ocaml/parsing/lexer.ml"
 
   | 51 ->
-# 858 "parsing/lexer.mll"
+# 858 "../ocaml/parsing/lexer.mll"
          ( SEMISEMI )
-# 2252 "parsing/lexer.ml"
+# 2252 "../ocaml/parsing/lexer.ml"
 
   | 52 ->
-# 859 "parsing/lexer.mll"
+# 859 "../ocaml/parsing/lexer.mll"
          ( LESS )
-# 2257 "parsing/lexer.ml"
+# 2257 "../ocaml/parsing/lexer.ml"
 
   | 53 ->
-# 860 "parsing/lexer.mll"
+# 860 "../ocaml/parsing/lexer.mll"
          ( LESSMINUS )
-# 2262 "parsing/lexer.ml"
+# 2262 "../ocaml/parsing/lexer.ml"
 
   | 54 ->
-# 861 "parsing/lexer.mll"
+# 861 "../ocaml/parsing/lexer.mll"
          ( EQUAL )
-# 2267 "parsing/lexer.ml"
+# 2267 "../ocaml/parsing/lexer.ml"
 
   | 55 ->
-# 862 "parsing/lexer.mll"
+# 862 "../ocaml/parsing/lexer.mll"
          ( LBRACKET )
-# 2272 "parsing/lexer.ml"
+# 2272 "../ocaml/parsing/lexer.ml"
 
   | 56 ->
-# 863 "parsing/lexer.mll"
+# 863 "../ocaml/parsing/lexer.mll"
          ( LBRACKETBAR )
-# 2277 "parsing/lexer.ml"
+# 2277 "../ocaml/parsing/lexer.ml"
 
   | 57 ->
-# 864 "parsing/lexer.mll"
+# 864 "../ocaml/parsing/lexer.mll"
          ( LBRACKETLESS )
-# 2282 "parsing/lexer.ml"
+# 2282 "../ocaml/parsing/lexer.ml"
 
   | 58 ->
-# 865 "parsing/lexer.mll"
+# 865 "../ocaml/parsing/lexer.mll"
          ( LBRACKETGREATER )
-# 2287 "parsing/lexer.ml"
+# 2287 "../ocaml/parsing/lexer.ml"
 
   | 59 ->
-# 866 "parsing/lexer.mll"
+# 866 "../ocaml/parsing/lexer.mll"
          ( RBRACKET )
-# 2292 "parsing/lexer.ml"
+# 2292 "../ocaml/parsing/lexer.ml"
 
   | 60 ->
-# 867 "parsing/lexer.mll"
+# 867 "../ocaml/parsing/lexer.mll"
          ( LBRACE )
-# 2297 "parsing/lexer.ml"
+# 2297 "../ocaml/parsing/lexer.ml"
 
   | 61 ->
-# 868 "parsing/lexer.mll"
+# 868 "../ocaml/parsing/lexer.mll"
          ( LBRACELESS )
-# 2302 "parsing/lexer.ml"
+# 2302 "../ocaml/parsing/lexer.ml"
 
   | 62 ->
-# 869 "parsing/lexer.mll"
+# 869 "../ocaml/parsing/lexer.mll"
          ( BAR )
-# 2307 "parsing/lexer.ml"
+# 2307 "../ocaml/parsing/lexer.ml"
 
   | 63 ->
-# 870 "parsing/lexer.mll"
+# 870 "../ocaml/parsing/lexer.mll"
          ( BARBAR )
-# 2312 "parsing/lexer.ml"
+# 2312 "../ocaml/parsing/lexer.ml"
 
   | 64 ->
-# 871 "parsing/lexer.mll"
+# 871 "../ocaml/parsing/lexer.mll"
          ( BARRBRACKET )
-# 2317 "parsing/lexer.ml"
+# 2317 "../ocaml/parsing/lexer.ml"
 
   | 65 ->
-# 872 "parsing/lexer.mll"
+# 872 "../ocaml/parsing/lexer.mll"
          ( GREATER )
-# 2322 "parsing/lexer.ml"
+# 2322 "../ocaml/parsing/lexer.ml"
 
   | 66 ->
-# 873 "parsing/lexer.mll"
+# 873 "../ocaml/parsing/lexer.mll"
          ( GREATERRBRACKET )
-# 2327 "parsing/lexer.ml"
+# 2327 "../ocaml/parsing/lexer.ml"
 
   | 67 ->
-# 874 "parsing/lexer.mll"
+# 874 "../ocaml/parsing/lexer.mll"
          ( RBRACE )
-# 2332 "parsing/lexer.ml"
+# 2332 "../ocaml/parsing/lexer.ml"
 
   | 68 ->
-# 875 "parsing/lexer.mll"
+# 875 "../ocaml/parsing/lexer.mll"
          ( GREATERRBRACE )
-# 2337 "parsing/lexer.ml"
+# 2337 "../ocaml/parsing/lexer.ml"
 
   | 69 ->
-# 876 "parsing/lexer.mll"
+# 876 "../ocaml/parsing/lexer.mll"
          ( LBRACKETAT )
-# 2342 "parsing/lexer.ml"
+# 2342 "../ocaml/parsing/lexer.ml"
 
   | 70 ->
-# 877 "parsing/lexer.mll"
+# 877 "../ocaml/parsing/lexer.mll"
          ( LBRACKETPERCENT )
-# 2347 "parsing/lexer.ml"
+# 2347 "../ocaml/parsing/lexer.ml"
 
   | 71 ->
-# 878 "parsing/lexer.mll"
+# 878 "../ocaml/parsing/lexer.mll"
           ( LBRACKETPERCENTPERCENT )
-# 2352 "parsing/lexer.ml"
+# 2352 "../ocaml/parsing/lexer.ml"
 
   | 72 ->
-# 879 "parsing/lexer.mll"
+# 879 "../ocaml/parsing/lexer.mll"
           ( LBRACKETATAT )
-# 2357 "parsing/lexer.ml"
+# 2357 "../ocaml/parsing/lexer.ml"
 
   | 73 ->
-# 880 "parsing/lexer.mll"
+# 880 "../ocaml/parsing/lexer.mll"
            ( LBRACKETATATAT )
-# 2362 "parsing/lexer.ml"
+# 2362 "../ocaml/parsing/lexer.ml"
 
   | 74 ->
-# 881 "parsing/lexer.mll"
+# 881 "../ocaml/parsing/lexer.mll"
          ( BANG )
-# 2367 "parsing/lexer.ml"
+# 2367 "../ocaml/parsing/lexer.ml"
 
   | 75 ->
-# 882 "parsing/lexer.mll"
+# 882 "../ocaml/parsing/lexer.mll"
          ( INFIXOP0 "!=" )
-# 2372 "parsing/lexer.ml"
+# 2372 "../ocaml/parsing/lexer.ml"
 
   | 76 ->
-# 883 "parsing/lexer.mll"
+# 883 "../ocaml/parsing/lexer.mll"
          ( PLUS )
-# 2377 "parsing/lexer.ml"
+# 2377 "../ocaml/parsing/lexer.ml"
 
   | 77 ->
-# 884 "parsing/lexer.mll"
+# 884 "../ocaml/parsing/lexer.mll"
          ( PLUSDOT )
-# 2382 "parsing/lexer.ml"
+# 2382 "../ocaml/parsing/lexer.ml"
 
   | 78 ->
-# 885 "parsing/lexer.mll"
+# 885 "../ocaml/parsing/lexer.mll"
          ( PLUSEQ )
-# 2387 "parsing/lexer.ml"
+# 2387 "../ocaml/parsing/lexer.ml"
 
   | 79 ->
-# 886 "parsing/lexer.mll"
+# 886 "../ocaml/parsing/lexer.mll"
          ( MINUS )
-# 2392 "parsing/lexer.ml"
+# 2392 "../ocaml/parsing/lexer.ml"
 
   | 80 ->
-# 887 "parsing/lexer.mll"
+# 887 "../ocaml/parsing/lexer.mll"
          ( MINUSDOT )
-# 2397 "parsing/lexer.ml"
+# 2397 "../ocaml/parsing/lexer.ml"
 
   | 81 ->
-# 890 "parsing/lexer.mll"
+# 890 "../ocaml/parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2402 "parsing/lexer.ml"
+# 2402 "../ocaml/parsing/lexer.ml"
 
   | 82 ->
-# 892 "parsing/lexer.mll"
+# 892 "../ocaml/parsing/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2407 "parsing/lexer.ml"
+# 2407 "../ocaml/parsing/lexer.ml"
 
   | 83 ->
-# 894 "parsing/lexer.mll"
+# 894 "../ocaml/parsing/lexer.mll"
             ( INFIXOP0(Lexing.lexeme lexbuf) )
-# 2412 "parsing/lexer.ml"
+# 2412 "../ocaml/parsing/lexer.ml"
 
   | 84 ->
-# 896 "parsing/lexer.mll"
+# 896 "../ocaml/parsing/lexer.mll"
             ( INFIXOP1(Lexing.lexeme lexbuf) )
-# 2417 "parsing/lexer.ml"
+# 2417 "../ocaml/parsing/lexer.ml"
 
   | 85 ->
-# 898 "parsing/lexer.mll"
+# 898 "../ocaml/parsing/lexer.mll"
             ( INFIXOP2(Lexing.lexeme lexbuf) )
-# 2422 "parsing/lexer.ml"
+# 2422 "../ocaml/parsing/lexer.ml"
 
   | 86 ->
-# 900 "parsing/lexer.mll"
+# 900 "../ocaml/parsing/lexer.mll"
             ( INFIXOP4(Lexing.lexeme lexbuf) )
-# 2427 "parsing/lexer.ml"
+# 2427 "../ocaml/parsing/lexer.ml"
 
   | 87 ->
-# 901 "parsing/lexer.mll"
+# 901 "../ocaml/parsing/lexer.mll"
             ( PERCENT )
-# 2432 "parsing/lexer.ml"
+# 2432 "../ocaml/parsing/lexer.ml"
 
   | 88 ->
-# 903 "parsing/lexer.mll"
+# 903 "../ocaml/parsing/lexer.mll"
             ( INFIXOP3(Lexing.lexeme lexbuf) )
-# 2437 "parsing/lexer.ml"
+# 2437 "../ocaml/parsing/lexer.ml"
 
   | 89 ->
-# 905 "parsing/lexer.mll"
+# 905 "../ocaml/parsing/lexer.mll"
             ( SHARPOP(Lexing.lexeme lexbuf) )
-# 2442 "parsing/lexer.ml"
+# 2442 "../ocaml/parsing/lexer.ml"
 
   | 90 ->
-# 906 "parsing/lexer.mll"
+# 906 "../ocaml/parsing/lexer.mll"
         (
       if !if_then_else <> Dir_out then
         if !if_then_else = Dir_if_true then
@@ -19247,14 +19247,14 @@ and
         EOF
         
     )
-# 2455 "parsing/lexer.ml"
+# 2455 "../ocaml/parsing/lexer.ml"
 
   | 91 ->
-# 916 "parsing/lexer.mll"
+# 916 "../ocaml/parsing/lexer.mll"
       ( raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf))
       )
-# 2462 "parsing/lexer.ml"
+# 2462 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_token_rec lexbuf __ocaml_lex_state
@@ -19264,15 +19264,15 @@ and comment lexbuf =
 and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 922 "parsing/lexer.mll"
+# 922 "../ocaml/parsing/lexer.mll"
       ( comment_start_loc := (Location.curr lexbuf) :: !comment_start_loc;
         store_lexeme lexbuf;
         comment lexbuf;
       )
-# 2477 "parsing/lexer.ml"
+# 2477 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 927 "parsing/lexer.mll"
+# 927 "../ocaml/parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | [_] -> comment_start_loc := []; Location.curr lexbuf
@@ -19280,10 +19280,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
                   store_lexeme lexbuf;
                   comment lexbuf;
        )
-# 2488 "parsing/lexer.ml"
+# 2488 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 935 "parsing/lexer.mll"
+# 935 "../ocaml/parsing/lexer.mll"
       (
         string_start_loc := Location.curr lexbuf;
         store_string_char '"';
@@ -19301,10 +19301,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         store_string_char '"';
         comment lexbuf )
-# 2509 "parsing/lexer.ml"
+# 2509 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 953 "parsing/lexer.mll"
+# 953 "../ocaml/parsing/lexer.mll"
       (
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -19326,43 +19326,43 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         store_string delim;
         store_string_char '}';
         comment lexbuf )
-# 2534 "parsing/lexer.ml"
+# 2534 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 976 "parsing/lexer.mll"
+# 976 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2539 "parsing/lexer.ml"
+# 2539 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 978 "parsing/lexer.mll"
+# 978 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2547 "parsing/lexer.ml"
+# 2547 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 983 "parsing/lexer.mll"
+# 983 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2552 "parsing/lexer.ml"
+# 2552 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 985 "parsing/lexer.mll"
+# 985 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2557 "parsing/lexer.ml"
+# 2557 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 987 "parsing/lexer.mll"
+# 987 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2562 "parsing/lexer.ml"
+# 2562 "../ocaml/parsing/lexer.ml"
 
   | 9 ->
-# 989 "parsing/lexer.mll"
+# 989 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2567 "parsing/lexer.ml"
+# 2567 "../ocaml/parsing/lexer.ml"
 
   | 10 ->
-# 991 "parsing/lexer.mll"
+# 991 "../ocaml/parsing/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | loc :: _ ->
@@ -19370,20 +19370,20 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
           comment_start_loc := [];
           raise (Error (Unterminated_comment start, loc))
       )
-# 2578 "parsing/lexer.ml"
+# 2578 "../ocaml/parsing/lexer.ml"
 
   | 11 ->
-# 999 "parsing/lexer.mll"
+# 999 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2586 "parsing/lexer.ml"
+# 2586 "../ocaml/parsing/lexer.ml"
 
   | 12 ->
-# 1004 "parsing/lexer.mll"
+# 1004 "../ocaml/parsing/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2591 "parsing/lexer.ml"
+# 2591 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec lexbuf __ocaml_lex_state
@@ -19393,42 +19393,42 @@ and string lexbuf =
 and __ocaml_lex_string_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1008 "parsing/lexer.mll"
+# 1008 "../ocaml/parsing/lexer.mll"
       ( () )
-# 2603 "parsing/lexer.ml"
+# 2603 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
 let
-# 1009 "parsing/lexer.mll"
+# 1009 "../ocaml/parsing/lexer.mll"
                                   space
-# 2609 "parsing/lexer.ml"
+# 2609 "../ocaml/parsing/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_curr_pos in
-# 1010 "parsing/lexer.mll"
+# 1010 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false (String.length space);
         string lexbuf
       )
-# 2615 "parsing/lexer.ml"
+# 2615 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1014 "parsing/lexer.mll"
+# 1014 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_backslash(Lexing.lexeme_char lexbuf 1));
         string lexbuf )
-# 2621 "parsing/lexer.ml"
+# 2621 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 1017 "parsing/lexer.mll"
+# 1017 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_decimal_code lexbuf 1);
          string lexbuf )
-# 2627 "parsing/lexer.ml"
+# 2627 "../ocaml/parsing/lexer.ml"
 
   | 4 ->
-# 1020 "parsing/lexer.mll"
+# 1020 "../ocaml/parsing/lexer.mll"
       ( store_string_char(char_for_hexadecimal_code lexbuf 2);
          string lexbuf )
-# 2633 "parsing/lexer.ml"
+# 2633 "../ocaml/parsing/lexer.ml"
 
   | 5 ->
-# 1023 "parsing/lexer.mll"
+# 1023 "../ocaml/parsing/lexer.mll"
       ( if in_comment ()
         then string lexbuf
         else begin
@@ -19443,29 +19443,29 @@ let
           string lexbuf
         end
       )
-# 2651 "parsing/lexer.ml"
+# 2651 "../ocaml/parsing/lexer.ml"
 
   | 6 ->
-# 1038 "parsing/lexer.mll"
+# 1038 "../ocaml/parsing/lexer.mll"
       ( if not (in_comment ()) then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Eol_in_string;
         update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         string lexbuf
       )
-# 2661 "parsing/lexer.ml"
+# 2661 "../ocaml/parsing/lexer.ml"
 
   | 7 ->
-# 1045 "parsing/lexer.mll"
+# 1045 "../ocaml/parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2667 "parsing/lexer.ml"
+# 2667 "../ocaml/parsing/lexer.ml"
 
   | 8 ->
-# 1048 "parsing/lexer.mll"
+# 1048 "../ocaml/parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         string lexbuf )
-# 2673 "parsing/lexer.ml"
+# 2673 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_string_rec lexbuf __ocaml_lex_state
@@ -19475,34 +19475,34 @@ and quoted_string delim lexbuf =
 and __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1053 "parsing/lexer.mll"
+# 1053 "../ocaml/parsing/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         quoted_string delim lexbuf
       )
-# 2688 "parsing/lexer.ml"
+# 2688 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 1058 "parsing/lexer.mll"
+# 1058 "../ocaml/parsing/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2694 "parsing/lexer.ml"
+# 2694 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1061 "parsing/lexer.mll"
+# 1061 "../ocaml/parsing/lexer.mll"
       (
         let edelim = Lexing.lexeme lexbuf in
         let edelim = String.sub edelim 1 (String.length edelim - 2) in
         if delim = edelim then ()
         else (store_lexeme lexbuf; quoted_string delim lexbuf)
       )
-# 2704 "parsing/lexer.ml"
+# 2704 "../ocaml/parsing/lexer.ml"
 
   | 3 ->
-# 1068 "parsing/lexer.mll"
+# 1068 "../ocaml/parsing/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         quoted_string delim lexbuf )
-# 2710 "parsing/lexer.ml"
+# 2710 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state
@@ -19512,26 +19512,26 @@ and skip_sharp_bang lexbuf =
 and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1073 "parsing/lexer.mll"
+# 1073 "../ocaml/parsing/lexer.mll"
        ( update_loc lexbuf None 3 false 0 )
-# 2722 "parsing/lexer.ml"
+# 2722 "../ocaml/parsing/lexer.ml"
 
   | 1 ->
-# 1075 "parsing/lexer.mll"
+# 1075 "../ocaml/parsing/lexer.mll"
        ( update_loc lexbuf None 1 false 0 )
-# 2727 "parsing/lexer.ml"
+# 2727 "../ocaml/parsing/lexer.ml"
 
   | 2 ->
-# 1076 "parsing/lexer.mll"
+# 1076 "../ocaml/parsing/lexer.mll"
        ( () )
-# 2732 "parsing/lexer.ml"
+# 2732 "../ocaml/parsing/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 1078 "parsing/lexer.mll"
+# 1078 "../ocaml/parsing/lexer.mll"
  
 
   let at_bol lexbuf = 
@@ -19766,7 +19766,7 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     preprocessor := Some (init, preprocess)
 
 
-# 2974 "parsing/lexer.ml"
+# 2974 "../ocaml/parsing/lexer.ml"
 
 end
 module Bs_conditional_initial : sig 
@@ -56482,6 +56482,1266 @@ let iinfo b str f  =
 
 
 end
+module Bs_hash_stubs
+= struct
+#1 "bs_hash_stubs.ml"
+external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
+
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
+
+external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
+
+end
+module Hash_set_gen
+= struct
+#1 "hash_set_gen.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type 'a t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: 'a list array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+
+
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+let create  initial_size =
+  let s = power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s [] }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  []
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size [ ]
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let iter f h =
+  let rec do_bucket = function
+    | [ ] ->
+        ()
+    | k ::  rest ->
+        f k ; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      [ ] ->
+        accu
+    | k ::  rest ->
+        do_bucket rest (f k  accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+   done;
+  !accu
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize [ ] in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        [ ] -> ()
+      | key :: rest ->
+          let nidx = indexfun h key in
+          ndata.(nidx) <- key :: ndata.(nidx);
+          insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let elements set = 
+  fold  (fun k  acc ->  k :: acc) set []
+
+
+
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+      let l = List.length b in
+      histo.(l) <- histo.(l) + 1)
+    h.data;
+  {Hashtbl.num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Ideas are based on {!Hashtbl}, 
+    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
+    This module fixes the semantics of [add].
+    [remove] is not optimized since it is not used too much 
+*)
+
+
+
+module type S =
+  sig
+    type key
+    type t
+    val create: int ->  t
+    val clear : t -> unit
+    val reset : t -> unit
+    val copy: t -> t
+    val remove:  t -> key -> unit
+    val add :  t -> key -> unit
+    val mem :  t -> key -> bool
+    val iter: (key -> unit) ->  t -> unit
+    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+    val length:  t -> int
+    val stats:  t -> Hashtbl.statistics
+    val elements : t -> key list 
+  end
+
+
+
+
+module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
+
+type   'a t 
+
+val create : int -> 'a t
+
+val clear : 'a t -> unit
+
+val reset : 'a t -> unit
+
+val copy : 'a t -> 'a t
+
+val add : 'a t -> 'a  -> unit
+val remove : 'a t -> 'a -> unit
+
+val mem : 'a t -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a t -> unit
+
+val elements : 'a t -> 'a list
+
+val length : 'a t -> int 
+
+val stats:  'a t -> Hashtbl.statistics
+
+end = struct
+#1 "hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type 'a t = 'a  Hash_set_gen.t 
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+
+let key_index (h : _ Hash_set_gen.t) key =
+  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
+
+
+let remove (h : _ Hash_set_gen.t ) key =
+  let rec remove_bucket = function
+    | [ ] ->
+        [ ]
+    | k :: next ->
+        if compare k key = 0
+        then begin h.size <- h.size - 1; next end
+        else k :: remove_bucket next in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    key = key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+      key = key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+         key = key3 ||
+         small_bucket_mem key rest 
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+    end
+let mem (h : _ Hash_set_gen.t ) key =
+  small_bucket_mem key h.data.(key_index h key) 
+
+
+
+module type S =
+  sig
+    type key
+    type t
+    val create: int ->  t
+    val clear : t -> unit
+    val reset : t -> unit
+    val copy: t -> t
+    val remove:  t -> key -> unit
+    val add :  t -> key -> unit
+    val mem :  t -> key -> bool
+    val iter: (key -> unit) ->  t -> unit
+    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+    val length:  t -> int
+    val stats:  t -> Hashtbl.statistics
+    val elements : t -> key list 
+  end
+
+
+module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
+  struct
+    type key = H.t
+    type nonrec  t = key t
+    let create = Hash_set_gen.create
+    let clear = Hash_set_gen.clear
+    let reset = Hash_set_gen.reset
+    let copy = Hash_set_gen.copy
+    let iter = Hash_set_gen.iter
+    let fold = Hash_set_gen.fold
+    let length = Hash_set_gen.length
+    let stats = Hash_set_gen.stats
+    let elements = Hash_set_gen.elements
+
+    let key_index (h :  t ) key =
+      (H.hash  key) land (Array.length h.data - 1)
+
+    let remove (h : t) key =
+      let rec remove_bucket = function
+        | [ ] ->
+            [ ]
+        | k :: next ->
+            if H.equal k key
+            then begin h.size <- h.size - 1; next end
+            else k :: remove_bucket next in
+      let i = key_index h key in
+      h.data.(i) <- remove_bucket h.data.(i)
+
+    let rec small_bucket_mem key lst =
+      match lst with 
+      | [] -> false 
+      | key1::rest -> 
+        H.equal key key1 ||
+        match rest with 
+        | [] -> false 
+        | key2 :: rest -> 
+          H.equal key  key2 ||
+          match rest with 
+          | [] -> false 
+          | key3 :: rest -> 
+            H.equal key  key3 ||
+            small_bucket_mem key rest 
+
+    let add (h : t) key =
+      let i = key_index h key  in 
+      if not (small_bucket_mem key  h.data.(i)) then 
+        begin 
+          h.data.(i) <- key :: h.data.(i);
+          h.size <- h.size + 1 ;
+          if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+        end
+
+    let mem (h :  t) key =
+      small_bucket_mem key h.data.(key_index h key) 
+
+  end
+
+
+
+
+
+
+
+
+
+
+
+end
+module String_hash_set : sig 
+#1 "string_hash_set.mli"
+
+
+include Hash_set.S with type key = string
+
+end = struct
+#1 "string_hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type key = string
+type  t = key  Hash_set_gen.t 
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+let key_index (h :  t ) key =
+  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
+
+let remove (h : t) key =
+  let rec remove_bucket = function
+    | [ ] ->
+      [ ]
+    | k :: next ->
+      if  (k : key)  = key
+      then begin h.size <- h.size - 1; next end
+      else k :: remove_bucket next in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+     (key : key) = key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+       (key : key) = key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+         (key : key) = key3 ||
+         small_bucket_mem key rest 
+
+let add (h : t) key =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let mem (h :  t) key =
+  small_bucket_mem key h.data.(key_index h key) 
+
+end
+module Hashtbl_gen
+= struct
+#1 "hashtbl_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Hash tables *)
+
+
+
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type ('a, 'b) t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
+    mutable seed: int;                        (* for randomization *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+and ('a, 'b) bucketlist =
+  | Empty
+  | Cons of 'a * 'b * ('a, 'b) bucketlist
+
+
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+let create  initial_size =
+  let s = power_2_above 16 initial_size in
+  { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    h.data.(i) <- Empty
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size Empty
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons(key, data, rest) ->
+          insert_bucket rest; (* preserve original order of elements *)
+          let nidx = indexfun h key in
+          ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+    for i = 0 to osize - 1 do
+      insert_bucket odata.(i)
+    done
+  end
+
+
+
+let iter f h =
+  let rec do_bucket = function
+    | Empty ->
+        ()
+    | Cons(k, d, rest) ->
+        f k d; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket d.(i)
+  done
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      Empty ->
+        accu
+    | Cons(k, d, rest) ->
+        do_bucket rest (f k d accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket d.(i) !accu
+  done;
+  !accu
+
+let rec bucket_length accu = function
+  | Empty -> accu
+  | Cons(_, _, rest) -> bucket_length (accu + 1) rest
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+      let l = bucket_length 0 b in
+      histo.(l) <- histo.(l) + 1)
+    h.data;
+  {Hashtbl.
+    num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+end
+module String_hashtbl : sig 
+#1 "string_hashtbl.mli"
+
+include Hashtbl.S with type key = string
+
+
+val of_list2 : key list -> 'a list ->  'a t
+
+end = struct
+#1 "string_hashtbl.ml"
+type key = string
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
+
+
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
+
+let compare_key (x : key) (y : key) = String.compare x y
+
+let add (h : _ t) key info =
+  let i = key_index h key in
+  let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
+  h.data.(i) <- bucket;
+  h.size <- h.size + 1;
+  if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+let remove (h : _ t ) key =
+  let rec remove_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with  
+    | Empty ->
+        Empty
+    | Cons(k, i, next) ->
+        if compare_key k key = 0
+        then begin h.size <- h.size - 1; next end
+        else Cons(k, i, remove_bucket next) in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+  | Empty ->
+      raise Not_found
+  | Cons(k, d, rest) ->
+      if compare_key key k = 0 then d else find_rec key rest
+
+let find (h : _ t) key =
+  match h.data.(key_index h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+      if compare_key key k1 = 0 then d1 else
+      match rest1 with
+      | Empty -> raise Not_found
+      | Cons(k2, d2, rest2) ->
+          if compare_key key k2 = 0 then d2 else
+          match rest2 with
+          | Empty -> raise Not_found
+          | Cons(k3, d3, rest3) ->
+              if compare_key key k3 = 0 then d3 else find_rec key rest3
+
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      []
+  | Cons(k, d, rest) ->
+      if compare_key k key = 0
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket h.data.(key_index h key)
+
+let replace h key info =
+  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
+    | Empty ->
+        raise_notrace Not_found
+    | Cons(k, i, next) ->
+        if compare_key k key = 0
+        then Cons(key, info, next)
+        else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let l = h.data.(i) in
+  try
+    h.data.(i) <- replace_bucket l
+  with Not_found ->
+    h.data.(i) <- Cons(key, info, l);
+    h.size <- h.size + 1;
+    if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+let mem (h : _ t) key =
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      false
+  | Cons(k, d, rest) ->
+      compare_key k key = 0 || mem_in_bucket rest in
+  mem_in_bucket h.data.(key_index h key)
+
+
+let of_list2 ks vs = 
+  let map = create 51 in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
+
+end
+module Ext_ident : sig 
+#1 "ext_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A wrapper around [Ident] module in compiler-libs*)
+
+val is_js : Ident.t -> bool
+
+val is_js_object : Ident.t -> bool
+
+(** create identifiers for predefined [js] global variables *)
+val create_js : string -> Ident.t
+
+val create : string -> Ident.t
+
+val create_js_module : string -> Ident.t 
+
+val make_js_object : Ident.t -> unit
+
+val reset : unit -> unit
+
+val gen_js :  ?name:string -> unit -> Ident.t
+
+val make_unused : unit -> Ident.t
+
+val is_unused_ident : Ident.t -> bool 
+
+(**
+   if name is not converted, the reference should be equal
+*)
+val convert : bool -> string -> string
+val property_no_need_convert : string -> bool 
+
+val undefined : Ident.t 
+val is_js_or_global : Ident.t -> bool
+val nil : Ident.t
+
+
+val compare : Ident.t -> Ident.t -> int
+
+end = struct
+#1 "ext_ident.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let js_flag = 0b1000 (* check with ocaml compiler *)
+
+let js_module_flag = 0b1_0000 (* javascript external modules *)
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let js_object_flag = 0b10_0000 (* javascript object flags *)
+
+let is_js (i : Ident.t) = 
+  i.flags land js_flag <> 0 
+
+let is_js_or_global (i : Ident.t) = 
+  i.flags land (8 lor 1) <> 0 
+
+let is_js_module (i : Ident.t) =
+  i.flags land js_module_flag <> 0 
+
+let is_js_object (i : Ident.t) = 
+  i.flags land js_object_flag <> 0 
+
+let make_js_object (i : Ident.t) = 
+  i.flags <- i.flags lor js_object_flag 
+      
+(* It's a js function hard coded by js api, so when printing,
+   it should preserve the name 
+ *)
+let create_js (name : string) : Ident.t  = 
+  { name = name; flags = js_flag ; stamp = 0}
+
+let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
+
+(* This is for a js exeternal module, we can change it when printing
+   for example
+   {[
+   var React$1 = require('react');
+   React$1.render(..)
+   ]}
+
+   Given a name, if duplicated, they should  have the same id
+ *)
+let create_js_module (name : string) : Ident.t = 
+  let name = 
+    String.concat "" @@ List.map (String.capitalize ) @@ 
+    Ext_string.split name '-' in
+  (* TODO: if we do such transformation, we should avoid 
+      collision for example:
+      react-dom 
+      react--dom
+      check collision later
+   *)
+  match String_hashtbl.find js_module_table name  with 
+  | exception Not_found -> 
+      let v = Ident.create name in
+      let ans = { v with flags = js_module_flag} in 
+      String_hashtbl.add js_module_table name ans;
+      ans
+  | v -> v 
+
+let create = Ident.create
+
+let gen_js ?(name="$js") () = create name 
+
+let reserved_words = 
+  [|
+    (* keywork *)
+    "break";
+    "case"; "catch"; "continue";
+    "debugger";"default";"delete";"do";
+    "else";
+    "finally";"for";"function";
+    "if"; "then"; "in";"instanceof";
+    "new";
+    "return";
+    "switch";
+    "this"; "throw"; "try"; "typeof";
+    "var"; "void"; "while"; "with";
+
+    (* reserved in ECMAScript 5 *)
+    "class"; "enum"; "export"; "extends"; "import"; "super";
+
+    "implements";"interface";
+    "let";
+    "package";"private";"protected";"public";
+    "static";
+    "yield";
+
+    (* other *)
+    "null";
+    "true";
+    "false";
+    "NaN";
+
+
+    "undefined";
+    "this";
+
+    (* also reserved in ECMAScript 3 *)
+    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
+    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
+    "synchronized"; 
+    (* "throws";  *)
+    (* seems to be fine, like nodejs [assert.throws] *)
+    "transient"; "volatile";
+
+    (* also reserved in ECMAScript 6 *)
+    "await";
+   
+   "event";
+   "location";
+   "window";
+   "document";
+   "eval";
+   "navigator";
+   (* "self"; *)
+   
+   "Array";
+   "Date";
+   "Math";
+   "JSON";
+   "Object";
+   "RegExp";
+   "String";
+   "Boolean";
+   "Number";
+
+   "Map"; (* es6*)
+   "Set";
+
+   "Infinity";
+   "isFinite";
+   
+   "ActiveXObject";
+   "XMLHttpRequest";
+   "XDomainRequest";
+   
+   "DOMException";
+   "Error";
+   "SyntaxError";
+   "arguments";
+   
+   "decodeURI";
+   "decodeURIComponent";
+   "encodeURI";
+   "encodeURIComponent";
+   "escape";
+   "unescape";
+
+   "isNaN";
+   "parseFloat";
+   "parseInt";
+   
+   (** reserved for commonjs *)   
+   "require";
+   "exports";
+   "module"
+  |]
+
+let reserved_map = 
+  let len = Array.length reserved_words in 
+  let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
+  for i = 0 to len - 1 do 
+    String_hash_set.add set reserved_words.(i);
+  done ;
+  set 
+
+
+
+
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let convert keyword (name : string) = 
+   if keyword && String_hash_set.mem reserved_map name  then "$$" ^ name 
+   else 
+     let module E = struct exception Not_normal_letter of int end in
+     let len = String.length name  in
+     try
+       for i  = 0 to len - 1 do 
+         match String.unsafe_get name i with 
+         | 'a' .. 'z' | 'A' .. 'Z'
+         | '0' .. '9' | '_' | '$' -> ()
+         | _ -> raise (E.Not_normal_letter i)
+       done;
+       name
+     with E.Not_normal_letter i ->
+       String.sub name 0 i ^ 
+       (let buffer = Buffer.create len in 
+        for j = i to  len - 1 do 
+          let c = String.unsafe_get name j in
+          match c with 
+          | '*' -> Buffer.add_string buffer "$star"
+          | '\'' -> Buffer.add_string buffer "$prime"
+          | '!' -> Buffer.add_string buffer "$bang"
+          | '>' -> Buffer.add_string buffer "$great"
+          | '<' -> Buffer.add_string buffer "$less"
+          | '=' -> Buffer.add_string buffer "$eq"
+          | '+' -> Buffer.add_string buffer "$plus"
+          | '-' -> Buffer.add_string buffer "$neg"
+          | '@' -> Buffer.add_string buffer "$at"
+          | '^' -> Buffer.add_string buffer "$caret"
+          | '/' -> Buffer.add_string buffer "$slash"
+          | '|' -> Buffer.add_string buffer "$pipe"
+          | '.' -> Buffer.add_string buffer "$dot"
+          | '%' -> Buffer.add_string buffer "$percent"
+          | '~' -> Buffer.add_string buffer "$tilde"
+          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
+          | _ -> Buffer.add_string buffer "$unknown"
+        done; Buffer.contents buffer)
+
+let property_no_need_convert s = 
+  s == convert false s 
+
+(* It is currently made a persistent ident to avoid fresh ids 
+    which would result in different signature files
+    - other solution: use lazy values
+*)
+let make_unused () = create "_"
+
+let is_unused_ident i = Ident.name i = "_"
+
+let reset () = 
+  String_hashtbl.clear js_module_table
+
+
+let undefined = create_js "undefined"
+let nil = create_js "null"
+
+let compare (x : Ident.t ) ( y : Ident.t) = 
+  let u = x.stamp - y.stamp in
+  if u = 0 then 
+    let u = String.compare x.name y.name in 
+    if u = 0 then 
+      x.flags - y.flags 
+    else  u 
+  else u 
+
+end
+module Ident_map : sig 
+#1 "ident_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type key = Ident.t
+val compare_key : key -> key -> int 
+
+(*************************************************)
+type + 'a t 
+val empty: 'a t
+val is_empty: 'a t -> bool
+val iter: (key -> 'a ->  unit) -> 'a t -> unit
+val fold: (key -> 'a -> 'b ->  'b) -> 'a t -> 'b -> 'b
+val for_all: (key -> 'a  -> bool) -> 'a t -> bool
+val exists: (key -> 'a -> bool) -> 'a t -> bool
+val singleton: key -> 'a  -> 'a t
+val cardinal: 'a t -> int
+(* val elements: 'a t -> (key * 'a) list *)
+val choose: 'a t -> key * 'a 
+(* val partition: (key -> bool) -> 'a t -> 'a t * 'a t *)
+
+val mem: key -> 'a t -> bool
+val add: key -> 'a -> 'a t -> 'a t
+val find : key -> 'a t -> 'a
+val map : ('a -> 'b) -> 'a t -> 'b t
+val mapi : (key -> 'b -> 'c) -> 'b t -> 'c t
+val merge : 
+    (key -> 'b option -> 'c option -> 'd option)
+    -> 'b t
+    -> 'c t 
+    -> 'd t 
+(*************************************************)
+
+val of_list  : (key * 'a) list -> 'a t
+
+val keys : 'a t -> key list
+
+val add_if_not_exist : key -> 'a -> 'a t -> 'a t
+
+val merge_disjoint : 'a t -> 'a t -> 'a t
+
+end = struct
+#1 "ident_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+type key = Ident.t
+
+let compare_key (x : Ident.t) (y : Ident.t) =
+    (* Can not overflow *)
+    let u = x.stamp - y.stamp in
+    if u = 0 then 
+      let u = String.compare x.name y.name in 
+      if u = 0 then 
+        x.flags - y.flags 
+      else  u 
+    else u 
+type 'a t = (key, 'a) Bal_map_common.t 
+open Bal_map_common 
+
+let empty = Bal_map_common.empty 
+let is_empty = Bal_map_common.is_empty
+let iter = Bal_map_common.iter
+let fold = Bal_map_common.fold
+let for_all = Bal_map_common.for_all 
+let exists = Bal_map_common.exists 
+let singleton = Bal_map_common.singleton 
+let cardinal = Bal_map_common.cardinal
+let bindings = Bal_map_common.bindings
+let choose = Bal_map_common.choose 
+let partition = Bal_map_common.partition 
+let filter = Bal_map_common.filter 
+let map = Bal_map_common.map 
+let mapi = Bal_map_common.mapi
+
+let bal = Bal_map_common.bal 
+let height = Bal_map_common.height 
+let join = Bal_map_common.join 
+let concat_or_join = Bal_map_common.concat_or_join 
+
+let rec add x data (tree : _ t) : _ t =
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add x data l) v d r
+    else
+      bal l v d (add x data r)
+
+let rec find x (tree : _ t) =
+  match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then d
+    else find x (if c < 0 then l else r)
+
+let rec mem x  (tree : _ t) =
+  match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec split x (tree : _ t) : _ t * _ option * _ t  =
+  match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
+    else
+      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
+
+let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split v1 s2 in
+    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split v2 s1 in
+    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
+
+let of_list lst = 
+  List.fold_left (fun acc (k,v) -> add k v acc) empty lst
+
+let keys map = fold (fun k _ acc -> k::acc  ) map []
+
+(* TODO: have this in stdlib/map to save some time *)
+let add_if_not_exist key v m = 
+  if mem key m then m else add key v m
+
+let merge_disjoint m1 m2 = 
+  merge 
+    (fun k x0 y0 -> 
+       match x0, y0 with 
+         None, None -> None
+       | None, Some v | Some v, None -> Some v
+       | _, _ -> invalid_arg "merge_disjoint: maps are not disjoint")
+    m1 m2
+
+end
 module Bal_set_common
 = struct
 #1 "bal_set_common.ml"
@@ -56925,689 +58185,6 @@ let rec compare_aux cmp e1 e2 =
 
 let compare cmp s1 s2 =
   compare_aux cmp (cons_enum s1 End) (cons_enum s2 End)
-
-end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type elt = String.t
-val compare_elt : elt -> elt -> int 
-(***********************************************************************)             
-type t
-val empty: t
-val is_empty: t -> bool
-val iter: (elt -> unit) -> t -> unit
-val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-val for_all: (elt -> bool) -> t -> bool
-val exists: (elt -> bool) -> t -> bool
-val singleton: elt -> t
-val cardinal: t -> int
-val elements: t -> elt list
-val min_elt: t -> elt
-val max_elt: t -> elt
-val choose: t -> elt
-val of_sorted_list : elt list -> t 
-val of_sorted_array : elt array -> t
-val partition: (elt -> bool) -> t -> t * t
-
-val mem: elt -> t -> bool
-val add: elt -> t -> t
-
-val of_list : elt list -> t
-val find : elt -> t -> elt 
-(***********************************************************************) 
-
-
-
-
-end = struct
-#1 "string_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type elt = string
-let compare_elt = String.compare 
-
-type  t = elt Bal_set_common.t 
-let empty = Bal_set_common.empty 
-let is_empty = Bal_set_common.is_empty
-let iter = Bal_set_common.iter
-let fold = Bal_set_common.fold
-let for_all = Bal_set_common.for_all 
-let exists = Bal_set_common.exists 
-let singleton = Bal_set_common.singleton 
-let cardinal = Bal_set_common.cardinal
-let elements = Bal_set_common.elements
-let min_elt = Bal_set_common.min_elt
-let max_elt = Bal_set_common.max_elt
-let choose = Bal_set_common.choose 
-let of_sorted_list = Bal_set_common.of_sorted_list
-let of_sorted_array = Bal_set_common.of_sorted_array
-let partition = Bal_set_common.partition 
-let filter = Bal_set_common.filter 
-let of_sorted_list = Bal_set_common.of_sorted_list
-let of_sorted_array = Bal_set_common.of_sorted_array
-
-let rec add x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
-  match tree with  
-  | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
-    let c = compare_elt x v in
-    if c = 0 then t else
-    if c < 0 then Bal_set_common.internal_bal (add x l) v r else Bal_set_common.internal_bal l v (add x r) 
-
-
-let rec mem x (tree : _ Bal_set_common.t) = 
-  match tree with 
-  | Empty -> false
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
-let of_list l =
-  match l with
-  | [] -> empty
-  | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
-
-let rec find x (tree : t) = 
-  match tree with 
-  | Empty -> raise Not_found
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then v
-    else find x (if c < 0 then l else r)
-
-
-
-
-
-
-
-end
-module Ext_ident : sig 
-#1 "ext_ident.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A wrapper around [Ident] module in compiler-libs*)
-
-val is_js : Ident.t -> bool
-
-val is_js_object : Ident.t -> bool
-
-(** create identifiers for predefined [js] global variables *)
-val create_js : string -> Ident.t
-
-val create : string -> Ident.t
-
-val create_js_module : string -> Ident.t 
-
-val make_js_object : Ident.t -> unit
-
-val reset : unit -> unit
-
-val gen_js :  ?name:string -> unit -> Ident.t
-
-val make_unused : unit -> Ident.t
-
-val is_unused_ident : Ident.t -> bool 
-
-(**
-   if name is not converted, the reference should be equal
-*)
-val convert : bool -> string -> string
-val property_no_need_convert : string -> bool 
-
-val undefined : Ident.t 
-val is_js_or_global : Ident.t -> bool
-val nil : Ident.t
-
-end = struct
-#1 "ext_ident.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let js_flag = 0b1000 (* check with ocaml compiler *)
-
-let js_module_flag = 0b1_0000 (* javascript external modules *)
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let js_object_flag = 0b10_0000 (* javascript object flags *)
-
-let is_js (i : Ident.t) = 
-  i.flags land js_flag <> 0 
-
-let is_js_or_global (i : Ident.t) = 
-  i.flags land (8 lor 1) <> 0 
-
-let is_js_module (i : Ident.t) =
-  i.flags land js_module_flag <> 0 
-
-let is_js_object (i : Ident.t) = 
-  i.flags land js_object_flag <> 0 
-
-let make_js_object (i : Ident.t) = 
-  i.flags <- i.flags lor js_object_flag 
-      
-(* It's a js function hard coded by js api, so when printing,
-   it should preserve the name 
- *)
-let create_js (name : string) : Ident.t  = 
-  { name = name; flags = js_flag ; stamp = 0}
-
-let js_module_table = Hashtbl.create 31 
-
-(* This is for a js exeternal module, we can change it when printing
-   for example
-   {[
-   var React$1 = require('react');
-   React$1.render(..)
-   ]}
-
-   Given a name, if duplicated, they should  have the same id
- *)
-let create_js_module (name : string) : Ident.t = 
-  let name = 
-    String.concat "" @@ List.map (String.capitalize ) @@ 
-    Ext_string.split name '-' in
-  (* TODO: if we do such transformation, we should avoid 
-      collision for example:
-      react-dom 
-      react--dom
-      check collision later
-   *)
-  match Hashtbl.find js_module_table name  with 
-  | exception Not_found -> 
-      let v = Ident.create name in
-      let ans = { v with flags = js_module_flag} in 
-      Hashtbl.add js_module_table name ans;
-      ans
-  | v -> v 
-
-let create = Ident.create
-
-let gen_js ?(name="$js") () = create name 
-
-let reserved_words = 
-  [
-    (* keywork *)
-    "break";
-    "case"; "catch"; "continue";
-    "debugger";"default";"delete";"do";
-    "else";
-    "finally";"for";"function";
-    "if"; "then"; "in";"instanceof";
-    "new";
-    "return";
-    "switch";
-    "this"; "throw"; "try"; "typeof";
-    "var"; "void"; "while"; "with";
-
-    (* reserved in ECMAScript 5 *)
-    "class"; "enum"; "export"; "extends"; "import"; "super";
-
-    "implements";"interface";
-    "let";
-    "package";"private";"protected";"public";
-    "static";
-    "yield";
-
-    (* other *)
-    "null";
-    "true";
-    "false";
-    "NaN";
-
-
-    "undefined";
-    "this";
-
-    (* also reserved in ECMAScript 3 *)
-    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
-    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
-    "synchronized"; 
-    (* "throws";  *)
-    (* seems to be fine, like nodejs [assert.throws] *)
-    "transient"; "volatile";
-
-    (* also reserved in ECMAScript 6 *)
-    "await";
-   
-   "event";
-   "location";
-   "window";
-   "document";
-   "eval";
-   "navigator";
-   (* "self"; *)
-   
-   "Array";
-   "Date";
-   "Math";
-   "JSON";
-   "Object";
-   "RegExp";
-   "String";
-   "Boolean";
-   "Number";
-
-   "Map"; (* es6*)
-   "Set";
-
-   "Infinity";
-   "isFinite";
-   
-   "ActiveXObject";
-   "XMLHttpRequest";
-   "XDomainRequest";
-   
-   "DOMException";
-   "Error";
-   "SyntaxError";
-   "arguments";
-   
-   "decodeURI";
-   "decodeURIComponent";
-   "encodeURI";
-   "encodeURIComponent";
-   "escape";
-   "unescape";
-
-   "isNaN";
-   "parseFloat";
-   "parseInt";
-   
-   (** reserved for commonjs *)   
-   "require";
-   "exports";
-   "module"
-]
-
-let reserved_map = 
-  List.fold_left (fun acc x -> String_set.add x acc) String_set.empty 
-    reserved_words
-
-
-
-
-
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let convert keyword (name : string) = 
-   if keyword && String_set.mem name reserved_map then "$$" ^ name 
-   else 
-     let module E = struct exception Not_normal_letter of int end in
-     let len = String.length name  in
-     try
-       for i  = 0 to len - 1 do 
-         match String.unsafe_get name i with 
-         | 'a' .. 'z' | 'A' .. 'Z'
-         | '0' .. '9' | '_' | '$' -> ()
-         | _ -> raise (E.Not_normal_letter i)
-       done;
-       name
-     with E.Not_normal_letter i ->
-       String.sub name 0 i ^ 
-       (let buffer = Buffer.create len in 
-        for j = i to  len - 1 do 
-          let c = String.unsafe_get name j in
-          match c with 
-          | '*' -> Buffer.add_string buffer "$star"
-          | '\'' -> Buffer.add_string buffer "$prime"
-          | '!' -> Buffer.add_string buffer "$bang"
-          | '>' -> Buffer.add_string buffer "$great"
-          | '<' -> Buffer.add_string buffer "$less"
-          | '=' -> Buffer.add_string buffer "$eq"
-          | '+' -> Buffer.add_string buffer "$plus"
-          | '-' -> Buffer.add_string buffer "$neg"
-          | '@' -> Buffer.add_string buffer "$at"
-          | '^' -> Buffer.add_string buffer "$caret"
-          | '/' -> Buffer.add_string buffer "$slash"
-          | '|' -> Buffer.add_string buffer "$pipe"
-          | '.' -> Buffer.add_string buffer "$dot"
-          | '%' -> Buffer.add_string buffer "$percent"
-          | '~' -> Buffer.add_string buffer "$tilde"
-          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
-          | _ -> Buffer.add_string buffer "$unknown"
-        done; Buffer.contents buffer)
-
-let property_no_need_convert s = 
-  s == convert false s 
-
-(* It is currently made a persistent ident to avoid fresh ids 
-    which would result in different signature files
-    - other solution: use lazy values
-*)
-let make_unused () = create "_"
-
-let is_unused_ident i = Ident.name i = "_"
-
-let reset () = 
-  begin
-    Hashtbl.clear js_module_table
-  end
-
-let undefined = create_js "undefined"
-let nil = create_js "null"
-
-end
-module Ident_map : sig 
-#1 "ident_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type key = Ident.t
-val compare_key : key -> key -> int 
-
-(*************************************************)
-type + 'a t 
-val empty: 'a t
-val is_empty: 'a t -> bool
-val iter: (key -> 'a ->  unit) -> 'a t -> unit
-val fold: (key -> 'a -> 'b ->  'b) -> 'a t -> 'b -> 'b
-val for_all: (key -> 'a  -> bool) -> 'a t -> bool
-val exists: (key -> 'a -> bool) -> 'a t -> bool
-val singleton: key -> 'a  -> 'a t
-val cardinal: 'a t -> int
-(* val elements: 'a t -> (key * 'a) list *)
-val choose: 'a t -> key * 'a 
-(* val partition: (key -> bool) -> 'a t -> 'a t * 'a t *)
-
-val mem: key -> 'a t -> bool
-val add: key -> 'a -> 'a t -> 'a t
-val find : key -> 'a t -> 'a
-val map : ('a -> 'b) -> 'a t -> 'b t
-val mapi : (key -> 'b -> 'c) -> 'b t -> 'c t
-val merge : 
-    (key -> 'b option -> 'c option -> 'd option)
-    -> 'b t
-    -> 'c t 
-    -> 'd t 
-(*************************************************)
-
-val of_list  : (key * 'a) list -> 'a t
-
-val keys : 'a t -> key list
-
-val add_if_not_exist : key -> 'a -> 'a t -> 'a t
-
-val merge_disjoint : 'a t -> 'a t -> 'a t
-
-end = struct
-#1 "ident_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type key = Ident.t
-
-let compare_key (x : Ident.t) (y : Ident.t) =
-    (* Can not overflow *)
-    let u = x.stamp - y.stamp in
-    if u = 0 then 
-      let u = String.compare x.name y.name in 
-      if u = 0 then 
-        x.flags - y.flags 
-      else  u 
-    else u 
-type 'a t = (key, 'a) Bal_map_common.t 
-open Bal_map_common 
-
-let empty = Bal_map_common.empty 
-let is_empty = Bal_map_common.is_empty
-let iter = Bal_map_common.iter
-let fold = Bal_map_common.fold
-let for_all = Bal_map_common.for_all 
-let exists = Bal_map_common.exists 
-let singleton = Bal_map_common.singleton 
-let cardinal = Bal_map_common.cardinal
-let bindings = Bal_map_common.bindings
-let choose = Bal_map_common.choose 
-let partition = Bal_map_common.partition 
-let filter = Bal_map_common.filter 
-let map = Bal_map_common.map 
-let mapi = Bal_map_common.mapi
-
-let bal = Bal_map_common.bal 
-let height = Bal_map_common.height 
-let join = Bal_map_common.join 
-let concat_or_join = Bal_map_common.concat_or_join 
-
-let rec add x data (tree : _ t) : _ t =
-  match tree with 
-  | Empty ->
-    Node(Empty, x, data, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, data, r, h)
-    else if c < 0 then
-      bal (add x data l) v d r
-    else
-      bal l v d (add x data r)
-
-let rec find x (tree : _ t) =
-  match tree with 
-  | Empty ->
-    raise Not_found
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then d
-    else find x (if c < 0 then l else r)
-
-let rec mem x  (tree : _ t) =
-  match tree with 
-  | Empty ->
-    false
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
-let rec split x (tree : _ t) : _ t * _ option * _ t  =
-  match tree with 
-  | Empty ->
-    (Empty, None, Empty)
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then (l, Some d, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
-    else
-      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
-
-let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split v1 s2 in
-    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
-    let (l1, d1, r1) = split v2 s1 in
-    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
-  | _ ->
-    assert false
-
-let of_list lst = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty lst
-
-let keys map = fold (fun k _ acc -> k::acc  ) map []
-
-(* TODO: have this in stdlib/map to save some time *)
-let add_if_not_exist key v m = 
-  if mem key m then m else add key v m
-
-let merge_disjoint m1 m2 = 
-  merge 
-    (fun k x0 y0 -> 
-       match x0, y0 with 
-         None, None -> None
-       | None, Some v | Some v, None -> Some v
-       | _, _ -> invalid_arg "merge_disjoint: maps are not disjoint")
-    m1 m2
 
 end
 module Ident_set : sig 
@@ -66228,371 +66805,114 @@ let find_cmj file =
 
 
 end
-module Hash_set : sig 
-#1 "hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Ideas are based on {!Hashtbl}, 
-    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
-    This module fixes the semantics of [add].
-    [remove] is not optimized since it is not used too much 
-*)
+module Ident_hashtbl : sig 
+#1 "ident_hashtbl.mli"
 
 
-type statistics = {
-  num_bindings: int;
-  num_buckets: int;
-  max_bucket_length: int;
-  bucket_histogram: int array
-}
-
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> statistics
-    val elements : t -> key list 
-  end
+include Hashtbl.S with type key = Ident.t 
 
 
-
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
-
-module Make ( H : HashedType) : (S with type key = H.t)
-(** A naive t implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a t 
-
-val create : int -> 'a t
-
-val clear : 'a t -> unit
-
-val reset : 'a t -> unit
-
-val copy : 'a t -> 'a t
-
-val add : 'a t -> 'a  -> unit
-val remove : 'a t -> 'a -> unit
-
-val mem : 'a t -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a t -> unit
-
-val elements : 'a t -> 'a list
-
-val length : 'a t -> int 
-
-val stats:  'a t -> statistics
+val of_list2 : key list -> 'a list ->  'a t
 
 end = struct
-#1 "hash_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+#1 "ident_hashtbl.ml"
 
 
+type key = Ident.t
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
 
 
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1)
 
+let compare_key = Ext_ident.compare
+let add (h : _ t) key info =
+  let i = key_index h key in
+  let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
+  h.data.(i) <- bucket;
+  h.size <- h.size + 1;
+  if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
-
-type 'a t =
-  { mutable size: int;                        (* number of entries *)
-    mutable data: 'a list array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
-
-
-
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
-
-let create  initial_size =
-  let s = power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s [] }
-
-let clear h =
-  h.size <- 0;
-  let len = Array.length h.data in
-  for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  []
-  done
-
-let reset h =
-  h.size <- 0;
-  h.data <- Array.make h.initial_size [ ]
-
-
-let copy h = { h with data = Array.copy h.data }
-
-let length h = h.size
-
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize [ ] in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        [ ] -> ()
-      | key :: rest ->
-          let nidx = indexfun h key in
-          ndata.(nidx) <- key :: ndata.(nidx);
-          insert_bucket rest
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
-
-let key_index h key =
-  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
-
-
-let remove h key =
-  let rec remove_bucket = function
-    | [ ] ->
-        [ ]
-    | k :: next ->
-        if compare k key = 0
+let remove (h : _ t ) key =
+  let rec remove_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with  
+    | Empty ->
+        Empty
+    | Cons(k, i, next) ->
+        if compare_key k key = 0
         then begin h.size <- h.size - 1; next end
-        else k :: remove_bucket next in
+        else Cons(k, i, remove_bucket next) in
   let i = key_index h key in
   h.data.(i) <- remove_bucket h.data.(i)
 
-let rec small_bucket_mem key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    key = key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-      key = key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-         key = key3 ||
-         small_bucket_mem key rest 
-let add h key =
-  let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
-    begin 
-      h.data.(i) <- key :: h.data.(i);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then resize key_index h
-    end
-let mem h key =
-  small_bucket_mem key h.data.(key_index h key) 
+let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+  | Empty ->
+      raise Not_found
+  | Cons(k, d, rest) ->
+      if compare_key key k = 0 then d else find_rec key rest
 
-let iter f h =
-  let rec do_bucket = function
-    | [ ] ->
-        ()
-    | k ::  rest ->
-        f k ; do_bucket rest in
-  let d = h.data in
-  for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
-  done
+let find (h : _ t) key =
+  match h.data.(key_index h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+      if compare_key key k1 = 0 then d1 else
+      match rest1 with
+      | Empty -> raise Not_found
+      | Cons(k2, d2, rest2) ->
+          if compare_key key k2 = 0 then d2 else
+          match rest2 with
+          | Empty -> raise Not_found
+          | Cons(k3, d3, rest3) ->
+              if compare_key key k3 = 0 then d3 else find_rec key rest3
 
-let fold f h init =
-  let rec do_bucket b accu =
-    match b with
-      [ ] ->
-        accu
-    | k ::  rest ->
-        do_bucket rest (f k  accu) in
-  let d = h.data in
-  let accu = ref init in
-  for i = 0 to Array.length d - 1 do
-    accu := do_bucket (Array.unsafe_get d i) !accu
-   done;
-  !accu
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      []
+  | Cons(k, d, rest) ->
+      if compare_key k key = 0
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket h.data.(key_index h key)
 
-let elements set = 
-  fold  (fun k  acc ->  k :: acc) set []
+let replace h key info =
+  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
+    | Empty ->
+        raise_notrace Not_found
+    | Cons(k, i, next) ->
+        if compare_key k key = 0
+        then Cons(key, info, next)
+        else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let l = h.data.(i) in
+  try
+    h.data.(i) <- replace_bucket l
+  with Not_found ->
+    h.data.(i) <- Cons(key, info, l);
+    h.size <- h.size + 1;
+    if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
-type statistics = {
-  num_bindings: int;
-  num_buckets: int;
-  max_bucket_length: int;
-  bucket_histogram: int array
-}
+let mem (h : _ t) key =
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      false
+  | Cons(k, d, rest) ->
+      compare_key k key = 0 || mem_in_bucket rest in
+  mem_in_bucket h.data.(key_index h key)
 
 
-
-let stats h =
-  let mbl =
-    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
-  let histo = Array.make (mbl + 1) 0 in
-  Array.iter
-    (fun b ->
-      let l = List.length b in
-      histo.(l) <- histo.(l) + 1)
-    h.data;
-  { num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
-
-
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> statistics
-    val elements : t -> key list 
-  end
-
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
-
-module Make(H: HashedType): (S with type key = H.t) =
-  struct
-    type key = H.t
-    
-    type nonrec  t = key t
-    let create = create
-    let clear = clear
-    let reset = reset
-    let copy = copy
-
-    let key_index h key =
-      (H.hash  key) land (Array.length h.data - 1)
-
-    let remove h key =
-      let rec remove_bucket = function
-        | [ ] ->
-            [ ]
-        | k :: next ->
-            if H.equal k key
-            then begin h.size <- h.size - 1; next end
-            else k :: remove_bucket next in
-      let i = key_index h key in
-      h.data.(i) <- remove_bucket h.data.(i)
-
-    let rec small_bucket_mem key lst =
-      match lst with 
-      | [] -> false 
-      | key1::rest -> 
-        H.equal key key1 ||
-        match rest with 
-        | [] -> false 
-        | key2 :: rest -> 
-          H.equal key  key2 ||
-          match rest with 
-          | [] -> false 
-          | key3 :: rest -> 
-            H.equal key  key3 ||
-            small_bucket_mem key rest 
-
-    let add h key =
-      let i = key_index h key  in 
-      if not (small_bucket_mem key  h.data.(i)) then 
-        begin 
-          h.data.(i) <- key :: h.data.(i);
-          h.size <- h.size + 1 ;
-          if h.size > Array.length h.data lsl 1 then resize key_index h
-        end
-
-    let mem h key =
-      small_bucket_mem key h.data.(key_index h key) 
-
-    let iter = iter
-    let fold = fold
-    let length = length
-    let stats = stats
-    let elements = elements
-  end
-
-
-
-
-
-
-
-
-
-
+let of_list2 ks vs = 
+  let map = create 51 in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
 
 end
 module Lam_module_ident : sig 
@@ -68116,8 +68436,8 @@ module Lam_stats : sig
 
 (** Types defined for lambda analysis *)
 
+type alias_tbl =  Ident.t Ident_hashtbl.t
 
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
 (** Keep track of which identifiers are aliased
   *)
 
@@ -68171,8 +68491,8 @@ type kind =
            if you only associate a property to an identifier 
            we should consider [Lassign]
         *)
+type ident_tbl = kind Ident_hashtbl.t 
 
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
 
 type ident_info = {
   kind : kind ; 
@@ -68244,7 +68564,7 @@ end = struct
 
 type function_arities = Lam.function_arities
 
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
+type alias_tbl =  Ident.t Ident_hashtbl.t
 
 type function_kind = 
   | Functor 
@@ -68298,7 +68618,7 @@ type kind =
        so that [Pfield v/2 0] will be replaced by [v/1], 
        [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
     *)
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
+type ident_tbl = kind Ident_hashtbl.t 
 
 type state = 
   | Live (** Globals are always live *)
@@ -68634,11 +68954,11 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
     match v_kind with 
     | NA ->
       begin 
-        match Hashtbl.find meta.ident_tbl v  with 
+        match Ident_hashtbl.find meta.ident_tbl v  with 
         | exception Not_found -> ()
-        | ident_info -> Hashtbl.add meta.ident_tbl k ident_info
+        | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
       end
-    | ident_info -> Hashtbl.add meta.ident_tbl k ident_info
+    | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
   end ;
   (* share -- it is safe to share most properties,
       for arity, we might be careful, only [Alias] can share,
@@ -68656,7 +68976,7 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
     | Alias -> 
       if not @@ Ident_set.mem k meta.export_idents 
       then
-        Hashtbl.add meta.alias_tbl k v 
+        Ident_hashtbl.add meta.alias_tbl k v 
     (** For [export_idents], we don't want to do such simplification
         if we do substitution, then it will affect exports...
     *)
@@ -68699,7 +69019,7 @@ let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind =
   |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
 
 let get lam v i tbl : Lam.t =
-  match (Hashtbl.find tbl v  : Lam_stats.kind) with 
+  match (Ident_hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
       ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
@@ -73284,15 +73604,15 @@ let mark_dead = object (self)
 
   val mutable name = ""
 
-  val mutable ident_use_stats : (Ident.t , [`Info of J.ident_info | `Recursive]) Hashtbl.t
-      = Hashtbl.create 17
+  val mutable ident_use_stats : [`Info of J.ident_info | `Recursive] Ident_hashtbl.t
+      = Ident_hashtbl.create 17
   
   val mutable export_set : Ident_set.t = Ident_set.empty    
 
   method mark_not_dead ident =
-    match Hashtbl.find ident_use_stats ident with
+    match Ident_hashtbl.find ident_use_stats ident with
     | exception Not_found -> (* First time *)
-        Hashtbl.add ident_use_stats ident `Recursive 
+        Ident_hashtbl.add ident_use_stats ident `Recursive 
         (* recursive identifiers *)
     | `Recursive
       -> ()
@@ -73304,10 +73624,10 @@ let mark_dead = object (self)
       if is_export (* && false *) then 
         Js_op_util.update_used_stats ident_info Exported 
     in
-    match Hashtbl.find ident_use_stats ident with
+    match Ident_hashtbl.find ident_use_stats ident with
     | `Recursive -> 
         Js_op_util.update_used_stats ident_info Used; 
-        Hashtbl.replace ident_use_stats ident (`Info ident_info)
+        Ident_hashtbl.replace ident_use_stats ident (`Info ident_info)
     | `Info _ ->  
         (** check [camlinternlFormat,box_type] inlined twice 
             FIXME: seems we have redeclared identifiers
@@ -73316,11 +73636,11 @@ let mark_dead = object (self)
         Ext_log.warn __LOC__ "@[%s$%d in %s@]" ident.name ident.stamp name
         (* assert false *)
     | exception Not_found ->  (* First time *)
-        Hashtbl.add ident_use_stats ident (`Info ident_info);
+        Ident_hashtbl.add ident_use_stats ident (`Info ident_info);
         Js_op_util.update_used_stats ident_info 
           (if b then Scanning_pure else Scanning_non_pure)
   method promote_dead = 
-    Hashtbl.iter (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
+    Ident_hashtbl.iter (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
       match info  with 
       | `Info ({used_stats = Scanning_pure} as info) -> 
           Js_op_util.update_used_stats info Dead_pure
@@ -73328,7 +73648,7 @@ let mark_dead = object (self)
           Js_op_util.update_used_stats info Dead_non_pure
       | _ -> ())
       ident_use_stats;
-    Hashtbl.clear ident_use_stats (* clear to make it re-entrant *)
+    Ident_hashtbl.clear ident_use_stats (* clear to make it re-entrant *)
 
   method! program x = 
     export_set <- x.export_set ; 
@@ -73380,12 +73700,12 @@ let mark_dead_code js =
 let subst_map name = object (self)
   inherit Js_map.map as super
 
-  val mutable substitution = Hashtbl.create 17 
+  val mutable substitution :  J.expression Ident_hashtbl.t= Ident_hashtbl.create 17 
 
   method get_substitution = substitution
 
   method add_substitue (ident : Ident.t) (e:J.expression) = 
-    Hashtbl.replace  substitution ident e
+    Ident_hashtbl.replace  substitution ident e
 
   method! statement v = 
     match v.statement_desc with 
@@ -73453,7 +73773,7 @@ let subst_map name = object (self)
     match x.expression_desc with 
     | Access ({expression_desc = Var (Id (id))}, 
               {expression_desc = Number (Int {i; _})}) -> 
-      begin match Hashtbl.find self#get_substitution id with 
+      begin match Ident_hashtbl.find self#get_substitution id with 
         | {expression_desc = Caml_block (ls, Immutable, _, _) } 
           -> 
           (* user program can be wrong, we should not 
@@ -73994,16 +74314,16 @@ let count_collects () =
   object (self)
     inherit Js_fold.fold as super
     (* collect used status*)
-    val stats : (Ident.t , int ref ) Hashtbl.t = Hashtbl.create 83
+    val stats : int ref Ident_hashtbl.t = Ident_hashtbl.create 83
     (* collect all def sites *)
-    val defined_idents : (Ident.t, J.variable_declaration) Hashtbl.t = Hashtbl.create 83
+    val defined_idents : J.variable_declaration Ident_hashtbl.t = Ident_hashtbl.create 83
 
     val mutable export_set  : Ident_set.t = Ident_set.empty
     val mutable name : string = ""
 
     method add_use id = 
-      match Hashtbl.find stats id with
-      | exception Not_found -> Hashtbl.add stats id (ref 1)
+      match Ident_hashtbl.find stats id with
+      | exception Not_found -> Ident_hashtbl.add stats id (ref 1)
       | v -> incr v 
     method! program x = 
       export_set <- x.export_set ; 
@@ -74012,7 +74332,7 @@ let count_collects () =
     method! variable_declaration 
         ({ident; value ; property  ; ident_info }  as v)
       =  
-        Hashtbl.add defined_idents ident v; 
+        Ident_hashtbl.add defined_idents ident v; 
         match value with 
         | None
           -> 
@@ -74021,7 +74341,7 @@ let count_collects () =
           -> self#expression x 
     method! ident id = self#add_use id; self
     method get_stats = 
-      Hashtbl.iter (fun ident (v : J.variable_declaration) -> 
+      Ident_hashtbl.iter (fun ident (v : J.variable_declaration) -> 
           if Ident_set.mem ident export_set then 
             Js_op_util.update_used_stats v.ident_info Exported
           else 
@@ -74030,7 +74350,7 @@ let count_collects () =
               | None -> false  (* can not happen *)
               | Some x -> Js_analyzer.no_side_effect_expression x  
             in
-            match Hashtbl.find stats ident with 
+            match Ident_hashtbl.find stats ident with 
               | exception Not_found -> 
                 Js_op_util.update_used_stats v.ident_info 
                   (if pure then Dead_pure else Dead_non_pure)
@@ -74107,7 +74427,7 @@ let subst name export_set stats  =
          does rely on this (otherwise, when you do beta-reduction you have to regenerate names)
       *)
       let v = super # variable_declaration v in
-      Hashtbl.add stats ident v; (* see #278 before changes *)
+      Ident_hashtbl.add stats ident v; (* see #278 before changes *)
       v
     method! block bs = 
       match bs with
@@ -74120,7 +74440,7 @@ let subst name export_set stats  =
           self#statement st :: self#block rest 
         else 
           begin 
-            match (Hashtbl.find stats vd.ident : J.variable_declaration) with
+            match (Ident_hashtbl.find stats vd.ident : J.variable_declaration) with
             | exception Not_found -> 
               if Js_analyzer.no_side_effect_expression v 
               then S.exp v  :: self#block rest 
@@ -74136,7 +74456,7 @@ let subst name export_set stats  =
         as st 
            :: rest 
         -> 
-        begin match Hashtbl.find stats id with 
+        begin match Ident_hashtbl.find stats id with 
           | exception Not_found 
             ->  self#statement st :: self#block rest 
 
@@ -74743,95 +75063,6 @@ let copy  = E.array_copy
 
 
 end
-module Ext_hashtbl : sig 
-#1 "ext_hashtbl.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-val of_list : ('a * 'b) list -> ('a, 'b) Hashtbl.t
-
-val of_list2 : 'a list -> 'b list -> ('a, 'b) Hashtbl.t
-
-val add_list : ('a, 'b) Hashtbl.t -> ('a * 'b) list -> unit
-
-val add_list2 :  ('a, 'b) Hashtbl.t -> 'a list -> 'b list -> unit
-
-end = struct
-#1 "ext_hashtbl.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-let of_list kvs = 
-  let map = Hashtbl.create 51 in 
-  List.iter (fun (k, v) -> Hashtbl.add map k v) kvs ; 
-  map
-
-
-let of_list2 ks vs = 
-  let map = Hashtbl.create 51 in 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
-  map
-
-let add_list map kvs =    
-  List.iter (fun (k, v) ->   Hashtbl.add map  k v) kvs 
-
-let add_list2 map ks vs = 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
-
-end
 module Lam_beta_reduce_util : sig 
 #1 "lam_beta_reduce_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -74911,11 +75142,11 @@ type value =
   { mutable used : bool ; 
     lambda  : Lam.t
   }
-let param_hash : (Ident.t , value) Hashtbl.t = Hashtbl.create 20
+let param_hash :  _ Ident_hashtbl.t = Ident_hashtbl.create 20
 let simple_beta_reduce params body args = 
   let module E = struct exception Not_simple_apply end in
   let rec find_param v  opt = 
-    match Hashtbl.find param_hash v with 
+    match Ident_hashtbl.find param_hash v with 
     | exp ->  
       if exp.used then raise E.Not_simple_apply
       else exp.used <- true; exp.lambda
@@ -74943,25 +75174,25 @@ let simple_beta_reduce params body args =
                 | _ -> false ) params args'
        ]}*)
     let () = 
-      List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
+      List.iter2 (fun p a -> Ident_hashtbl.add param_hash p {lambda = a; used = false }) params args  
     in 
     begin match aux [] args' with 
     | args -> 
       let result = 
-        Hashtbl.fold (fun _param {lambda; used} code -> 
+        Ident_hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
             else code) param_hash (Lam.prim ~primitive ~args loc) in 
-      Hashtbl.clear param_hash;
+      Ident_hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
-      Hashtbl.clear param_hash ;
+      Ident_hashtbl.clear param_hash ;
       None
     end
   | Lapply { fn = Lvar fn_name as f ; args =  args';  loc; status}
     ->  
     let () = 
-      List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
+      List.iter2 (fun p a -> Ident_hashtbl.add param_hash p {lambda = a; used = false }) params args  
     in 
     (*since we adde each param only once, 
       iff it is removed once, no exception, 
@@ -74972,16 +75203,16 @@ let simple_beta_reduce params body args =
       | us -> 
         let f = find_param fn_name  f in
         let result = 
-          Hashtbl.fold 
+          Ident_hashtbl.fold 
             (fun _param {lambda; used} code -> 
                if not used then 
                  Lam.seq lambda code
                else code )
             param_hash (Lam.apply  f us  loc status) in
-        Hashtbl.clear param_hash;
+        Ident_hashtbl.clear param_hash;
         Some result 
       | exception _ -> 
-        Hashtbl.clear param_hash; 
+        Ident_hashtbl.clear param_hash; 
         None
     end
   | _ -> None
@@ -75354,12 +75585,12 @@ end = struct
    2. number of invoked times
    3. arguments are const or not   
 *)
-let rewrite (map :   (Ident.t, _) Hashtbl.t) 
+let rewrite (map :   _ Ident_hashtbl.t) 
     (lam : Lam.t) : Lam.t = 
 
   let rebind i = 
     let i' = Ident.rename i in 
-    Hashtbl.add map i (Lam.var i');
+    Ident_hashtbl.add map i (Lam.var i');
     i' in
   (* order matters, especially for let bindings *)
   let rec 
@@ -75371,7 +75602,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     match lam with 
     | Lvar v -> 
       begin 
-        try (* Lvar *) (Hashtbl.find map v) 
+        try (* Lvar *) (Ident_hashtbl.find map v) 
         with Not_found -> lam 
       end
     | Llet(str, v, l1, l2) ->
@@ -75462,7 +75693,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
   aux lam
 
 
-let refresh lam = rewrite (Hashtbl.create 17 ) lam
+let refresh lam = rewrite (Ident_hashtbl.create 17 : Lam.t Ident_hashtbl.t ) lam
 
 
 
@@ -75504,17 +75735,17 @@ let propogate_beta_reduce
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
-  let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
            begin 
-             match Hashtbl.find meta.ident_tbl v with 
+             match Ident_hashtbl.find meta.ident_tbl v with 
              | exception Not_found -> ()
              | ident_info -> 
-               Hashtbl.add meta.ident_tbl param ident_info 
+               Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
          | Lprim {primitive = Pgetglobal ident;  args = [];  _} -> 
@@ -75524,7 +75755,7 @@ let propogate_beta_reduce
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
-           Hashtbl.replace meta.ident_tbl param 
+           Ident_hashtbl.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
@@ -75564,17 +75795,17 @@ let propogate_beta_reduce_with_map
              let p = Ident.rename old_param in 
              (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
-  let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  let new_body = rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
            begin 
-             match Hashtbl.find meta.ident_tbl v with 
+             match Ident_hashtbl.find meta.ident_tbl v with 
              | exception Not_found -> ()
              | ident_info -> 
-               Hashtbl.add meta.ident_tbl param ident_info 
+               Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
          | Lprim {primitive = Pgetglobal ident; args =  []} -> 
@@ -75582,7 +75813,7 @@ let propogate_beta_reduce_with_map
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
-           Hashtbl.replace meta.ident_tbl param 
+           Ident_hashtbl.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
@@ -83529,7 +83760,7 @@ end = struct
 
 let transitive_closure 
     (initial_idents : Ident.t list) 
-    (ident_freevars : (Ident.t, Ident_set.t) Hashtbl.t) 
+    (ident_freevars : Ident_set.t Ident_hashtbl.t) 
   =
   let visited = Hash_set.create 31 in 
   let rec dfs (id : Ident.t) =
@@ -83538,7 +83769,7 @@ let transitive_closure
     else 
       begin 
         Hash_set.add visited id;
-        match Hashtbl.find ident_freevars id with 
+        match Ident_hashtbl.find ident_freevars id with 
         | exception Not_found -> 
           Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
         | e -> Ident_set.iter (fun id -> dfs id) e
@@ -83547,7 +83778,7 @@ let transitive_closure
   visited
 
 let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
-  let ident_free_vars = Hashtbl.create 17 in
+  let ident_free_vars :  _ Ident_hashtbl.t = Ident_hashtbl.create 17 in
   (* calculate initial required idents, 
      at the same time, populate dependency set [ident_free_vars]
   *)
@@ -83556,7 +83787,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
         match x with
         | Single(kind, id,lam) ->                   
           begin
-            Hashtbl.add ident_free_vars id 
+            Ident_hashtbl.add ident_free_vars id 
               (Lam.free_variables  lam);
             match kind with
             | Alias | StrictOpt -> acc
@@ -83564,7 +83795,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           end
         | Recursive bindings -> 
           List.fold_left (fun acc (id,lam) -> 
-              Hashtbl.add ident_free_vars id (Lam.free_variables lam);
+              Ident_hashtbl.add ident_free_vars id (Lam.free_variables lam);
               match (lam : Lam.t) with
               | Lfunction _ -> acc 
               | _ -> id :: acc
@@ -83704,7 +83935,7 @@ let pp_arities_tbl
       pp Format.err_formatter "@[%s -> %a@]@."i.name pp_arities !v ) arities_tbl ()
 
 let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
-  Hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
     tbl
 
 let merge 
@@ -83730,7 +83961,7 @@ let rec get_arity
         if it's not from function parameter, we should warn
     *)
     begin 
-      match Hashtbl.find meta.ident_tbl v with 
+      match Ident_hashtbl.find meta.ident_tbl v with 
       | exception Not_found -> (NA : Lam.function_arities) 
       | Function {arity;_} -> arity
       | _ ->
@@ -84180,9 +84411,9 @@ let annotate (meta : Lam_stats.meta)
     rec_flag    
     (k:Ident.t) (v : Lam.function_arities) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
-  match Hashtbl.find  meta.ident_tbl k  with 
+  match Ident_hashtbl.find  meta.ident_tbl k  with 
   | exception Not_found -> 
-      Hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
+      Ident_hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
   |  Function old  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
@@ -84211,27 +84442,27 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     match lam with 
     | Lconst v 
       -> 
-      Hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
+      Ident_hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
     | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args=  ls}
       -> 
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls 
 
     | Lprim {primitive = Pccall {prim_name = "js_from_nullable"; _}; 
              args = ([ Lvar _] as ls) ; _}
       ->
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null ls )
     | Lprim {primitive = Pccall {prim_name = "js_from_def"; _}; 
              args = ([ Lvar _] as ls); _}
       ->
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Undefined ls )
     | Lprim {primitive = Pccall {prim_name = "js_from_nullable_def"; _};
              args = ([ Lvar _] as ls);}
       ->
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null_undefined ls )
       
     | Lprim {primitive = Pgetglobal v; args = []; _} 
@@ -84260,7 +84491,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
             so -- it would still iterate internally
          *)
 
-      List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
+      List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
       let arity = Lam_stats_util.get_arity meta lam in       
       (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected"  *)
       (*   ident.name ident.stamp  *)
@@ -84289,7 +84520,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lapply{fn = l1; args =  ll; _} ->
         collect  l1; List.iter collect  ll
     | Lfunction { params; body =  l} -> (* functor ? *)
-        List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
+        List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
         collect  l
     | Llet (kind,ident,arg,body) -> 
         collect_bind Non_rec kind ident arg ; collect body
@@ -84336,8 +84567,8 @@ let count_alias_globals
     export_idents
     (lam : Lam.t) : Lam_stats.meta =
   let meta : Lam_stats.meta = 
-    {alias_tbl = Hashtbl.create 31 ; 
-     ident_tbl = Hashtbl.create 31;
+    {alias_tbl = Ident_hashtbl.create 31 ; 
+     ident_tbl = Ident_hashtbl.create 31;
      exit_codes = Hash_set.create 31 ;
      exports =  export_idents;
      required_modules = [] ;
@@ -84347,6 +84578,113 @@ let count_alias_globals
    } in 
   collect_helper  meta lam ; 
   meta
+
+end
+module Int_hashtbl : sig 
+#1 "int_hashtbl.mli"
+include Hashtbl.S with type key = int
+
+
+val of_list2 : key list -> 'a list ->  'a t
+
+end = struct
+#1 "int_hashtbl.ml"
+type key = int
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
+
+
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
+
+let compare_key (x : key) (y : key) = Pervasives.compare x y
+
+let add (h : _ t) key info =
+  let i = key_index h key in
+  let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
+  h.data.(i) <- bucket;
+  h.size <- h.size + 1;
+  if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+let remove (h : _ t ) key =
+  let rec remove_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with  
+    | Empty ->
+        Empty
+    | Cons(k, i, next) ->
+        if compare_key k key = 0
+        then begin h.size <- h.size - 1; next end
+        else Cons(k, i, remove_bucket next) in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+  | Empty ->
+      raise Not_found
+  | Cons(k, d, rest) ->
+      if compare_key key k = 0 then d else find_rec key rest
+
+let find (h : _ t) key =
+  match h.data.(key_index h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+      if compare_key key k1 = 0 then d1 else
+      match rest1 with
+      | Empty -> raise Not_found
+      | Cons(k2, d2, rest2) ->
+          if compare_key key k2 = 0 then d2 else
+          match rest2 with
+          | Empty -> raise Not_found
+          | Cons(k3, d3, rest3) ->
+              if compare_key key k3 = 0 then d3 else find_rec key rest3
+
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      []
+  | Cons(k, d, rest) ->
+      if compare_key k key = 0
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket h.data.(key_index h key)
+
+let replace h key info =
+  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
+    | Empty ->
+        raise_notrace Not_found
+    | Cons(k, i, next) ->
+        if compare_key k key = 0
+        then Cons(key, info, next)
+        else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let l = h.data.(i) in
+  try
+    h.data.(i) <- replace_bucket l
+  with Not_found ->
+    h.data.(i) <- Cons(key, info, l);
+    h.size <- h.size + 1;
+    if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+let mem (h : _ t) key =
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      false
+  | Cons(k, d, rest) ->
+      compare_key k key = 0 || mem_in_bucket rest in
+  mem_in_bucket h.data.(key_index h key)
+
+
+let of_list2 ks vs = 
+  let map = create 51 in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
 
 end
 module Lam_pass_exits : sig 
@@ -84369,9 +84707,9 @@ module Lam_pass_exits : sig
     [simplif] module
  *)
 
-val count_helper : Lam.t -> (int, int ref) Hashtbl.t
+val count_helper : Lam.t -> int ref Int_hashtbl.t
 
-type subst_tbl = (int, Ident.t list * Lam.t) Hashtbl.t
+type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
 
 val subst_helper : subst_tbl -> (int -> int) -> Lam.t -> Lam.t
 
@@ -84414,18 +84752,18 @@ end = struct
 (* Count occurrences of (exit n ...) statements *)
 let count_exit exits i =
   try
-    !(Hashtbl.find exits i)
+    !(Int_hashtbl.find exits i)
   with
   | Not_found -> 0
 
 and incr_exit exits i =
   try
-    incr (Hashtbl.find exits i)
+    incr (Int_hashtbl.find exits i)
   with
-  | Not_found -> Hashtbl.add exits i (ref 1) 
+  | Not_found -> Int_hashtbl.add exits i (ref 1) 
 
-let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  = 
-  let exits = Hashtbl.create 17 in
+let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  = 
+  let exits  = Int_hashtbl.create 17 in
   let rec count (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,ls) -> incr_exit exits i ; List.iter count ls
@@ -84435,10 +84773,10 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
       count l1 ;
       let ic = count_exit exits i in
       begin try
-          let r = Hashtbl.find exits j in r := !r + ic
+          let r = Int_hashtbl.find exits j in r := !r + ic
         with
         | Not_found ->
-          Hashtbl.add exits j (ref ic)
+          Int_hashtbl.add exits j (ref ic)
       end
     | Lstaticcatch(l1, (i,_), l2) ->
       count l1;
@@ -84513,7 +84851,7 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
   exits
 ;;
 
-type subst_tbl = (int, Ident.t list * Lam.t) Hashtbl.t
+type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
 
 (*
    Second pass simplify  ``catch body with (i ...) handler''
@@ -84541,14 +84879,14 @@ let subst_helper (subst : subst_tbl) query lam =
     match lam with 
     | Lstaticraise (i,[])  ->
       begin 
-        match Hashtbl.find subst i with
+        match Int_hashtbl.find subst i with
         | _, handler -> handler
         | exception Not_found -> lam
       end
     | Lstaticraise (i,ls) ->
       let ls = List.map simplif ls in
       begin 
-        match Hashtbl.find subst i with
+        match Int_hashtbl.find subst i with
         | xs,handler -> 
           let ys = List.map Ident.rename xs in
           let env =
@@ -84562,7 +84900,7 @@ let subst_helper (subst : subst_tbl) query lam =
         | exception Not_found -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
-      Hashtbl.add subst i ([],simplif l2) ;
+      Int_hashtbl.add subst i ([],simplif l2) ;
       simplif l1 (** l1 will inline the exit handler *)
     | Lstaticcatch (l1,(i,xs),l2) ->
       begin 
@@ -84596,10 +84934,10 @@ let subst_helper (subst : subst_tbl) query lam =
         *)
         | ( _ , Lvar _
           | _, Lconst _) ->  
-          Hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs,simplif l2) ;
           simplif l1 (** l1 will inline *)
         | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
-          Hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs,simplif l2) ;
           simplif l1 (** l1 will inline *)
         | j,_ ->
 
@@ -84622,7 +84960,7 @@ let subst_helper (subst : subst_tbl) query lam =
           if ok_to_inline (* && false *) 
           then 
             begin 
-              Hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
+              Int_hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
               simplif l1 (** l1 will inline *)
             end
           else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)
@@ -84677,7 +85015,7 @@ let subst_helper (subst : subst_tbl) query lam =
  
 let simplify_exits (lam : Lam.t) =
   let exits = count_helper lam in
-  subst_helper (Hashtbl.create 17 ) (count_exit exits) lam
+  subst_helper (Int_hashtbl.create 17 ) (count_exit exits) lam
 
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->
@@ -84852,7 +85190,7 @@ type used_info = {
     *)
 }
 
-type occ_tbl  = (Ident.t, used_info) Hashtbl.t
+type occ_tbl  = used_info Ident_hashtbl.t
 (* First pass: count the occurrences of all let-bound identifiers *)
 
 type local_tbl = used_info  Ident_map.t
@@ -84867,15 +85205,15 @@ let absorb_info (x : used_info) (y : used_info) =
     if captured then x.captured <- true
 
 let lets_helper (count_var : Ident.t -> used_info) lam = 
-  let subst = Hashtbl.create 31 in
+  let subst : Lam.t Ident_hashtbl.t = Ident_hashtbl.create 31 in
   let used v = (count_var v ).times > 0 in
   let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lvar v  ->
-      begin try Hashtbl.find subst v with Not_found -> lam end
+      begin try Ident_hashtbl.find subst v with Not_found -> lam end
     | Llet( (Strict | Alias | StrictOpt) , v, Lvar w, l2) 
       ->
-      Hashtbl.add subst v (simplif (Lam.var w));
+      Ident_hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet((Strict | StrictOpt as kind) ,
            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
@@ -84916,7 +85254,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
              do constant folding independently              
           *)
           ->
-          Hashtbl.add subst v (simplif l1); simplif l2
+          Ident_hashtbl.add subst v (simplif l1); simplif l2
         | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
       end
     | Llet(StrictOpt as kind, v, l1, l2) ->
@@ -85009,12 +85347,12 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
 let apply_lets  occ lambda = 
   let count_var v =
     try
-      Hashtbl.find occ v
+      Ident_hashtbl.find occ v
     with Not_found -> dummy_info () in
   lets_helper count_var lambda      
 
 let collect_occurs  lam : occ_tbl =
-  let occ : occ_tbl = Hashtbl.create 83 in
+  let occ : occ_tbl = Ident_hashtbl.create 83 in
   (* The global table [occ] associates to each let-bound identifier
      the number of its uses (as a reference):
      - 0 if never used
@@ -85031,14 +85369,14 @@ let collect_occurs  lam : occ_tbl =
 
   (* Current use count of a variable. *)
   let used v = 
-    match Hashtbl.find occ v with 
+    match Ident_hashtbl.find occ v with 
     | exception Not_found -> false 
     | {times ; _} -> times > 0  in
 
   (* Entering a [let].  Returns updated [bv]. *)
   let bind_var bv ident =
     let r = dummy_info () in
-    Hashtbl.add occ ident r;
+    Ident_hashtbl.add occ ident r;
     Ident_map.add ident r bv in
 
   (* Record a use of a variable *)
@@ -85049,21 +85387,21 @@ let collect_occurs  lam : occ_tbl =
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Hashtbl.find occ ident with 
+      match Ident_hashtbl.find occ ident with 
       | r -> absorb_info r {times = 1; captured =  true}
       | exception Not_found ->
         (* Not a let-bound variable, ignore *)
         () in
 
   let inherit_use bv ident bid =
-    let n = try Hashtbl.find occ bid with Not_found -> dummy_info () in
+    let n = try Ident_hashtbl.find occ bid with Not_found -> dummy_info () in
     match Ident_map.find ident bv with 
     | r  -> absorb_info r n
     | exception Not_found ->
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Hashtbl.find occ ident with 
+      match Ident_hashtbl.find occ ident with 
       | r -> absorb_info r {n with captured = true} 
       | exception Not_found ->
         (* Not a let-bound variable, ignore *)
@@ -85355,7 +85693,7 @@ let simplify_alias
     match lam with 
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
-      (try Lam.var (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
+      (try Lam.var (Ident_hashtbl.find meta.alias_tbl v) with Not_found -> lam )
     | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
            l ) -> 
       (* This is detection of MODULE ALIAS 
@@ -85379,7 +85717,7 @@ let simplify_alias
       Lam_util.get lam v  i meta.ident_tbl 
     | Lifthenelse(Lvar id as l1, l2, l3) 
       -> 
-      begin match Hashtbl.find meta.ident_tbl id with 
+      begin match Ident_hashtbl.find meta.ident_tbl id with 
       | ImmutableBlock ( _, Normal)
       | MutableBlock _  
         -> simpl l2 
@@ -85441,7 +85779,7 @@ let simplify_alias
                         match arg with 
                         | Lvar p -> 
                           begin 
-                            try Hashtbl.find meta.ident_tbl p <> Parameter
+                            try Ident_hashtbl.find meta.ident_tbl p <> Parameter
                             with Not_found -> true
                           end
                         |  _ -> true 
@@ -85466,7 +85804,7 @@ let simplify_alias
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
       let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
       begin 
-        match Hashtbl.find meta.ident_tbl v with
+        match Ident_hashtbl.find meta.ident_tbl v with
         | Function {lambda = Lfunction {params; body} as _m;
                     rec_flag;                     
                     _ }
