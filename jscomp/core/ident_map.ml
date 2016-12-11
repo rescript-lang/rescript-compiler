@@ -27,15 +27,7 @@
 
 type key = Ident.t
 
-let compare_key (x : Ident.t) (y : Ident.t) =
-    (* Can not overflow *)
-    let u = x.stamp - y.stamp in
-    if u = 0 then 
-      let u = String.compare x.name y.name in 
-      if u = 0 then 
-        x.flags - y.flags 
-      else  u 
-    else u 
+let compare_key = Ext_ident.compare
 type 'a t = (key, 'a) Bal_map_common.t 
 open Bal_map_common 
 

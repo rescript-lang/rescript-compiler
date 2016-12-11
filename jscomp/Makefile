@@ -69,7 +69,9 @@ OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
 OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
-EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec\
+EXT_SRCS = ext_util\
+	ext_int\
+	ext_array ext_bytes ext_char resize_array string_vec\
 	int_vec int_vec_vec bal_set_common\
 	bal_tree  bal_map_common bal_map\
 	ext_file_pp ext_format \

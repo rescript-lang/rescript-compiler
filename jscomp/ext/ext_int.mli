@@ -25,6 +25,5 @@
 
 type t = int
 
-let compare (x : t) (y : t) = Pervasives.compare x y 
-
-let equal (x : t) (y : t) = x = y
+val compare : t -> t -> int 
+val equal : t -> t -> bool 

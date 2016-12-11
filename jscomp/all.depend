@@ -12,7 +12,7 @@ ext/ext_format.cmx : ext/ext_format.cmi
 ext/ext_hashtbl.cmx : ext/ext_hashtbl.cmi
 ext/ext_ident.cmx : ext/string_hashtbl.cmx ext/string_hash_set.cmx \
     ext/ext_string.cmx ext/ext_ident.cmi
-ext/ext_int.cmx :
+ext/ext_int.cmx : ext/ext_int.cmi
 ext/ext_io.cmx : ext/ext_pervasives.cmx ext/ext_io.cmi
 ext/ext_list.cmx : ext/ext_list.cmi
 ext/ext_map.cmx : ext/ext_map.cmi
@@ -26,22 +26,24 @@ ext/ext_ref.cmx : ext/ext_ref.cmi
 ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
 ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
 ext/ext_sys.cmx : ext/ext_sys.cmi
+ext/ext_util.cmx : ext/ext_util.cmi
 ext/hash_set.cmx : ext/hash_set_gen.cmx ext/hash_set.cmi
-ext/hash_set_gen.cmx :
-ext/hashtbl_gen.cmx :
+ext/hash_set_gen.cmx : ext/ext_util.cmx
+ext/hashtbl_gen.cmx : ext/ext_util.cmx
 ext/ident_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_ident.cmx \
     ext/ident_hashtbl.cmi
 ext/ident_set.cmx : ext/ext_format.cmx ext/bal_set_common.cmx \
     ext/ident_set.cmi
 ext/int_hash_set.cmx : ext/hash_set_gen.cmx ext/int_hash_set.cmi
-ext/int_hashtbl.cmx : ext/hashtbl_gen.cmx ext/int_hashtbl.cmi
+ext/int_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_int.cmx \
+    ext/int_hashtbl.cmi
 ext/int_map.cmx : ext/int_map.cmi
 ext/int_vec.cmx : ext/resize_array.cmx ext/int_vec.cmi
 ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
     ext/int_vec_vec.cmi
 ext/literals.cmx : ext/literals.cmi
-ext/ordered_hash_map.cmx : ext/ordered_hash_map.cmi
-ext/ordered_hash_set.cmx : ext/ordered_hash_set.cmi
+ext/ordered_hash_map.cmx : ext/ext_util.cmx ext/ordered_hash_map.cmi
+ext/ordered_hash_set.cmx : ext/ext_util.cmx ext/ordered_hash_set.cmi
 ext/resize_array.cmx : ext/ext_array.cmx ext/resize_array.cmi
 ext/string_hash_set.cmx : ext/hash_set_gen.cmx ext/string_hash_set.cmi
 ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/string_hashtbl.cmi
@@ -59,6 +61,7 @@ ext/ext_filename.cmi :
 ext/ext_format.cmi :
 ext/ext_hashtbl.cmi :
 ext/ext_ident.cmi :
+ext/ext_int.cmi :
 ext/ext_io.cmi :
 ext/ext_list.cmi :
 ext/ext_map.cmi :
@@ -71,11 +74,12 @@ ext/ext_ref.cmi :
 ext/ext_scc.cmi : ext/int_vec_vec.cmi ext/int_vec.cmi
 ext/ext_string.cmi :
 ext/ext_sys.cmi :
+ext/ext_util.cmi :
 ext/hash_set.cmi :
 ext/ident_hashtbl.cmi :
 ext/ident_set.cmi : ext/ext_format.cmi
 ext/int_hash_set.cmi : ext/hash_set.cmi
-ext/int_hashtbl.cmi :
+ext/int_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/int_map.cmi :
 ext/int_vec.cmi : ext/resize_array.cmi
 ext/int_vec_vec.cmi : ext/resize_array.cmi ext/int_vec.cmi
@@ -84,7 +88,7 @@ ext/ordered_hash_map.cmi :
 ext/ordered_hash_set.cmi :
 ext/resize_array.cmi :
 ext/string_hash_set.cmi : ext/hash_set.cmi
-ext/string_hashtbl.cmi :
+ext/string_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/string_map.cmi :
 ext/string_set.cmi :
 ext/string_vec.cmi : ext/resize_array.cmi
@@ -199,7 +203,8 @@ core/bspp_main.cmx : core/bspp_main.cmi
 core/bsppx_main.cmx : syntax/ppx_entry.cmx
 core/config_util.cmx : core/js_cmj_format.cmx depends/bs_exception.cmx \
     core/config_util.cmi
-core/ident_map.cmx : ext/bal_map_common.cmx core/ident_map.cmi
+core/ident_map.cmx : ext/ext_ident.cmx ext/bal_map_common.cmx \
+    core/ident_map.cmi
 core/ident_util.cmx : common/ext_log.cmx
 core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
     core/js_call_info.cmx ext/ident_set.cmx

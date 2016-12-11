@@ -15,7 +15,10 @@
 
 
 
-
+module type S = sig 
+  include Hashtbl.S
+  val of_list2 : key list -> 'a list -> 'a t 
+end
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
@@ -32,13 +35,8 @@ and ('a, 'b) bucketlist =
   | Cons of 'a * 'b * ('a, 'b) bucketlist
 
 
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
-
 let create  initial_size =
-  let s = power_2_above 16 initial_size in
+  let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
 
 let clear h =
@@ -71,7 +69,7 @@ let resize indexfun h =
           let nidx = indexfun h key in
           ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
     for i = 0 to osize - 1 do
-      insert_bucket odata.(i)
+      insert_bucket (Array.unsafe_get odata i)
     done
   end
 
@@ -85,7 +83,7 @@ let iter f h =
         f k d; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    do_bucket d.(i)
+    do_bucket (Array.unsafe_get d i)
   done
 
 let fold f h init =
@@ -121,3 +119,19 @@ let stats h =
     max_bucket_length = mbl;
     bucket_histogram = histo }
 
+
+
+let rec small_bucket_mem eq key (lst : _ bucketlist) =
+  match lst with 
+  | Empty -> false 
+  | Cons(k1,_,rest1) -> 
+    eq  key k1 ||
+    match rest1 with
+    | Empty -> false 
+    | Cons(k2,_,rest2) -> 
+      eq key k2  || 
+      match rest2 with 
+      | Empty -> false 
+      | Cons(k3,_,rest3) -> 
+        eq key k3  ||
+        small_bucket_mem eq key rest3 

@@ -34,13 +34,9 @@ type 'a t =
 
 
 
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
 
 let create  initial_size =
-  let s = power_2_above 16 initial_size in
+  let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; data = Array.make s [] }
 
 let clear h =

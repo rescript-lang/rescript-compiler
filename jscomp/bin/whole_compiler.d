@@ -131,6 +131,8 @@ bin/whole_compiler.ml : ../ocaml/driver/compmisc.mli
 bin/whole_compiler.ml : common/ext_log.ml
 bin/whole_compiler.ml : common/ext_log.mli
 bin/whole_compiler.ml : stubs/bs_hash_stubs.ml
+bin/whole_compiler.ml : ext/ext_util.ml
+bin/whole_compiler.ml : ext/ext_util.mli
 bin/whole_compiler.ml : ext/hash_set_gen.ml
 bin/whole_compiler.ml : ext/hash_set.ml
 bin/whole_compiler.ml : ext/hash_set.mli

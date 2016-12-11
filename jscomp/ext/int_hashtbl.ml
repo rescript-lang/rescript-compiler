@@ -34,6 +34,7 @@ let remove (h : _ t ) key =
   let i = key_index h key in
   h.data.(i) <- remove_bucket h.data.(i)
 
+
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
       raise Not_found
@@ -82,12 +83,13 @@ let replace h key info =
     if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
 let mem (h : _ t) key =
-  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-  | Empty ->
-      false
-  | Cons(k, d, rest) ->
-      compare_key k key = 0 || mem_in_bucket rest in
-  mem_in_bucket h.data.(key_index h key)
+  Hashtbl_gen.small_bucket_mem Ext_int.equal key (Array.unsafe_get h.data (key_index h key))
+  (* let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with  *)
+  (* | Empty -> *)
+  (*     false *)
+  (* | Cons(k, d, rest) -> *)
+  (*     compare_key k key = 0 || mem_in_bucket rest in *)
+  (* mem_in_bucket h.data.(key_index h key) *)
 
 
 let of_list2 ks vs = 

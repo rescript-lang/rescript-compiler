@@ -56492,6 +56492,74 @@ external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int
 external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
 
 end
+module Ext_util : sig 
+#1 "ext_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ 
+val power_2_above : int -> int -> int
+
+end = struct
+#1 "ext_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+   {[
+     (power_2_above 16 63 = 64)
+       (power_2_above 16 76 = 128)
+   ]}
+*)
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 > Sys.max_array_length then x
+  else power_2_above (x * 2) n
+
+end
 module Hash_set_gen
 = struct
 #1 "hash_set_gen.ml"
@@ -56531,13 +56599,9 @@ type 'a t =
 
 
 
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
 
 let create  initial_size =
-  let s = power_2_above 16 initial_size in
+  let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; data = Array.make s [] }
 
 let clear h =
@@ -56979,7 +57043,10 @@ module Hashtbl_gen
 
 
 
-
+module type S = sig 
+  include Hashtbl.S
+  val of_list2 : key list -> 'a list -> 'a t 
+end
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
@@ -56996,13 +57063,8 @@ and ('a, 'b) bucketlist =
   | Cons of 'a * 'b * ('a, 'b) bucketlist
 
 
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
-
 let create  initial_size =
-  let s = power_2_above 16 initial_size in
+  let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
 
 let clear h =
@@ -57035,7 +57097,7 @@ let resize indexfun h =
           let nidx = indexfun h key in
           ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
     for i = 0 to osize - 1 do
-      insert_bucket odata.(i)
+      insert_bucket (Array.unsafe_get odata i)
     done
   end
 
@@ -57049,7 +57111,7 @@ let iter f h =
         f k d; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    do_bucket d.(i)
+    do_bucket (Array.unsafe_get d i)
   done
 
 let fold f h init =
@@ -57086,14 +57148,54 @@ let stats h =
     bucket_histogram = histo }
 
 
+
+let rec small_bucket_mem eq key (lst : _ bucketlist) =
+  match lst with 
+  | Empty -> false 
+  | Cons(k1,_,rest1) -> 
+    eq  key k1 ||
+    match rest1 with
+    | Empty -> false 
+    | Cons(k2,_,rest2) -> 
+      eq key k2  || 
+      match rest2 with 
+      | Empty -> false 
+      | Cons(k3,_,rest3) -> 
+        eq key k3  ||
+        small_bucket_mem eq key rest3 
+
 end
 module String_hashtbl : sig 
 #1 "string_hashtbl.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-include Hashtbl.S with type key = string
+
+include Hashtbl_gen.S with type key = string
 
 
-val of_list2 : key list -> 'a list ->  'a t
+
 
 end = struct
 #1 "string_hashtbl.ml"
@@ -57637,15 +57739,7 @@ end = struct
 
 type key = Ident.t
 
-let compare_key (x : Ident.t) (y : Ident.t) =
-    (* Can not overflow *)
-    let u = x.stamp - y.stamp in
-    if u = 0 then 
-      let u = String.compare x.name y.name in 
-      if u = 0 then 
-        x.flags - y.flags 
-      else  u 
-    else u 
+let compare_key = Ext_ident.compare
 type 'a t = (key, 'a) Bal_map_common.t 
 open Bal_map_common 
 
@@ -61605,13 +61699,9 @@ type ('a,'b) t =
 
 
 
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
 
 let create  initial_size =
-  let s = power_2_above 16 initial_size in
+  let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; data = Array.make s Empty }
 
 let clear h =
@@ -84582,10 +84672,36 @@ let count_alias_globals
 end
 module Int_hashtbl : sig 
 #1 "int_hashtbl.mli"
-include Hashtbl.S with type key = int
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val of_list2 : key list -> 'a list ->  'a t
+
+include Hashtbl_gen.S with type key = int
+
+
+
 
 end = struct
 #1 "int_hashtbl.ml"
@@ -84624,6 +84740,21 @@ let remove (h : _ t ) key =
         else Cons(k, i, remove_bucket next) in
   let i = key_index h key in
   h.data.(i) <- remove_bucket h.data.(i)
+
+let rec small_bucket_mem eq key (lst : _ bucketlist) =
+  match lst with 
+  | Empty -> false 
+  | Cons(k1,_,rest1) -> 
+    eq  key k1 ||
+    match rest1 with
+    | Empty -> false 
+    | Cons(k2,_,rest2) -> 
+      eq key k2  || 
+      match rest2 with 
+      | Empty -> false 
+      | Cons(k3,_,rest3) -> 
+        eq key k3  ||
+        small_bucket_mem eq key rest3 
 
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
