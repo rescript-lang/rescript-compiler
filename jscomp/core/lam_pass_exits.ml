@@ -33,18 +33,18 @@
 (* Count occurrences of (exit n ...) statements *)
 let count_exit exits i =
   try
-    !(Hashtbl.find exits i)
+    !(Int_hashtbl.find exits i)
   with
   | Not_found -> 0
 
 and incr_exit exits i =
   try
-    incr (Hashtbl.find exits i)
+    incr (Int_hashtbl.find exits i)
   with
-  | Not_found -> Hashtbl.add exits i (ref 1) 
+  | Not_found -> Int_hashtbl.add exits i (ref 1) 
 
-let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  = 
-  let exits = Hashtbl.create 17 in
+let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  = 
+  let exits  = Int_hashtbl.create 17 in
   let rec count (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,ls) -> incr_exit exits i ; List.iter count ls
@@ -54,10 +54,10 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
       count l1 ;
       let ic = count_exit exits i in
       begin try
-          let r = Hashtbl.find exits j in r := !r + ic
+          let r = Int_hashtbl.find exits j in r := !r + ic
         with
         | Not_found ->
-          Hashtbl.add exits j (ref ic)
+          Int_hashtbl.add exits j (ref ic)
       end
     | Lstaticcatch(l1, (i,_), l2) ->
       count l1;
@@ -132,7 +132,7 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
   exits
 ;;
 
-type subst_tbl = (int, Ident.t list * Lam.t) Hashtbl.t
+type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
 
 (*
    Second pass simplify  ``catch body with (i ...) handler''
@@ -160,14 +160,14 @@ let subst_helper (subst : subst_tbl) query lam =
     match lam with 
     | Lstaticraise (i,[])  ->
       begin 
-        match Hashtbl.find subst i with
+        match Int_hashtbl.find subst i with
         | _, handler -> handler
         | exception Not_found -> lam
       end
     | Lstaticraise (i,ls) ->
       let ls = List.map simplif ls in
       begin 
-        match Hashtbl.find subst i with
+        match Int_hashtbl.find subst i with
         | xs,handler -> 
           let ys = List.map Ident.rename xs in
           let env =
@@ -181,7 +181,7 @@ let subst_helper (subst : subst_tbl) query lam =
         | exception Not_found -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
-      Hashtbl.add subst i ([],simplif l2) ;
+      Int_hashtbl.add subst i ([],simplif l2) ;
       simplif l1 (** l1 will inline the exit handler *)
     | Lstaticcatch (l1,(i,xs),l2) ->
       begin 
@@ -215,10 +215,10 @@ let subst_helper (subst : subst_tbl) query lam =
         *)
         | ( _ , Lvar _
           | _, Lconst _) ->  
-          Hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs,simplif l2) ;
           simplif l1 (** l1 will inline *)
         | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
-          Hashtbl.add subst i (xs,simplif l2) ;
+          Int_hashtbl.add subst i (xs,simplif l2) ;
           simplif l1 (** l1 will inline *)
         | j,_ ->
 
@@ -241,7 +241,7 @@ let subst_helper (subst : subst_tbl) query lam =
           if ok_to_inline (* && false *) 
           then 
             begin 
-              Hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
+              Int_hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
               simplif l1 (** l1 will inline *)
             end
           else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)
@@ -296,7 +296,7 @@ let subst_helper (subst : subst_tbl) query lam =
  
 let simplify_exits (lam : Lam.t) =
   let exits = count_helper lam in
-  subst_helper (Hashtbl.create 17 ) (count_exit exits) lam
+  subst_helper (Int_hashtbl.create 17 ) (count_exit exits) lam
 
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->

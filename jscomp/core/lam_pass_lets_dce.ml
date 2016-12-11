@@ -122,7 +122,7 @@ type used_info = {
     *)
 }
 
-type occ_tbl  = (Ident.t, used_info) Hashtbl.t
+type occ_tbl  = used_info Ident_hashtbl.t
 (* First pass: count the occurrences of all let-bound identifiers *)
 
 type local_tbl = used_info  Ident_map.t
@@ -137,15 +137,14 @@ let absorb_info (x : used_info) (y : used_info) =
     if captured then x.captured <- true
 
 let lets_helper (count_var : Ident.t -> used_info) lam = 
-  let subst = Hashtbl.create 31 in
+  let subst : Lam.t Ident_hashtbl.t = Ident_hashtbl.create 31 in
   let used v = (count_var v ).times > 0 in
   let rec simplif (lam : Lam.t) = 
     match lam with 
-    | Lvar v  ->
-      begin try Hashtbl.find subst v with Not_found -> lam end
+    | Lvar v  -> Ident_hashtbl.find_default subst v lam 
     | Llet( (Strict | Alias | StrictOpt) , v, Lvar w, l2) 
       ->
-      Hashtbl.add subst v (simplif (Lam.var w));
+      Ident_hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet((Strict | StrictOpt as kind) ,
            v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
@@ -186,7 +185,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
              do constant folding independently              
           *)
           ->
-          Hashtbl.add subst v (simplif l1); simplif l2
+          Ident_hashtbl.add subst v (simplif l1); simplif l2
         | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
       end
     | Llet(StrictOpt as kind, v, l1, l2) ->
@@ -279,12 +278,12 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
 let apply_lets  occ lambda = 
   let count_var v =
     try
-      Hashtbl.find occ v
+      Ident_hashtbl.find occ v 
     with Not_found -> dummy_info () in
   lets_helper count_var lambda      
 
 let collect_occurs  lam : occ_tbl =
-  let occ : occ_tbl = Hashtbl.create 83 in
+  let occ : occ_tbl = Ident_hashtbl.create 83 in
   (* The global table [occ] associates to each let-bound identifier
      the number of its uses (as a reference):
      - 0 if never used
@@ -301,14 +300,14 @@ let collect_occurs  lam : occ_tbl =
 
   (* Current use count of a variable. *)
   let used v = 
-    match Hashtbl.find occ v with 
+    match Ident_hashtbl.find occ v with 
     | exception Not_found -> false 
     | {times ; _} -> times > 0  in
 
   (* Entering a [let].  Returns updated [bv]. *)
   let bind_var bv ident =
     let r = dummy_info () in
-    Hashtbl.add occ ident r;
+    Ident_hashtbl.add occ ident r;
     Ident_map.add ident r bv in
 
   (* Record a use of a variable *)
@@ -319,21 +318,21 @@ let collect_occurs  lam : occ_tbl =
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Hashtbl.find occ ident with 
+      match Ident_hashtbl.find occ ident with 
       | r -> absorb_info r {times = 1; captured =  true}
       | exception Not_found ->
         (* Not a let-bound variable, ignore *)
         () in
 
   let inherit_use bv ident bid =
-    let n = try Hashtbl.find occ bid with Not_found -> dummy_info () in
+    let n = try Ident_hashtbl.find occ bid with Not_found -> dummy_info () in
     match Ident_map.find ident bv with 
     | r  -> absorb_info r n
     | exception Not_found ->
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Hashtbl.find occ ident with 
+      match Ident_hashtbl.find occ ident with 
       | r -> absorb_info r {n with captured = true} 
       | exception Not_found ->
         (* Not a let-bound variable, ignore *)

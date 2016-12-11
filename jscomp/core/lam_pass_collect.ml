@@ -34,10 +34,10 @@ let annotate (meta : Lam_stats.meta)
     rec_flag    
     (k:Ident.t) (v : Lam.function_arities) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
-  match Hashtbl.find  meta.ident_tbl k  with 
-  | exception Not_found -> 
-      Hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
-  |  Function old  ->  
+  match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
+  | None -> 
+      Ident_hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
+  |  Some (Function old)  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
           how about guarantee that [Lassign] only check the local ref 
@@ -65,27 +65,27 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     match lam with 
     | Lconst v 
       -> 
-      Hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
+      Ident_hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
     | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args=  ls}
       -> 
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls 
 
     | Lprim {primitive = Pccall {prim_name = "js_from_nullable"; _}; 
              args = ([ Lvar _] as ls) ; _}
       ->
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null ls )
     | Lprim {primitive = Pccall {prim_name = "js_from_def"; _}; 
              args = ([ Lvar _] as ls); _}
       ->
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Undefined ls )
     | Lprim {primitive = Pccall {prim_name = "js_from_nullable_def"; _};
              args = ([ Lvar _] as ls);}
       ->
-      Hashtbl.replace meta.ident_tbl ident 
+      Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null_undefined ls )
       
     | Lprim {primitive = Pgetglobal v; args = []; _} 
@@ -114,7 +114,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
             so -- it would still iterate internally
          *)
 
-      List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
+      List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
       let arity = Lam_stats_util.get_arity meta lam in       
       (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected"  *)
       (*   ident.name ident.stamp  *)
@@ -143,7 +143,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lapply{fn = l1; args =  ll; _} ->
         collect  l1; List.iter collect  ll
     | Lfunction { params; body =  l} -> (* functor ? *)
-        List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
+        List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
         collect  l
     | Llet (kind,ident,arg,body) -> 
         collect_bind Non_rec kind ident arg ; collect body
@@ -190,8 +190,8 @@ let count_alias_globals
     export_idents
     (lam : Lam.t) : Lam_stats.meta =
   let meta : Lam_stats.meta = 
-    {alias_tbl = Hashtbl.create 31 ; 
-     ident_tbl = Hashtbl.create 31;
+    {alias_tbl = Ident_hashtbl.create 31 ; 
+     ident_tbl = Ident_hashtbl.create 31;
      exit_codes = Hash_set.create 31 ;
      exports =  export_idents;
      required_modules = [] ;

@@ -56,7 +56,7 @@ let pp_arities_tbl
       pp Format.err_formatter "@[%s -> %a@]@."i.name pp_arities !v ) arities_tbl ()
 
 let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) = 
-  Hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
     tbl
 
 let merge 
@@ -82,7 +82,7 @@ let rec get_arity
         if it's not from function parameter, we should warn
     *)
     begin 
-      match Hashtbl.find meta.ident_tbl v with 
+      match Ident_hashtbl.find meta.ident_tbl v with 
       | exception Not_found -> (NA : Lam.function_arities) 
       | Function {arity;_} -> arity
       | _ ->

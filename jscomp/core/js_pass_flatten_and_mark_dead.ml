@@ -69,19 +69,19 @@ let mark_dead = object (self)
 
   val mutable name = ""
 
-  val mutable ident_use_stats : (Ident.t , [`Info of J.ident_info | `Recursive]) Hashtbl.t
-      = Hashtbl.create 17
+  val mutable ident_use_stats : [`Info of J.ident_info | `Recursive] Ident_hashtbl.t
+      = Ident_hashtbl.create 17
   
   val mutable export_set : Ident_set.t = Ident_set.empty    
 
   method mark_not_dead ident =
-    match Hashtbl.find ident_use_stats ident with
-    | exception Not_found -> (* First time *)
-        Hashtbl.add ident_use_stats ident `Recursive 
+    match Ident_hashtbl.find_opt ident_use_stats ident with
+    | None -> (* First time *)
+        Ident_hashtbl.add ident_use_stats ident `Recursive 
         (* recursive identifiers *)
-    | `Recursive
+    | Some `Recursive
       -> ()
-    | `Info x ->  Js_op_util.update_used_stats x Used 
+    | Some (`Info x) ->  Js_op_util.update_used_stats x Used 
 
   method scan b ident (ident_info : J.ident_info) = 
     let is_export = Ident_set.mem ident export_set in
@@ -89,23 +89,23 @@ let mark_dead = object (self)
       if is_export (* && false *) then 
         Js_op_util.update_used_stats ident_info Exported 
     in
-    match Hashtbl.find ident_use_stats ident with
-    | `Recursive -> 
+    match Ident_hashtbl.find_opt ident_use_stats ident with
+    | Some (`Recursive) -> 
         Js_op_util.update_used_stats ident_info Used; 
-        Hashtbl.replace ident_use_stats ident (`Info ident_info)
-    | `Info _ ->  
+        Ident_hashtbl.replace ident_use_stats ident (`Info ident_info)
+    | Some (`Info _) ->  
         (** check [camlinternlFormat,box_type] inlined twice 
             FIXME: seems we have redeclared identifiers
          *)
       if Js_config.get_diagnose () then 
         Ext_log.warn __LOC__ "@[%s$%d in %s@]" ident.name ident.stamp name
         (* assert false *)
-    | exception Not_found ->  (* First time *)
-        Hashtbl.add ident_use_stats ident (`Info ident_info);
+    | None ->  (* First time *)
+        Ident_hashtbl.add ident_use_stats ident (`Info ident_info);
         Js_op_util.update_used_stats ident_info 
           (if b then Scanning_pure else Scanning_non_pure)
   method promote_dead = 
-    Hashtbl.iter (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
+    Ident_hashtbl.iter (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
       match info  with 
       | `Info ({used_stats = Scanning_pure} as info) -> 
           Js_op_util.update_used_stats info Dead_pure
@@ -113,7 +113,7 @@ let mark_dead = object (self)
           Js_op_util.update_used_stats info Dead_non_pure
       | _ -> ())
       ident_use_stats;
-    Hashtbl.clear ident_use_stats (* clear to make it re-entrant *)
+    Ident_hashtbl.clear ident_use_stats (* clear to make it re-entrant *)
 
   method! program x = 
     export_set <- x.export_set ; 
@@ -165,12 +165,12 @@ let mark_dead_code js =
 let subst_map name = object (self)
   inherit Js_map.map as super
 
-  val mutable substitution = Hashtbl.create 17 
+  val mutable substitution :  J.expression Ident_hashtbl.t= Ident_hashtbl.create 17 
 
   method get_substitution = substitution
 
   method add_substitue (ident : Ident.t) (e:J.expression) = 
-    Hashtbl.replace  substitution ident e
+    Ident_hashtbl.replace  substitution ident e
 
   method! statement v = 
     match v.statement_desc with 
@@ -238,8 +238,8 @@ let subst_map name = object (self)
     match x.expression_desc with 
     | Access ({expression_desc = Var (Id (id))}, 
               {expression_desc = Number (Int {i; _})}) -> 
-      begin match Hashtbl.find self#get_substitution id with 
-        | {expression_desc = Caml_block (ls, Immutable, _, _) } 
+      begin match Ident_hashtbl.find_opt self#get_substitution id with 
+        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
           -> 
           (* user program can be wrong, we should not 
              turn a runtime crash into compile time crash : )
@@ -292,8 +292,7 @@ let subst_map name = object (self)
               *)
               super#expression x 
           end
-        | _ -> super#expression x 
-        | exception Not_found -> super#expression x 
+        | (Some _ | None) -> super#expression x 
       end
     | _ -> super#expression x
 end 

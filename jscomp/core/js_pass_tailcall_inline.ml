@@ -51,17 +51,17 @@ let count_collects () =
   object (self)
     inherit Js_fold.fold as super
     (* collect used status*)
-    val stats : (Ident.t , int ref ) Hashtbl.t = Hashtbl.create 83
+    val stats : int ref Ident_hashtbl.t = Ident_hashtbl.create 83
     (* collect all def sites *)
-    val defined_idents : (Ident.t, J.variable_declaration) Hashtbl.t = Hashtbl.create 83
+    val defined_idents : J.variable_declaration Ident_hashtbl.t = Ident_hashtbl.create 83
 
     val mutable export_set  : Ident_set.t = Ident_set.empty
     val mutable name : string = ""
 
     method add_use id = 
-      match Hashtbl.find stats id with
-      | exception Not_found -> Hashtbl.add stats id (ref 1)
-      | v -> incr v 
+      match Ident_hashtbl.find_opt stats id with
+      | None -> Ident_hashtbl.add stats id (ref 1)
+      | Some v -> incr v 
     method! program x = 
       export_set <- x.export_set ; 
       name <- x.name;
@@ -69,7 +69,7 @@ let count_collects () =
     method! variable_declaration 
         ({ident; value ; property  ; ident_info }  as v)
       =  
-        Hashtbl.add defined_idents ident v; 
+        Ident_hashtbl.add defined_idents ident v; 
         match value with 
         | None
           -> 
@@ -78,7 +78,7 @@ let count_collects () =
           -> self#expression x 
     method! ident id = self#add_use id; self
     method get_stats = 
-      Hashtbl.iter (fun ident (v : J.variable_declaration) -> 
+      Ident_hashtbl.iter (fun ident (v : J.variable_declaration) -> 
           if Ident_set.mem ident export_set then 
             Js_op_util.update_used_stats v.ident_info Exported
           else 
@@ -87,11 +87,11 @@ let count_collects () =
               | None -> false  (* can not happen *)
               | Some x -> Js_analyzer.no_side_effect_expression x  
             in
-            match Hashtbl.find stats ident with 
-              | exception Not_found -> 
+            match Ident_hashtbl.find_opt stats ident with 
+              | None -> 
                 Js_op_util.update_used_stats v.ident_info 
                   (if pure then Dead_pure else Dead_non_pure)
-              | num -> 
+              | Some num -> 
                 if !num = 1 then 
                   Js_op_util.update_used_stats v.ident_info 
                     (if pure then Once_pure else Used) 
@@ -164,7 +164,7 @@ let subst name export_set stats  =
          does rely on this (otherwise, when you do beta-reduction you have to regenerate names)
       *)
       let v = super # variable_declaration v in
-      Hashtbl.add stats ident v; (* see #278 before changes *)
+      Ident_hashtbl.add stats ident v; (* see #278 before changes *)
       v
     method! block bs = 
       match bs with
@@ -177,13 +177,14 @@ let subst name export_set stats  =
           self#statement st :: self#block rest 
         else 
           begin 
-            match (Hashtbl.find stats vd.ident : J.variable_declaration) with
-            | exception Not_found -> 
+            match Ident_hashtbl.find_opt stats vd.ident with 
+            (* TODO: could be improved as [mem] *)
+            | None -> 
               if Js_analyzer.no_side_effect_expression v 
               then S.exp v  :: self#block rest 
               else self#block rest 
 
-            | _ -> self#statement st  :: self#block rest 
+            | Some _ -> self#statement st  :: self#block rest 
           end
 
       | {statement_desc = 
@@ -193,11 +194,9 @@ let subst name export_set stats  =
         as st 
            :: rest 
         -> 
-        begin match Hashtbl.find stats id with 
-          | exception Not_found 
-            ->  self#statement st :: self#block rest 
+        begin match Ident_hashtbl.find_opt stats id with 
 
-          | { value = 
+          | Some ({ value = 
                 Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
               (*TODO: don't inline method tail call yet, 
                 [this] semantics are weird 
@@ -205,7 +204,7 @@ let subst name export_set stats  =
               property = (Alias | StrictOpt | Strict);
               ident_info = {used_stats = Once_pure };
               ident = _
-            } as v
+            } as v)
             when Ext_list.same_length params args 
             -> 
             (* Ext_log.dwarn  __LOC__ "%s is dead \n %s " id.name  *)
@@ -220,8 +219,7 @@ let subst name export_set stats  =
                here we inline the function
             *)
             block @ self#block rest
-
-          | _ ->
+          | (None | Some _) ->
             self#statement st :: self#block rest
         end
       | x :: xs 

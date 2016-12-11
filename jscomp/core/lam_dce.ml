@@ -34,7 +34,7 @@
 
 let transitive_closure 
     (initial_idents : Ident.t list) 
-    (ident_freevars : (Ident.t, Ident_set.t) Hashtbl.t) 
+    (ident_freevars : Ident_set.t Ident_hashtbl.t) 
   =
   let visited = Hash_set.create 31 in 
   let rec dfs (id : Ident.t) =
@@ -43,16 +43,16 @@ let transitive_closure
     else 
       begin 
         Hash_set.add visited id;
-        match Hashtbl.find ident_freevars id with 
-        | exception Not_found -> 
+        match Ident_hashtbl.find_opt ident_freevars id with 
+        | None -> 
           Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
-        | e -> Ident_set.iter (fun id -> dfs id) e
+        | Some e -> Ident_set.iter (fun id -> dfs id) e
       end  in 
   List.iter dfs initial_idents;
   visited
 
 let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
-  let ident_free_vars = Hashtbl.create 17 in
+  let ident_free_vars :  _ Ident_hashtbl.t = Ident_hashtbl.create 17 in
   (* calculate initial required idents, 
      at the same time, populate dependency set [ident_free_vars]
   *)
@@ -61,7 +61,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
         match x with
         | Single(kind, id,lam) ->                   
           begin
-            Hashtbl.add ident_free_vars id 
+            Ident_hashtbl.add ident_free_vars id 
               (Lam.free_variables  lam);
             match kind with
             | Alias | StrictOpt -> acc
@@ -69,7 +69,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           end
         | Recursive bindings -> 
           List.fold_left (fun acc (id,lam) -> 
-              Hashtbl.add ident_free_vars id (Lam.free_variables lam);
+              Ident_hashtbl.add ident_free_vars id (Lam.free_variables lam);
               match (lam : Lam.t) with
               | Lfunction _ -> acc 
               | _ -> id :: acc

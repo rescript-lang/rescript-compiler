@@ -75,11 +75,6 @@ let suites =
 
   ]
 
-let time description f  =
-  let start = Unix.gettimeofday () in 
-  f ();
-  let finish = Unix.gettimeofday () in
-  Printf.printf "%s elapsed %f\n" description (finish -. start)  
 
 type ident = { stamp : int ; name : string ; mutable flags : int}
 
@@ -115,7 +110,7 @@ module Ident_set2 = Set.Make(struct type t = ident
 
 let bench () = 
   let times = 1_000_000 in
-  time "functor set" begin fun _ -> 
+  Ounit_tests_util.time "functor set" begin fun _ -> 
     let v = ref Ident_set.empty in  
     for i = 0 to  times do
       v := Ident_set.add   {stamp = i ; name = "name"; flags = -1 } !v 
@@ -124,7 +119,7 @@ let bench () =
       ignore @@ Ident_set.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done 
   end ;
-  time "functor set (specialized)" begin fun _ -> 
+  Ounit_tests_util.time "functor set (specialized)" begin fun _ -> 
     let v = ref Ident_set2.empty in  
     for i = 0 to  times do
       v := Ident_set2.add   {stamp = i ; name = "name"; flags = -1 } !v 
@@ -134,7 +129,7 @@ let bench () =
     done 
   end ;
 
-  time "poly set" begin fun _ -> 
+  Ounit_tests_util.time "poly set" begin fun _ -> 
     let v = ref Bal_set_common.empty in  
     for i = 0 to  times do
       v := Bal_tree.add   {stamp = i ; name = "name"; flags = -1 } !v 
@@ -143,7 +138,7 @@ let bench () =
       ignore @@ Bal_tree.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done;
   end;
-  time "poly set (specialized)" begin fun _ -> 
+  Ounit_tests_util.time "poly set (specialized)" begin fun _ -> 
     let v = ref Bal_set_common.empty in  
     for i = 0 to  times do
       v := add   {stamp = i ; name = "name"; flags = -1 } !v 

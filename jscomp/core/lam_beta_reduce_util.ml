@@ -40,15 +40,15 @@ type value =
   { mutable used : bool ; 
     lambda  : Lam.t
   }
-let param_hash : (Ident.t , value) Hashtbl.t = Hashtbl.create 20
+let param_hash :  _ Ident_hashtbl.t = Ident_hashtbl.create 20
 let simple_beta_reduce params body args = 
   let module E = struct exception Not_simple_apply end in
   let rec find_param v  opt = 
-    match Hashtbl.find param_hash v with 
-    | exp ->  
+    match Ident_hashtbl.find_opt param_hash v with 
+    | Some exp ->  
       if exp.used then raise E.Not_simple_apply
       else exp.used <- true; exp.lambda
-    | exception Not_found -> opt
+    | None -> opt
   in  
   let rec aux acc (us : Lam.t list) = 
     match us with 
@@ -72,25 +72,25 @@ let simple_beta_reduce params body args =
                 | _ -> false ) params args'
        ]}*)
     let () = 
-      List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
+      List.iter2 (fun p a -> Ident_hashtbl.add param_hash p {lambda = a; used = false }) params args  
     in 
     begin match aux [] args' with 
     | args -> 
       let result = 
-        Hashtbl.fold (fun _param {lambda; used} code -> 
+        Ident_hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
             else code) param_hash (Lam.prim ~primitive ~args loc) in 
-      Hashtbl.clear param_hash;
+      Ident_hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
-      Hashtbl.clear param_hash ;
+      Ident_hashtbl.clear param_hash ;
       None
     end
   | Lapply { fn = Lvar fn_name as f ; args =  args';  loc; status}
     ->  
     let () = 
-      List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
+      List.iter2 (fun p a -> Ident_hashtbl.add param_hash p {lambda = a; used = false }) params args  
     in 
     (*since we adde each param only once, 
       iff it is removed once, no exception, 
@@ -101,16 +101,16 @@ let simple_beta_reduce params body args =
       | us -> 
         let f = find_param fn_name  f in
         let result = 
-          Hashtbl.fold 
+          Ident_hashtbl.fold 
             (fun _param {lambda; used} code -> 
                if not used then 
                  Lam.seq lambda code
                else code )
             param_hash (Lam.apply  f us  loc status) in
-        Hashtbl.clear param_hash;
+        Ident_hashtbl.clear param_hash;
         Some result 
       | exception _ -> 
-        Hashtbl.clear param_hash; 
+        Ident_hashtbl.clear param_hash; 
         None
     end
   | _ -> None

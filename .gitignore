@@ -82,3 +82,4 @@ lib/js/jscomp/test
 
 *.goog.js
 *.jsoo.js
+*.so

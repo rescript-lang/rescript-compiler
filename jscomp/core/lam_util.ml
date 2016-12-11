@@ -214,11 +214,11 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
     match v_kind with 
     | NA ->
       begin 
-        match Hashtbl.find meta.ident_tbl v  with 
+        match Ident_hashtbl.find meta.ident_tbl v  with 
         | exception Not_found -> ()
-        | ident_info -> Hashtbl.add meta.ident_tbl k ident_info
+        | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
       end
-    | ident_info -> Hashtbl.add meta.ident_tbl k ident_info
+    | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
   end ;
   (* share -- it is safe to share most properties,
       for arity, we might be careful, only [Alias] can share,
@@ -236,7 +236,7 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
     | Alias -> 
       if not @@ Ident_set.mem k meta.export_idents 
       then
-        Hashtbl.add meta.alias_tbl k v 
+        Ident_hashtbl.add meta.alias_tbl k v 
     (** For [export_idents], we don't want to do such simplification
         if we do substitution, then it will affect exports...
     *)
@@ -279,7 +279,7 @@ let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind =
   |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
 
 let get lam v i tbl : Lam.t =
-  match (Hashtbl.find tbl v  : Lam_stats.kind) with 
+  match (Ident_hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
       ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none

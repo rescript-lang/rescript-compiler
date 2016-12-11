@@ -6,6 +6,7 @@ ifndef EXE
 endif
 .SECONDARY:
 NATIVE=ocamlopt.opt$(EXE)
+BYTE=ocamlc.opt$(EXE)
 OCAMLLEX=ocamllex.opt$(EXE)
 CAMLP4OF=camlp4of
 CAMLDEP=ocamldep.opt$(EXE)
@@ -16,7 +17,7 @@ COMPFLAGS= -g -w -40-30 -warn-error +a-40-30
 
 print-%  : ; @echo $* = $($*)
 
-INCLUDES= -I +compiler-libs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests
+INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests
 
 .mli.cmi:
 	$(NATIVE) $(INCLUDES) $(COMPFLAGS) -c $<
@@ -26,6 +27,23 @@ INCLUDES= -I +compiler-libs -I ext -I common -I syntax -I depends -I core -I bsb
 
 .mll.ml:
 	$(OCAMLLEX) $< -o $@ || (rm $@ && exit 2)
+
+
+## Stubs 
+.c.o:
+	$(NATIVE) -c $< -o $@
+
+STUBS_OBJS=stubs/ext_basic_hash_stubs.o
+
+dllbs_hash.so libbs_hash.a: $(STUBS_OBJS)
+	ocamlmklib $(STUBS_OBJS) -o bs_hash
+
+bs_hash.cmxa:stubs/bs_hash_stubs.ml libbs_hash.a
+	$(NATIVE) -a $< -o $@ -cclib libbs_hash.a
+
+bs_hash.cma:stubs/bs_hash_stubs.ml dllbs_hash.so
+	$(BYTE) -a $< -o $@ -dllib dllbs_hash.so
+
 ## native plugin was not installed in opam..
 
 ## Beging Rules only make sense in dev mode
@@ -48,17 +66,30 @@ common/bs_version.ml: build_version.js ../package.json
 ### list files
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
-EXT_SRCS = ext_array ext_bytes ext_char resize_array string_vec int_vec int_vec_vec bal_set_common\
+EXT_SRCS = ext_util\
+	ext_int\
+	ext_array ext_bytes ext_char resize_array string_vec\
+	int_vec int_vec_vec bal_set_common\
 	bal_tree  bal_map_common bal_map\
-	ext_file_pp ext_format ext_hashtbl ext_list ext_map \
+	ext_file_pp ext_format \
+	hashtbl_gen \
+	ext_hashtbl \
+	ext_string \
+	string_hashtbl\
+	ext_list ext_map \
 	ext_marshal ext_option \
-	ext_pervasives ext_pp ext_ref ext_string ext_sys \
-	hash_set ordered_hash_set ordered_hash_map union_find \
+	ext_pervasives ext_pp ext_ref  ext_sys \
+	hash_set_gen hash_set string_hash_set int_hash_set ordered_hash_set ordered_hash_map union_find \
 	ident_set int_map literals string_map \
-	string_set ext_scc ext_pp_scope ext_io ext_ident ext_filename
+	string_set ext_scc ext_pp_scope\
+	ext_io\
+	ext_ident\
+	ident_hashtbl\
+	int_hashtbl\
+	ext_filename
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
 COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname  binary_cache
@@ -117,7 +148,7 @@ bin/bsb.exe: ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
 # bin/bsc:  ext.cmxa common.cmxa  depends.cmxa syntax.cmxa core.cmxa
 # 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-bin/bsc.exe: ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/js_main.cmx
+bin/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa core/js_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 bin/jscmj.exe:ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa  jscmj_main.cmx
@@ -185,7 +216,7 @@ bin/bsppx.ml:./bin/bspack.exe
 
 
 bin/whole_compiler.ml:./bin/bspack.exe
-	$< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
+	$< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
 
 bin/bsdep.ml:./bin/bspack.exe
 	BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core  -bs-main Ocamldep -o $@
@@ -212,18 +243,22 @@ bin/js_compiler.ml:./bin/bspack.exe
 	BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
 
 bin/all_ounit_tests.ml:./bin/bspack.exe
-	$< -bs-MD   -I ounit -I ounit_tests  -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
+	$< -bs-MD   -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
 -include bin/all_ounit_tests.d
 
-bin/all_ounit_tests.exe:bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	ocamlopt.opt -g -I bin -w -a unix.cmxa $^ -o $@
+bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
+	$(NATIVE) -g -I bin -w -a unix.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
 	$^
+
+# bin/all_ounit_tests.i.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
+# 	$(NATIVE) -ppx /Users/hzhang295/.opam/4.02.3+local-git-master/lib/bisect_ppx/bisect_ppx -g -I bin -w -a unix.cmxa $^ -o $@
+
 .PHONY:ounit_test
 # TODO: Fix Me use its own configuration
 bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
-	ocamlc.opt -w -a -I bin bin/config_whole_compiler.mli bin/config_whole_compiler.ml $^ -no-check-prims -o $@
+	$(BYTE) -w -a -I bin bin/config_whole_compiler.mli bin/config_whole_compiler.ml $^ -no-check-prims -o $@
 
 
 
