@@ -306,6 +306,8 @@ bin/whole_compiler.ml : core/lam_pass_alpha_conversion.ml
 bin/whole_compiler.ml : core/lam_pass_alpha_conversion.mli
 bin/whole_compiler.ml : core/lam_pass_collect.ml
 bin/whole_compiler.ml : core/lam_pass_collect.mli
+bin/whole_compiler.ml : ext/ext_int.ml
+bin/whole_compiler.ml : ext/ext_int.mli
 bin/whole_compiler.ml : ext/int_hashtbl.ml
 bin/whole_compiler.ml : ext/int_hashtbl.mli
 bin/whole_compiler.ml : core/lam_pass_exits.ml

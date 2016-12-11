@@ -46,7 +46,8 @@ ext/ordered_hash_map.cmx : ext/ext_util.cmx ext/ordered_hash_map.cmi
 ext/ordered_hash_set.cmx : ext/ext_util.cmx ext/ordered_hash_set.cmi
 ext/resize_array.cmx : ext/ext_array.cmx ext/resize_array.cmi
 ext/string_hash_set.cmx : ext/hash_set_gen.cmx ext/string_hash_set.cmi
-ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/string_hashtbl.cmi
+ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
+    ext/string_hashtbl.cmi
 ext/string_map.cmx : ext/bal_map_common.cmx ext/string_map.cmi
 ext/string_set.cmx : ext/bal_set_common.cmx ext/string_set.cmi
 ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
@@ -76,7 +77,7 @@ ext/ext_string.cmi :
 ext/ext_sys.cmi :
 ext/ext_util.cmi :
 ext/hash_set.cmi :
-ext/ident_hashtbl.cmi :
+ext/ident_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/ident_set.cmi : ext/ext_format.cmi
 ext/int_hash_set.cmi : ext/hash_set.cmi
 ext/int_hashtbl.cmi : ext/hashtbl_gen.cmx

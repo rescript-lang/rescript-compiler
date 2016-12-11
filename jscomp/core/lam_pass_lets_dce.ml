@@ -141,8 +141,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
   let used v = (count_var v ).times > 0 in
   let rec simplif (lam : Lam.t) = 
     match lam with 
-    | Lvar v  ->
-      begin try Ident_hashtbl.find subst v with Not_found -> lam end
+    | Lvar v  -> Ident_hashtbl.find_default subst v lam 
     | Llet( (Strict | Alias | StrictOpt) , v, Lvar w, l2) 
       ->
       Ident_hashtbl.add subst v (simplif (Lam.var w));
@@ -279,7 +278,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
 let apply_lets  occ lambda = 
   let count_var v =
     try
-      Ident_hashtbl.find occ v
+      Ident_hashtbl.find occ v 
     with Not_found -> dummy_info () in
   lets_helper count_var lambda      
 

@@ -59,9 +59,9 @@ let count_collects () =
     val mutable name : string = ""
 
     method add_use id = 
-      match Ident_hashtbl.find stats id with
-      | exception Not_found -> Ident_hashtbl.add stats id (ref 1)
-      | v -> incr v 
+      match Ident_hashtbl.find_opt stats id with
+      | None -> Ident_hashtbl.add stats id (ref 1)
+      | Some v -> incr v 
     method! program x = 
       export_set <- x.export_set ; 
       name <- x.name;
@@ -87,11 +87,11 @@ let count_collects () =
               | None -> false  (* can not happen *)
               | Some x -> Js_analyzer.no_side_effect_expression x  
             in
-            match Ident_hashtbl.find stats ident with 
-              | exception Not_found -> 
+            match Ident_hashtbl.find_opt stats ident with 
+              | None -> 
                 Js_op_util.update_used_stats v.ident_info 
                   (if pure then Dead_pure else Dead_non_pure)
-              | num -> 
+              | Some num -> 
                 if !num = 1 then 
                   Js_op_util.update_used_stats v.ident_info 
                     (if pure then Once_pure else Used) 
@@ -177,13 +177,14 @@ let subst name export_set stats  =
           self#statement st :: self#block rest 
         else 
           begin 
-            match (Ident_hashtbl.find stats vd.ident : J.variable_declaration) with
-            | exception Not_found -> 
+            match Ident_hashtbl.find_opt stats vd.ident with 
+            (* TODO: could be improved as [mem] *)
+            | None -> 
               if Js_analyzer.no_side_effect_expression v 
               then S.exp v  :: self#block rest 
               else self#block rest 
 
-            | _ -> self#statement st  :: self#block rest 
+            | Some _ -> self#statement st  :: self#block rest 
           end
 
       | {statement_desc = 
@@ -193,11 +194,9 @@ let subst name export_set stats  =
         as st 
            :: rest 
         -> 
-        begin match Ident_hashtbl.find stats id with 
-          | exception Not_found 
-            ->  self#statement st :: self#block rest 
+        begin match Ident_hashtbl.find_opt stats id with 
 
-          | { value = 
+          | Some ({ value = 
                 Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
               (*TODO: don't inline method tail call yet, 
                 [this] semantics are weird 
@@ -205,7 +204,7 @@ let subst name export_set stats  =
               property = (Alias | StrictOpt | Strict);
               ident_info = {used_stats = Once_pure };
               ident = _
-            } as v
+            } as v)
             when Ext_list.same_length params args 
             -> 
             (* Ext_log.dwarn  __LOC__ "%s is dead \n %s " id.name  *)
@@ -220,8 +219,7 @@ let subst name export_set stats  =
                here we inline the function
             *)
             block @ self#block rest
-
-          | _ ->
+          | (None | Some _) ->
             self#statement st :: self#block rest
         end
       | x :: xs 

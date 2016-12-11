@@ -17,7 +17,9 @@
 
 module type S = sig 
   include Hashtbl.S
-  val of_list2 : key list -> 'a list -> 'a t 
+  val of_list2 : key list -> 'a list -> 'a t
+  val find_opt : 'a t -> key  -> 'a option
+  val find_default : 'a t -> key -> 'a -> 'a 
 end
 
 (* We do dynamic hashing, and resize the table and rehash the elements
@@ -135,3 +137,34 @@ let rec small_bucket_mem eq key (lst : _ bucketlist) =
       | Cons(k3,_,rest3) -> 
         eq key k3  ||
         small_bucket_mem eq key rest3 
+
+
+let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then Some d1 else 
+    match rest1 with
+    | Empty -> None 
+    | Cons(k2,d2,rest2) -> 
+      if eq key k2 then Some d2 else 
+      match rest2 with 
+      | Empty -> None 
+      | Cons(k3,d3,rest3) -> 
+        if eq key k3  then Some d3 else 
+        small_bucket_opt eq key rest3 
+
+let rec small_bucket_default eq key default (lst : _ bucketlist) =
+  match lst with 
+  | Empty -> default 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then  d1 else 
+    match rest1 with
+    | Empty -> default 
+    | Cons(k2,d2,rest2) -> 
+      if eq key k2 then  d2 else 
+      match rest2 with 
+      | Empty -> default 
+      | Cons(k3,d3,rest3) -> 
+        if eq key k3  then  d3 else 
+        small_bucket_default eq key default rest3 

@@ -64,3 +64,4 @@ val nil : Ident.t
 
 
 val compare : Ident.t -> Ident.t -> int
+val equal : Ident.t -> Ident.t -> bool 

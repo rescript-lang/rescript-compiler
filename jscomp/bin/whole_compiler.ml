@@ -57045,7 +57045,9 @@ module Hashtbl_gen
 
 module type S = sig 
   include Hashtbl.S
-  val of_list2 : key list -> 'a list -> 'a t 
+  val of_list2 : key list -> 'a list -> 'a t
+  val find_opt : 'a t -> key  -> 'a option
+  val find_default : 'a t -> key -> 'a -> 'a 
 end
 
 (* We do dynamic hashing, and resize the table and rehash the elements
@@ -57164,6 +57166,37 @@ let rec small_bucket_mem eq key (lst : _ bucketlist) =
         eq key k3  ||
         small_bucket_mem eq key rest3 
 
+
+let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then Some d1 else 
+    match rest1 with
+    | Empty -> None 
+    | Cons(k2,d2,rest2) -> 
+      if eq key k2 then Some d2 else 
+      match rest2 with 
+      | Empty -> None 
+      | Cons(k3,d3,rest3) -> 
+        if eq key k3  then Some d3 else 
+        small_bucket_opt eq key rest3 
+
+let rec small_bucket_default eq key default (lst : _ bucketlist) =
+  match lst with 
+  | Empty -> default 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then  d1 else 
+    match rest1 with
+    | Empty -> default 
+    | Cons(k2,d2,rest2) -> 
+      if eq key k2 then  d2 else 
+      match rest2 with 
+      | Empty -> default 
+      | Cons(k3,d3,rest3) -> 
+        if eq key k3  then  d3 else 
+        small_bucket_default eq key default rest3 
+
 end
 module String_hashtbl : sig 
 #1 "string_hashtbl.mli"
@@ -57217,6 +57250,7 @@ let key_index (h : _ t ) (key : key) =
 
 let compare_key (x : key) (y : key) = String.compare x y
 
+let eq_key = Ext_string.equal 
 let add (h : _ t) key info =
   let i = key_index h key in
   let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
@@ -57255,6 +57289,10 @@ let find (h : _ t) key =
           | Cons(k3, d3, rest3) ->
               if compare_key key k3 = 0 then d3 else find_rec key rest3
 
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
   | Empty ->
@@ -57365,6 +57403,7 @@ val nil : Ident.t
 
 
 val compare : Ident.t -> Ident.t -> int
+val equal : Ident.t -> Ident.t -> bool 
 
 end = struct
 #1 "ext_ident.ml"
@@ -57643,6 +57682,11 @@ let compare (x : Ident.t ) ( y : Ident.t) =
       x.flags - y.flags 
     else  u 
   else u 
+
+let equal ( x : Ident.t) ( y : Ident.t) = 
+   (x.stamp : int) = y.stamp &&
+   Ext_string.equal x.name y.name &&
+   (x.flags : int) = y.flags 
 
 end
 module Ident_map : sig 
@@ -66899,10 +66943,9 @@ module Ident_hashtbl : sig
 #1 "ident_hashtbl.mli"
 
 
-include Hashtbl.S with type key = Ident.t 
+include Hashtbl_gen.S with type key = Ident.t 
 
 
-val of_list2 : key list -> 'a list ->  'a t
 
 end = struct
 #1 "ident_hashtbl.ml"
@@ -66925,6 +66968,8 @@ let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1)
 
 let compare_key = Ext_ident.compare
+let eq_key = Ext_ident.equal
+
 let add (h : _ t) key info =
   let i = key_index h key in
   let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
@@ -66972,6 +67017,12 @@ let find_all (h : _ t) key =
       then d :: find_in_bucket rest
       else find_in_bucket rest in
   find_in_bucket h.data.(key_index h key)
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 
 let replace h key info =
   let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
@@ -73700,13 +73751,13 @@ let mark_dead = object (self)
   val mutable export_set : Ident_set.t = Ident_set.empty    
 
   method mark_not_dead ident =
-    match Ident_hashtbl.find ident_use_stats ident with
-    | exception Not_found -> (* First time *)
+    match Ident_hashtbl.find_opt ident_use_stats ident with
+    | None -> (* First time *)
         Ident_hashtbl.add ident_use_stats ident `Recursive 
         (* recursive identifiers *)
-    | `Recursive
+    | Some `Recursive
       -> ()
-    | `Info x ->  Js_op_util.update_used_stats x Used 
+    | Some (`Info x) ->  Js_op_util.update_used_stats x Used 
 
   method scan b ident (ident_info : J.ident_info) = 
     let is_export = Ident_set.mem ident export_set in
@@ -73714,18 +73765,18 @@ let mark_dead = object (self)
       if is_export (* && false *) then 
         Js_op_util.update_used_stats ident_info Exported 
     in
-    match Ident_hashtbl.find ident_use_stats ident with
-    | `Recursive -> 
+    match Ident_hashtbl.find_opt ident_use_stats ident with
+    | Some (`Recursive) -> 
         Js_op_util.update_used_stats ident_info Used; 
         Ident_hashtbl.replace ident_use_stats ident (`Info ident_info)
-    | `Info _ ->  
+    | Some (`Info _) ->  
         (** check [camlinternlFormat,box_type] inlined twice 
             FIXME: seems we have redeclared identifiers
          *)
       if Js_config.get_diagnose () then 
         Ext_log.warn __LOC__ "@[%s$%d in %s@]" ident.name ident.stamp name
         (* assert false *)
-    | exception Not_found ->  (* First time *)
+    | None ->  (* First time *)
         Ident_hashtbl.add ident_use_stats ident (`Info ident_info);
         Js_op_util.update_used_stats ident_info 
           (if b then Scanning_pure else Scanning_non_pure)
@@ -73863,8 +73914,8 @@ let subst_map name = object (self)
     match x.expression_desc with 
     | Access ({expression_desc = Var (Id (id))}, 
               {expression_desc = Number (Int {i; _})}) -> 
-      begin match Ident_hashtbl.find self#get_substitution id with 
-        | {expression_desc = Caml_block (ls, Immutable, _, _) } 
+      begin match Ident_hashtbl.find_opt self#get_substitution id with 
+        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
           -> 
           (* user program can be wrong, we should not 
              turn a runtime crash into compile time crash : )
@@ -73917,8 +73968,7 @@ let subst_map name = object (self)
               *)
               super#expression x 
           end
-        | _ -> super#expression x 
-        | exception Not_found -> super#expression x 
+        | (Some _ | None) -> super#expression x 
       end
     | _ -> super#expression x
 end 
@@ -74412,9 +74462,9 @@ let count_collects () =
     val mutable name : string = ""
 
     method add_use id = 
-      match Ident_hashtbl.find stats id with
-      | exception Not_found -> Ident_hashtbl.add stats id (ref 1)
-      | v -> incr v 
+      match Ident_hashtbl.find_opt stats id with
+      | None -> Ident_hashtbl.add stats id (ref 1)
+      | Some v -> incr v 
     method! program x = 
       export_set <- x.export_set ; 
       name <- x.name;
@@ -74440,11 +74490,11 @@ let count_collects () =
               | None -> false  (* can not happen *)
               | Some x -> Js_analyzer.no_side_effect_expression x  
             in
-            match Ident_hashtbl.find stats ident with 
-              | exception Not_found -> 
+            match Ident_hashtbl.find_opt stats ident with 
+              | None -> 
                 Js_op_util.update_used_stats v.ident_info 
                   (if pure then Dead_pure else Dead_non_pure)
-              | num -> 
+              | Some num -> 
                 if !num = 1 then 
                   Js_op_util.update_used_stats v.ident_info 
                     (if pure then Once_pure else Used) 
@@ -74530,13 +74580,14 @@ let subst name export_set stats  =
           self#statement st :: self#block rest 
         else 
           begin 
-            match (Ident_hashtbl.find stats vd.ident : J.variable_declaration) with
-            | exception Not_found -> 
+            match Ident_hashtbl.find_opt stats vd.ident with 
+            (* TODO: could be improved as [mem] *)
+            | None -> 
               if Js_analyzer.no_side_effect_expression v 
               then S.exp v  :: self#block rest 
               else self#block rest 
 
-            | _ -> self#statement st  :: self#block rest 
+            | Some _ -> self#statement st  :: self#block rest 
           end
 
       | {statement_desc = 
@@ -74546,11 +74597,9 @@ let subst name export_set stats  =
         as st 
            :: rest 
         -> 
-        begin match Ident_hashtbl.find stats id with 
-          | exception Not_found 
-            ->  self#statement st :: self#block rest 
+        begin match Ident_hashtbl.find_opt stats id with 
 
-          | { value = 
+          | Some ({ value = 
                 Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
               (*TODO: don't inline method tail call yet, 
                 [this] semantics are weird 
@@ -74558,7 +74607,7 @@ let subst name export_set stats  =
               property = (Alias | StrictOpt | Strict);
               ident_info = {used_stats = Once_pure };
               ident = _
-            } as v
+            } as v)
             when Ext_list.same_length params args 
             -> 
             (* Ext_log.dwarn  __LOC__ "%s is dead \n %s " id.name  *)
@@ -74573,8 +74622,7 @@ let subst name export_set stats  =
                here we inline the function
             *)
             block @ self#block rest
-
-          | _ ->
+          | (None | Some _) ->
             self#statement st :: self#block rest
         end
       | x :: xs 
@@ -75236,11 +75284,11 @@ let param_hash :  _ Ident_hashtbl.t = Ident_hashtbl.create 20
 let simple_beta_reduce params body args = 
   let module E = struct exception Not_simple_apply end in
   let rec find_param v  opt = 
-    match Ident_hashtbl.find param_hash v with 
-    | exp ->  
+    match Ident_hashtbl.find_opt param_hash v with 
+    | Some exp ->  
       if exp.used then raise E.Not_simple_apply
       else exp.used <- true; exp.lambda
-    | exception Not_found -> opt
+    | None -> opt
   in  
   let rec aux acc (us : Lam.t list) = 
     match us with 
@@ -75832,9 +75880,9 @@ let propogate_beta_reduce
          match arg with 
          | Lvar v -> 
            begin 
-             match Ident_hashtbl.find meta.ident_tbl v with 
-             | exception Not_found -> ()
-             | ident_info -> 
+             match Ident_hashtbl.find_opt meta.ident_tbl v with 
+             | None -> ()
+             | Some ident_info -> 
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
@@ -75892,9 +75940,9 @@ let propogate_beta_reduce_with_map
          match arg with 
          | Lvar v -> 
            begin 
-             match Ident_hashtbl.find meta.ident_tbl v with 
-             | exception Not_found -> ()
-             | ident_info -> 
+             match Ident_hashtbl.find_opt meta.ident_tbl v with 
+             | None -> ()
+             | Some ident_info -> 
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
@@ -83859,10 +83907,10 @@ let transitive_closure
     else 
       begin 
         Hash_set.add visited id;
-        match Ident_hashtbl.find ident_freevars id with 
-        | exception Not_found -> 
+        match Ident_hashtbl.find_opt ident_freevars id with 
+        | None -> 
           Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
-        | e -> Ident_set.iter (fun id -> dfs id) e
+        | Some e -> Ident_set.iter (fun id -> dfs id) e
       end  in 
   List.iter dfs initial_idents;
   visited
@@ -84501,10 +84549,10 @@ let annotate (meta : Lam_stats.meta)
     rec_flag    
     (k:Ident.t) (v : Lam.function_arities) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
-  match Ident_hashtbl.find  meta.ident_tbl k  with 
-  | exception Not_found -> 
+  match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
+  | None -> 
       Ident_hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
-  |  Function old  ->  
+  |  Some (Function old)  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
           how about guarantee that [Lassign] only check the local ref 
@@ -84670,6 +84718,71 @@ let count_alias_globals
   meta
 
 end
+module Ext_int : sig 
+#1 "ext_int.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = int
+val compare : t -> t -> int 
+val equal : t -> t -> bool 
+
+end = struct
+#1 "ext_int.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = int
+
+let compare (x : t) (y : t) = Pervasives.compare x y 
+
+let equal (x : t) (y : t) = x = y
+
+end
 module Int_hashtbl : sig 
 #1 "int_hashtbl.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -84722,6 +84835,7 @@ let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
 
 let compare_key (x : key) (y : key) = Pervasives.compare x y
+let eq_key = Ext_int.equal 
 
 let add (h : _ t) key info =
   let i = key_index h key in
@@ -84741,20 +84855,6 @@ let remove (h : _ t ) key =
   let i = key_index h key in
   h.data.(i) <- remove_bucket h.data.(i)
 
-let rec small_bucket_mem eq key (lst : _ bucketlist) =
-  match lst with 
-  | Empty -> false 
-  | Cons(k1,_,rest1) -> 
-    eq  key k1 ||
-    match rest1 with
-    | Empty -> false 
-    | Cons(k2,_,rest2) -> 
-      eq key k2  || 
-      match rest2 with 
-      | Empty -> false 
-      | Cons(k3,_,rest3) -> 
-        eq key k3  ||
-        small_bucket_mem eq key rest3 
 
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
@@ -84776,6 +84876,11 @@ let find (h : _ t) key =
           | Cons(k3, d3, rest3) ->
               if compare_key key k3 = 0 then d3 else find_rec key rest3
 
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
   | Empty ->
@@ -84804,12 +84909,7 @@ let replace h key info =
     if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
 let mem (h : _ t) key =
-  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-  | Empty ->
-      false
-  | Cons(k, d, rest) ->
-      compare_key k key = 0 || mem_in_bucket rest in
-  mem_in_bucket h.data.(key_index h key)
+  Hashtbl_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key))
 
 
 let of_list2 ks vs = 
@@ -85340,8 +85440,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
   let used v = (count_var v ).times > 0 in
   let rec simplif (lam : Lam.t) = 
     match lam with 
-    | Lvar v  ->
-      begin try Ident_hashtbl.find subst v with Not_found -> lam end
+    | Lvar v  -> Ident_hashtbl.find_default subst v lam 
     | Llet( (Strict | Alias | StrictOpt) , v, Lvar w, l2) 
       ->
       Ident_hashtbl.add subst v (simplif (Lam.var w));
@@ -85478,7 +85577,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
 let apply_lets  occ lambda = 
   let count_var v =
     try
-      Ident_hashtbl.find occ v
+      Ident_hashtbl.find occ v 
     with Not_found -> dummy_info () in
   lets_helper count_var lambda      
 

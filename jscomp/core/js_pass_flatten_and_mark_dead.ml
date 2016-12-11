@@ -75,13 +75,13 @@ let mark_dead = object (self)
   val mutable export_set : Ident_set.t = Ident_set.empty    
 
   method mark_not_dead ident =
-    match Ident_hashtbl.find ident_use_stats ident with
-    | exception Not_found -> (* First time *)
+    match Ident_hashtbl.find_opt ident_use_stats ident with
+    | None -> (* First time *)
         Ident_hashtbl.add ident_use_stats ident `Recursive 
         (* recursive identifiers *)
-    | `Recursive
+    | Some `Recursive
       -> ()
-    | `Info x ->  Js_op_util.update_used_stats x Used 
+    | Some (`Info x) ->  Js_op_util.update_used_stats x Used 
 
   method scan b ident (ident_info : J.ident_info) = 
     let is_export = Ident_set.mem ident export_set in
@@ -89,18 +89,18 @@ let mark_dead = object (self)
       if is_export (* && false *) then 
         Js_op_util.update_used_stats ident_info Exported 
     in
-    match Ident_hashtbl.find ident_use_stats ident with
-    | `Recursive -> 
+    match Ident_hashtbl.find_opt ident_use_stats ident with
+    | Some (`Recursive) -> 
         Js_op_util.update_used_stats ident_info Used; 
         Ident_hashtbl.replace ident_use_stats ident (`Info ident_info)
-    | `Info _ ->  
+    | Some (`Info _) ->  
         (** check [camlinternlFormat,box_type] inlined twice 
             FIXME: seems we have redeclared identifiers
          *)
       if Js_config.get_diagnose () then 
         Ext_log.warn __LOC__ "@[%s$%d in %s@]" ident.name ident.stamp name
         (* assert false *)
-    | exception Not_found ->  (* First time *)
+    | None ->  (* First time *)
         Ident_hashtbl.add ident_use_stats ident (`Info ident_info);
         Js_op_util.update_used_stats ident_info 
           (if b then Scanning_pure else Scanning_non_pure)
@@ -238,8 +238,8 @@ let subst_map name = object (self)
     match x.expression_desc with 
     | Access ({expression_desc = Var (Id (id))}, 
               {expression_desc = Number (Int {i; _})}) -> 
-      begin match Ident_hashtbl.find self#get_substitution id with 
-        | {expression_desc = Caml_block (ls, Immutable, _, _) } 
+      begin match Ident_hashtbl.find_opt self#get_substitution id with 
+        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
           -> 
           (* user program can be wrong, we should not 
              turn a runtime crash into compile time crash : )
@@ -292,8 +292,7 @@ let subst_map name = object (self)
               *)
               super#expression x 
           end
-        | _ -> super#expression x 
-        | exception Not_found -> super#expression x 
+        | (Some _ | None) -> super#expression x 
       end
     | _ -> super#expression x
 end 

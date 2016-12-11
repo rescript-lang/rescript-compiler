@@ -77,10 +77,11 @@ EXT_SRCS = ext_util\
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_hashtbl \
+	ext_string \
 	string_hashtbl\
 	ext_list ext_map \
 	ext_marshal ext_option \
-	ext_pervasives ext_pp ext_ref ext_string ext_sys \
+	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set string_hash_set int_hash_set ordered_hash_set ordered_hash_map union_find \
 	ident_set int_map literals string_map \
 	string_set ext_scc ext_pp_scope\

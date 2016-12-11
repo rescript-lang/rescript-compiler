@@ -16,6 +16,7 @@ let key_index (h : _ t ) (key : key) =
 
 let compare_key (x : key) (y : key) = String.compare x y
 
+let eq_key = Ext_string.equal 
 let add (h : _ t) key info =
   let i = key_index h key in
   let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
@@ -54,6 +55,10 @@ let find (h : _ t) key =
           | Cons(k3, d3, rest3) ->
               if compare_key key k3 = 0 then d3 else find_rec key rest3
 
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
   | Empty ->

@@ -34,10 +34,10 @@ let annotate (meta : Lam_stats.meta)
     rec_flag    
     (k:Ident.t) (v : Lam.function_arities) lambda = 
   (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
-  match Ident_hashtbl.find  meta.ident_tbl k  with 
-  | exception Not_found -> 
+  match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
+  | None -> 
       Ident_hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
-  |  Function old  ->  
+  |  Some (Function old)  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
           how about guarantee that [Lassign] only check the local ref 

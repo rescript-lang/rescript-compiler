@@ -225,9 +225,9 @@ let propogate_beta_reduce
          match arg with 
          | Lvar v -> 
            begin 
-             match Ident_hashtbl.find meta.ident_tbl v with 
-             | exception Not_found -> ()
-             | ident_info -> 
+             match Ident_hashtbl.find_opt meta.ident_tbl v with 
+             | None -> ()
+             | Some ident_info -> 
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
@@ -285,9 +285,9 @@ let propogate_beta_reduce_with_map
          match arg with 
          | Lvar v -> 
            begin 
-             match Ident_hashtbl.find meta.ident_tbl v with 
-             | exception Not_found -> ()
-             | ident_info -> 
+             match Ident_hashtbl.find_opt meta.ident_tbl v with 
+             | None -> ()
+             | Some ident_info -> 
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 

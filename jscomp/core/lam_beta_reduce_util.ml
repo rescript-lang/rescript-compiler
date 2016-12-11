@@ -44,11 +44,11 @@ let param_hash :  _ Ident_hashtbl.t = Ident_hashtbl.create 20
 let simple_beta_reduce params body args = 
   let module E = struct exception Not_simple_apply end in
   let rec find_param v  opt = 
-    match Ident_hashtbl.find param_hash v with 
-    | exp ->  
+    match Ident_hashtbl.find_opt param_hash v with 
+    | Some exp ->  
       if exp.used then raise E.Not_simple_apply
       else exp.used <- true; exp.lambda
-    | exception Not_found -> opt
+    | None -> opt
   in  
   let rec aux acc (us : Lam.t list) = 
     match us with 

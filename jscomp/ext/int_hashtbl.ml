@@ -15,6 +15,7 @@ let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
 
 let compare_key (x : key) (y : key) = Pervasives.compare x y
+let eq_key = Ext_int.equal 
 
 let add (h : _ t) key info =
   let i = key_index h key in
@@ -55,6 +56,11 @@ let find (h : _ t) key =
           | Cons(k3, d3, rest3) ->
               if compare_key key k3 = 0 then d3 else find_rec key rest3
 
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
   | Empty ->
@@ -83,13 +89,7 @@ let replace h key info =
     if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
 let mem (h : _ t) key =
-  Hashtbl_gen.small_bucket_mem Ext_int.equal key (Array.unsafe_get h.data (key_index h key))
-  (* let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with  *)
-  (* | Empty -> *)
-  (*     false *)
-  (* | Cons(k, d, rest) -> *)
-  (*     compare_key k key = 0 || mem_in_bucket rest in *)
-  (* mem_in_bucket h.data.(key_index h key) *)
+  Hashtbl_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key))
 
 
 let of_list2 ks vs = 

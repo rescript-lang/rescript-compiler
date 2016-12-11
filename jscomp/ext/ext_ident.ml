@@ -273,3 +273,8 @@ let compare (x : Ident.t ) ( y : Ident.t) =
       x.flags - y.flags 
     else  u 
   else u 
+
+let equal ( x : Ident.t) ( y : Ident.t) = 
+   (x.stamp : int) = y.stamp &&
+   Ext_string.equal x.name y.name &&
+   (x.flags : int) = y.flags 

@@ -17,6 +17,8 @@ let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1)
 
 let compare_key = Ext_ident.compare
+let eq_key = Ext_ident.equal
+
 let add (h : _ t) key info =
   let i = key_index h key in
   let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
@@ -64,6 +66,12 @@ let find_all (h : _ t) key =
       then d :: find_in_bucket rest
       else find_in_bucket rest in
   find_in_bucket h.data.(key_index h key)
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 
 let replace h key info =
   let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
