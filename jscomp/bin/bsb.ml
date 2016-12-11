@@ -6114,8 +6114,8 @@ val get_bs_external_includes : unit -> string list
 val set_bsc_flags : Bsb_json.t array -> unit
 val get_bsc_flags : unit -> string list
 
-val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit
-val get_ppx_flags : unit -> string list
+val set_ppx_flags : Bsb_json.t array -> unit
+val get_ppx_flags : ?resolved_absolute:bool -> cwd:string -> unit -> string list
 
 val set_package_name : string -> unit
 val get_package_name : unit -> string option
@@ -6131,15 +6131,15 @@ val set_bs_dependencies : Bsb_json.t array  -> unit
 val get_js_post_build_cmd : unit -> string option
 val set_js_post_build_cmd : cwd:string -> string -> unit
 
-val get_ninja : unit -> string 
+val get_ninja : unit -> string
 val set_ninja : cwd:string -> string -> unit
 
 type package_specs = String_set.t
 val get_package_specs : unit -> package_specs
-val set_package_specs_from_array : Bsb_json.t array -> unit  
+val set_package_specs_from_array : Bsb_json.t array -> unit
 
-val get_generate_merlin : unit -> bool 
-val set_generate_merlin : bool -> unit 
+val get_generate_merlin : unit -> bool
+val set_generate_merlin : bool -> unit
 
 end = struct
 #1 "bsb_default.ml"
@@ -6176,10 +6176,10 @@ foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
 /foo/bar => /foo/bar
 ./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
 let resolve_bsb_magic_file ~cwd ~desc p =
-  let p_len = String.length p in 
-  let no_slash = Ext_filename.no_slash p 0 p_len in  
-  if no_slash then 
-    p 
+  let p_len = String.length p in
+  let no_slash = Ext_filename.no_slash p 0 p_len in
+  if no_slash then
+    p
   else if Filename.is_relative p &&
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
@@ -6219,7 +6219,7 @@ let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex ~cwd s = 
+let set_ocamllex ~cwd s =
   ocamllex := resolve_bsb_magic_file ~cwd ~desc:"ocamllex" s
 let get_ocamllex () = !ocamllex
 
@@ -6227,24 +6227,26 @@ let get_ocamllex () = !ocamllex
 
 let refmt = ref "refmt"
 let get_refmt () = !refmt
-let set_refmt ~cwd p = 
+let set_refmt ~cwd p =
   refmt := resolve_bsb_magic_file ~cwd ~desc:"refmt" p
 
 
 let ppx_flags = ref []
-let get_ppx_flags () = !ppx_flags
-let set_ppx_flags ~cwd s =
-  let s =
-    s (* TODO: unix conversion *)
-    |> get_list_string
-    |> List.map (fun p ->
-        if p = "" then failwith "invalid ppx, empty string found"
-        else resolve_bsb_magic_file ~cwd ~desc:"ppx" p
-      ) in
-  ppx_flags := s
+let get_ppx_flags ?(resolved_absolute=false) ~cwd () =
+  if resolved_absolute then
+    !ppx_flags |> List.map (fun p ->
+      if p = "" then failwith "invalid ppx, empty string found"
+      else cwd // p)
+  else
+    !ppx_flags |> List.map (fun p ->
+      if p = "" then failwith "invalid ppx, empty string found"
+      else resolve_bsb_magic_file ~cwd ~desc:"ppx" p)
+
+let set_ppx_flags s =
+  ppx_flags := get_list_string s (* TODO: unix conversion *)
 
 
-let js_post_build_cmd = ref None 
+let js_post_build_cmd = ref None
 let get_js_post_build_cmd () = !js_post_build_cmd
 let set_js_post_build_cmd ~cwd s =
   js_post_build_cmd := Some (resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
@@ -6257,7 +6259,7 @@ let get_ninja () = !ninja
    Second we need store it so that we can call ninja correctly
 *)
 let set_ninja ~cwd p  =
-  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p 
+  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p
 
 
 type package_specs = String_set.t
@@ -6266,24 +6268,24 @@ let package_specs = ref (String_set.singleton Literals.commonjs)
 
 let get_package_specs () = !package_specs
 
-let set_package_specs_from_array arr = 
-    let new_package_specs = 
-      arr 
+let set_package_specs_from_array arr =
+    let new_package_specs =
+      arr
       |> get_list_string
       |> List.fold_left (fun acc x ->
-          let v = 
+          let v =
             if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
-            else   
-              failwith ("Unkonwn package spec" ^ x) in 
+            else
+              failwith ("Unkonwn package spec" ^ x) in
           v
-        ) String_set.empty in 
+        ) String_set.empty in
    package_specs := new_package_specs
 
 let generate_merlin = ref false
 
-let get_generate_merlin () = !generate_merlin 
+let get_generate_merlin () = !generate_merlin
 
-let set_generate_merlin b = 
+let set_generate_merlin b =
   generate_merlin := b
 
 end
@@ -7256,33 +7258,33 @@ let merlin = ".merlin"
 let merlin_header = "\n####{BSB GENERATED: NO EDIT\n"
 let merlin_trailer = "\n####BSB GENERATED: NO EDIT}\n"
 let merlin_trailer_length = String.length merlin_trailer
-let revise_merlin new_content = 
-  if Sys.file_exists merlin then 
-    let merlin_chan = open_in_bin merlin in 
-    let size = in_channel_length merlin_chan in 
-    let s = really_input_string merlin_chan size in 
-    let () =  close_in merlin_chan in 
+let revise_merlin new_content =
+  if Sys.file_exists merlin then
+    let merlin_chan = open_in_bin merlin in
+    let size = in_channel_length merlin_chan in
+    let s = really_input_string merlin_chan size in
+    let () =  close_in merlin_chan in
 
     let header =  Ext_string.find s ~sub:merlin_header  in
-    let tail = Ext_string.find s ~sub:merlin_trailer in 
-    if header < 0  && tail < 0 then 
-      let ochan = open_out_bin merlin in 
-      output_string ochan s ; 
+    let tail = Ext_string.find s ~sub:merlin_trailer in
+    if header < 0  && tail < 0 then
+      let ochan = open_out_bin merlin in
+      output_string ochan s ;
       output_string ochan merlin_header;
       Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ; 
-      close_out ochan 
-    else if header >=0 && tail >= 0  then 
-      let ochan = open_out_bin merlin in 
-      output_string ochan (String.sub s 0 header) ; 
+      output_string ochan merlin_trailer ;
+      close_out ochan
+    else if header >=0 && tail >= 0  then
+      let ochan = open_out_bin merlin in
+      output_string ochan (String.sub s 0 header) ;
       output_string ochan merlin_header;
       Buffer.output_buffer ochan new_content;
-      output_string ochan merlin_trailer ; 
+      output_string ochan merlin_trailer ;
       output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
-      close_out ochan 
+      close_out ochan
     else assert false
-  else 
-    let ochan = open_out_bin merlin in 
+  else
+    let ochan = open_out_bin merlin in
     output_string ochan merlin_header ;
     Buffer.output_buffer ochan new_content;
     output_string ochan merlin_trailer ;
@@ -7292,26 +7294,34 @@ let revise_merlin new_content =
 let write_ninja_file cwd =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
   let bsc, bsdep, bsppx =
-    bsc_dir // "bsc.exe", 
+    bsc_dir // "bsc.exe",
     bsc_dir // "bsb_helper.exe",
-    bsc_dir // "bsppx.exe" in 
+    bsc_dir // "bsppx.exe" in
 
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
-  let handle_bsb_build_ui (res : Bsb_build_ui.t) = 
+  let handle_bsb_build_ui (res : Bsb_build_ui.t) =
     let ochan = open_out_bin (builddir // sourcedirs_meta) in
-    let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in 
-    let buffer = Buffer.create 100 in 
+    let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in
+    let buffer = Buffer.create 100 in
+    (* Note that the user's ppxes must be applied before bsppx. *)
     let () = Buffer.add_string buffer
-        (Printf.sprintf "S %s\n\
+        (Printf.sprintf "%s\n\
+                         S %s\n\
                          B %s\n\
-                         PPX %s\n
-                       " lib_ocaml_dir lib_ocaml_dir bsppx
-        ) in 
-    res.files |> List.iter 
-      (fun (x : Bsb_build_ui.file_group) -> 
+                         FLG -ppx %s\n
+                       "
+          (Bsb_default.(get_ppx_flags ~resolved_absolute:true ~cwd ())
+            |> List.map (fun p -> "FLG -ppx " ^ p)
+            |> String.concat "\n")
+          lib_ocaml_dir
+          lib_ocaml_dir
+          bsppx
+        ) in
+    res.files |> List.iter
+      (fun (x : Bsb_build_ui.file_group) ->
          output_string ochan x.dir;
          output_string ochan "\n" ;
          Buffer.add_string buffer "\nS ";
@@ -7319,14 +7329,14 @@ let write_ninja_file cwd =
          Buffer.add_string buffer "\nB ";
          Buffer.add_string buffer ("lib"//"bs"//x.dir) ;
          Buffer.add_string buffer "\n"
-      ) ; 
-    close_out ochan; 
+      ) ;
+    close_out ochan;
     bs_file_groups := res.files ;
     update_queue := res.intervals;
     globbed_dirs := res.globbed_dirs;
-    if Bsb_default.get_generate_merlin () then 
-      revise_merlin buffer ; 
-  in 
+    if Bsb_default.get_generate_merlin () then
+      revise_merlin buffer ;
+  in
   let config_json_chan = open_in_bin Literals.bsconfig_json in
   let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
 
@@ -7334,15 +7344,15 @@ let write_ninja_file cwd =
     match global_data with
     | `Obj map ->
       map
-      |? (Bsb_build_schemas.generate_merlin, `Bool (fun b -> 
+      |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->
           Bsb_default.set_generate_merlin b
         ))
       |?  (Bsb_build_schemas.name, `Str Bsb_default.set_package_name)
       |? (Bsb_build_schemas.package_specs, `Arr Bsb_default.set_package_specs_from_array )
-      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m -> 
+      |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
           m |? (Bsb_build_schemas.cmd , `Str (Bsb_default.set_js_post_build_cmd ~cwd)
                )
-          |> ignore 
+          |> ignore
         end)
       |? (Bsb_build_schemas.ocamllex, `Str (Bsb_default.set_ocamllex ~cwd))
       |? (Bsb_build_schemas.ninja, `Str (Bsb_default.set_ninja ~cwd))
@@ -7350,18 +7360,18 @@ let write_ninja_file cwd =
       (* More design *)
       |? (Bsb_build_schemas.bs_external_includes, `Arr Bsb_default.set_bs_external_includes)
       |? (Bsb_build_schemas.bsc_flags, `Arr Bsb_default.set_bsc_flags)
-      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags ~cwd))
+      |? (Bsb_build_schemas.ppx_flags, `Arr (Bsb_default.set_ppx_flags))
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
 
       |? (Bsb_build_schemas.sources, `Obj (fun x ->
-          let res : Bsb_build_ui.t =  Bsb_build_ui.parsing_source 
-              Filename.current_dir_name x in 
+          let res : Bsb_build_ui.t =  Bsb_build_ui.parsing_source
+              Filename.current_dir_name x in
           handle_bsb_build_ui res
         ))
       |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
 
-          let res : Bsb_build_ui.t  =  
-            Bsb_build_ui.parsing_sources Filename.current_dir_name xs  
+          let res : Bsb_build_ui.t  =
+            Bsb_build_ui.parsing_sources Filename.current_dir_name xs
           in
           handle_bsb_build_ui res
         ))
@@ -7383,9 +7393,9 @@ let write_ninja_file cwd =
       Unix.rename config_file_bak Literals.bsconfig_json
   end;
 
-  Bsb_gen.output_ninja 
-    ~builddir 
-    ~cwd 
+  Bsb_gen.output_ninja
+    ~builddir
+    ~cwd
     ~js_post_build_cmd: Bsb_default.(get_js_post_build_cmd ())
     ~package_specs:(Bsb_default.get_package_specs())
     bsc
@@ -7395,7 +7405,7 @@ let write_ninja_file cwd =
     (Bsb_default.get_bs_external_includes ())
     !bs_file_groups
     Bsb_default.(get_bsc_flags ())
-    Bsb_default.(get_ppx_flags ())
+    Bsb_default.(get_ppx_flags ~cwd ())
     Bsb_default.(get_bs_dependencies ())
     Bsb_default.(get_refmt ())
 
@@ -7411,36 +7421,36 @@ let force_regenerate = ref false
 let exec = ref false
 let targets = String_vec.make 5
 
-let cwd = Sys.getcwd () 
+let cwd = Sys.getcwd ()
 
-let create_bs_config () = 
+let create_bs_config () =
   ()
-let watch () = 
+let watch () =
   let bsb_watcher =
-    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in 
+    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
   let bsb_watcher =
     (*FIXME *)
-    if Sys.win32 then Filename.quote bsb_watcher 
-    else bsb_watcher in 
-  Unix.execvp "node" 
-    [| "node" ; 
-       bsb_watcher 
+    if Sys.win32 then Filename.quote bsb_watcher
+    else bsb_watcher in
+  Unix.execvp "node"
+    [| "node" ;
+       bsb_watcher
     |]
 
 
-let annoymous filename = 
+let annoymous filename =
   String_vec.push  filename targets
-let bsb_main_flags = 
+let bsb_main_flags =
   [
-    "-w", Arg.Unit watch, 
-    " watch mode" ;  
-    (*    "-init", Arg.Unit create_bs_config , 
+    "-w", Arg.Unit watch,
+    " watch mode" ;
+    (*    "-init", Arg.Unit create_bs_config ,
           " Create an simple bsconfig.json"
           ;
-    *)    "-regen", Arg.Set force_regenerate, 
-          " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"  
-    ;  
-    (*"-exec", Arg.Set exec, 
+    *)    "-regen", Arg.Set force_regenerate,
+          " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+    ;
+    (*"-exec", Arg.Set exec,
       " Also run the JS files passsed" ;*)
   ]
 
@@ -7448,11 +7458,11 @@ let regenerate_ninja cwd forced =
   let output_deps = Bsb_config.lib_bs // bsdeps in
   let reason =
     if forced then "Regenerating ninja (triggered by command line -regen)"
-    else  
-      Bsb_dep_infos.check ~cwd  output_deps in 
-  if String.length reason <> 0 then 
+    else
+      Bsb_dep_infos.check ~cwd  output_deps in
+  if String.length reason <> 0 then
     begin
-      print_endline reason ; 
+      print_endline reason ;
       print_endline "Regenrating build spec";
       let globbed_dirs = write_ninja_file cwd in
       Literals.bsconfig_json :: globbed_dirs
@@ -7484,31 +7494,31 @@ let () =
   try
     (* see discussion #929 *)
     if Array.length Sys.argv <= 1 then
-      begin 
+      begin
         regenerate_ninja cwd false;
         Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
       end
     else
       begin
-        match Ext_array.find_and_split Sys.argv Ext_string.equal "--" with 
-        | `No_split 
+        match Ext_array.find_and_split Sys.argv Ext_string.equal "--" with
+        | `No_split
           ->
-          begin 
-            Arg.parse bsb_main_flags annoymous usage; 
-            regenerate_ninja cwd !force_regenerate;   
+          begin
+            Arg.parse bsb_main_flags annoymous usage;
+            regenerate_ninja cwd !force_regenerate;
             (* String_vec.iter (fun s -> print_endline s) targets; *)
             (* ninja is not triggered in this case *)
           end
-        | `Split (bsb_args,ninja_args) 
-          -> 
-          begin 
+        | `Split (bsb_args,ninja_args)
+          ->
+          begin
             Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
             (* String_vec.iter (fun s -> print_endline s) targets; *)
             regenerate_ninja cwd !force_regenerate;
             Unix.execvp ninja
-              (Array.append       
+              (Array.append
                  [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|]
-                 ninja_args       
+                 ninja_args
               )
 
           end
