@@ -27,6 +27,7 @@ type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
   | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
@@ -44,6 +45,8 @@ let report_error ppf = function
       (Format.pp_print_list ~pp_sep:Format.pp_print_space
          Format.pp_print_string)
       str
+  | Bs_duplicate_exports str -> 
+    Format.fprintf ppf "%s are exported as twice" str 
   | Bs_duplicated_module (a,b)
     ->
     Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b

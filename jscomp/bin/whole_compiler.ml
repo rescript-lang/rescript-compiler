@@ -19859,6 +19859,7 @@ type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
   | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
@@ -19904,6 +19905,7 @@ type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
   | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
   | Bs_package_not_found of string                            
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string
@@ -19921,6 +19923,8 @@ let report_error ppf = function
       (Format.pp_print_list ~pp_sep:Format.pp_print_space
          Format.pp_print_string)
       str
+  | Bs_duplicate_exports str -> 
+    Format.fprintf ppf "%s are exported as twice" str 
   | Bs_duplicated_module (a,b)
     ->
     Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
@@ -56623,9 +56627,9 @@ let length h = h.size
 let iter f h =
   let rec do_bucket = function
     | [ ] ->
-        ()
+      ()
     | k ::  rest ->
-        f k ; do_bucket rest in
+      f k ; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -56635,14 +56639,14 @@ let fold f h init =
   let rec do_bucket b accu =
     match b with
       [ ] ->
-        accu
+      accu
     | k ::  rest ->
-        do_bucket rest (f k  accu) in
+      do_bucket rest (f k  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
     accu := do_bucket (Array.unsafe_get d i) !accu
-   done;
+  done;
   !accu
 
 let resize indexfun h =
@@ -56655,9 +56659,9 @@ let resize indexfun h =
     let rec insert_bucket = function
         [ ] -> ()
       | key :: rest ->
-          let nidx = indexfun h key in
-          ndata.(nidx) <- key :: ndata.(nidx);
-          insert_bucket rest
+        let nidx = indexfun h key in
+        ndata.(nidx) <- key :: ndata.(nidx);
+        insert_bucket rest
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -56676,272 +56680,86 @@ let stats h =
   let histo = Array.make (mbl + 1) 0 in
   Array.iter
     (fun b ->
-      let l = List.length b in
-      histo.(l) <- histo.(l) + 1)
+       let l = List.length b in
+       histo.(l) <- histo.(l) + 1)
     h.data;
   {Hashtbl.num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
+   num_buckets = Array.length h.data;
+   max_bucket_length = mbl;
+   bucket_histogram = histo }
 
-
-end
-module Hash_set : sig 
-#1 "hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Ideas are based on {!Hashtbl}, 
-    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
-    This module fixes the semantics of [add].
-    [remove] is not optimized since it is not used too much 
-*)
-
-
-
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> Hashtbl.statistics
-    val elements : t -> key list 
-  end
-
-
-
-
-module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
-(** A naive t implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a t 
-
-val create : int -> 'a t
-
-val clear : 'a t -> unit
-
-val reset : 'a t -> unit
-
-val copy : 'a t -> 'a t
-
-val add : 'a t -> 'a  -> unit
-val remove : 'a t -> 'a -> unit
-
-val mem : 'a t -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a t -> unit
-
-val elements : 'a t -> 'a list
-
-val length : 'a t -> int 
-
-val stats:  'a t -> Hashtbl.statistics
-
-end = struct
-#1 "hash_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type 'a t = 'a  Hash_set_gen.t 
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
-let elements = Hash_set_gen.elements
-
-
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
-
-let key_index (h : _ Hash_set_gen.t) key =
-  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
-
-
-let remove (h : _ Hash_set_gen.t ) key =
-  let rec remove_bucket = function
-    | [ ] ->
-        [ ]
-    | k :: next ->
-        if compare k key = 0
-        then begin h.size <- h.size - 1; next end
-        else k :: remove_bucket next in
-  let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
-
-let rec small_bucket_mem key lst =
+let rec small_bucket_mem eq_key key lst =
   match lst with 
   | [] -> false 
   | key1::rest -> 
-    key = key1 ||
+    eq_key key   key1 ||
     match rest with 
     | [] -> false 
     | key2 :: rest -> 
-      key = key2 ||
+      eq_key key   key2 ||
       match rest with 
       | [] -> false 
       | key3 :: rest -> 
-         key = key3 ||
-         small_bucket_mem key rest 
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
-    begin 
-      h.data.(i) <- key :: h.data.(i);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
-    end
-let mem (h : _ Hash_set_gen.t ) key =
-  small_bucket_mem key h.data.(key_index h key) 
+        eq_key key   key3 ||
+        small_bucket_mem eq_key key rest 
 
-
+let rec remove_bucket eq_key key (h : _ t) buckets = 
+  match buckets with 
+  | [ ] ->
+    [ ]
+  | k :: next ->
+    if  eq_key k   key
+    then begin h.size <- h.size - 1; next end
+    else k :: remove_bucket eq_key key h next    
 
 module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> Hashtbl.statistics
-    val elements : t -> key list 
-  end
-
-
-module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
-  struct
-    type key = H.t
-    type nonrec  t = key t
-    let create = Hash_set_gen.create
-    let clear = Hash_set_gen.clear
-    let reset = Hash_set_gen.reset
-    let copy = Hash_set_gen.copy
-    let iter = Hash_set_gen.iter
-    let fold = Hash_set_gen.fold
-    let length = Hash_set_gen.length
-    let stats = Hash_set_gen.stats
-    let elements = Hash_set_gen.elements
-
-    let key_index (h :  t ) key =
-      (H.hash  key) land (Array.length h.data - 1)
-
-    let remove (h : t) key =
-      let rec remove_bucket = function
-        | [ ] ->
-            [ ]
-        | k :: next ->
-            if H.equal k key
-            then begin h.size <- h.size - 1; next end
-            else k :: remove_bucket next in
-      let i = key_index h key in
-      h.data.(i) <- remove_bucket h.data.(i)
-
-    let rec small_bucket_mem key lst =
-      match lst with 
-      | [] -> false 
-      | key1::rest -> 
-        H.equal key key1 ||
-        match rest with 
-        | [] -> false 
-        | key2 :: rest -> 
-          H.equal key  key2 ||
-          match rest with 
-          | [] -> false 
-          | key3 :: rest -> 
-            H.equal key  key3 ||
-            small_bucket_mem key rest 
-
-    let add (h : t) key =
-      let i = key_index h key  in 
-      if not (small_bucket_mem key  h.data.(i)) then 
-        begin 
-          h.data.(i) <- key :: h.data.(i);
-          h.size <- h.size + 1 ;
-          if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
-        end
-
-    let mem (h :  t) key =
-      small_bucket_mem key h.data.(key_index h key) 
-
-  end
-
-
-
-
-
-
-
-
-
-
+sig
+  type key
+  type t
+  val create: int ->  t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy: t -> t
+  val remove:  t -> key -> unit
+  val add :  t -> key -> unit
+  val check_add : t -> key -> bool
+  val mem :  t -> key -> bool
+  val iter: (key -> unit) ->  t -> unit
+  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+  val length:  t -> int
+  val stats:  t -> Hashtbl.statistics
+  val elements : t -> key list 
+end
 
 end
 module String_hash_set : sig 
 #1 "string_hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-include Hash_set.S with type key = string
+include Hash_set_gen.S with type key = string
 
 end = struct
 #1 "string_hash_set.ml"
@@ -56970,6 +56788,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type key = string
 type  t = key  Hash_set_gen.t 
+let eq_key = Ext_string.equal 
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -56984,43 +56803,39 @@ let elements = Hash_set_gen.elements
 let key_index (h :  t ) key =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 
-let remove (h : t) key =
-  let rec remove_bucket = function
-    | [ ] ->
-      [ ]
-    | k :: next ->
-      if  (k : key)  = key
-      then begin h.size <- h.size - 1; next end
-      else k :: remove_bucket next in
+let remove (h : t) key =  
   let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
 
-let rec small_bucket_mem key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-     (key : key) = key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-       (key : key) = key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-         (key : key) = key3 ||
-         small_bucket_mem key rest 
+
 
 let add (h : t) key =
   let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let check_add (h : t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
 let mem (h :  t) key =
-  small_bucket_mem key h.data.(key_index h key) 
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
 end
 module Hashtbl_gen
@@ -57251,6 +57066,7 @@ let key_index (h : _ t ) (key : key) =
 let compare_key (x : key) (y : key) = String.compare x y
 
 let eq_key = Ext_string.equal 
+
 let add (h : _ t) key info =
   let i = key_index h key in
   let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
@@ -67054,6 +66870,212 @@ let of_list2 ks vs =
   let map = create 51 in 
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
+
+end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Ideas are based on {!Hashtbl}, 
+    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
+    This module fixes the semantics of [add].
+    [remove] is not optimized since it is not used too much 
+*)
+
+
+
+
+
+module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
+
+type   'a t 
+
+val create : int -> 'a t
+
+val clear : 'a t -> unit
+
+val reset : 'a t -> unit
+
+val copy : 'a t -> 'a t
+
+val add : 'a t -> 'a  -> unit
+val remove : 'a t -> 'a -> unit
+
+val mem : 'a t -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a t -> unit
+
+val elements : 'a t -> 'a list
+
+val length : 'a t -> int 
+
+val stats:  'a t -> Hashtbl.statistics
+
+end = struct
+#1 "hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type 'a t = 'a  Hash_set_gen.t 
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+let eq_key = (=)
+
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+
+let key_index (h : _ Hash_set_gen.t) key =
+  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
+
+
+let remove (h : _ Hash_set_gen.t ) key =
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h; 
+    end
+
+let check_add (h : _ t ) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false   
+
+let mem (h : _ t ) key =
+  Hash_set_gen.small_bucket_mem eq_key key h.data.(key_index h key) 
+
+
+
+
+
+module Make(H: Hashtbl.HashedType): (Hash_set_gen.S with type key = H.t) =
+struct
+  type key = H.t
+  type nonrec  t = key t
+  let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  let copy = Hash_set_gen.copy
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  let stats = Hash_set_gen.stats
+  let elements = Hash_set_gen.elements
+
+  let key_index (h :  t ) key =
+    (H.hash  key) land (Array.length h.data - 1)
+
+  let remove (h : t) key =
+    let i = key_index h key in
+    let h_data = h.data in
+    let old_h_size = h.size in 
+    let new_bucket = Hash_set_gen.remove_bucket H.equal key h (Array.unsafe_get h_data i) in
+    if old_h_size <> h.size then  
+      Array.unsafe_set h_data i new_bucket
+
+
+
+  let add (h : t) key =
+    let i = key_index h key  in 
+    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- key :: h.data.(i);
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      end
+  
+  let check_add (h : t) key =
+    let i = key_index h key  in 
+    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- key :: h.data.(i);
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+        true
+      end
+    else false
+      
+  let mem (h :  t) key =
+    Hash_set_gen.small_bucket_mem H.equal key h.data.(key_index h key) 
+
+end
+
+
+
+
+
+
+
+
+
+
 
 end
 module Lam_module_ident : sig 
@@ -95115,6 +95137,7 @@ let compile  ~filename output_prefix no_export env _sigs
          lambda_exports are pure
          compile each binding with a return value
          This might be wrong in toplevel
+         TODO: add this check as early as possible in the beginning
       *)
 
       begin 
@@ -95162,8 +95185,14 @@ let compile  ~filename output_prefix no_export env _sigs
                 ([],[], Ident_set.empty, Ident_map.empty)
           in
           let () = 
+            let len = List.length new_exports in 
+            let tbl = String_hash_set.create len in 
             new_exports |> List.iter 
-              (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
+              (fun (id : Ident.t) -> 
+                 if not @@ String_hash_set.check_add tbl id.name then 
+                   Bs_exception.error (Bs_duplicate_exports id.name);
+                 Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp
+              ) 
           in
           let meta = { meta with 
                        export_idents = new_export_set;

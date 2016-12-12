@@ -17,6 +17,7 @@ let key_index (h : _ t ) (key : key) =
 let compare_key (x : key) (y : key) = String.compare x y
 
 let eq_key = Ext_string.equal 
+
 let add (h : _ t) key info =
   let i = key_index h key in
   let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in

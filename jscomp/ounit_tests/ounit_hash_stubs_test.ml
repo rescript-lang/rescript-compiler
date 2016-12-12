@@ -41,6 +41,14 @@ let suites =
       end;
       __LOC__ >:: begin fun _ -> 
         Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
+      end;
+      __LOC__ >:: begin fun _ -> 
+        Bs_hash_stubs.hash_string "The quick brown fox jumps over the lazy dog"  =~ 
+        Hashtbl.hash "The quick brown fox jumps over the lazy dog"
+      end;
+      __LOC__ >:: begin fun _ ->
+        Array.init 100 (fun i -> String.make i 'a' )
+        |> Array.iter (fun x -> 
+          Bs_hash_stubs.hash_string x =~ Hashtbl.hash x) 
       end
-
     ]

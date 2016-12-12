@@ -2941,7 +2941,7 @@ let suites =
     end;
 
      __LOC__ >:: begin fun _ ->
-      let arr_size = 1_000_000 in
+      let arr_size = 1_00_000 in
       let v = ref Bal_set_common.empty in 
       for i = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
@@ -3158,9 +3158,9 @@ let length h = h.size
 let iter f h =
   let rec do_bucket = function
     | [ ] ->
-        ()
+      ()
     | k ::  rest ->
-        f k ; do_bucket rest in
+      f k ; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -3170,14 +3170,14 @@ let fold f h init =
   let rec do_bucket b accu =
     match b with
       [ ] ->
-        accu
+      accu
     | k ::  rest ->
-        do_bucket rest (f k  accu) in
+      do_bucket rest (f k  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
     accu := do_bucket (Array.unsafe_get d i) !accu
-   done;
+  done;
   !accu
 
 let resize indexfun h =
@@ -3190,9 +3190,9 @@ let resize indexfun h =
     let rec insert_bucket = function
         [ ] -> ()
       | key :: rest ->
-          let nidx = indexfun h key in
-          ndata.(nidx) <- key :: ndata.(nidx);
-          insert_bucket rest
+        let nidx = indexfun h key in
+        ndata.(nidx) <- key :: ndata.(nidx);
+        insert_bucket rest
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -3211,14 +3211,56 @@ let stats h =
   let histo = Array.make (mbl + 1) 0 in
   Array.iter
     (fun b ->
-      let l = List.length b in
-      histo.(l) <- histo.(l) + 1)
+       let l = List.length b in
+       histo.(l) <- histo.(l) + 1)
     h.data;
   {Hashtbl.num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
+   num_buckets = Array.length h.data;
+   max_bucket_length = mbl;
+   bucket_histogram = histo }
 
+let rec small_bucket_mem eq_key key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    eq_key key   key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+      eq_key key   key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+        eq_key key   key3 ||
+        small_bucket_mem eq_key key rest 
+
+let rec remove_bucket eq_key key (h : _ t) buckets = 
+  match buckets with 
+  | [ ] ->
+    [ ]
+  | k :: next ->
+    if  eq_key k   key
+    then begin h.size <- h.size - 1; next end
+    else k :: remove_bucket eq_key key h next    
+
+module type S =
+sig
+  type key
+  type t
+  val create: int ->  t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy: t -> t
+  val remove:  t -> key -> unit
+  val add :  t -> key -> unit
+  val check_add : t -> key -> bool
+  val mem :  t -> key -> bool
+  val iter: (key -> unit) ->  t -> unit
+  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+  val length:  t -> int
+  val stats:  t -> Hashtbl.statistics
+  val elements : t -> key list 
+end
 
 end
 module Hash_set : sig 
@@ -3255,28 +3297,9 @@ module Hash_set : sig
 
 
 
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> Hashtbl.statistics
-    val elements : t -> key list 
-  end
 
 
-
-
-module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
+module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
 (** A naive t implementation on top of [hashtbl], the value is [unit]*)
 
 type   'a t 
@@ -3338,7 +3361,7 @@ let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 let stats = Hash_set_gen.stats
 let elements = Hash_set_gen.elements
-
+let eq_key = (=)
 
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
@@ -3348,118 +3371,92 @@ let key_index (h : _ Hash_set_gen.t) key =
 
 
 let remove (h : _ Hash_set_gen.t ) key =
-  let rec remove_bucket = function
-    | [ ] ->
-        [ ]
-    | k :: next ->
-        if compare k key = 0
-        then begin h.size <- h.size - 1; next end
-        else k :: remove_bucket next in
   let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
 
-let rec small_bucket_mem key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    key = key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-      key = key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-         key = key3 ||
-         small_bucket_mem key rest 
+
 let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h; 
     end
-let mem (h : _ Hash_set_gen.t ) key =
-  small_bucket_mem key h.data.(key_index h key) 
+
+let check_add (h : _ t ) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false   
+
+let mem (h : _ t ) key =
+  Hash_set_gen.small_bucket_mem eq_key key h.data.(key_index h key) 
 
 
 
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> Hashtbl.statistics
-    val elements : t -> key list 
-  end
 
 
-module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
-  struct
-    type key = H.t
-    type nonrec  t = key t
-    let create = Hash_set_gen.create
-    let clear = Hash_set_gen.clear
-    let reset = Hash_set_gen.reset
-    let copy = Hash_set_gen.copy
-    let iter = Hash_set_gen.iter
-    let fold = Hash_set_gen.fold
-    let length = Hash_set_gen.length
-    let stats = Hash_set_gen.stats
-    let elements = Hash_set_gen.elements
+module Make(H: Hashtbl.HashedType): (Hash_set_gen.S with type key = H.t) =
+struct
+  type key = H.t
+  type nonrec  t = key t
+  let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  let copy = Hash_set_gen.copy
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  let stats = Hash_set_gen.stats
+  let elements = Hash_set_gen.elements
 
-    let key_index (h :  t ) key =
-      (H.hash  key) land (Array.length h.data - 1)
+  let key_index (h :  t ) key =
+    (H.hash  key) land (Array.length h.data - 1)
 
-    let remove (h : t) key =
-      let rec remove_bucket = function
-        | [ ] ->
-            [ ]
-        | k :: next ->
-            if H.equal k key
-            then begin h.size <- h.size - 1; next end
-            else k :: remove_bucket next in
-      let i = key_index h key in
-      h.data.(i) <- remove_bucket h.data.(i)
+  let remove (h : t) key =
+    let i = key_index h key in
+    let h_data = h.data in
+    let old_h_size = h.size in 
+    let new_bucket = Hash_set_gen.remove_bucket H.equal key h (Array.unsafe_get h_data i) in
+    if old_h_size <> h.size then  
+      Array.unsafe_set h_data i new_bucket
 
-    let rec small_bucket_mem key lst =
-      match lst with 
-      | [] -> false 
-      | key1::rest -> 
-        H.equal key key1 ||
-        match rest with 
-        | [] -> false 
-        | key2 :: rest -> 
-          H.equal key  key2 ||
-          match rest with 
-          | [] -> false 
-          | key3 :: rest -> 
-            H.equal key  key3 ||
-            small_bucket_mem key rest 
 
-    let add (h : t) key =
-      let i = key_index h key  in 
-      if not (small_bucket_mem key  h.data.(i)) then 
-        begin 
-          h.data.(i) <- key :: h.data.(i);
-          h.size <- h.size + 1 ;
-          if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
-        end
 
-    let mem (h :  t) key =
-      small_bucket_mem key h.data.(key_index h key) 
+  let add (h : t) key =
+    let i = key_index h key  in 
+    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- key :: h.data.(i);
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      end
+  
+  let check_add (h : t) key =
+    let i = key_index h key  in 
+    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- key :: h.data.(i);
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+        true
+      end
+    else false
+      
+  let mem (h :  t) key =
+    Hash_set_gen.small_bucket_mem H.equal key h.data.(key_index h key) 
 
-  end
+end
 
 
 
@@ -3866,6 +3863,122 @@ end
 
 
 end
+module Bs_hash_stubs
+= struct
+#1 "bs_hash_stubs.ml"
+external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
+
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
+
+external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
+
+end
+module String_hash_set : sig 
+#1 "string_hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Hash_set_gen.S with type key = string
+
+end = struct
+#1 "string_hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type key = string
+type  t = key  Hash_set_gen.t 
+let eq_key = Ext_string.equal 
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+let key_index (h :  t ) key =
+  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
+
+let remove (h : t) key =  
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+
+let add (h : t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let check_add (h : t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
+let mem (h :  t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+end
 module Ounit_hash_set_tests
 = struct
 #1 "ounit_hash_set_tests.ml"
@@ -3883,6 +3996,14 @@ module Id_hash_set = Hash_set.Make(struct
   end
   )
 
+let const_tbl = [|"0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"; "100"; "99"; "98";
+          "97"; "96"; "95"; "94"; "93"; "92"; "91"; "90"; "89"; "88"; "87"; "86"; "85";
+          "84"; "83"; "82"; "81"; "80"; "79"; "78"; "77"; "76"; "75"; "74"; "73"; "72";
+          "71"; "70"; "69"; "68"; "67"; "66"; "65"; "64"; "63"; "62"; "61"; "60"; "59";
+          "58"; "57"; "56"; "55"; "54"; "53"; "52"; "51"; "50"; "49"; "48"; "47"; "46";
+          "45"; "44"; "43"; "42"; "41"; "40"; "39"; "38"; "37"; "36"; "35"; "34"; "33";
+          "32"; "31"; "30"; "29"; "28"; "27"; "26"; "25"; "24"; "23"; "22"; "21"; "20";
+          "19"; "18"; "17"; "16"; "15"; "14"; "13"; "12"; "11"|]
 let suites = 
   __FILE__
   >:::
@@ -3917,9 +4038,9 @@ let suites =
         Hash_set.remove v {name = "x"; stamp = i}
       done ;
       OUnit.assert_equal (Hash_set.length v) 1990;
-      OUnit.assert_equal (Hash_set.stats v)
-        {Hashtbl.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7;
-         bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]}
+      (* OUnit.assert_equal (Hash_set.stats v) *)
+      (*   {Hashtbl.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7; *)
+      (*    bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]} *)
     end ;
     __LOC__ >:: begin fun _ -> 
       let module Hash_set = Id_hash_set in 
@@ -3938,9 +4059,9 @@ let suites =
         Hash_set.remove v {name = "x"; stamp = i}
       done ;
       OUnit.assert_equal (Hash_set.length v) 1990;
-      OUnit.assert_equal (Hash_set.stats v)
-        {num_bindings = 1990; num_buckets = 1024; max_bucket_length = 8;
-         bucket_histogram = [|148; 275; 285; 182; 95; 21; 14; 2; 2|]}
+      (* OUnit.assert_equal (Hash_set.stats v) *)
+      (*   {num_bindings = 1990; num_buckets = 1024; max_bucket_length = 8; *)
+      (*    bucket_histogram = [|148; 275; 285; 182; 95; 21; 14; 2; 2|]} *)
 
     end 
     ;
@@ -3953,33 +4074,66 @@ let suites =
         Ordered_hash_set.add v (string_of_int i)
       done;
       OUnit.assert_equal (Ordered_hash_set.to_sorted_array v )
-        [|"0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"; "100"; "99"; "98";
-          "97"; "96"; "95"; "94"; "93"; "92"; "91"; "90"; "89"; "88"; "87"; "86"; "85";
-          "84"; "83"; "82"; "81"; "80"; "79"; "78"; "77"; "76"; "75"; "74"; "73"; "72";
-          "71"; "70"; "69"; "68"; "67"; "66"; "65"; "64"; "63"; "62"; "61"; "60"; "59";
-          "58"; "57"; "56"; "55"; "54"; "53"; "52"; "51"; "50"; "49"; "48"; "47"; "46";
-          "45"; "44"; "43"; "42"; "41"; "40"; "39"; "38"; "37"; "36"; "35"; "34"; "33";
-          "32"; "31"; "30"; "29"; "28"; "27"; "26"; "25"; "24"; "23"; "22"; "21"; "20";
-          "19"; "18"; "17"; "16"; "15"; "14"; "13"; "12"; "11"|]
+        const_tbl
     end;
+    __LOC__ >:: begin fun _ -> 
+      let duplicate arr = 
+        let len = Array.length arr in 
+        let rec aux tbl off = 
+          if off >= len  then None
+          else 
+            let curr = (Array.unsafe_get arr off) in
+            if String_hash_set.check_add tbl curr then 
+              aux tbl (off + 1)
+            else   Some curr in 
+        aux (String_hash_set.create len) 0 in 
+      let v = [| "if"; "a"; "b"; "c" |] in 
+      OUnit.assert_equal (duplicate v) None;
+      OUnit.assert_equal (duplicate [|"if"; "a"; "b"; "b"; "c"|]) (Some "b")
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let of_array lst =
+        let len = Array.length lst in 
+        let tbl = String_hash_set.create len in 
+        Array.iter (String_hash_set.add tbl ) lst; tbl  in 
+      let hash = of_array const_tbl  in 
+      let len = String_hash_set.length hash in 
+      String_hash_set.remove hash "x";
+      OUnit.assert_equal len (String_hash_set.length hash);
+      String_hash_set.remove hash "0";
+      OUnit.assert_equal (len - 1 ) (String_hash_set.length hash);
+    end
   ]
-
-end
-module Bs_hash_stubs
-= struct
-#1 "bs_hash_stubs.ml"
-external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
-
-external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
-
-external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
 
 end
 module Int_hash_set : sig 
 #1 "int_hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-include Hash_set.S with type key = int
+include Hash_set_gen.S with type key = int
 
 end = struct
 #1 "int_hash_set.ml"
@@ -4008,6 +4162,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type key = int
 type  t = key  Hash_set_gen.t 
+let eq_key = Ext_int.equal 
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4022,43 +4177,39 @@ let elements = Hash_set_gen.elements
 let key_index (h :  t ) key =
   (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 
-let remove (h : t) key =
-  let rec remove_bucket = function
-    | [ ] ->
-      [ ]
-    | k :: next ->
-      if  (k : key)  = key
-      then begin h.size <- h.size - 1; next end
-      else k :: remove_bucket next in
+let remove (h : t) key =  
   let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
 
-let rec small_bucket_mem key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-     (key : key) = key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-       (key : key) = key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-         (key : key) = key3 ||
-         small_bucket_mem key rest 
+
 
 let add (h : t) key =
   let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let check_add (h : t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
 let mem (h :  t) key =
-  small_bucket_mem key h.data.(key_index h key) 
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
 end
 module Ounit_hash_stubs_test
@@ -4107,8 +4258,16 @@ let suites =
       end;
       __LOC__ >:: begin fun _ -> 
         Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
+      end;
+      __LOC__ >:: begin fun _ -> 
+        Bs_hash_stubs.hash_string "The quick brown fox jumps over the lazy dog"  =~ 
+        Hashtbl.hash "The quick brown fox jumps over the lazy dog"
+      end;
+      __LOC__ >:: begin fun _ ->
+        Array.init 100 (fun i -> String.make i 'a' )
+        |> Array.iter (fun x -> 
+          Bs_hash_stubs.hash_string x =~ Hashtbl.hash x) 
       end
-
     ]
 
 end

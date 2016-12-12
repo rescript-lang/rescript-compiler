@@ -25,8 +25,10 @@ bin/all_ounit_tests.ml : ext/hash_set.ml
 bin/all_ounit_tests.ml : ext/hash_set.mli
 bin/all_ounit_tests.ml : ext/ordered_hash_set.ml
 bin/all_ounit_tests.ml : ext/ordered_hash_set.mli
-bin/all_ounit_tests.ml : ounit_tests/ounit_hash_set_tests.ml
 bin/all_ounit_tests.ml : stubs/bs_hash_stubs.ml
+bin/all_ounit_tests.ml : ext/string_hash_set.ml
+bin/all_ounit_tests.ml : ext/string_hash_set.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_hash_set_tests.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_stubs_test.ml
