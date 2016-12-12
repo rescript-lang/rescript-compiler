@@ -488,7 +488,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1><a href="https://github.com/bloomberg/bucklescript">BuckleScript</a> User Manual</h1>
 <div class="details">
 <span id="author" class="author">Hongbo Zhang</span><br>
-<span id="revnumber">version 1.2.1+dev</span>
+<span id="revnumber">version 1.3.4</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1027,17 +1027,27 @@ The built compiler is not <em>relocatable</em> out of box, please don&#8217;t mo
 <div class="ulist">
 <ul>
 <li>
-<p>Create a directory called <code>hello</code> and create <code>package.json</code>
+<p>Create a directory called <code>hello</code> and create <code>bsconfig.json</code>, <code>package.json</code>
 as below:</p>
+<div class="listingblock">
+<div class="title">bsconfig.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;helo&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span>  <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
 <div class="listingblock">
 <div class="title">package.json</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
     <span class="tok-s2">&quot;dependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">{</span>
-        <span class="tok-s2">&quot;bs-platform&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;1.0.1&quot;</span> <b class="conum">(1)</b>
+        <span class="tok-s2">&quot;bs-platform&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;1.3.3&quot;</span> <b class="conum">(1)</b>
     <span class="tok-p">},</span>
     <span class="tok-s2">&quot;scripts&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span>
-        <span class="tok-s2">&quot;build&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsc.exe -c  main_entry.ml&quot;</span>
+        <span class="tok-s2">&quot;build&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsb&quot;</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;watch&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsb -w&quot;</span> <b class="conum">(2)</b>
     <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
@@ -1047,13 +1057,16 @@ as below:</p>
 <li>
 <p>Version should be updated accordingly</p>
 </li>
+<li>
+<p>Watch mode when development</p>
+</li>
 </ol>
 </div>
 </li>
 <li>
-<p>Create <code>main_entry.ml</code> as below:</p>
+<p>Create <code>src/main_entry.ml</code> as below:</p>
 <div class="listingblock">
-<div class="title">main_entry.ml</div>
+<div class="title">src/main_entry.ml</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
   <span class="tok-n">print_endline</span> <span class="tok-s2">&quot;hello world&quot;</span></code></pre>
@@ -1071,10 +1084,10 @@ as below:</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Now you should see a file called <code>main_entry.js</code> generated as below:</p>
+<p>Now you should see a file called <code>lib/js/src/main_entry.js</code> generated as below:</p>
 </div>
 <div class="listingblock">
-<div class="title">main_entry.js</div>
+<div class="title">lib/js/src/main_entry.js</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-c1">// GENERATED CODE BY BUCKLESCRIPT VERSION 1.0.1 , PLEASE EDIT WITH CARE</span>
 <span class="tok-s1">&#39;use strict&#39;</span><span class="tok-p">;</span>
@@ -1091,6 +1104,14 @@ as below:</p>
 <p>The compiler analyze this module is impure due to the side effect</p>
 </li>
 </ol>
+</div>
+<div class="paragraph">
+<p>User can  also run <code>watch</code> mode see changes instantly while editing.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">npm run watch</code></pre>
+</div>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1115,33 +1136,35 @@ will call <code>fib</code>.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Create a directory <code>fib</code> and created a file <code>package.json</code></p>
+<p>Create a directory <code>fib</code> and created files, <code>bsconfig.json</code>, <code>package.json</code></p>
+<div class="listingblock">
+<div class="title">bsconfig.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;name&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;helo&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span> <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span>  <span class="tok-s2">&quot;src&quot;</span><span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
 <div class="listingblock">
 <div class="title">package.json</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
     <span class="tok-s2">&quot;dependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">{</span>
-        <span class="tok-s2">&quot;bs-platform&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;1.0.1&quot;</span>
+        <span class="tok-s2">&quot;bs-platform&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;1.3.4&quot;</span>
     <span class="tok-p">},</span>
     <span class="tok-s2">&quot;scripts&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span>
-        <span class="tok-s2">&quot;build&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsc.exe -c -bs-main Main_entry&quot;</span> <b class="conum">(1)</b>
+        <span class="tok-s2">&quot;build&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsb&quot;</span><span class="tok-p">,</span>
+        <span class="tok-s2">&quot;watch&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;bsb -w&quot;</span>
     <span class="tok-p">}</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<ol>
-<li>
-<p>here <code>-bs-main</code> option tells the compiler compile <code>Main_entry</code> module and
-its dependency accordingly</p>
-</li>
-</ol>
-</div>
 </li>
 <li>
-<p>Create file <code>fib.ml</code> and file <code>main_entry.ml</code></p>
+<p>Create file <code>src/fib.ml</code> and file <code>src/main_entry.ml</code></p>
 <div class="listingblock">
-<div class="title">fib.ml</div>
+<div class="title">src/fib.ml</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span>  <span class="tok-n">fib</span> <span class="tok-n">n</span>  <span class="tok-o">=</span>
   <span class="tok-k">let</span> <span class="tok-k">rec</span> <span class="tok-n">aux</span> <span class="tok-n">n</span> <span class="tok-n">a</span> <span class="tok-n">b</span> <span class="tok-o">=</span>
@@ -1152,7 +1175,7 @@ its dependency accordingly</p>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">main_entry.ml</div>
+<div class="title">src/main_entry.ml</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
   <span class="tok-k">for</span> <span class="tok-n">i</span> <span class="tok-o">=</span> <span class="tok-mi">0</span> <span class="tok-k">to</span> <span class="tok-mi">10</span> <span class="tok-k">do</span>
@@ -1174,7 +1197,7 @@ its dependency accordingly</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">npm install
 npm run build
-node main_entry.js</code></pre>
+node lib/js/src/main_entry.js</code></pre>
 </div>
 </div>
 </li>
@@ -4990,7 +5013,7 @@ polymorphism <a href="https://github.com/bloomberg/bucklescript/issues/686">#686
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.2.1+dev<br>
+Version 1.3.4<br>
 </div>
 </div>
 </body>
