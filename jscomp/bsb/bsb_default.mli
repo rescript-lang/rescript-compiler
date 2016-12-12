@@ -37,8 +37,8 @@ val get_bs_external_includes : unit -> string list
 val set_bsc_flags : Bsb_json.t array -> unit
 val get_bsc_flags : unit -> string list
 
-val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit
-val get_ppx_flags : unit -> string list
+val set_ppx_flags : Bsb_json.t array -> unit
+val get_ppx_flags : ?resolved_absolute:bool -> cwd:string -> unit -> string list
 
 val set_package_name : string -> unit
 val get_package_name : unit -> string option
@@ -54,12 +54,12 @@ val set_bs_dependencies : Bsb_json.t array  -> unit
 val get_js_post_build_cmd : unit -> string option
 val set_js_post_build_cmd : cwd:string -> string -> unit
 
-val get_ninja : unit -> string 
+val get_ninja : unit -> string
 val set_ninja : cwd:string -> string -> unit
 
 type package_specs = String_set.t
 val get_package_specs : unit -> package_specs
-val set_package_specs_from_array : Bsb_json.t array -> unit  
+val set_package_specs_from_array : Bsb_json.t array -> unit
 
-val get_generate_merlin : unit -> bool 
-val set_generate_merlin : bool -> unit 
+val get_generate_merlin : unit -> bool
+val set_generate_merlin : bool -> unit

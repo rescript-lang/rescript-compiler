@@ -31,10 +31,10 @@ foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
 /foo/bar => /foo/bar
 ./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
 let resolve_bsb_magic_file ~cwd ~desc p =
-  let p_len = String.length p in 
-  let no_slash = Ext_filename.no_slash p 0 p_len in  
-  if no_slash then 
-    p 
+  let p_len = String.length p in
+  let no_slash = Ext_filename.no_slash p 0 p_len in
+  if no_slash then
+    p
   else if Filename.is_relative p &&
      p_len > 0 &&
      String.unsafe_get p 0 <> '.' then
@@ -74,7 +74,7 @@ let get_bs_external_includes () = !bs_external_includes
 
 
 let ocamllex =  ref  "ocamllex.opt"
-let set_ocamllex ~cwd s = 
+let set_ocamllex ~cwd s =
   ocamllex := resolve_bsb_magic_file ~cwd ~desc:"ocamllex" s
 let get_ocamllex () = !ocamllex
 
@@ -82,24 +82,26 @@ let get_ocamllex () = !ocamllex
 
 let refmt = ref "refmt"
 let get_refmt () = !refmt
-let set_refmt ~cwd p = 
+let set_refmt ~cwd p =
   refmt := resolve_bsb_magic_file ~cwd ~desc:"refmt" p
 
 
 let ppx_flags = ref []
-let get_ppx_flags () = !ppx_flags
-let set_ppx_flags ~cwd s =
-  let s =
-    s (* TODO: unix conversion *)
-    |> get_list_string
-    |> List.map (fun p ->
-        if p = "" then failwith "invalid ppx, empty string found"
-        else resolve_bsb_magic_file ~cwd ~desc:"ppx" p
-      ) in
-  ppx_flags := s
+let get_ppx_flags ?(resolved_absolute=false) ~cwd () =
+  if resolved_absolute then
+    !ppx_flags |> List.map (fun p ->
+      if p = "" then failwith "invalid ppx, empty string found"
+      else cwd // p)
+  else
+    !ppx_flags |> List.map (fun p ->
+      if p = "" then failwith "invalid ppx, empty string found"
+      else resolve_bsb_magic_file ~cwd ~desc:"ppx" p)
+
+let set_ppx_flags s =
+  ppx_flags := get_list_string s (* TODO: unix conversion *)
 
 
-let js_post_build_cmd = ref None 
+let js_post_build_cmd = ref None
 let get_js_post_build_cmd () = !js_post_build_cmd
 let set_js_post_build_cmd ~cwd s =
   js_post_build_cmd := Some (resolve_bsb_magic_file ~cwd ~desc:"js-post-build:cmd" s )
@@ -112,7 +114,7 @@ let get_ninja () = !ninja
    Second we need store it so that we can call ninja correctly
 *)
 let set_ninja ~cwd p  =
-  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p 
+  ninja := resolve_bsb_magic_file ~cwd ~desc:"ninja" p
 
 
 type package_specs = String_set.t
@@ -121,22 +123,22 @@ let package_specs = ref (String_set.singleton Literals.commonjs)
 
 let get_package_specs () = !package_specs
 
-let set_package_specs_from_array arr = 
-    let new_package_specs = 
-      arr 
+let set_package_specs_from_array arr =
+    let new_package_specs =
+      arr
       |> get_list_string
       |> List.fold_left (fun acc x ->
-          let v = 
+          let v =
             if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
-            else   
-              failwith ("Unkonwn package spec" ^ x) in 
+            else
+              failwith ("Unkonwn package spec" ^ x) in
           v
-        ) String_set.empty in 
+        ) String_set.empty in
    package_specs := new_package_specs
 
 let generate_merlin = ref false
 
-let get_generate_merlin () = !generate_merlin 
+let get_generate_merlin () = !generate_merlin
 
-let set_generate_merlin b = 
+let set_generate_merlin b =
   generate_merlin := b
