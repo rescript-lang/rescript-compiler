@@ -93,10 +93,16 @@ let write_ninja_file cwd =
     let ochan = open_out_bin (builddir // sourcedirs_meta) in
     let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in 
     let buffer = Buffer.create 100 in 
+    let () = 
+      Bsb_default.get_ppx_flags ()
+      |> List.iter (fun x -> 
+          Buffer.add_string buffer (Printf.sprintf "PPX %s\n" x )
+        )
+    in 
     let () = Buffer.add_string buffer
         (Printf.sprintf "S %s\n\
                          B %s\n\
-                         PPX %s\n
+                         PPX %s\n\
                        " lib_ocaml_dir lib_ocaml_dir bsppx
         ) in 
     let () = 
