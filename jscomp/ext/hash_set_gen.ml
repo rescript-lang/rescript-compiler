@@ -58,9 +58,9 @@ let length h = h.size
 let iter f h =
   let rec do_bucket = function
     | [ ] ->
-        ()
+      ()
     | k ::  rest ->
-        f k ; do_bucket rest in
+      f k ; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -70,14 +70,14 @@ let fold f h init =
   let rec do_bucket b accu =
     match b with
       [ ] ->
-        accu
+      accu
     | k ::  rest ->
-        do_bucket rest (f k  accu) in
+      do_bucket rest (f k  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
     accu := do_bucket (Array.unsafe_get d i) !accu
-   done;
+  done;
   !accu
 
 let resize indexfun h =
@@ -90,9 +90,9 @@ let resize indexfun h =
     let rec insert_bucket = function
         [ ] -> ()
       | key :: rest ->
-          let nidx = indexfun h key in
-          ndata.(nidx) <- key :: ndata.(nidx);
-          insert_bucket rest
+        let nidx = indexfun h key in
+        ndata.(nidx) <- key :: ndata.(nidx);
+        insert_bucket rest
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
@@ -111,11 +111,53 @@ let stats h =
   let histo = Array.make (mbl + 1) 0 in
   Array.iter
     (fun b ->
-      let l = List.length b in
-      histo.(l) <- histo.(l) + 1)
+       let l = List.length b in
+       histo.(l) <- histo.(l) + 1)
     h.data;
   {Hashtbl.num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
+   num_buckets = Array.length h.data;
+   max_bucket_length = mbl;
+   bucket_histogram = histo }
 
+let rec small_bucket_mem eq_key key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    eq_key key   key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+      eq_key key   key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+        eq_key key   key3 ||
+        small_bucket_mem eq_key key rest 
+
+let rec remove_bucket eq_key key (h : _ t) buckets = 
+  match buckets with 
+  | [ ] ->
+    [ ]
+  | k :: next ->
+    if  eq_key k   key
+    then begin h.size <- h.size - 1; next end
+    else k :: remove_bucket eq_key key h next    
+
+module type S =
+sig
+  type key
+  type t
+  val create: int ->  t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy: t -> t
+  val remove:  t -> key -> unit
+  val add :  t -> key -> unit
+  val check_add : t -> key -> bool
+  val mem :  t -> key -> bool
+  val iter: (key -> unit) ->  t -> unit
+  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+  val length:  t -> int
+  val stats:  t -> Hashtbl.statistics
+  val elements : t -> key list 
+end

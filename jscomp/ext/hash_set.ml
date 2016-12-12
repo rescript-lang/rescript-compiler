@@ -32,7 +32,7 @@ let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 let stats = Hash_set_gen.stats
 let elements = Hash_set_gen.elements
-
+let eq_key = (=)
 
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
@@ -42,118 +42,92 @@ let key_index (h : _ Hash_set_gen.t) key =
 
 
 let remove (h : _ Hash_set_gen.t ) key =
-  let rec remove_bucket = function
-    | [ ] ->
-        [ ]
-    | k :: next ->
-        if compare k key = 0
-        then begin h.size <- h.size - 1; next end
-        else k :: remove_bucket next in
   let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
 
-let rec small_bucket_mem key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    key = key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-      key = key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-         key = key3 ||
-         small_bucket_mem key rest 
+
 let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h; 
     end
-let mem (h : _ Hash_set_gen.t ) key =
-  small_bucket_mem key h.data.(key_index h key) 
+
+let check_add (h : _ t ) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false   
+
+let mem (h : _ t ) key =
+  Hash_set_gen.small_bucket_mem eq_key key h.data.(key_index h key) 
 
 
 
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> Hashtbl.statistics
-    val elements : t -> key list 
-  end
 
 
-module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
-  struct
-    type key = H.t
-    type nonrec  t = key t
-    let create = Hash_set_gen.create
-    let clear = Hash_set_gen.clear
-    let reset = Hash_set_gen.reset
-    let copy = Hash_set_gen.copy
-    let iter = Hash_set_gen.iter
-    let fold = Hash_set_gen.fold
-    let length = Hash_set_gen.length
-    let stats = Hash_set_gen.stats
-    let elements = Hash_set_gen.elements
+module Make(H: Hashtbl.HashedType): (Hash_set_gen.S with type key = H.t) =
+struct
+  type key = H.t
+  type nonrec  t = key t
+  let create = Hash_set_gen.create
+  let clear = Hash_set_gen.clear
+  let reset = Hash_set_gen.reset
+  let copy = Hash_set_gen.copy
+  let iter = Hash_set_gen.iter
+  let fold = Hash_set_gen.fold
+  let length = Hash_set_gen.length
+  let stats = Hash_set_gen.stats
+  let elements = Hash_set_gen.elements
 
-    let key_index (h :  t ) key =
-      (H.hash  key) land (Array.length h.data - 1)
+  let key_index (h :  t ) key =
+    (H.hash  key) land (Array.length h.data - 1)
 
-    let remove (h : t) key =
-      let rec remove_bucket = function
-        | [ ] ->
-            [ ]
-        | k :: next ->
-            if H.equal k key
-            then begin h.size <- h.size - 1; next end
-            else k :: remove_bucket next in
-      let i = key_index h key in
-      h.data.(i) <- remove_bucket h.data.(i)
+  let remove (h : t) key =
+    let i = key_index h key in
+    let h_data = h.data in
+    let old_h_size = h.size in 
+    let new_bucket = Hash_set_gen.remove_bucket H.equal key h (Array.unsafe_get h_data i) in
+    if old_h_size <> h.size then  
+      Array.unsafe_set h_data i new_bucket
 
-    let rec small_bucket_mem key lst =
-      match lst with 
-      | [] -> false 
-      | key1::rest -> 
-        H.equal key key1 ||
-        match rest with 
-        | [] -> false 
-        | key2 :: rest -> 
-          H.equal key  key2 ||
-          match rest with 
-          | [] -> false 
-          | key3 :: rest -> 
-            H.equal key  key3 ||
-            small_bucket_mem key rest 
 
-    let add (h : t) key =
-      let i = key_index h key  in 
-      if not (small_bucket_mem key  h.data.(i)) then 
-        begin 
-          h.data.(i) <- key :: h.data.(i);
-          h.size <- h.size + 1 ;
-          if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
-        end
 
-    let mem (h :  t) key =
-      small_bucket_mem key h.data.(key_index h key) 
+  let add (h : t) key =
+    let i = key_index h key  in 
+    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- key :: h.data.(i);
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      end
+  
+  let check_add (h : t) key =
+    let i = key_index h key  in 
+    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
+      begin 
+        h.data.(i) <- key :: h.data.(i);
+        h.size <- h.size + 1 ;
+        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+        true
+      end
+    else false
+      
+  let mem (h :  t) key =
+    Hash_set_gen.small_bucket_mem H.equal key h.data.(key_index h key) 
 
-  end
+end
 
 
 

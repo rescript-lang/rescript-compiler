@@ -263,6 +263,7 @@ let compile  ~filename output_prefix no_export env _sigs
          lambda_exports are pure
          compile each binding with a return value
          This might be wrong in toplevel
+         TODO: add this check as early as possible in the beginning
       *)
 
       begin 
@@ -310,8 +311,14 @@ let compile  ~filename output_prefix no_export env _sigs
                 ([],[], Ident_set.empty, Ident_map.empty)
           in
           let () = 
+            let len = List.length new_exports in 
+            let tbl = String_hash_set.create len in 
             new_exports |> List.iter 
-              (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
+              (fun (id : Ident.t) -> 
+                 if not @@ String_hash_set.check_add tbl id.name then 
+                   Bs_exception.error (Bs_duplicate_exports id.name);
+                 Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp
+              ) 
           in
           let meta = { meta with 
                        export_idents = new_export_set;

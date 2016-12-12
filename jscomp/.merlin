@@ -4,7 +4,8 @@ B common
 B ext
 B syntax
 B core
-
+S stubs
+B stubs
 S runtime
 B runtime
 S stdlib

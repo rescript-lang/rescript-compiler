@@ -64,7 +64,7 @@ let suites =
     end;
 
      __LOC__ >:: begin fun _ ->
-      let arr_size = 1_000_000 in
+      let arr_size = 1_00_000 in
       let v = ref Bal_set_common.empty in 
       for i = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  

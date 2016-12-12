@@ -26,6 +26,7 @@ type error =
   | Cmj_not_found of string
   | Bs_cyclic_depends of string  list
   | Bs_duplicated_module of string * string
+  | Bs_duplicate_exports of string (* gpr_974 *)
   | Bs_package_not_found of string                                                        
   | Bs_main_not_exist of string 
   | Bs_invalid_path of string

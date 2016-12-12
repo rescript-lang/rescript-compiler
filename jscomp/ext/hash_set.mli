@@ -30,28 +30,9 @@
 
 
 
-module type S =
-  sig
-    type key
-    type t
-    val create: int ->  t
-    val clear : t -> unit
-    val reset : t -> unit
-    val copy: t -> t
-    val remove:  t -> key -> unit
-    val add :  t -> key -> unit
-    val mem :  t -> key -> bool
-    val iter: (key -> unit) ->  t -> unit
-    val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-    val length:  t -> int
-    val stats:  t -> Hashtbl.statistics
-    val elements : t -> key list 
-  end
 
 
-
-
-module Make ( H : Hashtbl.HashedType) : (S with type key = H.t)
+module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
 (** A naive t implementation on top of [hashtbl], the value is [unit]*)
 
 type   'a t 

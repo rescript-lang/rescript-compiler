@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type key = string
 type  t = key  Hash_set_gen.t 
+let eq_key = Ext_string.equal 
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -37,40 +38,36 @@ let elements = Hash_set_gen.elements
 let key_index (h :  t ) key =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 
-let remove (h : t) key =
-  let rec remove_bucket = function
-    | [ ] ->
-      [ ]
-    | k :: next ->
-      if  (k : key)  = key
-      then begin h.size <- h.size - 1; next end
-      else k :: remove_bucket next in
+let remove (h : t) key =  
   let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
 
-let rec small_bucket_mem key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-     (key : key) = key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-       (key : key) = key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-         (key : key) = key3 ||
-         small_bucket_mem key rest 
+
 
 let add (h : t) key =
   let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
+let check_add (h : t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
 let mem (h :  t) key =
-  small_bucket_mem key h.data.(key_index h key) 
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
