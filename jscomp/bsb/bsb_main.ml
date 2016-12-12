@@ -86,16 +86,38 @@ let write_ninja_file cwd =
 
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
+  (* ATTENTION: order matters here, need resolve global properties before
+     merlin generation
+  *)
   let handle_bsb_build_ui (res : Bsb_build_ui.t) = 
     let ochan = open_out_bin (builddir // sourcedirs_meta) in
     let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in 
     let buffer = Buffer.create 100 in 
+    let () = 
+      Bsb_default.get_ppx_flags ()
+      |> List.iter (fun x -> 
+          Buffer.add_string buffer (Printf.sprintf "PPX %s\n" x )
+        )
+    in 
     let () = Buffer.add_string buffer
         (Printf.sprintf "S %s\n\
                          B %s\n\
-                         PPX %s\n
+                         PPX %s\n\
                        " lib_ocaml_dir lib_ocaml_dir bsppx
         ) in 
+    let () = 
+      Bsb_default.get_bs_dependencies ()
+      |> List.iter (fun package -> 
+          let path = (Bsb_default.resolve_bsb_magic_file ~cwd ~desc:"dependecies" 
+                         (package ^ "/")// "lib"//"ocaml") in 
+          Buffer.add_string buffer "\nS "; 
+          Buffer.add_string buffer path ;
+          Buffer.add_string buffer "\nB ";
+          Buffer.add_string buffer path ; 
+          Buffer.add_string buffer "\n";
+           
+        )
+    in 
     res.files |> List.iter 
       (fun (x : Bsb_build_ui.file_group) -> 
          output_string ochan x.dir;

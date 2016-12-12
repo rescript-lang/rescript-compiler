@@ -466,6 +466,11 @@
                 "a_filename_test.ml",
                 "a.ml"
             ]
-        }
+    },
+
+    // "ppx-flags": ["reason/bin/reactjs_jsx_ppx"]
+    // ,
+    // "bs-dependencies" : ["mocha"]
+    // , "generate-merlin" : true
     
 }
