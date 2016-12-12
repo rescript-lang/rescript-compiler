@@ -2,26 +2,39 @@
 
 ### First example
 
-* Create a directory called `hello` and create `package.json`
+* Create a directory called `hello` and create `bsconfig.json`, `package.json`
   as below:
+
++
+[source,js]
+.bsconfig.json
+----
+{
+    "name" : "helo",
+    "sources" : { "dir" :  "src"}
+}
+----
+
 +
 [source,js]
 .package.json
 ----
 {
     "dependencies": {
-        "bs-platform": "1.0.1" // <1>
+        "bs-platform": "1.3.3" // <1>
     },
     "scripts" : {
-        "build" : "bsc.exe -c  main_entry.ml"
+        "build" : "bsb",
+        "watch" : "bsb -w" // <2>
     }
 }
 ----
 <1> Version should be updated accordingly
-* Create `main_entry.ml` as below:
+<2> Watch mode when development
+* Create `src/main_entry.ml` as below:
 +
 [source,ocaml]
-.main_entry.ml
+.src/main_entry.ml
 ----
 let () =
   print_endline "hello world"
@@ -34,10 +47,10 @@ let () =
 ----
 npm run build
 ----
-
-Now you should see a file called `main_entry.js` generated as below:
+ 
+Now you should see a file called `lib/js/src/main_entry.js` generated as below:
 [source,js]
-.main_entry.js
+.lib/js/src/main_entry.js
 ----
 // GENERATED CODE BY BUCKLESCRIPT VERSION 1.0.1 , PLEASE EDIT WITH CARE
 'use strict';
@@ -49,6 +62,13 @@ console.log("hello world");
 ----
 <1> The compiler analyze this module is impure due to the side effect
 
+User can  also run `watch` mode see changes instantly while editing.
+
+[source,sh]
+----
+npm run watch
+----
+
 TIP: The working code is available https://github.com/bloomberg/bucklescript-addons/tree/master/examples/hello[here]:
 
 
@@ -58,26 +78,34 @@ Now we want to create two modules, one file called `fib.ml` which
 exports `fib` function, the other module called `main_entry.ml` which
 will call `fib`.
 
-* Create a directory `fib` and created a file `package.json`
+* Create a directory `fib` and created files, `bsconfig.json`, `package.json`
++
+[source,js]
+.bsconfig.json
+----
+{
+    "name" : "helo",
+    "sources" : { "dir" :  "src"}
+}
+----
 +
 [source,js]
 .package.json
 ----------
 {
     "dependencies": {
-        "bs-platform": "1.0.1"
+        "bs-platform": "1.3.4"
     },
     "scripts" : {
-        "build" : "bsc.exe -c -bs-main Main_entry" // <1>
+        "build" : "bsb",
+        "watch" : "bsb -w"
     }
 }
 ----------
-<1> here `-bs-main` option tells the compiler compile `Main_entry` module and
-its dependency accordingly
-* Create file `fib.ml` and file `main_entry.ml`
+* Create file `src/fib.ml` and file `src/main_entry.ml`
 +
 [source,ocaml]
-.fib.ml
+.src/fib.ml
 ------
 let  fib n  =
   let rec aux n a b =
@@ -88,7 +116,7 @@ let  fib n  =
 ------
 +
 [source,ocaml]
-.main_entry.ml
+.src/main_entry.ml
 ------
 let () =
   for i = 0 to 10 do
@@ -102,7 +130,7 @@ let () =
 -------
 npm install
 npm run build
-node main_entry.js
+node lib/js/src/main_entry.js
 -------
 
 If everything goes well, you should see the output as below:

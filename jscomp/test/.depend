@@ -369,6 +369,7 @@ test_closure.cmj : ../stdlib/array.cmj
 test_common.cmj :
 test_const_elim.cmj :
 test_const_propogate.cmj :
+test_cpp.cmj : ../stdlib/pervasives.cmj
 test_cps.cmj : ../stdlib/array.cmj
 test_demo.cmj : ../stdlib/list.cmj
 test_dup_param.cmj :
