@@ -27,9 +27,13 @@ let (//) = Ext_filename.combine
 
 
 (* Magic path resolution:
-foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
-/foo/bar => /foo/bar
-./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
+   foo => foo 
+   foo/ => /absolute/path/to/projectRoot/node_modules/foo
+   foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
+   /foo/bar => /foo/bar
+   ./foo/bar => /absolute/path/to/projectRoot/./foo/bar 
+   Input is node path, output is OS dependent path
+*)
 let resolve_bsb_magic_file ~cwd ~desc p =
   let p_len = String.length p in 
   let no_slash = Ext_filename.no_slash p 0 p_len in  

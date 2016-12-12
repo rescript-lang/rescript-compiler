@@ -6100,6 +6100,7 @@ module Bsb_default : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
 
 val get_ocamllex : unit -> string
 val set_ocamllex : cwd:string -> string -> unit
@@ -6172,9 +6173,13 @@ let (//) = Ext_filename.combine
 
 
 (* Magic path resolution:
-foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
-/foo/bar => /foo/bar
-./foo/bar => /absolute/path/to/projectRoot/./foo/bar *)
+   foo => foo 
+   foo/ => /absolute/path/to/projectRoot/node_modules/foo
+   foo/bar => /absolute/path/to/projectRoot/node_modules/foo.bar
+   /foo/bar => /foo/bar
+   ./foo/bar => /absolute/path/to/projectRoot/./foo/bar 
+   Input is node path, output is OS dependent path
+*)
 let resolve_bsb_magic_file ~cwd ~desc p =
   let p_len = String.length p in 
   let no_slash = Ext_filename.no_slash p 0 p_len in  
@@ -7300,6 +7305,9 @@ let write_ninja_file cwd =
 
   let update_queue = ref [] in
   let globbed_dirs = ref [] in
+  (* ATTENTION: order matters here, need resolve global properties before
+     merlin generation
+  *)
   let handle_bsb_build_ui (res : Bsb_build_ui.t) = 
     let ochan = open_out_bin (builddir // sourcedirs_meta) in
     let lib_ocaml_dir = (bsc_dir // ".."//"lib"//"ocaml") in 
@@ -7310,6 +7318,19 @@ let write_ninja_file cwd =
                          PPX %s\n
                        " lib_ocaml_dir lib_ocaml_dir bsppx
         ) in 
+    let () = 
+      Bsb_default.get_bs_dependencies ()
+      |> List.iter (fun package -> 
+          let path = (Bsb_default.resolve_bsb_magic_file ~cwd ~desc:"dependecies" 
+                         (package ^ "/")// "lib"//"ocaml") in 
+          Buffer.add_string buffer "\nS "; 
+          Buffer.add_string buffer path ;
+          Buffer.add_string buffer "\nB ";
+          Buffer.add_string buffer path ; 
+          Buffer.add_string buffer "\n";
+           
+        )
+    in 
     res.files |> List.iter 
       (fun (x : Bsb_build_ui.file_group) -> 
          output_string ochan x.dir;

@@ -467,5 +467,8 @@
                 "a.ml"
             ]
         }
+    // ,
+    // "bs-dependencies" : ["mocha"]
+    // , "generate-merlin" : true
     
 }
