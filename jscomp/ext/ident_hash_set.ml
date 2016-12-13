@@ -22,14 +22,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 36
+# 37
 type key = Ident.t
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
 let eq_key = Ext_ident.equal
+type t = key Hash_set_gen.t
 
-# 44
-type  t = key  Hash_set_gen.t 
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -42,7 +43,7 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : t) key =  
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -52,7 +53,7 @@ let remove (h : t) key =
 
 
 
-let add (h : t) key =
+let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -61,7 +62,7 @@ let add (h : t) key =
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : t) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -73,5 +74,7 @@ let check_add (h : t) key =
   else false 
 
 
-let mem (h :  t) key =
+let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  

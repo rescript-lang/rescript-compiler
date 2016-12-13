@@ -26,22 +26,36 @@ type key = int
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 let eq_key = Ext_int.equal 
-
+type  t = key  Hash_set_gen.t 
 #elif defined TYPE_STRING
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
+type  t = key  Hash_set_gen.t 
 #elif defined TYPE_IDENT
 type key = Ident.t
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
 let eq_key = Ext_ident.equal
+type t = key Hash_set_gen.t
+#elif defined TYPE_FUNCTOR
+module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
+type key = H.t 
+let eq_key = H.equal
+let key_index (h :  _ Hash_set_gen.t ) key =
+  (H.hash  key) land (Array.length h.data - 1)
+type t = key Hash_set_gen.t
 #else 
-[%error "undefined type"]
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
+  seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
+let eq_key = (=)
+type  'a t = 'a Hash_set_gen.t 
 #endif 
 
-type  t = key  Hash_set_gen.t 
+
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -54,7 +68,7 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : t) key =  
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -64,7 +78,7 @@ let remove (h : t) key =
 
 
 
-let add (h : t) key =
+let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -73,7 +87,7 @@ let add (h : t) key =
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : t) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -85,5 +99,10 @@ let check_add (h : t) key =
   else false 
 
 
-let mem (h :  t) key =
+let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+#if defined TYPE_FUNCTOR
+end
+#endif
+  

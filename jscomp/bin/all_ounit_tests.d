@@ -23,6 +23,8 @@ bin/all_ounit_tests.ml : ext/ext_util.mli
 bin/all_ounit_tests.ml : ext/hash_set_gen.ml
 bin/all_ounit_tests.ml : ext/hash_set.ml
 bin/all_ounit_tests.ml : ext/hash_set.mli
+bin/all_ounit_tests.ml : ext/hash_set_poly.ml
+bin/all_ounit_tests.ml : ext/hash_set_poly.mli
 bin/all_ounit_tests.ml : ext/ordered_hash_set.ml
 bin/all_ounit_tests.ml : ext/ordered_hash_set.mli
 bin/all_ounit_tests.ml : stubs/bs_hash_stubs.ml

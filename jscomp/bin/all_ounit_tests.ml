@@ -3302,31 +3302,96 @@ module Hash_set : sig
 module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
 (** A naive t implementation on top of [hashtbl], the value is [unit]*)
 
-type   'a t 
-
-val create : int -> 'a t
-
-val clear : 'a t -> unit
-
-val reset : 'a t -> unit
-
-val copy : 'a t -> 'a t
-
-val add : 'a t -> 'a  -> unit
-val remove : 'a t -> 'a -> unit
-
-val mem : 'a t -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a t -> unit
-
-val elements : 'a t -> 'a list
-
-val length : 'a t -> int 
-
-val stats:  'a t -> Hashtbl.statistics
 
 end = struct
 #1 "hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 43
+module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
+type key = H.t 
+let eq_key = H.equal
+let key_index (h :  _ Hash_set_gen.t ) key =
+  (H.hash  key) land (Array.length h.data - 1)
+type t = key Hash_set_gen.t
+
+
+# 59
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+
+let remove (h : _ Hash_set_gen.t) key =  
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let check_add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+# 106
+end
+  
+
+end
+module Hash_set_poly : sig 
+#1 "hash_set_poly.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3351,7 +3416,66 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type 'a t = 'a  Hash_set_gen.t 
+
+type   'a t 
+
+val create : int -> 'a t
+
+val clear : 'a t -> unit
+
+val reset : 'a t -> unit
+
+val copy : 'a t -> 'a t
+
+val add : 'a t -> 'a  -> unit
+val remove : 'a t -> 'a -> unit
+
+val mem : 'a t -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a t -> unit
+
+val elements : 'a t -> 'a list
+
+val length : 'a t -> int 
+
+val stats:  'a t -> Hashtbl.statistics
+
+end = struct
+#1 "hash_set_poly.ml"
+# 1 "ext/hash_set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 50
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
+  seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
+let eq_key = (=)
+type  'a t = 'a Hash_set_gen.t 
+
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -3361,16 +3485,10 @@ let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 let stats = Hash_set_gen.stats
 let elements = Hash_set_gen.elements
-let eq_key = (=)
-
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
-
-let key_index (h : _ Hash_set_gen.t) key =
-  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
 
 
-let remove (h : _ Hash_set_gen.t ) key =
+
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -3379,94 +3497,32 @@ let remove (h : _ Hash_set_gen.t ) key =
     Array.unsafe_set h_data i new_bucket
 
 
+
 let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h; 
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : _ t ) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
       true 
     end
-  else false   
-
-let mem (h : _ t ) key =
-  Hash_set_gen.small_bucket_mem eq_key key h.data.(key_index h key) 
+  else false 
 
 
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-
-
-module Make(H: Hashtbl.HashedType): (Hash_set_gen.S with type key = H.t) =
-struct
-  type key = H.t
-  type nonrec  t = key t
-  let create = Hash_set_gen.create
-  let clear = Hash_set_gen.clear
-  let reset = Hash_set_gen.reset
-  let copy = Hash_set_gen.copy
-  let iter = Hash_set_gen.iter
-  let fold = Hash_set_gen.fold
-  let length = Hash_set_gen.length
-  let stats = Hash_set_gen.stats
-  let elements = Hash_set_gen.elements
-
-  let key_index (h :  t ) key =
-    (H.hash  key) land (Array.length h.data - 1)
-
-  let remove (h : t) key =
-    let i = key_index h key in
-    let h_data = h.data in
-    let old_h_size = h.size in 
-    let new_bucket = Hash_set_gen.remove_bucket H.equal key h (Array.unsafe_get h_data i) in
-    if old_h_size <> h.size then  
-      Array.unsafe_set h_data i new_bucket
-
-
-
-  let add (h : t) key =
-    let i = key_index h key  in 
-    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
-      begin 
-        h.data.(i) <- key :: h.data.(i);
-        h.size <- h.size + 1 ;
-        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
-      end
   
-  let check_add (h : t) key =
-    let i = key_index h key  in 
-    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
-      begin 
-        h.data.(i) <- key :: h.data.(i);
-        h.size <- h.size + 1 ;
-        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
-        true
-      end
-    else false
-      
-  let mem (h :  t) key =
-    Hash_set_gen.small_bucket_mem H.equal key h.data.(key_index h key) 
-
-end
-
-
-
-
-
-
-
-
-
-
 
 end
 module Ordered_hash_set : sig 
@@ -3933,9 +3989,10 @@ type key = string
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
-
-# 44
 type  t = key  Hash_set_gen.t 
+
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -3948,7 +4005,7 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : t) key =  
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -3958,7 +4015,7 @@ let remove (h : t) key =
 
 
 
-let add (h : t) key =
+let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -3967,7 +4024,7 @@ let add (h : t) key =
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : t) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -3979,8 +4036,10 @@ let check_add (h : t) key =
   else false 
 
 
-let mem (h :  t) key =
+let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
 
 end
 module Ounit_hash_set_tests
@@ -4013,35 +4072,35 @@ let suites =
   >:::
   [
     __LOC__ >:: begin fun _ ->
-      let v = Hash_set.create 31 in
+      let v = Hash_set_poly.create 31 in
       for i = 0 to 1000 do
-        Hash_set.add v i  
+        Hash_set_poly.add v i  
       done  ;
-      OUnit.assert_equal (Hash_set.length v) 1001
+      OUnit.assert_equal (Hash_set_poly.length v) 1001
     end ;
     __LOC__ >:: begin fun _ ->
-      let v = Hash_set.create 31 in
+      let v = Hash_set_poly.create 31 in
       for i = 0 to 1_0_000 do
-        Hash_set.add v 0
+        Hash_set_poly.add v 0
       done  ;
-      OUnit.assert_equal (Hash_set.length v) 1
+      OUnit.assert_equal (Hash_set_poly.length v) 1
     end ;
     __LOC__ >:: begin fun _ -> 
-      let v = Hash_set.create 30 in 
+      let v = Hash_set_poly.create 30 in 
       for i = 0 to 2_000 do 
-        Hash_set.add v {name = "x" ; stamp = i}
+        Hash_set_poly.add v {name = "x" ; stamp = i}
       done ;
       for i = 0 to 2_000 do 
-        Hash_set.add v {name = "x" ; stamp = i}
+        Hash_set_poly.add v {name = "x" ; stamp = i}
       done  ; 
       for i = 0 to 2_000 do 
-        assert (Hash_set.mem v {name = "x"; stamp = i})
+        assert (Hash_set_poly.mem v {name = "x"; stamp = i})
       done;  
-      OUnit.assert_equal (Hash_set.length v)  2_001;
+      OUnit.assert_equal (Hash_set_poly.length v)  2_001;
       for i =  1990 to 3_000 do 
-        Hash_set.remove v {name = "x"; stamp = i}
+        Hash_set_poly.remove v {name = "x"; stamp = i}
       done ;
-      OUnit.assert_equal (Hash_set.length v) 1990;
+      OUnit.assert_equal (Hash_set_poly.length v) 1990;
       (* OUnit.assert_equal (Hash_set.stats v) *)
       (*   {Hashtbl.num_bindings = 1990; num_buckets = 1024; max_bucket_length = 7; *)
       (*    bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]} *)
@@ -4170,10 +4229,10 @@ type key = int
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 let eq_key = Ext_int.equal 
-
-
-# 44
 type  t = key  Hash_set_gen.t 
+
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4186,7 +4245,7 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : t) key =  
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -4196,7 +4255,7 @@ let remove (h : t) key =
 
 
 
-let add (h : t) key =
+let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -4205,7 +4264,7 @@ let add (h : t) key =
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : t) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -4217,8 +4276,10 @@ let check_add (h : t) key =
   else false 
 
 
-let mem (h :  t) key =
+let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
 
 end
 module Ounit_hash_stubs_test
@@ -4244,13 +4305,13 @@ let bench () =
     done
   end;
   Ounit_tests_util.time "int hash set" begin fun _ -> 
-    let v = Hash_set.create 2_000_000 in 
+    let v = Hash_set_poly.create 2_000_000 in 
     for i = 0 to  count do 
-      Hash_set.add  v i
+      Hash_set_poly.add  v i
     done ;
     for i = 0 to 3 do 
       for i = 0 to count do 
-        assert (Hash_set.mem v i)
+        assert (Hash_set_poly.mem v i)
      done
     done
   end

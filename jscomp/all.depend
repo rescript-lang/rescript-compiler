@@ -51,6 +51,7 @@ ext/ext_ident.cmx : ext/string_hashtbl.cmx ext/string_hash_set.cmx \
     ext/ext_string.cmx ext/ext_ident.cmi
 ext/ident_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_ident.cmx \
     stubs/bs_hash_stubs.cmx ext/ident_hash_set.cmi
+ext/hash_set_poly.cmx : ext/hash_set_gen.cmx ext/hash_set_poly.cmi
 ext/ident_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_ident.cmx \
     stubs/bs_hash_stubs.cmx ext/ident_hashtbl.cmi
 ext/int_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_int.cmx \
@@ -97,6 +98,7 @@ ext/ext_pp_scope.cmi : ext/ident_set.cmi
 ext/ext_io.cmi :
 ext/ext_ident.cmi :
 ext/ident_hash_set.cmi : ext/hash_set_gen.cmx
+ext/hash_set_poly.cmi :
 ext/ident_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/int_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/ext_filename.cmi :
@@ -220,7 +222,7 @@ core/lam_stats.cmi : core/lam_module_ident.cmi core/lam.cmi \
 core/config_util.cmi : core/js_cmj_format.cmi
 core/lam_compile_defs.cmi : core/lam_stats.cmi core/j.cmx core/ident_map.cmi
 core/js_fold_basic.cmi : core/lam_module_ident.cmi core/j.cmx \
-    ext/ident_set.cmi ext/hash_set.cmi
+    ext/ident_set.cmi ext/hash_set_poly.cmi
 core/js_pass_scope.cmi : core/j.cmx ext/ident_set.cmi
 core/js_op_util.cmi : core/js_op.cmx core/j.cmx
 core/js_analyzer.cmi : core/j.cmx ext/ident_set.cmi
@@ -249,7 +251,7 @@ core/js_pass_flatten_and_mark_dead.cmi : core/j.cmx
 core/js_ast_util.cmi : core/j.cmx
 core/lam_dce.cmi : core/lam_group.cmi
 core/lam_compile_env.cmi : core/lam_module_ident.cmi core/lam.cmi \
-    common/js_config.cmi core/js_cmj_format.cmi ext/hash_set.cmi
+    common/js_config.cmi core/js_cmj_format.cmi ext/hash_set_poly.cmi
 core/lam_stats_util.cmi : core/lam_stats.cmi core/lam.cmi
 core/lam_stats_export.cmi : core/lam_stats.cmi core/lam_module_ident.cmi \
     core/lam.cmi core/js_cmj_format.cmi core/ident_map.cmi
@@ -322,7 +324,7 @@ core/lam_compile_defs.cmx : core/lam_stats.cmx core/j.cmx core/ident_map.cmx \
 core/js_map.cmx : core/j.cmx
 core/js_fold.cmx : core/j.cmx
 core/js_fold_basic.cmx : core/lam_module_ident.cmx core/js_fold.cmx \
-    common/js_config.cmx core/j.cmx ext/ident_set.cmx ext/hash_set.cmx \
+    common/js_config.cmx core/j.cmx ext/ident_set.cmx ext/hash_set_poly.cmx \
     ext/ext_ident.cmx core/js_fold_basic.cmi
 core/js_pass_scope.cmx : core/js_fun_env.cmx core/js_fold.cmx \
     core/js_closure.cmx ext/ident_set.cmx common/ext_log.cmx \
@@ -390,7 +392,7 @@ core/lam_group_pass.cmx : core/lam.cmx
 core/lam_compile_env.cmx : core/type_util.cmx ext/string_map.cmx \
     core/lam_module_ident.cmx core/lam.cmx core/js_stmt_make.cmx \
     core/js_exp_make.cmx common/js_config.cmx core/js_cmj_format.cmx \
-    ext/hash_set.cmx ext/ext_ident.cmx core/config_util.cmx \
+    ext/hash_set_poly.cmx ext/ext_ident.cmx core/config_util.cmx \
     core/lam_compile_env.cmi
 core/lam_stats_util.cmx : core/lam_stats.cmx core/lam_compile_env.cmx \
     core/lam.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
@@ -537,8 +539,12 @@ ounit_tests/ounit_bal_tree_tests.cmx : ounit_tests/ounit_tests_util.cmx \
 ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_filename.cmx
 ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \
     ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx
+ounit_tests/ounit_hash_stubs_test.cmx : ounit_tests/ounit_tests_util.cmx \
+    ounit/oUnit.cmx ext/int_hash_set.cmx ext/hash_set_poly.cmx \
+    stubs/bs_hash_stubs.cmx
 ounit_tests/ounit_hash_set_tests.cmx : ext/string_hash_set.cmx \
-    ext/ordered_hash_set.cmx ounit/oUnit.cmx ext/hash_set.cmx
+    ext/ordered_hash_set.cmx ounit/oUnit.cmx ext/hash_set_poly.cmx \
+    ext/hash_set.cmx
 ounit_tests/ounit_scc_tests.cmx : ounit/oUnit.cmx ext/int_vec_vec.cmx \
     ext/int_vec.cmx ext/ext_string.cmx ext/ext_scc.cmx
 ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \

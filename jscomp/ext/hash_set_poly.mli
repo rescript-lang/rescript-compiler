@@ -23,14 +23,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type   'a t 
 
+val create : int -> 'a t
 
+val clear : 'a t -> unit
 
+val reset : 'a t -> unit
 
+val copy : 'a t -> 'a t
 
+val add : 'a t -> 'a  -> unit
+val remove : 'a t -> 'a -> unit
 
-(** A module to calculate hard dependency based on JS IR in module [J] *)
+val mem : 'a t -> 'a -> bool
 
-val depends_j : J.expression -> Ident_set.t -> Ident_set.t
+val iter : ('a -> unit) -> 'a t -> unit
 
-val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set_poly.t
+val elements : 'a t -> 'a list
+
+val length : 'a t -> int 
+
+val stats:  'a t -> Hashtbl.statistics

@@ -56792,9 +56792,10 @@ type key = string
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
-
-# 44
 type  t = key  Hash_set_gen.t 
+
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -56807,7 +56808,7 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : t) key =  
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -56817,7 +56818,7 @@ let remove (h : t) key =
 
 
 
-let add (h : t) key =
+let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -56826,7 +56827,7 @@ let add (h : t) key =
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : t) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -56838,8 +56839,10 @@ let check_add (h : t) key =
   else false 
 
 
-let mem (h :  t) key =
+let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
 
 end
 module Hashtbl_gen
@@ -67085,8 +67088,8 @@ let of_list2 ks vs =
   map
 
 end
-module Hash_set : sig 
-#1 "hash_set.mli"
+module Hash_set_poly : sig 
+#1 "hash_set_poly.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -67111,18 +67114,6 @@ module Hash_set : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Ideas are based on {!Hashtbl}, 
-    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
-    This module fixes the semantics of [add].
-    [remove] is not optimized since it is not used too much 
-*)
-
-
-
-
-
-module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
-(** A naive t implementation on top of [hashtbl], the value is [unit]*)
 
 type   'a t 
 
@@ -67148,7 +67139,8 @@ val length : 'a t -> int
 val stats:  'a t -> Hashtbl.statistics
 
 end = struct
-#1 "hash_set.ml"
+#1 "hash_set_poly.ml"
+# 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -67172,8 +67164,16 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 50
+external seeded_hash_param :
+  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
+let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
+  seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
+let eq_key = (=)
+type  'a t = 'a Hash_set_gen.t 
 
-type 'a t = 'a  Hash_set_gen.t 
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -67183,16 +67183,10 @@ let fold = Hash_set_gen.fold
 let length = Hash_set_gen.length
 let stats = Hash_set_gen.stats
 let elements = Hash_set_gen.elements
-let eq_key = (=)
-
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
-
-let key_index (h : _ Hash_set_gen.t) key =
-  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
 
 
-let remove (h : _ Hash_set_gen.t ) key =
+
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -67201,94 +67195,32 @@ let remove (h : _ Hash_set_gen.t ) key =
     Array.unsafe_set h_data i new_bucket
 
 
+
 let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h; 
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : _ t ) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  h.data.(i)) then 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
       h.data.(i) <- key :: h.data.(i);
       h.size <- h.size + 1 ;
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
       true 
     end
-  else false   
-
-let mem (h : _ t ) key =
-  Hash_set_gen.small_bucket_mem eq_key key h.data.(key_index h key) 
+  else false 
 
 
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-
-
-module Make(H: Hashtbl.HashedType): (Hash_set_gen.S with type key = H.t) =
-struct
-  type key = H.t
-  type nonrec  t = key t
-  let create = Hash_set_gen.create
-  let clear = Hash_set_gen.clear
-  let reset = Hash_set_gen.reset
-  let copy = Hash_set_gen.copy
-  let iter = Hash_set_gen.iter
-  let fold = Hash_set_gen.fold
-  let length = Hash_set_gen.length
-  let stats = Hash_set_gen.stats
-  let elements = Hash_set_gen.elements
-
-  let key_index (h :  t ) key =
-    (H.hash  key) land (Array.length h.data - 1)
-
-  let remove (h : t) key =
-    let i = key_index h key in
-    let h_data = h.data in
-    let old_h_size = h.size in 
-    let new_bucket = Hash_set_gen.remove_bucket H.equal key h (Array.unsafe_get h_data i) in
-    if old_h_size <> h.size then  
-      Array.unsafe_set h_data i new_bucket
-
-
-
-  let add (h : t) key =
-    let i = key_index h key  in 
-    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
-      begin 
-        h.data.(i) <- key :: h.data.(i);
-        h.size <- h.size + 1 ;
-        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
-      end
   
-  let check_add (h : t) key =
-    let i = key_index h key  in 
-    if not (Hash_set_gen.small_bucket_mem H.equal key  h.data.(i)) then 
-      begin 
-        h.data.(i) <- key :: h.data.(i);
-        h.size <- h.size + 1 ;
-        if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
-        true
-      end
-    else false
-      
-  let mem (h :  t) key =
-    Hash_set_gen.small_bucket_mem H.equal key h.data.(key_index h key) 
-
-end
-
-
-
-
-
-
-
-
-
-
 
 end
 module Lam_module_ident : sig 
@@ -67441,7 +67373,7 @@ module Js_fold_basic : sig
 
 val depends_j : J.expression -> Ident_set.t -> Ident_set.t
 
-val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set.t
+val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set_poly.t
 
 end = struct
 #1 "js_fold_basic.ml"
@@ -67504,18 +67436,18 @@ class count_deps (add : Ident.t -> unit )  =
 class count_hard_dependencies = 
   object(self)
     inherit  Js_fold.fold as super
-    val hard_dependencies = Hash_set.create 17
+    val hard_dependencies = Hash_set_poly.create 17
     method! vident vid = 
       match vid with 
       | Qualified (id,kind,_) ->
-          Hash_set.add  hard_dependencies (Lam_module_ident.mk kind id); self
+          Hash_set_poly.add  hard_dependencies (Lam_module_ident.mk kind id); self
       | Id id -> self
     method! expression x = 
       match  x with
       | {expression_desc = Call (_,_, {arity = NA}); _}
         (* see [Js_exp_make.runtime_var_dot] *)
         -> 
-        Hash_set.add hard_dependencies 
+        Hash_set_poly.add hard_dependencies 
           (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
@@ -67528,7 +67460,7 @@ class count_hard_dependencies =
             -> ()
           | _, _
             -> 
-            Hash_set.add hard_dependencies 
+            Hash_set_poly.add hard_dependencies 
               (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.block));
         end;
         super#expression x 
@@ -68902,10 +68834,10 @@ type key = int
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 let eq_key = Ext_int.equal 
-
-
-# 44
 type  t = key  Hash_set_gen.t 
+
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -68918,7 +68850,7 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : t) key =  
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -68928,7 +68860,7 @@ let remove (h : t) key =
 
 
 
-let add (h : t) key =
+let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -68937,7 +68869,7 @@ let add (h : t) key =
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : t) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -68949,8 +68881,10 @@ let check_add (h : t) key =
   else false 
 
 
-let mem (h :  t) key =
+let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
 
 end
 module Lam_stats : sig 
@@ -70455,7 +70389,7 @@ val get_package_path_from_cmj :
 val get_requried_modules : 
   Env.t ->
   Lam_module_ident.t list ->
-  Lam_module_ident.t Hash_set.t -> 
+  Lam_module_ident.t Hash_set_poly.t -> 
   Lam_module_ident.t list
 
 end = struct
@@ -70701,19 +70635,19 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
 (* TODO: [env] is not hard dependency *)
 
 let get_requried_modules env (extras : module_id list ) (hard_dependencies 
-  : _ Hash_set.t) : module_id list =  
+  : _ Hash_set_poly.t) : module_id list =  
 
   let mem (x : Lam_module_ident.t) = 
-    not (is_pure x ) || Hash_set.mem hard_dependencies  x 
+    not (is_pure x ) || Hash_set_poly.mem hard_dependencies  x 
   in
   Hashtbl.iter (fun (id : module_id)  _  ->
       if mem id 
-      then Hash_set.add hard_dependencies id) cached_tbl ;
+      then Hash_set_poly.add hard_dependencies id) cached_tbl ;
   List.iter (fun id -> 
       if mem id 
-      then Hash_set.add hard_dependencies id
+      then Hash_set_poly.add hard_dependencies id
     ) extras;
-  Hash_set.elements hard_dependencies
+  Hash_set_poly.elements hard_dependencies
 
 end
 module Js_program_loader : sig 
@@ -83878,14 +83812,15 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 36
+# 37
 type key = Ident.t
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
 let eq_key = Ext_ident.equal
+type t = key Hash_set_gen.t
 
-# 44
-type  t = key  Hash_set_gen.t 
+
+# 59
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -83898,7 +83833,7 @@ let elements = Hash_set_gen.elements
 
 
 
-let remove (h : t) key =  
+let remove (h : _ Hash_set_gen.t) key =  
   let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
@@ -83908,7 +83843,7 @@ let remove (h : t) key =
 
 
 
-let add (h : t) key =
+let add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -83917,7 +83852,7 @@ let add (h : t) key =
       if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
     end
 
-let check_add (h : t) key =
+let check_add (h : _ Hash_set_gen.t) key =
   let i = key_index h key  in 
   if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
     begin 
@@ -83929,8 +83864,10 @@ let check_add (h : t) key =
   else false 
 
 
-let mem (h :  t) key =
+let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
 
 end
 module Lam_group : sig 

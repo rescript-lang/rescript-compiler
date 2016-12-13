@@ -103,5 +103,5 @@ val get_package_path_from_cmj :
 val get_requried_modules : 
   Env.t ->
   Lam_module_ident.t list ->
-  Lam_module_ident.t Hash_set.t -> 
+  Lam_module_ident.t Hash_set_poly.t -> 
   Lam_module_ident.t list

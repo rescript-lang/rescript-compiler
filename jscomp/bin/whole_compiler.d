@@ -194,8 +194,8 @@ bin/whole_compiler.ml : core/config_util.ml
 bin/whole_compiler.ml : core/config_util.mli
 bin/whole_compiler.ml : ext/ident_hashtbl.ml
 bin/whole_compiler.ml : ext/ident_hashtbl.mli
-bin/whole_compiler.ml : ext/hash_set.ml
-bin/whole_compiler.ml : ext/hash_set.mli
+bin/whole_compiler.ml : ext/hash_set_poly.ml
+bin/whole_compiler.ml : ext/hash_set_poly.mli
 bin/whole_compiler.ml : core/lam_module_ident.ml
 bin/whole_compiler.ml : core/lam_module_ident.mli
 bin/whole_compiler.ml : core/js_fold_basic.ml
