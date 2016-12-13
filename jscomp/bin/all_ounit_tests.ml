@@ -3904,6 +3904,7 @@ include Hash_set_gen.S with type key = string
 
 end = struct
 #1 "string_hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3927,9 +3928,14 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type key = string
-type  t = key  Hash_set_gen.t 
+# 31
+type key = string 
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
+
+# 44
+type  t = key  Hash_set_gen.t 
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -3941,8 +3947,6 @@ let stats = Hash_set_gen.stats
 let elements = Hash_set_gen.elements
 
 
-let key_index (h :  t ) key =
-  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 
 let remove (h : t) key =  
   let i = key_index h key in
@@ -4101,7 +4105,7 @@ let suites =
       String_hash_set.remove hash "x";
       OUnit.assert_equal len (String_hash_set.length hash);
       String_hash_set.remove hash "0";
-      OUnit.assert_equal (len - 1 ) (String_hash_set.length hash);
+      OUnit.assert_equal (len - 1 ) (String_hash_set.length hash)
     end
   ]
 
@@ -4137,6 +4141,7 @@ include Hash_set_gen.S with type key = int
 
 end = struct
 #1 "int_hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -4160,9 +4165,15 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 25
 type key = int
-type  t = key  Hash_set_gen.t 
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 let eq_key = Ext_int.equal 
+
+
+# 44
+type  t = key  Hash_set_gen.t 
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4174,8 +4185,6 @@ let stats = Hash_set_gen.stats
 let elements = Hash_set_gen.elements
 
 
-let key_index (h :  t ) key =
-  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 
 let remove (h : t) key =  
   let i = key_index h key in

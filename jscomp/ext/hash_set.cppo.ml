@@ -1,4 +1,3 @@
-# 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22,13 +21,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 31
+#ifdef TYPE_INT
+type key = int
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
+let eq_key = Ext_int.equal 
+
+#elif defined TYPE_STRING
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
+#elif defined TYPE_IDENT
+type key = Ident.t
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
+let eq_key = Ext_ident.equal
+#else 
+[%error "undefined type"]
+#endif 
 
-# 44
 type  t = key  Hash_set_gen.t 
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear

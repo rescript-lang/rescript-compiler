@@ -28,6 +28,12 @@ INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I co
 .mll.ml:
 	$(OCAMLLEX) $< -o $@ || (rm $@ && exit 2)
 
+ext/string_hash_set.ml: ext/hash_set.cppo.ml
+	cppo -D TYPE_STRING $< -o $@
+ext/int_hash_set.ml: ext/hash_set.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/ident_hash_set.ml: ext/hash_set.cppo.ml
+	cppo -D TYPE_IDENT $< -o $@
 
 ## Stubs 
 .c.o:
@@ -64,6 +70,7 @@ common/bs_version.ml: build_version.js ../package.json
 
 
 ### list files
+STUB_SRCS = bs_hash_stubs
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
 OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
@@ -82,11 +89,13 @@ EXT_SRCS = ext_util\
 	ext_list ext_map \
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
-	hash_set_gen hash_set string_hash_set int_hash_set ordered_hash_set ordered_hash_map union_find \
+	hash_set_gen hash_set string_hash_set int_hash_set \
+	 ordered_hash_set ordered_hash_map union_find \
 	ident_set int_map literals string_map \
 	string_set ext_scc ext_pp_scope\
 	ext_io\
 	ext_ident\
+	ident_hash_set\
 	ident_hashtbl\
 	int_hashtbl\
 	ext_filename
@@ -163,7 +172,28 @@ bin/jsgen.exe:ext.cmxa jsgen_main.cmx
 
 
 depend:
-	$(CAMLDEP) -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb stubs/*.ml stubs/*.mli ext/*.ml ext/*.mli common/*.ml common/*.mli syntax/*.ml syntax/*.mli *.ml *.mli depends/*.ml depends/*.mli core/*.ml core/*.mli bsb/*.ml bsb/*.mli ounit/*.mli ounit/*.ml ounit_tests/*.ml ounit_tests/*.mli > all.depend
+	$(CAMLDEP) -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb \
+	$(addprefix stubs/, $(addsuffix .ml, $(STUB_SRCS))) \
+	$(addprefix stubs/, $(addsuffix .mli, $(STUB_SRCS))) \
+	$(addprefix ext/, $(addsuffix .ml, $(EXT_SRCS))) \
+	$(addprefix ext/, $(addsuffix .mli, $(EXT_SRCS))) \
+	$(addprefix common/, $(addsuffix .ml, $(COMMON_SRCS))) \
+	$(addprefix common/, $(addsuffix .mli, $(COMMON_SRCS))) \
+	$(addprefix syntax/, $(addsuffix .ml, $(SYNTAX_SRCS))) \
+	$(addprefix syntax/, $(addsuffix .mli, $(SYNTAX_SRCS))) \
+	$(addprefix depends/, $(addsuffix .mli, $(DEPENDS_SRCS))) \
+	$(addprefix depends/, $(addsuffix .ml, $(DEPENDS_SRCS))) \
+	$(addprefix core/, $(addsuffix .mli, $(CORE_SRCS))) \
+	$(addprefix core/, $(addsuffix .ml, $(CORE_SRCS))) \
+	$(addprefix core/, $(addsuffix .mli, $(OTHER_CORE_SRCS))) \
+	$(addprefix core/, $(addsuffix .ml, $(OTHER_CORE_SRCS))) \
+	$(addprefix ounit/, $(addsuffix .mli, $(OUNIT_SRCS))) \
+	$(addprefix ounit/, $(addsuffix .ml, $(OUNIT_SRCS))) \
+	$(addprefix ounit_tests/, $(addsuffix .mli, $(OUNIT_TESTS_SRCS))) \
+	$(addprefix ounit_tests/, $(addsuffix .ml, $(OUNIT_TESTS_SRCS))) \
+	bsb/*.ml bsb/*.mli *.ml *.mli > all.depend
+	# $(addprefix bsb/, $(addsuffix .mli, $(BSB_SRCS))) \
+	# $(addprefix bsb/, $(addsuffix .ml, $(BSB_SRCS))) \
 
 
 

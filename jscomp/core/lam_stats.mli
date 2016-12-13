@@ -100,7 +100,7 @@ type meta = {
   export_idents : Ident_set.t ;
   exports : Ident.t list ;
   alias_tbl : alias_tbl; 
-  exit_codes : int Hash_set.t;
+  exit_codes : Int_hash_set.t;
 
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
