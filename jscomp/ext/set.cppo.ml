@@ -1,4 +1,3 @@
-# 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -24,13 +23,37 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 27
+#if defined TYPE_STRING 
 type elt = string
 let compare_elt = String.compare 
 type  t = elt Set_gen.t 
+#elif defined TYPE_IDENT
+type elt = Ident.t
+let compare_elt (x : elt) (y : elt) = 
+  let a =  Pervasives.compare (x.stamp : int) y.stamp in 
+  if a <> 0 then a 
+  else 
+    let b = Pervasives.compare (x.name : string) y.name in 
+    if b <> 0 then b 
+    else Pervasives.compare (x.flags : int) y.flags     
+type  t = elt Set_gen.t 
+#elif defined TYPE_INT
+type elt = int 
+let compare_elt = Ext_int.compare 
+type t = elt Set_gen.t
+#elif defined TYPE_FUNCTOR 
+module Make ( S : Set.OrderedType) = struct
+  type elt = S.t
+  type nonrec t = elt Set_gen.t 
+  let compare_elt = S.compare 
+#elif defined TYPE_POLY
+type 'a t = 'a Set_gen.t
+let compare_elt = Pervasives.compare
+#else 
+[%error "unknown type" ]
+#endif
 
 
-# 57
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
@@ -172,6 +195,9 @@ let invariant t =
   Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
+#if defined TYPE_FUNCTOR 
+end
+#endif
 
 
 

@@ -1948,9 +1948,19 @@ let suites =
     end     ;
     ]
 end
-module Bal_set_common
+module Ounit_tests_util
 = struct
-#1 "bal_set_common.ml"
+#1 "ounit_tests_util.ml"
+let time description f  =
+  let start = Unix.gettimeofday () in 
+  f ();
+  let finish = Unix.gettimeofday () in
+  Printf.printf "%s elapsed %f\n" description (finish -. start)  
+
+end
+module Set_gen
+= struct
+#1 "set_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -1965,7 +1975,6 @@ module Bal_set_common
 (***********************************************************************)
 
 (** balanced tree based on stdlib distribution *)
-
 
 type 'a t = 
   | Empty 
@@ -2392,82 +2401,9 @@ let rec compare_aux cmp e1 e2 =
 let compare cmp s1 s2 =
   compare_aux cmp (cons_enum s1 End) (cons_enum s2 End)
 
-end
-module Bal_tree : sig 
-#1 "bal_tree.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
 
-(** Balanced tree based on stdlib distribution *)
-
-
-type 'a t = 'a Bal_set_common.t 
-(** this operation is exposed intentionally , so that
-    users can whip up a specialized collection quickly
-*)
-
-
-
-val mem: 'a -> 'a t -> bool
-(** [mem x s] tests whether [x] belongs to the set [s]. *)
-
-val add: 'a -> 'a t -> 'a t
-(** [add x s] returns a set containing all elements of [s],
-    plus [x]. If [x] was already in [s], [s] is returned unchanged. *)
-
-val remove: 'a -> 'a t -> 'a t
-(** [remove x s] returns a set containing all elements of [s],
-    except [x]. If [x] was not in [s], [s] is returned unchanged. *)
-
-val union: 'a t -> 'a t -> 'a t
-
-val inter: 'a t -> 'a t -> 'a t
-
-val diff: 'a t -> 'a t -> 'a t
-
-
-val compare: 'a t -> 'a t -> int
-
-val equal: 'a t -> 'a t -> bool
-
-val subset: 'a t -> 'a t -> bool
-
-
-
-val split: 'a -> 'a t -> 'a t * bool * 'a t
-(** [split x s] returns a triple [(l, present, r)], where
-      [l] is the set of elements of [s] that are
-      strictly less than [x];
-      [r] is the set of elements of [s] that are
-      strictly greater than [x];
-      [present] is [false] if [s] contains no element equal to [x],
-      or [true] if [s] contains an element equal to [x]. *)
-
-val find: 'a -> 'a t -> 'a
-(** [find x s] returns the element of [s] equal to [x] (according
-    to [Ord.compare]), or raise [Not_found] if no such element
-    exists.
-*)
-
-val of_list: 'a list -> 'a t
-
-val of_array : 'a array -> 'a t
-
-val invariant : 'a t -> bool
-
-
-module Make (Ord : Set.OrderedType) : sig
-  type elt = Ord.t
+module type S = sig
+  type elt 
   type t
   val empty: t
   val is_empty: t -> bool
@@ -2495,305 +2431,12 @@ module Make (Ord : Set.OrderedType) : sig
   val equal: t -> t -> bool
   val subset: t -> t -> bool
   val filter: (elt -> bool) -> t -> t
-  
+
   val split: elt -> t -> t * bool * t
   val find: elt -> t -> elt
   val of_list: elt list -> t
-
-
-end 
-
-end = struct
-#1 "bal_tree.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-(** balanced tree based on stdlib distribution *)
-
-type 'a t  = 'a Bal_set_common.t 
-open Bal_set_common
-
-
-(* Splitting.  
-    split x s returns a triple (l, present, r) where
-        - l is the set of elements of s that are < x
-        - r is the set of elements of s that are > x
-        - present is false if s contains no element equal to x,
-          or true if s contains an element equal to x.
-*)
-
-let rec split x (tree : _ t ) : _ t  *  bool * _ t =
-  match tree with 
-  | Empty ->
-    (Empty, false, Empty)
-  | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then (l, true, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, internal_join rl v r)
-    else
-      let (lr, pres, rr) = split x r in (internal_join l v lr, pres, rr)
-
-let rec add x (tree : _ t) : _ t  =
-  match tree with 
-  | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
-    let c = Pervasives.compare x v in
-    if c = 0 then t else
-    if c < 0 then internal_bal (add x l) v r else internal_bal l v (add x r)
-
-let rec union (s1 : _ t) (s2 : _ t) =
-  match (s1, s2) with
-  | (Empty, t2) -> t2
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
-    if h1 >= h2 then
-      if h2 = 1 then add v2 s1 else begin
-        let (l2, _, r2) = split v1 s2 in
-        internal_join (union l1 l2) v1 (union r1 r2)
-      end
-    else
-    if h1 = 1 then add v1 s2 else begin
-      let (l1, _, r1) = split v2 s1 in
-      internal_join (union l1 l2) v2 (union r1 r2)
-    end    
-
-let rec inter s1 s2 =
-  match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> Empty
-  | (Node(l1, v1, r1, _), t2) ->
-    begin match split v1 t2 with
-      | (l2, false, r2) ->
-        internal_concat (inter l1 l2) (inter r1 r2)
-      | (l2, true, r2) ->
-        internal_join (inter l1 l2) v1 (inter r1 r2)
-    end 
-
-let rec diff s1 s2 =
-  match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, _), t2) ->
-    begin match split v1 t2 with
-      | (l2, false, r2) ->
-        internal_join (diff l1 l2) v1 (diff r1 r2)
-      | (l2, true, r2) ->
-        internal_concat (diff l1 l2) (diff r1 r2)    
-    end
-
-
-let rec mem x (tree : _ t) =
-  match tree with 
-  | Empty -> false
-  | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
-let rec remove x = function
-    Empty -> Empty
-  | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then internal_merge l r else
-    if c < 0 then internal_bal (remove x l) v r else internal_bal l v (remove x r)
-
-
-let rec subset (s1 : _ t) (s2 : _ t) =
-  match (s1, s2) with
-  | Empty, _ -> true
-  | _, Empty -> false
-  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
-    let c = Pervasives.compare v1 v2 in
-    if c = 0 then
-      subset l1 l2 && subset r1 r2
-    else if c < 0 then
-      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
-    else
-      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
-
-let compare s1 s2 = Bal_set_common.compare Pervasives.compare s1 s2 
-
-let equal s1 s2 = compare s1 s2 = 0
-
-let rec find x = function
-    Empty -> raise Not_found
-  | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then v
-    else find x (if c < 0 then l else r)
-
-
-
-let of_list l =
-  match l with
-  | [] -> empty
-  | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq Pervasives.compare l)
-
-let of_array l = 
-  Array.fold_left (fun  acc x -> add x acc) empty l
-
-
-
-
-let invariant t =
-  Bal_set_common.invariant Pervasives.compare t 
-
-module Make ( S : Set.OrderedType) = struct
-  type elt = S.t
-  type nonrec t = elt t 
-  let empty = Bal_set_common.empty 
-  let is_empty = Bal_set_common.is_empty
-  let iter = Bal_set_common.iter 
-  let fold = Bal_set_common.fold 
-  let for_all = Bal_set_common.for_all 
-  let exists = Bal_set_common.exists 
-  let singleton = Bal_set_common.singleton 
-  let cardinal = Bal_set_common.cardinal
-  let elements = Bal_set_common.elements
-  let min_elt = Bal_set_common.min_elt
-  let max_elt = Bal_set_common.max_elt
-  let choose = Bal_set_common.choose 
-  let of_sorted_list = Bal_set_common.of_sorted_list
-  let of_sorted_array = Bal_set_common.of_sorted_array
-  let partition = Bal_set_common.partition 
-  let filter = Bal_set_common.filter 
-  let of_sorted_list = Bal_set_common.of_sorted_list
-  let of_sorted_array = Bal_set_common.of_sorted_array
-  let rec split x = function
-    | Empty ->
-      (Empty, false, Empty)
-    | Node(l, v, r, _) ->
-      let c = S.compare x v in
-      if c = 0 then (l, true, r)
-      else if c < 0 then
-        let (ll, pres, rl) = split x l in (ll, pres, internal_join rl v r)
-      else
-        let (lr, pres, rr) = split x r in (internal_join l v lr, pres, rr)
-  let rec add x = function
-      Empty -> Node(Empty, x, Empty, 1)
-    | Node(l, v, r, _) as t ->
-      let c = S.compare x v in
-      if c = 0 then t else
-      if c < 0 then internal_bal (add x l) v r else internal_bal l v (add x r)
-
-  let rec union s1 s2 =
-    match (s1, s2) with
-    | (Empty, t2) -> t2
-    | (t1, Empty) -> t1
-    | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
-      if h1 >= h2 then
-        if h2 = 1 then add v2 s1 else begin
-          let (l2, _, r2) = split v1 s2 in
-          internal_join (union l1 l2) v1 (union r1 r2)
-        end
-      else
-      if h1 = 1 then add v1 s2 else begin
-        let (l1, _, r1) = split v2 s1 in
-        internal_join (union l1 l2) v2 (union r1 r2)
-      end    
-
-  let rec inter s1 s2 =
-    match (s1, s2) with
-    | (Empty, t2) -> Empty
-    | (t1, Empty) -> Empty
-    | (Node(l1, v1, r1, _), t2) ->
-      begin match split v1 t2 with
-        | (l2, false, r2) ->
-          internal_concat (inter l1 l2) (inter r1 r2)
-        | (l2, true, r2) ->
-          internal_join (inter l1 l2) v1 (inter r1 r2)
-      end 
-
-  let rec diff s1 s2 =
-    match (s1, s2) with
-    | (Empty, t2) -> Empty
-    | (t1, Empty) -> t1
-    | (Node(l1, v1, r1, _), t2) ->
-      begin match split v1 t2 with
-        | (l2, false, r2) ->
-          internal_join (diff l1 l2) v1 (diff r1 r2)
-        | (l2, true, r2) ->
-          internal_concat (diff l1 l2) (diff r1 r2)    
-      end
-
-
-  let rec mem x = function
-      Empty -> false
-    | Node(l, v, r, _) ->
-      let c = S.compare x v in
-      c = 0 || mem x (if c < 0 then l else r)
-
-  let rec remove x = function
-      Empty -> Empty
-    | Node(l, v, r, _) ->
-      let c = S.compare x v in
-      if c = 0 then internal_merge l r else
-      if c < 0 then internal_bal (remove x l) v r else internal_bal l v (remove x r)
-
-  let compare s1 s2 = Bal_set_common.compare Pervasives.compare s1 s2 
-
-
-  let equal s1 s2 =
-    compare s1 s2 = 0
-
-  let rec subset s1 s2 =
-    match (s1, s2) with
-      Empty, _ ->
-      true
-    | _, Empty ->
-      false
-    | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
-      let c = S.compare v1 v2 in
-      if c = 0 then
-        subset l1 l2 && subset r1 r2
-      else if c < 0 then
-        subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
-      else
-        subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
-
-
-
-
-  let rec find x = function
-      Empty -> raise Not_found
-    | Node(l, v, r, _) ->
-      let c = S.compare x v in
-      if c = 0 then v
-      else find x (if c < 0 then l else r)
-
-
-
-  let of_list l =
-    match l with
-    | [] -> empty
-    | [x0] -> singleton x0
-    | [x0; x1] -> add x1 (singleton x0)
-    | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-    | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-    | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-    | _ -> of_sorted_list (List.sort_uniq S.compare l)
-
-  let of_array l = 
-    Array.fold_left (fun  acc x -> add x acc) empty l
-
-  (* also check order *)
-  let invariant t =
-    check t ;
-    is_ordered S.compare t          
+  val of_sorted_list : elt list ->  t
+  val of_sorted_array : elt array -> t 
 end 
 
 end
@@ -2862,14 +2505,448 @@ let compare (x : t) (y : t) = Pervasives.compare x y
 let equal (x : t) (y : t) = x = y
 
 end
-module Ounit_tests_util
+module Set_int
 = struct
-#1 "ounit_tests_util.ml"
-let time description f  =
-  let start = Unix.gettimeofday () in 
-  f ();
-  let finish = Unix.gettimeofday () in
-  Printf.printf "%s elapsed %f\n" description (finish -. start)  
+#1 "set_int.ml"
+# 1 "ext/set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+# 41
+type elt = int 
+let compare_elt = Ext_int.compare 
+type t = elt Set_gen.t
+
+
+# 57
+let empty = Set_gen.empty 
+let is_empty = Set_gen.is_empty
+let iter = Set_gen.iter
+let fold = Set_gen.fold
+let for_all = Set_gen.for_all 
+let exists = Set_gen.exists 
+let singleton = Set_gen.singleton 
+let cardinal = Set_gen.cardinal
+let elements = Set_gen.elements
+let min_elt = Set_gen.min_elt
+let max_elt = Set_gen.max_elt
+let choose = Set_gen.choose 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+let partition = Set_gen.partition 
+let filter = Set_gen.filter 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+
+let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  match tree with 
+  | Empty ->
+    (Empty, false, Empty)
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then (l, true, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
+    else
+      let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  match tree with 
+  | Empty -> Node(Empty, x, Empty, 1)
+  | Node(l, v, r, _) as t ->
+    let c = compare_elt x v in
+    if c = 0 then t else
+    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
+
+let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> t2
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+    if h1 >= h2 then
+      if h2 = 1 then add v2 s1 else begin
+        let (l2, _, r2) = split v1 s2 in
+        Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
+      end
+    else
+    if h1 = 1 then add v1 s2 else begin
+      let (l1, _, r1) = split v2 s1 in
+      Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
+    end    
+
+let rec inter (s1 : _ Set_gen.t)  (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> Empty
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
+    end 
+
+let rec diff (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
+    end
+
+
+let rec mem x (tree : _ Set_gen.t) =  match tree with 
+  | Empty -> false
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x (tree : _ Set_gen.t) : _ Set_gen.t = match tree with 
+  | Empty -> Empty
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then Set_gen.internal_merge l r else
+    if c < 0 then Set_gen.internal_bal (remove x l) v r else Set_gen.internal_bal l v (remove x r)
+
+let compare s1 s2 = Set_gen.compare compare_elt s1 s2 
+
+
+let equal s1 s2 =
+  compare s1 s2 = 0
+
+let rec subset (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) =
+  match (s1, s2) with
+  | Empty, _ ->
+    true
+  | _, Empty ->
+    false
+  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
+    let c = compare_elt v1 v2 in
+    if c = 0 then
+      subset l1 l2 && subset r1 r2
+    else if c < 0 then
+      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
+    else
+      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
+
+
+
+
+let rec find x (tree : _ Set_gen.t) = match tree with
+  | Empty -> raise Not_found
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then v
+    else find x (if c < 0 then l else r)
+
+
+
+let of_list l =
+  match l with
+  | [] -> empty
+  | [x0] -> singleton x0
+  | [x0; x1] -> add x1 (singleton x0)
+  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
+  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
+  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
+  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
+
+let of_array l = 
+  Array.fold_left (fun  acc x -> add x acc) empty l
+
+(* also check order *)
+let invariant t =
+  Set_gen.check t ;
+  Set_gen.is_ordered compare_elt t          
+
+
+
+
+
+
+end
+module Set_poly : sig 
+#1 "set_poly.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(** Balanced tree based on stdlib distribution *)
+
+
+
+type 'a t
+(** this operation is exposed intentionally , so that
+    users can whip up a specialized collection quickly
+*)
+
+
+
+val mem: 'a -> 'a t -> bool
+(** [mem x s] tests whether [x] belongs to the set [s]. *)
+
+val add: 'a -> 'a t -> 'a t
+(** [add x s] returns a set containing all elements of [s],
+    plus [x]. If [x] was already in [s], [s] is returned unchanged. *)
+
+val remove: 'a -> 'a t -> 'a t
+(** [remove x s] returns a set containing all elements of [s],
+    except [x]. If [x] was not in [s], [s] is returned unchanged. *)
+
+val union: 'a t -> 'a t -> 'a t
+
+val inter: 'a t -> 'a t -> 'a t
+
+val diff: 'a t -> 'a t -> 'a t
+
+
+val compare: 'a t -> 'a t -> int
+
+val equal: 'a t -> 'a t -> bool
+
+val subset: 'a t -> 'a t -> bool
+
+
+
+val split: 'a -> 'a t -> 'a t * bool * 'a t
+(** [split x s] returns a triple [(l, present, r)], where
+      [l] is the set of elements of [s] that are
+      strictly less than [x];
+      [r] is the set of elements of [s] that are
+      strictly greater than [x];
+      [present] is [false] if [s] contains no element equal to [x],
+      or [true] if [s] contains an element equal to [x]. *)
+
+val find: 'a -> 'a t -> 'a
+(** [find x s] returns the element of [s] equal to [x] (according
+    to [Ord.compare]), or raise [Not_found] if no such element
+    exists.
+*)
+
+val of_list: 'a list -> 'a t
+
+val of_array : 'a array -> 'a t
+
+val invariant : 'a t -> bool
+
+
+val of_sorted_list : 'a list -> 'a t 
+val of_sorted_array : 'a array -> 'a t 
+val cardinal : 'a t -> int
+val empty : 'a t 
+val is_empty : 'a t -> bool 
+
+end = struct
+#1 "set_poly.ml"
+# 1 "ext/set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+# 50
+type 'a t = 'a Set_gen.t
+let compare_elt = Pervasives.compare
+
+
+# 57
+let empty = Set_gen.empty 
+let is_empty = Set_gen.is_empty
+let iter = Set_gen.iter
+let fold = Set_gen.fold
+let for_all = Set_gen.for_all 
+let exists = Set_gen.exists 
+let singleton = Set_gen.singleton 
+let cardinal = Set_gen.cardinal
+let elements = Set_gen.elements
+let min_elt = Set_gen.min_elt
+let max_elt = Set_gen.max_elt
+let choose = Set_gen.choose 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+let partition = Set_gen.partition 
+let filter = Set_gen.filter 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+
+let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  match tree with 
+  | Empty ->
+    (Empty, false, Empty)
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then (l, true, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
+    else
+      let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  match tree with 
+  | Empty -> Node(Empty, x, Empty, 1)
+  | Node(l, v, r, _) as t ->
+    let c = compare_elt x v in
+    if c = 0 then t else
+    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
+
+let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> t2
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+    if h1 >= h2 then
+      if h2 = 1 then add v2 s1 else begin
+        let (l2, _, r2) = split v1 s2 in
+        Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
+      end
+    else
+    if h1 = 1 then add v1 s2 else begin
+      let (l1, _, r1) = split v2 s1 in
+      Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
+    end    
+
+let rec inter (s1 : _ Set_gen.t)  (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> Empty
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
+    end 
+
+let rec diff (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
+    end
+
+
+let rec mem x (tree : _ Set_gen.t) =  match tree with 
+  | Empty -> false
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x (tree : _ Set_gen.t) : _ Set_gen.t = match tree with 
+  | Empty -> Empty
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then Set_gen.internal_merge l r else
+    if c < 0 then Set_gen.internal_bal (remove x l) v r else Set_gen.internal_bal l v (remove x r)
+
+let compare s1 s2 = Set_gen.compare compare_elt s1 s2 
+
+
+let equal s1 s2 =
+  compare s1 s2 = 0
+
+let rec subset (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) =
+  match (s1, s2) with
+  | Empty, _ ->
+    true
+  | _, Empty ->
+    false
+  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
+    let c = compare_elt v1 v2 in
+    if c = 0 then
+      subset l1 l2 && subset r1 r2
+    else if c < 0 then
+      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
+    else
+      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
+
+
+
+
+let rec find x (tree : _ Set_gen.t) = match tree with
+  | Empty -> raise Not_found
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then v
+    else find x (if c < 0 then l else r)
+
+
+
+let of_list l =
+  match l with
+  | [] -> empty
+  | [x0] -> singleton x0
+  | [x0; x1] -> add x1 (singleton x0)
+  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
+  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
+  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
+  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
+
+let of_array l = 
+  Array.fold_left (fun  acc x -> add x acc) empty l
+
+(* also check order *)
+let invariant t =
+  Set_gen.check t ;
+  Set_gen.is_ordered compare_elt t          
+
+
+
+
+
 
 end
 module Ounit_bal_tree_tests
@@ -2880,74 +2957,66 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal
 
-let rec add_int x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
-  match tree with  
-    | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
-    let c = Ext_int.compare (x : int) v in
-    if c = 0 then t else
-    if c < 0 then Bal_set_common.internal_bal (add_int x l) v r 
-    else Bal_set_common.internal_bal l v (add_int x r)
 
 let suites = 
   __FILE__ >:::
   [
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_tree.of_array (Array.init 1000 (fun n -> n))))
+        (Set_poly.invariant 
+           (Set_poly.of_array (Array.init 1000 (fun n -> n))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_tree.of_array (Array.init 1000 (fun n -> 1000-n))))
+        (Set_poly.invariant 
+           (Set_poly.of_array (Array.init 1000 (fun n -> 1000-n))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_tree.of_array (Array.init 1000 (fun n -> Random.int 1000))))
+        (Set_poly.invariant 
+           (Set_poly.of_array (Array.init 1000 (fun n -> Random.int 1000))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_set_common.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> n)))))
+        (Set_poly.invariant 
+           (Set_poly.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> n)))))
     end;
     __LOC__ >:: begin fun _ ->
       let arr = Array.init 1000 (fun n -> n) in
-      let set = (Bal_set_common.of_sorted_array arr) in
+      let set = (Set_poly.of_sorted_array arr) in
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant set );
-      OUnit.assert_equal 1000 (Bal_set_common.cardinal set)    
+        (Set_poly.invariant set );
+      OUnit.assert_equal 1000 (Set_poly.cardinal set)    
     end;
     __LOC__ >:: begin fun _ ->
       for i = 0 to 200 do 
         let arr = Array.init i (fun n -> n) in
-        let set = (Bal_set_common.of_sorted_array arr) in
+        let set = (Set_poly.of_sorted_array arr) in
         OUnit.assert_bool __LOC__
-          (Bal_tree.invariant set );
-        OUnit.assert_equal i (Bal_set_common.cardinal set)
+          (Set_poly.invariant set );
+        OUnit.assert_equal i (Set_poly.cardinal set)
       done    
     end;
     __LOC__ >:: begin fun _ ->
       let arr_size = 200 in
-      let arr_sets = Array.make 200 Bal_set_common.empty in  
+      let arr_sets = Array.make 200 Set_poly.empty in  
       for i = 0 to arr_size - 1 do
         let size = Random.int 1000 in  
         let arr = Array.init size (fun n -> n) in
-        arr_sets.(i)<- (Bal_set_common.of_sorted_array arr)            
+        arr_sets.(i)<- (Set_poly.of_sorted_array arr)            
       done;
-      let large = Array.fold_left Bal_tree.union Bal_set_common.empty arr_sets in 
-      OUnit.assert_bool __LOC__ (Bal_tree.invariant large)
+      let large = Array.fold_left Set_poly.union Set_poly.empty arr_sets in 
+      OUnit.assert_bool __LOC__ (Set_poly.invariant large)
     end;
 
      __LOC__ >:: begin fun _ ->
       let arr_size = 1_00_000 in
-      let v = ref Bal_set_common.empty in 
+      let v = ref Set_int.empty in 
       for i = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
-         v := add_int size !v                      
+         v := Set_int.add size !v                      
       done;       
-      OUnit.assert_bool __LOC__ (Bal_tree.invariant !v)
+      OUnit.assert_bool __LOC__ (Set_int.invariant !v)
     end;
 
   ]
@@ -2966,15 +3035,15 @@ let compare_ident x y =
     if b <> 0 then b 
     else compare (x.flags : int) y.flags     
 
-let rec add x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =
   match tree with  
     | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Bal_set_common.internal_bal (add x l) v r else Bal_set_common.internal_bal l v (add x r)
+    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
 
-let rec mem x (tree : _ Bal_set_common.t) = 
+let rec mem x (tree : _ Set_gen.t) = 
   match tree with 
    | Empty -> false
    | Node(l, v, r, _) ->
@@ -3007,16 +3076,16 @@ let bench () =
   end ;
 
   Ounit_tests_util.time "poly set" begin fun _ -> 
-    let v = ref Bal_set_common.empty in  
+    let v = ref Set_poly.empty in  
     for i = 0 to  times do
-      v := Bal_tree.add   {stamp = i ; name = "name"; flags = -1 } !v 
+      v := Set_poly.add   {stamp = i ; name = "name"; flags = -1 } !v 
     done;
     for i = 0 to times do
-      ignore @@ Bal_tree.mem   {stamp = i; name = "name" ; flags = -1} !v 
+      ignore @@ Set_poly.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done;
   end;
   Ounit_tests_util.time "poly set (specialized)" begin fun _ -> 
-    let v = ref Bal_set_common.empty in  
+    let v = ref Set_gen.empty in  
     for i = 0 to  times do
       v := add   {stamp = i ; name = "name"; flags = -1 } !v 
     done;

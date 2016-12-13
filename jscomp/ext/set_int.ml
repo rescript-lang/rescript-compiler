@@ -24,10 +24,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 27
-type elt = string
-let compare_elt = String.compare 
-type  t = elt Set_gen.t 
+# 41
+type elt = int 
+let compare_elt = Ext_int.compare 
+type t = elt Set_gen.t
 
 
 # 57

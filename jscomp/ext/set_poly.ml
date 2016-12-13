@@ -24,10 +24,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 27
-type elt = string
-let compare_elt = String.compare 
-type  t = elt Set_gen.t 
+# 50
+type 'a t = 'a Set_gen.t
+let compare_elt = Pervasives.compare
 
 
 # 57

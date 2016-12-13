@@ -5017,9 +5017,9 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
 end
 
 end
-module Bal_set_common
+module Set_gen
 = struct
-#1 "bal_set_common.ml"
+#1 "set_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -5034,7 +5034,6 @@ module Bal_set_common
 (***********************************************************************)
 
 (** balanced tree based on stdlib distribution *)
-
 
 type 'a t = 
   | Empty 
@@ -5461,6 +5460,44 @@ let rec compare_aux cmp e1 e2 =
 let compare cmp s1 s2 =
   compare_aux cmp (cons_enum s1 End) (cons_enum s2 End)
 
+
+module type S = sig
+  type elt 
+  type t
+  val empty: t
+  val is_empty: t -> bool
+  val iter: (elt -> unit) -> t -> unit
+  val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
+  val for_all: (elt -> bool) -> t -> bool
+  val exists: (elt -> bool) -> t -> bool
+  val singleton: elt -> t
+  val cardinal: t -> int
+  val elements: t -> elt list
+  val min_elt: t -> elt
+  val max_elt: t -> elt
+  val choose: t -> elt
+  val of_sorted_list : elt list -> t 
+  val of_sorted_array : elt array -> t
+  val partition: (elt -> bool) -> t -> t * t
+
+  val mem: elt -> t -> bool
+  val add: elt -> t -> t
+  val remove: elt -> t -> t
+  val union: t -> t -> t
+  val inter: t -> t -> t
+  val diff: t -> t -> t
+  val compare: t -> t -> int
+  val equal: t -> t -> bool
+  val subset: t -> t -> bool
+  val filter: (elt -> bool) -> t -> t
+
+  val split: elt -> t -> t * bool * t
+  val find: elt -> t -> elt
+  val of_list: elt list -> t
+  val of_sorted_list : elt list ->  t
+  val of_sorted_array : elt array -> t 
+end 
+
 end
 module String_set : sig 
 #1 "string_set.mli"
@@ -5523,6 +5560,7 @@ val find : elt -> t -> elt
 
 end = struct
 #1 "string_set.ml"
+# 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5548,45 +5586,135 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+# 27
 type elt = string
 let compare_elt = String.compare 
+type  t = elt Set_gen.t 
 
-type  t = elt Bal_set_common.t 
-let empty = Bal_set_common.empty 
-let is_empty = Bal_set_common.is_empty
-let iter = Bal_set_common.iter
-let fold = Bal_set_common.fold
-let for_all = Bal_set_common.for_all 
-let exists = Bal_set_common.exists 
-let singleton = Bal_set_common.singleton 
-let cardinal = Bal_set_common.cardinal
-let elements = Bal_set_common.elements
-let min_elt = Bal_set_common.min_elt
-let max_elt = Bal_set_common.max_elt
-let choose = Bal_set_common.choose 
-let of_sorted_list = Bal_set_common.of_sorted_list
-let of_sorted_array = Bal_set_common.of_sorted_array
-let partition = Bal_set_common.partition 
-let filter = Bal_set_common.filter 
-let of_sorted_list = Bal_set_common.of_sorted_list
-let of_sorted_array = Bal_set_common.of_sorted_array
 
-let rec add x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
-  match tree with  
+# 57
+let empty = Set_gen.empty 
+let is_empty = Set_gen.is_empty
+let iter = Set_gen.iter
+let fold = Set_gen.fold
+let for_all = Set_gen.for_all 
+let exists = Set_gen.exists 
+let singleton = Set_gen.singleton 
+let cardinal = Set_gen.cardinal
+let elements = Set_gen.elements
+let min_elt = Set_gen.min_elt
+let max_elt = Set_gen.max_elt
+let choose = Set_gen.choose 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+let partition = Set_gen.partition 
+let filter = Set_gen.filter 
+let of_sorted_list = Set_gen.of_sorted_list
+let of_sorted_array = Set_gen.of_sorted_array
+
+let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  match tree with 
+  | Empty ->
+    (Empty, false, Empty)
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then (l, true, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
+    else
+      let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  match tree with 
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_elt x v in
     if c = 0 then t else
-    if c < 0 then Bal_set_common.internal_bal (add x l) v r else Bal_set_common.internal_bal l v (add x r) 
+    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
+
+let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> t2
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+    if h1 >= h2 then
+      if h2 = 1 then add v2 s1 else begin
+        let (l2, _, r2) = split v1 s2 in
+        Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
+      end
+    else
+    if h1 = 1 then add v1 s2 else begin
+      let (l1, _, r1) = split v2 s1 in
+      Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
+    end    
+
+let rec inter (s1 : _ Set_gen.t)  (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> Empty
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
+    end 
+
+let rec diff (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+  match (s1, s2) with
+  | (Empty, t2) -> Empty
+  | (t1, Empty) -> t1
+  | (Node(l1, v1, r1, _), t2) ->
+    begin match split v1 t2 with
+      | (l2, false, r2) ->
+        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
+      | (l2, true, r2) ->
+        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
+    end
 
 
-let rec mem x (tree : _ Bal_set_common.t) = 
-  match tree with 
+let rec mem x (tree : _ Set_gen.t) =  match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x (tree : _ Set_gen.t) : _ Set_gen.t = match tree with 
+  | Empty -> Empty
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then Set_gen.internal_merge l r else
+    if c < 0 then Set_gen.internal_bal (remove x l) v r else Set_gen.internal_bal l v (remove x r)
+
+let compare s1 s2 = Set_gen.compare compare_elt s1 s2 
+
+
+let equal s1 s2 =
+  compare s1 s2 = 0
+
+let rec subset (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) =
+  match (s1, s2) with
+  | Empty, _ ->
+    true
+  | _, Empty ->
+    false
+  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
+    let c = compare_elt v1 v2 in
+    if c = 0 then
+      subset l1 l2 && subset r1 r2
+    else if c < 0 then
+      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
+    else
+      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
+
+
+
+
+let rec find x (tree : _ Set_gen.t) = match tree with
+  | Empty -> raise Not_found
+  | Node(l, v, r, _) ->
+    let c = compare_elt x v in
+    if c = 0 then v
+    else find x (if c < 0 then l else r)
+
+
 
 let of_list l =
   match l with
@@ -5598,14 +5726,13 @@ let of_list l =
   | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
   | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
-let rec find x (tree : t) = 
-  match tree with 
-  | Empty -> raise Not_found
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then v
-    else find x (if c < 0 then l else r)
+let of_array l = 
+  Array.fold_left (fun  acc x -> add x acc) empty l
 
+(* also check order *)
+let invariant t =
+  Set_gen.check t ;
+  Set_gen.is_ordered compare_elt t          
 
 
 

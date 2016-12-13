@@ -43,6 +43,15 @@ ext/int_vec.ml: ext/vec.cppo.ml
 	cppo -D TYPE_INT $< -o $@
 ext/resize_array.ml: ext/vec.cppo.ml
 	cppo -D TYPE_FUNCTOR $< -o $@
+ext/string_set.ml : ext/set.cppo.ml
+	cppo -D TYPE_STRING $< -o $@
+ext/set_int.ml : ext/set.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/ident_set.ml : ext/set.cppo.ml
+	cppo -D TYPE_IDENT $< -o $@
+ext/set_poly.ml : ext/set.cppo.ml
+	cppo  -D TYPE_POLY $< -o $@
+
 ## Stubs 
 .c.o:
 	$(NATIVE) -ccopt -o -ccopt $@ -c $< 
@@ -90,8 +99,9 @@ EXT_SRCS = ext_util\
 	vec_gen \
 	resize_array \
 	string_vec\
-	int_vec int_vec_vec bal_set_common\
-	bal_tree  bal_map_common bal_map\
+	int_vec int_vec_vec \
+	set_gen\
+	bal_map_common bal_map\
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_hashtbl \
@@ -104,7 +114,10 @@ EXT_SRCS = ext_util\
 	 ordered_hash_set ordered_hash_map union_find \
 	ident_set\
 	int_map literals string_map \
-	string_set ext_scc ext_pp_scope\
+	string_set\
+	set_int\
+	set_poly\
+	ext_scc ext_pp_scope\
 	ext_io\
 	ext_ident\
 	ident_hash_set\

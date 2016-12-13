@@ -13,7 +13,6 @@
 
 (** balanced tree based on stdlib distribution *)
 
-
 type 'a t = 
   | Empty 
   | Node of 'a t * 'a * 'a t * int 
@@ -438,3 +437,41 @@ let rec compare_aux cmp e1 e2 =
 
 let compare cmp s1 s2 =
   compare_aux cmp (cons_enum s1 End) (cons_enum s2 End)
+
+
+module type S = sig
+  type elt 
+  type t
+  val empty: t
+  val is_empty: t -> bool
+  val iter: (elt -> unit) -> t -> unit
+  val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
+  val for_all: (elt -> bool) -> t -> bool
+  val exists: (elt -> bool) -> t -> bool
+  val singleton: elt -> t
+  val cardinal: t -> int
+  val elements: t -> elt list
+  val min_elt: t -> elt
+  val max_elt: t -> elt
+  val choose: t -> elt
+  val of_sorted_list : elt list -> t 
+  val of_sorted_array : elt array -> t
+  val partition: (elt -> bool) -> t -> t * t
+
+  val mem: elt -> t -> bool
+  val add: elt -> t -> t
+  val remove: elt -> t -> t
+  val union: t -> t -> t
+  val inter: t -> t -> t
+  val diff: t -> t -> t
+  val compare: t -> t -> int
+  val equal: t -> t -> bool
+  val subset: t -> t -> bool
+  val filter: (elt -> bool) -> t -> t
+
+  val split: elt -> t -> t * bool * t
+  val find: elt -> t -> elt
+  val of_list: elt list -> t
+  val of_sorted_list : elt list ->  t
+  val of_sorted_array : elt array -> t 
+end 

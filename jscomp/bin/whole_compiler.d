@@ -143,7 +143,7 @@ bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_ident.mli
 bin/whole_compiler.ml : core/ident_map.ml
 bin/whole_compiler.ml : core/ident_map.mli
-bin/whole_compiler.ml : ext/bal_set_common.ml
+bin/whole_compiler.ml : ext/set_gen.ml
 bin/whole_compiler.ml : ext/ident_set.ml
 bin/whole_compiler.ml : ext/ident_set.mli
 bin/whole_compiler.ml : core/js_call_info.ml
