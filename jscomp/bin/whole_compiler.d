@@ -204,6 +204,10 @@ bin/whole_compiler.ml : core/lam_analysis.ml
 bin/whole_compiler.ml : core/lam_analysis.mli
 bin/whole_compiler.ml : core/lam_print.ml
 bin/whole_compiler.ml : core/lam_print.mli
+bin/whole_compiler.ml : ext/ext_int.ml
+bin/whole_compiler.ml : ext/ext_int.mli
+bin/whole_compiler.ml : ext/int_hash_set.ml
+bin/whole_compiler.ml : ext/int_hash_set.mli
 bin/whole_compiler.ml : core/lam_stats.ml
 bin/whole_compiler.ml : core/lam_stats.mli
 bin/whole_compiler.ml : core/lam_util.ml
@@ -296,6 +300,8 @@ bin/whole_compiler.ml : core/lam_exit_code.ml
 bin/whole_compiler.ml : core/lam_exit_code.mli
 bin/whole_compiler.ml : core/lam_compile.ml
 bin/whole_compiler.ml : core/lam_compile.mli
+bin/whole_compiler.ml : ext/ident_hash_set.ml
+bin/whole_compiler.ml : ext/ident_hash_set.mli
 bin/whole_compiler.ml : core/lam_group.ml
 bin/whole_compiler.ml : core/lam_group.mli
 bin/whole_compiler.ml : core/lam_dce.ml
@@ -306,8 +312,6 @@ bin/whole_compiler.ml : core/lam_pass_alpha_conversion.ml
 bin/whole_compiler.ml : core/lam_pass_alpha_conversion.mli
 bin/whole_compiler.ml : core/lam_pass_collect.ml
 bin/whole_compiler.ml : core/lam_pass_collect.mli
-bin/whole_compiler.ml : ext/ext_int.ml
-bin/whole_compiler.ml : ext/ext_int.mli
 bin/whole_compiler.ml : ext/int_hashtbl.ml
 bin/whole_compiler.ml : ext/int_hashtbl.mli
 bin/whole_compiler.ml : core/lam_pass_exits.ml

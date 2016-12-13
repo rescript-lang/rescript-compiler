@@ -28,6 +28,12 @@ INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I co
 .mll.ml:
 	$(OCAMLLEX) $< -o $@ || (rm $@ && exit 2)
 
+ext/string_hash_set.ml: ext/hash_set.cppo.ml
+	cppo -D TYPE_STRING $< -o $@
+ext/int_hash_set.ml: ext/hash_set.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/ident_hash_set.ml: ext/hash_set.cppo.ml
+	cppo -D TYPE_IDENT $< -o $@
 
 ## Stubs 
 .c.o:
@@ -83,11 +89,13 @@ EXT_SRCS = ext_util\
 	ext_list ext_map \
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
-	hash_set_gen hash_set string_hash_set int_hash_set ordered_hash_set ordered_hash_map union_find \
+	hash_set_gen hash_set string_hash_set int_hash_set \
+	 ordered_hash_set ordered_hash_map union_find \
 	ident_set int_map literals string_map \
 	string_set ext_scc ext_pp_scope\
 	ext_io\
 	ext_ident\
+	ident_hash_set\
 	ident_hashtbl\
 	int_hashtbl\
 	ext_filename
@@ -177,13 +185,15 @@ depend:
 	$(addprefix depends/, $(addsuffix .ml, $(DEPENDS_SRCS))) \
 	$(addprefix core/, $(addsuffix .mli, $(CORE_SRCS))) \
 	$(addprefix core/, $(addsuffix .ml, $(CORE_SRCS))) \
-	$(addprefix bsb/, $(addsuffix .mli, $(BSB_SRCS))) \
-	$(addprefix bsb/, $(addsuffix .ml, $(BSB_SRCS))) \
+	$(addprefix core/, $(addsuffix .mli, $(OTHER_CORE_SRCS))) \
+	$(addprefix core/, $(addsuffix .ml, $(OTHER_CORE_SRCS))) \
 	$(addprefix ounit/, $(addsuffix .mli, $(OUNIT_SRCS))) \
 	$(addprefix ounit/, $(addsuffix .ml, $(OUNIT_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .mli, $(OUNIT_TESTS_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .ml, $(OUNIT_TESTS_SRCS))) \
-	*.ml *.mli 
+	bsb/*.ml bsb/*.mli *.ml *.mli > all.depend
+	# $(addprefix bsb/, $(addsuffix .mli, $(BSB_SRCS))) \
+	# $(addprefix bsb/, $(addsuffix .ml, $(BSB_SRCS))) \
 
 
 

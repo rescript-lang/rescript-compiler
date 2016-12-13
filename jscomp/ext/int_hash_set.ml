@@ -1,3 +1,4 @@
+# 1 "ext/hash_set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21,9 +22,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 25
 type key = int
-type  t = key  Hash_set_gen.t 
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 let eq_key = Ext_int.equal 
+
+
+# 44
+type  t = key  Hash_set_gen.t 
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -35,8 +42,6 @@ let stats = Hash_set_gen.stats
 let elements = Hash_set_gen.elements
 
 
-let key_index (h :  t ) key =
-  (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
 
 let remove (h : t) key =  
   let i = key_index h key in

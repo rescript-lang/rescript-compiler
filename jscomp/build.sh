@@ -10,7 +10,8 @@ export npm_package_name=bs-platform
 
 
 echo "Building the compiler" > build.compile
-make -k -j5 -r  check  2>>build.compile
+make -j5 -r  check  2>>build.compile
+# -k will keep going, due to failure, some cmi files not produced, false alarm
 make -r -j2 bin/bsc.exe bin/bsb.exe 2>>build.compile
 echo "Building finished" >> build.compile
 echo "Building libs" >> build.compile

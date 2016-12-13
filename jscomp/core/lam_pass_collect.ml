@@ -167,7 +167,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
         | None -> ()
         end
     | Lstaticraise (code,ls) -> 
-        Hash_set.add meta.exit_codes code;
+        Int_hash_set.add meta.exit_codes code;
         List.iter collect  ls
     | Lstaticcatch(l1, (_,_), l2) -> collect  l1; collect  l2
     | Ltrywith(l1, _, l2) -> collect  l1; collect  l2
@@ -192,7 +192,7 @@ let count_alias_globals
   let meta : Lam_stats.meta = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
      ident_tbl = Ident_hashtbl.create 31;
-     exit_codes = Hash_set.create 31 ;
+     exit_codes = Int_hash_set.create 31 ;
      exports =  export_idents;
      required_modules = [] ;
      filename;
