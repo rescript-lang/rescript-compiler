@@ -18,13 +18,13 @@ let bench () =
     done
   end;
   Ounit_tests_util.time "int hash set" begin fun _ -> 
-    let v = Hash_set.create 2_000_000 in 
+    let v = Hash_set_poly.create 2_000_000 in 
     for i = 0 to  count do 
-      Hash_set.add  v i
+      Hash_set_poly.add  v i
     done ;
     for i = 0 to 3 do 
       for i = 0 to count do 
-        assert (Hash_set.mem v i)
+        assert (Hash_set_poly.mem v i)
      done
     done
   end

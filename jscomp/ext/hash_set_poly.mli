@@ -22,6 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module Make ( Resize : Vec_gen.ResizeType) : Vec_gen.S with type elt = Resize.t 
 
+type   'a t 
 
+val create : int -> 'a t
+
+val clear : 'a t -> unit
+
+val reset : 'a t -> unit
+
+val copy : 'a t -> 'a t
+
+val add : 'a t -> 'a  -> unit
+val remove : 'a t -> 'a -> unit
+
+val mem : 'a t -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a t -> unit
+
+val elements : 'a t -> 'a list
+
+val length : 'a t -> int 
+
+val stats:  'a t -> Hashtbl.statistics

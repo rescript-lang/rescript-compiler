@@ -34,10 +34,18 @@ ext/int_hash_set.ml: ext/hash_set.cppo.ml
 	cppo -D TYPE_INT $< -o $@
 ext/ident_hash_set.ml: ext/hash_set.cppo.ml
 	cppo -D TYPE_IDENT $< -o $@
+ext/hash_set.ml: ext/hash_set.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
+ext/hash_set_poly.ml: ext/hash_set.cppo.ml
+	cppo $< -o $@
 
+ext/int_vec.ml: ext/vec.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/resize_array.ml: ext/vec.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
 ## Stubs 
 .c.o:
-	$(NATIVE) -c $< -ccopt -o -ccopt $@
+	$(NATIVE) -ccopt -o -ccopt $@ -c $< 
 
 STUBS_OBJS=stubs/ext_basic_hash_stubs.o
 
@@ -73,12 +81,15 @@ common/bs_version.ml: build_version.js ../package.json
 STUB_SRCS = bs_hash_stubs
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_stubs_test ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_util\
 	ext_int\
-	ext_array ext_bytes ext_char resize_array string_vec\
+	ext_array ext_bytes ext_char\
+	vec_gen \
+	resize_array \
+	string_vec\
 	int_vec int_vec_vec bal_set_common\
 	bal_tree  bal_map_common bal_map\
 	ext_file_pp ext_format \
@@ -91,11 +102,13 @@ EXT_SRCS = ext_util\
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set string_hash_set int_hash_set \
 	 ordered_hash_set ordered_hash_map union_find \
-	ident_set int_map literals string_map \
+	ident_set\
+	int_map literals string_map \
 	string_set ext_scc ext_pp_scope\
 	ext_io\
 	ext_ident\
 	ident_hash_set\
+	hash_set_poly\
 	ident_hashtbl\
 	int_hashtbl\
 	ext_filename
