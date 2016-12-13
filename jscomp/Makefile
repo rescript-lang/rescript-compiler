@@ -39,6 +39,10 @@ ext/hash_set.ml: ext/hash_set.cppo.ml
 ext/hash_set_poly.ml: ext/hash_set.cppo.ml
 	cppo $< -o $@
 
+ext/int_vec.ml: ext/vec.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/resize_array.ml: ext/vec.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
 ## Stubs 
 .c.o:
 	$(NATIVE) -ccopt -o -ccopt $@ -c $< 
@@ -82,7 +86,10 @@ OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRC
 
 EXT_SRCS = ext_util\
 	ext_int\
-	ext_array ext_bytes ext_char resize_array string_vec\
+	ext_array ext_bytes ext_char\
+	vec_gen \
+	resize_array \
+	string_vec\
 	int_vec int_vec_vec bal_set_common\
 	bal_tree  bal_map_common bal_map\
 	ext_file_pp ext_format \

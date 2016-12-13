@@ -30,6 +30,7 @@ bin/bsb.ml : bsb/bsb_dir.ml
 bin/bsb.ml : bsb/bsb_dir.mli
 bin/bsb.ml : ext/ext_file_pp.ml
 bin/bsb.ml : ext/ext_file_pp.mli
+bin/bsb.ml : ext/vec_gen.ml
 bin/bsb.ml : ext/resize_array.ml
 bin/bsb.ml : ext/resize_array.mli
 bin/bsb.ml : ext/bal_set_common.ml

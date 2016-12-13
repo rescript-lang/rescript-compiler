@@ -158,10 +158,11 @@ bin/whole_compiler.ml : core/js_op.ml
 bin/whole_compiler.ml : core/j.ml
 bin/whole_compiler.ml : ext/ext_array.ml
 bin/whole_compiler.ml : ext/ext_array.mli
-bin/whole_compiler.ml : ext/resize_array.ml
-bin/whole_compiler.ml : ext/resize_array.mli
+bin/whole_compiler.ml : ext/vec_gen.ml
 bin/whole_compiler.ml : ext/int_vec.ml
 bin/whole_compiler.ml : ext/int_vec.mli
+bin/whole_compiler.ml : ext/resize_array.ml
+bin/whole_compiler.ml : ext/resize_array.mli
 bin/whole_compiler.ml : ext/int_vec_vec.ml
 bin/whole_compiler.ml : ext/int_vec_vec.mli
 bin/whole_compiler.ml : ext/ext_scc.ml

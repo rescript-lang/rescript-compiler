@@ -1,4 +1,3 @@
-# 1 "ext/vec.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -25,12 +24,18 @@
 
 
 
-# 33
+#if defined TYPE_FUNCTOR
+module Make ( Resize : Vec_gen.ResizeType) = struct
+  type elt = Resize.t 
+  type nonrec t = elt Vec_gen.t
+  let null = Resize.null 
+#elif defined TYPE_INT
 type elt = int 
 type t = int Vec_gen.t 
 let null = 0 (* can be optimized *)
-  
-# 39
+#else 
+[%error "unknown type"]
+#endif
   let length = Vec_gen.length 
   let compact = Vec_gen.compact 
   let singleton = Vec_gen.singleton
@@ -179,3 +184,6 @@ let null = 0 (* can be optimized *)
     let last = !p  in 
     delete_range d last  (d.len - last)
 
+#if defined TYPE_FUNCTOR
+end
+#endif 
