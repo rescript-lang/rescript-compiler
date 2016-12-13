@@ -31,7 +31,7 @@ INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I co
 
 ## Stubs 
 .c.o:
-	$(NATIVE) -c $< -o $@
+	$(NATIVE) -c $< -ccopt -o -ccopt $@
 
 STUBS_OBJS=stubs/ext_basic_hash_stubs.o
 
@@ -163,7 +163,7 @@ bin/jsgen.exe:ext.cmxa jsgen_main.cmx
 
 
 depend:
-	$(CAMLDEP) -native -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb ext/*.ml ext/*.mli common/*.ml common/*.mli syntax/*.ml syntax/*.mli *.ml *.mli depends/*.ml depends/*.mli core/*.ml core/*.mli bsb/*.ml bsb/*.mli ounit/*.mli ounit/*.ml ounit_tests/*.ml ounit_tests/*.mli > all.depend
+	$(CAMLDEP) -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb stubs/*.ml stubs/*.mli ext/*.ml ext/*.mli common/*.ml common/*.mli syntax/*.ml syntax/*.mli *.ml *.mli depends/*.ml depends/*.mli core/*.ml core/*.mli bsb/*.ml bsb/*.mli ounit/*.mli ounit/*.ml ounit_tests/*.ml ounit_tests/*.mli > all.depend
 
 
 

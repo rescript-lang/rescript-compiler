@@ -151,6 +151,11 @@ type primitive =
   | Pjs_fn_method of int 
   | Pjs_fn_runmethod of int
 
+type apply_status =
+  | App_na
+  | App_ml_full
+  | App_js_full    
+module Types = struct 
 type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -162,10 +167,6 @@ and prim_info =
     args : t list ;
     loc : Location.t;
   }
-and apply_status =
-  | App_na
-  | App_ml_full
-  | App_js_full    
 and apply_info = 
   { fn : t ; 
     args : t list ; 
@@ -202,19 +203,78 @@ and t =
      [Levent] in the branch hurt pattern match, 
      we should use record for trivial debugger info
   *)
+end 
 
+module X = struct 
+  type switch
+    = Types.switch
+    =
+    { sw_numconsts: int;
+      sw_consts: (int * t) list;
+      sw_numblocks: int;
+      sw_blocks: (int * t) list;
+      sw_failaction : t option}
+  and prim_info
+    =  Types.prim_info
+    =
+    { primitive : primitive ; 
+      args : t list ;
+      loc : Location.t;
+    }
+  and apply_info
+    = Types.apply_info
+    =
+    { fn : t ; 
+      args : t list ; 
+      loc : Location.t;
+      status : apply_status
+    }
+
+  and function_info
+    = Types.function_info
+    =
+    { arity : int ; 
+      kind : Lambda.function_kind ; 
+      params : ident list ;
+      body : t 
+    }
+  and t
+    = Types.t
+    =
+    | Lvar of ident
+    | Lconst of Lambda.structured_constant
+    | Lapply of apply_info
+    | Lfunction of function_info
+    | Llet of Lambda.let_kind * ident * t * t
+    | Lletrec of (ident * t) list * t
+    | Lprim of prim_info
+    | Lswitch of t * switch
+    | Lstringswitch of t * (string * t) list * t option
+    | Lstaticraise of int * t list
+    | Lstaticcatch of t * (int * ident list) * t
+    | Ltrywith of t * ident * t
+    | Lifthenelse of t * t * t
+    | Lsequence of t * t
+    | Lwhile of t * t
+    | Lfor of ident * t * t * Asttypes.direction_flag * t
+    | Lassign of ident * t
+    | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+    | Lifused of ident * t
+end
+include Types 
 (** apply [f] to direct successor which has type [Lam.t] *)
-let inner_map f l : t = 
-  match (l : t) with 
-    Lvar _
-  | Lconst _ -> l
-  | Lapply ({fn; args; _} as app)  ->
+let inner_map (f : t -> X.t ) (l : t) : X.t = 
+  match l  with 
+  | Lvar (_ : ident)
+  | Lconst (_ : Lambda.structured_constant) -> 
+    ( (* Obj.magic *) l : X.t)
+  | Lapply ({fn; args; loc; status} )  ->
     let fn = f fn in
     let args = List.map f args in 
-    Lapply {app with  fn ; args}
-  | Lfunction({body;_} as app) ->
+    Lapply { fn ; args; loc; status }
+  | Lfunction({body; arity; kind; params } ) ->
     let body = f body in 
-    Lfunction {app with body}
+    Lfunction {body; arity; kind ; params}
   | Llet(str, id, arg, body) ->
     let arg = f arg in let body =  f body in
     Llet(str,id,arg,body)
@@ -222,18 +282,18 @@ let inner_map f l : t =
     let body = f body in 
     let decl = List.map (fun (id, exp) -> id, f exp) decl in 
     Lletrec(decl,body)
-  | Lprim ({args; _} as app) ->
+  | Lprim {args; primitive ; loc}  ->
     let args = List.map f args in 
-    Lprim {app with args}
-  | Lswitch(arg, sw) ->
+    Lprim { args; primitive; loc}
+  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
     let arg = f arg in 
-    let sw_consts = List.map (fun (key, case) -> key , f case) sw.sw_consts in 
-    let sw_blocks = List.map (fun (key, case) -> key, f case) sw.sw_blocks in 
-    let sw_failaction = begin match sw.sw_failaction with 
+    let sw_consts = List.map (fun (key, case) -> key , f case) sw_consts in 
+    let sw_blocks = List.map (fun (key, case) -> key, f case) sw_blocks in 
+    let sw_failaction = begin match sw_failaction with
       | None -> None
-      | Some a -> Some (f a) 
-    end in 
-    Lswitch(arg, {sw with sw_consts; sw_blocks; sw_failaction})
+      | Some a -> Some (f a)
+    end in
+    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
   | Lstringswitch (arg,cases,default) ->
     let arg = f arg  in 
     let cases = List.map (fun (k,act) -> k,f act) cases  in
@@ -277,6 +337,217 @@ let inner_map f l : t =
   | Lifused (v, e) ->
     let e = f e in 
     Lifused(v,e)
+
+let inner_iter (f : t -> unit ) (l : t) : unit = 
+  match l  with 
+  | Lvar (_ : ident)
+  | Lconst (_ : Lambda.structured_constant) ->  ()
+  | Lapply ({fn; args; loc; status} )  ->
+    f fn;
+    List.iter f args 
+  | Lfunction({body; arity; kind; params } ) ->
+    f body
+  | Llet(str, id, arg, body) ->
+    f arg ;
+    f body;
+  | Lletrec(decl, body) ->
+    f body;
+    List.iter (fun (id, exp) ->  f exp) decl
+  | Lprim {args; primitive ; loc}  ->
+    List.iter f args;
+  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
+    f arg;
+    List.iter (fun (key, case) -> f case) sw_consts;
+    List.iter (fun (key, case) ->  f case) sw_blocks ;
+    begin match sw_failaction with
+      | None -> ()
+      | Some a ->  f a
+    end 
+  | Lstringswitch (arg,cases,default) ->
+    f arg;
+    List.iter (fun (k,act) -> f act) cases  ;
+    begin match default with 
+      | None -> ()
+      | Some a -> f a
+    end
+  | Lstaticraise (id,args) ->
+     List.iter f args;
+  | Lstaticcatch(e1, vars , e2) ->
+    f e1;
+    f e2
+  | Ltrywith(e1, exn, e2) ->
+    f e1;
+    f e2 
+  | Lifthenelse(e1, e2, e3) ->
+     f e1;  f e2 ;  f e3
+  | Lsequence(e1, e2) ->
+    f e1 ;  f e2
+  | Lwhile(e1, e2) ->
+    f e1 ;  f e2 
+  | Lfor(v, e1, e2, dir, e3) ->
+    f e1 ;  f e2;  f e3 
+  | Lassign(id, e) ->
+    f e 
+  | Lsend (k, met, obj, args, loc) ->
+    f met; f obj; List.iter f args 
+  | Lifused (v, e) ->
+    f e 
+
+(* 
+TODO: add a santizer to check variables arre not bound twice
+We need an invariant checker for troubleshooting: 
+1. variables are not bound twice 
+2. all variables are of right scope 
+Otherwise, it would be too dangerous to apply optimizations and 
+very hard to fix bugs
+*)
+
+(*
+let add_list lst set = 
+    List.fold_left (fun acc x -> Ident_set.add x acc) set lst 
+let free_variables l =
+  let rec free bounded acc (l : t) =
+      match (l : t) with 
+      | Lvar id ->
+        if Ident_set.mem id bounded then acc 
+        else Ident_set.add id acc 
+      | Lconst _ -> acc
+      | Lapply{fn; args; _} ->
+        let acc = free bounded  acc fn in
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args  
+      | Lfunction{body;params} ->
+        let bounded = add_list params bounded in  
+        free bounded acc  body        
+      | Llet(str, id, arg, body) ->        
+        let acc = free bounded acc  arg in
+        let bounded =  Ident_set.add id bounded in 
+        free bounded acc body
+      | Lletrec(decl, body) ->
+        let bounded = 
+          List.fold_left (fun acc (x,_) -> Ident_set.add x acc) bounded decl
+        in
+        let acc = List.fold_left (fun acc (_,exp) -> free bounded acc exp ) acc decl in
+        free bounded acc body          
+      | Lprim {args; _} ->
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args         
+      | Lswitch(arg, {sw_consts; sw_blocks; sw_failaction}) ->
+        let acc = free bounded acc arg in 
+        let acc = List.fold_left 
+          (fun acc (key, case) -> free  bounded acc case) acc sw_consts in 
+        let acc = 
+          List.fold_left 
+          (fun acc (key, case) -> free bounded acc  case) acc sw_blocks in 
+        begin match sw_failaction with 
+          | None -> acc 
+          | Some a -> free bounded acc a  
+        end
+      | Lstringswitch (arg,cases,default) ->
+        let acc = free bounded acc arg  in 
+        let acc = List.fold_left (fun acc  (_,act) -> free bounded acc act) acc cases  in
+        begin match default with 
+          | None -> acc 
+          | Some a -> free bounded acc a  
+        end
+      | Lstaticraise (_,args) ->
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        let acc = free  bounded acc e1 in
+        let bounded = add_list vars bounded in 
+        free bounded acc e2                 
+      | Ltrywith(e1, exn, e2) ->
+        let acc = free  bounded acc e1 in
+        let bounded = Ident_set.add exn bounded in  
+        free  bounded acc e2          
+      | Lifthenelse(e1, e2, e3) ->
+        let acc = free  bounded acc e1 in 
+        let acc = free  bounded acc e2 in 
+        free bounded acc e3
+      | Lwhile(e1, e2) 
+      | Lsequence(e1, e2) ->
+        let acc = free bounded acc e1 in 
+        free bounded acc e2
+      | Lfor(v, e1, e2, dir, e3) ->
+  
+        let acc = free  bounded acc e1 in 
+        let acc = free  bounded acc e2 in
+        let bounded = Ident_set.add v bounded in 
+        free bounded acc e3
+      | Lassign(id, e) ->
+        let acc = free bounded acc  e in 
+        if Ident_set.mem id bounded then acc 
+        else Ident_set.add id acc 
+      | Lsend (k, met, obj, args, _) ->
+        let acc = free bounded acc met in
+        let acc = free bounded acc obj in
+        List.fold_left (fun ac arg -> free bounded acc arg) acc args            
+      | Lifused (v, e) ->
+        free bounded acc e
+  in free Ident_set.empty Ident_set.empty l
+*)  
+
+let free_variables l =
+  let fv = ref Ident_set.empty in
+  let rec free (l : t) =
+    begin
+      match (l : t) with 
+        Lvar id -> fv := Ident_set.add id !fv
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        free fn; List.iter free args
+      | Lfunction{body;params} ->
+        free body;
+        List.iter (fun param -> fv := Ident_set.remove param !fv) params
+      | Llet(str, id, arg, body) ->
+        free arg; free body;
+        fv := Ident_set.remove id !fv
+      | Lletrec(decl, body) ->
+        free body;
+        List.iter (fun (id, exp) -> free exp) decl;
+        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      | Lprim {args; _} ->
+        List.iter free args
+      | Lswitch(arg, sw) ->
+        free arg;
+        List.iter (fun (key, case) -> free case) sw.sw_consts;
+        List.iter (fun (key, case) -> free case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        free arg ;
+        List.iter (fun (_,act) -> free act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter free args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        free e1; free e2;
+        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      | Ltrywith(e1, exn, e2) ->
+        free e1; free e2;
+        fv := Ident_set.remove exn !fv
+      | Lifthenelse(e1, e2, e3) ->
+        free e1; free e2; free e3
+      | Lsequence(e1, e2) ->
+        free e1; free e2
+      | Lwhile(e1, e2) ->
+        free e1; free e2
+      | Lfor(v, e1, e2, dir, e3) ->
+        free e1; free e2; free e3;
+        fv := Ident_set.remove v !fv
+      | Lassign(id, e) ->
+        free e;
+        fv := Ident_set.add id !fv
+      | Lsend (k, met, obj, args, _) ->
+        List.iter free (met::obj::args)
+      | Lifused (v, e) ->
+        free e
+    end;
+  in free l; 
+  !fv
 
 module Prim = struct 
   type t = primitive
@@ -786,69 +1057,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
   | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc 
   | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc 
 
-let free_variables l =
-  let fv = ref Ident_set.empty in
-  let rec free (l : t) =
-    begin
-      match (l : t) with 
-        Lvar id -> fv := Ident_set.add id !fv
-      | Lconst _ -> ()
-      | Lapply{fn; args; _} ->
-        free fn; List.iter free args
-      | Lfunction{body;params} ->
-        free body;
-        List.iter (fun param -> fv := Ident_set.remove param !fv) params
-      | Llet(str, id, arg, body) ->
-        free arg; free body;
-        fv := Ident_set.remove id !fv
-      | Lletrec(decl, body) ->
-        free body;
-        List.iter (fun (id, exp) -> free exp) decl;
-        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
-      | Lprim {args; _} ->
-        List.iter free args
-      | Lswitch(arg, sw) ->
-        free arg;
-        List.iter (fun (key, case) -> free case) sw.sw_consts;
-        List.iter (fun (key, case) -> free case) sw.sw_blocks;
-        begin match sw.sw_failaction with 
-          | None -> ()
-          | Some a -> free a 
-        end
-      | Lstringswitch (arg,cases,default) ->
-        free arg ;
-        List.iter (fun (_,act) -> free act) cases ;
-        begin match default with 
-          | None -> ()
-          | Some a -> free a 
-        end
-      | Lstaticraise (_,args) ->
-        List.iter free args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        free e1; free e2;
-        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
-      | Ltrywith(e1, exn, e2) ->
-        free e1; free e2;
-        fv := Ident_set.remove exn !fv
-      | Lifthenelse(e1, e2, e3) ->
-        free e1; free e2; free e3
-      | Lsequence(e1, e2) ->
-        free e1; free e2
-      | Lwhile(e1, e2) ->
-        free e1; free e2
-      | Lfor(v, e1, e2, dir, e3) ->
-        free e1; free e2; free e3;
-        fv := Ident_set.remove v !fv
-      | Lassign(id, e) ->
-        free e;
-        fv := Ident_set.add id !fv
-      | Lsend (k, met, obj, args, _) ->
-        List.iter free (met::obj::args)
-      | Lifused (v, e) ->
-        free e
-    end;
-  in free l; 
-  !fv
 
 
 type bindings = (Ident.t * t) list
