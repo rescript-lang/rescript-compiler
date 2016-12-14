@@ -33,7 +33,7 @@ bin/bsb.ml : ext/ext_file_pp.mli
 bin/bsb.ml : ext/vec_gen.ml
 bin/bsb.ml : ext/resize_array.ml
 bin/bsb.ml : ext/resize_array.mli
-bin/bsb.ml : ext/bal_set_common.ml
+bin/bsb.ml : ext/set_gen.ml
 bin/bsb.ml : ext/string_set.ml
 bin/bsb.ml : ext/string_set.mli
 bin/bsb.ml : bsb/bsb_build_ui.ml

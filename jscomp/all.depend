@@ -10,8 +10,7 @@ ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
 ext/int_vec.cmx : ext/vec_gen.cmx ext/int_vec.cmi
 ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
     ext/int_vec_vec.cmi
-ext/bal_set_common.cmx :
-ext/bal_tree.cmx : ext/bal_set_common.cmx ext/bal_tree.cmi
+ext/set_gen.cmx :
 ext/bal_map_common.cmx :
 ext/bal_map.cmx : ext/bal_map_common.cmx ext/bal_map.cmi
 ext/ext_file_pp.cmx : ext/ext_file_pp.cmi
@@ -38,12 +37,13 @@ ext/int_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_int.cmx \
 ext/ordered_hash_set.cmx : ext/ext_util.cmx ext/ordered_hash_set.cmi
 ext/ordered_hash_map.cmx : ext/ext_util.cmx ext/ordered_hash_map.cmi
 ext/union_find.cmx : ext/union_find.cmi
-ext/ident_set.cmx : ext/ext_format.cmx ext/bal_set_common.cmx \
-    ext/ident_set.cmi
+ext/ident_set.cmx : ext/set_gen.cmx ext/ident_set.cmi
 ext/int_map.cmx : ext/int_map.cmi
 ext/literals.cmx : ext/literals.cmi
 ext/string_map.cmx : ext/bal_map_common.cmx ext/string_map.cmi
-ext/string_set.cmx : ext/bal_set_common.cmx ext/string_set.cmi
+ext/string_set.cmx : ext/set_gen.cmx ext/string_set.cmi
+ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx
+ext/set_poly.cmx : ext/set_gen.cmx ext/set_poly.cmi
 ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
 ext/ext_pp_scope.cmx : ext/string_map.cmx ext/int_map.cmx ext/ident_set.cmx \
     ext/ext_pp_scope.cmi
@@ -68,7 +68,6 @@ ext/resize_array.cmi : ext/vec_gen.cmx
 ext/string_vec.cmi : ext/vec_gen.cmx
 ext/int_vec.cmi : ext/vec_gen.cmx
 ext/int_vec_vec.cmi : ext/vec_gen.cmx ext/int_vec.cmi
-ext/bal_tree.cmi : ext/bal_set_common.cmx
 ext/bal_map.cmi : ext/bal_map_common.cmx
 ext/ext_file_pp.cmi :
 ext/ext_format.cmi :
@@ -89,11 +88,12 @@ ext/int_hash_set.cmi : ext/hash_set_gen.cmx
 ext/ordered_hash_set.cmi :
 ext/ordered_hash_map.cmi :
 ext/union_find.cmi :
-ext/ident_set.cmi : ext/ext_format.cmi
+ext/ident_set.cmi : ext/set_gen.cmx
 ext/int_map.cmi :
 ext/literals.cmi :
 ext/string_map.cmi :
 ext/string_set.cmi :
+ext/set_poly.cmi :
 ext/ext_scc.cmi : ext/int_vec_vec.cmi ext/int_vec.cmi
 ext/ext_pp_scope.cmi : ext/ident_set.cmi
 ext/ext_io.cmi :
@@ -535,8 +535,8 @@ ounit_tests/ounit_tests_util.cmx :
 ounit_tests/ounit_array_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
     ext/ext_array.cmx
 ounit_tests/ounit_list_test.cmx : ounit/oUnit.cmx ext/ext_list.cmx
-ounit_tests/ounit_bal_tree_tests.cmx : ounit_tests/ounit_tests_util.cmx \
-    ounit/oUnit.cmx ext/ext_int.cmx ext/bal_tree.cmx ext/bal_set_common.cmx
+ounit_tests/ounit_bal_tree_tests.cmx : ext/set_poly.cmx ext/set_int.cmx \
+    ext/set_gen.cmx ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx
 ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_filename.cmx
 ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \
     ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx

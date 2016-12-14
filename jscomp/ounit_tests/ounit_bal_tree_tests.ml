@@ -3,74 +3,66 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal
 
-let rec add_int x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
-  match tree with  
-    | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
-    let c = Ext_int.compare (x : int) v in
-    if c = 0 then t else
-    if c < 0 then Bal_set_common.internal_bal (add_int x l) v r 
-    else Bal_set_common.internal_bal l v (add_int x r)
 
 let suites = 
   __FILE__ >:::
   [
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_tree.of_array (Array.init 1000 (fun n -> n))))
+        (Set_poly.invariant 
+           (Set_poly.of_array (Array.init 1000 (fun n -> n))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_tree.of_array (Array.init 1000 (fun n -> 1000-n))))
+        (Set_poly.invariant 
+           (Set_poly.of_array (Array.init 1000 (fun n -> 1000-n))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_tree.of_array (Array.init 1000 (fun n -> Random.int 1000))))
+        (Set_poly.invariant 
+           (Set_poly.of_array (Array.init 1000 (fun n -> Random.int 1000))))
     end;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant 
-           (Bal_set_common.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> n)))))
+        (Set_poly.invariant 
+           (Set_poly.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> n)))))
     end;
     __LOC__ >:: begin fun _ ->
       let arr = Array.init 1000 (fun n -> n) in
-      let set = (Bal_set_common.of_sorted_array arr) in
+      let set = (Set_poly.of_sorted_array arr) in
       OUnit.assert_bool __LOC__
-        (Bal_tree.invariant set );
-      OUnit.assert_equal 1000 (Bal_set_common.cardinal set)    
+        (Set_poly.invariant set );
+      OUnit.assert_equal 1000 (Set_poly.cardinal set)    
     end;
     __LOC__ >:: begin fun _ ->
       for i = 0 to 200 do 
         let arr = Array.init i (fun n -> n) in
-        let set = (Bal_set_common.of_sorted_array arr) in
+        let set = (Set_poly.of_sorted_array arr) in
         OUnit.assert_bool __LOC__
-          (Bal_tree.invariant set );
-        OUnit.assert_equal i (Bal_set_common.cardinal set)
+          (Set_poly.invariant set );
+        OUnit.assert_equal i (Set_poly.cardinal set)
       done    
     end;
     __LOC__ >:: begin fun _ ->
       let arr_size = 200 in
-      let arr_sets = Array.make 200 Bal_set_common.empty in  
+      let arr_sets = Array.make 200 Set_poly.empty in  
       for i = 0 to arr_size - 1 do
         let size = Random.int 1000 in  
         let arr = Array.init size (fun n -> n) in
-        arr_sets.(i)<- (Bal_set_common.of_sorted_array arr)            
+        arr_sets.(i)<- (Set_poly.of_sorted_array arr)            
       done;
-      let large = Array.fold_left Bal_tree.union Bal_set_common.empty arr_sets in 
-      OUnit.assert_bool __LOC__ (Bal_tree.invariant large)
+      let large = Array.fold_left Set_poly.union Set_poly.empty arr_sets in 
+      OUnit.assert_bool __LOC__ (Set_poly.invariant large)
     end;
 
      __LOC__ >:: begin fun _ ->
       let arr_size = 1_00_000 in
-      let v = ref Bal_set_common.empty in 
+      let v = ref Set_int.empty in 
       for i = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
-         v := add_int size !v                      
+         v := Set_int.add size !v                      
       done;       
-      OUnit.assert_bool __LOC__ (Bal_tree.invariant !v)
+      OUnit.assert_bool __LOC__ (Set_int.invariant !v)
     end;
 
   ]
@@ -89,15 +81,15 @@ let compare_ident x y =
     if b <> 0 then b 
     else compare (x.flags : int) y.flags     
 
-let rec add x (tree : _ Bal_set_common.t) : _ Bal_set_common.t =
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =
   match tree with  
     | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_ident x v in
     if c = 0 then t else
-    if c < 0 then Bal_set_common.internal_bal (add x l) v r else Bal_set_common.internal_bal l v (add x r)
+    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
 
-let rec mem x (tree : _ Bal_set_common.t) = 
+let rec mem x (tree : _ Set_gen.t) = 
   match tree with 
    | Empty -> false
    | Node(l, v, r, _) ->
@@ -130,16 +122,16 @@ let bench () =
   end ;
 
   Ounit_tests_util.time "poly set" begin fun _ -> 
-    let v = ref Bal_set_common.empty in  
+    let v = ref Set_poly.empty in  
     for i = 0 to  times do
-      v := Bal_tree.add   {stamp = i ; name = "name"; flags = -1 } !v 
+      v := Set_poly.add   {stamp = i ; name = "name"; flags = -1 } !v 
     done;
     for i = 0 to times do
-      ignore @@ Bal_tree.mem   {stamp = i; name = "name" ; flags = -1} !v 
+      ignore @@ Set_poly.mem   {stamp = i; name = "name" ; flags = -1} !v 
     done;
   end;
   Ounit_tests_util.time "poly set (specialized)" begin fun _ -> 
-    let v = ref Bal_set_common.empty in  
+    let v = ref Set_gen.empty in  
     for i = 0 to  times do
       v := add   {stamp = i ; name = "name"; flags = -1 } !v 
     done;
