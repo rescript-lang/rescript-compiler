@@ -98758,18 +98758,21 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                    {pexp_desc = 
                       Pexp_ident  {txt = Lident "##"  ; loc} ; _},
                    [("", obj) ;
-                    ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                    ("", ({pexp_desc = 
+                             Pexp_ident {txt = Lident name;_ }
+                           | Pexp_constant (Const_string (name, None)) ; _}) )
                    ]);
-               _} ->  (* f##paint 1 2 *)
+               _} ->  (* f##paint 1 2, f##"paint" 1 2  *)
               {e with pexp_desc = Ast_util.method_apply loc self obj name args }
             | {pexp_desc = 
                  Pexp_apply (
                    {pexp_desc = 
                       Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
                    [("", obj) ;
-                    ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                    ("", {pexp_desc = Pexp_ident {txt = Lident name;_ }
+                                    | Pexp_constant (Const_string (name, None)) ; _} )
                    ]);
-               _} ->  (* f##paint 1 2 *)
+               _} ->  (* f#@paint 1 2, f#@"paint" 1 2  *)
               {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
 
             | {pexp_desc = 
@@ -98778,15 +98781,17 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               begin match args with 
                 | [("", obj) ;
                    ("", {pexp_desc = Pexp_apply(
-                        {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
+                        {pexp_desc = Pexp_ident {txt = Lident name;_ }
+                                   | Pexp_constant (Const_string (name, None)) ; _},
                         args
                       ) })
-                  ] -> (* f##(paint 1 2 ) *)
+                  ] -> (* f##(paint 1 2 ), f#@("paint" 1 2) *)
                   {e with pexp_desc = Ast_util.method_apply loc self obj name args}
                 | [("", obj) ;
                    ("", 
-                    {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
-                   )  (* f##paint  *)
+                    {pexp_desc = Pexp_ident {txt = Lident name;_ }
+                               | Pexp_constant (Const_string (name, None)) ; _}
+                   )  (* f##paint, f#@"paint"  *)
                   ] -> 
                   { e with pexp_desc = 
                              Ast_util.js_property loc (self.expr self obj) name  
@@ -98817,11 +98822,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                   {pexp_desc = 
                      Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}}, 
                                  ["", obj; 
-                                  "", {pexp_desc = Pexp_ident {txt = Lident name}}
+                                  "", {pexp_desc = Pexp_ident {txt = Lident name}
+                                                 | Pexp_constant (Const_string (name, None))}
                                  ]                                 
                                 )}; 
                  "", arg
-                ] -> 
+                ] -> (* f##paint#=, f##"paint"#= *)
                  Exp.constraint_ ~loc
                    { e with
                      pexp_desc =

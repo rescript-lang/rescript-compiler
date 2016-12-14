@@ -71,8 +71,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	flow_parser_reg_test	utf8_decode_test stream_parser_test condition_compilation_test semver_test update_record_test installation_test app_root_finder derive_projector_test\
 	gpr_904_test gpr_858_unit2_test inner_unused \
 	set_gen bal_tree string_set string_set_test \
-	math_test bal_set_mini gpr_974_test test_cpp
-
+	math_test bal_set_mini gpr_974_test test_cpp\
+	method_string_name
 
 
 
