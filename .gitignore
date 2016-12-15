@@ -57,10 +57,9 @@ man/
 lib/ocaml
 bin/*
 ocaml_src
-*.exe
+
 
 # for npm publish
-!bin/bsc.exe
 !bin/bsppx
 !bin/bspack
 !/bin/bsb
@@ -74,8 +73,7 @@ ocaml_src
 *.d
 .bsbuild
 build.ninja
-jscomp/bin/bsb
-jscomp/bin/bsc
+
 jscomp/bin/config_whole_compiler.ml
 lib/bs
 lib/js/jscomp/test
