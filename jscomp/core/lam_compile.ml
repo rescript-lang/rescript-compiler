@@ -279,7 +279,7 @@ and compile_recursive_let
             *)
             ~immutable_mask:ret.immutable_mask
             (List.map (fun x -> 
-                 try Ident_map.find x ret.new_params with  Not_found -> x)
+                 try Ident_map.find_exn x ret.new_params with  Not_found -> x)
                 params)
             [
               S.while_ (* ~label:continue_label *)
@@ -562,7 +562,7 @@ and
                                   (i + 1, assigns, new_params)
                                 | _ ->
                                   let new_param, m  = 
-                                    match Ident_map.find  param ret.new_params with 
+                                    match Ident_map.find_exn  param ret.new_params with 
                                     | exception Not_found -> 
                                       ret.immutable_mask.(i)<- false;
                                       let v = Ext_ident.create ("_"^param.Ident.name) in
@@ -570,7 +570,7 @@ and
                                     | v -> v, new_params  in
                                   (i+1, (new_param, arg) :: assigns, m)
                               ) (0, [], Ident_map.empty) params args  in 
-                          let () = ret.new_params <- Ident_map.(merge_disjoint new_params ret.new_params) in
+                          let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
                           assigned_params |> List.map (fun (param, arg) -> S.assign param arg))
                          @
                         [S.continue ()(* label *)]

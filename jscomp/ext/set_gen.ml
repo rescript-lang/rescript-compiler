@@ -49,12 +49,15 @@ let empty = Empty
 
 let is_empty = function Empty -> true | _ -> false
 
-let rec cardinal = function
-    Empty -> 0
-  | Node(l, v, r, _) -> cardinal l + 1 + cardinal r
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
 
 let rec elements_aux accu = function
-    Empty -> accu
+  | Empty -> accu
   | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
 
 let elements s =

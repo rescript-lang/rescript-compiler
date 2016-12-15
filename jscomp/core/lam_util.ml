@@ -59,7 +59,7 @@ let sort_dag_args  param_args =
   let dependencies  : Ident_set.t Ident_map.t = 
     Ident_map.mapi (fun param arg -> Js_fold_basic.depends_j arg idents) param_args in
   try  
-    Some (toplogical (fun k -> Ident_map.find k dependencies) todos)
+    Some (toplogical (fun k -> Ident_map.find_exn k dependencies) todos)
   with Cyclic -> None 
 
 
@@ -85,7 +85,7 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
     match x with 
     | Lvar id as l ->
       begin 
-        try Ident_map.find id s with Not_found -> l 
+        try Ident_map.find_exn id s with Not_found -> l 
       end
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 

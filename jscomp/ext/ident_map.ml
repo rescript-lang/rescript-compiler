@@ -4,9 +4,9 @@
 
 
   
-# 10
-  type key = string 
-  let compare_key = String.compare
+# 16
+  type key = Ident.t
+  let compare_key = Ext_ident.compare
 
 # 22
 type 'a t = (key,'a) Map_gen.t

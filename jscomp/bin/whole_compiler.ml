@@ -23267,9 +23267,9 @@ let rec last xs =
 
 
 end
-module Bal_map_common
+module Map_gen
 = struct
-#1 "bal_map_common.ml"
+#1 "map_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -23288,20 +23288,29 @@ type ('key,'a) t =
   | Empty
   | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
 
-type ('key,'a) enumeration = End | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
+type ('key,'a) enumeration =
+  | End
+  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
 
-let rec cardinal = function
-    Empty -> 0
-  | Node(l, _, _, r, _) -> cardinal l + 1 + cardinal r
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
 
 let rec bindings_aux accu = function
-        Empty -> accu
-      | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+  | Empty -> accu
+  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
 
-    let bindings s =
-      bindings_aux [] s
+let bindings s =
+  bindings_aux [] s
 
+let rec keys_aux accu = function
+    Empty -> accu
+  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
 
+let keys s = keys_aux [] s
 
 
 
@@ -23355,17 +23364,18 @@ let empty = Empty
 
 let is_empty = function Empty -> true | _ -> false
 
-let rec min_binding = function
+let rec min_binding_exn = function
     Empty -> raise Not_found
   | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding l
+  | Node(l, x, d, r, _) -> min_binding_exn l
 
-let choose = min_binding
 
-let rec max_binding = function
+let choose = min_binding_exn
+
+let rec max_binding_exn = function
     Empty -> raise Not_found
   | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding r
+  | Node(l, x, d, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
@@ -23377,7 +23387,7 @@ let merge t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding t2 in
+    let (x, d) = min_binding_exn t2 in
     bal t1 x d (remove_min_binding t2)
 
 
@@ -23457,7 +23467,7 @@ let concat t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding t2 in
+    let (x, d) = min_binding_exn t2 in
     join t1 x d (remove_min_binding t2)
 
 let concat_or_join t1 v d t2 =
@@ -23484,6 +23494,155 @@ let rec partition p = function
     if pvd
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)
+
+let compare compare_key cmp_val m1 m2 =
+  let rec compare_aux e1  e2 =
+    match (e1, e2) with
+      (End, End) -> 0
+    | (End, _)  -> -1
+    | (_, End) -> 1
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      let c = compare_key v1 v2 in
+      if c <> 0 then c else
+        let c = cmp_val d1 d2 in
+        if c <> 0 then c else
+          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
+
+let equal compare_key cmp m1 m2 =
+  let rec equal_aux e1 e2 =
+    match (e1, e2) with
+      (End, End) -> true
+    | (End, _)  -> false
+    | (_, End) -> false
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      compare_key v1 v2 = 0 && cmp d1 d2 &&
+      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
+
+
+
+    
+module type S =
+  sig
+    type key
+    type +'a t
+    val empty: 'a t
+    val is_empty: 'a t -> bool
+    val mem: key -> 'a t -> bool
+
+    val add: key -> 'a -> 'a t -> 'a t
+    (** [add x y m] 
+        If [x] was already bound in [m], its previous binding disappears. *)
+
+    val singleton: key -> 'a -> 'a t
+
+    val remove: key -> 'a t -> 'a t
+    (** [remove x m] returns a map containing the same bindings as
+       [m], except for [x] which is unbound in the returned map. *)
+
+    val merge:
+         (key -> 'a option -> 'b option -> 'c option) -> 'a t -> 'b t -> 'c t
+    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+        and of [m2]. The presence of each such binding, and the corresponding
+        value, is determined with the function [f].
+        @since 3.12.0
+     *)
+
+     val disjoint_merge : 'a t -> 'a t -> 'a t
+     (* merge two maps, will raise if they have the same key *)
+    val compare: ('a -> 'a -> int) -> 'a t -> 'a t -> int
+    (** Total ordering between maps.  The first argument is a total ordering
+        used to compare data associated with equal keys in the two maps. *)
+
+    val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
+
+    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    (** [iter f m] applies [f] to all bindings in map [m].
+        The bindings are passed to [f] in increasing order. *)
+
+    val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+       where [k1 ... kN] are the keys of all bindings in [m]
+       (in increasing order) *)
+
+    val for_all: (key -> 'a -> bool) -> 'a t -> bool
+    (** [for_all p m] checks if all the bindings of the map.
+        order unspecified
+     *)
+
+    val exists: (key -> 'a -> bool) -> 'a t -> bool
+    (** [exists p m] checks if at least one binding of the map
+        satisfy the predicate [p]. 
+        order unspecified
+     *)
+
+    val filter: (key -> 'a -> bool) -> 'a t -> 'a t
+    (** [filter p m] returns the map with all the bindings in [m]
+        that satisfy predicate [p].
+        order unspecified
+     *)
+
+    val partition: (key -> 'a -> bool) -> 'a t -> 'a t * 'a t
+    (** [partition p m] returns a pair of maps [(m1, m2)], where
+        [m1] contains all the bindings of [s] that satisfy the
+        predicate [p], and [m2] is the map with all the bindings of
+        [s] that do not satisfy [p].
+     *)
+
+    val cardinal: 'a t -> int
+    (** Return the number of bindings of a map. *)
+
+    val bindings: 'a t -> (key * 'a) list
+    (** Return the list of all bindings of the given map.
+       The returned list is sorted in increasing order with respect
+       to the ordering *)
+    val keys : 'a t -> key list 
+    (* Increasing order *)
+
+    val min_binding_exn: 'a t -> (key * 'a)
+    (** raise [Not_found] if the map is empty. *)
+
+    val max_binding_exn: 'a t -> (key * 'a)
+    (** Same as {!Map.S.min_binding} *)
+
+    val choose: 'a t -> (key * 'a)
+    (** Return one binding of the given map, or raise [Not_found] if
+       the map is empty. Which binding is chosen is unspecified,
+       but equal bindings will be chosen for equal maps.
+     *)
+
+    val split: key -> 'a t -> 'a t * 'a option * 'a t
+    (** [split x m] returns a triple [(l, data, r)], where
+          [l] is the map with all the bindings of [m] whose key
+        is strictly less than [x];
+          [r] is the map with all the bindings of [m] whose key
+        is strictly greater than [x];
+          [data] is [None] if [m] contains no binding for [x],
+          or [Some v] if [m] binds [v] to [x].
+        @since 3.12.0
+     *)
+
+    val find_exn: key -> 'a t -> 'a
+    (** [find x m] returns the current binding of [x] in [m],
+       or raises [Not_found] if no such binding exists. *)
+
+    val map: ('a -> 'b) -> 'a t -> 'b t
+    (** [map f m] returns a map with same domain as [m], where the
+       associated value [a] of all bindings of [m] has been
+       replaced by the result of the application of [f] to [a].
+       The bindings are passed to [f] in increasing order
+       with respect to the ordering over the type of the keys. *)
+
+    val mapi: (key -> 'a -> 'b) -> 'a t -> 'b t
+    (** Same as {!Map.S.map}, but the function receives as arguments both the
+       key and the associated value for each binding of the map. *)
+
+    val of_list : (key * 'a) list -> 'a t 
+    val of_array : (key * 'a ) array -> 'a t 
+    val add_list : (key * 'b) list -> 'b t -> 'b t
+
+  end
 
 end
 module String_map : sig 
@@ -23512,98 +23671,47 @@ module String_map : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type key = string 
-val compare_key : key -> key -> int 
 
-(*************************************************)
-type + 'a t 
-val empty: 'a t
-val is_empty: 'a t -> bool
-val iter: (key -> 'a ->  unit) -> 'a t -> unit
-val fold: (key -> 'a -> 'b ->  'b) -> 'a t -> 'b -> 'b
-val for_all: (key -> 'a  -> bool) -> 'a t -> bool
-val exists: (key -> 'a -> bool) -> 'a t -> bool
-val singleton: key -> 'a  -> 'a t
-val cardinal: 'a t -> int
-(* val elements: 'a t -> (key * 'a) list *)
-val choose: 'a t -> key * 'a 
-(* val partition: (key -> bool) -> 'a t -> 'a t * 'a t *)
-
-val mem: key -> 'a t -> bool
-val add: key -> 'a -> 'a t -> 'a t
-val find : key -> 'a t -> 'a
-val map : ('a -> 'b) -> 'a t -> 'b t
-val merge : 
-    (key -> 'b option -> 'c option -> 'd option)
-    -> 'b t
-    -> 'c t 
-    -> 'd t 
-(*************************************************)
- 
-
-val of_list : (key * 'a) list -> 'a t 
-
-val add_list : (key * 'b) list -> 'b t -> 'b t
-
-val find_opt : key -> 'a t -> 'a option
-
-val find_default : key -> 'a -> 'a t -> 'a
-
-val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
+include Map_gen.S with type key = string
 
 end = struct
 #1 "string_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type key = string 
-let compare_key = String.compare 
-
-(**********************************************************************************)
-type 'a t = (key,'a) Bal_map_common.t 
-let empty = Bal_map_common.empty 
-let is_empty = Bal_map_common.is_empty
-let iter = Bal_map_common.iter
-let fold = Bal_map_common.fold
-let for_all = Bal_map_common.for_all 
-let exists = Bal_map_common.exists 
-let singleton = Bal_map_common.singleton 
-let cardinal = Bal_map_common.cardinal
-let bindings = Bal_map_common.bindings
-let choose = Bal_map_common.choose 
-let partition = Bal_map_common.partition 
-let filter = Bal_map_common.filter 
-let map = Bal_map_common.map 
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
 
-let bal = Bal_map_common.bal 
-let height = Bal_map_common.height 
-let join = Bal_map_common.join 
-let concat_or_join = Bal_map_common.concat_or_join 
+  
+# 10
+  type key = string 
+  let compare_key = String.compare
 
-let rec add x data (tree : _ t) : _ t =
-  match tree with 
+# 22
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
+
+
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
   | Empty ->
     Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
@@ -23615,71 +23723,90 @@ let rec add x data (tree : _ t) : _ t =
     else
       bal l v d (add x data r)
 
-let rec find x (tree : _ t) =
-  match tree with 
+let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then d
-    else find x (if c < 0 then l else r)
+    else find_exn x (if c < 0 then l else r)
 
-let rec mem x  (tree : _ t) =
-  match tree with 
+let rec mem x (tree : _ Map_gen.t )   = match tree with 
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     c = 0 || mem x (if c < 0 then l else r)
 
-let rec split x (tree : _ t) : _ t * _ option * _ t  =
-  match tree with 
+let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove x l) v d r
+    else
+      bal l v d (remove x r)
+
+
+let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
   | Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then (l, Some d, r)
     else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
+      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
     else
-      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
+      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
 
-let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
+let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
+
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split v1 s2 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    begin match  split v2 s1 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
   | _ ->
     assert false
 
 
-(* include Map.Make(String) *)
+
+let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+
+let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add k v acc) init xs 
 
 let of_list xs = add_list xs empty
 
-let find_opt k m =
-  match find k m with 
-  | exception v -> None
-  | u -> Some u
-
-let find_default k default m =
-  match find k m with 
-  | exception v -> default 
-  | u -> u
-
-let print p_v fmt  m =
-  iter (fun k v -> 
-      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
-    ) m
-
-
+let of_array xs = 
+  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
 module Ast_extract : sig 
@@ -23865,7 +23992,7 @@ type ('a,'b) t =
 (* dfs   *)
 let sort_files_by_dependencies ~domain dependency_graph =
   let next current =
-    (String_map.find  current dependency_graph) in    
+    (String_map.find_exn  current dependency_graph) in    
   let worklist = ref domain in
   let result = Queue.create () in
   let rec visit visiting path current =
@@ -23941,7 +24068,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
       match check_suffix source_file with
       | `Ml, opref ->
         let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
+        begin match String_map.find_exn module_name acc with
           | exception Not_found ->
             String_map.add module_name
               {ast_info =
@@ -23968,7 +24095,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
         end
       | `Mli, opref ->
         let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
+        begin match String_map.find_exn module_name acc with
           | exception Not_found ->
             String_map.add module_name
               {ast_info = (Mli (source_file, parse_interface
@@ -24033,7 +24160,7 @@ let collect_from_main
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
   let next module_name =
-    match String_map.find module_name ast_table with
+    match String_map.find_exn module_name ast_table with
     | exception _ -> String_set.empty
     | {ast_info = Ml (_,  impl, _)} ->
       read_parse_and_extract Ml (project_impl impl)
@@ -24072,7 +24199,7 @@ let build_queue ppf queue
   queue
   |> Queue.iter
     (fun modname -> 
-      match String_map.find modname ast_table  with
+      match String_map.find_exn modname ast_table  with
       | {ast_info = Ml(source_file,ast, opref)}
         -> 
         after_parsing_impl ppf source_file 
@@ -24093,7 +24220,7 @@ let handle_queue ppf queue ast_table decorate_module_only decorate_interface_onl
   queue 
   |> Queue.iter
     (fun base ->
-       match (String_map.find  base ast_table).ast_info with
+       match (String_map.find_exn  base ast_table).ast_info with
        | exception Not_found -> assert false
        | Ml (ml_name,  ml_content, _)
          ->
@@ -24113,7 +24240,7 @@ let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
     after_parsing_sig    
   =
   queue |> Queue.iter (fun modname -> 
-      match String_map.find modname ast_table  with
+      match String_map.find_exn modname ast_table  with
       | {ast_info = Ml(source_file,lazy ast, opref)}
         -> 
         after_parsing_impl ppf source_file opref ast 
@@ -57538,100 +57665,45 @@ module Ident_map : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type key = Ident.t
-val compare_key : key -> key -> int 
-
-(*************************************************)
-type + 'a t 
-val empty: 'a t
-val is_empty: 'a t -> bool
-val iter: (key -> 'a ->  unit) -> 'a t -> unit
-val fold: (key -> 'a -> 'b ->  'b) -> 'a t -> 'b -> 'b
-val for_all: (key -> 'a  -> bool) -> 'a t -> bool
-val exists: (key -> 'a -> bool) -> 'a t -> bool
-val singleton: key -> 'a  -> 'a t
-val cardinal: 'a t -> int
-(* val elements: 'a t -> (key * 'a) list *)
-val choose: 'a t -> key * 'a 
-(* val partition: (key -> bool) -> 'a t -> 'a t * 'a t *)
-
-val mem: key -> 'a t -> bool
-val add: key -> 'a -> 'a t -> 'a t
-val find : key -> 'a t -> 'a
-val map : ('a -> 'b) -> 'a t -> 'b t
-val mapi : (key -> 'b -> 'c) -> 'b t -> 'c t
-val merge : 
-    (key -> 'b option -> 'c option -> 'd option)
-    -> 'b t
-    -> 'c t 
-    -> 'd t 
-(*************************************************)
-
-val of_list  : (key * 'a) list -> 'a t
-
-val keys : 'a t -> key list
-
-val add_if_not_exist : key -> 'a -> 'a t -> 'a t
-
-val merge_disjoint : 'a t -> 'a t -> 'a t
-
+include Map_gen.S with type key = Ident.t
 end = struct
 #1 "ident_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
 
+  
+# 16
+  type key = Ident.t
+  let compare_key = Ext_ident.compare
+
+# 22
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
 
 
-type key = Ident.t
-
-let compare_key = Ext_ident.compare
-type 'a t = (key, 'a) Bal_map_common.t 
-open Bal_map_common 
-
-let empty = Bal_map_common.empty 
-let is_empty = Bal_map_common.is_empty
-let iter = Bal_map_common.iter
-let fold = Bal_map_common.fold
-let for_all = Bal_map_common.for_all 
-let exists = Bal_map_common.exists 
-let singleton = Bal_map_common.singleton 
-let cardinal = Bal_map_common.cardinal
-let bindings = Bal_map_common.bindings
-let choose = Bal_map_common.choose 
-let partition = Bal_map_common.partition 
-let filter = Bal_map_common.filter 
-let map = Bal_map_common.map 
-let mapi = Bal_map_common.mapi
-
-let bal = Bal_map_common.bal 
-let height = Bal_map_common.height 
-let join = Bal_map_common.join 
-let concat_or_join = Bal_map_common.concat_or_join 
-
-let rec add x data (tree : _ t) : _ t =
-  match tree with 
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
   | Empty ->
     Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
@@ -57643,64 +57715,90 @@ let rec add x data (tree : _ t) : _ t =
     else
       bal l v d (add x data r)
 
-let rec find x (tree : _ t) =
-  match tree with 
+let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then d
-    else find x (if c < 0 then l else r)
+    else find_exn x (if c < 0 then l else r)
 
-let rec mem x  (tree : _ t) =
-  match tree with 
+let rec mem x (tree : _ Map_gen.t )   = match tree with 
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     c = 0 || mem x (if c < 0 then l else r)
 
-let rec split x (tree : _ t) : _ t * _ option * _ t  =
-  match tree with 
+let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove x l) v d r
+    else
+      bal l v d (remove x r)
+
+
+let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
   | Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then (l, Some d, r)
     else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
+      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
     else
-      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
+      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
 
-let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
+let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
   | _ ->
     assert false
 
-let of_list lst = 
-  List.fold_left (fun acc (k,v) -> add k v acc) empty lst
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split v1 s2 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    begin match  split v2 s1 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
+  | _ ->
+    assert false
 
-let keys map = fold (fun k _ acc -> k::acc  ) map []
 
-(* TODO: have this in stdlib/map to save some time *)
-let add_if_not_exist key v m = 
-  if mem key m then m else add key v m
 
-let merge_disjoint m1 m2 = 
-  merge 
-    (fun k x0 y0 -> 
-       match x0, y0 with 
-         None, None -> None
-       | None, Some v | Some v, None -> Some v
-       | _, _ -> invalid_arg "merge_disjoint: maps are not disjoint")
-    m1 m2
+let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+
+let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
+
+let add_list (xs : _ list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
+let of_list xs = add_list xs empty
+
+let of_array xs = 
+  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
 module Set_gen
@@ -57757,12 +57855,15 @@ let empty = Empty
 
 let is_empty = function Empty -> true | _ -> false
 
-let rec cardinal = function
-    Empty -> 0
-  | Node(l, v, r, _) -> cardinal l + 1 + cardinal r
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
 
 let rec elements_aux accu = function
-    Empty -> accu
+  | Empty -> accu
   | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
 
 let elements s =
@@ -63955,6 +64056,71 @@ let indent t n =
 let flush t () = t.flush ()
 
 end
+module Ext_int : sig 
+#1 "ext_int.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = int
+val compare : t -> t -> int 
+val equal : t -> t -> bool 
+
+end = struct
+#1 "ext_int.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = int
+
+let compare (x : t) (y : t) = Pervasives.compare x y 
+
+let equal (x : t) (y : t) = x = y
+
+end
 module Int_map : sig 
 #1 "int_map.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -63988,45 +64154,141 @@ module Int_map : sig
 
 
 
-include Map.S with type key = int
+include Map_gen.S with type key = int
 
 end = struct
 #1 "int_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
+
+
+  
+# 13
+  type key = int
+  let compare_key = Ext_int.compare
+
+# 22
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
+
+
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add x data l) v d r
+    else
+      bal l v d (add x data r)
+
+let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then d
+    else find_exn x (if c < 0 then l else r)
+
+let rec mem x (tree : _ Map_gen.t )   = match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove x l) v d r
+    else
+      bal l v d (remove x r)
+
+
+let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
+    else
+      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
+
+let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split v1 s2 in
+    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split v2 s1 in
+    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
+
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split v1 s2 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    begin match  split v2 s1 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
+  | _ ->
+    assert false
 
 
 
+let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
 
+let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
 
+let add_list (xs : _ list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
 
+let of_list xs = add_list xs empty
 
-
-include  Map.Make(struct 
-  type t = int
-  let compare (x : int) y  = Pervasives.compare x y
-end)
+let of_array xs = 
+  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
 module Ext_pp_scope : sig 
@@ -64133,10 +64395,10 @@ and print_int_map fmt m =
     ) m    
 
 let add_ident (id : Ident.t) (cxt : t) : int * t = 
-  match String_map.find id.name cxt with 
+  match String_map.find_exn id.name cxt with 
   | exception Not_found -> (0, String_map.add id.name Int_map.(add id.stamp 0  empty) cxt )
   | imap -> (
-    match Int_map.find id.stamp imap with
+    match Int_map.find_exn id.stamp imap with
     | exception Not_found ->
       let v = Int_map.cardinal imap in
       v, String_map.add id.name (Int_map.add id.stamp v imap) cxt
@@ -64156,11 +64418,11 @@ let merge set cxt  =
 let sub_scope (scope : t) ident_collection : t =
   let cxt = empty in
   Ident_set.fold (fun (i : Ident.t) acc -> 
-    match String_map.find i.name scope with 
+    match String_map.find_exn i.name scope with 
     | exception Not_found -> assert false 
     | imap -> ( 
       (* They are the same if already there*)
-      match String_map.find i.name acc with 
+      match String_map.find_exn i.name acc with 
       | exception Not_found -> String_map.add i.name imap acc
       | _ -> acc  (* TODO: optimization *) 
     )
@@ -68169,7 +68431,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     (* relies on [identifier] uniquely bound *)    
     let times = if loop then loop_use else 1 in
     if Ident_set.mem v !local_set then ()    
-    else begin match Ident_map.find v !fv with 
+    else begin match Ident_map.find_exn v !fv with 
       | exception Not_found
         -> fv := Ident_map.add v { top ; times } !fv
       | v ->
@@ -68874,71 +69136,6 @@ let seriaize env (filename : string) (lam : Lam.t) : unit =
   end
 
 end
-module Ext_int : sig 
-#1 "ext_int.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = int
-val compare : t -> t -> int 
-val equal : t -> t -> bool 
-
-end = struct
-#1 "ext_int.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = int
-
-let compare (x : t) (y : t) = Pervasives.compare x y 
-
-let equal (x : t) (y : t) = x = y
-
-end
 module Int_hash_set : sig 
 #1 "int_hash_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -69450,7 +69647,7 @@ let sort_dag_args  param_args =
   let dependencies  : Ident_set.t Ident_map.t = 
     Ident_map.mapi (fun param arg -> Js_fold_basic.depends_j arg idents) param_args in
   try  
-    Some (toplogical (fun k -> Ident_map.find k dependencies) todos)
+    Some (toplogical (fun k -> Ident_map.find_exn k dependencies) todos)
   with Cyclic -> None 
 
 
@@ -69476,7 +69673,7 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
     match x with 
     | Lvar id as l ->
       begin 
-        try Ident_map.find id s with Not_found -> l 
+        try Ident_map.find_exn id s with Not_found -> l 
       end
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
@@ -70669,7 +70866,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
                                    cmj_table ;  } ) ;
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
-          begin match String_map.find name cmj_table.values with
+          begin match String_map.find_exn name cmj_table.values with
             | exception Not_found -> NA, None ;
             | {arity; closed_lambda} -> arity, closed_lambda 
           end in
@@ -70686,7 +70883,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
     | Visit { signatures = serializable_sigs ; cmj_table = { values ; _} }  -> 
       let name = (Type_util.get_name serializable_sigs pos ) in
       let arity , closed_lambda =  (
-        match  String_map.find name values with
+        match  String_map.find_exn name values with
         | exception  Not_found -> (NA, None)
         | {arity; closed_lambda;_} -> 
           arity, closed_lambda 
@@ -76429,7 +76626,7 @@ let propogate_beta_reduce_with_map
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
-             begin match Ident_map.find old_param map with 
+             begin match Ident_map.find_exn old_param map with 
                | exception Not_found -> assert false 
                | {top = true ; times = 0 }
                | {top = true ; times = 1 } 
@@ -78146,7 +78343,7 @@ let table_dispatch table (action : action)
      = 
   match action with 
   | {txt =  name; loc  }, y -> 
-    begin match String_map.find name table with 
+    begin match String_map.find_exn name table with 
       | fn -> fn y
       | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end
@@ -82557,7 +82754,7 @@ and compile_recursive_let
             *)
             ~immutable_mask:ret.immutable_mask
             (List.map (fun x -> 
-                 try Ident_map.find x ret.new_params with  Not_found -> x)
+                 try Ident_map.find_exn x ret.new_params with  Not_found -> x)
                 params)
             [
               S.while_ (* ~label:continue_label *)
@@ -82840,7 +83037,7 @@ and
                                   (i + 1, assigns, new_params)
                                 | _ ->
                                   let new_param, m  = 
-                                    match Ident_map.find  param ret.new_params with 
+                                    match Ident_map.find_exn  param ret.new_params with 
                                     | exception Not_found -> 
                                       ret.immutable_mask.(i)<- false;
                                       let v = Ext_ident.create ("_"^param.Ident.name) in
@@ -82848,7 +83045,7 @@ and
                                     | v -> v, new_params  in
                                   (i+1, (new_param, arg) :: assigns, m)
                               ) (0, [], Ident_map.empty) params args  in 
-                          let () = ret.new_params <- Ident_map.(merge_disjoint new_params ret.new_params) in
+                          let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
                           assigned_params |> List.map (fun (param, arg) -> S.assign param arg))
                          @
                         [S.continue ()(* label *)]
@@ -86169,7 +86366,7 @@ let collect_occurs  lam : occ_tbl =
 
   (* Record a use of a variable *)
   let add_one_use bv ident  =
-    match Ident_map.find ident bv with 
+    match Ident_map.find_exn ident bv with 
     | r  -> r.times <- r.times + 1 
     | exception Not_found ->
       (* ident is not locally bound, therefore this is a use under a lambda
@@ -86183,7 +86380,7 @@ let collect_occurs  lam : occ_tbl =
 
   let inherit_use bv ident bid =
     let n = try Ident_hashtbl.find occ bid with Not_found -> dummy_info () in
-    match Ident_map.find ident bv with 
+    match Ident_map.find_exn ident bv with 
     | r  -> absorb_info r n
     | exception Not_found ->
       (* ident is not locally bound, therefore this is a use under a lambda
@@ -86917,7 +87114,7 @@ let export_to_cmj
     List.fold_left
       (fun   acc (x : Ident.t)  ->
          let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
-         match Ident_map.find x export_map with 
+         match Ident_map.find_exn x export_map with 
          | lambda  -> 
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,

@@ -77,7 +77,7 @@ let export_to_cmj
     List.fold_left
       (fun   acc (x : Ident.t)  ->
          let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
-         match Ident_map.find x export_map with 
+         match Ident_map.find_exn x export_map with 
          | lambda  -> 
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,

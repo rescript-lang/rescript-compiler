@@ -52,7 +52,7 @@ bin/whole_compiler.ml : ext/ext_format.ml
 bin/whole_compiler.ml : ext/ext_format.mli
 bin/whole_compiler.ml : ext/ext_list.ml
 bin/whole_compiler.ml : ext/ext_list.mli
-bin/whole_compiler.ml : ext/bal_map_common.ml
+bin/whole_compiler.ml : ext/map_gen.ml
 bin/whole_compiler.ml : ext/string_map.ml
 bin/whole_compiler.ml : ext/string_map.mli
 bin/whole_compiler.ml : depends/ast_extract.ml
@@ -141,8 +141,8 @@ bin/whole_compiler.ml : ext/string_hashtbl.ml
 bin/whole_compiler.ml : ext/string_hashtbl.mli
 bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_ident.mli
-bin/whole_compiler.ml : core/ident_map.ml
-bin/whole_compiler.ml : core/ident_map.mli
+bin/whole_compiler.ml : ext/ident_map.ml
+bin/whole_compiler.ml : ext/ident_map.mli
 bin/whole_compiler.ml : ext/set_gen.ml
 bin/whole_compiler.ml : ext/ident_set.ml
 bin/whole_compiler.ml : ext/ident_set.mli
@@ -176,6 +176,8 @@ bin/whole_compiler.ml : core/js_cmj_format.ml
 bin/whole_compiler.ml : core/js_cmj_format.mli
 bin/whole_compiler.ml : ext/ext_pp.ml
 bin/whole_compiler.ml : ext/ext_pp.mli
+bin/whole_compiler.ml : ext/ext_int.ml
+bin/whole_compiler.ml : ext/ext_int.mli
 bin/whole_compiler.ml : ext/int_map.ml
 bin/whole_compiler.ml : ext/int_map.mli
 bin/whole_compiler.ml : ext/ext_pp_scope.ml
@@ -205,8 +207,6 @@ bin/whole_compiler.ml : core/lam_analysis.ml
 bin/whole_compiler.ml : core/lam_analysis.mli
 bin/whole_compiler.ml : core/lam_print.ml
 bin/whole_compiler.ml : core/lam_print.mli
-bin/whole_compiler.ml : ext/ext_int.ml
-bin/whole_compiler.ml : ext/ext_int.mli
 bin/whole_compiler.ml : ext/int_hash_set.ml
 bin/whole_compiler.ml : ext/int_hash_set.mli
 bin/whole_compiler.ml : core/lam_stats.ml

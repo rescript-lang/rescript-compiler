@@ -108,7 +108,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
                                    cmj_table ;  } ) ;
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
-          begin match String_map.find name cmj_table.values with
+          begin match String_map.find_exn name cmj_table.values with
             | exception Not_found -> NA, None ;
             | {arity; closed_lambda} -> arity, closed_lambda 
           end in
@@ -125,7 +125,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
     | Visit { signatures = serializable_sigs ; cmj_table = { values ; _} }  -> 
       let name = (Type_util.get_name serializable_sigs pos ) in
       let arity , closed_lambda =  (
-        match  String_map.find name values with
+        match  String_map.find_exn name values with
         | exception  Not_found -> (NA, None)
         | {arity; closed_lambda;_} -> 
           arity, closed_lambda 
