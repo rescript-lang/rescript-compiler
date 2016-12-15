@@ -115,8 +115,14 @@ function patch_config(config_map){
         function (_whole, p0) {
             if (p0 === "LIBDIR") {
                 //Escape
-                var origin_path = path.join(jscomp, '..', 'lib', 'ocaml')
-                return JSON.stringify(origin_path).slice(1, -1)
+		if(is_windows){
+		    return 'Filename.concat (Filename.concat (Filename.concat (Filename.dirname Sys.executable_name) "..") "lib") "ocaml"'
+		}
+		else{
+                    var origin_path = path.join(jscomp, '..', 'lib', 'ocaml')
+                    return JSON.stringify(origin_path);
+			// .slice(1, -1)
+		}
             }
             else {
                 return config_map[map[p0]]
