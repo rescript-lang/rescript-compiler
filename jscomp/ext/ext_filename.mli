@@ -111,6 +111,6 @@ val replace_backward_slash : string -> string
 (*
 [no_slash s i len]
 *)
-val no_slash : string -> int -> int -> bool
+val no_char : string -> char  -> int -> int  -> bool
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 

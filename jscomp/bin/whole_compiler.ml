@@ -21426,7 +21426,7 @@ val replace_backward_slash : string -> string
 (*
 [no_slash s i len]
 *)
-val no_slash : string -> int -> int -> bool
+val no_char : string -> char  -> int -> int  -> bool
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -21643,13 +21643,13 @@ let find_package_json_dir cwd  =
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let rec no_slash x i len = 
+let rec no_char x ch i  len = 
   i >= len  || 
-  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+  (String.unsafe_get x i <> ch && no_char x ch (i + 1)  len)
 
 let replace_backward_slash (x : string)=
   let len = String.length x in
-  if no_slash x 0 len then x 
+  if no_char x '\\' 0  len then x 
   else  
     String.map (function 
         |'\\'-> '/'
@@ -21658,7 +21658,7 @@ let replace_backward_slash (x : string)=
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
-  if no_slash x 0 len then x 
+  if no_char x '/' 0  len then x 
   else 
     String.map (function 
         | '/' -> '\\'
