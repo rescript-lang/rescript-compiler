@@ -36,7 +36,7 @@ let (//) = Ext_filename.combine
 *)
 let resolve_bsb_magic_file ~cwd ~desc p =
   let p_len = String.length p in 
-  let no_slash = Ext_filename.no_slash p 0 p_len in  
+  let no_slash = Ext_filename.no_char p '/'  0  p_len in  
   if no_slash then 
     p 
   else if Filename.is_relative p &&

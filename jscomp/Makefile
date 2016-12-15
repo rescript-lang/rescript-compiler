@@ -380,7 +380,7 @@ world:
 travis-world-test:
 	$(MAKE) world
 	@echo "Making test"
-	make test
+	$(NATIVE) -g -I bin -w -a unix.cmxa stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml -o bin/all_ounit_tests.exe && bin/all_ounit_tests.exe
 	$(MAKE) -C test all
 	@echo "Making test finsihed"
 

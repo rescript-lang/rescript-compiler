@@ -268,13 +268,13 @@ var package_dir = Block.__(246, [function () {
                   ));
     }]);
 
-function no_slash(x, _i, len) {
+function no_char(x, ch, _i, len) {
   while(true) {
     var i = _i;
     if (i >= len) {
       return /* true */1;
     }
-    else if (x.charCodeAt(i) !== /* "/" */47) {
+    else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
       
@@ -287,7 +287,7 @@ function no_slash(x, _i, len) {
 
 function replace_backward_slash(x) {
   var len = x.length;
-  if (no_slash(x, 0, len)) {
+  if (no_char(x, /* "\\" */92, 0, len)) {
     return x;
   }
   else {
@@ -304,7 +304,7 @@ function replace_backward_slash(x) {
 
 function replace_slash_backward(x) {
   var len = x.length;
-  if (no_slash(x, 0, len)) {
+  if (no_char(x, /* "/" */47, 0, len)) {
     return x;
   }
   else {
@@ -508,7 +508,7 @@ exports.relative_path                = relative_path;
 exports.node_relative_path           = node_relative_path;
 exports.find_package_json_dir        = find_package_json_dir;
 exports.package_dir                  = package_dir;
-exports.no_slash                     = no_slash;
+exports.no_char                      = no_char;
 exports.replace_backward_slash       = replace_backward_slash;
 exports.replace_slash_backward       = replace_slash_backward;
 exports.module_name_of_file          = module_name_of_file;
