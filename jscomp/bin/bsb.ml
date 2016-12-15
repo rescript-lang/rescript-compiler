@@ -7346,7 +7346,7 @@ end = struct
 
 
 let config_file_bak = "bsconfig.json.bak"
-let ninja = "ninja"
+
 let bsdeps = ".bsdeps"
 
 
@@ -7397,11 +7397,10 @@ let revise_merlin new_content =
     close_out ochan
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 (** *)
-let write_ninja_file cwd =
+let write_ninja_file bsc_dir cwd =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let bsc, bsdep, bsppx =
+    let bsc, bsdep, bsppx =
     bsc_dir // "bsc.exe",
     bsc_dir // "bsb_helper.exe",
     bsc_dir // "bsppx.exe" in
@@ -7574,7 +7573,7 @@ let bsb_main_flags =
       " Also run the JS files passsed" ;*)
   ]
 
-let regenerate_ninja cwd forced =
+let regenerate_ninja cwd bsc_dir forced =
   let output_deps = Bsb_config.lib_bs // bsdeps in
   let reason =
     if forced then "Regenerating ninja (triggered by command line -regen)"
@@ -7584,7 +7583,7 @@ let regenerate_ninja cwd forced =
     begin
       print_endline reason ;
       print_endline "Regenrating build spec";
-      let globbed_dirs = write_ninja_file cwd in
+      let globbed_dirs = write_ninja_file bsc_dir cwd in
       Literals.bsconfig_json :: globbed_dirs
       |> List.map
         (fun x ->
@@ -7596,6 +7595,23 @@ let regenerate_ninja cwd forced =
 
     end
 
+
+let ninja_command ninja ninja_args = 
+  let ninja_args_len = Array.length ninja_args in
+  if ninja_args_len = 0 then 
+    Unix.execvp ninja [|"ninja"; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
+  else 
+    let fixed_args_length = 5 in 
+    Unix.execvp ninja 
+    (Array.init (fixed_args_length + ninja_args_len)
+     (fun i -> match i with 
+     | 0 -> "ninja"
+     | 1 -> "-C"
+     | 2 -> Bsb_config.lib_bs
+     | 3 -> "-d"
+     | 4 -> "keepdepfile"
+    | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) ))
+    
 (**
    Cache files generated:
    - .bsdircache in project root dir
@@ -7611,12 +7627,20 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
              Bsb options are:"
 
 let () =
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let ninja = 
+    if Sys.win32 then 
+      bsc_dir // "ninja.exe"
+    else 
+      "ninja" 
+    in 
   try
     (* see discussion #929 *)
     if Array.length Sys.argv <= 1 then
       begin
-        regenerate_ninja cwd false;
-        Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
+        regenerate_ninja cwd bsc_dir false;
+        ninja_command ninja [||]
+        (* Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]*)
       end
     else
       begin
@@ -7625,7 +7649,7 @@ let () =
           ->
           begin
             Arg.parse bsb_main_flags annoymous usage;
-            regenerate_ninja cwd !force_regenerate;
+            regenerate_ninja cwd bsc_dir !force_regenerate;
             (* String_vec.iter (fun s -> print_endline s) targets; *)
             (* ninja is not triggered in this case *)
           end
@@ -7634,12 +7658,13 @@ let () =
           begin
             Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
             (* String_vec.iter (fun s -> print_endline s) targets; *)
-            regenerate_ninja cwd !force_regenerate;
-            Unix.execvp ninja
+            regenerate_ninja cwd bsc_dir !force_regenerate;
+            ninja_command ninja ninja_args
+            (*Unix.execvp ninja
               (Array.append
                  [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|]
                  ninja_args
-              )
+              )*)
 
           end
       end

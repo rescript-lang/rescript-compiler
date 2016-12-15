@@ -16,25 +16,42 @@ var fs = require('fs')
 var path = require('path')
 var os = require('os')
 
-var is_windows = ! (os.type().indexOf('Windows') < 0)
-var jscomp = path.join(__dirname,'..','jscomp')
+var is_windows = !(os.type().indexOf('Windows') < 0)
+var jscomp = path.join(__dirname, '..', 'jscomp')
+var jscomp_bin = path.join(jscomp, 'bin')
+var dest_bin = path.join(__dirname, '..', 'bin')
 var working_dir = process.cwd()
 console.log("Working dir", working_dir)
-var working_config = {cwd: jscomp, stdio:[0,1,2]}
+var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
 var clean = require('./clean.js')
+var build_util = require('./build_util')
 
 if (is_windows) {
     process.env.WIN32 = '1'
+    console.log("Installing on Windows")
+    fs.readdirSync(jscomp_bin).forEach(function (f) {
+        var last_index = f.lastIndexOf('.win')
+        if (last_index !== -1) {
+            var new_file = f.slice(0, -4) + ".exe"
+            build_util.poor_copy_sync(path.join(jscomp_bin, f), path.join(jscomp_bin, new_file))
+        }
+
+    })
+    child_process.execSync(path.join(__dirname, 'win_build.bat'), working_config)
+    clean.clean()
+    console.log("Installing")
+    build_util.install()
 }
+else {
 
-try{
-    child_process.execSync('node config.js', working_config)
-    console.log("Build the compiler and runtime .. ")
-    child_process.execSync("make world", working_config)
+    try {
+        child_process.execSync('node config.js', working_config)
+        console.log("Build the compiler and runtime .. ")
+        child_process.execSync("make world", working_config)
 
-}catch(e){
-    child_process.execSync(path.join(__dirname,'buildocaml.sh'))
-    process.env.PATH = path.join(__dirname,'..','bin') + path.delimiter + process.env.PATH
+    } catch (e) {
+        child_process.execSync(path.join(__dirname, 'buildocaml.sh'))
+        process.env.PATH = path.join(__dirname, '..', 'bin') + path.delimiter + process.env.PATH
     console.log('configure again with local ocaml installed')
     if(process.env.BS_TRAVIS_CI){
         child_process.execSync("make travis-world-test", working_config)
@@ -45,5 +62,8 @@ try{
     clean.clean()
 }
 
-console.log("Installing")
-child_process.execSync('make VERBOSE=true install', working_config)
+    console.log("Installing")
+    child_process.execSync('make VERBOSE=true install', working_config)
+
+}
+
