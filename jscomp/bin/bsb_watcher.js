@@ -114,20 +114,3 @@ function getWatchFiles(file) {
 watchers.push({watcher : fs.watch(bsconfig,on_change) , dir : bsconfig});
 build();
 
-/* var watch_dirs = ['src', 'bsconfig.json'];
-watch_build(watch_dirs)
-*/
-/*
-fs.watch('src',(eventType,fileName)=>{
-
-    console.log(eventType);
-    console.log(">>>> Start compiling");
-    try{
-        child_process.execSync(bsb,{stdio:[0,1,2]})
-    }catch(e){
-        
-    }
-    console.log(">>>> Finish compiling")
-
-})
-*/
