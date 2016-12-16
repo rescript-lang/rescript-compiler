@@ -3597,8 +3597,19 @@ let mem (h :  _ Hash_set_gen.t) key =
   
 
 end
-module Ordered_hash_set : sig 
-#1 "ordered_hash_set.mli"
+module Bs_hash_stubs
+= struct
+#1 "bs_hash_stubs.ml"
+external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
+
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
+
+external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
+
+end
+module Ordered_hash_set_gen
+= struct
+#1 "ordered_hash_set_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3622,12 +3633,6 @@ module Ordered_hash_set : sig
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(* does not support [remove], 
-    so that the adding order is strict and continous  
- *)
 
 module type S =
 sig
@@ -3639,7 +3644,7 @@ sig
   val copy: t -> t
   val add :  t -> key -> unit
   val mem :  t -> key -> bool
-  val find : t -> key -> int 
+  val find : t -> key -> int (* -1 if not found*)
   val iter: (key -> int -> unit) ->  t -> unit
   val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
   val length:  t -> int
@@ -3648,76 +3653,6 @@ sig
   val choose : t -> key 
   val to_sorted_array: t -> key array
 end
-
-
-
-
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
-
-module Make ( H : HashedType) : (S with type key = H.t)
-(** A naive t implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a t 
-
-val create : int -> 'a t
-
-val clear : 'a t -> unit
-
-val reset : 'a t -> unit
-
-val copy : 'a t -> 'a t
-
-val add : 'a t -> 'a  -> unit
-
-
-val mem : 'a t -> 'a -> bool
-val find : 'a t -> 'a -> int 
-val iter : ('a -> int ->  unit) -> 'a t -> unit
-
-val elements : 'a t -> 'a list
-
-val length : 'a t -> int 
-
-val stats:  'a t -> Hashtbl.statistics
-
-val to_sorted_array : 'a t -> 'a array
- 
-end = struct
-#1 "ordered_hash_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 
 
 (* We do dynamic hashing, and resize the table and rehash the elements
@@ -3771,54 +3706,6 @@ let resize indexfun h =
       insert_bucket (Array.unsafe_get odata i)
     done
   end
-
-let key_index h key =
-  (seeded_hash_param 10 100 0 key) land (Array.length h.data - 1)
-
-
-
-let rec small_bucket_mem key lst =
-  match lst with 
-  | Empty -> false 
-  | Cons(key1,_,rest) -> 
-    key = key1 ||
-    match rest with 
-    | Empty -> false 
-    | Cons(key2,_,  rest) -> 
-      key = key2 ||
-      match rest with 
-      | Empty -> false 
-      | Cons(key3,_, rest) -> 
-        key = key3 ||
-        small_bucket_mem key rest 
-
-let rec small_bucket_find key lst =
-  match lst with 
-  | Empty -> -1
-  | Cons(key1,i,rest) -> 
-    if key = key1 then i 
-    else match rest with 
-      | Empty -> -1 
-      | Cons(key2,i2,  rest) -> 
-        if key = key2 then i2 else
-          match rest with 
-          | Empty -> -1 
-          | Cons(key3,i3, rest) -> 
-            if key = key3 then i3 else
-              small_bucket_find key rest 
-
-let add h key =
-  let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
-    begin 
-      h.data.(i) <- Cons(key, h.size, h.data.(i));
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then resize key_index h
-    end
-let mem h key =
-  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
-let find h key = 
-  small_bucket_find key (Array.unsafe_get h.data (key_index h key))
 
 let iter f h =
   let rec do_bucket = function
@@ -3887,97 +3774,78 @@ let stats h =
     bucket_histogram = histo }
 
 
-module type S =
-sig
-  type key
-  type t
-  val create: int ->  t
-  val clear : t -> unit
-  val reset : t -> unit
-  val copy: t -> t
-  val add :  t -> key -> unit
-  val mem :  t -> key -> bool
-  val find : t -> key -> int (* -1 if not found*)
-  val iter: (key -> int -> unit) ->  t -> unit
-  val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
-  val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
-  val elements : t -> key list 
-  val choose : t -> key 
-  val to_sorted_array: t -> key array
 end
+module Ordered_hash_set_string
+= struct
+#1 "ordered_hash_set_string.ml"
 
-module type HashedType =
-sig
-  type t
-  val equal: t -> t -> bool
-  val hash: t -> int
-end
+  
+# 14 "ext/ordered_hash_set.cppo.ml"
+  type key = string 
+  type t = key Ordered_hash_set_gen.t
+  let key_index (h :  t) key = 
+    (Bs_hash_stubs.hash_string key) land (Array.length h.data - 1)
+  let equal_key = Ext_string.equal
 
-module Make(H: HashedType): (S with type key = H.t) =
-struct
-  type key = H.t
+# 23
+open Ordered_hash_set_gen
 
-  type nonrec  t = key t
-  let create = create
-  let clear = clear
-  let reset = reset
-  let copy = copy
+let create = create
+let clear = clear
+let reset = reset
+let copy = copy
+let iter = iter
+let fold = fold
+let length = length
+let stats = stats
+let elements = elements
+let choose = choose
+let to_sorted_array = to_sorted_array
 
-  let key_index h key =
-    (H.hash  key) land (Array.length h.data - 1)
 
 
-  let rec small_bucket_mem key lst =
-    match lst with 
+let rec small_bucket_mem key lst =
+  match lst with 
+  | Empty -> false 
+  | Cons(key1,_, rest) -> 
+    equal_key key key1 ||
+    match rest with 
     | Empty -> false 
-    | Cons(key1,_, rest) -> 
-      H.equal key key1 ||
+    | Cons(key2 , _, rest) -> 
+      equal_key key  key2 ||
       match rest with 
       | Empty -> false 
-      | Cons(key2 , _, rest) -> 
-        H.equal key  key2 ||
-        match rest with 
-        | Empty -> false 
-        | Cons(key3,_,  rest) -> 
-          H.equal key  key3 ||
-          small_bucket_mem key rest 
+      | Cons(key3,_,  rest) -> 
+        equal_key key  key3 ||
+        small_bucket_mem key rest 
 
-  let rec small_bucket_find key lst =
-    match lst with 
-    | Empty -> -1
-    | Cons(key1,i,rest) -> 
-      if H.equal key key1 then i 
-      else match rest with 
-        | Empty -> -1 
-        | Cons(key2,i2,  rest) -> 
-          if H.equal key  key2 then i2 else
-            match rest with 
-            | Empty -> -1 
-            | Cons(key3,i3, rest) -> 
-              if H.equal key  key3 then i3 else
-                small_bucket_find key rest 
-  let add h key =
-    let i = key_index h key  in 
-    if not (small_bucket_mem key  h.data.(i)) then 
-      begin 
-        h.data.(i) <- Cons(key,h.size, h.data.(i));
-        h.size <- h.size + 1 ;
-        if h.size > Array.length h.data lsl 1 then resize key_index h
-      end
+let rec small_bucket_find key lst =
+  match lst with 
+  | Empty -> -1
+  | Cons(key1,i,rest) -> 
+    if equal_key key key1 then i 
+    else match rest with 
+      | Empty -> -1 
+      | Cons(key2,i2,  rest) -> 
+        if equal_key key  key2 then i2 else
+          match rest with 
+          | Empty -> -1 
+          | Cons(key3,i3, rest) -> 
+            if equal_key key  key3 then i3 else
+              small_bucket_find key rest 
+let add h key =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- Cons(key,h.size, h.data.(i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then resize key_index h
+    end
 
-  let mem h key =
-    small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
-  let find h key = 
-    small_bucket_find key (Array.unsafe_get h.data (key_index h key))  
-  let iter = iter
-  let fold = fold
-  let length = length
-  let stats = stats
-  let elements = elements
-  let choose = choose
-  let to_sorted_array = to_sorted_array
-end
+let mem h key =
+  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
+let find h key = 
+  small_bucket_find key (Array.unsafe_get h.data (key_index h key))  
 
 
 
@@ -3990,15 +3858,6 @@ end
 
 
 
-end
-module Bs_hash_stubs
-= struct
-#1 "bs_hash_stubs.ml"
-external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
-
-external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
-
-external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
 
 end
 module String_hash_set : sig 
@@ -4201,14 +4060,14 @@ let suites =
     end 
     ;
     __LOC__ >:: begin fun _ ->
-      let v = Ordered_hash_set.create 3 in 
+      let v = Ordered_hash_set_string.create 3 in 
       for i =  0 to 10 do
-        Ordered_hash_set.add v (string_of_int i) 
+        Ordered_hash_set_string.add v (string_of_int i) 
       done; 
       for i = 100 downto 2 do
-        Ordered_hash_set.add v (string_of_int i)
+        Ordered_hash_set_string.add v (string_of_int i)
       done;
-      OUnit.assert_equal (Ordered_hash_set.to_sorted_array v )
+      OUnit.assert_equal (Ordered_hash_set_string.to_sorted_array v )
         const_tbl
     end;
     __LOC__ >:: begin fun _ -> 
