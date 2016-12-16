@@ -168,8 +168,9 @@ bin/whole_compiler.ml : ext/int_vec_vec.mli
 bin/whole_compiler.ml : ext/ext_scc.ml
 bin/whole_compiler.ml : ext/ext_scc.mli
 bin/whole_compiler.ml : core/ocaml_stdlib_slots.ml
-bin/whole_compiler.ml : ext/ordered_hash_map.ml
-bin/whole_compiler.ml : ext/ordered_hash_map.mli
+bin/whole_compiler.ml : ext/ordered_hash_map_gen.ml
+bin/whole_compiler.ml : ext/ordered_hash_map_local_ident.ml
+bin/whole_compiler.ml : ext/ordered_hash_map_local_ident.mli
 bin/whole_compiler.ml : core/lam.ml
 bin/whole_compiler.ml : core/lam.mli
 bin/whole_compiler.ml : core/js_cmj_format.ml

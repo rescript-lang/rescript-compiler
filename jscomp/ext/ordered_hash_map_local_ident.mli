@@ -24,65 +24,7 @@
 
 
 
-(* does not support [remove], 
-    so that the adding order is strict and continous  
- *)
-
-module type S =
-sig
-  type key
-  type t
-  val create: int ->  t
-  val clear : t -> unit
-  val reset : t -> unit
-  val copy: t -> t
-  val add :  t -> key -> unit
-  val mem :  t -> key -> bool
-  val find : t -> key -> int 
-  val iter: (key -> int -> unit) ->  t -> unit
-  val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
-  val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
-  val elements : t -> key list 
-  val choose : t -> key 
-  val to_sorted_array: t -> key array
-end
-
-
-
-
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
-
-module Make ( H : HashedType) : (S with type key = H.t)
-(** A naive t implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a t 
-
-val create : int -> 'a t
-
-val clear : 'a t -> unit
-
-val reset : 'a t -> unit
-
-val copy : 'a t -> 'a t
-
-val add : 'a t -> 'a  -> unit
-
-
-val mem : 'a t -> 'a -> bool
-val find : 'a t -> 'a -> int 
-val iter : ('a -> int ->  unit) -> 'a t -> unit
-
-val elements : 'a t -> 'a list
-
-val length : 'a t -> int 
-
-val stats:  'a t -> Hashtbl.statistics
-
-val to_sorted_array : 'a t -> 'a array
- 
+(** Hash algorithm only hash 
+    stamp, this makes sense when  all identifiers are local (no global)
+*)
+include Ordered_hash_map_gen.S with type key = Ident.t

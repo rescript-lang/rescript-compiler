@@ -1071,15 +1071,16 @@ let scc  (groups :  bindings)
        we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
      *)
     | _ ->    
-      let domain : (Ident.t, t) Ordered_hash_map.t = Ordered_hash_map.create 3 in 
-      List.iter (fun (x,lam) -> Ordered_hash_map.add domain x lam) groups ;
-      let int_mapping = Ordered_hash_map.to_sorted_array domain in 
+      let domain : _ Ordered_hash_map_local_ident.t = 
+        Ordered_hash_map_local_ident.create 3 in 
+      List.iter (fun (x,lam) -> Ordered_hash_map_local_ident.add domain x lam) groups ;
+      let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
       let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
-      Ordered_hash_map.iter ( fun id lam key_index ->        
+      Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
           let base_key =  node_vec.(key_index) in 
           let free_vars = free_variables lam in
           Ident_set.iter (fun x ->
-              let key = Ordered_hash_map.find domain x in 
+              let key = Ordered_hash_map_local_ident.find domain x in 
               if key >= 0 then 
                 Int_vec.push key base_key 
             ) free_vars
@@ -1091,12 +1092,12 @@ let scc  (groups :  bindings)
             let bindings =
               Int_vec.map_into_list (fun i -> 
                   let id = int_mapping.(i) in 
-                  let lam  = Ordered_hash_map.find_value domain  id in  
+                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
                   (id,lam)
                 ) v  in 
             match bindings with 
             | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map.find domain id in          
+              let base_key = Ordered_hash_map_local_ident.find domain id in          
 
               if  Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
                 letrec bindings acc 

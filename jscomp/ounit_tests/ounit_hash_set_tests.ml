@@ -82,14 +82,14 @@ let suites =
     end 
     ;
     __LOC__ >:: begin fun _ ->
-      let v = Ordered_hash_set.create 3 in 
+      let v = Ordered_hash_set_string.create 3 in 
       for i =  0 to 10 do
-        Ordered_hash_set.add v (string_of_int i) 
+        Ordered_hash_set_string.add v (string_of_int i) 
       done; 
       for i = 100 downto 2 do
-        Ordered_hash_set.add v (string_of_int i)
+        Ordered_hash_set_string.add v (string_of_int i)
       done;
-      OUnit.assert_equal (Ordered_hash_set.to_sorted_array v )
+      OUnit.assert_equal (Ordered_hash_set_string.to_sorted_array v )
         const_tbl
     end;
     __LOC__ >:: begin fun _ -> 

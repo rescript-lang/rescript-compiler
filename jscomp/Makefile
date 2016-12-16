@@ -64,6 +64,16 @@ ext/ident_map.ml : ext/map.cppo.ml
 # ext/map_poly.ml : ext/map.cppo.ml
 # 	cppo -D TYPE_POLY $< -o $@
 
+ext/ordered_hash_map_make.ml: ext/ordered_hash_map.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
+ext/ordered_hash_map_local_ident.ml: ext/ordered_hash_map.cppo.ml
+	cppo -D TYPE_LOCAL_IDENT $< -o $@
+
+ext/ordered_hash_set_make.ml : ext/ordered_hash_set.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
+
+ext/ordered_hash_set_string.ml:ext/ordered_hash_set.cppo.ml
+	cppo -D TYPE_STRING $< -o $@
 ## Stubs 
 .c.o:
 	$(NATIVE) -ccopt -o -ccopt $@ -c $< 
@@ -125,10 +135,14 @@ EXT_SRCS = ext_util\
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set string_hash_set int_hash_set \
-	 ordered_hash_set ordered_hash_map union_find \
+	ordered_hash_set_gen\
+	ordered_hash_set_string\
+	ordered_hash_map_gen\
+	union_find \
 	ext_ident\
 	ident_map\
 	ident_set\
+	ordered_hash_map_local_ident\
 	int_map\
 	literals \
 	string_map \

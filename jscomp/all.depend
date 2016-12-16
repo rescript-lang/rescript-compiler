@@ -34,13 +34,18 @@ ext/string_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_string.cmx \
     stubs/bs_hash_stubs.cmx ext/string_hash_set.cmi
 ext/int_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_int.cmx \
     stubs/bs_hash_stubs.cmx ext/int_hash_set.cmi
-ext/ordered_hash_set.cmx : ext/ext_util.cmx ext/ordered_hash_set.cmi
-ext/ordered_hash_map.cmx : ext/ext_util.cmx ext/ordered_hash_map.cmi
+ext/ordered_hash_set_gen.cmx : ext/ext_util.cmx
+ext/ordered_hash_set_string.cmx : ext/ordered_hash_set_gen.cmx \
+    ext/ext_string.cmx stubs/bs_hash_stubs.cmx
+ext/ordered_hash_map_gen.cmx : ext/ext_util.cmx
 ext/union_find.cmx : ext/union_find.cmi
 ext/ext_ident.cmx : ext/string_hashtbl.cmx ext/string_hash_set.cmx \
     ext/ext_string.cmx ext/ext_ident.cmi
 ext/ident_map.cmx : ext/map_gen.cmx ext/ext_ident.cmx ext/ident_map.cmi
 ext/ident_set.cmx : ext/set_gen.cmx ext/ident_set.cmi
+ext/ordered_hash_map_local_ident.cmx : ext/ordered_hash_map_gen.cmx \
+    ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
+    ext/ordered_hash_map_local_ident.cmi
 ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
 ext/literals.cmx : ext/literals.cmi
 ext/string_map.cmx : ext/map_gen.cmx ext/string_map.cmi
@@ -86,12 +91,11 @@ ext/ext_sys.cmi :
 ext/hash_set.cmi : ext/hash_set_gen.cmx
 ext/string_hash_set.cmi : ext/hash_set_gen.cmx
 ext/int_hash_set.cmi : ext/hash_set_gen.cmx
-ext/ordered_hash_set.cmi :
-ext/ordered_hash_map.cmi :
 ext/union_find.cmi :
 ext/ext_ident.cmi :
 ext/ident_map.cmi : ext/map_gen.cmx
 ext/ident_set.cmi : ext/set_gen.cmx
+ext/ordered_hash_map_local_ident.cmi : ext/ordered_hash_map_gen.cmx
 ext/int_map.cmi : ext/map_gen.cmx
 ext/literals.cmi :
 ext/string_map.cmi : ext/map_gen.cmx
@@ -290,9 +294,10 @@ core/bs_conditional_initial.cmx : common/bs_version.cmx \
 core/ocaml_options.cmx : common/bs_version.cmx core/ocaml_options.cmi
 core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
     core/ocaml_parse.cmi
-core/lam.cmx : ext/ordered_hash_map.cmx core/ocaml_stdlib_slots.cmx \
-    ext/literals.cmx common/js_config.cmx ext/int_vec_vec.cmx ext/int_vec.cmx \
-    ext/ident_set.cmx ext/ext_string.cmx ext/ext_scc.cmx core/lam.cmi
+core/lam.cmx : ext/ordered_hash_map_local_ident.cmx \
+    core/ocaml_stdlib_slots.cmx ext/literals.cmx common/js_config.cmx \
+    ext/int_vec_vec.cmx ext/int_vec.cmx ext/ident_set.cmx ext/ext_string.cmx \
+    ext/ext_scc.cmx core/lam.cmi
 core/lam_print.cmx : core/lam.cmx core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_beta_reduce_util.cmi
@@ -543,7 +548,7 @@ ounit_tests/ounit_hash_stubs_test.cmx : ounit_tests/ounit_tests_util.cmx \
     ounit/oUnit.cmx ext/int_hash_set.cmx ext/hash_set_poly.cmx \
     stubs/bs_hash_stubs.cmx
 ounit_tests/ounit_hash_set_tests.cmx : ext/string_hash_set.cmx \
-    ext/ordered_hash_set.cmx ounit/oUnit.cmx ext/hash_set_poly.cmx \
+    ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/hash_set_poly.cmx \
     ext/hash_set.cmx
 ounit_tests/ounit_scc_tests.cmx : ounit/oUnit.cmx ext/int_vec_vec.cmx \
     ext/int_vec.cmx ext/ext_string.cmx ext/ext_scc.cmx
