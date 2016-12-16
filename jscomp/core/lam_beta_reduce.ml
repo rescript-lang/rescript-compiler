@@ -264,7 +264,7 @@ let propogate_beta_reduce_with_map
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
-             begin match Ident_map.find old_param map with 
+             begin match Ident_map.find_exn old_param map with 
                | exception Not_found -> assert false 
                | {top = true ; times = 0 }
                | {top = true ; times = 1 } 

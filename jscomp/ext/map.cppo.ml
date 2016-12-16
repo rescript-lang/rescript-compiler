@@ -1,14 +1,24 @@
 
-# 2 "ext/map.cppo.ml"
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
 
-  
-# 10
+#if defined TYPE_FUNCTOR
+module Make(Ord: Map.OrderedType) = struct
+  type key = Ord.t
+  let compare_key = Ord.compare 
+#elif defined TYPE_STRING
   type key = string 
   let compare_key = String.compare
+#elif defined TYPE_INT
+  type key = int
+  let compare_key = Ext_int.compare
+#elif defined TYPE_IDENT
+  type key = Ident.t
+  let compare_key = Ext_ident.compare
+#else
+  [%error "unknown type"]
+#endif
 
-# 22
 type 'a t = (key,'a) Map_gen.t
 exception Duplicate_key of key 
 
@@ -129,3 +139,6 @@ let of_list xs = add_list xs empty
 
 let of_array xs = 
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
+#if defined TYPE_FUNCTOR
+end
+#endif

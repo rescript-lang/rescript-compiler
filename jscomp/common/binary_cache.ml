@@ -108,7 +108,7 @@ let map_update ?dir (map : t)  name : t  =
     if Filename.check_suffix name ".re" then handle name v module_info_of_re else 
     if Filename.check_suffix name ".rei" then handle name v module_info_of_rei else 
       map    in 
-  match String_map.find module_name map with 
+  match String_map.find_exn module_name map with 
   | exception Not_found 
     -> aux None name 
   | v -> 

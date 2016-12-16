@@ -47,10 +47,10 @@ and print_int_map fmt m =
     ) m    
 
 let add_ident (id : Ident.t) (cxt : t) : int * t = 
-  match String_map.find id.name cxt with 
+  match String_map.find_exn id.name cxt with 
   | exception Not_found -> (0, String_map.add id.name Int_map.(add id.stamp 0  empty) cxt )
   | imap -> (
-    match Int_map.find id.stamp imap with
+    match Int_map.find_exn id.stamp imap with
     | exception Not_found ->
       let v = Int_map.cardinal imap in
       v, String_map.add id.name (Int_map.add id.stamp v imap) cxt
@@ -70,11 +70,11 @@ let merge set cxt  =
 let sub_scope (scope : t) ident_collection : t =
   let cxt = empty in
   Ident_set.fold (fun (i : Ident.t) acc -> 
-    match String_map.find i.name scope with 
+    match String_map.find_exn i.name scope with 
     | exception Not_found -> assert false 
     | imap -> ( 
       (* They are the same if already there*)
-      match String_map.find i.name acc with 
+      match String_map.find_exn i.name acc with 
       | exception Not_found -> String_map.add i.name imap acc
       | _ -> acc  (* TODO: optimization *) 
     )

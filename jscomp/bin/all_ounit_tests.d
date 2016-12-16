@@ -35,7 +35,7 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_hash_set_tests.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_stubs_test.ml
-bin/all_ounit_tests.ml : ext/bal_map_common.ml
+bin/all_ounit_tests.ml : ext/map_gen.ml
 bin/all_ounit_tests.ml : ext/string_map.ml
 bin/all_ounit_tests.ml : ext/string_map.mli
 bin/all_ounit_tests.ml : bsb/bsb_json.ml
@@ -44,6 +44,9 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_json_tests.ml
 bin/all_ounit_tests.ml : ext/ext_list.ml
 bin/all_ounit_tests.ml : ext/ext_list.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_list_test.ml
+bin/all_ounit_tests.ml : ext/int_map.ml
+bin/all_ounit_tests.ml : ext/int_map.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_map_tests.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.mli
 bin/all_ounit_tests.ml : ext/literals.ml

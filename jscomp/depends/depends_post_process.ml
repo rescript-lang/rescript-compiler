@@ -62,7 +62,7 @@ let handle_bin_depfile oprefix  (fn : string) : unit =
     let (files, len) = 
       Array.fold_left
         (fun ((acc, len) as v) k  -> 
-           match String_map.find k data with
+           match String_map.find_exn k data with
            | {ml = Ml s | Re s  } 
            | {mll = Some s } 
              -> 
@@ -88,7 +88,7 @@ let handle_bin_depfile oprefix  (fn : string) : unit =
         let (files, len) = 
           Array.fold_left
             (fun ((acc, len) as v) k ->
-               match String_map.find k data with 
+               match String_map.find_exn k data with 
                | { ml = Ml f | Re f  }
                | { mll = Some f }
                | { mli = Mli f | Rei f } -> 

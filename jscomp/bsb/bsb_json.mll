@@ -359,7 +359,7 @@ type callback =
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) m 
      =
-     begin match String_map.find key m, cb with 
+     begin match String_map.find_exn key m, cb with 
        | exception Not_found  ->
         begin match cb with `Not_found f ->  f ()
         | _ -> fail ()
@@ -384,7 +384,7 @@ let query path (json : t ) =
     | p :: rest -> 
       begin match json with 
         | `Obj m -> 
-          begin match String_map.find p m with 
+          begin match String_map.find_exn p m with 
             | m' -> aux (p::acc) rest m'
             | exception Not_found ->  No_path
           end

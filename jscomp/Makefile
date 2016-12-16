@@ -52,6 +52,18 @@ ext/ident_set.ml : ext/set.cppo.ml
 ext/set_poly.ml : ext/set.cppo.ml
 	cppo  -D TYPE_POLY $< -o $@
 
+
+ext/string_map.ml : ext/map.cppo.ml
+	cppo -D TYPE_STRING $< -o $@
+ext/int_map.ml : ext/map.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/map_make.ml : ext/map.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
+ext/ident_map.ml : ext/map.cppo.ml
+	cppo -D TYPE_IDENT $< -o $@
+# ext/map_poly.ml : ext/map.cppo.ml
+# 	cppo -D TYPE_POLY $< -o $@
+
 ## Stubs 
 .c.o:
 	$(NATIVE) -ccopt -o -ccopt $@ -c $< 
@@ -90,7 +102,7 @@ common/bs_version.ml: build_version.js ../package.json
 STUB_SRCS = bs_hash_stubs
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_stubs_test ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_stubs_test ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_map_tests ounit_vec_test ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_util\
@@ -101,25 +113,30 @@ EXT_SRCS = ext_util\
 	string_vec\
 	int_vec int_vec_vec \
 	set_gen\
-	bal_map_common bal_map\
+	map_gen\
+	map_make\
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_hashtbl \
 	ext_string \
 	string_hashtbl\
-	ext_list ext_map \
+	ext_list \
+	ext_map \
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set string_hash_set int_hash_set \
 	 ordered_hash_set ordered_hash_map union_find \
+	ext_ident\
+	ident_map\
 	ident_set\
-	int_map literals string_map \
+	int_map\
+	literals \
+	string_map \
 	string_set\
 	set_int\
 	set_poly\
 	ext_scc ext_pp_scope\
 	ext_io\
-	ext_ident\
 	ident_hash_set\
 	hash_set_poly\
 	ident_hashtbl\
@@ -136,7 +153,7 @@ SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
-CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util bs_conditional_initial ocaml_options ocaml_parse lam\
+CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots ident_util bs_conditional_initial ocaml_options ocaml_parse lam\
 	lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
 	lam_exit_code j lam_module_ident lam_compile_util lam_stats config_util lam_compile_defs js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\

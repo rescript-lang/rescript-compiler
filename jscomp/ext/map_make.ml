@@ -3,10 +3,10 @@
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
 
-  
-# 10
-  type key = string 
-  let compare_key = String.compare
+# 6
+module Make(Ord: Map.OrderedType) = struct
+  type key = Ord.t
+  let compare_key = Ord.compare 
 
 # 22
 type 'a t = (key,'a) Map_gen.t
@@ -129,3 +129,5 @@ let of_list xs = add_list xs empty
 
 let of_array xs = 
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
+# 143
+end

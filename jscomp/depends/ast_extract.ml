@@ -68,7 +68,7 @@ type ('a,'b) t =
 (* dfs   *)
 let sort_files_by_dependencies ~domain dependency_graph =
   let next current =
-    (String_map.find  current dependency_graph) in    
+    (String_map.find_exn  current dependency_graph) in    
   let worklist = ref domain in
   let result = Queue.create () in
   let rec visit visiting path current =
@@ -144,7 +144,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
       match check_suffix source_file with
       | `Ml, opref ->
         let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
+        begin match String_map.find_exn module_name acc with
           | exception Not_found ->
             String_map.add module_name
               {ast_info =
@@ -171,7 +171,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
         end
       | `Mli, opref ->
         let module_name = Ext_filename.module_name_of_file source_file in
-        begin match String_map.find module_name acc with
+        begin match String_map.find_exn module_name acc with
           | exception Not_found ->
             String_map.add module_name
               {ast_info = (Mli (source_file, parse_interface
@@ -236,7 +236,7 @@ let collect_from_main
   let visited = Hashtbl.create 31 in
   let result = Queue.create () in  
   let next module_name =
-    match String_map.find module_name ast_table with
+    match String_map.find_exn module_name ast_table with
     | exception _ -> String_set.empty
     | {ast_info = Ml (_,  impl, _)} ->
       read_parse_and_extract Ml (project_impl impl)
@@ -275,7 +275,7 @@ let build_queue ppf queue
   queue
   |> Queue.iter
     (fun modname -> 
-      match String_map.find modname ast_table  with
+      match String_map.find_exn modname ast_table  with
       | {ast_info = Ml(source_file,ast, opref)}
         -> 
         after_parsing_impl ppf source_file 
@@ -296,7 +296,7 @@ let handle_queue ppf queue ast_table decorate_module_only decorate_interface_onl
   queue 
   |> Queue.iter
     (fun base ->
-       match (String_map.find  base ast_table).ast_info with
+       match (String_map.find_exn  base ast_table).ast_info with
        | exception Not_found -> assert false
        | Ml (ml_name,  ml_content, _)
          ->
@@ -316,7 +316,7 @@ let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
     after_parsing_sig    
   =
   queue |> Queue.iter (fun modname -> 
-      match String_map.find modname ast_table  with
+      match String_map.find_exn modname ast_table  with
       | {ast_info = Ml(source_file,lazy ast, opref)}
         -> 
         after_parsing_impl ppf source_file opref ast 

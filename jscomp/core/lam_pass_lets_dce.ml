@@ -312,7 +312,7 @@ let collect_occurs  lam : occ_tbl =
 
   (* Record a use of a variable *)
   let add_one_use bv ident  =
-    match Ident_map.find ident bv with 
+    match Ident_map.find_exn ident bv with 
     | r  -> r.times <- r.times + 1 
     | exception Not_found ->
       (* ident is not locally bound, therefore this is a use under a lambda
@@ -326,7 +326,7 @@ let collect_occurs  lam : occ_tbl =
 
   let inherit_use bv ident bid =
     let n = try Ident_hashtbl.find occ bid with Not_found -> dummy_info () in
-    match Ident_map.find ident bv with 
+    match Ident_map.find_exn ident bv with 
     | r  -> absorb_info r n
     | exception Not_found ->
       (* ident is not locally bound, therefore this is a use under a lambda
