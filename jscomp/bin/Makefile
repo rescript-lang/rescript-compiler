@@ -6,6 +6,8 @@ ifndef EXE
 endif
 NATIVE=ocamlopt.opt$(EXE)
 
+OCAMLOPT_FLAGS= -inline 1000 -w -a ../stubs/ext_basic_hash_stubs.c
+
 bsppx.exe: config_bsppx.mli config_bsppx.ml bsppx.mli bsppx.ml
 	$(NATIVE) -g -inline 1000 -linkall -w -a $^ -o $@
 
@@ -27,7 +29,7 @@ bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli 
 	$(NATIVE) -w -a ../stubs/ext_basic_hash_stubs.c $^  -o $@
 
 bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
-	$(NATIVE) -w -a unix.cmxa  $^ -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa  $^ -o $@
 
 
 all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe
