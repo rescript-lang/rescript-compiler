@@ -23369,7 +23369,6 @@ let rec min_binding_exn = function
   | Node(Empty, x, d, r, _) -> (x, d)
   | Node(l, x, d, r, _) -> min_binding_exn l
 
-
 let choose = min_binding_exn
 
 let rec max_binding_exn = function
