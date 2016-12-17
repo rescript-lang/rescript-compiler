@@ -3,18 +3,14 @@
 module Make(H: Hashtbl.HashedType): (Ordered_hash_set_gen.S with type key = H.t) =
 struct
   type key = H.t
-
   type   t = key Ordered_hash_set_gen.t
-
-  let key_index (h :  t) key =
-    (H.hash  key) land (Array.length h.data - 1)
+  let hash = H.hash
   let equal_key = H.equal 
-#elif defined TYPE_STRING
 
+#elif defined TYPE_STRING
   type key = string 
   type t = key Ordered_hash_set_gen.t
-  let key_index (h :  t) key = 
-    (Bs_hash_stubs.hash_string key) land (Array.length h.data - 1)
+  let hash = Bs_hash_stubs.hash_string
   let equal_key = Ext_string.equal
 #else 
 [%error "unknown type"]
@@ -30,7 +26,7 @@ let iter = iter
 let fold = fold
 let length = length
 let stats = stats
-let choose = choose
+let choose_exn = choose_exn
 let to_sorted_array = to_sorted_array
 
 
@@ -65,12 +61,13 @@ let rec small_bucket_rank key lst =
             if equal_key key  key3 then i3 else
               small_bucket_rank key rest 
 let add h key =
-  let i = key_index h key  in 
+  let h_data_mask = h.data_mask in 
+  let i = hash key land h_data_mask in 
   if not (small_bucket_mem key  h.data.(i)) then 
     begin 
-      h.data.(i) <- Cons(key,h.size, h.data.(i));
+      Array.unsafe_set h.data i (Cons(key,h.size, Array.unsafe_get h.data i));
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then resize key_index h
+      if h.size > Array.length h.data lsl 1 then resize hash h
     end
 
 let of_array arr =
@@ -81,11 +78,11 @@ let of_array arr =
   done;
   h
 
-  
+
 let mem h key =
-  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
+  small_bucket_mem key (Array.unsafe_get h.data (hash  key land h.data_mask)) 
 let rank h key = 
-  small_bucket_rank key (Array.unsafe_get h.data (key_index h key))  
+  small_bucket_rank key (Array.unsafe_get h.data (hash  key land h.data_mask))  
 
 #if defined TYPE_FUNCTOR
 end

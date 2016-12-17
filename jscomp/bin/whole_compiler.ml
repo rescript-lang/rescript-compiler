@@ -56652,6 +56652,8 @@ module Ext_util : sig
  
 val power_2_above : int -> int -> int
 
+
+val stats_to_string : Hashtbl.statistics -> string 
 end = struct
 #1 "ext_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -56689,6 +56691,14 @@ let rec power_2_above x n =
   else if x * 2 > Sys.max_array_length then x
   else power_2_above (x * 2) n
 
+
+let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
+  Printf.sprintf 
+    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
+    num_bindings 
+    num_buckets 
+    max_bucket_length
+    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
 end
 module Hash_set_gen
 = struct

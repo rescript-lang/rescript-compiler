@@ -28,6 +28,7 @@ let suites =
     Ounit_bal_tree_tests.suites;
     Ounit_hash_stubs_test.suites;
     Ounit_map_tests.suites;
+    Ounit_ordered_hash_set_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

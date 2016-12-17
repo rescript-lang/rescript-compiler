@@ -48,6 +48,7 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_list_test.ml
 bin/all_ounit_tests.ml : ext/int_map.ml
 bin/all_ounit_tests.ml : ext/int_map.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_map_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_ordered_hash_set_tests.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.mli
 bin/all_ounit_tests.ml : ext/literals.ml

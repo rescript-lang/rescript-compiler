@@ -342,11 +342,14 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD   -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
 -include bin/all_ounit_tests.d
 
+
+
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	$(NATIVE) -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -g -I bin -w -a unix.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
-	$^
+	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump
+
 
 # bin/all_ounit_tests.i.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
 # 	$(NATIVE) -ppx /Users/hzhang295/.opam/4.02.3+local-git-master/lib/bisect_ppx/bisect_ppx -g -I bin -w -a unix.cmxa $^ -o $@
