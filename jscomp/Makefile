@@ -112,7 +112,15 @@ common/bs_version.ml: build_version.js ../package.json
 STUB_SRCS = bs_hash_stubs
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_stubs_test ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_map_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_tests_util \
+	ounit_array_tests ounit_list_test \
+	ounit_bal_tree_tests ounit_path_tests \
+	ounit_union_find_tests ounit_hash_stubs_test \
+	ounit_hash_set_tests ounit_scc_tests \
+	ounit_json_tests ounit_map_tests \
+	ounit_ordered_hash_set_tests \
+	ounit_vec_test \
+	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_util\
@@ -137,6 +145,7 @@ EXT_SRCS = ext_util\
 	hash_set_gen hash_set string_hash_set int_hash_set \
 	ordered_hash_set_gen\
 	ordered_hash_set_string\
+	ordered_hash_set_make\
 	ordered_hash_map_gen\
 	union_find \
 	ext_ident\

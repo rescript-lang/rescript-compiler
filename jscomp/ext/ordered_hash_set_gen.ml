@@ -32,12 +32,11 @@ sig
   val copy: t -> t
   val add :  t -> key -> unit
   val mem :  t -> key -> bool
-  val find : t -> key -> int (* -1 if not found*)
+  val rank : t -> key -> int (* -1 if not found*)
   val iter: (key -> int -> unit) ->  t -> unit
   val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
   val length:  t -> int
   val stats:  t -> Hashtbl.statistics
-  val elements : t -> key list 
   val choose : t -> key 
   val to_sorted_array: t -> key array
 end
@@ -95,17 +94,20 @@ let resize indexfun h =
     done
   end
 
+
+let rec do_bucket f = function
+  | Empty ->
+    ()
+  | Cons(k ,i,  rest) ->
+    f k i ; do_bucket f rest 
+
 let iter f h =
-  let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons(k ,i,  rest) ->
-      f k i ; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
+    do_bucket f (Array.unsafe_get d i)
   done
 
+(* find one element *)
 let choose h = 
   let rec aux arr offset len = 
     if offset >= len then raise Not_found
@@ -115,14 +117,6 @@ let choose h =
       | Cons (k,_,rest) -> k 
   in
   aux h.data 0 (Array.length h.data)
-
-let to_sorted_array h = 
-  if h.size = 0 then [||]
-  else 
-    let v = choose h in 
-    let arr = Array.make h.size v in
-    iter (fun k i -> Array.unsafe_set arr i k) h;
-    arr 
 
 let fold f h init =
   let rec do_bucket b accu =
@@ -138,8 +132,17 @@ let fold f h init =
   done;
   !accu
 
-let elements set = 
-  fold  (fun k i  acc ->  k :: acc) set []
+
+
+let to_sorted_array h = 
+  if h.size = 0 then [||]
+  else 
+    let v = choose h in 
+    let arr = Array.make h.size v in
+    iter (fun k i -> Array.unsafe_set arr i k) h;
+    arr 
+
+
 
 
 let rec bucket_length acc (x : _ bucket) = 

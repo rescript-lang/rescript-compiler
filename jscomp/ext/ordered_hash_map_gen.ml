@@ -37,7 +37,7 @@ sig
   val copy: 'value t -> 'value t
   val add : 'value t -> key -> 'value -> unit
   val mem : 'value t -> key -> bool
-  val find : 'value t -> key -> int (* -1 if not found*)
+  val rank : 'value t -> key -> int (* -1 if not found*)
   val find_value : 'value t -> key -> 'value (* raise if not found*)
   val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
   val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b

@@ -1,12 +1,12 @@
 #if defined TYPE_FUNCTOR
 
-module Make(H: Hashtbl.HashedType): (S with type key = H.t) =
+module Make(H: Hashtbl.HashedType): (Ordered_hash_set_gen.S with type key = H.t) =
 struct
   type key = H.t
 
   type   t = key Ordered_hash_set_gen.t
 
-  let key_index h key =
+  let key_index (h :  t) key =
     (H.hash  key) land (Array.length h.data - 1)
   let equal_key = H.equal 
 #elif defined TYPE_STRING
@@ -30,7 +30,6 @@ let iter = iter
 let fold = fold
 let length = length
 let stats = stats
-let elements = elements
 let choose = choose
 let to_sorted_array = to_sorted_array
 
@@ -51,7 +50,7 @@ let rec small_bucket_mem key lst =
         equal_key key  key3 ||
         small_bucket_mem key rest 
 
-let rec small_bucket_find key lst =
+let rec small_bucket_rank key lst =
   match lst with 
   | Empty -> -1
   | Cons(key1,i,rest) -> 
@@ -64,7 +63,7 @@ let rec small_bucket_find key lst =
           | Empty -> -1 
           | Cons(key3,i3, rest) -> 
             if equal_key key  key3 then i3 else
-              small_bucket_find key rest 
+              small_bucket_rank key rest 
 let add h key =
   let i = key_index h key  in 
   if not (small_bucket_mem key  h.data.(i)) then 
@@ -74,10 +73,19 @@ let add h key =
       if h.size > Array.length h.data lsl 1 then resize key_index h
     end
 
+let of_array arr =
+  let len = Array.length arr in 
+  let h = create len in 
+  for i = 0 to len - 1 do 
+    add h (Array.unsafe_get arr i)
+  done;
+  h
+
+  
 let mem h key =
   small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
-let find h key = 
-  small_bucket_find key (Array.unsafe_get h.data (key_index h key))  
+let rank h key = 
+  small_bucket_rank key (Array.unsafe_get h.data (key_index h key))  
 
 #if defined TYPE_FUNCTOR
 end

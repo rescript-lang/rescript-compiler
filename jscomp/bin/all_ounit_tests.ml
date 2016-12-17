@@ -3644,12 +3644,11 @@ sig
   val copy: t -> t
   val add :  t -> key -> unit
   val mem :  t -> key -> bool
-  val find : t -> key -> int (* -1 if not found*)
+  val rank : t -> key -> int (* -1 if not found*)
   val iter: (key -> int -> unit) ->  t -> unit
   val fold: (key -> int -> 'b -> 'b) ->  t -> 'b -> 'b
   val length:  t -> int
   val stats:  t -> Hashtbl.statistics
-  val elements : t -> key list 
   val choose : t -> key 
   val to_sorted_array: t -> key array
 end
@@ -3707,17 +3706,20 @@ let resize indexfun h =
     done
   end
 
+
+let rec do_bucket f = function
+  | Empty ->
+    ()
+  | Cons(k ,i,  rest) ->
+    f k i ; do_bucket f rest 
+
 let iter f h =
-  let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons(k ,i,  rest) ->
-      f k i ; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
+    do_bucket f (Array.unsafe_get d i)
   done
 
+(* find one element *)
 let choose h = 
   let rec aux arr offset len = 
     if offset >= len then raise Not_found
@@ -3727,14 +3729,6 @@ let choose h =
       | Cons (k,_,rest) -> k 
   in
   aux h.data 0 (Array.length h.data)
-
-let to_sorted_array h = 
-  if h.size = 0 then [||]
-  else 
-    let v = choose h in 
-    let arr = Array.make h.size v in
-    iter (fun k i -> Array.unsafe_set arr i k) h;
-    arr 
 
 let fold f h init =
   let rec do_bucket b accu =
@@ -3750,8 +3744,17 @@ let fold f h init =
   done;
   !accu
 
-let elements set = 
-  fold  (fun k i  acc ->  k :: acc) set []
+
+
+let to_sorted_array h = 
+  if h.size = 0 then [||]
+  else 
+    let v = choose h in 
+    let arr = Array.make h.size v in
+    iter (fun k i -> Array.unsafe_set arr i k) h;
+    arr 
+
+
 
 
 let rec bucket_length acc (x : _ bucket) = 
@@ -3775,8 +3778,14 @@ let stats h =
 
 
 end
-module Ordered_hash_set_string
-= struct
+module Ordered_hash_set_string : sig 
+#1 "ordered_hash_set_string.mli"
+
+
+
+
+include Ordered_hash_set_gen.S with type key = string
+end = struct
 #1 "ordered_hash_set_string.ml"
 
   
@@ -3798,7 +3807,6 @@ let iter = iter
 let fold = fold
 let length = length
 let stats = stats
-let elements = elements
 let choose = choose
 let to_sorted_array = to_sorted_array
 
@@ -3819,7 +3827,7 @@ let rec small_bucket_mem key lst =
         equal_key key  key3 ||
         small_bucket_mem key rest 
 
-let rec small_bucket_find key lst =
+let rec small_bucket_rank key lst =
   match lst with 
   | Empty -> -1
   | Cons(key1,i,rest) -> 
@@ -3832,7 +3840,7 @@ let rec small_bucket_find key lst =
           | Empty -> -1 
           | Cons(key3,i3, rest) -> 
             if equal_key key  key3 then i3 else
-              small_bucket_find key rest 
+              small_bucket_rank key rest 
 let add h key =
   let i = key_index h key  in 
   if not (small_bucket_mem key  h.data.(i)) then 
@@ -3842,10 +3850,19 @@ let add h key =
       if h.size > Array.length h.data lsl 1 then resize key_index h
     end
 
+let of_array arr =
+  let len = Array.length arr in 
+  let h = create len in 
+  for i = 0 to len - 1 do 
+    add h (Array.unsafe_get arr i)
+  done;
+  h
+
+  
 let mem h key =
   small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
-let find h key = 
-  small_bucket_find key (Array.unsafe_get h.data (key_index h key))  
+let rank h key = 
+  small_bucket_rank key (Array.unsafe_get h.data (key_index h key))  
 
 
 

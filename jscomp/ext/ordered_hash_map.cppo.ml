@@ -48,7 +48,7 @@ let rec small_bucket_mem key lst =
         equal_key key  key3 ||
         small_bucket_mem key rest 
 
-let rec small_bucket_find key lst =
+let rec small_bucket_rank key lst =
   match lst with 
   | Empty -> -1
   | Cons(key1,i,_, rest) -> 
@@ -61,7 +61,7 @@ let rec small_bucket_find key lst =
           | Empty -> -1 
           | Cons(key3,i3, _, rest) -> 
             if equal_key key  key3 then i3 else
-              small_bucket_find key rest 
+              small_bucket_rank key rest 
 let rec small_bucket_find_value  key (lst : (_,_) bucket)   =
   match lst with 
   | Empty -> raise Not_found
@@ -88,8 +88,8 @@ let add h key value =
 
 let mem h key =
   small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
-let find h key = 
-  small_bucket_find key (Array.unsafe_get h.data (key_index h key))  
+let rank h key = 
+  small_bucket_rank key(Array.unsafe_get h.data (key_index h key))  
 
 let find_value h key =
   small_bucket_find_value key (Array.unsafe_get h.data (key_index h key))
