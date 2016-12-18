@@ -56619,6 +56619,12 @@ external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
 
+external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" "noalloc";;
+
+external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" "noalloc";;
+
+external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
+
 external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
 
 end
@@ -57002,7 +57008,22 @@ module Hashtbl_gen
 
 
 module type S = sig 
-  include Hashtbl.S
+  type key
+  type 'a t
+  val create: int -> 'a t
+  val clear : 'a t -> unit
+  val reset : 'a t -> unit
+  val copy: 'a t -> 'a t
+  val add: 'a t -> key -> 'a -> unit
+  val remove: 'a t -> key -> unit
+  val find: 'a t -> key -> 'a
+  val find_all: 'a t -> key -> 'a list
+  val replace : 'a t -> key -> 'a -> unit
+  val mem : 'a t -> key -> bool
+  val iter: (key -> 'a -> unit) -> 'a t -> unit
+  val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+  val length: 'a t -> int
+  val stats: 'a t -> Hashtbl.statistics
   val of_list2 : key list -> 'a list -> 'a t
   val find_opt : 'a t -> key  -> 'a option
   val find_default : 'a t -> key -> 'a -> 'a 
@@ -57053,9 +57074,9 @@ let resize indexfun h =
     let rec insert_bucket = function
         Empty -> ()
       | Cons(key, data, rest) ->
-          insert_bucket rest; (* preserve original order of elements *)
-          let nidx = indexfun h key in
-          ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+        insert_bucket rest; (* preserve original order of elements *)
+        let nidx = indexfun h key in
+        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
     done
@@ -57066,9 +57087,9 @@ let resize indexfun h =
 let iter f h =
   let rec do_bucket = function
     | Empty ->
-        ()
+      ()
     | Cons(k, d, rest) ->
-        f k d; do_bucket rest in
+      f k d; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -57078,9 +57099,9 @@ let fold f h init =
   let rec do_bucket b accu =
     match b with
       Empty ->
-        accu
+      accu
     | Cons(k, d, rest) ->
-        do_bucket rest (f k d accu) in
+      do_bucket rest (f k d accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -57098,8 +57119,8 @@ let stats h =
   let histo = Array.make (mbl + 1) 0 in
   Array.iter
     (fun b ->
-      let l = bucket_length 0 b in
-      histo.(l) <- histo.(l) + 1)
+       let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
     h.data;
   {Hashtbl.
     num_bindings = h.size;
@@ -57130,30 +57151,30 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
   | Empty -> None 
   | Cons(k1,d1,rest1) -> 
     if eq  key k1 then Some d1 else 
-    match rest1 with
-    | Empty -> None 
-    | Cons(k2,d2,rest2) -> 
-      if eq key k2 then Some d2 else 
-      match rest2 with 
+      match rest1 with
       | Empty -> None 
-      | Cons(k3,d3,rest3) -> 
-        if eq key k3  then Some d3 else 
-        small_bucket_opt eq key rest3 
+      | Cons(k2,d2,rest2) -> 
+        if eq key k2 then Some d2 else 
+          match rest2 with 
+          | Empty -> None 
+          | Cons(k3,d3,rest3) -> 
+            if eq key k3  then Some d3 else 
+              small_bucket_opt eq key rest3 
 
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   match lst with 
   | Empty -> default 
   | Cons(k1,d1,rest1) -> 
     if eq  key k1 then  d1 else 
-    match rest1 with
-    | Empty -> default 
-    | Cons(k2,d2,rest2) -> 
-      if eq key k2 then  d2 else 
-      match rest2 with 
+      match rest1 with
       | Empty -> default 
-      | Cons(k3,d3,rest3) -> 
-        if eq key k3  then  d3 else 
-        small_bucket_default eq key default rest3 
+      | Cons(k2,d2,rest2) -> 
+        if eq key k2 then  d2 else 
+          match rest2 with 
+          | Empty -> default 
+          | Cons(k3,d3,rest3) -> 
+            if eq key k3  then  d3 else 
+              small_bucket_default eq key default rest3 
 
 end
 module String_hashtbl : sig 
@@ -57190,9 +57211,15 @@ include Hashtbl_gen.S with type key = string
 
 end = struct
 #1 "string_hashtbl.ml"
+# 9 "ext/hashtbl.cppo.ml"
 type key = string
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
+let eq_key = Ext_string.equal 
+
+# 24
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
@@ -57203,12 +57230,6 @@ let length = Hashtbl_gen.length
 let stats = Hashtbl_gen.stats
 
 
-let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
-
-let compare_key (x : key) (y : key) = String.compare x y
-
-let eq_key = Ext_string.equal 
 
 let add (h : _ t) key info =
   let i = key_index h key in
@@ -57222,7 +57243,7 @@ let remove (h : _ t ) key =
     | Empty ->
         Empty
     | Cons(k, i, next) ->
-        if compare_key k key = 0
+        if eq_key k key 
         then begin h.size <- h.size - 1; next end
         else Cons(k, i, remove_bucket next) in
   let i = key_index h key in
@@ -57232,21 +57253,21 @@ let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with
   | Empty ->
       raise Not_found
   | Cons(k, d, rest) ->
-      if compare_key key k = 0 then d else find_rec key rest
+      if eq_key key k then d else find_rec key rest
 
 let find (h : _ t) key =
   match h.data.(key_index h key) with
   | Empty -> raise Not_found
   | Cons(k1, d1, rest1) ->
-      if compare_key key k1 = 0 then d1 else
+      if eq_key key k1 then d1 else
       match rest1 with
       | Empty -> raise Not_found
       | Cons(k2, d2, rest2) ->
-          if compare_key key k2 = 0 then d2 else
+          if eq_key key k2 then d2 else
           match rest2 with
           | Empty -> raise Not_found
           | Cons(k3, d3, rest3) ->
-              if compare_key key k3 = 0 then d3 else find_rec key rest3
+              if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
@@ -57257,7 +57278,7 @@ let find_all (h : _ t) key =
   | Empty ->
       []
   | Cons(k, d, rest) ->
-      if compare_key k key = 0
+      if eq_key k key 
       then d :: find_in_bucket rest
       else find_in_bucket rest in
   find_in_bucket h.data.(key_index h key)
@@ -57267,7 +57288,7 @@ let replace h key info =
     | Empty ->
         raise_notrace Not_found
     | Cons(k, i, next) ->
-        if compare_key k key = 0
+        if eq_key k key
         then Cons(key, info, next)
         else Cons(k, i, replace_bucket next) in
   let i = key_index h key in
@@ -57284,7 +57305,7 @@ let mem (h : _ t) key =
   | Empty ->
       false
   | Cons(k, d, rest) ->
-      compare_key k key = 0 || mem_in_bucket rest in
+      eq_key k key  || mem_in_bucket rest in
   mem_in_bucket h.data.(key_index h key)
 
 
@@ -67324,11 +67345,16 @@ include Hashtbl_gen.S with type key = Ident.t
 
 end = struct
 #1 "ident_hashtbl.ml"
-
-
-type key = Ident.t
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+# 2 "ext/hashtbl.cppo.ml"
+type key = Ident.t 
 type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_stamp_and_name  key.stamp key.name ) land (Array.length h.data - 1)
+  (* (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1) *)
+let eq_key = Ext_ident.equal 
+
+# 24
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
@@ -67339,11 +67365,6 @@ let length = Hashtbl_gen.length
 let stats = Hashtbl_gen.stats
 
 
-let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1)
-
-let compare_key = Ext_ident.compare
-let eq_key = Ext_ident.equal
 
 let add (h : _ t) key info =
   let i = key_index h key in
@@ -67357,7 +67378,7 @@ let remove (h : _ t ) key =
     | Empty ->
         Empty
     | Cons(k, i, next) ->
-        if compare_key k key = 0
+        if eq_key k key 
         then begin h.size <- h.size - 1; next end
         else Cons(k, i, remove_bucket next) in
   let i = key_index h key in
@@ -67367,44 +67388,42 @@ let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with
   | Empty ->
       raise Not_found
   | Cons(k, d, rest) ->
-      if compare_key key k = 0 then d else find_rec key rest
+      if eq_key key k then d else find_rec key rest
 
 let find (h : _ t) key =
   match h.data.(key_index h key) with
   | Empty -> raise Not_found
   | Cons(k1, d1, rest1) ->
-      if compare_key key k1 = 0 then d1 else
+      if eq_key key k1 then d1 else
       match rest1 with
       | Empty -> raise Not_found
       | Cons(k2, d2, rest2) ->
-          if compare_key key k2 = 0 then d2 else
+          if eq_key key k2 then d2 else
           match rest2 with
           | Empty -> raise Not_found
           | Cons(k3, d3, rest3) ->
-              if compare_key key k3 = 0 then d3 else find_rec key rest3
+              if eq_key key k3  then d3 else find_rec key rest3
 
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
   | Empty ->
       []
   | Cons(k, d, rest) ->
-      if compare_key k key = 0
+      if eq_key k key 
       then d :: find_in_bucket rest
       else find_in_bucket rest in
   find_in_bucket h.data.(key_index h key)
-
-let find_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-
-let find_default (h : _ t) key default = 
-  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 
 let replace h key info =
   let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
     | Empty ->
         raise_notrace Not_found
     | Cons(k, i, next) ->
-        if compare_key k key = 0
+        if eq_key k key
         then Cons(key, info, next)
         else Cons(k, i, replace_bucket next) in
   let i = key_index h key in
@@ -67421,7 +67440,7 @@ let mem (h : _ t) key =
   | Empty ->
       false
   | Cons(k, d, rest) ->
-      compare_key k key = 0 || mem_in_bucket rest in
+      eq_key k key  || mem_in_bucket rest in
   mem_in_bucket h.data.(key_index h key)
 
 
@@ -85489,9 +85508,15 @@ include Hashtbl_gen.S with type key = int
 
 end = struct
 #1 "int_hashtbl.ml"
-type key = int
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+# 15 "ext/hashtbl.cppo.ml"
+type key = int 
 type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
+let eq_key = Ext_int.equal   
+
+# 24
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
 let reset = Hashtbl_gen.reset
@@ -85502,11 +85527,6 @@ let length = Hashtbl_gen.length
 let stats = Hashtbl_gen.stats
 
 
-let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
-
-let compare_key (x : key) (y : key) = Pervasives.compare x y
-let eq_key = Ext_int.equal 
 
 let add (h : _ t) key info =
   let i = key_index h key in
@@ -85520,33 +85540,31 @@ let remove (h : _ t ) key =
     | Empty ->
         Empty
     | Cons(k, i, next) ->
-        if compare_key k key = 0
+        if eq_key k key 
         then begin h.size <- h.size - 1; next end
         else Cons(k, i, remove_bucket next) in
   let i = key_index h key in
   h.data.(i) <- remove_bucket h.data.(i)
 
-
 let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
   | Empty ->
       raise Not_found
   | Cons(k, d, rest) ->
-      if compare_key key k = 0 then d else find_rec key rest
+      if eq_key key k then d else find_rec key rest
 
 let find (h : _ t) key =
   match h.data.(key_index h key) with
   | Empty -> raise Not_found
   | Cons(k1, d1, rest1) ->
-      if compare_key key k1 = 0 then d1 else
+      if eq_key key k1 then d1 else
       match rest1 with
       | Empty -> raise Not_found
       | Cons(k2, d2, rest2) ->
-          if compare_key key k2 = 0 then d2 else
+          if eq_key key k2 then d2 else
           match rest2 with
           | Empty -> raise Not_found
           | Cons(k3, d3, rest3) ->
-              if compare_key key k3 = 0 then d3 else find_rec key rest3
-
+              if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
@@ -85557,7 +85575,7 @@ let find_all (h : _ t) key =
   | Empty ->
       []
   | Cons(k, d, rest) ->
-      if compare_key k key = 0
+      if eq_key k key 
       then d :: find_in_bucket rest
       else find_in_bucket rest in
   find_in_bucket h.data.(key_index h key)
@@ -85567,7 +85585,7 @@ let replace h key info =
     | Empty ->
         raise_notrace Not_found
     | Cons(k, i, next) ->
-        if compare_key k key = 0
+        if eq_key k key
         then Cons(key, info, next)
         else Cons(k, i, replace_bucket next) in
   let i = key_index h key in
@@ -85580,7 +85598,12 @@ let replace h key info =
     if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
 let mem (h : _ t) key =
-  Hashtbl_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key))
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      false
+  | Cons(k, d, rest) ->
+      eq_key k key  || mem_in_bucket rest in
+  mem_in_bucket h.data.(key_index h key)
 
 
 let of_list2 ks vs = 

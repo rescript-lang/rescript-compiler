@@ -29,6 +29,9 @@ let bench () =
     done
   end
 
+
+type id (* = Ident.t *) = { stamp : int; name : string; mutable flags : int; }
+let hash id = Bs_hash_stubs.hash_stamp_and_name id.stamp id.name 
 let suites = 
     __FILE__
     >:::
@@ -50,5 +53,16 @@ let suites =
         Array.init 100 (fun i -> String.make i 'a' )
         |> Array.iter (fun x -> 
           Bs_hash_stubs.hash_string x =~ Hashtbl.hash x) 
+      end;
+      __LOC__ >:: begin fun _ ->
+        (** only stamp matters here *)
+        hash {stamp = 1 ; name = "xx"; flags = 0} =~ Bs_hash_stubs.hash_small_int 1 ;
+        hash {stamp = 11 ; name = "xx"; flags = 0} =~ Bs_hash_stubs.hash_small_int 11;
+      end;
+      __LOC__ >:: begin fun _ ->
+        (* only string matters here *)
+        hash {stamp = 0 ; name = "Pervasives"; flags = 0} =~ Bs_hash_stubs.hash_string "Pervasives";
+        hash {stamp = 0 ; name = "UU"; flags = 0} =~ Bs_hash_stubs.hash_string "UU";
       end
+      
     ]
