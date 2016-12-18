@@ -48,6 +48,34 @@ CAMLprim value caml_bs_hash_string_and_small_int(value obj, value d){
   return Val_int(h & 0x3FFFFFFFU);
 }
 
+CAMLprim value caml_bs_hash_small_int(value d){
+  uint32 h = 0; 
+  intnat stamp = Long_val(d);
+  MIX(h,d);
+  FINAL_MIX(h);
+  return Val_int(h & 0x3FFFFFFFU);
+}
+/*
+ * We gave up the idea to  hash Ident.t (take only one argument)
+ * customized hash function for Ident.t, first 
+ * argument is stamp, second argument is string 
+ * It's not just introducing c stubs, we need make a clear line
+ * which part of our libraries depends on Ident.t
+ */
+CAMLprim value caml_bs_hash_stamp_and_name(value d, value obj ){
+  uint32 h = 0;
+  intnat stamp = Long_val(d); 
+  if (stamp){
+    MIX(h,d);
+  } else {
+    h = caml_hash_mix_string(h,obj);
+  }
+  
+  FINAL_MIX(h);
+  return Val_int(h & 0x3FFFFFFFU);
+}
+
+
 
 /* local variables: */
 /* compile-command: "ocamlopt.opt -c hash_runtime.c" */

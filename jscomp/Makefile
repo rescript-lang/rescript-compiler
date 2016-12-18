@@ -74,6 +74,13 @@ ext/ordered_hash_set_make.ml : ext/ordered_hash_set.cppo.ml
 
 ext/ordered_hash_set_string.ml:ext/ordered_hash_set.cppo.ml
 	cppo -D TYPE_STRING $< -o $@
+
+ext/string_hashtbl.ml: ext/hashtbl.cppo.ml
+	cppo -D TYPE_STRING $< -o $@	
+ext/int_hashtbl.ml: ext/hashtbl.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/ident_hashtbl.ml: ext/hashtbl.cppo.ml	
+	cppo -D TYPE_IDENT $< -o $@
 ## Stubs 
 .c.o:
 	$(NATIVE) -ccopt -o -ccopt $@ -c $< 

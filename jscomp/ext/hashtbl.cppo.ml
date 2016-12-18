@@ -1,11 +1,26 @@
-# 9 "ext/hashtbl.cppo.ml"
+#if defined TYPE_IDENT
+type key = Ident.t 
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_stamp_and_name  key.stamp key.name ) land (Array.length h.data - 1)
+  (* (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1) *)
+let eq_key = Ext_ident.equal 
+#elif defined TYPE_STRING
 type key = string
 type 'a t = (key, 'a)  Hashtbl_gen.t 
 let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
+#elif defined TYPE_INT
+type key = int 
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
+let eq_key = Ext_int.equal   
+#else
+[%error "unknown type"]
+#endif
 
-# 24
 type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
