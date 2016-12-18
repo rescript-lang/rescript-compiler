@@ -112,7 +112,15 @@ common/bs_version.ml: build_version.js ../package.json
 STUB_SRCS = bs_hash_stubs
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_stubs_test ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_map_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_tests_util \
+	ounit_array_tests ounit_list_test \
+	ounit_bal_tree_tests ounit_path_tests \
+	ounit_union_find_tests ounit_hash_stubs_test \
+	ounit_hash_set_tests ounit_scc_tests \
+	ounit_json_tests ounit_map_tests \
+	ounit_ordered_hash_set_tests \
+	ounit_vec_test \
+	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_util\
@@ -137,6 +145,7 @@ EXT_SRCS = ext_util\
 	hash_set_gen hash_set string_hash_set int_hash_set \
 	ordered_hash_set_gen\
 	ordered_hash_set_string\
+	ordered_hash_set_make\
 	ordered_hash_map_gen\
 	union_find \
 	ext_ident\
@@ -333,11 +342,14 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD   -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
 -include bin/all_ounit_tests.d
 
+
+
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	$(NATIVE) -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -g -I bin -w -a unix.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
-	$^
+	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump
+
 
 # bin/all_ounit_tests.i.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
 # 	$(NATIVE) -ppx /Users/hzhang295/.opam/4.02.3+local-git-master/lib/bisect_ppx/bisect_ppx -g -I bin -w -a unix.cmxa $^ -o $@

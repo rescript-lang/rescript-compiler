@@ -1,9 +1,12 @@
-  
-# 11 "ext/ordered_hash_set.cppo.ml"
-  type key = string 
-  type t = key Ordered_hash_set_gen.t
-  let hash = Bs_hash_stubs.hash_string
-  let equal_key = Ext_string.equal
+
+# 3 "ext/ordered_hash_set.cppo.ml"
+module Make(H: Hashtbl.HashedType): (Ordered_hash_set_gen.S with type key = H.t) =
+struct
+  type key = H.t
+  type   t = key Ordered_hash_set_gen.t
+  let hash = H.hash
+  let equal_key = H.equal 
+
 
 # 19
 open Ordered_hash_set_gen
@@ -74,6 +77,8 @@ let mem h key =
 let rank h key = 
   small_bucket_rank key (Array.unsafe_get h.data (hash  key land h.data_mask))  
 
+# 88
+end
 
 
 

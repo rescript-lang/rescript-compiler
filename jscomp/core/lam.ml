@@ -1080,7 +1080,7 @@ let scc  (groups :  bindings)
           let base_key =  node_vec.(key_index) in 
           let free_vars = free_variables lam in
           Ident_set.iter (fun x ->
-              let key = Ordered_hash_map_local_ident.find domain x in 
+              let key = Ordered_hash_map_local_ident.rank domain x in 
               if key >= 0 then 
                 Int_vec.push key base_key 
             ) free_vars
@@ -1097,7 +1097,7 @@ let scc  (groups :  bindings)
                 ) v  in 
             match bindings with 
             | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map_local_ident.find domain id in          
+              let base_key = Ordered_hash_map_local_ident.rank domain id in          
 
               if  Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
                 letrec bindings acc 
