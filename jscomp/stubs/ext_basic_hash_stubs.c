@@ -40,6 +40,14 @@ CAMLprim value caml_bs_hash_string_and_int  (value obj, value d){
   return Val_int(h & 0x3FFFFFFFU);
 }
 
+CAMLprim value caml_bs_hash_string_and_small_int(value obj, value d){
+  uint32 h = 0;
+  h = caml_hash_mix_string(h,obj);
+  MIX(h,d);
+  FINAL_MIX(h);
+  return Val_int(h & 0x3FFFFFFFU);
+}
+
 
 /* local variables: */
 /* compile-command: "ocamlopt.opt -c hash_runtime.c" */
