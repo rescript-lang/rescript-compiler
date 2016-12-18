@@ -40,6 +40,22 @@ let add (h : _ t) key info =
   h.size <- h.size + 1;
   if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
+
+let modify_or_init (h : _ t) key modf default =
+  let rec find_bucket (bucketlist : _ bucketlist)  =
+    match bucketlist with
+    | Cons(k,i,next) ->
+      if eq_key k key then begin modf i; false end
+      else find_bucket next 
+    | Empty -> true in
+  let i = key_index h key in 
+  if find_bucket h.data.(i) then
+    begin 
+      h.data.(i) <- Cons(key,default (),h.data.(i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h 
+    end
+
 let remove (h : _ t ) key =
   let rec remove_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with  
     | Empty ->
@@ -57,7 +73,7 @@ let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with
   | Cons(k, d, rest) ->
       if eq_key key k then d else find_rec key rest
 
-let find (h : _ t) key =
+let find_exn (h : _ t) key =
   match h.data.(key_index h key) with
   | Empty -> raise Not_found
   | Cons(k1, d1, rest1) ->

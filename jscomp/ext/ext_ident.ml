@@ -83,7 +83,7 @@ let create_js_module (name : string) : Ident.t =
       react--dom
       check collision later
    *)
-  match String_hashtbl.find js_module_table name  with 
+  match String_hashtbl.find_exn js_module_table name  with 
   | exception Not_found -> 
       let v = Ident.create name in
       let ans = { v with flags = js_module_flag} in 

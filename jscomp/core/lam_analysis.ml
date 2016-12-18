@@ -426,10 +426,10 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     (* relies on [identifier] uniquely bound *)    
     let times = if loop then loop_use else 1 in
     if Ident_set.mem v !local_set then ()    
-    else begin match Ident_map.find_exn v !fv with 
-      | exception Not_found
+    else begin match Ident_map.find_opt v !fv with 
+      | None
         -> fv := Ident_map.add v { top ; times } !fv
-      | v ->
+      | Some v ->
         v.times <- v.times + times ; 
         v.top <- v.top && top          
     end

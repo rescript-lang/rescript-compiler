@@ -53,6 +53,20 @@ let rec find_exn x (tree : _ Map_gen.t )  = match tree with
     if c = 0 then d
     else find_exn x (if c < 0 then l else r)
 
+let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+  | Empty -> None 
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt x (if c < 0 then l else r)
+
+let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+  | Empty -> default  
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then  d
+    else find_default x   (if c < 0 then l else r) default
+
 let rec mem x (tree : _ Map_gen.t )   = match tree with 
   | Empty ->
     false
