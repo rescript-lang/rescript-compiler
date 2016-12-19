@@ -52,3 +52,12 @@ let name  x : string  =
   
 (* OCaml runtime written in JS *)
 type module_property = bool 
+
+module Hash = Hashtbl_make.Make(struct 
+    type nonrec t = t 
+    let hash x  = 
+      let x_id = x.id in 
+      Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
+    let equal (x : t) y = 
+      Ext_ident.equal x.id y.id && x.kind = y.kind
+  end)

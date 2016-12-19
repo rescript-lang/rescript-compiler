@@ -5,7 +5,8 @@ let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
 let eq_key = Ext_int.equal   
 
-# 24
+
+# 33
 type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
@@ -116,3 +117,4 @@ let of_list2 ks vs =
   let map = create 51 in 
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
+

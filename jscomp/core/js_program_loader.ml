@@ -138,14 +138,12 @@ let string_of_module_id ~output_prefix
              (`Empty | `Package_script _) , 
              (`Empty  | `Package_script _)
             -> 
-            begin match Config_util.find js_file with 
-              | file -> 
+            begin match Config_util.find_opt js_file with 
+              | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
                 rebase package_dir (`File file) 
-              | exception Not_found -> 
-                Ext_pervasives.failwithf ~loc:__LOC__ 
-                  "@[%s was not found  in search path - while compiling %s @] "
-                  js_file !Location.input_name 
+              | None -> 
+                Bs_exception.error (Js_not_found js_file)
             end
         end
       | External name -> name in 
