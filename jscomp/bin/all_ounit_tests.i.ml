@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 72 *) List.hd state.tests_planned
+  (* 75 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 144 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 150 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 144 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 150 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 144 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 150 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 144 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 150 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 216 *) was_successful t
+        (* 225 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 288 *) string_of_int n
+        (* 300 *) string_of_int n
     | Label s -> 
-        (* 432 *) s
+        (* 450 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 72 *) 1 
-    | TestLabel (_, t) -> (* 85 *) test_case_count t
+    | TestCase _ -> (* 75 *) 1 
+    | TestLabel (_, t) -> (* 89 *) test_case_count t
     | TestList l -> 
-        (* 13 *) List.fold_left 
-          (fun c t -> (* 84 *) c + test_case_count t) 
+        (* 14 *) List.fold_left 
+          (fun c t -> (* 88 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 144 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 150 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -193,13 +193,13 @@ let mapi f l =
     rmapi 0 l
 
 let fold_lefti f accu l =
-  (* 13 *) let rec rfold_lefti cnt accup l = 
-    (* 97 *) match l with
+  (* 14 *) let rec rfold_lefti cnt accup l = 
+    (* 102 *) match l with
       | [] -> 
-          (* 13 *) accup
+          (* 14 *) accup
 
       | h::t -> 
-          (* 84 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 88 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 434 *) match event_type with
+  (* 452 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,18 +276,18 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 432 *) begin
+        (* 450 *) begin
           let string_of_result = 
             if verbose then
               function
-                | RSuccess _      -> (* 72 *) "ok\n"
+                | RSuccess _      -> (* 75 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
               function
-                | RSuccess _      -> (* 72 *) "."
+                | RSuccess _      -> (* 75 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
@@ -296,11 +296,11 @@ let format_event verbose event_type =
             if verbose then
               match e with 
                 | EStart p -> 
-                    (* 72 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 75 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 72 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 75 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 72 *) string_of_result result
+                    (* 75 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -313,20 +313,20 @@ let format_event verbose event_type =
                     (* 0 *) str
             else 
               match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 144 *) ""
-                | EResult result -> (* 72 *) string_of_result result
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 150 *) ""
+                | EResult result -> (* 75 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 217 *) output_string chn (format_event true ev);
+       (* 226 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 217 *) print_string (format_event verbose ev);
+     (* 226 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 217 *) std_log ev; file_log ev; log ev),
+       (* 226 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -709,7 +709,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2000391 *) let get_error_string () =
+  (* 2000400 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -925,8 +925,8 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 72 *) TestLabel(s, TestCase(f))  (* infix *)
-let (>:::) s l = (* 13 *) TestLabel(s, TestList(l)) (* infix *)
+let (>::) s f = (* 75 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>:::) s l = (* 14 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
 let rec test_decorate g =
@@ -1061,7 +1061,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 72 *) try 
+    (* 75 *) try 
       f ();
       RSuccess path
     with
@@ -1080,22 +1080,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 72 *) (path, f) :: acc
+          (* 75 *) (path, f) :: acc
 
       | TestList (tests) ->
-          (* 13 *) fold_lefti 
+          (* 14 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 84 *) flatten_test 
+               (* 88 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 85 *) flatten_test ((Label label)::path) acc t
+          (* 89 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 72 *) let result = 
+    (* 75 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1104,18 +1104,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 73 *) match state.tests_planned with 
+    (* 76 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 72 *) let (path, f) = !global_chooser state in            
+          (* 75 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 2628 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 2850 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1145,7 +1145,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 216 *) log (OUnitLogger.TestEvent ev))
+         (* 225 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1889,7 +1889,7 @@ let starts_with_and_number s ~offset beg =
       else 
         -1 
 
-let equal (x : string) y  = (* 8822561 *) x = y
+let equal (x : string) y  = (* 8832017 *) x = y
 
 let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
@@ -3164,7 +3164,7 @@ end = struct
    ]}
 *)
 let rec power_2_above x n =
-  (* 54 *) if x >= n then x
+  (* 57 *) if x >= n then x
   else if x * 2 > Sys.max_array_length then x
   else power_2_above (x * 2) n
 
@@ -4348,6 +4348,419 @@ let suites =
     ]
 
 end
+module Hashtbl_gen
+= struct
+#1 "hashtbl_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Hash tables *)
+
+
+
+module type S = sig 
+  type key
+  type 'a t
+  val create: int -> 'a t
+  val clear: 'a t -> unit
+  val reset: 'a t -> unit
+  val copy: 'a t -> 'a t
+  val add: 'a t -> key -> 'a -> unit
+  val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
+  val replace_or_init: 'a t -> key -> ('a -> 'a) -> 'a -> unit 
+  val remove: 'a t -> key -> unit
+  val find_exn: 'a t -> key -> 'a
+  val find_all: 'a t -> key -> 'a list
+  val find_opt: 'a t -> key  -> 'a option
+  val find_default: 'a t -> key -> 'a -> 'a 
+
+  val replace: 'a t -> key -> 'a -> unit
+  val mem: 'a t -> key -> bool
+  val iter: (key -> 'a -> unit) -> 'a t -> unit
+  val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+  val length: 'a t -> int
+  val stats: 'a t -> Hashtbl.statistics
+  val of_list2: key list -> 'a list -> 'a t
+end
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type ('a, 'b) t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
+    mutable seed: int;                        (* for randomization *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+and ('a, 'b) bucketlist =
+  | Empty
+  | Cons of 'a * 'b * ('a, 'b) bucketlist
+
+
+let create  initial_size =
+  (* 3 *) let s = Ext_util.power_2_above 16 initial_size in
+  { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
+
+let clear h =
+  (* 0 *) h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    h.data.(i) <- Empty
+  done
+
+let reset h =
+  (* 0 *) h.size <- 0;
+  h.data <- Array.make h.initial_size Empty
+
+
+let copy h = (* 0 *) { h with data = Array.copy h.data }
+
+let length h = (* 3 *) h.size
+
+let resize indexfun h =
+  (* 11 *) let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> (* 1504 *) ()
+      | Cons(key, data, rest) ->
+        (* 3019 *) insert_bucket rest; (* preserve original order of elements *)
+        let nidx = indexfun h key in
+        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+
+
+let iter f h =
+  (* 1 *) let rec do_bucket = function
+    | Empty ->
+      (* 16 *) ()
+    | Cons(k, d, rest) ->
+      (* 6 *) f k d; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let fold f h init =
+  (* 0 *) let rec do_bucket b accu =
+    (* 0 *) match b with
+      Empty ->
+      (* 0 *) accu
+    | Cons(k, d, rest) ->
+      (* 0 *) do_bucket rest (f k d accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket d.(i) !accu
+  done;
+  !accu
+
+let rec bucket_length accu = function
+  | Empty -> (* 0 *) accu
+  | Cons(_, _, rest) -> (* 0 *) bucket_length (accu + 1) rest
+
+let stats h =
+  (* 0 *) let mbl =
+    Array.fold_left (fun m b -> (* 0 *) max m (bucket_length 0 b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+       (* 0 *) let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
+    h.data;
+  {Hashtbl.
+    num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+
+let rec small_bucket_mem eq key (lst : _ bucketlist) =
+  (* 0 *) match lst with 
+  | Empty -> (* 0 *) false 
+  | Cons(k1,_,rest1) -> 
+    (* 0 *) eq  key k1 ||
+    match rest1 with
+    | Empty -> (* 0 *) false 
+    | Cons(k2,_,rest2) -> 
+      (* 0 *) eq key k2  || 
+      match rest2 with 
+      | Empty -> (* 0 *) false 
+      | Cons(k3,_,rest3) -> 
+        (* 0 *) eq key k3  ||
+        small_bucket_mem eq key rest3 
+
+
+let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
+  (* 0 *) match lst with 
+  | Empty -> (* 0 *) None 
+  | Cons(k1,d1,rest1) -> 
+    (* 0 *) if eq  key k1 then Some d1 else 
+      match rest1 with
+      | Empty -> (* 0 *) None 
+      | Cons(k2,d2,rest2) -> 
+        (* 0 *) if eq key k2 then Some d2 else 
+          match rest2 with 
+          | Empty -> (* 0 *) None 
+          | Cons(k3,d3,rest3) -> 
+            (* 0 *) if eq key k3  then Some d3 else 
+              small_bucket_opt eq key rest3 
+
+let rec small_bucket_default eq key default (lst : _ bucketlist) =
+  (* 0 *) match lst with 
+  | Empty -> (* 0 *) default 
+  | Cons(k1,d1,rest1) -> 
+    (* 0 *) if eq  key k1 then  d1 else 
+      match rest1 with
+      | Empty -> (* 0 *) default 
+      | Cons(k2,d2,rest2) -> 
+        (* 0 *) if eq key k2 then  d2 else 
+          match rest2 with 
+          | Empty -> (* 0 *) default 
+          | Cons(k3,d3,rest3) -> 
+            (* 0 *) if eq key k3  then  d3 else 
+              small_bucket_default eq key default rest3 
+
+end
+module String_hashtbl : sig 
+#1 "string_hashtbl.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Hashtbl_gen.S with type key = string
+
+
+
+
+end = struct
+#1 "string_hashtbl.ml"
+# 9 "ext/hashtbl.cppo.ml"
+type key = string
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (* 13019 *) (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
+let eq_key = Ext_string.equal 
+
+# 24
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
+
+
+
+let add (h : _ t) key info =
+  (* 2000 *) let i = key_index h key in
+  let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
+  h.data.(i) <- bucket;
+  h.size <- h.size + 1;
+  if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+
+let modify_or_init (h : _ t) key modf default =
+  (* 0 *) let rec find_bucket (bucketlist : _ bucketlist)  =
+    (* 0 *) match bucketlist with
+    | Cons(k,i,next) ->
+      (* 0 *) if eq_key k key then begin modf i; false end
+      else find_bucket next 
+    | Empty -> (* 0 *) true in
+  let i = key_index h key in 
+  if find_bucket h.data.(i) then
+    begin 
+      h.data.(i) <- Cons(key,default (),h.data.(i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h 
+    end
+
+let remove (h : _ t ) key =
+  (* 0 *) let rec remove_bucket (bucketlist : _ bucketlist) : _ bucketlist = (* 0 *) match bucketlist with  
+    | Empty ->
+        (* 0 *) Empty
+    | Cons(k, i, next) ->
+        (* 0 *) if eq_key k key 
+        then begin h.size <- h.size - 1; next end
+        else Cons(k, i, remove_bucket next) in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec find_rec key (bucketlist : _ bucketlist) = (* 0 *) match bucketlist with  
+  | Empty ->
+      (* 0 *) raise Not_found
+  | Cons(k, d, rest) ->
+      (* 0 *) if eq_key key k then d else find_rec key rest
+
+let find_exn (h : _ t) key =
+  (* 0 *) match h.data.(key_index h key) with
+  | Empty -> (* 0 *) raise Not_found
+  | Cons(k1, d1, rest1) ->
+      (* 0 *) if eq_key key k1 then d1 else
+      match rest1 with
+      | Empty -> (* 0 *) raise Not_found
+      | Cons(k2, d2, rest2) ->
+          (* 0 *) if eq_key key k2 then d2 else
+          match rest2 with
+          | Empty -> (* 0 *) raise Not_found
+          | Cons(k3, d3, rest3) ->
+              (* 0 *) if eq_key key k3  then d3 else find_rec key rest3
+
+let find_opt (h : _ t) key =
+  (* 0 *) Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  (* 0 *) Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+let find_all (h : _ t) key =
+  (* 0 *) let rec find_in_bucket (bucketlist : _ bucketlist) = (* 0 *) match bucketlist with 
+  | Empty ->
+      (* 0 *) []
+  | Cons(k, d, rest) ->
+      (* 0 *) if eq_key k key 
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket h.data.(key_index h key)
+
+let replace h key info =
+  (* 2000 *) let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist =
+    (* 4462 *) match bucketlist with 
+    | Empty ->
+        (* 1000 *) raise_notrace Not_found
+    | Cons(k, i, next) ->
+        (* 3462 *) if eq_key k key
+        then Cons(key, info, next)
+        else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let l = h.data.(i) in
+  try
+    h.data.(i) <- replace_bucket l
+  with Not_found ->
+    h.data.(i) <- Cons(key, info, l);
+    h.size <- h.size + 1;
+    if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+let replace_or_init h key modf info =
+  (* 6000 *) let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist =
+    (* 6000 *) match bucketlist with 
+    | Empty ->
+        (* 6 *) raise_notrace Not_found
+    | Cons(k, i, next) ->
+        (* 5994 *) if eq_key k key
+        then Cons(key, modf i, next)
+        else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let l = h.data.(i) in
+  try
+    h.data.(i) <- replace_bucket l
+  with Not_found ->
+    h.data.(i) <- Cons(key, info, l);
+    h.size <- h.size + 1;
+    if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+let mem (h : _ t) key =
+  (* 0 *) let rec mem_in_bucket (bucketlist : _ bucketlist) = (* 0 *) match bucketlist with 
+  | Empty ->
+      (* 0 *) false
+  | Cons(k, d, rest) ->
+      (* 0 *) eq_key k key  || mem_in_bucket rest in
+  mem_in_bucket h.data.(key_index h key)
+
+
+let of_list2 ks vs = 
+  (* 0 *) let map = create 51 in 
+  List.iter2 (fun k v -> (* 0 *) add map k v) ks vs ; 
+  map
+
+end
+module Ounit_hashtbl_tests
+= struct
+#1 "ounit_hashtbl_tests.ml"
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+let suites = 
+  __FILE__
+  >:::[
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let h = String_hashtbl.create 0 in 
+      let accu key =
+        (* 6000 *) String_hashtbl.replace_or_init h key   succ 1 in 
+      let count = 1000 in 
+      for i = 0 to count - 1 do     
+        Array.iter accu  [|"a";"b";"c";"d";"e";"f"|]    
+      done;
+      String_hashtbl.length h =~ 6;
+      String_hashtbl.iter (fun _ v -> (* 6 *) v =~ count ) h
+    end;
+
+    "add semantics " >:: begin fun _ -> 
+      (* 1 *) let h = String_hashtbl.create 0 in 
+      let count = 1000 in 
+      for j = 0 to 1 do  
+        for i = 0 to count - 1 do                 
+          String_hashtbl.add h (string_of_int i) i 
+        done
+      done ;
+      String_hashtbl.length h =~ 2 * count 
+    end; 
+    "replace semantics" >:: begin fun _ -> 
+      (* 1 *) let h = String_hashtbl.create 0 in 
+      let count = 1000 in 
+      for j = 0 to 1 do  
+        for i = 0 to count - 1 do                 
+          String_hashtbl.replace h (string_of_int i) i 
+        done
+      done ;
+      String_hashtbl.length h =~  count 
+    end; 
+    
+  ]
+end
 module Map_gen
 = struct
 #1 "map_gen.ml"
@@ -4706,7 +5119,8 @@ module type S =
     val find_exn: key -> 'a t -> 'a
     (** [find x m] returns the current binding of [x] in [m],
        or raises [Not_found] if no such binding exists. *)
-
+    val find_opt: key -> 'a t -> 'a option
+    val find_default: key  -> 'a t -> 'a  -> 'a 
     val map: ('a -> 'b) -> 'a t -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
@@ -4810,6 +5224,20 @@ let rec find_exn x (tree : _ Map_gen.t )  = (* 2 *) match tree with
     (* 2 *) let c = compare_key x v in
     if c = 0 then d
     else find_exn x (if c < 0 then l else r)
+
+let rec find_opt x (tree : _ Map_gen.t )  = (* 0 *) match tree with 
+  | Empty -> (* 0 *) None 
+  | Node(l, v, d, r, _) ->
+    (* 0 *) let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt x (if c < 0 then l else r)
+
+let rec find_default x (tree : _ Map_gen.t ) default     = (* 0 *) match tree with 
+  | Empty -> (* 0 *) default  
+  | Node(l, v, d, r, _) ->
+    (* 0 *) let c = compare_key x v in
+    if c = 0 then  d
+    else find_default x   (if c < 0 then l else r) default
 
 let rec mem x (tree : _ Map_gen.t )   = (* 0 *) match tree with 
   | Empty ->
@@ -6387,6 +6815,20 @@ let rec find_exn x (tree : _ Map_gen.t )  = (* 0 *) match tree with
     (* 0 *) let c = compare_key x v in
     if c = 0 then d
     else find_exn x (if c < 0 then l else r)
+
+let rec find_opt x (tree : _ Map_gen.t )  = (* 0 *) match tree with 
+  | Empty -> (* 0 *) None 
+  | Node(l, v, d, r, _) ->
+    (* 0 *) let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt x (if c < 0 then l else r)
+
+let rec find_default x (tree : _ Map_gen.t ) default     = (* 0 *) match tree with 
+  | Empty -> (* 0 *) default  
+  | Node(l, v, d, r, _) ->
+    (* 0 *) let c = compare_key x v in
+    if c = 0 then  d
+    else find_default x   (if c < 0 then l else r) default
 
 let rec mem x (tree : _ Map_gen.t )   = (* 0 *) match tree with 
   | Empty ->
@@ -10160,6 +10602,7 @@ let suites =
     Ounit_hash_stubs_test.suites;
     Ounit_map_tests.suites;
     Ounit_ordered_hash_set_tests.suites;
+    Ounit_hashtbl_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

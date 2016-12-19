@@ -26,7 +26,7 @@ let add (h : _ t) key info =
   h.size <- h.size + 1;
   if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
-
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with

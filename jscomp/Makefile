@@ -124,6 +124,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_bal_tree_tests ounit_path_tests \
 	ounit_union_find_tests ounit_hash_stubs_test \
 	ounit_hash_set_tests ounit_scc_tests \
+	ounit_hashtbl_tests\
 	ounit_json_tests ounit_map_tests \
 	ounit_ordered_hash_set_tests \
 	ounit_vec_test \
