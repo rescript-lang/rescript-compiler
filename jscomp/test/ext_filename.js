@@ -485,17 +485,12 @@ function normalize_absolute_path(x) {
 }
 
 function get_extension(x) {
-  try {
-    var pos = Bytes.rindex(Caml_string.bytes_of_string(x), /* "." */46);
-    return Ext_string.tail_from(x, pos);
+  var pos = Ext_string.rindex_neg(x, /* "." */46);
+  if (pos < 0) {
+    return "";
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      return "";
-    }
-    else {
-      throw exn;
-    }
+  else {
+    return Ext_string.tail_from(x, pos);
   }
 }
 

@@ -26575,11 +26575,15 @@ let normalize_absolute_path x =
 
 
 let get_extension x =
+  let pos = Ext_string.rindex_neg x '.' in 
+  if pos < 0 then ""
+  else Ext_string.tail_from x pos 
+(*  
   try
     let pos = String.rindex x '.' in
     Ext_string.tail_from x pos
   with Not_found -> ""
-
+*)
 
 
 end

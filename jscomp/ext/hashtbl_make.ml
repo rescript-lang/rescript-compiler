@@ -1,10 +1,11 @@
-# 2 "ext/hashtbl.cppo.ml"
-type key = Ident.t 
+# 22 "ext/hashtbl.cppo.ml"
+module Make (Key : Hashtbl.HashedType) = struct 
+type key = Key.t 
 type 'a t = (key, 'a)  Hashtbl_gen.t 
 let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_stamp_and_name  key.stamp key.name ) land (Array.length h.data - 1)
-  (* (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1) *)
-let eq_key = Ext_ident.equal 
+  (Key.hash  key ) land (Array.length h.data - 1)
+let eq_key = Key.equal   
+
 
 # 33
 type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
@@ -118,3 +119,5 @@ let of_list2 ks vs =
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
 
+# 145
+end

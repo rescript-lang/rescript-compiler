@@ -52,6 +52,12 @@ bin/whole_compiler.ml : ext/ext_format.ml
 bin/whole_compiler.ml : ext/ext_format.mli
 bin/whole_compiler.ml : ext/ext_list.ml
 bin/whole_compiler.ml : ext/ext_list.mli
+bin/whole_compiler.ml : stubs/bs_hash_stubs.ml
+bin/whole_compiler.ml : ext/ext_util.ml
+bin/whole_compiler.ml : ext/ext_util.mli
+bin/whole_compiler.ml : ext/hashtbl_gen.ml
+bin/whole_compiler.ml : ext/string_hashtbl.ml
+bin/whole_compiler.ml : ext/string_hashtbl.mli
 bin/whole_compiler.ml : ext/map_gen.ml
 bin/whole_compiler.ml : ext/string_map.ml
 bin/whole_compiler.ml : ext/string_map.mli
@@ -130,15 +136,9 @@ bin/whole_compiler.ml : ../ocaml/driver/compmisc.ml
 bin/whole_compiler.ml : ../ocaml/driver/compmisc.mli
 bin/whole_compiler.ml : common/ext_log.ml
 bin/whole_compiler.ml : common/ext_log.mli
-bin/whole_compiler.ml : stubs/bs_hash_stubs.ml
-bin/whole_compiler.ml : ext/ext_util.ml
-bin/whole_compiler.ml : ext/ext_util.mli
 bin/whole_compiler.ml : ext/hash_set_gen.ml
 bin/whole_compiler.ml : ext/string_hash_set.ml
 bin/whole_compiler.ml : ext/string_hash_set.mli
-bin/whole_compiler.ml : ext/hashtbl_gen.ml
-bin/whole_compiler.ml : ext/string_hashtbl.ml
-bin/whole_compiler.ml : ext/string_hashtbl.mli
 bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_ident.mli
 bin/whole_compiler.ml : ext/ident_map.ml
@@ -200,6 +200,7 @@ bin/whole_compiler.ml : ext/ident_hashtbl.ml
 bin/whole_compiler.ml : ext/ident_hashtbl.mli
 bin/whole_compiler.ml : core/lam_analysis.ml
 bin/whole_compiler.ml : core/lam_analysis.mli
+bin/whole_compiler.ml : ext/hashtbl_make.ml
 bin/whole_compiler.ml : core/lam_module_ident.ml
 bin/whole_compiler.ml : core/lam_module_ident.mli
 bin/whole_compiler.ml : core/lam_print.ml

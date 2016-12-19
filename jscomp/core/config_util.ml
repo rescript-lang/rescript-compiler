@@ -27,11 +27,24 @@
 
 
 
+let find_in_path_uncap path name =
+  let uname = String.uncapitalize name in
+  let rec try_dir = function
+    | [] -> None
+    | dir::rem ->      
+      let ufullname = Filename.concat dir uname in
+      if Sys.file_exists ufullname then Some ufullname
+      else 
+        let fullname = Filename.concat dir name   in
+        if Sys.file_exists fullname then Some fullname
+        else try_dir rem
+  in try_dir path
 
 
 
 (* ATTENTION: lazy to wait [Config.load_path] populated *)
-let find file =  Misc.find_in_path_uncap !Config.load_path file 
+let find_opt file =  find_in_path_uncap !Config.load_path file 
+
 
 
 
@@ -40,31 +53,31 @@ let find file =  Misc.find_in_path_uncap !Config.load_path file
    make sure that the distributed files are platform independent
 *)
 let find_cmj file = 
-  match find file with
-  | f
+  match find_opt file with
+  | Some f
     -> 
     Js_cmj_format.from_file f             
-  | exception Not_found -> 
+  | None -> 
     (* ONLY read the stored cmj data in browser environment *)
 #if BS_COMPILER_IN_BROWSER then     
-      let target = String.uncapitalize (Filename.basename file) in
-      match String_map.find  target Js_cmj_datasets.data_sets with 
-      | v
-        -> 
-        begin match Lazy.force v with
-          | exception _ 
-            -> 
-            Ext_log.warn __LOC__ 
-              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Js_config.get_current_file ())  ;
-            Js_cmj_format.no_pure_dummy; (* FIXME *)
-          | v -> v 
-        end
-      | exception Not_found 
-        ->     
-        Ext_log.warn __LOC__ "@[%s not found @]" file ;
-        Js_cmj_format.no_pure_dummy 
+        let target = String.uncapitalize (Filename.basename file) in
+        match String_map.find  target Js_cmj_datasets.data_sets with 
+        | v
+          -> 
+          begin match Lazy.force v with
+            | exception _ 
+              -> 
+              Ext_log.warn __LOC__ 
+                "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Js_config.get_current_file ())  ;
+              Js_cmj_format.no_pure_dummy; (* FIXME *)
+            | v -> v 
+          end
+        | exception Not_found 
+          ->     
+          Ext_log.warn __LOC__ "@[%s not found @]" file ;
+          Js_cmj_format.no_pure_dummy 
 #else
-      Bs_exception.error (Cmj_not_found file)
+        Bs_exception.error (Cmj_not_found file)
 #end        
 
 

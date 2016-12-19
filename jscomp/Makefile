@@ -81,6 +81,8 @@ ext/int_hashtbl.ml: ext/hashtbl.cppo.ml
 	cppo -D TYPE_INT $< -o $@
 ext/ident_hashtbl.ml: ext/hashtbl.cppo.ml	
 	cppo -D TYPE_IDENT $< -o $@
+ext/hashtbl_make.ml: ext/hashtbl.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
 ## Stubs 
 .c.o:
 	$(NATIVE) -ccopt -o -ccopt $@ -c $< 
@@ -144,7 +146,6 @@ EXT_SRCS = ext_util\
 	map_make\
 	ext_file_pp ext_format \
 	hashtbl_gen \
-	ext_hashtbl \
 	ext_string \
 	string_hashtbl\
 	ext_list \
@@ -160,6 +161,7 @@ EXT_SRCS = ext_util\
 	ext_ident\
 	ident_map\
 	ident_set\
+	hashtbl_make\
 	ordered_hash_map_local_ident\
 	int_map\
 	literals \

@@ -233,7 +233,7 @@ let collect_from_main
           ) acc (Sys.readdir dirname))
       [] extra_dirs in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
-  let visited = Hashtbl.create 31 in
+  let visited = String_hashtbl.create 31 in
   let result = Queue.create () in  
   let next module_name =
     match String_map.find_exn module_name ast_table with
@@ -252,7 +252,7 @@ let collect_from_main
     if String_set.mem current visiting  then
       Bs_exception.error (Bs_cyclic_depends (current::path))
     else
-    if not (Hashtbl.mem visited current)
+    if not (String_hashtbl.mem visited current)
     && String_map.mem current ast_table then
       begin
         String_set.iter
@@ -261,7 +261,7 @@ let collect_from_main
              (current::path))
           (next current) ;
         Queue.push current result;
-        Hashtbl.add visited current ();
+        String_hashtbl.add visited current ();
       end in
   visit (String_set.empty) [] main_module ;
   ast_table, result   

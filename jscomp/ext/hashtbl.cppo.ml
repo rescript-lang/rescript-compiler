@@ -17,6 +17,15 @@ type 'a t = (key, 'a)  Hashtbl_gen.t
 let key_index (h : _ t ) (key : key) =
   (Bs_hash_stubs.hash_int  key ) land (Array.length h.data - 1)
 let eq_key = Ext_int.equal   
+
+#elif defined TYPE_FUNCTOR
+module Make (Key : Hashtbl.HashedType) = struct 
+type key = Key.t 
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Key.hash  key ) land (Array.length h.data - 1)
+let eq_key = Key.equal   
+
 #else
 [%error "unknown type"]
 #endif
@@ -131,3 +140,7 @@ let of_list2 ks vs =
   let map = create 51 in 
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
+
+#if defined TYPE_FUNCTOR
+end
+#endif
