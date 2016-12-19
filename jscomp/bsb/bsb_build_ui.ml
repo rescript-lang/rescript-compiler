@@ -60,7 +60,8 @@ let print_arrays file_array oc offset  =
   | _ (* first::(_::_ as rest) *)
     -> 
     output_string oc "[ \n";
-    String_vect.iter_range 0 (len - 2 ) (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    String_vect.iter_range ~from:0 ~to_:(len - 2 ) 
+      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
     p_str @@ "\"" ^ (String_vect.last file_array) ^ "\"";
 
     p_str "]" 

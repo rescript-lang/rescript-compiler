@@ -4601,7 +4601,7 @@ let add (h : _ t) key info =
   h.size <- h.size + 1;
   if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
-
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with
@@ -7771,21 +7771,21 @@ let node_relative_path (file1 : t)
 
 
 
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists (cwd // filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
 
 
 let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
+  find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 

@@ -231,41 +231,48 @@ function node_relative_path(file1, dep_file) {
   }
 }
 
-function find_package_json_dir(cwd) {
-  var _cwd = cwd;
+function find_root_filename(_cwd, filename) {
   while(true) {
-    var cwd$1 = _cwd;
-    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd$1, Literals.package_json))) {
-      return cwd$1;
+    var cwd = _cwd;
+    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd, filename))) {
+      return cwd;
     }
     else {
-      var cwd$prime = Curry._1(Filename.dirname, cwd$1);
-      if (cwd$prime.length < cwd$1.length) {
+      var cwd$prime = Curry._1(Filename.dirname, cwd);
+      if (cwd$prime.length < cwd.length) {
         _cwd = cwd$prime;
         continue ;
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 204, characters 15-22', /* Format */[
-                        /* String_literal */Block.__(11, [
-                            "package.json not found from ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* End_of_format */0
+        return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 202, characters 13-20', /* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                " not found from ",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* End_of_format */0
+                                  ])
                               ])
                           ]),
-                        "package.json not found from %s"
-                      ]), cwd$1);
+                        "%s not found from %s"
+                      ]), filename, cwd);
       }
     }
   };
 }
 
+function find_package_json_dir(cwd) {
+  return find_root_filename(cwd, Literals.bsconfig_json);
+}
+
 var package_dir = Block.__(246, [function () {
       var tag = cwd.tag | 0;
-      return find_package_json_dir(tag === 250 ? cwd[0] : (
-                    tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-                  ));
+      var cwd$1 = tag === 250 ? cwd[0] : (
+          tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
+        );
+      return find_root_filename(cwd$1, Literals.bsconfig_json);
     }]);
 
 function no_char(x, ch, _i, len) {
@@ -506,6 +513,7 @@ exports.chop_extension_if_any        = chop_extension_if_any;
 exports.os_path_separator_char       = os_path_separator_char;
 exports.relative_path                = relative_path;
 exports.node_relative_path           = node_relative_path;
+exports.find_root_filename           = find_root_filename;
 exports.find_package_json_dir        = find_package_json_dir;
 exports.package_dir                  = package_dir;
 exports.no_char                      = no_char;

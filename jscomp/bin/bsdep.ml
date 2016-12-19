@@ -26403,21 +26403,21 @@ let node_relative_path (file1 : t)
 
 
 
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists (cwd // filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
 
 
 let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
+  find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 

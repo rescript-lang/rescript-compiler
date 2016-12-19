@@ -21624,21 +21624,21 @@ let node_relative_path (file1 : t)
 
 
 
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists (cwd // filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
 
 
 let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
+  find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
@@ -24061,7 +24061,7 @@ let sort  project_ml project_mli (ast_table : _ t String_map.t) =
               (read_parse_and_extract Ml (project_ml impl))
               (read_parse_and_extract Mli (project_mli intf))              
       ) ast_table in    
-  sort_files_by_dependencies  domain h
+  sort_files_by_dependencies  ~domain h
 
 (** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
 let check_suffix  name  = 
@@ -57255,7 +57255,7 @@ let add (h : _ t) key info =
   h.size <- h.size + 1;
   if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
-
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with
@@ -63256,7 +63256,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
 
 
 let not_ loc x  : t = 
-  prim Pnot [x] loc
+  prim ~primitive:Pnot ~args:[x] loc
 
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t = 
   match p with 
@@ -67434,7 +67434,7 @@ let add (h : _ t) key info =
   h.size <- h.size + 1;
   if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
-
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with
@@ -71009,7 +71009,7 @@ let string_of_module_id ~output_prefix
         let js_file = Printf.sprintf "%s.js" modulename in
         let rebase package_dir dep =
           let current_unit_dir =
-            `Dir (Js_config.get_output_dir package_dir module_system output_prefix) in
+            `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
           Ext_filename.node_relative_path  current_unit_dir dep 
         in 
         let dependency_pkg_info = 
@@ -85607,7 +85607,7 @@ let add (h : _ t) key info =
   h.size <- h.size + 1;
   if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
 
-
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
   let rec find_bucket (bucketlist : _ bucketlist)  =
     match bucketlist with
@@ -85985,7 +85985,7 @@ let subst_helper (subst : subst_tbl) query lam =
         (simplif body)
     | Lprim {primitive; args; loc} -> 
       let args = List.map simplif args in
-      Lam.prim primitive args loc
+      Lam.prim ~primitive ~args loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
@@ -96090,7 +96090,7 @@ let lambda_as_module
     | NonBrowser (_, []) -> 
       (* script mode *)
       let output_chan chan =         
-        Js_dump.dump_deps_program output_prefix `NodeJS lambda_output chan in
+        Js_dump.dump_deps_program ~output_prefix `NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
