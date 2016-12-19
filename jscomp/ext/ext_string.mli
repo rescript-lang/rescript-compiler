@@ -85,3 +85,9 @@ val digits_of_str : string -> offset:int -> int -> int
 val starts_with_and_number : string -> offset:int -> string -> int
 
 val unsafe_concat_with_length : int -> string -> string list -> string
+
+
+(** returns negative number if not found *)
+val rindex_neg : string -> char -> int 
+
+val rindex_opt : string -> char -> int option

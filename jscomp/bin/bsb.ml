@@ -465,6 +465,11 @@ val starts_with_and_number : string -> offset:int -> string -> int
 
 val unsafe_concat_with_length : int -> string -> string list -> string
 
+
+(** returns negative number if not found *)
+val rindex_neg : string -> char -> int 
+
+val rindex_opt : string -> char -> int option
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -722,6 +727,20 @@ let unsafe_concat_with_length len sep l =
     tl;
   Bytes.unsafe_to_string r
 
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+
+let rec rindex_rec_opt s i c =
+  if i < 0 then None else
+  if String.unsafe_get s i = c then Some i else rindex_rec_opt s (i - 1) c;;
+
+let rindex_neg s c = 
+  rindex_rec s (String.length s - 1) c;;
+
+let rindex_opt s c = 
+  rindex_rec_opt s (String.length s - 1) c;;
 end
 module Literals : sig 
 #1 "literals.mli"

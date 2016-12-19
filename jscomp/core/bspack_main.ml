@@ -212,10 +212,10 @@ let normalize s =
   Ext_filename.normalize_absolute_path (Ext_filename.combine cwd s )
 
 let process_include s : Ast_extract.dir_spec = 
-  match String.rindex s '?'  with 
-  | exception Not_found -> 
+  let i = Ext_string.rindex_neg s '?'   in 
+  if i < 0 then   
     { dir = normalize s; excludes = []}
-  | i ->
+  else 
     let dir = String.sub s 0 i in
     { dir = normalize dir;
       excludes = Ext_string.split 

@@ -1653,6 +1653,11 @@ val starts_with_and_number : string -> offset:int -> string -> int
 
 val unsafe_concat_with_length : int -> string -> string list -> string
 
+
+(** returns negative number if not found *)
+val rindex_neg : string -> char -> int 
+
+val rindex_opt : string -> char -> int option
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1910,6 +1915,20 @@ let unsafe_concat_with_length len sep l =
     tl;
   Bytes.unsafe_to_string r
 
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+
+let rec rindex_rec_opt s i c =
+  if i < 0 then None else
+  if String.unsafe_get s i = c then Some i else rindex_rec_opt s (i - 1) c;;
+
+let rindex_neg s c = 
+  rindex_rec s (String.length s - 1) c;;
+
+let rindex_opt s c = 
+  rindex_rec_opt s (String.length s - 1) c;;
 end
 module Ounit_array_tests
 = struct
@@ -9351,6 +9370,37 @@ let suites =
     ]
 
 end
+module Ounit_string_tests
+= struct
+#1 "ounit_string_tests.ml"
+let ((>::),
+    (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal    
+
+
+
+
+let suites = 
+    __FILE__ >::: 
+    [
+        __LOC__ >:: begin fun _ ->
+            OUnit.assert_bool "not found " (Ext_string.rindex_neg "hello" 'x' < 0 )
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+            Ext_string.rindex_neg "hello" 'h' =~ 0 ;
+            Ext_string.rindex_neg "hello" 'e' =~ 1 ;
+            Ext_string.rindex_neg "hello" 'l' =~ 3 ;
+            Ext_string.rindex_neg "hello" 'l' =~ 3 ;
+            Ext_string.rindex_neg "hello" 'o' =~ 4 ;
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+            OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
+        end
+    ]
+end
 module Union_find : sig 
 #1 "union_find.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10584,6 +10634,7 @@ let suites =
     Ounit_map_tests.suites;
     Ounit_ordered_hash_set_tests.suites;
     Ounit_hashtbl_tests.suites;
+    Ounit_string_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

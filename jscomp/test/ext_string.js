@@ -385,6 +385,48 @@ function unsafe_concat_with_length(len, sep, l) {
   }
 }
 
+function rindex_rec(s, _i, c) {
+  while(true) {
+    var i = _i;
+    if (i < 0) {
+      return i;
+    }
+    else if (s.charCodeAt(i) === c) {
+      return i;
+    }
+    else {
+      _i = i - 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
+function rindex_rec_opt(s, _i, c) {
+  while(true) {
+    var i = _i;
+    if (i < 0) {
+      return /* None */0;
+    }
+    else if (s.charCodeAt(i) === c) {
+      return /* Some */[i];
+    }
+    else {
+      _i = i - 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
+function rindex_neg(s, c) {
+  return rindex_rec(s, s.length - 1 | 0, c);
+}
+
+function rindex_opt(s, c) {
+  return rindex_rec_opt(s, s.length - 1 | 0, c);
+}
+
 exports.split_by                  = split_by;
 exports.trim                      = trim;
 exports.split                     = split;
@@ -405,4 +447,8 @@ exports.digits_of_str             = digits_of_str;
 exports.starts_with_and_number    = starts_with_and_number;
 exports.equal                     = equal;
 exports.unsafe_concat_with_length = unsafe_concat_with_length;
+exports.rindex_rec                = rindex_rec;
+exports.rindex_rec_opt            = rindex_rec_opt;
+exports.rindex_neg                = rindex_neg;
+exports.rindex_opt                = rindex_opt;
 /* No side effect */
