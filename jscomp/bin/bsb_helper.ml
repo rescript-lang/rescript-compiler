@@ -1704,7 +1704,8 @@ module type S =
     val find_exn: key -> 'a t -> 'a
     (** [find x m] returns the current binding of [x] in [m],
        or raises [Not_found] if no such binding exists. *)
-
+    val find_opt: key -> 'a t -> 'a option
+    val find_default: key  -> 'a t -> 'a  -> 'a 
     val map: ('a -> 'b) -> 'a t -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
@@ -1808,6 +1809,20 @@ let rec find_exn x (tree : _ Map_gen.t )  = match tree with
     let c = compare_key x v in
     if c = 0 then d
     else find_exn x (if c < 0 then l else r)
+
+let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+  | Empty -> None 
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt x (if c < 0 then l else r)
+
+let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+  | Empty -> default  
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then  d
+    else find_default x   (if c < 0 then l else r) default
 
 let rec mem x (tree : _ Map_gen.t )   = match tree with 
   | Empty ->

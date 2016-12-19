@@ -35,32 +35,32 @@ let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
 (* TODO: not very efficient .. *)
-exception Cyclic 
+(* exception Cyclic  *)
 
-let toplogical (get_deps : Ident.t -> Ident_set.t) (libs : Ident.t list) : Ident.t list =
-  let rec aux acc later todo round_progress =
-    match todo, later with
-    | [], [] ->  acc
-    | [], _ ->
-      if round_progress
-      then aux acc todo later false
-      else raise Cyclic
-    | x::xs, _ ->
-      if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x)
-      then aux (x::acc) later xs true
-      else aux acc (x::later) xs round_progress
-  in
-  let starts, todo = List.partition (fun lib -> Ident_set.is_empty @@ get_deps lib) libs in
-  aux starts [] todo false
+(* let toplogical (get_deps : Ident.t -> Ident_set.t) (libs : Ident.t list) : Ident.t list = *)
+(*   let rec aux acc later todo round_progress = *)
+(*     match todo, later with *)
+(*     | [], [] ->  acc *)
+(*     | [], _ -> *)
+(*       if round_progress *)
+(*       then aux acc todo later false *)
+(*       else raise Cyclic *)
+(*     | x::xs, _ -> *)
+(*       if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x) *)
+(*       then aux (x::acc) later xs true *)
+(*       else aux acc (x::later) xs round_progress *)
+(*   in *)
+(*   let starts, todo = List.partition (fun lib -> Ident_set.is_empty @@ get_deps lib) libs in *)
+(*   aux starts [] todo false *)
 
-let sort_dag_args  param_args =
-  let todos = Ident_map.keys param_args  in
-  let idents = Ident_set.of_list  todos in
-  let dependencies  : Ident_set.t Ident_map.t = 
-    Ident_map.mapi (fun param arg -> Js_fold_basic.depends_j arg idents) param_args in
-  try  
-    Some (toplogical (fun k -> Ident_map.find_exn k dependencies) todos)
-  with Cyclic -> None 
+(* let sort_dag_args  param_args = *)
+(*   let todos = Ident_map.keys param_args  in *)
+(*   let idents = Ident_set.of_list  todos in *)
+(*   let dependencies  : Ident_set.t Ident_map.t =  *)
+(*     Ident_map.mapi (fun param arg -> Js_fold_basic.depends_j arg idents) param_args in *)
+(*   try   *)
+(*     Some (toplogical (fun k -> Ident_map.find_exn k dependencies) todos) *)
+(*   with Cyclic -> None  *)
 
 
 
@@ -84,9 +84,7 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
   let rec subst (x : Lam.t) : Lam.t =
     match x with 
     | Lvar id as l ->
-      begin 
-        try Ident_map.find_exn id s with Not_found -> l 
-      end
+      Ident_map.find_default id s l
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
       Lam.apply (subst fn) (List.map subst args) loc status
@@ -214,9 +212,9 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
     match v_kind with 
     | NA ->
       begin 
-        match Ident_hashtbl.find meta.ident_tbl v  with 
-        | exception Not_found -> ()
-        | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
+        match Ident_hashtbl.find_opt meta.ident_tbl v  with 
+        | None -> ()
+        | Some ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
       end
     | ident_info -> Ident_hashtbl.add meta.ident_tbl k ident_info
   end ;
@@ -279,19 +277,19 @@ let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind =
   |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
 
 let get lam v i tbl : Lam.t =
-  match (Ident_hashtbl.find tbl v  : Lam_stats.kind) with 
-  | Module g -> 
+  match (Ident_hashtbl.find_opt tbl v  : Lam_stats.kind option)   with 
+  | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
       ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
-  | ImmutableBlock (arr, _) -> 
+  | Some (ImmutableBlock (arr, _)) -> 
     begin match arr.(i) with 
       | NA -> lam 
       | SimpleForm l -> l
     end
-  | Constant (Const_block (_,_,ls)) -> 
+  | Some (Constant (Const_block (_,_,ls))) -> 
     Lam.const (List.nth  ls i)
-  | _ -> lam
-  | exception Not_found -> lam 
+  | Some _
+  | None -> lam 
 
 
 (* TODO: check that if label belongs to a different 

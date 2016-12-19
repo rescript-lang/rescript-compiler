@@ -83,11 +83,8 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Some x -> Some (aux x)
   and aux (lam : Lam.t) : Lam.t = 
     match lam with 
-    | Lvar v -> 
-      begin 
-        try (* Lvar *) (Ident_hashtbl.find map v) 
-        with Not_found -> lam 
-      end
+    | Lvar v ->
+      Ident_hashtbl.find_default map v lam 
     | Llet(str, v, l1, l2) ->
       let v = rebind v in
       let l1 = aux l1 in      

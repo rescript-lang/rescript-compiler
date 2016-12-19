@@ -52,7 +52,7 @@ val refine_let :
 
 val generate_label : ?name:string -> unit -> J.label
 
-val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
+(* val sort_dag_args : J.expression Ident_map.t -> Ident.t list option *)
 (** if [a] depends on [b] a is ahead of [b] as [a::b]
 
     TODO: make it a stable sort 

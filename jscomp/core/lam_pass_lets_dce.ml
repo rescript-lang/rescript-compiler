@@ -277,9 +277,11 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
 (* To transform let-bound references into variables *)
 let apply_lets  occ lambda = 
   let count_var v =
-    try
-      Ident_hashtbl.find occ v 
-    with Not_found -> dummy_info () in
+    match
+      Ident_hashtbl.find_opt occ v 
+    with
+    | None -> dummy_info ()
+    | Some  v -> v in
   lets_helper count_var lambda      
 
 let collect_occurs  lam : occ_tbl =
@@ -300,9 +302,9 @@ let collect_occurs  lam : occ_tbl =
 
   (* Current use count of a variable. *)
   let used v = 
-    match Ident_hashtbl.find occ v with 
-    | exception Not_found -> false 
-    | {times ; _} -> times > 0  in
+    match Ident_hashtbl.find_opt occ v with 
+    | None -> false 
+    | Some {times ; _} -> times > 0  in
 
   (* Entering a [let].  Returns updated [bv]. *)
   let bind_var bv ident =
@@ -312,29 +314,32 @@ let collect_occurs  lam : occ_tbl =
 
   (* Record a use of a variable *)
   let add_one_use bv ident  =
-    match Ident_map.find_exn ident bv with 
-    | r  -> r.times <- r.times + 1 
-    | exception Not_found ->
+    match Ident_map.find_opt ident bv with 
+    | Some r  -> r.times <- r.times + 1 
+    | None ->
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Ident_hashtbl.find occ ident with 
-      | r -> absorb_info r {times = 1; captured =  true}
-      | exception Not_found ->
+      match Ident_hashtbl.find_opt occ ident with 
+      | Some r -> absorb_info r {times = 1; captured =  true}
+      | None ->
         (* Not a let-bound variable, ignore *)
         () in
 
   let inherit_use bv ident bid =
-    let n = try Ident_hashtbl.find occ bid with Not_found -> dummy_info () in
-    match Ident_map.find_exn ident bv with 
-    | r  -> absorb_info r n
-    | exception Not_found ->
+    let n =
+      match Ident_hashtbl.find_opt occ bid with
+      | None -> dummy_info ()
+      | Some v -> v in
+    match Ident_map.find_opt ident bv with 
+    | Some r  -> absorb_info r n
+    | None ->
       (* ident is not locally bound, therefore this is a use under a lambda
          or within a loop.  Increase use count by 2 -- enough so
          that single-use optimizations will not apply. *)
-      match Ident_hashtbl.find occ ident with 
-      | r -> absorb_info r {n with captured = true} 
-      | exception Not_found ->
+      match Ident_hashtbl.find_opt occ ident with 
+      | Some r -> absorb_info r {n with captured = true} 
+      | None ->
         (* Not a let-bound variable, ignore *)
         () in
 
