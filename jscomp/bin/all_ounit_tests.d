@@ -36,6 +36,10 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_hash_set_tests.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.ml
 bin/all_ounit_tests.ml : ext/int_hash_set.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_hash_stubs_test.ml
+bin/all_ounit_tests.ml : ext/hashtbl_gen.ml
+bin/all_ounit_tests.ml : ext/string_hashtbl.ml
+bin/all_ounit_tests.ml : ext/string_hashtbl.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_hashtbl_tests.ml
 bin/all_ounit_tests.ml : ext/map_gen.ml
 bin/all_ounit_tests.ml : ext/string_map.ml
 bin/all_ounit_tests.ml : ext/string_map.mli

@@ -1228,21 +1228,21 @@ let node_relative_path (file1 : t)
 
 
 
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists (cwd // filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
 
 
 let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
+  find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
@@ -6007,7 +6007,8 @@ let print_arrays file_array oc offset  =
   | _ (* first::(_::_ as rest) *)
     -> 
     output_string oc "[ \n";
-    String_vect.iter_range 0 (len - 2 ) (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    String_vect.iter_range ~from:0 ~to_:(len - 2 ) 
+      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
     p_str @@ "\"" ^ (String_vect.last file_array) ^ "\"";
 
     p_str "]" 
@@ -7382,7 +7383,7 @@ let output_ninja
         ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
     let all_deps =
       (* we need copy package.json into [_build] since it does affect build output *)
-      (* Literals.package_json ::
+      (* 
          it is a bad idea to copy package.json which requires to copy js files
       *)
       static_resources

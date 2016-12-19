@@ -10,7 +10,7 @@ BYTE=ocamlc.opt$(EXE)
 OCAMLLEX=ocamllex.opt$(EXE)
 CAMLP4OF=camlp4of
 CAMLDEP=ocamldep.opt$(EXE)
-COMPFLAGS= -g -w -40-30 -warn-error +a-40-30
+COMPFLAGS= -g -w +6-40-30 -warn-error +a-40-30
 
 
 .SUFFIXES: .mli .ml .cmi .cmx .mll
@@ -124,6 +124,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_bal_tree_tests ounit_path_tests \
 	ounit_union_find_tests ounit_hash_stubs_test \
 	ounit_hash_set_tests ounit_scc_tests \
+	ounit_hashtbl_tests\
 	ounit_json_tests ounit_map_tests \
 	ounit_ordered_hash_set_tests \
 	ounit_vec_test \

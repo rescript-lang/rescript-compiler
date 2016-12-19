@@ -170,6 +170,7 @@ fs_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj
 genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/genlex.cmj
 global_exception_regression_test.cmj : mt.cmj
+global_module_alias_test.cmj : mt.cmj ../stdlib/list.cmj
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
 gpr496_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../runtime/js.cmj
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi

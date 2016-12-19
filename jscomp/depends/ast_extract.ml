@@ -123,7 +123,7 @@ let sort  project_ml project_mli (ast_table : _ t String_map.t) =
               (read_parse_and_extract Ml (project_ml impl))
               (read_parse_and_extract Mli (project_mli intf))              
       ) ast_table in    
-  sort_files_by_dependencies  domain h
+  sort_files_by_dependencies  ~domain h
 
 (** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
 let check_suffix  name  = 

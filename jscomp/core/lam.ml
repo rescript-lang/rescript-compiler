@@ -887,7 +887,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
 
 
 let not_ loc x  : t = 
-  prim Pnot [x] loc
+  prim ~primitive:Pnot ~args:[x] loc
 
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t = 
   match p with 

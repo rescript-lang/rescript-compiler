@@ -4348,6 +4348,400 @@ let suites =
     ]
 
 end
+module Hashtbl_gen
+= struct
+#1 "hashtbl_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Hash tables *)
+
+
+
+module type S = sig 
+  type key
+  type 'a t
+  val create: int -> 'a t
+  val clear: 'a t -> unit
+  val reset: 'a t -> unit
+  val copy: 'a t -> 'a t
+  val add: 'a t -> key -> 'a -> unit
+  val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
+  val remove: 'a t -> key -> unit
+  val find_exn: 'a t -> key -> 'a
+  val find_all: 'a t -> key -> 'a list
+  val find_opt: 'a t -> key  -> 'a option
+  val find_default: 'a t -> key -> 'a -> 'a 
+
+  val replace: 'a t -> key -> 'a -> unit
+  val mem: 'a t -> key -> bool
+  val iter: (key -> 'a -> unit) -> 'a t -> unit
+  val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+  val length: 'a t -> int
+  val stats: 'a t -> Hashtbl.statistics
+  val of_list2: key list -> 'a list -> 'a t
+end
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type ('a, 'b) t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
+    mutable seed: int;                        (* for randomization *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+and ('a, 'b) bucketlist =
+  | Empty
+  | Cons of 'a * 'b * ('a, 'b) bucketlist
+
+
+let create  initial_size =
+  let s = Ext_util.power_2_above 16 initial_size in
+  { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    h.data.(i) <- Empty
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size Empty
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons(key, data, rest) ->
+        insert_bucket rest; (* preserve original order of elements *)
+        let nidx = indexfun h key in
+        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+
+
+let iter f h =
+  let rec do_bucket = function
+    | Empty ->
+      ()
+    | Cons(k, d, rest) ->
+      f k d; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      Empty ->
+      accu
+    | Cons(k, d, rest) ->
+      do_bucket rest (f k d accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket d.(i) !accu
+  done;
+  !accu
+
+let rec bucket_length accu = function
+  | Empty -> accu
+  | Cons(_, _, rest) -> bucket_length (accu + 1) rest
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+       let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
+    h.data;
+  {Hashtbl.
+    num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+
+let rec small_bucket_mem eq key (lst : _ bucketlist) =
+  match lst with 
+  | Empty -> false 
+  | Cons(k1,_,rest1) -> 
+    eq  key k1 ||
+    match rest1 with
+    | Empty -> false 
+    | Cons(k2,_,rest2) -> 
+      eq key k2  || 
+      match rest2 with 
+      | Empty -> false 
+      | Cons(k3,_,rest3) -> 
+        eq key k3  ||
+        small_bucket_mem eq key rest3 
+
+
+let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then Some d1 else 
+      match rest1 with
+      | Empty -> None 
+      | Cons(k2,d2,rest2) -> 
+        if eq key k2 then Some d2 else 
+          match rest2 with 
+          | Empty -> None 
+          | Cons(k3,d3,rest3) -> 
+            if eq key k3  then Some d3 else 
+              small_bucket_opt eq key rest3 
+
+let rec small_bucket_default eq key default (lst : _ bucketlist) =
+  match lst with 
+  | Empty -> default 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then  d1 else 
+      match rest1 with
+      | Empty -> default 
+      | Cons(k2,d2,rest2) -> 
+        if eq key k2 then  d2 else 
+          match rest2 with 
+          | Empty -> default 
+          | Cons(k3,d3,rest3) -> 
+            if eq key k3  then  d3 else 
+              small_bucket_default eq key default rest3 
+
+end
+module String_hashtbl : sig 
+#1 "string_hashtbl.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Hashtbl_gen.S with type key = string
+
+
+
+
+end = struct
+#1 "string_hashtbl.ml"
+# 9 "ext/hashtbl.cppo.ml"
+type key = string
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
+let eq_key = Ext_string.equal 
+
+# 24
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
+
+
+
+let add (h : _ t) key info =
+  let i = key_index h key in
+  let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
+  h.data.(i) <- bucket;
+  h.size <- h.size + 1;
+  if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
+let modify_or_init (h : _ t) key modf default =
+  let rec find_bucket (bucketlist : _ bucketlist)  =
+    match bucketlist with
+    | Cons(k,i,next) ->
+      if eq_key k key then begin modf i; false end
+      else find_bucket next 
+    | Empty -> true in
+  let i = key_index h key in 
+  if find_bucket h.data.(i) then
+    begin 
+      h.data.(i) <- Cons(key,default (),h.data.(i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h 
+    end
+
+let remove (h : _ t ) key =
+  let rec remove_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with  
+    | Empty ->
+        Empty
+    | Cons(k, i, next) ->
+        if eq_key k key 
+        then begin h.size <- h.size - 1; next end
+        else Cons(k, i, remove_bucket next) in
+  let i = key_index h key in
+  h.data.(i) <- remove_bucket h.data.(i)
+
+let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+  | Empty ->
+      raise Not_found
+  | Cons(k, d, rest) ->
+      if eq_key key k then d else find_rec key rest
+
+let find_exn (h : _ t) key =
+  match h.data.(key_index h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+      if eq_key key k1 then d1 else
+      match rest1 with
+      | Empty -> raise Not_found
+      | Cons(k2, d2, rest2) ->
+          if eq_key key k2 then d2 else
+          match rest2 with
+          | Empty -> raise Not_found
+          | Cons(k3, d3, rest3) ->
+              if eq_key key k3  then d3 else find_rec key rest3
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      []
+  | Cons(k, d, rest) ->
+      if eq_key k key 
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket h.data.(key_index h key)
+
+let replace h key info =
+  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
+    | Empty ->
+        raise_notrace Not_found
+    | Cons(k, i, next) ->
+        if eq_key k key
+        then Cons(key, info, next)
+        else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let l = h.data.(i) in
+  try
+    h.data.(i) <- replace_bucket l
+  with Not_found ->
+    h.data.(i) <- Cons(key, info, l);
+    h.size <- h.size + 1;
+    if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+
+let mem (h : _ t) key =
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+  | Empty ->
+      false
+  | Cons(k, d, rest) ->
+      eq_key k key  || mem_in_bucket rest in
+  mem_in_bucket h.data.(key_index h key)
+
+
+let of_list2 ks vs = 
+  let map = create 51 in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
+
+end
+module Ounit_hashtbl_tests
+= struct
+#1 "ounit_hashtbl_tests.ml"
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+let suites = 
+  __FILE__
+  >:::[
+    (* __LOC__ >:: begin fun _ ->  *)
+    (*   let h = String_hashtbl.create 0 in  *)
+    (*   let accu key = *)
+    (*     String_hashtbl.replace_or_init h key   succ 1 in  *)
+    (*   let count = 1000 in  *)
+    (*   for i = 0 to count - 1 do      *)
+    (*     Array.iter accu  [|"a";"b";"c";"d";"e";"f"|]     *)
+    (*   done; *)
+    (*   String_hashtbl.length h =~ 6; *)
+    (*   String_hashtbl.iter (fun _ v -> v =~ count ) h *)
+    (* end; *)
+
+    "add semantics " >:: begin fun _ -> 
+      let h = String_hashtbl.create 0 in 
+      let count = 1000 in 
+      for j = 0 to 1 do  
+        for i = 0 to count - 1 do                 
+          String_hashtbl.add h (string_of_int i) i 
+        done
+      done ;
+      String_hashtbl.length h =~ 2 * count 
+    end; 
+    "replace semantics" >:: begin fun _ -> 
+      let h = String_hashtbl.create 0 in 
+      let count = 1000 in 
+      for j = 0 to 1 do  
+        for i = 0 to count - 1 do                 
+          String_hashtbl.replace h (string_of_int i) i 
+        done
+      done ;
+      String_hashtbl.length h =~  count 
+    end; 
+    
+  ]
+
+end
 module Map_gen
 = struct
 #1 "map_gen.ml"
@@ -7377,21 +7771,21 @@ let node_relative_path (file1 : t)
 
 
 
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists (cwd // filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
 
 
 let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
+  find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
@@ -10189,6 +10583,7 @@ let suites =
     Ounit_hash_stubs_test.suites;
     Ounit_map_tests.suites;
     Ounit_ordered_hash_set_tests.suites;
+    Ounit_hashtbl_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

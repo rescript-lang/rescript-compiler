@@ -253,7 +253,7 @@ let subst_helper (subst : subst_tbl) query lam =
         (simplif body)
     | Lprim {primitive; args; loc} -> 
       let args = List.map simplif args in
-      Lam.prim primitive args loc
+      Lam.prim ~primitive ~args loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts

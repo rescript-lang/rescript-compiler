@@ -87,7 +87,7 @@ let string_of_module_id ~output_prefix
         let js_file = Printf.sprintf "%s.js" modulename in
         let rebase package_dir dep =
           let current_unit_dir =
-            `Dir (Js_config.get_output_dir package_dir module_system output_prefix) in
+            `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
           Ext_filename.node_relative_path  current_unit_dir dep 
         in 
         let dependency_pkg_info = 
