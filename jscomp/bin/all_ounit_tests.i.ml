@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 77 *) List.hd state.tests_planned
+  (* 79 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 154 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 158 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 154 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 158 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 154 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 158 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 154 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 158 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 231 *) was_successful t
+        (* 237 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 308 *) string_of_int n
+        (* 316 *) string_of_int n
     | Label s -> 
-        (* 462 *) s
+        (* 474 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 77 *) 1 
-    | TestLabel (_, t) -> (* 92 *) test_case_count t
+    | TestCase _ -> (* 79 *) 1 
+    | TestLabel (_, t) -> (* 94 *) test_case_count t
     | TestList l -> 
         (* 15 *) List.fold_left 
-          (fun c t -> (* 91 *) c + test_case_count t) 
+          (fun c t -> (* 93 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 154 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 158 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 15 *) let rec rfold_lefti cnt accup l = 
-    (* 106 *) match l with
+    (* 108 *) match l with
       | [] -> 
           (* 15 *) accup
 
       | h::t -> 
-          (* 91 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 93 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 464 *) match event_type with
+  (* 476 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,18 +276,18 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 462 *) begin
+        (* 474 *) begin
           let string_of_result = 
             if verbose then
               function
-                | RSuccess _      -> (* 77 *) "ok\n"
+                | RSuccess _      -> (* 79 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
               function
-                | RSuccess _      -> (* 77 *) "."
+                | RSuccess _      -> (* 79 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
@@ -296,11 +296,11 @@ let format_event verbose event_type =
             if verbose then
               match e with 
                 | EStart p -> 
-                    (* 77 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 79 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 77 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 79 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 77 *) string_of_result result
+                    (* 79 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -313,20 +313,20 @@ let format_event verbose event_type =
                     (* 0 *) str
             else 
               match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 154 *) ""
-                | EResult result -> (* 77 *) string_of_result result
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 158 *) ""
+                | EResult result -> (* 79 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 232 *) output_string chn (format_event true ev);
+       (* 238 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 232 *) print_string (format_event verbose ev);
+     (* 238 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 232 *) std_log ev; file_log ev; log ev),
+       (* 238 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -703,7 +703,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2000210 *) if not b then assert_failure msg
+  (* 2000217 *) if not b then assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then assert_failure str
@@ -925,7 +925,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 77 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 79 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 15 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1061,7 +1061,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 77 *) try 
+    (* 79 *) try 
       f ();
       RSuccess path
     with
@@ -1080,22 +1080,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 77 *) (path, f) :: acc
+          (* 79 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 15 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 91 *) flatten_test 
+               (* 93 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 92 *) flatten_test ((Label label)::path) acc t
+          (* 94 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 77 *) let result = 
+    (* 79 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1104,18 +1104,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 78 *) match state.tests_planned with 
+    (* 80 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 77 *) let (path, f) = !global_chooser state in            
+          (* 79 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 3003 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 3160 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1145,7 +1145,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 231 *) log (OUnitLogger.TestEvent ev))
+         (* 237 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1633,6 +1633,11 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
+(** the range is [start, finish) 
+*)
+val for_all_range : 
+  string -> start:int -> finish:int -> (char -> bool) -> bool 
+
 val for_all : (char -> bool) -> string -> bool
 
 val is_empty : string -> bool
@@ -1658,6 +1663,8 @@ val unsafe_concat_with_length : int -> string -> string list -> string
 val rindex_neg : string -> char -> int 
 
 val rindex_opt : string -> char -> int option
+
+val is_valid_source_name : string -> bool
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1703,13 +1710,13 @@ let split_by ?(keep_empty=false) is_delim str =
       else 
         String.sub str 0 last_pos :: acc
     else
-      if is_delim str.[pos] then
-        let new_len = (last_pos - pos - 1) in
-        if new_len <> 0 || keep_empty then 
-          let v = String.sub str (pos + 1) new_len in
-          loop ( v :: acc)
-            pos (pos - 1)
-        else loop acc pos (pos - 1)
+    if is_delim str.[pos] then
+      let new_len = (last_pos - pos - 1) in
+      if new_len <> 0 || keep_empty then 
+        let v = String.sub str (pos + 1) new_len in
+        loop ( v :: acc)
+          pos (pos - 1)
+      else loop acc pos (pos - 1)
     else loop acc last_pos (pos - 1)
   in
   loop [] len (len - 1)
@@ -1728,7 +1735,7 @@ let trim s =
 
 let split ?keep_empty  str on = 
   (* 173 *) if str = "" then [] else 
-  split_by ?keep_empty (fun x -> (* 24320 *) (x : char) = on) str  ;;
+    split_by ?keep_empty (fun x -> (* 24320 *) (x : char) = on) str  ;;
 
 let quick_split_by_ws str : string list = 
   (* 913 *) split_by ~keep_empty:false (fun x -> (* 21526 *) x = '\t' || x = '\n' || x = ' ') str
@@ -1736,14 +1743,14 @@ let quick_split_by_ws str : string list =
 let starts_with s beg = 
   (* 0 *) let beg_len = String.length beg in
   let s_len = String.length s in
-   beg_len <=  s_len &&
+  beg_len <=  s_len &&
   (let i = ref 0 in
-    while !i <  beg_len 
-          && String.unsafe_get s !i =
-             String.unsafe_get beg !i do 
-      incr i 
-    done;
-    !i = beg_len
+   while !i <  beg_len 
+         && String.unsafe_get s !i =
+            String.unsafe_get beg !i do 
+     incr i 
+   done;
+   !i = beg_len
   )
 
 
@@ -1785,13 +1792,18 @@ let escaped s =
   else
     s
 
+(* it is unsafe to expose such API as unsafe since 
+   user can provide bad input range 
+*)
+let rec for_all_range s ~start:i ~finish:len p =     
+  (* 27 *) if i >= len then true 
+  else  p (String.get s i) && 
+        for_all_range s ~start:(i + 1) ~finish:len p
+
 
 let for_all (p : char -> bool) s = 
   (* 0 *) let len = String.length s in
-  let rec aux i = 
-    (* 0 *) if i >= len then true 
-    else  p (String.unsafe_get s i) && aux (i + 1)
-  in aux 0 
+  for_all_range s ~start:0  ~finish:len p 
 
 let is_empty s = (* 0 *) String.length s = 0
 
@@ -1881,18 +1893,18 @@ let starts_with_and_number s ~offset beg =
   let s_len = String.length s in
   let finish_delim = offset + beg_len in 
 
-   if finish_delim >  s_len  then -1 
-   else 
-     let i = ref offset  in
-      while !i <  finish_delim
-            && String.unsafe_get s !i =
-               String.unsafe_get beg (!i - offset) do 
-        incr i 
-      done;
-      if !i = finish_delim then 
-        digits_of_str ~offset:finish_delim s 2 
-      else 
-        -1 
+  if finish_delim >  s_len  then -1 
+  else 
+    let i = ref offset  in
+    while !i <  finish_delim
+          && String.unsafe_get s !i =
+             String.unsafe_get beg (!i - offset) do 
+      incr i 
+    done;
+    if !i = finish_delim then 
+      digits_of_str ~offset:finish_delim s 2 
+    else 
+      -1 
 
 let equal (x : string) y  = (* 8826023 *) x = y
 
@@ -1900,20 +1912,20 @@ let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
   | [] -> (* 0 *) ""
   | hd :: tl -> (* num is positive *)
-  (* 0 *) let r = Bytes.create len in
-  let hd_len = String.length hd in 
-  let sep_len = String.length sep in 
-  String.unsafe_blit hd 0 r 0 hd_len;
-  let pos = ref hd_len in
-  List.iter
-    (fun s ->
-       (* 0 *) let s_len = String.length s in
-       String.unsafe_blit sep 0 r !pos sep_len;
-       pos := !pos +  sep_len;
-       String.unsafe_blit s 0 r !pos s_len;
-       pos := !pos + s_len)
-    tl;
-  Bytes.unsafe_to_string r
+    (* 0 *) let r = Bytes.create len in
+    let hd_len = String.length hd in 
+    let sep_len = String.length sep in 
+    String.unsafe_blit hd 0 r 0 hd_len;
+    let pos = ref hd_len in
+    List.iter
+      (fun s ->
+         (* 0 *) let s_len = String.length s in
+         String.unsafe_blit sep 0 r !pos sep_len;
+         pos := !pos +  sep_len;
+         String.unsafe_blit s 0 r !pos s_len;
+         pos := !pos + s_len)
+      tl;
+    Bytes.unsafe_to_string r
 
 
 let rec rindex_rec s i c =
@@ -1929,6 +1941,34 @@ let rindex_neg s c =
 
 let rindex_opt s c = 
   (* 0 *) rindex_rec_opt s (String.length s - 1) c;;
+
+let is_valid_module_file ~finish (s : string) = 
+  (* 22 *) match s.[0] with 
+  | 'A' .. 'Z'
+  | 'a' .. 'z' -> 
+    (* 10 *) for_all_range s ~start:1 ~finish
+      (fun x -> 
+         (* 7 *) match x with 
+         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> (* 7 *) true
+         | _ -> (* 0 *) false )
+  | _ -> (* 12 *) false 
+
+(** 
+  TODO: move to another module 
+  Make {!Ext_filename} not stateful
+*)
+let is_valid_source_name name =
+  (* 23 *) ((Filename.check_suffix name ".ml"  
+    || Filename.check_suffix name ".re"
+   ) &&
+   (is_valid_module_file ~finish:(String.length name - 3) name)
+  )
+  || 
+  ((Filename.check_suffix name ".mli"
+    || Filename.check_suffix name ".mll"                  
+    || Filename.check_suffix name ".rei")
+   && (is_valid_module_file ~finish:(String.length name - 4 ) name )
+  )
 end
 module Ounit_array_tests
 = struct
@@ -4600,7 +4640,7 @@ let key_index (h : _ t ) (key : key) =
   (* 7019 *) (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 
-# 24
+# 33
 type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
@@ -4711,6 +4751,7 @@ let of_list2 ks vs =
   (* 0 *) let map = create 51 in 
   List.iter2 (fun k v -> (* 0 *) add map k v) ks vs ; 
   map
+
 
 end
 module Ounit_hashtbl_tests
@@ -7934,11 +7975,15 @@ let normalize_absolute_path x =
 
 
 let get_extension x =
-  (* 0 *) try
+  (* 0 *) let pos = Ext_string.rindex_neg x '.' in 
+  if pos < 0 then ""
+  else Ext_string.tail_from x pos 
+(*  
+  try
     let pos = String.rindex x '.' in
     Ext_string.tail_from x pos
   with Not_found -> ""
-
+*)
 
 
 end
@@ -9398,6 +9443,38 @@ let suites =
 
         __LOC__ >:: begin fun _ -> 
             (* 1 *) OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) OUnit.assert_bool __LOC__
+            (Ext_string.for_all_range "xABc"~start:1
+            ~finish:3 (function 'A' .. 'Z' -> (* 2 *) true | _ -> (* 0 *) false));
+            OUnit.assert_bool __LOC__
+            (not (Ext_string.for_all_range "xABc"~start:1
+            ~finish:4 (function 'A' .. 'Z' -> (* 2 *) true | _ -> (* 1 *) false)));
+            OUnit.assert_bool __LOC__
+            ( (Ext_string.for_all_range "xABc"~start:1
+            ~finish:2 (function 'A' .. 'Z' -> (* 1 *) true | _ -> (* 0 *) false)));
+            OUnit.assert_bool __LOC__
+            ( (Ext_string.for_all_range "xABc"~start:1
+            ~finish:1 (function 'A' .. 'Z' -> (* 0 *) true | _ -> (* 0 *) false)));
+            OUnit.assert_bool __LOC__
+            ( (Ext_string.for_all_range "xABc"~start:1
+            ~finish:0 (function 'A' .. 'Z' -> (* 0 *) true | _ -> (* 0 *) false)));
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) OUnit.assert_bool __LOC__ @@
+             List.for_all Ext_string.is_valid_source_name
+            ["x.ml"; "x.mli"; "x.re"; "x.rei"; "x.mll"; 
+            "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
+            "ax.ml"];
+            OUnit.assert_bool __LOC__ @@ not @@
+                List.exists Ext_string.is_valid_source_name
+                [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
+                "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
+                ".#hello.ml"; ".#hello.rei"
+                ]
         end
     ]
 end

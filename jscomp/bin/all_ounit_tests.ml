@@ -1633,6 +1633,11 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
+(** the range is [start, finish) 
+*)
+val for_all_range : 
+  string -> start:int -> finish:int -> (char -> bool) -> bool 
+
 val for_all : (char -> bool) -> string -> bool
 
 val is_empty : string -> bool
@@ -1658,6 +1663,8 @@ val unsafe_concat_with_length : int -> string -> string list -> string
 val rindex_neg : string -> char -> int 
 
 val rindex_opt : string -> char -> int option
+
+val is_valid_source_name : string -> bool
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1703,13 +1710,13 @@ let split_by ?(keep_empty=false) is_delim str =
       else 
         String.sub str 0 last_pos :: acc
     else
-      if is_delim str.[pos] then
-        let new_len = (last_pos - pos - 1) in
-        if new_len <> 0 || keep_empty then 
-          let v = String.sub str (pos + 1) new_len in
-          loop ( v :: acc)
-            pos (pos - 1)
-        else loop acc pos (pos - 1)
+    if is_delim str.[pos] then
+      let new_len = (last_pos - pos - 1) in
+      if new_len <> 0 || keep_empty then 
+        let v = String.sub str (pos + 1) new_len in
+        loop ( v :: acc)
+          pos (pos - 1)
+      else loop acc pos (pos - 1)
     else loop acc last_pos (pos - 1)
   in
   loop [] len (len - 1)
@@ -1728,7 +1735,7 @@ let trim s =
 
 let split ?keep_empty  str on = 
   if str = "" then [] else 
-  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+    split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
 
 let quick_split_by_ws str : string list = 
   split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
@@ -1736,14 +1743,14 @@ let quick_split_by_ws str : string list =
 let starts_with s beg = 
   let beg_len = String.length beg in
   let s_len = String.length s in
-   beg_len <=  s_len &&
+  beg_len <=  s_len &&
   (let i = ref 0 in
-    while !i <  beg_len 
-          && String.unsafe_get s !i =
-             String.unsafe_get beg !i do 
-      incr i 
-    done;
-    !i = beg_len
+   while !i <  beg_len 
+         && String.unsafe_get s !i =
+            String.unsafe_get beg !i do 
+     incr i 
+   done;
+   !i = beg_len
   )
 
 
@@ -1785,13 +1792,18 @@ let escaped s =
   else
     s
 
+(* it is unsafe to expose such API as unsafe since 
+   user can provide bad input range 
+*)
+let rec for_all_range s ~start:i ~finish:len p =     
+  if i >= len then true 
+  else  p (String.get s i) && 
+        for_all_range s ~start:(i + 1) ~finish:len p
+
 
 let for_all (p : char -> bool) s = 
   let len = String.length s in
-  let rec aux i = 
-    if i >= len then true 
-    else  p (String.unsafe_get s i) && aux (i + 1)
-  in aux 0 
+  for_all_range s ~start:0  ~finish:len p 
 
 let is_empty s = String.length s = 0
 
@@ -1881,18 +1893,18 @@ let starts_with_and_number s ~offset beg =
   let s_len = String.length s in
   let finish_delim = offset + beg_len in 
 
-   if finish_delim >  s_len  then -1 
-   else 
-     let i = ref offset  in
-      while !i <  finish_delim
-            && String.unsafe_get s !i =
-               String.unsafe_get beg (!i - offset) do 
-        incr i 
-      done;
-      if !i = finish_delim then 
-        digits_of_str ~offset:finish_delim s 2 
-      else 
-        -1 
+  if finish_delim >  s_len  then -1 
+  else 
+    let i = ref offset  in
+    while !i <  finish_delim
+          && String.unsafe_get s !i =
+             String.unsafe_get beg (!i - offset) do 
+      incr i 
+    done;
+    if !i = finish_delim then 
+      digits_of_str ~offset:finish_delim s 2 
+    else 
+      -1 
 
 let equal (x : string) y  = x = y
 
@@ -1900,20 +1912,20 @@ let unsafe_concat_with_length len sep l =
   match l with 
   | [] -> ""
   | hd :: tl -> (* num is positive *)
-  let r = Bytes.create len in
-  let hd_len = String.length hd in 
-  let sep_len = String.length sep in 
-  String.unsafe_blit hd 0 r 0 hd_len;
-  let pos = ref hd_len in
-  List.iter
-    (fun s ->
-       let s_len = String.length s in
-       String.unsafe_blit sep 0 r !pos sep_len;
-       pos := !pos +  sep_len;
-       String.unsafe_blit s 0 r !pos s_len;
-       pos := !pos + s_len)
-    tl;
-  Bytes.unsafe_to_string r
+    let r = Bytes.create len in
+    let hd_len = String.length hd in 
+    let sep_len = String.length sep in 
+    String.unsafe_blit hd 0 r 0 hd_len;
+    let pos = ref hd_len in
+    List.iter
+      (fun s ->
+         let s_len = String.length s in
+         String.unsafe_blit sep 0 r !pos sep_len;
+         pos := !pos +  sep_len;
+         String.unsafe_blit s 0 r !pos s_len;
+         pos := !pos + s_len)
+      tl;
+    Bytes.unsafe_to_string r
 
 
 let rec rindex_rec s i c =
@@ -1929,6 +1941,34 @@ let rindex_neg s c =
 
 let rindex_opt s c = 
   rindex_rec_opt s (String.length s - 1) c;;
+
+let is_valid_module_file ~finish (s : string) = 
+  match s.[0] with 
+  | 'A' .. 'Z'
+  | 'a' .. 'z' -> 
+    for_all_range s ~start:1 ~finish
+      (fun x -> 
+         match x with 
+         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
+         | _ -> false )
+  | _ -> false 
+
+(** 
+  TODO: move to another module 
+  Make {!Ext_filename} not stateful
+*)
+let is_valid_source_name name =
+  ((Filename.check_suffix name ".ml"  
+    || Filename.check_suffix name ".re"
+   ) &&
+   (is_valid_module_file ~finish:(String.length name - 3) name)
+  )
+  || 
+  ((Filename.check_suffix name ".mli"
+    || Filename.check_suffix name ".mll"                  
+    || Filename.check_suffix name ".rei")
+   && (is_valid_module_file ~finish:(String.length name - 4 ) name )
+  )
 end
 module Ounit_array_tests
 = struct
@@ -9403,6 +9443,38 @@ let suites =
 
         __LOC__ >:: begin fun _ -> 
             OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+            OUnit.assert_bool __LOC__
+            (Ext_string.for_all_range "xABc"~start:1
+            ~finish:3 (function 'A' .. 'Z' -> true | _ -> false));
+            OUnit.assert_bool __LOC__
+            (not (Ext_string.for_all_range "xABc"~start:1
+            ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));
+            OUnit.assert_bool __LOC__
+            ( (Ext_string.for_all_range "xABc"~start:1
+            ~finish:2 (function 'A' .. 'Z' -> true | _ -> false)));
+            OUnit.assert_bool __LOC__
+            ( (Ext_string.for_all_range "xABc"~start:1
+            ~finish:1 (function 'A' .. 'Z' -> true | _ -> false)));
+            OUnit.assert_bool __LOC__
+            ( (Ext_string.for_all_range "xABc"~start:1
+            ~finish:0 (function 'A' .. 'Z' -> true | _ -> false)));
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+            OUnit.assert_bool __LOC__ @@
+             List.for_all Ext_string.is_valid_source_name
+            ["x.ml"; "x.mli"; "x.re"; "x.rei"; "x.mll"; 
+            "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
+            "ax.ml"];
+            OUnit.assert_bool __LOC__ @@ not @@
+                List.exists Ext_string.is_valid_source_name
+                [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
+                "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
+                ".#hello.ml"; ".#hello.rei"
+                ]
         end
     ]
 end
