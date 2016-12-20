@@ -45,6 +45,21 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
     else
       bal l v d (add x data r)
 
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
+
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
     raise Not_found
@@ -143,5 +158,5 @@ let of_list xs = add_list xs empty
 
 let of_array xs = 
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
-# 157
+# 172
 end

@@ -24050,7 +24050,10 @@ module type S =
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
-
+    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
+    (** [adjust k v f map] if not exist [add k v], otherwise 
+        [add k v (f old)]
+    *)
     val singleton: key -> 'a -> 'a t
 
     val remove: key -> 'a t -> 'a t
@@ -24239,6 +24242,21 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal (add x data l) v d r
     else
       bal l v d (add x data r)
+
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
@@ -57855,6 +57873,21 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
     else
       bal l v d (add x data r)
 
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
+
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
     raise Not_found
@@ -64265,6 +64298,21 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal (add x data l) v d r
     else
       bal l v d (add x data r)
+
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->

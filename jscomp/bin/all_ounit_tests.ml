@@ -5068,7 +5068,10 @@ module type S =
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
-
+    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
+    (** [adjust k v f map] if not exist [add k v], otherwise 
+        [add k v (f old)]
+    *)
     val singleton: key -> 'a -> 'a t
 
     val remove: key -> 'a t -> 'a t
@@ -5257,6 +5260,21 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal (add x data l) v d r
     else
       bal l v d (add x data r)
+
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
@@ -6849,6 +6867,21 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
     else
       bal l v d (add x data r)
 
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
+
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
     raise Not_found
@@ -6976,8 +7009,20 @@ let suites =
     __LOC__ >:: begin fun _ ->
       Int_map.cardinal (Int_map.of_array (Array.init 1000 (fun i -> (i,i))))
       =~ 1000
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let count = 1000 in 
+      let a = Array.init count (fun x -> x ) in 
+      let v = Int_map.empty in
+      let u = 
+        begin 
+          let v = Array.fold_left (fun acc key -> Int_map.adjust key (fun _ -> 1) (succ) acc ) v a   in 
+          Array.fold_left (fun acc key -> Int_map.adjust key (fun _ -> 1) (succ) acc ) v a  
+          end
+        in  
+       Int_map.iter (fun _ v -> v =~ 2 ) u   ;
+       Int_map.cardinal u =~ count
     end
-    
   ]
 
 end

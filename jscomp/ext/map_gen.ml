@@ -261,7 +261,10 @@ module type S =
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
-
+    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
+    (** [adjust k v f map] if not exist [add k v], otherwise 
+        [add k v (f old)]
+    *)
     val singleton: key -> 'a -> 'a t
 
     val remove: key -> 'a t -> 'a t
