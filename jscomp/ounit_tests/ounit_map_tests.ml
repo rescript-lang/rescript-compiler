@@ -22,6 +22,18 @@ let suites =
     __LOC__ >:: begin fun _ ->
       Int_map.cardinal (Int_map.of_array (Array.init 1000 (fun i -> (i,i))))
       =~ 1000
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let count = 1000 in 
+      let a = Array.init count (fun x -> x ) in 
+      let v = Int_map.empty in
+      let u = 
+        begin 
+          let v = Array.fold_left (fun acc key -> Int_map.adjust key (fun _ -> 1) (succ) acc ) v a   in 
+          Array.fold_left (fun acc key -> Int_map.adjust key (fun _ -> 1) (succ) acc ) v a  
+          end
+        in  
+       Int_map.iter (fun _ v -> v =~ 2 ) u   ;
+       Int_map.cardinal u =~ count
     end
-    
   ]

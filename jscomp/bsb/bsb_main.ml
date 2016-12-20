@@ -104,6 +104,12 @@ let write_ninja_file bsc_dir cwd =
                          FLG -ppx %s\n\
                        " lib_ocaml_dir lib_ocaml_dir bsppx
         ) in
+    let () = 
+      match Bsb_default.get_bsc_flags () with 
+      | [] -> ()
+      | xs -> 
+        Buffer.add_string buffer 
+          (Printf.sprintf "FLG %s\n" (String.concat " " xs) ) in 
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
