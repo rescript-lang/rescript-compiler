@@ -467,7 +467,7 @@
                 "a.ml"
             ]
     }  
-    , "generate-merlin" : true
+    // , "generate-merlin" : true
     // "ppx-flags": ["reason/bin/reactjs_jsx_ppx"]
     // ,
     // "bs-dependencies" : ["mocha"]
