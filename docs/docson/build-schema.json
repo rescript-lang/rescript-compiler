@@ -216,12 +216,13 @@
                     "$ref": "#/definitions/sourceItem"
                 }
             ]
+        },
+        
+        "generate-merlin": {
+            "type": "boolean",
+            "description": "default false (generate .merlin)"
         }
     },
-    "generate-merlin" : { 
-        "type" : "boolean",
-        "description" : "default false"   
-        },
     "additionalProperties": false,
     "required": [
         "name",

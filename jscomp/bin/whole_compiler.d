@@ -201,6 +201,7 @@ bin/whole_compiler.ml : ext/ident_hashtbl.mli
 bin/whole_compiler.ml : core/lam_analysis.ml
 bin/whole_compiler.ml : core/lam_analysis.mli
 bin/whole_compiler.ml : ext/hashtbl_make.ml
+bin/whole_compiler.ml : ext/hashtbl_make.mli
 bin/whole_compiler.ml : core/lam_module_ident.ml
 bin/whole_compiler.ml : core/lam_module_ident.mli
 bin/whole_compiler.ml : core/lam_print.ml

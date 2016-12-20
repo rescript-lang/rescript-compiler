@@ -581,9 +581,10 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_tests_main.cmi
 bsb/bsb_build_schemas.cmx :
 bsb/bsb_build_ui.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/resize_array.cmx ext/ext_filename.cmx ext/ext_file_pp.cmx \
-    bsb/bsb_json.cmx bsb/bsb_dir.cmx bsb/bsb_build_util.cmx \
-    bsb/bsb_build_schemas.cmx common/binary_cache.cmx bsb/bsb_build_ui.cmi
+    ext/resize_array.cmx ext/ext_string.cmx ext/ext_filename.cmx \
+    ext/ext_file_pp.cmx bsb/bsb_json.cmx bsb/bsb_dir.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
+    bsb/bsb_build_ui.cmi
 bsb/bsb_build_util.cmx : ext/ext_list.cmx ext/ext_filename.cmx \
     ext/ext_array.cmx bsb/bsb_json.cmx bsb/bsb_config.cmx \
     bsb/bsb_build_util.cmi

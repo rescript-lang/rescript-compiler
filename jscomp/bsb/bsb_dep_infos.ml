@@ -35,7 +35,7 @@ type t =
 
 
 let magic_number = "BS_DEP_INFOS_20161116"
-let bsb_version = "20161117+dev"
+let bsb_version = "20161217+dev"
 
 let write (fname : string)  (x : t) = 
   let oc = open_out_bin fname in 

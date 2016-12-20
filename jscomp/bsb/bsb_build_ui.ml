@@ -121,6 +121,8 @@ let (++)
 
 let empty = { files = []; intervals  = []; globbed_dirs = [];  }
 
+
+
 let rec parsing_source cwd (x : Bsb_json.t String_map.t )
   : t =
   let dir = ref cwd in
@@ -150,13 +152,10 @@ let rec parsing_source cwd (x : Bsb_json.t String_map.t )
         `Not_found (fun _ ->
             let dir = !dir in 
             let file_array = Bsb_dir.readdir dir in 
+            (** We should avoid temporary files *)
             sources := 
               Array.fold_left (fun acc name -> 
-                  if Filename.check_suffix name ".ml"  
-                  || Filename.check_suffix name ".mli"
-                  || Filename.check_suffix name ".mll"
-                  || Filename.check_suffix name ".re"
-                  || Filename.check_suffix name ".rei"
+                  if Ext_string.is_valid_source_name name 
                   then 
                     Binary_cache.map_update  ~dir acc name 
                   else acc
