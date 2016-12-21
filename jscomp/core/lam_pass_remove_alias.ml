@@ -184,7 +184,7 @@ let simplify_alias
                 (* let old_count = List.length params in *)
                 (* let new_count = Ident_map.cardinal param_map in *)
                 let param_map = 
-                  Lam_analysis.is_closed_with_map 
+                  Lam_closure.is_closed_with_map 
                     meta.export_idents params body in
                 let is_export_id = Ident_set.mem v meta.export_idents in
                 match is_export_id, param_map with 

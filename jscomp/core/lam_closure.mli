@@ -22,27 +22,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** [is_closed_by map lam]
+    return [true] if all unbound variables
+    belongs to the given [map] *)
+val is_closed_by : Ident_set.t -> Lam.t -> bool
+
+val is_closed : Lam.t -> bool
 
 
 
 
 
-(** A module which provides some basic analysis over lambda expression *)
+type stats = 
+  { 
+    top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    times : int ; 
+  }
 
-(** No side effect, but it might depend on data store *)
-val no_side_effects : Lam.t -> bool 
+val is_closed_with_map : 
+  Ident_set.t ->
+  Ident.t list -> Lam.t -> bool * stats Ident_map.t
 
-val size : Lam.t -> int
+(* val param_map_of_list : Ident.t list -> stats Ident_map.t *)
 
-val ok_to_inline : body:Lam.t -> Lam.ident list -> Lam.t list -> bool
-  
-val eq_lambda : Lam.t -> Lam.t -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
+val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
 
-val small_inline_size : int  
-val exit_inline_size : int  
-
-
-val safe_to_inline : Lam.t -> bool

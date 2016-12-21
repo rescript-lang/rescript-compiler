@@ -81,6 +81,6 @@ val refresh :
 *)
 val propogate_beta_reduce_with_map : 
   Lam_stats.meta ->
-  Lam_analysis.stats Ident_map.t ->
+  Lam_closure.stats Ident_map.t ->
   Ident.t list ->
   Lam.t -> Lam.t list -> Lam.t

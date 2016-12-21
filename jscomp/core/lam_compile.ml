@@ -183,7 +183,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           when Ext_list.same_length params args_lambda -> 
           (* TODO: serialize it when exporting to save compile time *)
           let (_, param_map)  = 
-            Lam_analysis.is_closed_with_map Ident_set.empty params body in
+            Lam_closure.is_closed_with_map Ident_set.empty params body in
           compile_lambda cxt 
             (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
                params body args_lambda)

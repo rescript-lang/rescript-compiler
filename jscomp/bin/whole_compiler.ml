@@ -57782,20 +57782,20 @@ let reset () =
 let undefined = create_js "undefined"
 let nil = create_js "null"
 
+(* Has to be total order, [x < y] 
+   and [x > y] should be consistent
+   flags are not relevant here 
+ *)
 let compare (x : Ident.t ) ( y : Ident.t) = 
   let u = x.stamp - y.stamp in
   if u = 0 then 
-    let u = String.compare x.name y.name in 
-    if u = 0 then 
-      x.flags - y.flags 
-    else  u 
+     String.compare x.name y.name 
   else u 
 
 let equal ( x : Ident.t) ( y : Ident.t) = 
-   (x.stamp : int) = y.stamp &&
-   Ext_string.equal x.name y.name &&
-   (x.flags : int) = y.flags 
-
+  if x.stamp <> 0 then x.stamp = y.stamp
+  else y.stamp = 0 && x.name = y.name
+   
 end
 module Ident_map : sig 
 #1 "ident_map.mli"
@@ -61871,6 +61871,119 @@ let graph_check v =
   Int_vec_vec.fold_left (fun acc x -> Int_vec.length x :: acc ) [] v  
 
 end
+module Ident_hash_set : sig 
+#1 "ident_hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Hash_set_gen.S with type key = Ident.t
+
+end = struct
+#1 "ident_hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 37
+type key = Ident.t
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
+let eq_key = Ext_ident.equal
+type t = key Hash_set_gen.t
+
+
+# 59
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+
+let remove (h : _ Hash_set_gen.t) key =  
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let check_add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+    begin 
+      h.data.(i) <- key :: h.data.(i);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
+
+end
 module Ocaml_stdlib_slots
 = struct
 #1 "ocaml_stdlib_slots.ml"
@@ -62418,7 +62531,7 @@ type unop = t ->  t
 val inner_map : (t -> t) -> t -> t
 val inner_iter : (t -> unit) -> t -> unit 
 val free_variables : t -> Ident_set.t
-
+val check : string -> t -> t 
 type bindings = (Ident.t * t) list
 
 val scc : bindings -> t -> t  -> t 
@@ -62872,14 +62985,6 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lifused (v, e) ->
     f e 
 
-(* 
-TODO: add a santizer to check variables arre not bound twice
-We need an invariant checker for troubleshooting: 
-1. variables are not bound twice 
-2. all variables are of right scope 
-Otherwise, it would be too dangerous to apply optimizations and 
-very hard to fix bugs
-*)
 
 (*
 let add_list lst set = 
@@ -63021,12 +63126,94 @@ let free_variables l =
         free e;
         fv := Ident_set.add id !fv
       | Lsend (k, met, obj, args, _) ->
-        List.iter free (met::obj::args)
+        free met; free obj; List.iter free args 
       | Lifused (v, e) ->
         free e
     end;
   in free l; 
   !fv
+
+
+(**
+checks  
+   1. variables are not bound twice 
+   2. all variables are of right scope 
+*)
+let check file lam = 
+  let defined_variables = Ident_hash_set.create 1000 in 
+  let use (id : Ident.t)  = 
+    if not @@ Ident_hash_set.mem defined_variables id  then 
+      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file in 
+  let def (id : Ident.t) =
+    if Ident_hash_set.mem defined_variables id  then 
+      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file 
+    else Ident_hash_set.add defined_variables id 
+  in 
+  let rec iter (l : t) =
+    begin
+      match (l : t) with 
+        Lvar id -> use id 
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        iter fn; List.iter iter args
+      | Lfunction{body;params} ->
+        List.iter def params;
+        iter body
+      | Llet(str, id, arg, body) ->
+        iter arg;
+        def id;
+        iter body
+      | Lletrec(decl, body) ->
+        List.iter (fun (id, exp) ->  def id) decl;
+        List.iter (fun (id, exp) -> iter exp) decl;
+        iter body
+      | Lprim {args; _} ->
+        List.iter iter args
+      | Lswitch(arg, sw) ->
+        iter arg;
+        List.iter (fun (key, case) -> iter case) sw.sw_consts;
+        List.iter (fun (key, case) -> iter case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        iter arg ;
+        List.iter (fun (_,act) -> iter act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter iter args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        iter e1; 
+        List.iter def vars;
+        iter e2
+      | Ltrywith(e1, exn, e2) ->
+        iter e1; 
+        def exn; 
+        iter e2
+      | Lifthenelse(e1, e2, e3) ->
+        iter e1; iter e2; iter e3
+      | Lsequence(e1, e2) ->
+        iter e1; iter e2
+      | Lwhile(e1, e2) ->
+        iter e1; iter e2
+      | Lfor(v, e1, e2, dir, e3) ->
+        iter e1; iter e2; 
+        def v; 
+        iter e3;
+      | Lassign(id, e) ->
+        use id ; 
+        iter e
+      | Lsend (k, met, obj, args, _) ->
+        iter met; iter obj; 
+        List.iter iter args
+      | Lifused (v, e) ->
+        iter e
+    end;
+  in iter lam; lam
 
 module Prim = struct 
   type t = primitive
@@ -67711,42 +67898,8 @@ val eq_lambda : Lam.t -> Lam.t -> bool
     for looking for similar cases in switch
  *)
 
-(** [is_closed_by map lam]
-    return [true] if all unbound variables
-    belongs to the given [map] *)
-val is_closed_by : (* Lambda. *) Ident_set.t -> Lam.t -> bool
-
-val is_closed : Lam.t -> bool
-
-
-
-
-
-type stats = 
-  { 
-    mutable top : bool ; 
-    (* all appearances are in the top,  substitution is fine 
-       whether it is pure or not
-       {[
-         (fun x y          
-           ->  x + y + (f x )) (32) (console.log('hi'), 33)
-       ]}       
-       since in ocaml, the application order is intentionally undefined, 
-       note if [times] is not one, this field does not make sense       
-    *)    
-    mutable times : int ; 
-  }
-
-val is_closed_with_map : 
-  Ident_set.t ->
-  Ident.t list -> Lam.t -> bool * stats Ident_map.t
-
-val param_map_of_list : Ident.t list -> stats Ident_map.t
-
-val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
-
-val small_inline_size : int 
-val exit_inline_size : int 
+val small_inline_size : int  
+val exit_inline_size : int  
 
 
 val safe_to_inline : Lam.t -> bool
@@ -67961,15 +68114,16 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
   | Lifthenelse  (a,b,c) -> 
     no_side_effects a && no_side_effects b && no_side_effects c
-  | Lsequence (e0,e1) -> no_side_effects e0 && no_side_effects e1 
-  | Lwhile (a,b) -> no_side_effects a && no_side_effects b 
+  | Lsequence (a,b) -> no_side_effects a && no_side_effects b
+  | Lletrec (bindings, body) ->
+    List.for_all (fun (_,b) -> no_side_effects b) bindings && no_side_effects body
+  | Lwhile _ -> false (* conservative here, non-terminating loop does have side effect *)
   | Lfor _ -> false 
   | Lassign _ -> false (* actually it depends ... *)
   | Lsend _ -> false 
   | Lifused _ -> false 
   | Lapply _ -> false (* we need purity analysis .. *)
-  | Lletrec (bindings, body) ->
-    List.for_all (fun (_,b) -> no_side_effects b) bindings && no_side_effects body
+  
 
 
 (* 
@@ -68138,161 +68292,6 @@ and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) =
 
 
 
-type stats = 
-  { 
-    mutable top : bool ; 
-    (* all appearances are in the top,  substitution is fine 
-       whether it is pure or not
-       {[
-         (fun x y          
-           ->  x + y + (f x )) (32) (console.log('hi'), 33)
-       ]}       
-       since in ocaml, the application order is intentionally undefined, 
-       note if [times] is not one, this field does not make sense       
-    *)    
-    mutable times : int ; 
-  }
-type env = 
-  { top  : bool ; 
-    loop : bool 
-  }
-
-let no_substitute = { top = false; loop = true }
-let fresh_env = {top = true; loop = false }
-let fresh_stats () = { top = true; times = 0 }
-
-let param_map_of_list lst = 
-  List.fold_left  (fun acc l -> Ident_map.add l (fresh_stats ()) acc) Ident_map.empty  lst 
-
-(** Sanity check, remove all varaibles in [local_set] in the last pass *)  
-
-let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) lam = 
-  let fv = ref params in
-  let local_set = ref export_idents in
-
-  let local_add k =
-    local_set := Ident_set.add k !local_set in
-  let local_add_list ks = 
-    local_set :=  
-      List.fold_left (fun acc k -> Ident_set.add k acc) !local_set ks 
-  in    
-  let loop_use = 100 in
-  let map_use {top; loop} v = 
-    (* relies on [identifier] uniquely bound *)    
-    let times = if loop then loop_use else 1 in
-    if Ident_set.mem v !local_set then ()    
-    else begin match Ident_map.find_opt v !fv with 
-      | None
-        -> fv := Ident_map.add v { top ; times } !fv
-      | Some v ->
-        v.times <- v.times + times ; 
-        v.top <- v.top && top          
-    end
-  in
-  let new_env lam (env : env) = 
-    if env.top then 
-      if no_side_effects lam 
-      then env 
-      else { env with top = false}
-    else env      
-  in    
-  let rec iter (top : env) (lam : Lam.t) =
-    match lam with 
-    | Lvar v -> map_use top v 
-    | Lconst _ -> ()
-    | Lapply {fn; args; _} ->
-      iter top  fn; 
-      let top = new_env fn top in
-      List.iter (iter top ) args  
-    | Lprim {args ; _} -> 
-      (* Check: can top be propoaged for all primitives *)
-      List.iter (iter top) args
-    | Lfunction{ params; body} ->
-      local_add_list params;
-      iter no_substitute body 
-    | Llet(_let_kind, id, arg, body) ->
-      local_add id ;  
-      iter top  arg; iter no_substitute body
-    | Lletrec(decl, body) ->
-      local_set := List.fold_left (fun acc (id, _) -> 
-          Ident_set.add id acc) !local_set decl;        
-      List.iter (fun (_, exp) -> iter no_substitute exp) decl;
-      iter no_substitute body
-    | Lswitch(arg, sw) ->
-      iter top arg; 
-      let top = new_env arg top  in       
-      List.iter (fun (key, case) -> iter top case) sw.sw_consts;
-      List.iter (fun (key, case) -> iter top  case) sw.sw_blocks;
-  
-      begin match sw.sw_failaction with 
-        | None -> ()
-        | Some x ->
-          let nconsts = List.length sw.sw_consts in
-          let nblocks = List.length sw.sw_blocks in
-
-          if nconsts < sw.sw_numconsts  && nblocks < sw.sw_numblocks then
-            iter no_substitute x
-          else
-            iter top x
-      end
-
-    | Lstringswitch (arg,cases,default) ->
-      iter top arg ;
-      let top = new_env arg top  in       
-      List.iter (fun (_,act) -> iter top  act) cases ;
-      begin match default with 
-      | None -> ()
-      | Some x -> iter top x 
-      end
-    | Lstaticraise (_,args) ->
-      List.iter (iter no_substitute ) args
-    | Lstaticcatch(e1, (_,vars), e2) ->
-      iter no_substitute  e1; 
-      local_add_list vars;       
-      iter no_substitute e2
-    | Ltrywith(e1, exn, e2) ->
-      iter top  e1; iter no_substitute  e2
-    | Lifthenelse(e1, e2, e3) ->
-      iter top e1; 
-      let top = new_env e1 top  in
-      iter top e2; iter top e3
-    | Lsequence(e1, e2) ->
-      iter top e1; iter no_substitute e2
-    | Lwhile(e1, e2) ->
-      iter no_substitute e1; iter no_substitute e2 (* in the loop, no substitution any way *)
-    | Lfor(v, e1, e2, dir, e3) ->
-      local_add v ; 
-      iter no_substitute e1; iter no_substitute e2; iter no_substitute e3
-    | Lassign(id, e) ->
-      map_use top  id ; 
-      iter top e
-    | Lsend (_k, met, obj, args, _) ->
-      iter no_substitute met ; 
-      iter no_substitute obj;
-      List.iter (iter no_substitute) args
-    | Lifused (v, e) ->
-      iter no_substitute e in
-  iter fresh_env  lam ; !fv 
-
-
-let is_closed_by set lam = 
-  Ident_map.is_empty (free_variables set (Ident_map.empty ) lam   )
-
-
-(** A bit consverative , it should be empty *)
-let is_closed  lam = 
-  Ident_map.for_all (fun k _ -> Ident.global k)
-    (free_variables Ident_set.empty Ident_map.empty lam)  
-
-
-let is_closed_with_map exports params body = 
-  let param_map = free_variables exports (param_map_of_list params) body in
-  let old_count = List.length params in
-  let new_count = Ident_map.cardinal param_map in
-  (old_count  = new_count, param_map)
-
-
-  
 (* TODO:  We can relax this a bit later,
     but decide whether to inline it later in the call site
  *)
@@ -76354,6 +76353,235 @@ let simple_beta_reduce params body args =
   | _ -> None
 
 end
+module Lam_closure : sig 
+#1 "lam_closure.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [is_closed_by map lam]
+    return [true] if all unbound variables
+    belongs to the given [map] *)
+val is_closed_by : Ident_set.t -> Lam.t -> bool
+
+val is_closed : Lam.t -> bool
+
+
+
+
+
+type stats = 
+  { 
+    top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    times : int ; 
+  }
+
+val is_closed_with_map : 
+  Ident_set.t ->
+  Ident.t list -> Lam.t -> bool * stats Ident_map.t
+
+(* val param_map_of_list : Ident.t list -> stats Ident_map.t *)
+
+val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
+
+
+end = struct
+#1 "lam_closure.ml"
+
+
+
+type stats = 
+  { 
+    top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    times : int ; 
+  }
+type env = 
+  { top  : bool ; 
+    loop : bool 
+  }
+
+let no_substitute = { top = false; loop = true }
+let fresh_env = {top = true; loop = false }
+let fresh_stats  : stats = { top = true; times = 0 }
+
+let param_map_of_list lst : stats Ident_map.t = 
+  List.fold_left  (fun acc l -> Ident_map.add l fresh_stats acc) Ident_map.empty  lst 
+
+(** Sanity check, remove all varaibles in [local_set] in the last pass *)  
+
+let loop_use = 100 (** Used in loop, huge punishment *)
+
+(**
+   [param_stats = free_variables exports param_stats lam] 
+   This function tries to do more than detect free variable of [lam],  
+   given [param_stats] it tries to return a new stats with updated usage of 
+   recorded params and unbound parameters
+*)
+let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) lam = 
+  let fv = ref params in
+  let local_set = ref export_idents in
+
+  let local_add k =
+    local_set := Ident_set.add k !local_set in
+  let local_add_list ks = 
+    local_set :=  
+      List.fold_left (fun acc k -> Ident_set.add k acc) !local_set ks 
+  in    
+  (* base don the envrionmet, recoring the use cases of arguments *)
+  let map_use {top; loop} v = 
+    (* relies on [identifier] uniquely bound *)    
+    if not (Ident_set.mem v !local_set) then 
+      fv := Ident_map.adjust 
+        v
+        (fun _ -> {top; times = if loop then loop_use else 1})
+        (fun v -> {times = if loop then loop_use else v.times + 1 ; top = v.top && top})
+        !fv 
+  in
+  let new_env lam (env : env) : env = 
+    if env.top then 
+      if Lam_analysis.no_side_effects lam 
+      then env 
+      (* no side effect, if argument has no side effect and used only once we can simply do the replacement *)
+      else { env with top = false}
+    else env      
+  in    
+  let rec iter (top : env) (lam : Lam.t) =
+    match lam with 
+    | Lvar v -> map_use top v 
+    | Lconst _ -> ()
+    | Lapply {fn; args; _} ->
+      iter top  fn; 
+      let top = new_env fn top in
+      List.iter (fun lam -> iter top lam ) args  
+    | Lprim {args ; _} -> 
+      (* Check: can top be propoaged for all primitives *)
+      List.iter (iter top) args
+    | Lfunction{ params; body} ->
+      local_add_list params;
+      iter no_substitute body 
+    | Llet(_let_kind, id, arg, body) ->
+      local_add id ;  
+      iter top  arg; iter no_substitute body
+    | Lletrec(decl, body) ->
+      local_set := List.fold_left (fun acc (id, _) -> 
+          Ident_set.add id acc) !local_set decl;        
+      List.iter (fun (_, exp) -> iter no_substitute exp) decl;
+      iter no_substitute body
+    | Lswitch(arg, sw) ->
+      iter top arg; 
+      let top = new_env arg top  in       
+      List.iter (fun (key, case) -> iter top case) sw.sw_consts;
+      List.iter (fun (key, case) -> iter top  case) sw.sw_blocks;
+  
+      begin match sw.sw_failaction with 
+        | None -> ()
+        | Some x ->
+          let nconsts = List.length sw.sw_consts in
+          let nblocks = List.length sw.sw_blocks in
+
+          if nconsts < sw.sw_numconsts  && nblocks < sw.sw_numblocks then
+            iter no_substitute x
+          else
+            iter top x
+      end
+
+    | Lstringswitch (arg,cases,default) ->
+      iter top arg ;
+      let top = new_env arg top  in       
+      List.iter (fun (_,act) -> iter top  act) cases ;
+      begin match default with 
+      | None -> ()
+      | Some x -> iter top x 
+      end
+    | Lstaticraise (_,args) ->
+      List.iter (iter no_substitute ) args
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      iter no_substitute  e1; 
+      local_add_list vars;       
+      iter no_substitute e2
+    | Ltrywith(e1, exn, e2) ->
+      iter top  e1; iter no_substitute  e2
+    | Lifthenelse(e1, e2, e3) ->
+      iter top e1; 
+      let top = new_env e1 top  in
+      iter top e2; iter top e3
+    | Lsequence(e1, e2) ->
+      iter top e1; iter no_substitute e2
+    | Lwhile(e1, e2) ->
+      iter no_substitute e1; iter no_substitute e2 (* in the loop, no substitution any way *)
+    | Lfor(v, e1, e2, dir, e3) ->
+      local_add v ; 
+      iter no_substitute e1; iter no_substitute e2; iter no_substitute e3
+    | Lassign(id, e) ->
+      map_use top  id ; 
+      iter top e
+    | Lsend (_k, met, obj, args, _) ->
+      iter no_substitute met ; 
+      iter no_substitute obj;
+      List.iter (iter no_substitute) args
+    | Lifused (v, e) ->
+      iter no_substitute e in
+  iter fresh_env  lam ; !fv 
+
+
+let is_closed_by set lam = 
+  Ident_map.is_empty (free_variables set (Ident_map.empty ) lam   )
+
+
+(** A bit consverative , it should be empty *)
+let is_closed  lam = 
+  Ident_map.for_all (fun k _ -> Ident.global k)
+    (free_variables Ident_set.empty Ident_map.empty lam)  
+
+
+let is_closed_with_map exports params body = 
+  let param_map = free_variables exports (param_map_of_list params) body in
+  let old_count = List.length params in
+  let new_count = Ident_map.cardinal param_map in
+  (old_count  = new_count, param_map)
+
+
+  
+
+end
 module Js_of_lam_module : sig 
 #1 "js_of_lam_module.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -76645,7 +76873,7 @@ val refresh :
 *)
 val propogate_beta_reduce_with_map : 
   Lam_stats.meta ->
-  Lam_analysis.stats Ident_map.t ->
+  Lam_closure.stats Ident_map.t ->
   Ident.t list ->
   Lam.t -> Lam.t list -> Lam.t
 
@@ -76896,7 +77124,7 @@ let propogate_beta_reduce
      rest_bindings new_body
 
 let propogate_beta_reduce_with_map  
-    (meta : Lam_stats.meta) (map : Lam_analysis.stats Ident_map.t ) params body args =
+    (meta : Lam_stats.meta) (map : Lam_closure.stats Ident_map.t ) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with
   | Some x -> x
   | None ->
@@ -82946,7 +83174,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           when Ext_list.same_length params args_lambda -> 
           (* TODO: serialize it when exporting to save compile time *)
           let (_, param_map)  = 
-            Lam_analysis.is_closed_with_map Ident_set.empty params body in
+            Lam_closure.is_closed_with_map Ident_set.empty params body in
           compile_lambda cxt 
             (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
                params body args_lambda)
@@ -84405,119 +84633,6 @@ and
     *)
     | Lifused(_,lam) -> compile_lambda cxt lam
   end
-
-end
-module Ident_hash_set : sig 
-#1 "ident_hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Hash_set_gen.S with type key = Ident.t
-
-end = struct
-#1 "ident_hash_set.ml"
-# 1 "ext/hash_set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 37
-type key = Ident.t
-let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
-let eq_key = Ext_ident.equal
-type t = key Hash_set_gen.t
-
-
-# 59
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
-let elements = Hash_set_gen.elements
-
-
-
-let remove (h : _ Hash_set_gen.t) key =  
-  let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
-
-
-
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
-    begin 
-      h.data.(i) <- key :: h.data.(i);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
-    end
-
-let check_add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
-    begin 
-      h.data.(i) <- key :: h.data.(i);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
-
-
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
-
-  
 
 end
 module Lam_group : sig 
@@ -87132,7 +87247,7 @@ let simplify_alias
                 (* let old_count = List.length params in *)
                 (* let new_count = Ident_map.cardinal param_map in *)
                 let param_map = 
-                  Lam_analysis.is_closed_with_map 
+                  Lam_closure.is_closed_with_map 
                     meta.export_idents params body in
                 let is_export_id = Ident_set.mem v meta.export_idents in
                 match is_export_id, param_map with 
@@ -87435,7 +87550,7 @@ let export_to_cmj
              let closed_lambda = 
                if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
                then
-                 if Lam_analysis.is_closed lambda (* TODO: seriealize more*)
+                 if Lam_closure.is_closed lambda (* TODO: seriealize more*)
                  then Some lambda
                  else None
                else 
@@ -87445,7 +87560,7 @@ let export_to_cmj
                     2. [lambda_exports] is not precise
                  *)
                  let free_variables =
-                   Lam_analysis.free_variables Ident_set.empty
+                   Lam_closure.free_variables Ident_set.empty
                    (* meta.export_idents *)  Ident_map.empty 
                      lambda in
                  if  lam_size < Lam_analysis.small_inline_size  && 
@@ -96159,7 +96274,7 @@ let compile  ~filename output_prefix no_export env _sigs
     |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-
+    (* |> Lam.check (Js_config.get_current_file () ) *)
 
   in
 

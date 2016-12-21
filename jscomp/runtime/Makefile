@@ -20,6 +20,8 @@ caml_format.cmj caml_io.cmj: curry.cmj
 caml_weak.cmj caml_module.cmj: caml_obj.cmj js_primitive.cmj
 caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi js_unsafe.cmi
 block.cmj: block.cmi
+caml_int64.cmj : caml_obj.cmj
+# or we can do a post-processing to add missing cmj dependency manually
 
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj
 ## since we use ppx
