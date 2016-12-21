@@ -167,6 +167,8 @@ bin/whole_compiler.ml : ext/int_vec_vec.ml
 bin/whole_compiler.ml : ext/int_vec_vec.mli
 bin/whole_compiler.ml : ext/ext_scc.ml
 bin/whole_compiler.ml : ext/ext_scc.mli
+bin/whole_compiler.ml : ext/ident_hash_set.ml
+bin/whole_compiler.ml : ext/ident_hash_set.mli
 bin/whole_compiler.ml : core/ocaml_stdlib_slots.ml
 bin/whole_compiler.ml : ext/ordered_hash_map_gen.ml
 bin/whole_compiler.ml : ext/ordered_hash_map_local_ident.ml
@@ -254,6 +256,8 @@ bin/whole_compiler.ml : core/js_of_lam_record.ml
 bin/whole_compiler.ml : core/js_of_lam_record.mli
 bin/whole_compiler.ml : core/lam_beta_reduce_util.ml
 bin/whole_compiler.ml : core/lam_beta_reduce_util.mli
+bin/whole_compiler.ml : core/lam_closure.ml
+bin/whole_compiler.ml : core/lam_closure.mli
 bin/whole_compiler.ml : core/js_of_lam_module.ml
 bin/whole_compiler.ml : core/js_of_lam_module.mli
 bin/whole_compiler.ml : core/lam_compile_global.ml
@@ -304,8 +308,6 @@ bin/whole_compiler.ml : core/lam_exit_code.ml
 bin/whole_compiler.ml : core/lam_exit_code.mli
 bin/whole_compiler.ml : core/lam_compile.ml
 bin/whole_compiler.ml : core/lam_compile.mli
-bin/whole_compiler.ml : ext/ident_hash_set.ml
-bin/whole_compiler.ml : ext/ident_hash_set.mli
 bin/whole_compiler.ml : core/lam_group.ml
 bin/whole_compiler.ml : core/lam_group.mli
 bin/whole_compiler.ml : core/lam_dce.ml

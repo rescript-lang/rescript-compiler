@@ -241,7 +241,7 @@ let compile  ~filename output_prefix no_export env _sigs
     |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-
+    (* |> Lam.check (Js_config.get_current_file () ) *)
 
   in
 

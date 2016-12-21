@@ -265,16 +265,17 @@ let reset () =
 let undefined = create_js "undefined"
 let nil = create_js "null"
 
+(* Has to be total order, [x < y] 
+   and [x > y] should be consistent
+   flags are not relevant here 
+ *)
 let compare (x : Ident.t ) ( y : Ident.t) = 
   let u = x.stamp - y.stamp in
   if u = 0 then 
-    let u = String.compare x.name y.name in 
-    if u = 0 then 
-      x.flags - y.flags 
-    else  u 
+     String.compare x.name y.name 
   else u 
 
 let equal ( x : Ident.t) ( y : Ident.t) = 
-   (x.stamp : int) = y.stamp &&
-   Ext_string.equal x.name y.name &&
-   (x.flags : int) = y.flags 
+  if x.stamp <> 0 then x.stamp = y.stamp
+  else y.stamp = 0 && x.name = y.name
+   

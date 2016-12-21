@@ -22,14 +22,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** [is_closed_by map lam]
+    return [true] if all unbound variables
+    belongs to the given [map] *)
+val is_closed_by : Ident_set.t -> Lam.t -> bool
+
+val is_closed : Lam.t -> bool
 
 
 
 
 
+type stats = 
+  { 
+    top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    times : int ; 
+  }
 
+val is_closed_with_map : 
+  Ident_set.t ->
+  Ident.t list -> Lam.t -> bool * stats Ident_map.t
 
-(** Utilities for [ident] type *)
+(* val param_map_of_list : Ident.t list -> stats Ident_map.t *)
 
-let print_identset set = 
-  Lambda.IdentSet.iter (fun x -> Ext_log.err __LOC__ "@[%a@]@." Ident.print x ) set
+val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
+

@@ -87,7 +87,7 @@ let export_to_cmj
              let closed_lambda = 
                if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
                then
-                 if Lam_analysis.is_closed lambda (* TODO: seriealize more*)
+                 if Lam_closure.is_closed lambda (* TODO: seriealize more*)
                  then Some lambda
                  else None
                else 
@@ -97,7 +97,7 @@ let export_to_cmj
                     2. [lambda_exports] is not precise
                  *)
                  let free_variables =
-                   Lam_analysis.free_variables Ident_set.empty
+                   Lam_closure.free_variables Ident_set.empty
                    (* meta.export_idents *)  Ident_map.empty 
                      lambda in
                  if  lam_size < Lam_analysis.small_inline_size  && 

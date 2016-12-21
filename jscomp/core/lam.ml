@@ -393,14 +393,6 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lifused (v, e) ->
     f e 
 
-(* 
-TODO: add a santizer to check variables arre not bound twice
-We need an invariant checker for troubleshooting: 
-1. variables are not bound twice 
-2. all variables are of right scope 
-Otherwise, it would be too dangerous to apply optimizations and 
-very hard to fix bugs
-*)
 
 (*
 let add_list lst set = 
@@ -542,12 +534,94 @@ let free_variables l =
         free e;
         fv := Ident_set.add id !fv
       | Lsend (k, met, obj, args, _) ->
-        List.iter free (met::obj::args)
+        free met; free obj; List.iter free args 
       | Lifused (v, e) ->
         free e
     end;
   in free l; 
   !fv
+
+
+(**
+checks  
+   1. variables are not bound twice 
+   2. all variables are of right scope 
+*)
+let check file lam = 
+  let defined_variables = Ident_hash_set.create 1000 in 
+  let use (id : Ident.t)  = 
+    if not @@ Ident_hash_set.mem defined_variables id  then 
+      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file in 
+  let def (id : Ident.t) =
+    if Ident_hash_set.mem defined_variables id  then 
+      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file 
+    else Ident_hash_set.add defined_variables id 
+  in 
+  let rec iter (l : t) =
+    begin
+      match (l : t) with 
+        Lvar id -> use id 
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        iter fn; List.iter iter args
+      | Lfunction{body;params} ->
+        List.iter def params;
+        iter body
+      | Llet(str, id, arg, body) ->
+        iter arg;
+        def id;
+        iter body
+      | Lletrec(decl, body) ->
+        List.iter (fun (id, exp) ->  def id) decl;
+        List.iter (fun (id, exp) -> iter exp) decl;
+        iter body
+      | Lprim {args; _} ->
+        List.iter iter args
+      | Lswitch(arg, sw) ->
+        iter arg;
+        List.iter (fun (key, case) -> iter case) sw.sw_consts;
+        List.iter (fun (key, case) -> iter case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        iter arg ;
+        List.iter (fun (_,act) -> iter act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter iter args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        iter e1; 
+        List.iter def vars;
+        iter e2
+      | Ltrywith(e1, exn, e2) ->
+        iter e1; 
+        def exn; 
+        iter e2
+      | Lifthenelse(e1, e2, e3) ->
+        iter e1; iter e2; iter e3
+      | Lsequence(e1, e2) ->
+        iter e1; iter e2
+      | Lwhile(e1, e2) ->
+        iter e1; iter e2
+      | Lfor(v, e1, e2, dir, e3) ->
+        iter e1; iter e2; 
+        def v; 
+        iter e3;
+      | Lassign(id, e) ->
+        use id ; 
+        iter e
+      | Lsend (k, met, obj, args, _) ->
+        iter met; iter obj; 
+        List.iter iter args
+      | Lifused (v, e) ->
+        iter e
+    end;
+  in iter lam; lam
 
 module Prim = struct 
   type t = primitive
