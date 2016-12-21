@@ -187,7 +187,7 @@ SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
-CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots ident_util bs_conditional_initial ocaml_options ocaml_parse lam\
+CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initial ocaml_options ocaml_parse lam\
 	lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
 	lam_exit_code j lam_module_ident lam_compile_util lam_stats config_util lam_compile_defs js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\
@@ -458,6 +458,6 @@ clean:
 	rm -f bsb/bs_json.ml bsb/sexp_lexer.ml core/js_fold.ml core/js_map.ml
 	rm -f common/bs_version.ml
 	rm -rf bin/config_whole_compiler.ml
-	git clean -dfx ext common syntax depends core bsb
+	git clean -dfx stubs ext common syntax depends core bsb
 
 .PHONY: release   releasebuild libs snapshotml force-snapshotml
