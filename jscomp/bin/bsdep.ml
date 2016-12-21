@@ -5,7 +5,7 @@ val version : string
 
 end = struct
 #1 "bs_version.ml"
-let version = "1.3.4"
+let version = "1.4.0"
 
 end
 module Terminfo : sig 

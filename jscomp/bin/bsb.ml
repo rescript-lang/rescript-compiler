@@ -7560,9 +7560,11 @@ let bs_file_groups = ref []
 
 let sourcedirs_meta = ".sourcedirs"
 let merlin = ".merlin"
-let merlin_header = "\n####{BSB GENERATED: NO EDIT\n"
-let merlin_trailer = "\n####BSB GENERATED: NO EDIT}\n"
+let merlin_header = "####{BSB GENERATED: NO EDIT"
+let merlin_trailer = "####BSB GENERATED: NO EDIT}"
 let merlin_trailer_length = String.length merlin_trailer
+
+(** [new_content] should start end finish with newline *)
 let revise_merlin new_content =
   if Sys.file_exists merlin then
     let merlin_chan = open_in_bin merlin in
@@ -7572,14 +7574,19 @@ let revise_merlin new_content =
 
     let header =  Ext_string.find s ~sub:merlin_header  in
     let tail = Ext_string.find s ~sub:merlin_trailer in
-    if header < 0  && tail < 0 then
+    if header < 0  && tail < 0 then (* locked region not added yet *)
       let ochan = open_out_bin merlin in
       output_string ochan s ;
+      output_string ochan "\n";
       output_string ochan merlin_header;
       Buffer.output_buffer ochan new_content;
       output_string ochan merlin_trailer ;
+      output_string ochan "\n";
       close_out ochan
-    else if header >=0 && tail >= 0  then
+    else if header >=0 && tail >= 0  then 
+      (* there is one, hit it everytime,
+         should be fixed point
+      *)
       let ochan = open_out_bin merlin in
       output_string ochan (String.sub s 0 header) ;
       output_string ochan merlin_header;
@@ -7587,7 +7594,7 @@ let revise_merlin new_content =
       output_string ochan merlin_trailer ;
       output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
       close_out ochan
-    else assert false
+    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
   else
     let ochan = open_out_bin merlin in
     output_string ochan merlin_header ;
@@ -7616,11 +7623,12 @@ let write_ninja_file bsc_dir cwd =
     let () =
       Bsb_default.get_ppx_flags ()
       |> List.iter (fun x ->
-          Buffer.add_string buffer (Printf.sprintf "FLG -ppx %s\n" x )
+          Buffer.add_string buffer (Printf.sprintf "\nFLG -ppx %s" x )
         )
     in
     let () = Buffer.add_string buffer
-        (Printf.sprintf "S %s\n\
+        (Printf.sprintf "\n\
+                         S %s\n\
                          B %s\n\
                          FLG -ppx %s\n\
                        " lib_ocaml_dir lib_ocaml_dir bsppx
@@ -7630,7 +7638,7 @@ let write_ninja_file bsc_dir cwd =
       | [] -> ()
       | xs -> 
         Buffer.add_string buffer 
-          (Printf.sprintf "FLG %s\n" (String.concat " " xs) ) in 
+          (Printf.sprintf "\nFLG %s" (String.concat " " xs) ) in 
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
@@ -7646,7 +7654,7 @@ let write_ninja_file bsc_dir cwd =
     in
     res.files |> List.iter
       (fun (x : Bsb_build_ui.file_group) ->
-         output_string ochan x.dir;
+         output_string ochan x.dir; (* to [.sourcedirs] *)
          output_string ochan "\n" ;
          Buffer.add_string buffer "\nS ";
          Buffer.add_string buffer x.dir ;
