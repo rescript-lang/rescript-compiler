@@ -7600,6 +7600,7 @@ let revise_merlin new_content =
     output_string ochan merlin_header ;
     Buffer.output_buffer ochan new_content;
     output_string ochan merlin_trailer ;
+    output_string ochan "\n";
     close_out ochan
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 (** *)
