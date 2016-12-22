@@ -2,6 +2,7 @@
 
 var Bytes                   = require("../../lib/js/bytes");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Filename                = require("../../lib/js/filename");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
 var Caml_int32              = require("../../lib/js/caml_int32");
 var Curry                   = require("../../lib/js/curry");
@@ -201,15 +202,13 @@ function escaped(s) {
   }
 }
 
-function for_all(p, s) {
-  var len = s.length;
-  var _i = 0;
+function for_all_range(s, _i, len, p) {
   while(true) {
     var i = _i;
     if (i >= len) {
       return /* true */1;
     }
-    else if (Curry._1(p, s.charCodeAt(i))) {
+    else if (Curry._1(p, Caml_string.get(s, i))) {
       _i = i + 1 | 0;
       continue ;
       
@@ -218,6 +217,11 @@ function for_all(p, s) {
       return /* false */0;
     }
   };
+}
+
+function for_all(p, s) {
+  var len = s.length;
+  return for_all_range(s, 0, len, p);
 }
 
 function is_empty(s) {
@@ -385,6 +389,115 @@ function unsafe_concat_with_length(len, sep, l) {
   }
 }
 
+function rindex_rec(s, _i, c) {
+  while(true) {
+    var i = _i;
+    if (i < 0) {
+      return i;
+    }
+    else if (s.charCodeAt(i) === c) {
+      return i;
+    }
+    else {
+      _i = i - 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
+function rindex_rec_opt(s, _i, c) {
+  while(true) {
+    var i = _i;
+    if (i < 0) {
+      return /* None */0;
+    }
+    else if (s.charCodeAt(i) === c) {
+      return /* Some */[i];
+    }
+    else {
+      _i = i - 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
+function rindex_neg(s, c) {
+  return rindex_rec(s, s.length - 1 | 0, c);
+}
+
+function rindex_opt(s, c) {
+  return rindex_rec_opt(s, s.length - 1 | 0, c);
+}
+
+function is_valid_module_file(finish, s) {
+  var match = Caml_string.get(s, 0);
+  var exit = 0;
+  if (match >= 91) {
+    if (match > 122 || match < 97) {
+      return /* false */0;
+    }
+    else {
+      exit = 1;
+    }
+  }
+  else if (match >= 65) {
+    exit = 1;
+  }
+  else {
+    return /* false */0;
+  }
+  if (exit === 1) {
+    return for_all_range(s, 1, finish, function (x) {
+                if (x >= 65) {
+                  var switcher = x - 91 | 0;
+                  if (switcher > 5 || switcher < 0) {
+                    if (switcher >= 32) {
+                      return /* false */0;
+                    }
+                    else {
+                      return /* true */1;
+                    }
+                  }
+                  else if (switcher !== 4) {
+                    return /* false */0;
+                  }
+                  else {
+                    return /* true */1;
+                  }
+                }
+                else if (x >= 48) {
+                  if (x >= 58) {
+                    return /* false */0;
+                  }
+                  else {
+                    return /* true */1;
+                  }
+                }
+                else if (x !== 39) {
+                  return /* false */0;
+                }
+                else {
+                  return /* true */1;
+                }
+              });
+  }
+  
+}
+
+function is_valid_source_name(name) {
+  if ((Curry._2(Filename.check_suffix, name, ".ml") || Curry._2(Filename.check_suffix, name, ".re")) && is_valid_module_file(name.length - 3 | 0, name)) {
+    return /* true */1;
+  }
+  else if (Curry._2(Filename.check_suffix, name, ".mli") || Curry._2(Filename.check_suffix, name, ".mll") || Curry._2(Filename.check_suffix, name, ".rei")) {
+    return is_valid_module_file(name.length - 4 | 0, name);
+  }
+  else {
+    return /* false */0;
+  }
+}
+
 exports.split_by                  = split_by;
 exports.trim                      = trim;
 exports.split                     = split;
@@ -394,6 +507,7 @@ exports.ends_with_index           = ends_with_index;
 exports.ends_with                 = ends_with;
 exports.ends_with_then_chop       = ends_with_then_chop;
 exports.escaped                   = escaped;
+exports.for_all_range             = for_all_range;
 exports.for_all                   = for_all;
 exports.is_empty                  = is_empty;
 exports.repeat                    = repeat;
@@ -405,4 +519,10 @@ exports.digits_of_str             = digits_of_str;
 exports.starts_with_and_number    = starts_with_and_number;
 exports.equal                     = equal;
 exports.unsafe_concat_with_length = unsafe_concat_with_length;
-/* No side effect */
+exports.rindex_rec                = rindex_rec;
+exports.rindex_rec_opt            = rindex_rec_opt;
+exports.rindex_neg                = rindex_neg;
+exports.rindex_opt                = rindex_opt;
+exports.is_valid_module_file      = is_valid_module_file;
+exports.is_valid_source_name      = is_valid_source_name;
+/* Filename Not a pure module */

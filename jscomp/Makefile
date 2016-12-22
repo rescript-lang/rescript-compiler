@@ -10,10 +10,10 @@ BYTE=ocamlc.opt$(EXE)
 OCAMLLEX=ocamllex.opt$(EXE)
 CAMLP4OF=camlp4of
 CAMLDEP=ocamldep.opt$(EXE)
-COMPFLAGS= -g -w -40-30 -warn-error +a-40-30
+COMPFLAGS= -g -w +6-40-30 -warn-error +a-40-30-23
 
 
-.SUFFIXES: .mli .ml .cmi .cmx .mll
+.SUFFIXES: .mli .ml .cmi .cmx .mll .c .o
 
 print-%  : ; @echo $* = $($*)
 
@@ -52,6 +52,37 @@ ext/ident_set.ml : ext/set.cppo.ml
 ext/set_poly.ml : ext/set.cppo.ml
 	cppo  -D TYPE_POLY $< -o $@
 
+
+ext/string_map.ml : ext/map.cppo.ml
+	cppo -D TYPE_STRING $< -o $@
+ext/int_map.ml : ext/map.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/map_make.ml : ext/map.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
+ext/ident_map.ml : ext/map.cppo.ml
+	cppo -D TYPE_IDENT $< -o $@
+# ext/map_poly.ml : ext/map.cppo.ml
+# 	cppo -D TYPE_POLY $< -o $@
+
+ext/ordered_hash_map_make.ml: ext/ordered_hash_map.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
+ext/ordered_hash_map_local_ident.ml: ext/ordered_hash_map.cppo.ml
+	cppo -D TYPE_LOCAL_IDENT $< -o $@
+
+ext/ordered_hash_set_make.ml : ext/ordered_hash_set.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
+
+ext/ordered_hash_set_string.ml:ext/ordered_hash_set.cppo.ml
+	cppo -D TYPE_STRING $< -o $@
+
+ext/string_hashtbl.ml: ext/hashtbl.cppo.ml
+	cppo -D TYPE_STRING $< -o $@	
+ext/int_hashtbl.ml: ext/hashtbl.cppo.ml
+	cppo -D TYPE_INT $< -o $@
+ext/ident_hashtbl.ml: ext/hashtbl.cppo.ml	
+	cppo -D TYPE_IDENT $< -o $@
+ext/hashtbl_make.ml: ext/hashtbl.cppo.ml
+	cppo -D TYPE_FUNCTOR $< -o $@
 ## Stubs 
 .c.o:
 	$(NATIVE) -ccopt -o -ccopt $@ -c $< 
@@ -90,7 +121,17 @@ common/bs_version.ml: build_version.js ../package.json
 STUB_SRCS = bs_hash_stubs
 OUNIT_SRCS = oUnit oUnitDiff oUnitLogger oUnitTypes oUnitUtils oUnitChooser
 OUNIT_CMXS = $(addprefix ounit/, $(addsuffix .cmx, $(OUNIT_SRCS)))
-OUNIT_TESTS_SRCS =  ounit_tests_util ounit_array_tests ounit_list_test ounit_bal_tree_tests ounit_path_tests ounit_union_find_tests ounit_hash_stubs_test ounit_hash_set_tests ounit_scc_tests ounit_json_tests ounit_vec_test ounit_tests_main
+OUNIT_TESTS_SRCS =  ounit_tests_util \
+	ounit_array_tests ounit_list_test \
+	ounit_bal_tree_tests ounit_path_tests \
+	ounit_union_find_tests ounit_hash_stubs_test \
+	ounit_hash_set_tests ounit_scc_tests \
+	ounit_hashtbl_tests\
+	ounit_json_tests ounit_map_tests \
+	ounit_ordered_hash_set_tests \
+	ounit_vec_test \
+	ounit_string_tests\
+	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
 EXT_SRCS = ext_util\
@@ -101,25 +142,35 @@ EXT_SRCS = ext_util\
 	string_vec\
 	int_vec int_vec_vec \
 	set_gen\
-	bal_map_common bal_map\
+	map_gen\
+	map_make\
 	ext_file_pp ext_format \
 	hashtbl_gen \
-	ext_hashtbl \
 	ext_string \
 	string_hashtbl\
-	ext_list ext_map \
+	ext_list \
+	ext_map \
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set string_hash_set int_hash_set \
-	 ordered_hash_set ordered_hash_map union_find \
+	ordered_hash_set_gen\
+	ordered_hash_set_string\
+	ordered_hash_set_make\
+	ordered_hash_map_gen\
+	union_find \
+	ext_ident\
+	ident_map\
 	ident_set\
-	int_map literals string_map \
+	hashtbl_make\
+	ordered_hash_map_local_ident\
+	int_map\
+	literals \
+	string_map \
 	string_set\
 	set_int\
 	set_poly\
 	ext_scc ext_pp_scope\
 	ext_io\
-	ext_ident\
 	ident_hash_set\
 	hash_set_poly\
 	ident_hashtbl\
@@ -136,8 +187,10 @@ SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
-CORE_SRCS= type_int_to_string type_util ident_map ocaml_stdlib_slots ident_util bs_conditional_initial ocaml_options ocaml_parse lam\
-	lam_print lam_beta_reduce_util lam_inline_util lam_analysis js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
+CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initial ocaml_options ocaml_parse lam\
+	lam_print lam_beta_reduce_util lam_inline_util lam_analysis\
+	lam_closure\
+	js_cmj_format js_fun_env js_call_info js_closure js_op js_number js_cmj_datasets\
 	lam_exit_code j lam_module_ident lam_compile_util lam_stats config_util lam_compile_defs js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\
 	js_of_lam_tuple js_of_lam_record js_of_lam_float_record js_arr lam_compile_const \
@@ -302,11 +355,14 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD   -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
 -include bin/all_ounit_tests.d
 
+
+
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	$(NATIVE) -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -g -I bin -w -a unix.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
-	$^
+	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump
+
 
 # bin/all_ounit_tests.i.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
 # 	$(NATIVE) -ppx /Users/hzhang295/.opam/4.02.3+local-git-master/lib/bisect_ppx/bisect_ppx -g -I bin -w -a unix.cmxa $^ -o $@
@@ -329,10 +385,10 @@ bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
 
 bootbspack:
 	@echo "Bootstrap bspack.exe"
-	./bin/bspack.exe -bs-MD -prelude-str 'module Config = Config_bspack '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
-	$(NATIVE) -w -40  unix.cmxa  -I bin bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
+	./bin/bspack.exe -bs-MD -prelude-str 'module Config = Config_bspack '   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
+	$(NATIVE) ./stubs/ext_basic_hash_stubs.c -w -40  unix.cmxa  -I bin bin/config_bspack.mli bin/config_bspack.ml bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
 	@echo "Using the bootstrapped bspack.exe to genreate new bspack.ml: `date`"
-	./bin/bspack.exe -bs-MD  -prelude-str  'module Config = Config_bspack'   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
+	./bin/bspack.exe -bs-MD  -prelude-str  'module Config = Config_bspack'   -bs-exclude-I config  -I ../ocaml/parsing/ -I ../ocaml/utils/ -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
 	@echo "Rebuilding bspack.exe"
 	make -C bin -B bspack.exe
@@ -380,7 +436,7 @@ world:
 travis-world-test:
 	$(MAKE) world
 	@echo "Making test"
-	make test
+	$(NATIVE) -g -I bin -w -a unix.cmxa stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml -o bin/all_ounit_tests.exe && bin/all_ounit_tests.exe
 	$(MAKE) -C test all
 	@echo "Making test finsihed"
 
@@ -404,6 +460,6 @@ clean:
 	rm -f bsb/bs_json.ml bsb/sexp_lexer.ml core/js_fold.ml core/js_map.ml
 	rm -f common/bs_version.ml
 	rm -rf bin/config_whole_compiler.ml
-	git clean -dfx ext common syntax depends core bsb
+	git clean -dfx stubs ext common syntax depends core bsb
 
 .PHONY: release   releasebuild libs snapshotml force-snapshotml

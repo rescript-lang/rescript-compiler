@@ -84,13 +84,24 @@ function is_empty(param) {
   }
 }
 
-function cardinal(param) {
-  if (param) {
-    return (cardinal(param[0]) + 1 | 0) + cardinal(param[2]) | 0;
-  }
-  else {
-    return 0;
-  }
+function cardinal_aux(_acc, _param) {
+  while(true) {
+    var param = _param;
+    var acc = _acc;
+    if (param) {
+      _param = param[0];
+      _acc = cardinal_aux(acc + 1 | 0, param[2]);
+      continue ;
+      
+    }
+    else {
+      return acc;
+    }
+  };
+}
+
+function cardinal(s) {
+  return cardinal_aux(0, s);
 }
 
 function elements_aux(_accu, _param) {
@@ -282,7 +293,7 @@ function internal_bal(l, v, r) {
               Caml_builtin_exceptions.assert_failure,
               [
                 "set_gen.ml",
-                232,
+                235,
                 19
               ]
             ];
@@ -293,7 +304,7 @@ function internal_bal(l, v, r) {
             Caml_builtin_exceptions.assert_failure,
             [
               "set_gen.ml",
-              222,
+              225,
               15
             ]
           ];
@@ -315,7 +326,7 @@ function internal_bal(l, v, r) {
               Caml_builtin_exceptions.assert_failure,
               [
                 "set_gen.ml",
-                248,
+                251,
                 19
               ]
             ];
@@ -326,7 +337,7 @@ function internal_bal(l, v, r) {
             Caml_builtin_exceptions.assert_failure,
             [
               "set_gen.ml",
-              242,
+              245,
               15
             ]
           ];
@@ -601,7 +612,7 @@ function of_sorted_list(l) {
               Caml_builtin_exceptions.assert_failure,
               [
                 "set_gen.ml",
-                358,
+                361,
                 14
               ]
             ];
@@ -811,6 +822,7 @@ exports.min_elt                 = min_elt;
 exports.max_elt                 = max_elt;
 exports.empty                   = empty;
 exports.is_empty                = is_empty;
+exports.cardinal_aux            = cardinal_aux;
 exports.cardinal                = cardinal;
 exports.elements_aux            = elements_aux;
 exports.elements                = elements;

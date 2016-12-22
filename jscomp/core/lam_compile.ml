@@ -183,7 +183,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           when Ext_list.same_length params args_lambda -> 
           (* TODO: serialize it when exporting to save compile time *)
           let (_, param_map)  = 
-            Lam_analysis.is_closed_with_map Ident_set.empty params body in
+            Lam_closure.is_closed_with_map Ident_set.empty params body in
           compile_lambda cxt 
             (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
                params body args_lambda)
@@ -279,7 +279,7 @@ and compile_recursive_let
             *)
             ~immutable_mask:ret.immutable_mask
             (List.map (fun x -> 
-                 try Ident_map.find x ret.new_params with  Not_found -> x)
+                  Ident_map.find_default x ret.new_params x )
                 params)
             [
               S.while_ (* ~label:continue_label *)
@@ -562,15 +562,15 @@ and
                                   (i + 1, assigns, new_params)
                                 | _ ->
                                   let new_param, m  = 
-                                    match Ident_map.find  param ret.new_params with 
-                                    | exception Not_found -> 
+                                    match Ident_map.find_opt  param ret.new_params with 
+                                    | None -> 
                                       ret.immutable_mask.(i)<- false;
                                       let v = Ext_ident.create ("_"^param.Ident.name) in
                                       v, (Ident_map.add param v new_params) 
-                                    | v -> v, new_params  in
+                                    | Some v -> v, new_params  in
                                   (i+1, (new_param, arg) :: assigns, m)
                               ) (0, [], Ident_map.empty) params args  in 
-                          let () = ret.new_params <- Ident_map.(merge_disjoint new_params ret.new_params) in
+                          let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
                           assigned_params |> List.map (fun (param, arg) -> S.assign param arg))
                          @
                         [S.continue ()(* label *)]

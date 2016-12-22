@@ -87,7 +87,7 @@ let string_of_module_id ~output_prefix
         let js_file = Printf.sprintf "%s.js" modulename in
         let rebase package_dir dep =
           let current_unit_dir =
-            `Dir (Js_config.get_output_dir package_dir module_system output_prefix) in
+            `Dir (Js_config.get_output_dir ~pkg_dir:package_dir module_system output_prefix) in
           Ext_filename.node_relative_path  current_unit_dir dep 
         in 
         let dependency_pkg_info = 
@@ -138,14 +138,12 @@ let string_of_module_id ~output_prefix
              (`Empty | `Package_script _) , 
              (`Empty  | `Package_script _)
             -> 
-            begin match Config_util.find js_file with 
-              | file -> 
+            begin match Config_util.find_opt js_file with 
+              | Some file -> 
                 let package_dir = Lazy.force Ext_filename.package_dir in
                 rebase package_dir (`File file) 
-              | exception Not_found -> 
-                Ext_pervasives.failwithf ~loc:__LOC__ 
-                  "@[%s was not found  in search path - while compiling %s @] "
-                  js_file !Location.input_name 
+              | None -> 
+                Bs_exception.error (Js_not_found js_file)
             end
         end
       | External name -> name in 

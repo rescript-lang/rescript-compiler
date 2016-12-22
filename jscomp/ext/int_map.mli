@@ -29,4 +29,4 @@
 
 
 
-include Map.S with type key = int
+include Map_gen.S with type key = int

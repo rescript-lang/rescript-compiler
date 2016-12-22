@@ -231,50 +231,57 @@ function node_relative_path(file1, dep_file) {
   }
 }
 
-function find_package_json_dir(cwd) {
-  var _cwd = cwd;
+function find_root_filename(_cwd, filename) {
   while(true) {
-    var cwd$1 = _cwd;
-    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd$1, Literals.package_json))) {
-      return cwd$1;
+    var cwd = _cwd;
+    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd, filename))) {
+      return cwd;
     }
     else {
-      var cwd$prime = Curry._1(Filename.dirname, cwd$1);
-      if (cwd$prime.length < cwd$1.length) {
+      var cwd$prime = Curry._1(Filename.dirname, cwd);
+      if (cwd$prime.length < cwd.length) {
         _cwd = cwd$prime;
         continue ;
         
       }
       else {
-        return Curry._1(Ext_pervasives.failwithf('File "ext_filename.ml", line 204, characters 15-22', /* Format */[
-                        /* String_literal */Block.__(11, [
-                            "package.json not found from ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* End_of_format */0
+        return Curry._2(Ext_pervasives.failwithf('File "ext_filename.ml", line 202, characters 13-20', /* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                " not found from ",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* End_of_format */0
+                                  ])
                               ])
                           ]),
-                        "package.json not found from %s"
-                      ]), cwd$1);
+                        "%s not found from %s"
+                      ]), filename, cwd);
       }
     }
   };
 }
 
+function find_package_json_dir(cwd) {
+  return find_root_filename(cwd, Literals.bsconfig_json);
+}
+
 var package_dir = Block.__(246, [function () {
       var tag = cwd.tag | 0;
-      return find_package_json_dir(tag === 250 ? cwd[0] : (
-                    tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
-                  ));
+      var cwd$1 = tag === 250 ? cwd[0] : (
+          tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
+        );
+      return find_root_filename(cwd$1, Literals.bsconfig_json);
     }]);
 
-function no_slash(x, _i, len) {
+function no_char(x, ch, _i, len) {
   while(true) {
     var i = _i;
     if (i >= len) {
       return /* true */1;
     }
-    else if (x.charCodeAt(i) !== /* "/" */47) {
+    else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
       
@@ -287,7 +294,7 @@ function no_slash(x, _i, len) {
 
 function replace_backward_slash(x) {
   var len = x.length;
-  if (no_slash(x, 0, len)) {
+  if (no_char(x, /* "\\" */92, 0, len)) {
     return x;
   }
   else {
@@ -304,7 +311,7 @@ function replace_backward_slash(x) {
 
 function replace_slash_backward(x) {
   var len = x.length;
-  if (no_slash(x, 0, len)) {
+  if (no_char(x, /* "/" */47, 0, len)) {
     return x;
   }
   else {
@@ -478,17 +485,12 @@ function normalize_absolute_path(x) {
 }
 
 function get_extension(x) {
-  try {
-    var pos = Bytes.rindex(Caml_string.bytes_of_string(x), /* "." */46);
-    return Ext_string.tail_from(x, pos);
+  var pos = Ext_string.rindex_neg(x, /* "." */46);
+  if (pos < 0) {
+    return "";
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      return "";
-    }
-    else {
-      throw exn;
-    }
+  else {
+    return Ext_string.tail_from(x, pos);
   }
 }
 
@@ -506,9 +508,10 @@ exports.chop_extension_if_any        = chop_extension_if_any;
 exports.os_path_separator_char       = os_path_separator_char;
 exports.relative_path                = relative_path;
 exports.node_relative_path           = node_relative_path;
+exports.find_root_filename           = find_root_filename;
 exports.find_package_json_dir        = find_package_json_dir;
 exports.package_dir                  = package_dir;
-exports.no_slash                     = no_slash;
+exports.no_char                      = no_char;
 exports.replace_backward_slash       = replace_backward_slash;
 exports.replace_slash_backward       = replace_slash_backward;
 exports.module_name_of_file          = module_name_of_file;

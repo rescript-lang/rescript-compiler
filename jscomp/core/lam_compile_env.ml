@@ -75,11 +75,11 @@ type ident_info = {
 
 
 
-let cached_tbl : (module_id , env_value) Hashtbl.t = Hashtbl.create 31
+let cached_tbl  = Lam_module_ident.Hash.create 31
 
 (* For each compilation we need reset to make it re-entrant *)
 let reset () = 
-  Hashtbl.clear cached_tbl 
+  Lam_module_ident.Hash.clear cached_tbl 
 
 (* FIXME: JS external instead *)
 let add_js_module ?id module_name = 
@@ -87,17 +87,17 @@ let add_js_module ?id module_name =
     match id with
     | None -> Ext_ident.create_js_module module_name 
     | Some id -> id in
-  Hashtbl.replace cached_tbl (Lam_module_ident.of_external id module_name) External;
+  Lam_module_ident.Hash.replace cached_tbl (Lam_module_ident.of_external id module_name) External;
   id  
 
 
 
-let add_cached_tbl = Hashtbl.add cached_tbl
+let add_cached_tbl = Lam_module_ident.Hash.add cached_tbl
 
 let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   let oid  = Lam_module_ident.of_ml id in
-  begin match Hashtbl.find cached_tbl oid with 
-    | exception Not_found -> 
+  begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
+    | None -> 
       let cmj_table = Config_util.find_cmj (id.name ^ Js_config.cmj_ext) in
       begin match
           Type_util.find_serializable_signatures_by_path
@@ -108,9 +108,9 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
                                    cmj_table ;  } ) ;
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
-          begin match String_map.find name cmj_table.values with
-            | exception Not_found -> NA, None ;
-            | {arity; closed_lambda} -> arity, closed_lambda 
+          begin match String_map.find_opt name cmj_table.values with
+            | Some {arity; closed_lambda} -> arity, closed_lambda
+            | None -> NA, None 
           end in
         found {id; 
                name ;
@@ -122,13 +122,13 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
                  else None
               }
       end
-    | Visit { signatures = serializable_sigs ; cmj_table = { values ; _} }  -> 
+    | Some (Visit { signatures = serializable_sigs ; cmj_table = { values ; _} } ) -> 
       let name = (Type_util.get_name serializable_sigs pos ) in
       let arity , closed_lambda =  (
-        match  String_map.find name values with
-        | exception  Not_found -> (NA, None)
-        | {arity; closed_lambda;_} -> 
+        match  String_map.find_opt name values with
+        | Some {arity; closed_lambda;_} -> 
           arity, closed_lambda 
+        | None -> (NA, None)
       ) in
       found { id;
               name; 
@@ -140,8 +140,8 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
                 else None
               (* TODO shall we cache the arity ?*) 
             } 
-    | Runtime _ -> assert false
-    | External  -> assert false
+    | Some (Runtime _) -> assert false
+    | Some External  -> assert false
   end
 
 
@@ -156,8 +156,8 @@ type _ t =
 let query_and_add_if_not_exist (type u)
     (oid : Lam_module_ident.t) 
     (env : u t) ~not_found ~found:(found : u -> _) =
-  match Hashtbl.find cached_tbl oid with 
-  | exception Not_found -> 
+  match Lam_module_ident.Hash.find_opt cached_tbl oid with 
+  | None -> 
     begin match oid.kind with
       | Runtime  -> 
         let cmj_table = 
@@ -200,21 +200,21 @@ let query_and_add_if_not_exist (type u)
         end
 
     end
-  | Visit {signatures  ; cmj_table =  cmj_table; _} -> 
+  | Some (Visit {signatures  ; cmj_table =  cmj_table; _}) -> 
     begin match env with 
       | Has_env _ -> 
         found   { signature =  signatures  ; pure = (cmj_table.effect = None)} 
       | No_env  -> found cmj_table
     end
 
-  | Runtime (pure, cmj_table) -> 
+  | Some (Runtime (pure, cmj_table)) -> 
     begin match env with 
       | Has_env _ -> 
         found {signature = []  ; pure }
       | No_env -> 
         found cmj_table
     end
-  | External -> 
+  | Some External -> 
     begin match env with 
     | Has_env _ -> 
       found {signature = []  ; pure  = false}
@@ -244,7 +244,7 @@ let get_requried_modules env (extras : module_id list ) (hard_dependencies
   let mem (x : Lam_module_ident.t) = 
     not (is_pure x ) || Hash_set_poly.mem hard_dependencies  x 
   in
-  Hashtbl.iter (fun (id : module_id)  _  ->
+  Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
       if mem id 
       then Hash_set_poly.add hard_dependencies id) cached_tbl ;
   List.iter (fun id -> 

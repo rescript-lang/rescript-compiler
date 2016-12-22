@@ -100,7 +100,7 @@ let output_ninja
         ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
     let all_deps =
       (* we need copy package.json into [_build] since it does affect build output *)
-      (* Literals.package_json ::
+      (* 
          it is a bad idea to copy package.json which requires to copy js files
       *)
       static_resources

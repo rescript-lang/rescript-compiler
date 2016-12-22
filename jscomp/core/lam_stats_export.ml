@@ -77,8 +77,8 @@ let export_to_cmj
     List.fold_left
       (fun   acc (x : Ident.t)  ->
          let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
-         match Ident_map.find x export_map with 
-         | lambda  -> 
+         match Ident_map.find_opt x export_map with 
+         | Some lambda  -> 
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,
               only truly immutable values can be inlined
@@ -87,7 +87,7 @@ let export_to_cmj
              let closed_lambda = 
                if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
                then
-                 if Lam_analysis.is_closed lambda (* TODO: seriealize more*)
+                 if Lam_closure.is_closed lambda (* TODO: seriealize more*)
                  then Some lambda
                  else None
                else 
@@ -97,7 +97,7 @@ let export_to_cmj
                     2. [lambda_exports] is not precise
                  *)
                  let free_variables =
-                   Lam_analysis.free_variables Ident_set.empty
+                   Lam_closure.free_variables Ident_set.empty
                    (* meta.export_idents *)  Ident_map.empty 
                      lambda in
                  if  lam_size < Lam_analysis.small_inline_size  && 
@@ -119,7 +119,7 @@ let export_to_cmj
              String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc 
            else
              String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None } acc 
-         | exception Not_found 
+         | None
            -> String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None} acc  
       )
       String_map.empty

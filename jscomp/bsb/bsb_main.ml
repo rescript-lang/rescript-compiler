@@ -24,7 +24,7 @@
 
 
 let config_file_bak = "bsconfig.json.bak"
-let ninja = "ninja"
+
 let bsdeps = ".bsdeps"
 
 
@@ -39,9 +39,11 @@ let bs_file_groups = ref []
 
 let sourcedirs_meta = ".sourcedirs"
 let merlin = ".merlin"
-let merlin_header = "\n####{BSB GENERATED: NO EDIT\n"
-let merlin_trailer = "\n####BSB GENERATED: NO EDIT}\n"
+let merlin_header = "####{BSB GENERATED: NO EDIT"
+let merlin_trailer = "####BSB GENERATED: NO EDIT}"
 let merlin_trailer_length = String.length merlin_trailer
+
+(** [new_content] should start end finish with newline *)
 let revise_merlin new_content =
   if Sys.file_exists merlin then
     let merlin_chan = open_in_bin merlin in
@@ -51,14 +53,19 @@ let revise_merlin new_content =
 
     let header =  Ext_string.find s ~sub:merlin_header  in
     let tail = Ext_string.find s ~sub:merlin_trailer in
-    if header < 0  && tail < 0 then
+    if header < 0  && tail < 0 then (* locked region not added yet *)
       let ochan = open_out_bin merlin in
       output_string ochan s ;
+      output_string ochan "\n";
       output_string ochan merlin_header;
       Buffer.output_buffer ochan new_content;
       output_string ochan merlin_trailer ;
+      output_string ochan "\n";
       close_out ochan
-    else if header >=0 && tail >= 0  then
+    else if header >=0 && tail >= 0  then 
+      (* there is one, hit it everytime,
+         should be fixed point
+      *)
       let ochan = open_out_bin merlin in
       output_string ochan (String.sub s 0 header) ;
       output_string ochan merlin_header;
@@ -66,20 +73,20 @@ let revise_merlin new_content =
       output_string ochan merlin_trailer ;
       output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
       close_out ochan
-    else assert false
+    else failwith ("the .merlin is corrupted, locked region by bsb is not consistent ")
   else
     let ochan = open_out_bin merlin in
     output_string ochan merlin_header ;
     Buffer.output_buffer ochan new_content;
     output_string ochan merlin_trailer ;
+    output_string ochan "\n";
     close_out ochan
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 (** *)
-let write_ninja_file cwd =
+let write_ninja_file bsc_dir cwd =
   let builddir = Bsb_config.lib_bs in
   let () = Bsb_build_util.mkp builddir in
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
-  let bsc, bsdep, bsppx =
+    let bsc, bsdep, bsppx =
     bsc_dir // "bsc.exe",
     bsc_dir // "bsb_helper.exe",
     bsc_dir // "bsppx.exe" in
@@ -96,15 +103,22 @@ let write_ninja_file cwd =
     let () =
       Bsb_default.get_ppx_flags ()
       |> List.iter (fun x ->
-          Buffer.add_string buffer (Printf.sprintf "FLG -ppx %s\n" x )
+          Buffer.add_string buffer (Printf.sprintf "\nFLG -ppx %s" x )
         )
     in
     let () = Buffer.add_string buffer
-        (Printf.sprintf "S %s\n\
+        (Printf.sprintf "\n\
+                         S %s\n\
                          B %s\n\
                          FLG -ppx %s\n\
                        " lib_ocaml_dir lib_ocaml_dir bsppx
         ) in
+    let () = 
+      match Bsb_default.get_bsc_flags () with 
+      | [] -> ()
+      | xs -> 
+        Buffer.add_string buffer 
+          (Printf.sprintf "\nFLG %s" (String.concat " " xs) ) in 
     let () =
       Bsb_default.get_bs_dependencies ()
       |> List.iter (fun package ->
@@ -120,7 +134,7 @@ let write_ninja_file cwd =
     in
     res.files |> List.iter
       (fun (x : Bsb_build_ui.file_group) ->
-         output_string ochan x.dir;
+         output_string ochan x.dir; (* to [.sourcedirs] *)
          output_string ochan "\n" ;
          Buffer.add_string buffer "\nS ";
          Buffer.add_string buffer x.dir ;
@@ -252,7 +266,7 @@ let bsb_main_flags =
       " Also run the JS files passsed" ;*)
   ]
 
-let regenerate_ninja cwd forced =
+let regenerate_ninja cwd bsc_dir forced =
   let output_deps = Bsb_config.lib_bs // bsdeps in
   let reason =
     if forced then "Regenerating ninja (triggered by command line -regen)"
@@ -262,7 +276,7 @@ let regenerate_ninja cwd forced =
     begin
       print_endline reason ;
       print_endline "Regenrating build spec";
-      let globbed_dirs = write_ninja_file cwd in
+      let globbed_dirs = write_ninja_file bsc_dir cwd in
       Literals.bsconfig_json :: globbed_dirs
       |> List.map
         (fun x ->
@@ -274,6 +288,23 @@ let regenerate_ninja cwd forced =
 
     end
 
+
+let ninja_command ninja ninja_args = 
+  let ninja_args_len = Array.length ninja_args in
+  if ninja_args_len = 0 then 
+    Unix.execvp ninja [|"ninja"; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
+  else 
+    let fixed_args_length = 5 in 
+    Unix.execvp ninja 
+    (Array.init (fixed_args_length + ninja_args_len)
+     (fun i -> match i with 
+     | 0 -> "ninja"
+     | 1 -> "-C"
+     | 2 -> Bsb_config.lib_bs
+     | 3 -> "-d"
+     | 4 -> "keepdepfile"
+    | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) ))
+    
 (**
    Cache files generated:
    - .bsdircache in project root dir
@@ -289,12 +320,20 @@ let usage = "Usage : bsb.exe <bsb-options> <files> -- <ninja_options>\n\
              Bsb options are:"
 
 let () =
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let ninja = 
+    if Sys.win32 then 
+      bsc_dir // "ninja.exe"
+    else 
+      "ninja" 
+    in 
   try
     (* see discussion #929 *)
     if Array.length Sys.argv <= 1 then
       begin
-        regenerate_ninja cwd false;
-        Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
+        regenerate_ninja cwd bsc_dir false;
+        ninja_command ninja [||]
+        (* Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]*)
       end
     else
       begin
@@ -303,7 +342,7 @@ let () =
           ->
           begin
             Arg.parse bsb_main_flags annoymous usage;
-            regenerate_ninja cwd !force_regenerate;
+            regenerate_ninja cwd bsc_dir !force_regenerate;
             (* String_vec.iter (fun s -> print_endline s) targets; *)
             (* ninja is not triggered in this case *)
           end
@@ -312,12 +351,13 @@ let () =
           begin
             Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
             (* String_vec.iter (fun s -> print_endline s) targets; *)
-            regenerate_ninja cwd !force_regenerate;
-            Unix.execvp ninja
+            regenerate_ninja cwd bsc_dir !force_regenerate;
+            ninja_command ninja ninja_args
+            (*Unix.execvp ninja
               (Array.append
                  [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|]
                  ninja_args
-              )
+              )*)
 
           end
       end

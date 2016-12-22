@@ -82,10 +82,10 @@ let rec get_arity
         if it's not from function parameter, we should warn
     *)
     begin 
-      match Ident_hashtbl.find meta.ident_tbl v with 
-      | exception Not_found -> (NA : Lam.function_arities) 
-      | Function {arity;_} -> arity
-      | _ ->
+      match Ident_hashtbl.find_opt meta.ident_tbl v with 
+      | Some (Function {arity;_}) -> arity
+      | Some _
+      | None ->
         (* Format.fprintf Format.err_formatter *)
         (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
         (NA : Lam.function_arities)

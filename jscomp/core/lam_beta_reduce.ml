@@ -83,11 +83,8 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Some x -> Some (aux x)
   and aux (lam : Lam.t) : Lam.t = 
     match lam with 
-    | Lvar v -> 
-      begin 
-        try (* Lvar *) (Ident_hashtbl.find map v) 
-        with Not_found -> lam 
-      end
+    | Lvar v ->
+      Ident_hashtbl.find_default map v lam 
     | Llet(str, v, l1, l2) ->
       let v = rebind v in
       let l1 = aux l1 in      
@@ -246,7 +243,7 @@ let propogate_beta_reduce
      rest_bindings new_body
 
 let propogate_beta_reduce_with_map  
-    (meta : Lam_stats.meta) (map : Lam_analysis.stats Ident_map.t ) params body args =
+    (meta : Lam_stats.meta) (map : Lam_closure.stats Ident_map.t ) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with
   | Some x -> x
   | None ->
@@ -264,7 +261,7 @@ let propogate_beta_reduce_with_map
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
-             begin match Ident_map.find old_param map with 
+             begin match Ident_map.find_exn old_param map with 
                | exception Not_found -> assert false 
                | {top = true ; times = 0 }
                | {top = true ; times = 1 } 

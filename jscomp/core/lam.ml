@@ -393,14 +393,6 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lifused (v, e) ->
     f e 
 
-(* 
-TODO: add a santizer to check variables arre not bound twice
-We need an invariant checker for troubleshooting: 
-1. variables are not bound twice 
-2. all variables are of right scope 
-Otherwise, it would be too dangerous to apply optimizations and 
-very hard to fix bugs
-*)
 
 (*
 let add_list lst set = 
@@ -542,12 +534,94 @@ let free_variables l =
         free e;
         fv := Ident_set.add id !fv
       | Lsend (k, met, obj, args, _) ->
-        List.iter free (met::obj::args)
+        free met; free obj; List.iter free args 
       | Lifused (v, e) ->
         free e
     end;
   in free l; 
   !fv
+
+
+(**
+checks  
+   1. variables are not bound twice 
+   2. all variables are of right scope 
+*)
+let check file lam = 
+  let defined_variables = Ident_hash_set.create 1000 in 
+  let use (id : Ident.t)  = 
+    if not @@ Ident_hash_set.mem defined_variables id  then 
+      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file in 
+  let def (id : Ident.t) =
+    if Ident_hash_set.mem defined_variables id  then 
+      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file 
+    else Ident_hash_set.add defined_variables id 
+  in 
+  let rec iter (l : t) =
+    begin
+      match (l : t) with 
+        Lvar id -> use id 
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        iter fn; List.iter iter args
+      | Lfunction{body;params} ->
+        List.iter def params;
+        iter body
+      | Llet(str, id, arg, body) ->
+        iter arg;
+        def id;
+        iter body
+      | Lletrec(decl, body) ->
+        List.iter (fun (id, exp) ->  def id) decl;
+        List.iter (fun (id, exp) -> iter exp) decl;
+        iter body
+      | Lprim {args; _} ->
+        List.iter iter args
+      | Lswitch(arg, sw) ->
+        iter arg;
+        List.iter (fun (key, case) -> iter case) sw.sw_consts;
+        List.iter (fun (key, case) -> iter case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        iter arg ;
+        List.iter (fun (_,act) -> iter act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter iter args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        iter e1; 
+        List.iter def vars;
+        iter e2
+      | Ltrywith(e1, exn, e2) ->
+        iter e1; 
+        def exn; 
+        iter e2
+      | Lifthenelse(e1, e2, e3) ->
+        iter e1; iter e2; iter e3
+      | Lsequence(e1, e2) ->
+        iter e1; iter e2
+      | Lwhile(e1, e2) ->
+        iter e1; iter e2
+      | Lfor(v, e1, e2, dir, e3) ->
+        iter e1; iter e2; 
+        def v; 
+        iter e3;
+      | Lassign(id, e) ->
+        use id ; 
+        iter e
+      | Lsend (k, met, obj, args, _) ->
+        iter met; iter obj; 
+        List.iter iter args
+      | Lifused (v, e) ->
+        iter e
+    end;
+  in iter lam; lam
 
 module Prim = struct 
   type t = primitive
@@ -887,7 +961,7 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
 
 
 let not_ loc x  : t = 
-  prim Pnot [x] loc
+  prim ~primitive:Pnot ~args:[x] loc
 
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t = 
   match p with 
@@ -1071,15 +1145,16 @@ let scc  (groups :  bindings)
        we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
      *)
     | _ ->    
-      let domain : (Ident.t, t) Ordered_hash_map.t = Ordered_hash_map.create 3 in 
-      List.iter (fun (x,lam) -> Ordered_hash_map.add domain x lam) groups ;
-      let int_mapping = Ordered_hash_map.to_sorted_array domain in 
+      let domain : _ Ordered_hash_map_local_ident.t = 
+        Ordered_hash_map_local_ident.create 3 in 
+      List.iter (fun (x,lam) -> Ordered_hash_map_local_ident.add domain x lam) groups ;
+      let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
       let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
-      Ordered_hash_map.iter ( fun id lam key_index ->        
+      Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
           let base_key =  node_vec.(key_index) in 
           let free_vars = free_variables lam in
           Ident_set.iter (fun x ->
-              let key = Ordered_hash_map.find domain x in 
+              let key = Ordered_hash_map_local_ident.rank domain x in 
               if key >= 0 then 
                 Int_vec.push key base_key 
             ) free_vars
@@ -1091,12 +1166,12 @@ let scc  (groups :  bindings)
             let bindings =
               Int_vec.map_into_list (fun i -> 
                   let id = int_mapping.(i) in 
-                  let lam  = Ordered_hash_map.find_value domain  id in  
+                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
                   (id,lam)
                 ) v  in 
             match bindings with 
             | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map.find domain id in          
+              let base_key = Ordered_hash_map_local_ident.rank domain id in          
 
               if  Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
                 letrec bindings acc 

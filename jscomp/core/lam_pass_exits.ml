@@ -32,16 +32,15 @@
 
 (* Count occurrences of (exit n ...) statements *)
 let count_exit exits i =
-  try
-    !(Int_hashtbl.find exits i)
+  match 
+    (Int_hashtbl.find_opt exits i)
   with
-  | Not_found -> 0
+  | None -> 0
+  | Some v -> !v 
 
 and incr_exit exits i =
-  try
-    incr (Int_hashtbl.find exits i)
-  with
-  | Not_found -> Int_hashtbl.add exits i (ref 1) 
+  Int_hashtbl.modify_or_init exits i incr (fun _ -> ref 1)
+
 
 let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  = 
   let exits  = Int_hashtbl.create 17 in
@@ -53,12 +52,7 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
          increases j's ref count *)
       count l1 ;
       let ic = count_exit exits i in
-      begin try
-          let r = Int_hashtbl.find exits j in r := !r + ic
-        with
-        | Not_found ->
-          Int_hashtbl.add exits j (ref ic)
-      end
+      Int_hashtbl.modify_or_init exits j (fun x -> x := !x + ic) (fun _ -> ref ic)
     | Lstaticcatch(l1, (i,_), l2) ->
       count l1;
       (* If l1 does not contain (exit i),
@@ -159,16 +153,15 @@ let subst_helper (subst : subst_tbl) query lam =
   let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,[])  ->
-      begin 
-        match Int_hashtbl.find subst i with
-        | _, handler -> handler
-        | exception Not_found -> lam
+      begin match Int_hashtbl.find_opt subst i with
+        | Some (_, handler) -> handler
+        | None -> lam
       end
     | Lstaticraise (i,ls) ->
       let ls = List.map simplif ls in
       begin 
-        match Int_hashtbl.find subst i with
-        | xs,handler -> 
+        match Int_hashtbl.find_opt subst i with
+        | Some (xs,handler) -> 
           let ys = List.map Ident.rename xs in
           let env =
             List.fold_right2
@@ -178,7 +171,7 @@ let subst_helper (subst : subst_tbl) query lam =
             (fun y l r -> Lam.let_ Alias y l r)
             ys ls 
                (Lam_util.subst_lambda  env  handler)
-        | exception Not_found -> Lam.staticraise i ls
+        | None -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
       Int_hashtbl.add subst i ([],simplif l2) ;
@@ -260,7 +253,7 @@ let subst_helper (subst : subst_tbl) query lam =
         (simplif body)
     | Lprim {primitive; args; loc} -> 
       let args = List.map simplif args in
-      Lam.prim primitive args loc
+      Lam.prim ~primitive ~args loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts

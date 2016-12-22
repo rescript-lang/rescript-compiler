@@ -190,32 +190,32 @@ let node_relative_path (file1 : t)
 
 
 
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists (cwd // filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
 
 
 let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
+  find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let rec no_slash x i len = 
+let rec no_char x ch i  len = 
   i >= len  || 
-  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+  (String.unsafe_get x i <> ch && no_char x ch (i + 1)  len)
 
 let replace_backward_slash (x : string)=
   let len = String.length x in
-  if no_slash x 0 len then x 
+  if no_char x '\\' 0  len then x 
   else  
     String.map (function 
         |'\\'-> '/'
@@ -224,7 +224,7 @@ let replace_backward_slash (x : string)=
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
-  if no_slash x 0 len then x 
+  if no_char x '/' 0  len then x 
   else 
     String.map (function 
         | '/' -> '\\'
@@ -334,9 +334,13 @@ let normalize_absolute_path x =
 
 
 let get_extension x =
+  let pos = Ext_string.rindex_neg x '.' in 
+  if pos < 0 then ""
+  else Ext_string.tail_from x pos 
+(*  
   try
     let pos = String.rindex x '.' in
     Ext_string.tail_from x pos
   with Not_found -> ""
-
+*)
 

@@ -241,7 +241,7 @@ let compile  ~filename output_prefix no_export env _sigs
     |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-
+    (* |> Lam.check (Js_config.get_current_file () ) *)
 
   in
 
@@ -455,7 +455,7 @@ let lambda_as_module
     | NonBrowser (_, []) -> 
       (* script mode *)
       let output_chan chan =         
-        Js_dump.dump_deps_program output_prefix `NodeJS lambda_output chan in
+        Js_dump.dump_deps_program ~output_prefix `NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 

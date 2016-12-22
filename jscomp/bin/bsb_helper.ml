@@ -411,6 +411,11 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
+(** the range is [start, finish) 
+*)
+val for_all_range : 
+  string -> start:int -> finish:int -> (char -> bool) -> bool 
+
 val for_all : (char -> bool) -> string -> bool
 
 val is_empty : string -> bool
@@ -431,6 +436,13 @@ val starts_with_and_number : string -> offset:int -> string -> int
 
 val unsafe_concat_with_length : int -> string -> string list -> string
 
+
+(** returns negative number if not found *)
+val rindex_neg : string -> char -> int 
+
+val rindex_opt : string -> char -> int option
+
+val is_valid_source_name : string -> bool
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -476,13 +488,13 @@ let split_by ?(keep_empty=false) is_delim str =
       else 
         String.sub str 0 last_pos :: acc
     else
-      if is_delim str.[pos] then
-        let new_len = (last_pos - pos - 1) in
-        if new_len <> 0 || keep_empty then 
-          let v = String.sub str (pos + 1) new_len in
-          loop ( v :: acc)
-            pos (pos - 1)
-        else loop acc pos (pos - 1)
+    if is_delim str.[pos] then
+      let new_len = (last_pos - pos - 1) in
+      if new_len <> 0 || keep_empty then 
+        let v = String.sub str (pos + 1) new_len in
+        loop ( v :: acc)
+          pos (pos - 1)
+      else loop acc pos (pos - 1)
     else loop acc last_pos (pos - 1)
   in
   loop [] len (len - 1)
@@ -501,7 +513,7 @@ let trim s =
 
 let split ?keep_empty  str on = 
   if str = "" then [] else 
-  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+    split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
 
 let quick_split_by_ws str : string list = 
   split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
@@ -509,14 +521,14 @@ let quick_split_by_ws str : string list =
 let starts_with s beg = 
   let beg_len = String.length beg in
   let s_len = String.length s in
-   beg_len <=  s_len &&
+  beg_len <=  s_len &&
   (let i = ref 0 in
-    while !i <  beg_len 
-          && String.unsafe_get s !i =
-             String.unsafe_get beg !i do 
-      incr i 
-    done;
-    !i = beg_len
+   while !i <  beg_len 
+         && String.unsafe_get s !i =
+            String.unsafe_get beg !i do 
+     incr i 
+   done;
+   !i = beg_len
   )
 
 
@@ -558,13 +570,18 @@ let escaped s =
   else
     s
 
+(* it is unsafe to expose such API as unsafe since 
+   user can provide bad input range 
+*)
+let rec for_all_range s ~start:i ~finish:len p =     
+  if i >= len then true 
+  else  p (String.get s i) && 
+        for_all_range s ~start:(i + 1) ~finish:len p
+
 
 let for_all (p : char -> bool) s = 
   let len = String.length s in
-  let rec aux i = 
-    if i >= len then true 
-    else  p (String.unsafe_get s i) && aux (i + 1)
-  in aux 0 
+  for_all_range s ~start:0  ~finish:len p 
 
 let is_empty s = String.length s = 0
 
@@ -654,18 +671,18 @@ let starts_with_and_number s ~offset beg =
   let s_len = String.length s in
   let finish_delim = offset + beg_len in 
 
-   if finish_delim >  s_len  then -1 
-   else 
-     let i = ref offset  in
-      while !i <  finish_delim
-            && String.unsafe_get s !i =
-               String.unsafe_get beg (!i - offset) do 
-        incr i 
-      done;
-      if !i = finish_delim then 
-        digits_of_str ~offset:finish_delim s 2 
-      else 
-        -1 
+  if finish_delim >  s_len  then -1 
+  else 
+    let i = ref offset  in
+    while !i <  finish_delim
+          && String.unsafe_get s !i =
+             String.unsafe_get beg (!i - offset) do 
+      incr i 
+    done;
+    if !i = finish_delim then 
+      digits_of_str ~offset:finish_delim s 2 
+    else 
+      -1 
 
 let equal (x : string) y  = x = y
 
@@ -673,21 +690,63 @@ let unsafe_concat_with_length len sep l =
   match l with 
   | [] -> ""
   | hd :: tl -> (* num is positive *)
-  let r = Bytes.create len in
-  let hd_len = String.length hd in 
-  let sep_len = String.length sep in 
-  String.unsafe_blit hd 0 r 0 hd_len;
-  let pos = ref hd_len in
-  List.iter
-    (fun s ->
-       let s_len = String.length s in
-       String.unsafe_blit sep 0 r !pos sep_len;
-       pos := !pos +  sep_len;
-       String.unsafe_blit s 0 r !pos s_len;
-       pos := !pos + s_len)
-    tl;
-  Bytes.unsafe_to_string r
+    let r = Bytes.create len in
+    let hd_len = String.length hd in 
+    let sep_len = String.length sep in 
+    String.unsafe_blit hd 0 r 0 hd_len;
+    let pos = ref hd_len in
+    List.iter
+      (fun s ->
+         let s_len = String.length s in
+         String.unsafe_blit sep 0 r !pos sep_len;
+         pos := !pos +  sep_len;
+         String.unsafe_blit s 0 r !pos s_len;
+         pos := !pos + s_len)
+      tl;
+    Bytes.unsafe_to_string r
 
+
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+
+let rec rindex_rec_opt s i c =
+  if i < 0 then None else
+  if String.unsafe_get s i = c then Some i else rindex_rec_opt s (i - 1) c;;
+
+let rindex_neg s c = 
+  rindex_rec s (String.length s - 1) c;;
+
+let rindex_opt s c = 
+  rindex_rec_opt s (String.length s - 1) c;;
+
+let is_valid_module_file ~finish (s : string) = 
+  match s.[0] with 
+  | 'A' .. 'Z'
+  | 'a' .. 'z' -> 
+    for_all_range s ~start:1 ~finish
+      (fun x -> 
+         match x with 
+         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
+         | _ -> false )
+  | _ -> false 
+
+(** 
+  TODO: move to another module 
+  Make {!Ext_filename} not stateful
+*)
+let is_valid_source_name name =
+  ((Filename.check_suffix name ".ml"  
+    || Filename.check_suffix name ".re"
+   ) &&
+   (is_valid_module_file ~finish:(String.length name - 3) name)
+  )
+  || 
+  ((Filename.check_suffix name ".mli"
+    || Filename.check_suffix name ".mll"                  
+    || Filename.check_suffix name ".rei")
+   && (is_valid_module_file ~finish:(String.length name - 4 ) name )
+  )
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -996,7 +1055,7 @@ val replace_backward_slash : string -> string
 (*
 [no_slash s i len]
 *)
-val no_slash : string -> int -> int -> bool
+val no_char : string -> char  -> int -> int  -> bool
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -1194,32 +1253,32 @@ let node_relative_path (file1 : t)
 
 
 
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists (cwd // filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
 
 
 let find_package_json_dir cwd  = 
-  let rec aux cwd  = 
-    if Sys.file_exists (cwd // Literals.package_json) then cwd
-    else 
-      let cwd' = Filename.dirname cwd in 
-      if String.length cwd' < String.length cwd then  
-        aux cwd'
-      else 
-        Ext_pervasives.failwithf 
-          ~loc:__LOC__
-          "package.json not found from %s" cwd
-  in
-  aux cwd 
+  find_root_filename ~cwd  Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let rec no_slash x i len = 
+let rec no_char x ch i  len = 
   i >= len  || 
-  (String.unsafe_get x i <> '/' && no_slash x (i + 1)  len)
+  (String.unsafe_get x i <> ch && no_char x ch (i + 1)  len)
 
 let replace_backward_slash (x : string)=
   let len = String.length x in
-  if no_slash x 0 len then x 
+  if no_char x '\\' 0  len then x 
   else  
     String.map (function 
         |'\\'-> '/'
@@ -1228,7 +1287,7 @@ let replace_backward_slash (x : string)=
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
-  if no_slash x 0 len then x 
+  if no_char x '/' 0  len then x 
   else 
     String.map (function 
         | '/' -> '\\'
@@ -1338,17 +1397,21 @@ let normalize_absolute_path x =
 
 
 let get_extension x =
+  let pos = Ext_string.rindex_neg x '.' in 
+  if pos < 0 then ""
+  else Ext_string.tail_from x pos 
+(*  
   try
     let pos = String.rindex x '.' in
     Ext_string.tail_from x pos
   with Not_found -> ""
-
+*)
 
 
 end
-module Bal_map_common
+module Map_gen
 = struct
-#1 "bal_map_common.ml"
+#1 "map_gen.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -1367,20 +1430,29 @@ type ('key,'a) t =
   | Empty
   | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
 
-type ('key,'a) enumeration = End | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
+type ('key,'a) enumeration =
+  | End
+  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
 
-let rec cardinal = function
-    Empty -> 0
-  | Node(l, _, _, r, _) -> cardinal l + 1 + cardinal r
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
 
 let rec bindings_aux accu = function
-        Empty -> accu
-      | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+  | Empty -> accu
+  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
 
-    let bindings s =
-      bindings_aux [] s
+let bindings s =
+  bindings_aux [] s
 
+let rec keys_aux accu = function
+    Empty -> accu
+  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
 
+let keys s = keys_aux [] s
 
 
 
@@ -1434,17 +1506,17 @@ let empty = Empty
 
 let is_empty = function Empty -> true | _ -> false
 
-let rec min_binding = function
+let rec min_binding_exn = function
     Empty -> raise Not_found
   | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding l
+  | Node(l, x, d, r, _) -> min_binding_exn l
 
-let choose = min_binding
+let choose = min_binding_exn
 
-let rec max_binding = function
+let rec max_binding_exn = function
     Empty -> raise Not_found
   | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding r
+  | Node(l, x, d, r, _) -> max_binding_exn r
 
 let rec remove_min_binding = function
     Empty -> invalid_arg "Map.remove_min_elt"
@@ -1456,7 +1528,7 @@ let merge t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding t2 in
+    let (x, d) = min_binding_exn t2 in
     bal t1 x d (remove_min_binding t2)
 
 
@@ -1536,7 +1608,7 @@ let concat t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding t2 in
+    let (x, d) = min_binding_exn t2 in
     join t1 x d (remove_min_binding t2)
 
 let concat_or_join t1 v d t2 =
@@ -1563,6 +1635,159 @@ let rec partition p = function
     if pvd
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)
+
+let compare compare_key cmp_val m1 m2 =
+  let rec compare_aux e1  e2 =
+    match (e1, e2) with
+      (End, End) -> 0
+    | (End, _)  -> -1
+    | (_, End) -> 1
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      let c = compare_key v1 v2 in
+      if c <> 0 then c else
+        let c = cmp_val d1 d2 in
+        if c <> 0 then c else
+          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
+
+let equal compare_key cmp m1 m2 =
+  let rec equal_aux e1 e2 =
+    match (e1, e2) with
+      (End, End) -> true
+    | (End, _)  -> false
+    | (_, End) -> false
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      compare_key v1 v2 = 0 && cmp d1 d2 &&
+      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
+
+
+
+    
+module type S =
+  sig
+    type key
+    type +'a t
+    val empty: 'a t
+    val is_empty: 'a t -> bool
+    val mem: key -> 'a t -> bool
+
+    val add: key -> 'a -> 'a t -> 'a t
+    (** [add x y m] 
+        If [x] was already bound in [m], its previous binding disappears. *)
+    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
+    (** [adjust k v f map] if not exist [add k v], otherwise 
+        [add k v (f old)]
+    *)
+    val singleton: key -> 'a -> 'a t
+
+    val remove: key -> 'a t -> 'a t
+    (** [remove x m] returns a map containing the same bindings as
+       [m], except for [x] which is unbound in the returned map. *)
+
+    val merge:
+         (key -> 'a option -> 'b option -> 'c option) -> 'a t -> 'b t -> 'c t
+    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+        and of [m2]. The presence of each such binding, and the corresponding
+        value, is determined with the function [f].
+        @since 3.12.0
+     *)
+
+     val disjoint_merge : 'a t -> 'a t -> 'a t
+     (* merge two maps, will raise if they have the same key *)
+    val compare: ('a -> 'a -> int) -> 'a t -> 'a t -> int
+    (** Total ordering between maps.  The first argument is a total ordering
+        used to compare data associated with equal keys in the two maps. *)
+
+    val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
+
+    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    (** [iter f m] applies [f] to all bindings in map [m].
+        The bindings are passed to [f] in increasing order. *)
+
+    val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+       where [k1 ... kN] are the keys of all bindings in [m]
+       (in increasing order) *)
+
+    val for_all: (key -> 'a -> bool) -> 'a t -> bool
+    (** [for_all p m] checks if all the bindings of the map.
+        order unspecified
+     *)
+
+    val exists: (key -> 'a -> bool) -> 'a t -> bool
+    (** [exists p m] checks if at least one binding of the map
+        satisfy the predicate [p]. 
+        order unspecified
+     *)
+
+    val filter: (key -> 'a -> bool) -> 'a t -> 'a t
+    (** [filter p m] returns the map with all the bindings in [m]
+        that satisfy predicate [p].
+        order unspecified
+     *)
+
+    val partition: (key -> 'a -> bool) -> 'a t -> 'a t * 'a t
+    (** [partition p m] returns a pair of maps [(m1, m2)], where
+        [m1] contains all the bindings of [s] that satisfy the
+        predicate [p], and [m2] is the map with all the bindings of
+        [s] that do not satisfy [p].
+     *)
+
+    val cardinal: 'a t -> int
+    (** Return the number of bindings of a map. *)
+
+    val bindings: 'a t -> (key * 'a) list
+    (** Return the list of all bindings of the given map.
+       The returned list is sorted in increasing order with respect
+       to the ordering *)
+    val keys : 'a t -> key list 
+    (* Increasing order *)
+
+    val min_binding_exn: 'a t -> (key * 'a)
+    (** raise [Not_found] if the map is empty. *)
+
+    val max_binding_exn: 'a t -> (key * 'a)
+    (** Same as {!Map.S.min_binding} *)
+
+    val choose: 'a t -> (key * 'a)
+    (** Return one binding of the given map, or raise [Not_found] if
+       the map is empty. Which binding is chosen is unspecified,
+       but equal bindings will be chosen for equal maps.
+     *)
+
+    val split: key -> 'a t -> 'a t * 'a option * 'a t
+    (** [split x m] returns a triple [(l, data, r)], where
+          [l] is the map with all the bindings of [m] whose key
+        is strictly less than [x];
+          [r] is the map with all the bindings of [m] whose key
+        is strictly greater than [x];
+          [data] is [None] if [m] contains no binding for [x],
+          or [Some v] if [m] binds [v] to [x].
+        @since 3.12.0
+     *)
+
+    val find_exn: key -> 'a t -> 'a
+    (** [find x m] returns the current binding of [x] in [m],
+       or raises [Not_found] if no such binding exists. *)
+    val find_opt: key -> 'a t -> 'a option
+    val find_default: key  -> 'a t -> 'a  -> 'a 
+    val map: ('a -> 'b) -> 'a t -> 'b t
+    (** [map f m] returns a map with same domain as [m], where the
+       associated value [a] of all bindings of [m] has been
+       replaced by the result of the application of [f] to [a].
+       The bindings are passed to [f] in increasing order
+       with respect to the ordering over the type of the keys. *)
+
+    val mapi: (key -> 'a -> 'b) -> 'a t -> 'b t
+    (** Same as {!Map.S.map}, but the function receives as arguments both the
+       key and the associated value for each binding of the map. *)
+
+    val of_list : (key * 'a) list -> 'a t 
+    val of_array : (key * 'a ) array -> 'a t 
+    val add_list : (key * 'b) list -> 'b t -> 'b t
+
+  end
 
 end
 module String_map : sig 
@@ -1591,98 +1816,47 @@ module String_map : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type key = string 
-val compare_key : key -> key -> int 
 
-(*************************************************)
-type + 'a t 
-val empty: 'a t
-val is_empty: 'a t -> bool
-val iter: (key -> 'a ->  unit) -> 'a t -> unit
-val fold: (key -> 'a -> 'b ->  'b) -> 'a t -> 'b -> 'b
-val for_all: (key -> 'a  -> bool) -> 'a t -> bool
-val exists: (key -> 'a -> bool) -> 'a t -> bool
-val singleton: key -> 'a  -> 'a t
-val cardinal: 'a t -> int
-(* val elements: 'a t -> (key * 'a) list *)
-val choose: 'a t -> key * 'a 
-(* val partition: (key -> bool) -> 'a t -> 'a t * 'a t *)
-
-val mem: key -> 'a t -> bool
-val add: key -> 'a -> 'a t -> 'a t
-val find : key -> 'a t -> 'a
-val map : ('a -> 'b) -> 'a t -> 'b t
-val merge : 
-    (key -> 'b option -> 'c option -> 'd option)
-    -> 'b t
-    -> 'c t 
-    -> 'd t 
-(*************************************************)
- 
-
-val of_list : (key * 'a) list -> 'a t 
-
-val add_list : (key * 'b) list -> 'b t -> 'b t
-
-val find_opt : key -> 'a t -> 'a option
-
-val find_default : key -> 'a -> 'a t -> 'a
-
-val print :  (Format.formatter -> 'a -> unit) -> Format.formatter ->  'a t -> unit
+include Map_gen.S with type key = string
 
 end = struct
 #1 "string_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type key = string 
-let compare_key = String.compare 
-
-(**********************************************************************************)
-type 'a t = (key,'a) Bal_map_common.t 
-let empty = Bal_map_common.empty 
-let is_empty = Bal_map_common.is_empty
-let iter = Bal_map_common.iter
-let fold = Bal_map_common.fold
-let for_all = Bal_map_common.for_all 
-let exists = Bal_map_common.exists 
-let singleton = Bal_map_common.singleton 
-let cardinal = Bal_map_common.cardinal
-let bindings = Bal_map_common.bindings
-let choose = Bal_map_common.choose 
-let partition = Bal_map_common.partition 
-let filter = Bal_map_common.filter 
-let map = Bal_map_common.map 
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
 
-let bal = Bal_map_common.bal 
-let height = Bal_map_common.height 
-let join = Bal_map_common.join 
-let concat_or_join = Bal_map_common.concat_or_join 
+  
+# 10
+  type key = string 
+  let compare_key = String.compare
 
-let rec add x data (tree : _ t) : _ t =
-  match tree with 
+# 22
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
+
+
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
   | Empty ->
     Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
@@ -1694,71 +1868,119 @@ let rec add x data (tree : _ t) : _ t =
     else
       bal l v d (add x data r)
 
-let rec find x (tree : _ t) =
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
   match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
+
+let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then d
-    else find x (if c < 0 then l else r)
+    else find_exn x (if c < 0 then l else r)
 
-let rec mem x  (tree : _ t) =
-  match tree with 
+let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+  | Empty -> None 
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt x (if c < 0 then l else r)
+
+let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+  | Empty -> default  
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then  d
+    else find_default x   (if c < 0 then l else r) default
+
+let rec mem x (tree : _ Map_gen.t )   = match tree with 
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     c = 0 || mem x (if c < 0 then l else r)
 
-let rec split x (tree : _ t) : _ t * _ option * _ t  =
-  match tree with 
+let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove x l) v d r
+    else
+      bal l v d (remove x r)
+
+
+let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
   | Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then (l, Some d, r)
     else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
+      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
     else
-      let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
+      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
 
-let rec merge f (s1 : _ t) (s2 : _ t) : _ t =
+let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
+
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split v1 s2 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    begin match  split v2 s1 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
   | _ ->
     assert false
 
 
-(* include Map.Make(String) *)
+
+let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+
+let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add k v acc) init xs 
 
 let of_list xs = add_list xs empty
 
-let find_opt k m =
-  match find k m with 
-  | exception v -> None
-  | u -> Some u
-
-let find_default k default m =
-  match find k m with 
-  | exception v -> default 
-  | u -> u
-
-let print p_v fmt  m =
-  iter (fun k v -> 
-      Format.fprintf fmt "@[%s@ ->@ %a@]@." k p_v v 
-    ) m
-
-
+let of_array xs = 
+  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
 module Binary_cache : sig 
@@ -1889,32 +2111,16 @@ let read_build_cache bsbuild : module_info String_map.t =
 let bsbuild_cache = ".bsbuild"
 
 
-(* TODO check duplication *)
-let module_info_of_ml exist ml : module_info =
-  match exist with 
-  | None -> { ml  = Ml ml ; mli = Mli_empty ; mll = None }
-  | Some x -> { x with ml = Ml ml}
+let empty_module_info = {mli = Mli_empty ; mll = None ; ml = Ml_empty}
 
-let module_info_of_re exist ml : module_info =
-  match exist with 
-  | None -> { ml  = Re ml ; mli = Mli_empty ; mll = None }
-  | Some x -> { x with ml = Re ml} 
-
-let module_info_of_mli exist mli : module_info = 
-  match exist with 
-  | None -> { mli  = Mli mli ; ml = Ml_empty ; mll = None }
-  | Some x -> { x with mli = Mli mli} 
-
-let module_info_of_rei exist mli : module_info = 
-  match exist with 
-  | None -> { mli  = Rei mli ; ml = Ml_empty ; mll = None }
-  | Some x -> { x with mli = Rei mli} 
-
-let module_info_of_mll exist mll : module_info = 
-  match exist with 
-  | None -> { mll  = Some mll ; ml = Ml_empty ; mli = Mli_empty }
-  | Some x -> { x with mll = Some mll} 
-
+let adjust_module_info x suffix name =
+  match suffix with 
+  | ".ml" -> {x with ml = Ml name}
+  | ".re" -> {x with ml = Re name}
+  | ".mli" ->  {x with mli = Mli name}
+  | ".rei" -> { x with mli = Rei name}
+  | ".mll" -> {x with mll = Some name}
+  | _ -> failwith ("don't know what to do with " ^ name)
 
 let map_update ?dir (map : t)  name : t  = 
   let prefix   = 
@@ -1922,22 +2128,12 @@ let map_update ?dir (map : t)  name : t  =
     | None -> fun x ->  x
     | Some v -> fun x ->  Ext_filename.combine v x in
   let module_name = Ext_filename.module_name_of_file_if_any name in 
-  let handle name v cb =
-    String_map.add module_name
-      (cb v (prefix name ) ) map 
-  in 
-  let aux v name = 
-    if Filename.check_suffix name ".ml" then handle name  v  module_info_of_ml  else
-    if Filename.check_suffix name ".mll" then handle name  v  module_info_of_mll  else 
-    if Filename.check_suffix name ".mli" then handle name  v  module_info_of_mli else 
-    if Filename.check_suffix name ".re" then handle name v module_info_of_re else 
-    if Filename.check_suffix name ".rei" then handle name v module_info_of_rei else 
-      map    in 
-  match String_map.find module_name map with 
-  | exception Not_found 
-    -> aux None name 
-  | v -> 
-    aux (Some v ) name
+  let suffix = Ext_filename.get_extension name in 
+  String_map.adjust 
+    module_name 
+    (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
+    (fun v -> (adjust_module_info v suffix (prefix name )))
+    map 
 
 end
 module Depends_post_process : sig 
@@ -2035,7 +2231,7 @@ let handle_bin_depfile oprefix  (fn : string) : unit =
     let (files, len) = 
       Array.fold_left
         (fun ((acc, len) as v) k  -> 
-           match String_map.find k data with
+           match String_map.find_exn k data with
            | {ml = Ml s | Re s  } 
            | {mll = Some s } 
              -> 
@@ -2061,7 +2257,7 @@ let handle_bin_depfile oprefix  (fn : string) : unit =
         let (files, len) = 
           Array.fold_left
             (fun ((acc, len) as v) k ->
-               match String_map.find k data with 
+               match String_map.find_exn k data with 
                | { ml = Ml f | Re f  }
                | { mll = Some f }
                | { mli = Mli f | Rei f } -> 

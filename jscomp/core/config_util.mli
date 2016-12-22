@@ -34,7 +34,7 @@
 *)
 
 
-val find : string -> string
+val find_opt : string -> string option
 (** [find filename] Input is a file name, output is absolute path *)
 
 

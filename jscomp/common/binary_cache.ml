@@ -64,32 +64,16 @@ let read_build_cache bsbuild : module_info String_map.t =
 let bsbuild_cache = ".bsbuild"
 
 
-(* TODO check duplication *)
-let module_info_of_ml exist ml : module_info =
-  match exist with 
-  | None -> { ml  = Ml ml ; mli = Mli_empty ; mll = None }
-  | Some x -> { x with ml = Ml ml}
+let empty_module_info = {mli = Mli_empty ; mll = None ; ml = Ml_empty}
 
-let module_info_of_re exist ml : module_info =
-  match exist with 
-  | None -> { ml  = Re ml ; mli = Mli_empty ; mll = None }
-  | Some x -> { x with ml = Re ml} 
-
-let module_info_of_mli exist mli : module_info = 
-  match exist with 
-  | None -> { mli  = Mli mli ; ml = Ml_empty ; mll = None }
-  | Some x -> { x with mli = Mli mli} 
-
-let module_info_of_rei exist mli : module_info = 
-  match exist with 
-  | None -> { mli  = Rei mli ; ml = Ml_empty ; mll = None }
-  | Some x -> { x with mli = Rei mli} 
-
-let module_info_of_mll exist mll : module_info = 
-  match exist with 
-  | None -> { mll  = Some mll ; ml = Ml_empty ; mli = Mli_empty }
-  | Some x -> { x with mll = Some mll} 
-
+let adjust_module_info x suffix name =
+  match suffix with 
+  | ".ml" -> {x with ml = Ml name}
+  | ".re" -> {x with ml = Re name}
+  | ".mli" ->  {x with mli = Mli name}
+  | ".rei" -> { x with mli = Rei name}
+  | ".mll" -> {x with mll = Some name}
+  | _ -> failwith ("don't know what to do with " ^ name)
 
 let map_update ?dir (map : t)  name : t  = 
   let prefix   = 
@@ -97,19 +81,9 @@ let map_update ?dir (map : t)  name : t  =
     | None -> fun x ->  x
     | Some v -> fun x ->  Ext_filename.combine v x in
   let module_name = Ext_filename.module_name_of_file_if_any name in 
-  let handle name v cb =
-    String_map.add module_name
-      (cb v (prefix name ) ) map 
-  in 
-  let aux v name = 
-    if Filename.check_suffix name ".ml" then handle name  v  module_info_of_ml  else
-    if Filename.check_suffix name ".mll" then handle name  v  module_info_of_mll  else 
-    if Filename.check_suffix name ".mli" then handle name  v  module_info_of_mli else 
-    if Filename.check_suffix name ".re" then handle name v module_info_of_re else 
-    if Filename.check_suffix name ".rei" then handle name v module_info_of_rei else 
-      map    in 
-  match String_map.find module_name map with 
-  | exception Not_found 
-    -> aux None name 
-  | v -> 
-    aux (Some v ) name
+  let suffix = Ext_filename.get_extension name in 
+  String_map.adjust 
+    module_name 
+    (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
+    (fun v -> (adjust_module_info v suffix (prefix name )))
+    map 
