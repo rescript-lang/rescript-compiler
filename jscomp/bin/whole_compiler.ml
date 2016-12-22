@@ -84674,7 +84674,7 @@ type t =
 
 val flatten : t list -> Lam.t -> Lam.t * t list
 
-val lambda_of_groups : Lam.t -> t list -> Lam.t
+(* val lambda_of_groups : Lam.t -> t list -> Lam.t *)
 
 val deep_flatten : Lam.t -> Lam.t
 (** Tricky to be complete *)
@@ -84780,7 +84780,7 @@ let rec flatten
 
 (* [groups] are in reverse order *)
 
-let lambda_of_groups result groups = 
+let lambda_of_groups result ~rev_bindings:groups = 
   List.fold_left (fun acc x -> 
       match x with 
       | Nop l -> Lam.seq l acc
@@ -84859,7 +84859,7 @@ let deep_flatten
     match lam with 
     | Llet _ -> 
       let res, groups = flatten [] lam  
-      in lambda_of_groups res groups
+      in lambda_of_groups res ~rev_bindings:groups
     | Lletrec (bind_args, body) ->  
       (** be careful to flatten letrec 
           like below : 
@@ -84877,19 +84877,7 @@ let deep_flatten
               let odd = even2 in
               fun n -> if n ==0  then true else odd (n - 1)
           ]}
-      *)
-      (* let module Ident_set = Lambda.IdentSet in *)
-      let rec iter bind_args acc =
-        match bind_args with
-        | [] ->   acc
-        | (id,arg) :: rest ->
-          let groups, set = acc in
-          let res, groups = flatten groups (aux arg)
-          in
-          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
-      in
-      let groups, collections = iter bind_args ([], Ident_set.empty) in
-      (* FIXME:
+      
           here we try to move inner definitions of [recurisve value] upwards
           for example:
          {[
@@ -84908,13 +84896,26 @@ let deep_flatten
           recursive value, so what's the best strategy?
           ---
           the motivation is to capture real tail call
+      
       *)
-      let (result, _, wrap) = 
+      let rec iter bind_args acc =
+        match bind_args with
+        | [] ->   acc
+        | (id,arg) :: rest ->
+          let groups, set = acc in
+          let res, groups = flatten groups (aux arg)
+          in
+          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
+      in
+      let groups, collections = iter bind_args ([], Ident_set.empty) in
+   
+      let (bindings, _, (wrap : (Ident.t * Lam.t) list )) = 
+        (* [wrap] is pushed up bindings *)
         List.fold_left (fun  (acc, set, wrap)  g -> 
             match g with 
-            | Recursive [ id, (Lconst _)]
-            | Single (Alias, id, ( Lconst _   ))
-            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
+            | Recursive [ id, (Lconst _ as e)]
+            | Single (Alias, id, ( Lconst _   as e))
+            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _  as e)) -> 
               (** FIXME: 
                    It should be alias and alias will be optimized away
                    in later optmizations, however, 
@@ -84924,15 +84925,15 @@ let deep_flatten
                    this away right now* instead of delaying it to the 
                    later passes
               *)
-              (acc, set, g :: wrap)
+              (acc, set, (id,e) :: wrap)
 
-            | Single (_, id, ( Lvar bid)) -> 
-              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
+            | Single (_, id, ( Lvar bid as e)) -> 
+              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), (id,e) :: wrap)
             | Single (_, id, lam) ->
               let variables = Lam.free_variables  lam in
-              if Ident_set.(is_empty (inter variables collections)) 
+              if Ident_set.is_empty (Ident_set.inter variables collections)
               then 
-                (acc, set, g :: wrap )
+                (acc, set, (id,lam) :: wrap )
               else 
                 ((id, lam ) :: acc , Ident_set.add id set, wrap)
             | Recursive us -> 
@@ -84951,11 +84952,19 @@ let deep_flatten
                wrap)
             | Nop _ -> assert false 
           ) ([], collections, []) groups in
-      lambda_of_groups 
-        (Lam.letrec 
-            result 
-            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
-            (aux body)) (List.rev wrap)
+      Lam.letrec (wrap @ bindings) (aux body)
+      (* Flatten should not change scoping rules, however, it will push some [Aliases] into 
+         [letrec] we should improve such inlining
+      *)
+      (* lambda_of_groups *)
+      (*   (Lam.letrec *)
+      (*       bindings *)
+      (*       (aux body)) ~rev_bindings:(List.rev wrap) *)
+
+
+
+
+
     | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
     | Lconst _ -> lam
     | Lvar _ -> lam 
@@ -96274,7 +96283,7 @@ let compile  ~filename output_prefix no_export env _sigs
     |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-    (* |> Lam.check (Js_config.get_current_file () ) *)
+    |> Lam.check (Js_config.get_current_file () ) 
 
   in
 
@@ -96473,7 +96482,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-    Js_config.iset_debug_file "camlinternalFormat.ml";
+    Js_config.set_debug_file "flattern_order_test.ml";
     let lambda_output = compile ~filename output_prefix false env sigs lam in
     let (//) = Filename.concat in 
     let basename =  

@@ -241,7 +241,7 @@ let compile  ~filename output_prefix no_export env _sigs
     |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-    (* |> Lam.check (Js_config.get_current_file () ) *)
+    |> Lam.check (Js_config.get_current_file () ) 
 
   in
 
@@ -440,7 +440,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-    Js_config.iset_debug_file "camlinternalFormat.ml";
+    Js_config.set_debug_file "flattern_order_test.ml";
     let lambda_output = compile ~filename output_prefix false env sigs lam in
     let (//) = Filename.concat in 
     let basename =  

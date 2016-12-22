@@ -36,63 +36,80 @@ Caml_obj.caml_update_dummy(c, /* :: */[
       a
     ]);
 
+var v = 1;
+
 var xx = [];
 
-Caml_obj.caml_update_dummy(xx, /* :: */[
-      1,
-      xx
-    ]);
+xx[0] = v;
+
+xx[1] = xx;
+
+var uu = naive;
 
 function naive(n) {
   if (n === 0 || n === 1) {
     return 1;
   }
   else {
-    return (n + naive(n - 1 | 0) | 0) + naive(n - 2 | 0) | 0;
+    return (n + uu(n - 1 | 0) | 0) + uu(n - 2 | 0) | 0;
   }
 }
 
-var four = [2];
+var four = [];
 
-var three = [3];
+var three = [];
 
-var v = [function () {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "rec_value_test.ml",
-            23,
-            24
-          ]
-        ];
-  }];
+var v$1 = [];
 
 var h = [];
+
+var one = 1;
+
+Caml_obj.caml_update_dummy(four, [2]);
+
+Caml_obj.caml_update_dummy(three, [3]);
+
+var u = fib;
+
+Caml_obj.caml_update_dummy(v$1, [function () {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              [
+                "rec_value_test.ml",
+                23,
+                24
+              ]
+            ];
+      }]);
 
 Caml_obj.caml_update_dummy(h, Block.__(250, [fib]));
 
 function fib(n) {
   if (n > 3 || n < 0) {
-    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
+    return fib(n - 1 | 0) + u(n - 2 | 0) | 0;
   }
   else {
     switch (n) {
       case 0 : 
           return four[0];
       case 1 : 
-          return 1;
+          return one;
       case 2 : 
           return three[0];
       case 3 : 
           var tag = h.tag | 0;
-          v[0] = tag === 250 ? fib : (
+          v$1[0] = tag === 250 ? fib : (
               tag === 246 ? CamlinternalLazy.force_lazy_block(h) : h
             );
-          return 1;
+          return one;
       
     }
   }
 }
+
+var ys = [];
+
+var xs = [];
 
 function _zs() {
   return /* tuple */[
@@ -100,10 +117,6 @@ function _zs() {
           List.hd(xs[0])
         ];
 }
-
-var ys = [];
-
-var xs = [];
 
 Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
@@ -121,14 +134,14 @@ Caml_obj.caml_update_dummy(xs, /* tuple */[
       _zs
     ]);
 
+var xs$1 = [];
+
 function zs() {
   return List.hd(/* :: */[
               2,
               /* [] */0
             ]);
 }
-
-var xs$1 = [];
 
 Caml_obj.caml_update_dummy(xs$1, /* tuple */[
       /* :: */[
@@ -173,18 +186,15 @@ function even(n) {
   }
 }
 
-function even2(_n) {
-  while(true) {
-    var n = _n;
-    if (n) {
-      _n = n - 1 | 0;
-      continue ;
-      
-    }
-    else {
-      return /* true */1;
-    }
-  };
+var odd = even2;
+
+function even2(n) {
+  if (n) {
+    return odd(n - 1 | 0);
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function lazy_v() {
@@ -195,20 +205,15 @@ function lazy_v() {
   return /* () */0;
 }
 
-function sum(_acc, _n) {
-  while(true) {
-    var n = _n;
-    var acc = _acc;
-    if (n > 0) {
-      _n = n - 1 | 0;
-      _acc = acc + n | 0;
-      continue ;
-      
-    }
-    else {
-      return acc;
-    }
-  };
+var a$1 = sum;
+
+function sum(acc, n) {
+  if (n > 0) {
+    return a$1(acc + n | 0, n - 1 | 0);
+  }
+  else {
+    return acc;
+  }
 }
 
 var fake_v = /* :: */[
@@ -252,7 +257,7 @@ Caml_obj.caml_update_dummy(fake_z2, /* :: */[
       ]
     ]);
 
-var v$1 = 3;
+var v$2 = 3;
 
 var rec_variant_b = [];
 
@@ -424,7 +429,7 @@ var suites_001 = /* :: */[
                   function () {
                     return /* Eq */Block.__(0, [
                               3,
-                              v$1
+                              v$2
                             ]);
                   }
                 ],
@@ -528,7 +533,7 @@ exports.fake_y             = fake_y;
 exports.fake_z             = fake_z;
 exports.fake_z2            = fake_z2;
 exports.fake_y2            = fake_y2;
-exports.v                  = v$1;
+exports.v                  = v$2;
 exports.rec_variant_b      = rec_variant_b;
 exports.rec_variant_a      = rec_variant_a;
 exports.suites             = suites;
