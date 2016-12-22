@@ -98,15 +98,32 @@ let caml_obj_truncate (x : Obj.t) (new_size : int) =
 
 let caml_lazy_make_forward x = lazy x
 
-(** TODO: the dummy one should be [{}] *)
+(** 
+  For the empty dummy object, whether it's 
+  `[]` or `{}` depends on how 
+  runtime encoding works, and will affect 
+  js polymorphic comparison(Js.(=)) (fine with caml polymoprhic comparison (Pervasives.equal))
+  In most cases, rec value comes from record/modules, 
+  whose tag is 0, we optimize that case
+ *)
 let caml_update_dummy x y =
+  (* let len = Bs_obj.length y in   
+  for i = 0 to len - 1 do 
+    Array.unsafe_set x i (Obj.field y i)
+  done;
+  Obj.set_tag (Obj.magic x) (Obj.tag y)
+  *)
   let len = Bs_obj.length y in
   for i = 0 to len - 1 do
     Obj.set_field x i (Obj.field y i)
-  done  ;
-  Obj.set_tag x (Obj.tag y);
-  Bs_obj.set_length x   (Bs_obj.length y)
-
+  done ; 
+  let y_tag = Obj.tag y in 
+  if y_tag <> 0 then
+    Obj.set_tag x y_tag
+  
+  (* Bs_obj.set_length x   (Bs_obj.length y) *)
+  (* [set_length] seems redundant here given that it is initialized as an array 
+  *)
 let caml_int_compare (x : int) (y: int) : int =
   if  x < y then -1 else if x = y then 0 else  1
 

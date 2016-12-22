@@ -66373,9 +66373,9 @@ let method_
     comment
   }
 
-
+(** This is coupuled with {!Caml_obj.caml_update_dummy} *)
 let dummy_obj ?comment ()  : t = 
-  {comment  ; expression_desc = Object []}
+  {comment  ; expression_desc = J.Array ([],Mutable)}
 
 let is_instance_array ?comment e : t = 
   {comment; expression_desc = Bin(InstanceOf, e , str L.js_array_ctor) }

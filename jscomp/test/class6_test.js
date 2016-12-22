@@ -174,7 +174,7 @@ var d = [
   0
 ];
 
-var c2$prime = { };
+var c2$prime = [];
 
 Caml_obj.caml_update_dummy(c2$prime, [
       0,

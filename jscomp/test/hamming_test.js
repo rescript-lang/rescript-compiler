@@ -214,13 +214,13 @@ function iter_interval(f, _l, _param) {
   };
 }
 
-var hamming = { };
+var hamming = [];
 
-var ham2 = { };
+var ham2 = [];
 
-var ham3 = { };
+var ham3 = [];
 
-var ham5 = { };
+var ham5 = [];
 
 Caml_obj.caml_update_dummy(hamming, Block.__(246, [function () {
           return /* Cons */[
