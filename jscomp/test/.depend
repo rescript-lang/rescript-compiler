@@ -44,6 +44,7 @@ a_recursive_type.cmj : a_recursive_type.cmi
 a_scope_bug.cmj :
 a_string_test.cmj : mt.cmj ../stdlib/list.cmj ext_string.cmj
 abstract_type.cmj : abstract_type.cmi
+alias_test.cmj :
 and_or_tailcall_test.cmj : mt.cmj
 app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
@@ -149,6 +150,7 @@ ffi_js_test.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_obj.cmj \
 ffi_splice_test.cmj : mt.cmj
 ffi_test.cmj : ../runtime/js.cmj
 fib.cmj :
+flattern_order_test.cmj : ../stdlib/list.cmj
 float_array.cmj :
 float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/array.cmj

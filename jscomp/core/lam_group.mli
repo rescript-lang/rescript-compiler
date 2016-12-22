@@ -35,7 +35,7 @@ type t =
 
 val flatten : t list -> Lam.t -> Lam.t * t list
 
-val lambda_of_groups : Lam.t -> t list -> Lam.t
+(* val lambda_of_groups : Lam.t -> t list -> Lam.t *)
 
 val deep_flatten : Lam.t -> Lam.t
 (** Tricky to be complete *)

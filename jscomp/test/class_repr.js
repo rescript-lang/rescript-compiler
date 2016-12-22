@@ -1,8 +1,17 @@
 'use strict';
 
+var Caml_obj       = require("../../lib/js/caml_obj");
 var Curry          = require("../../lib/js/curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
 var Oo             = require("../../lib/js/oo");
+
+var x_tables = [];
+
+Caml_obj.caml_update_dummy(x_tables, [
+      0,
+      0,
+      0
+    ]);
 
 function x_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "x");
