@@ -50,7 +50,7 @@ type primitive =
   | Pbytes_to_string
   | Pbytes_of_string
   | Pgetglobal of ident
-  | Psetglobal of ident
+  (* | Psetglobal of ident *)
   | Pglobal_exception of ident             
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info

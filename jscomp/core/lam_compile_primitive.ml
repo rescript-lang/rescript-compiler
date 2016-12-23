@@ -565,8 +565,8 @@ let translate  loc
       | Ostype_cygwin -> 
         if Sys.cygwin then E.caml_true else E.caml_false
     end
-  | Psetglobal _  -> 
-    assert false (* already handled *)
+  (* | Psetglobal _  ->  *)
+  (*   assert false (\* already handled *\) *)
     (* assert false *)
   | Pduprecord ((Record_regular 
                 | Record_float ),0)

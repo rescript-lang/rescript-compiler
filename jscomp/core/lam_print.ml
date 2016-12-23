@@ -113,7 +113,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id                       
-  | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
+  (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n,_) -> fprintf ppf "field %i" n
@@ -504,11 +504,12 @@ let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) =
 
 let lambda_as_module env  ppf (lam : Lam.t) = 
   try
-  match lam with
-  | Lprim {primitive = Psetglobal id ; args =  [biglambda]; _}
-  (* might be wrong in toplevel *) ->
+  (* match lam with *)
+  (* | Lprim {primitive = Psetglobal id ; args =  [biglambda]; _} *)
+  (* might be wrong in toplevel *) 
+  (* -> *)
       
-      begin match flat [] biglambda  with 
+      begin match flat [] lam  with 
       | (Nop, Lprim {primitive = Pmakeblock (_, _, _); args =  toplevels; _})
         :: rest ->
           (* let spc = ref false in *)
@@ -527,7 +528,7 @@ let lambda_as_module env  ppf (lam : Lam.t) =
           
       | _ -> raise Not_a_module
       end
-  | _ -> raise Not_a_module
+  (* | _ -> raise Not_a_module *)
   with _ -> 
     env_lambda env ppf lam;
     fprintf ppf "; lambda-failure"
