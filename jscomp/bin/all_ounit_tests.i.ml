@@ -3504,20 +3504,24 @@ let remove (h : _ Hash_set_gen.t) key =
 
 let add (h : _ Hash_set_gen.t) key =
   (* 4103 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
 let check_add (h : _ Hash_set_gen.t) key =
   (* 0 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i  (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
     end
   else false 
@@ -3526,7 +3530,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   (* 3102 *) Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 106
+# 110
 end
   
 
@@ -3641,20 +3645,24 @@ let remove (h : _ Hash_set_gen.t) key =
 
 let add (h : _ Hash_set_gen.t) key =
   (* 15004 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
 let check_add (h : _ Hash_set_gen.t) key =
   (* 0 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i  (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
     end
   else false 
@@ -4069,20 +4077,24 @@ let remove (h : _ Hash_set_gen.t) key =
 
 let add (h : _ Hash_set_gen.t) key =
   (* 101 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
 let check_add (h : _ Hash_set_gen.t) key =
   (* 8 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i  (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
     end
   else false 
@@ -4319,20 +4331,24 @@ let remove (h : _ Hash_set_gen.t) key =
 
 let add (h : _ Hash_set_gen.t) key =
   (* 0 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
     end
 
 let check_add (h : _ Hash_set_gen.t) key =
   (* 0 *) let i = key_index h key  in 
-  if not (Hash_set_gen.small_bucket_mem eq_key key  (Array.unsafe_get h.data i)) then 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
     begin 
-      h.data.(i) <- key :: h.data.(i);
+      Array.unsafe_set h_data i  (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hash_set_gen.resize key_index h;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
       true 
     end
   else false 
@@ -4665,10 +4681,10 @@ let stats = Hashtbl_gen.stats
 
 let add (h : _ t) key info =
   (* 2000 *) let i = key_index h key in
-  let bucket : _ bucketlist = Cons(key, info, h.data.(i)) in
-  h.data.(i) <- bucket;
+  let h_data = h.data in   
+  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
   h.size <- h.size + 1;
-  if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
 
 (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
@@ -4679,43 +4695,51 @@ let modify_or_init (h : _ t) key modf default =
       else find_bucket next 
     | Empty -> (* 0 *) true in
   let i = key_index h key in 
-  if find_bucket h.data.(i) then
+  let h_data = h.data in 
+  if find_bucket (Array.unsafe_get h_data i) then
     begin 
-      h.data.(i) <- Cons(key,default (),h.data.(i));
+      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h 
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
     end
 
+
+let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
+  (* 0 *) match bucketlist with  
+  | Empty ->
+    (* 0 *) Empty
+  | Cons(k, i, next) ->
+    (* 0 *) if eq_key k key 
+    then begin h.size <- h.size - 1; next end
+    else Cons(k, i, remove_bucket key h next) 
+
 let remove (h : _ t ) key =
-  (* 0 *) let rec remove_bucket (bucketlist : _ bucketlist) : _ bucketlist = (* 0 *) match bucketlist with  
-    | Empty ->
-        (* 0 *) Empty
-    | Cons(k, i, next) ->
-        (* 0 *) if eq_key k key 
-        then begin h.size <- h.size - 1; next end
-        else Cons(k, i, remove_bucket next) in
-  let i = key_index h key in
-  h.data.(i) <- remove_bucket h.data.(i)
+  (* 0 *) let i = key_index h key in
+  let h_data = h.data in 
+  let old_h_szie = h.size in 
+  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
+  if old_h_szie <> h.size then 
+    Array.unsafe_set h_data i  new_bucket
 
 let rec find_rec key (bucketlist : _ bucketlist) = (* 0 *) match bucketlist with  
   | Empty ->
-      (* 0 *) raise Not_found
+    (* 0 *) raise Not_found
   | Cons(k, d, rest) ->
-      (* 0 *) if eq_key key k then d else find_rec key rest
+    (* 0 *) if eq_key key k then d else find_rec key rest
 
 let find_exn (h : _ t) key =
-  (* 0 *) match h.data.(key_index h key) with
+  (* 0 *) match Array.unsafe_get h.data (key_index h key) with
   | Empty -> (* 0 *) raise Not_found
   | Cons(k1, d1, rest1) ->
-      (* 0 *) if eq_key key k1 then d1 else
+    (* 0 *) if eq_key key k1 then d1 else
       match rest1 with
       | Empty -> (* 0 *) raise Not_found
       | Cons(k2, d2, rest2) ->
-          (* 0 *) if eq_key key k2 then d2 else
+        (* 0 *) if eq_key key k2 then d2 else
           match rest2 with
           | Empty -> (* 0 *) raise Not_found
           | Cons(k3, d3, rest3) ->
-              (* 0 *) if eq_key key k3  then d3 else find_rec key rest3
+            (* 0 *) if eq_key key k3  then d3 else find_rec key rest3
 
 let find_opt (h : _ t) key =
   (* 0 *) Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
@@ -4723,42 +4747,46 @@ let find_default (h : _ t) key default =
   (* 0 *) Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
   (* 0 *) let rec find_in_bucket (bucketlist : _ bucketlist) = (* 0 *) match bucketlist with 
-  | Empty ->
+    | Empty ->
       (* 0 *) []
-  | Cons(k, d, rest) ->
+    | Cons(k, d, rest) ->
       (* 0 *) if eq_key k key 
       then d :: find_in_bucket rest
       else find_in_bucket rest in
-  find_in_bucket h.data.(key_index h key)
+  find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
 let replace h key info =
   (* 2000 *) let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = (* 4462 *) match bucketlist with 
     | Empty ->
-        (* 1000 *) raise_notrace Not_found
+      (* 1000 *) raise_notrace Not_found
     | Cons(k, i, next) ->
-        (* 3462 *) if eq_key k key
-        then Cons(key, info, next)
-        else Cons(k, i, replace_bucket next) in
+      (* 3462 *) if eq_key k key
+      then Cons(key, info, next)
+      else Cons(k, i, replace_bucket next) in
   let i = key_index h key in
-  let l = h.data.(i) in
+  let h_data = h.data in 
+  let l = Array.unsafe_get h_data i in
   try
-    h.data.(i) <- replace_bucket l
+    Array.unsafe_set h_data i  (replace_bucket l)
   with Not_found ->
-    h.data.(i) <- Cons(key, info, l);
-    h.size <- h.size + 1;
-    if h.size > Array.length h.data lsl 1 then Hashtbl_gen.resize key_index h
+    begin 
+      Array.unsafe_set h_data i (Cons(key, info, l));
+      h.size <- h.size + 1;
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
+    end 
 
 let mem (h : _ t) key =
   (* 0 *) let rec mem_in_bucket (bucketlist : _ bucketlist) = (* 0 *) match bucketlist with 
-  | Empty ->
+    | Empty ->
       (* 0 *) false
-  | Cons(k, d, rest) ->
+    | Cons(k, d, rest) ->
       (* 0 *) eq_key k key  || mem_in_bucket rest in
-  mem_in_bucket h.data.(key_index h key)
+  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
 
 
 let of_list2 ks vs = 
-  (* 0 *) let map = create 51 in 
+  (* 0 *) let len = List.length ks in 
+  let map = create len in 
   List.iter2 (fun k v -> (* 0 *) add map k v) ks vs ; 
   map
 
