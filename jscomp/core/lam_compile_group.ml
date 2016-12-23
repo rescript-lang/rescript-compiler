@@ -173,24 +173,81 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 
 ;;
 
+
+
+
+(* Invariant: The last one is always [exports]
+           Compile definitions
+           Compile exports
+           Assume Pmakeblock(_,_),
+           lambda_exports are pure
+           compile each binding with a return value
+           This might be wrong in toplevel
+           TODO: add this check as early as possible in the beginning
+*)
+let handle_exports 
+    (original_exports : Ident.t list)
+    (lambda_exports : Lam.t list)  (rest : Lam_group.t list) : 
+  Lam.ident list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list=
+  let coercion_groups, new_exports, new_export_set,  export_map = 
+    List.fold_right2 
+        (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
+           match (lam : Lam.t) with 
+           | Lvar id 
+             when Ident.name id = Ident.name eid -> 
+             (* {[ Ident.same id eid]} is more  correct, 
+                however, it will introduce a coercion, which is not necessary, 
+                as long as its name is the same, we want to avoid 
+                another coercion                        
+             *)
+             (coercions, 
+              id :: new_exports, 
+              Ident_set.add id new_export_set,
+              export_map)
+           | _ -> (** TODO : bug 
+                      check [map.ml] here coercion, we introduced 
+                      rebound which is not corrrect 
+                      {[
+                        let Make/identifier = function (funarg){
+                            var $$let = Make/identifier(funarg);
+                                    return [0, ..... ]
+                          }
+                      ]}
+                      Possible fix ? 
+                      change export identifier, we should do this in the very 
+                      beginning since lots of optimizations depend on this
+                      however
+                  *)
+             (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
+              eid :: new_exports,
+              Ident_set.add eid new_export_set, 
+              Ident_map.add eid lam export_map))
+        original_exports lambda_exports 
+        ([],[], Ident_set.empty, Ident_map.empty)
+  in
+  let (export_map, rest) = 
+    List.fold_left 
+      (fun (export_map, acc) x ->
+         (match (x : Lam_group.t)  with 
+          | Single (_,id,lam) when Ident_set.mem id new_export_set 
+            -> Ident_map.add id lam export_map
+          | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
+  let rest = Lam_dce.remove new_exports rest in
+  new_exports, new_export_set, export_map , rest 
+
+
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
-    [no_export] is only used in playground
 *)
-let compile  ~filename output_prefix no_export env _sigs 
+let compile  ~filename output_prefix env _sigs 
     (lam : Lambda.lambda)   = 
-  let export_idents = 
-    if no_export then
-      []    
-    else  Translmod.get_export_identifiers()  
-  in
+  let export_idents = Translmod.get_export_identifiers() in
   let () = 
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
   in
   (* To make toplevel happy - reentrant for js-demo *)
   let ()   = 
-    Translmod.reset () ; 
     Lam_compile_env.reset () ;
   in 
   let lam = Lam.convert  lam in 
@@ -250,74 +307,16 @@ let compile  ~filename output_prefix no_export env _sigs
 
   (* Dump for debugger *)
 
-
-  (* Invariant: The last one is always [exports]
-           Compile definitions
-           Compile exports
-           Assume Pmakeblock(_,_),
-           lambda_exports are pure
-           compile each binding with a return value
-           This might be wrong in toplevel
-           TODO: add this check as early as possible in the beginning
-  *)
   begin 
     match Lam_group.flatten [] lam with 
     | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
       rest ->
-      let coercion_groups, new_exports, new_export_set,  export_map = 
-        if no_export then 
-          [], [], Ident_set.empty, Ident_map.empty
-        else
-          List.fold_right2 
-            (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
-               match (lam : Lam.t) with 
-               | Lvar id 
-                 when Ident.name id = Ident.name eid -> 
-                 (* {[ Ident.same id eid]} is more  correct, 
-                    however, it will introduce a coercion, which is not necessary, 
-                    as long as its name is the same, we want to avoid 
-                    another coercion                        
-                 *)
-                 (coercions, 
-                  id :: new_exports, 
-                  Ident_set.add id new_export_set,
-                  export_map)
-               | _ -> (** TODO : bug 
-                          check [map.ml] here coercion, we introduced 
-                          rebound which is not corrrect 
-                          {[
-                            let Make/identifier = function (funarg){
-                                var $$let = Make/identifier(funarg);
-                                        return [0, ..... ]
-                              }
-                          ]}
-                          Possible fix ? 
-                          change export identifier, we should do this in the very 
-                          beginning since lots of optimizations depend on this
-                          however
-                      *)
-                 (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
-                  eid :: new_exports,
-                  Ident_set.add eid new_export_set, 
-                  Ident_map.add eid lam export_map))
-            meta.exports lambda_exports 
-            ([],[], Ident_set.empty, Ident_map.empty)
-      in
-
-      let (export_map, rest) = 
-        List.fold_left 
-          (fun (export_map, acc) x ->
-             (match (x : Lam_group.t)  with 
-              | Single (_,id,lam) when Ident_set.mem id new_export_set 
-                -> Ident_map.add id lam export_map
-              | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
-      let rest = Lam_dce.remove new_exports rest in
+      let new_exports, new_export_set, export_map, rest = 
+        handle_exports  meta.exports lambda_exports rest in 
       let meta = { meta with 
                    export_idents = new_export_set;
                    exports = new_exports
                  } in 
-
-
       (* TODO: turn in on debug mode later*)
       let () =
         let len = List.length new_exports in 
@@ -411,8 +410,7 @@ let compile  ~filename output_prefix no_export env _sigs
           in
 
           let v = 
-            Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
-              (if no_export then Ident_map.empty else export_map) 
+            Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids export_map
           in
           (if not @@ !Clflags.dont_write_files then
              Js_cmj_format.to_file 
@@ -434,7 +432,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "camlinternalFormat.ml";
-    let lambda_output = compile ~filename output_prefix false env sigs lam in
+    let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
@@ -461,8 +459,6 @@ let lambda_as_module
                 only generate little-case js file
              *)
           ) output_chan
-
-
     | NonBrowser (_package_name, module_systems) ->
       module_systems |> List.iter begin fun (module_system, _path) -> 
         let output_chan chan  = 

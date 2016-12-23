@@ -70618,6 +70618,8353 @@ let mem (h :  _ Hash_set_gen.t) key =
   
 
 end
+module Printlambda : sig 
+#1 "printlambda.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Lambda
+
+open Format
+
+val structured_constant: formatter -> structured_constant -> unit
+
+val env_lambda : Env.t -> formatter -> lambda -> unit
+val lambda : formatter -> lambda -> unit
+val primitive: formatter -> primitive -> unit
+
+val lambda_as_module : Env.t  -> Format.formatter -> Lambda.lambda -> unit
+
+
+val seriaize: Env.t -> string -> lambda -> unit
+
+val serialize_raw_js: 
+    (Env.t -> Types.signature ->  string  -> lambda  -> unit) ref
+val serialize_js: (Env.t -> string  -> lambda  -> unit) ref
+
+end = struct
+#1 "printlambda.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+[@@@ocaml.warning "-40"]
+open Format
+open Asttypes
+open Primitive
+open Types
+open Lambda
+
+
+let rec struct_const ppf = function
+  | Const_base(Const_int n) -> fprintf ppf "%i" n
+  | Const_base(Const_char c) -> fprintf ppf "%C" c
+  | Const_base(Const_string (s, _)) -> fprintf ppf "%S" s
+  | Const_immstring s -> fprintf ppf "#%S" s
+  | Const_base(Const_float f) -> fprintf ppf "%s" f
+  | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
+  | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
+  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
+  | Const_pointer (n,_) -> fprintf ppf "%ia" n
+  | Const_block(tag,_, []) ->
+      fprintf ppf "[%i]" tag
+  | Const_block(tag,_, sc1::scl) ->
+      let sconsts ppf scl =
+        List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
+      fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
+  | Const_float_array [] ->
+      fprintf ppf "[| |]"
+  | Const_float_array (f1 :: fl) ->
+      let floats ppf fl =
+        List.iter (fun f -> fprintf ppf "@ %s" f) fl in
+      fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
+
+let boxed_integer_name = function
+  | Pnativeint -> "nativeint"
+  | Pint32 -> "int32"
+  | Pint64 -> "int64"
+
+let print_boxed_integer name ppf bi =
+  fprintf ppf "%s_%s" (boxed_integer_name bi) name
+
+let print_boxed_integer_conversion ppf bi1 bi2 =
+  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
+
+let boxed_integer_mark name = function
+  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
+  | Pint32 -> Printf.sprintf "Int32.%s" name
+  | Pint64 -> Printf.sprintf "Int64.%s" name
+
+let print_boxed_integer name ppf bi =
+  fprintf ppf "%s" (boxed_integer_mark name bi);;
+
+let print_bigarray name unsafe kind ppf layout =
+  fprintf ppf "Bigarray.%s[%s,%s]"
+    (if unsafe then "unsafe_"^ name else name)
+    (match kind with
+     | Pbigarray_unknown -> "generic"
+     | Pbigarray_float32 -> "float32"
+     | Pbigarray_float64 -> "float64"
+     | Pbigarray_sint8 -> "sint8"
+     | Pbigarray_uint8 -> "uint8"
+     | Pbigarray_sint16 -> "sint16"
+     | Pbigarray_uint16 -> "uint16"
+     | Pbigarray_int32 -> "int32"
+     | Pbigarray_int64 -> "int64"
+     | Pbigarray_caml_int -> "camlint"
+     | Pbigarray_native_int -> "nativeint"
+     | Pbigarray_complex32 -> "complex32"
+     | Pbigarray_complex64 -> "complex64")
+    (match layout with
+    |  Pbigarray_unknown_layout -> "unknown"
+     | Pbigarray_c_layout -> "C"
+     | Pbigarray_fortran_layout -> "Fortran")
+
+let record_rep ppf r =
+  match r with
+  | Record_regular -> fprintf ppf "regular"
+  | Record_float -> fprintf ppf "float"
+;;
+
+let string_of_loc_kind = function
+  | Loc_FILE -> "loc_FILE"
+  | Loc_LINE -> "loc_LINE"
+  | Loc_MODULE -> "loc_MODULE"
+  | Loc_POS -> "loc_POS"
+  | Loc_LOC -> "loc_LOC"
+
+let primitive ppf = function
+  | Pidentity -> fprintf ppf "id"
+  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
+  | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pignore -> fprintf ppf "ignore"
+  | Prevapply  -> fprintf ppf "revapply"
+  | Pdirapply  -> fprintf ppf "dirapply"
+  | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
+  | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
+  | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
+  | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
+  | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
+  | Pfield (n,_) -> fprintf ppf "field %i" n
+  | Psetfield(n, ptr, _) ->
+      let instr = if ptr then "setfield_ptr " else "setfield_imm " in
+      fprintf ppf "%s%i" instr n
+  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
+  | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
+  | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
+  | Plazyforce -> fprintf ppf "force"
+  | Pccall p -> fprintf ppf "%s" p.prim_name
+  | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
+  | Psequand -> fprintf ppf "&&"
+  | Psequor -> fprintf ppf "||"
+  | Pnot -> fprintf ppf "not"
+  | Pnegint -> fprintf ppf "~"
+  | Paddint -> fprintf ppf "+"
+  | Psubint -> fprintf ppf "-"
+  | Pmulint -> fprintf ppf "*"
+  | Pdivint -> fprintf ppf "/"
+  | Pmodint -> fprintf ppf "mod"
+  | Pandint -> fprintf ppf "and"
+  | Porint -> fprintf ppf "or"
+  | Pxorint -> fprintf ppf "xor"
+  | Plslint -> fprintf ppf "lsl"
+  | Plsrint -> fprintf ppf "lsr"
+  | Pasrint -> fprintf ppf "asr"
+  | Pintcomp(Ceq) -> fprintf ppf "=="
+  | Pintcomp(Cneq) -> fprintf ppf "!="
+  | Pintcomp(Clt) -> fprintf ppf "<"
+  | Pintcomp(Cle) -> fprintf ppf "<="
+  | Pintcomp(Cgt) -> fprintf ppf ">"
+  | Pintcomp(Cge) -> fprintf ppf ">="
+  | Poffsetint n -> fprintf ppf "%i+" n
+  | Poffsetref n -> fprintf ppf "+:=%i"n
+  | Pintoffloat -> fprintf ppf "int_of_float"
+  | Pfloatofint -> fprintf ppf "float_of_int"
+  | Pnegfloat -> fprintf ppf "~."
+  | Pabsfloat -> fprintf ppf "abs."
+  | Paddfloat -> fprintf ppf "+."
+  | Psubfloat -> fprintf ppf "-."
+  | Pmulfloat -> fprintf ppf "*."
+  | Pdivfloat -> fprintf ppf "/."
+  | Pfloatcomp(Ceq) -> fprintf ppf "==."
+  | Pfloatcomp(Cneq) -> fprintf ppf "!=."
+  | Pfloatcomp(Clt) -> fprintf ppf "<."
+  | Pfloatcomp(Cle) -> fprintf ppf "<=."
+  | Pfloatcomp(Cgt) -> fprintf ppf ">."
+  | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pstringlength -> fprintf ppf "string.length"
+  | Pstringrefu -> fprintf ppf "string.unsafe_get"
+  | Pstringsetu -> fprintf ppf "string.unsafe_set"
+  | Pstringrefs -> fprintf ppf "string.get"
+  | Pstringsets -> fprintf ppf "string.set"
+  | Pbyteslength -> fprintf ppf "bytes.length"
+  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
+  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
+  | Pbytesrefs -> fprintf ppf "bytes.get"
+  | Pbytessets -> fprintf ppf "bytes.set"
+
+  | Parraylength _ -> fprintf ppf "array.length"
+  | Pmakearray _ -> fprintf ppf "makearray "
+  | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
+  | Parraysetu _ -> fprintf ppf "array.unsafe_set"
+  | Parrayrefs _ -> fprintf ppf "array.get"
+  | Parraysets _ -> fprintf ppf "array.set"
+  | Pctconst c ->
+     let const_name = match c with
+       | Big_endian -> "big_endian"
+       | Word_size -> "word_size"
+       | Ostype_unix -> "ostype_unix"
+       | Ostype_win32 -> "ostype_win32"
+       | Ostype_cygwin -> "ostype_cygwin" in
+     fprintf ppf "sys.constant_%s" const_name
+  | Pisint -> fprintf ppf "isint"
+  | Pisout -> fprintf ppf "isout"
+  | Pbittest -> fprintf ppf "testbit"
+  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
+  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
+  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
+  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
+  | Paddbint bi -> print_boxed_integer "add" ppf bi
+  | Psubbint bi -> print_boxed_integer "sub" ppf bi
+  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
+  | Pdivbint bi -> print_boxed_integer "div" ppf bi
+  | Pmodbint bi -> print_boxed_integer "mod" ppf bi
+  | Pandbint bi -> print_boxed_integer "and" ppf bi
+  | Porbint bi -> print_boxed_integer "or" ppf bi
+  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
+  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
+  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
+  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
+  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
+  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
+  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
+  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
+  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
+  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
+  | Pbigarrayref(unsafe, n, kind, layout) ->
+      print_bigarray "get" unsafe kind ppf layout
+  | Pbigarrayset(unsafe, n, kind, layout) ->
+      print_bigarray "set" unsafe kind ppf layout
+  | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
+  | Pstring_load_16(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get16"
+     else fprintf ppf "string.get16"
+  | Pstring_load_32(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get32"
+     else fprintf ppf "string.get32"
+  | Pstring_load_64(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get64"
+     else fprintf ppf "string.get64"
+  | Pstring_set_16(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set16"
+     else fprintf ppf "string.set16"
+  | Pstring_set_32(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set32"
+     else fprintf ppf "string.set32"
+  | Pstring_set_64(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set64"
+     else fprintf ppf "string.set64"
+  | Pbigstring_load_16(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
+     else fprintf ppf "bigarray.array1.get16"
+  | Pbigstring_load_32(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
+     else fprintf ppf "bigarray.array1.get32"
+  | Pbigstring_load_64(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
+     else fprintf ppf "bigarray.array1.get64"
+  | Pbigstring_set_16(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
+     else fprintf ppf "bigarray.array1.set16"
+  | Pbigstring_set_32(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
+     else fprintf ppf "bigarray.array1.set32"
+  | Pbigstring_set_64(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
+     else fprintf ppf "bigarray.array1.set64"
+  | Pbswap16 -> fprintf ppf "bswap16"
+  | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
+  | Pint_as_pointer -> fprintf ppf "int_as_pointer"
+
+type print_kind = 
+  | Alias 
+  | Strict 
+  | StrictOpt 
+  | Variable 
+  | Recursive 
+
+let kind = function
+  | Alias -> "a"
+  | Strict -> ""
+  | StrictOpt -> "o"
+  | Variable -> "v" 
+  | Recursive -> "r"
+
+let to_print_kind (k : Lambda.let_kind) : print_kind = 
+  match k with 
+  | Alias -> Alias 
+  | Strict -> Strict
+  | StrictOpt -> StrictOpt
+  | Variable -> Variable
+  
+let rec aux (acc : (print_kind * Ident.t * lambda ) list) lam = 
+  match lam with 
+  | Llet (str3, id3, arg3, body3) ->
+      aux ((to_print_kind str3,id3, arg3)::acc) body3
+  | Lletrec (bind_args, body) ->
+      aux 
+        (List.map (fun (id,l) -> (Recursive,id,l)) bind_args 
+         @ acc) body
+  | e ->  (acc , e) 
+
+type left_var = 
+    {
+     kind : print_kind ;
+     id : Ident.t
+   }
+
+type left = 
+  | Id of left_var
+  | Nop
+
+
+
+
+let  flatten lam : (print_kind * Ident.t * lambda ) list * lambda = 
+  match lam with 
+  | Llet(str,id, arg, body) ->
+      aux [to_print_kind str, id, arg] body
+  | Lletrec(bind_args, body) ->
+      aux 
+        (List.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
+        body
+  | _ -> assert false
+
+        
+let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
+  match  Env.find_module (Pident id) env with 
+  | {md_type = Mty_signature signature  ; _ } -> 
+      (* Env.prefix_idents, could be cached  *)
+      let serializable_sigs = 
+        List.filter (fun x ->
+            match x with 
+            | Sig_typext _ 
+            | Sig_module _
+            | Sig_class _ -> true
+            | Sig_value(_, {val_kind = Val_prim _}) -> false
+            | Sig_value _ -> true
+            | _ -> false
+                    ) signature  in
+      (begin match List.nth  serializable_sigs  pos  with 
+      | Sig_value (i,_) 
+      | Sig_module (i,_,_) -> i 
+      | Sig_typext (i,_,_) -> i 
+      | Sig_modtype(i,_) -> i 
+      | Sig_class (i,_,_) -> i 
+      | Sig_class_type(i,_,_) -> i 
+      | Sig_type(i,_,_) -> i 
+      end).name
+  | _ -> assert false
+
+
+
+let lambda use_env env ppf v  =
+  let rec lam ppf = function
+  | Lvar id ->
+      Ident.print ppf id
+  | Lconst cst ->
+      struct_const ppf cst
+  | Lapply(lfun, largs, _) ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(apply@ %a%a)@]" lam lfun lams largs
+  | Lfunction(kind, params, body) ->
+      let pr_params ppf params =
+        match kind with
+        | Curried ->
+            List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
+        | Tupled ->
+            fprintf ppf " (";
+            let first = ref true in
+            List.iter
+              (fun param ->
+                if !first then first := false else fprintf ppf ",@ ";
+                Ident.print ppf param)
+              params;
+            fprintf ppf ")" in
+      fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
+  | Llet _ | Lletrec _ as x ->
+      let args, body =   flatten x  in
+      let bindings ppf id_arg_list =
+        let spc = ref false in
+        List.iter
+          (fun (k, id, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
+          id_arg_list in
+      fprintf ppf
+        "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
+      fprintf ppf ")@ %a)@]"  lam body
+  | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[],_)],_) when use_env ->
+      fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
+
+  | Lprim(Psetfield (n,_,_), [ Lprim(Pgetglobal id,[],_) ;  e ], _) when use_env  ->
+      fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
+        lam e
+  | Lprim(prim, largs,_) ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
+  | Lswitch(larg, sw) ->
+      let switch ppf sw =
+        let spc = ref false in
+        List.iter
+         (fun (n, l) ->
+           if !spc then fprintf ppf "@ " else spc := true;
+           fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
+         sw.sw_consts;
+        List.iter
+          (fun (n, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
+          sw.sw_blocks ;
+        begin match sw.sw_failaction with
+        | None  -> ()
+        | Some l ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>default:@ %a@]" lam l
+        end in
+      fprintf ppf
+       "@[<1>(%s %a@ @[<v 0>%a@])@]"
+       (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
+       lam larg switch sw
+  | Lstringswitch(arg, cases, default,_) ->
+      let switch ppf cases =
+        let spc = ref false in
+        List.iter
+         (fun (s, l) ->
+           if !spc then fprintf ppf "@ " else spc := true;
+           fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
+          cases;
+        begin match default with
+        | Some default ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>default:@ %a@]" lam default
+        | None -> ()
+        end in
+      fprintf ppf
+       "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
+  | Lstaticraise (i, ls)  ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls;
+  | Lstaticcatch(lbody, (i, vars), lhandler) ->
+      fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]"
+        lam lbody i
+        (fun ppf vars -> match vars with
+          | [] -> ()
+          | _ ->
+              List.iter
+                (fun x -> fprintf ppf " %a" Ident.print x)
+                vars)
+        vars
+        lam lhandler
+  | Ltrywith(lbody, param, lhandler) ->
+      fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]"
+        lam lbody Ident.print param lam lhandler
+  | Lifthenelse(lcond, lif, lelse) ->
+      fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
+  | Lsequence(l1, l2) ->
+      fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
+  | Lwhile(lcond, lbody) ->
+      fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
+  | Lfor(param, lo, hi, dir, body) ->
+      fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]"
+       Ident.print param lam lo
+       (match dir with Upto -> "to" | Downto -> "downto")
+       lam hi lam body
+  | Lassign(id, expr) ->
+      fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
+  | Lsend (k, met, obj, largs, _) ->
+      let args ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      let kind =
+        if k = Self then "self" else if k = Cached then "cache" else "" in
+      fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
+  | Levent(expr, _ev) ->
+      lam ppf expr
+      (* let kind = *)
+      (*  match ev.lev_kind with *)
+      (*  | Lev_before -> "before" *)
+      (*  | Lev_after _  -> "after" *)
+      (*  | Lev_function -> "funct-body" in *)
+      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
+      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
+      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
+      (*         lam expr *)
+  | Lifused(id, expr) ->
+      fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
+
+and sequence ppf = function
+  | Lsequence(l1, l2) ->
+      fprintf ppf "%a@ %a" sequence l1 sequence l2
+  | l ->
+      lam ppf l
+  in 
+  lam ppf v
+
+let structured_constant = struct_const
+
+let env_lambda = lambda true 
+let lambda = lambda false Env.empty
+
+let rec flatten_seq acc lam =
+  match lam with 
+  | Lsequence(l1,l2) -> 
+      flatten_seq (flatten_seq acc l1) l2
+  | x -> x :: acc 
+
+exception Not_a_module
+
+let rec flat (acc : (left * lambda) list ) (lam : lambda) = 
+  match lam with 
+  | Llet (str,id,arg,body) ->
+      flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
+  | Lletrec (bind_args, body) ->
+      flat ( List.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args @ acc) body 
+  | Lsequence (l,r) -> 
+      flat (flat acc l) r
+  | x -> (Nop, x) :: acc 
+
+let lambda_as_module env  ppf lam = 
+  try
+  match lam with
+  | Lprim(Psetglobal(id), [biglambda],_)  (* might be wrong in toplevel *) ->
+      
+      begin match flat [] biglambda  with 
+      | (Nop, Lprim (Pmakeblock (_, _, _), toplevels,_)) :: rest ->
+          (* let spc = ref false in *)
+          List.iter
+            (fun (left, l) ->
+              match left with 
+              | Id { kind = k; id } ->
+                  fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
+              | Nop -> 
+
+                  fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
+            )
+
+            @@ List.rev rest
+          
+          
+      | _ -> raise Not_a_module
+      end
+  | _ -> raise Not_a_module
+  with _ -> 
+    env_lambda env ppf lam;
+    fprintf ppf "; lambda-failure"
+let seriaize env (filename : string) (lam : Lambda.lambda) : unit =
+  let ou = open_out filename  in
+  let old = Format.get_margin () in
+  let () = Format.set_margin 10000 in
+  let fmt = Format.formatter_of_out_channel ou in
+  begin
+    (* lambda_as_module env fmt lambda; *)
+    lambda fmt lam;
+    Format.pp_print_flush fmt ();
+    close_out ou;
+    Format.set_margin old
+  end
+
+let serialize_raw_js = ref(fun _ _ _ _ -> ())    
+let serialize_js = ref (fun _ _ _ -> ())
+
+end
+module Switch : sig 
+#1 "switch.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Luc Maranget, projet Moscova, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2000 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(*
+  This module transforms generic switches in combinations
+  of if tests and switches.
+*)
+
+(* For detecting action sharing, object style *)
+
+(* Store for actions in object style:
+  act_store : store an action, returns index in table
+              In case an action with equal key exists, returns index
+              of the stored action. Otherwise add entry in table.
+  act_store_shared : This stored action will always be shared.
+  act_get   : retrieve table
+  act_get_shared : retrieve table, with sharing explicit
+*)
+
+type 'a shared = Shared of 'a | Single of 'a
+
+type 'a t_store =
+    {act_get : unit -> 'a array ;
+     act_get_shared : unit -> 'a shared array ;
+     act_store : 'a -> int ;
+     act_store_shared : 'a -> int ; }
+
+exception Not_simple
+
+module type Stored = sig
+  type t
+  type key
+  val make_key : t -> key option
+end
+
+module Store(A:Stored) :
+    sig
+      val mk_store : unit -> A.t t_store
+    end
+
+(* Arguments to the Make functor *)
+module type S =
+  sig
+    (* type of basic tests *)
+    type primitive
+    (* basic tests themselves *)
+    val eqint : primitive
+    val neint : primitive
+    val leint : primitive
+    val ltint : primitive
+    val geint : primitive
+    val gtint : primitive
+    (* type of actions *)
+    type act
+
+    (* Various constructors, for making a binder,
+        adding one integer, etc. *)
+    val bind : act -> (act -> act) -> act
+    val make_const : int -> act
+    val make_offset : act -> int -> act
+    val make_prim : primitive -> act list -> act
+    val make_isout : act -> act -> act
+    val make_isin : act -> act -> act
+    val make_if : act -> act -> act -> act
+   (* construct an actual switch :
+      make_switch arg cases acts
+      NB:  cases is in the value form *)
+    val make_switch :
+        act -> int array -> act array -> act
+   (* Build last minute sharing of action stuff *)
+   val make_catch : act -> int * (act -> act)
+   val make_exit : int -> act
+
+  end
+
+
+(*
+  Make.zyva arg low high cases actions where
+    - arg is the argument of the switch.
+    - low, high are the interval limits.
+    - cases is a list of sub-interval and action indices
+    - actions is an array of actions.
+
+  All these arguments specify a switch construct and zyva
+  returns an action that performs the switch,
+*)
+module Make :
+  functor (Arg : S) ->
+    sig
+(* Standard entry point, sharing is tracked *)
+      val zyva :
+          (int * int) ->
+           Arg.act ->
+           (int * int * int) array ->
+           Arg.act t_store ->
+           Arg.act
+
+(* Output test sequence, sharing tracked *)
+     val test_sequence :
+           Arg.act ->
+           (int * int * int) array ->
+           Arg.act t_store ->
+           Arg.act
+    end
+
+end = struct
+#1 "switch.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Luc Maranget, projet Moscova, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 2000 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+
+type 'a shared = Shared of 'a | Single of 'a
+
+let share_out = function
+  | Shared act|Single act -> act
+
+
+type 'a t_store =
+    {act_get : unit -> 'a array ;
+     act_get_shared : unit -> 'a shared array ;
+     act_store : 'a -> int ;
+     act_store_shared : 'a -> int ; }
+
+exception Not_simple
+
+module type Stored = sig
+  type t
+  type key
+  val make_key : t -> key option
+end
+
+module Store(A:Stored) = struct
+  module AMap =
+    Map.Make(struct type t = A.key let compare = Pervasives.compare end)
+
+  type intern =
+      { mutable map : (bool * int)  AMap.t ;
+        mutable next : int ;
+        mutable acts : (bool * A.t) list; }
+
+  let mk_store () =
+    let st =
+      { map = AMap.empty ;
+        next = 0 ;
+        acts = [] ; } in
+
+    let add mustshare act =
+      let i = st.next in
+      st.acts <- (mustshare,act) :: st.acts ;
+      st.next <- i+1 ;
+      i in
+
+    let store mustshare act = match A.make_key act with
+    | Some key ->
+        begin try
+          let (shared,i) = AMap.find key st.map in
+          if not shared then st.map <- AMap.add key (true,i) st.map ;
+          i
+        with Not_found ->
+          let i = add mustshare act in
+          st.map <- AMap.add key (mustshare,i) st.map ;
+          i
+        end
+    | None ->
+        add mustshare act
+
+    and get () = Array.of_list (List.rev_map (fun (_,act) -> act) st.acts)
+
+    and get_shared () =
+      let acts =
+        Array.of_list
+          (List.rev_map
+             (fun (shared,act) ->
+               if shared then Shared act else Single act)
+             st.acts) in
+      AMap.iter
+        (fun _ (shared,i) ->
+          if shared then match acts.(i) with
+          | Single act -> acts.(i) <- Shared act
+          | Shared _ -> ())
+        st.map ;
+      acts in
+    {act_store = store false ; act_store_shared = store true ;
+     act_get = get; act_get_shared = get_shared; }
+end
+
+
+
+module type S =
+ sig
+   type primitive
+   val eqint : primitive
+   val neint : primitive
+   val leint : primitive
+   val ltint : primitive
+   val geint : primitive
+   val gtint : primitive
+   type act
+
+   val bind : act -> (act -> act) -> act
+   val make_const : int -> act
+   val make_offset : act -> int -> act
+   val make_prim : primitive -> act list -> act
+   val make_isout : act -> act -> act
+   val make_isin : act -> act -> act
+   val make_if : act -> act -> act -> act
+   val make_switch : act -> int array -> act array -> act
+   val make_catch : act -> int * (act -> act)
+   val make_exit : int -> act
+ end
+
+(* The module will ``produce good code for the case statement'' *)
+(*
+  Adaptation of
+   R.L. Berstein
+   ``Producing good code for the case statement''
+   Sofware Practice and Experience, 15(10) (1985)
+ and
+   D.L. Spuler
+    ``Two-Way Comparison Search Trees, a Generalisation of Binary Search Trees
+      and Split Trees''
+    ``Compiler Code Generation for Multiway Branch Statement as
+      a Static Search Problem''
+   Technical Reports, James Cook University
+*)
+(*
+  Main adaptation is considering interval tests
+ (implemented as one addition + one unsigned test and branch)
+  which leads to exhaustive search for finding the optimal
+  test sequence in small cases and heuristics otherwise.
+*)
+module Make (Arg : S) =
+  struct
+
+    type 'a inter =
+        {cases : (int * int * int) array ;
+          actions : 'a array}
+
+type 'a t_ctx =  {off : int ; arg : 'a}
+
+let cut = ref 8
+and more_cut = ref 16
+
+let pint chan i =
+  if i = min_int then Printf.fprintf chan "-oo"
+  else if i=max_int then Printf.fprintf chan "oo"
+  else Printf.fprintf chan "%d" i
+
+let pcases chan cases =
+  for i =0 to Array.length cases-1 do
+    let l,h,act = cases.(i) in
+    if l=h then
+      Printf.fprintf chan "%d:%d " l act
+    else
+      Printf.fprintf chan "%a..%a:%d " pint l pint h act
+  done
+
+    let prerr_inter i = Printf.fprintf stderr
+        "cases=%a" pcases i.cases
+
+let get_act cases i =
+  let _,_,r = cases.(i) in
+  r
+and get_low cases i =
+  let r,_,_ = cases.(i) in
+  r
+
+type ctests = {
+    mutable n : int ;
+    mutable ni : int ;
+  }
+
+let too_much = {n=max_int ; ni=max_int}
+
+let ptests chan {n=n ; ni=ni} =
+  Printf.fprintf chan "{n=%d ; ni=%d}" n ni
+
+let pta chan t =
+  for i =0 to Array.length t-1 do
+    Printf.fprintf chan "%d: %a\n" i ptests t.(i)
+  done
+
+let count_tests s =
+  let r =
+    Array.init
+      (Array.length s.actions)
+      (fun _ -> {n=0 ; ni=0 }) in
+  let c = s.cases in
+  let imax = Array.length c-1 in
+  for i=0 to imax do
+    let l,h,act = c.(i) in
+    let x = r.(act) in
+    x.n <- x.n+1 ;
+    if l < h && i<> 0 && i<>imax then
+      x.ni <- x.ni+1 ;
+  done ;
+  r
+
+
+let less_tests c1 c2 =
+  if c1.n < c2.n then
+    true
+  else if c1.n = c2.n then begin
+    if c1.ni < c2.ni then
+      true
+    else
+      false
+  end else
+    false
+
+and eq_tests c1 c2 = c1.n = c2.n && c1.ni=c2.ni
+
+let min_tests c1 c2 = if less_tests c1 c2 then c1 else c2
+
+let less2tests (c1,d1) (c2,d2) =
+  if eq_tests c1 c2 then
+    less_tests d1 d2
+  else
+    less_tests c1 c2
+
+let add_test t1 t2 =
+  t1.n <- t1.n + t2.n ;
+  t1.ni <- t1.ni + t2.ni ;
+
+type t_ret = Inter of int * int  | Sep of int | No
+
+let pret chan = function
+  | Inter (i,j)-> Printf.fprintf chan "Inter %d %d" i j
+  | Sep i -> Printf.fprintf chan "Sep %d" i
+  | No -> Printf.fprintf chan "No"
+
+let coupe cases i =
+  let l,_,_ = cases.(i) in
+  l,
+  Array.sub cases 0 i,
+  Array.sub cases i (Array.length cases-i)
+
+
+let case_append c1 c2 =
+  let len1 = Array.length c1
+  and len2 = Array.length c2 in
+  match len1,len2 with
+  | 0,_ -> c2
+  | _,0 -> c1
+  | _,_ ->
+      let l1,h1,act1 = c1.(Array.length c1-1)
+      and l2,h2,act2 = c2.(0) in
+      if act1 = act2 then
+        let r = Array.make (len1+len2-1) c1.(0) in
+        for i = 0 to len1-2 do
+          r.(i) <- c1.(i)
+        done ;
+
+        let l =
+          if len1-2 >= 0 then begin
+            let _,h,_ = r.(len1-2) in
+            if h+1 < l1 then
+              h+1
+            else
+              l1
+          end else
+            l1
+        and h =
+          if 1 < len2-1 then begin
+            let l,_,_ = c2.(1) in
+            if h2+1 < l then
+              l-1
+            else
+              h2
+          end else
+            h2 in
+        r.(len1-1) <- (l,h,act1) ;
+        for i=1 to len2-1  do
+          r.(len1-1+i) <- c2.(i)
+        done ;
+        r
+      else if h1 > l1 then
+        let r = Array.make (len1+len2) c1.(0) in
+        for i = 0 to len1-2 do
+          r.(i) <- c1.(i)
+        done ;
+        r.(len1-1) <- (l1,l2-1,act1) ;
+        for i=0 to len2-1  do
+          r.(len1+i) <- c2.(i)
+        done ;
+        r
+      else if h2 > l2 then
+        let r = Array.make (len1+len2) c1.(0) in
+        for i = 0 to len1-1 do
+          r.(i) <- c1.(i)
+        done ;
+        r.(len1) <- (h1+1,h2,act2) ;
+        for i=1 to len2-1  do
+          r.(len1+i) <- c2.(i)
+        done ;
+        r
+      else
+        Array.append c1 c2
+
+
+let coupe_inter i j cases =
+  let lcases = Array.length cases in
+  let low,_,_ = cases.(i)
+  and _,high,_ = cases.(j) in
+  low,high,
+  Array.sub cases i (j-i+1),
+  case_append (Array.sub cases 0 i) (Array.sub cases (j+1) (lcases-(j+1)))
+
+type kind = Kvalue of int | Kinter of int | Kempty
+
+let pkind chan = function
+  | Kvalue i ->Printf.fprintf chan "V%d" i
+  | Kinter i -> Printf.fprintf chan "I%d" i
+  | Kempty -> Printf.fprintf chan "E"
+
+let rec pkey chan  = function
+  | [] -> ()
+  | [k] -> pkind chan k
+  | k::rem ->
+      Printf.fprintf chan "%a %a" pkey rem pkind k
+
+let t = Hashtbl.create 17
+
+let make_key  cases =
+  let seen = ref []
+  and count = ref 0 in
+  let rec got_it act = function
+    | [] ->
+        seen := (act,!count):: !seen ;
+        let r = !count in
+        incr count ;
+        r
+    | (act0,index) :: rem ->
+        if act0 = act then
+          index
+        else
+          got_it act rem in
+
+  let make_one l h act =
+    if l=h then
+      Kvalue (got_it act !seen)
+    else
+      Kinter (got_it act !seen) in
+
+  let rec make_rec i pl =
+    if i < 0 then
+      []
+    else
+      let l,h,act = cases.(i) in
+      if pl = h+1 then
+        make_one l h act::make_rec (i-1) l
+      else
+        Kempty::make_one l h act::make_rec (i-1) l in
+
+  let l,h,act = cases.(Array.length cases-1) in
+  make_one l h act::make_rec (Array.length cases-2) l
+
+
+    let same_act t =
+      let len = Array.length t in
+      let a = get_act t (len-1) in
+      let rec do_rec i =
+        if i < 0 then true
+        else
+          let b = get_act t i in
+          b=a && do_rec (i-1) in
+      do_rec (len-2)
+
+
+(*
+  Intervall test x in [l,h] works by checking x-l in [0,h-l]
+   * This may be false for arithmetic modulo 2^31
+   * Subtracting l may change the relative ordering of values
+     and invalid the invariant that matched values are given in
+     increasing order
+
+   To avoid this, interval check is allowed only when the
+   integers indeed present in the whole case interval are
+   in [-2^16 ; 2^16]
+
+   This condition is checked by zyva
+*)
+
+let inter_limit = 1 lsl 16
+
+let ok_inter = ref false
+
+let rec opt_count top cases =
+  let key = make_key cases in
+  try
+    let r = Hashtbl.find t key in
+    r
+  with
+  | Not_found ->
+      let r =
+        let lcases = Array.length cases in
+        match lcases with
+        | 0 -> assert false
+        | _ when same_act cases -> No, ({n=0; ni=0},{n=0; ni=0})
+        | _ ->
+            if lcases < !cut then
+              enum top cases
+            else if lcases < !more_cut then
+              heuristic top cases
+            else
+              divide top cases in
+      Hashtbl.add t key r ;
+      r
+
+and divide top cases =
+  let lcases = Array.length cases in
+  let m = lcases/2 in
+  let _,left,right = coupe cases m in
+  let ci = {n=1 ; ni=0}
+  and cm = {n=1 ; ni=0}
+  and _,(cml,cleft) = opt_count false left
+  and _,(cmr,cright) = opt_count false right in
+  add_test ci cleft ;
+  add_test ci cright ;
+  if less_tests cml cmr then
+    add_test cm cmr
+  else
+    add_test cm cml ;
+  Sep m,(cm, ci)
+
+and heuristic top cases =
+  let lcases = Array.length cases in
+
+  let sep,csep = divide false cases
+
+  and inter,cinter =
+    if !ok_inter then begin
+      let _,_,act0 = cases.(0)
+      and _,_,act1 = cases.(lcases-1) in
+      if act0 = act1 then begin
+        let low, high, inside, outside = coupe_inter 1 (lcases-2) cases in
+        let _,(cmi,cinside) = opt_count false inside
+        and _,(cmo,coutside) = opt_count false outside
+        and cmij = {n=1 ; ni=(if low=high then 0 else 1)}
+        and cij = {n=1 ; ni=(if low=high then 0 else 1)} in
+        add_test cij cinside ;
+        add_test cij coutside ;
+        if less_tests cmi cmo then
+          add_test cmij cmo
+        else
+          add_test cmij cmi ;
+        Inter (1,lcases-2),(cmij,cij)
+      end else
+        Inter (-1,-1),(too_much, too_much)
+    end else
+      Inter (-1,-1),(too_much, too_much) in
+  if less2tests csep cinter then
+    sep,csep
+  else
+    inter,cinter
+
+
+and enum top cases =
+  let lcases = Array.length cases in
+  let lim, with_sep =
+    let best = ref (-1) and best_cost = ref (too_much,too_much) in
+
+    for i = 1 to lcases-(1) do
+      let _,left,right = coupe cases i in
+      let ci = {n=1 ; ni=0}
+      and cm = {n=1 ; ni=0}
+      and _,(cml,cleft) = opt_count false left
+      and _,(cmr,cright) = opt_count false right in
+      add_test ci cleft ;
+      add_test ci cright ;
+      if less_tests cml cmr then
+        add_test cm cmr
+      else
+        add_test cm cml ;
+
+      if
+        less2tests (cm,ci) !best_cost
+      then begin
+        if top then
+          Printf.fprintf stderr "Get it: %d\n" i ;
+        best := i ;
+        best_cost := (cm,ci)
+      end
+    done ;
+    !best, !best_cost in
+
+  let ilow, ihigh, with_inter =
+    if not !ok_inter then
+      let rlow = ref (-1) and rhigh = ref (-1)
+      and best_cost= ref (too_much,too_much) in
+      for i=1 to lcases-2 do
+        let low, high, inside, outside = coupe_inter i i cases in
+         if low=high then begin
+           let _,(cmi,cinside) = opt_count false inside
+           and _,(cmo,coutside) = opt_count false outside
+           and cmij = {n=1 ; ni=0}
+           and cij = {n=1 ; ni=0} in
+           add_test cij cinside ;
+           add_test cij coutside ;
+           if less_tests cmi cmo then
+             add_test cmij cmo
+           else
+             add_test cmij cmi ;
+           if less2tests (cmij,cij) !best_cost then begin
+             rlow := i ;
+             rhigh := i ;
+             best_cost := (cmij,cij)
+           end
+         end
+      done ;
+      !rlow, !rhigh, !best_cost
+    else
+      let rlow = ref (-1) and rhigh = ref (-1)
+      and best_cost= ref (too_much,too_much) in
+      for i=1 to lcases-2 do
+        for j=i to lcases-2 do
+          let low, high, inside, outside = coupe_inter i j cases in
+          let _,(cmi,cinside) = opt_count false inside
+          and _,(cmo,coutside) = opt_count false outside
+          and cmij = {n=1 ; ni=(if low=high then 0 else 1)}
+          and cij = {n=1 ; ni=(if low=high then 0 else 1)} in
+          add_test cij cinside ;
+          add_test cij coutside ;
+          if less_tests cmi cmo then
+            add_test cmij cmo
+          else
+            add_test cmij cmi ;
+          if less2tests (cmij,cij) !best_cost then begin
+            rlow := i ;
+            rhigh := j ;
+            best_cost := (cmij,cij)
+          end
+        done
+      done ;
+      !rlow, !rhigh, !best_cost in
+  let r = ref (Inter (ilow,ihigh)) and rc = ref with_inter in
+  if less2tests with_sep !rc then begin
+    r := Sep lim ; rc := with_sep
+  end ;
+  !r, !rc
+
+    let make_if_test test arg i ifso ifnot =
+      Arg.make_if
+        (Arg.make_prim test [arg ; Arg.make_const i])
+        ifso ifnot
+
+    let make_if_lt arg i  ifso ifnot = match i with
+    | 1 ->
+        make_if_test Arg.leint arg 0 ifso ifnot
+    | _ ->
+        make_if_test Arg.ltint arg i ifso ifnot
+
+    and make_if_le arg i ifso ifnot = match i with
+    | -1 ->
+        make_if_test Arg.ltint arg 0 ifso ifnot
+    | _ ->
+        make_if_test Arg.leint arg i ifso ifnot
+
+    and make_if_gt arg i  ifso ifnot = match i with
+    | -1 ->
+        make_if_test Arg.geint arg 0 ifso ifnot
+    | _ ->
+        make_if_test Arg.gtint arg i ifso ifnot
+
+    and make_if_ge arg i  ifso ifnot = match i with
+    | 1 ->
+        make_if_test Arg.gtint arg 0 ifso ifnot
+    | _ ->
+        make_if_test Arg.geint arg i ifso ifnot
+
+    and make_if_eq  arg i ifso ifnot =
+      make_if_test Arg.eqint arg i ifso ifnot
+
+    and make_if_ne  arg i ifso ifnot =
+      make_if_test Arg.neint arg i ifso ifnot
+
+    let do_make_if_out h arg ifso ifno =
+      Arg.make_if (Arg.make_isout h arg) ifso ifno
+
+    let make_if_out ctx l d mk_ifso mk_ifno = match l with
+    | 0 ->
+        do_make_if_out
+          (Arg.make_const d) ctx.arg (mk_ifso ctx) (mk_ifno ctx)
+    | _ ->
+        Arg.bind
+          (Arg.make_offset ctx.arg (-l))
+          (fun arg ->
+            let ctx = {off= (-l+ctx.off) ; arg=arg} in
+            do_make_if_out
+              (Arg.make_const d) arg (mk_ifso ctx) (mk_ifno ctx))
+
+    let do_make_if_in h arg ifso ifno =
+      Arg.make_if (Arg.make_isin h arg) ifso ifno
+
+    let make_if_in ctx l d mk_ifso mk_ifno = match l with
+    | 0 ->
+        do_make_if_in
+          (Arg.make_const d) ctx.arg (mk_ifso ctx) (mk_ifno ctx)
+    | _ ->
+        Arg.bind
+          (Arg.make_offset ctx.arg (-l))
+          (fun arg ->
+            let ctx = {off= (-l+ctx.off) ; arg=arg} in
+            do_make_if_in
+              (Arg.make_const d) arg (mk_ifso ctx) (mk_ifno ctx))
+
+    let rec c_test ctx ({cases=cases ; actions=actions} as s) =
+      let lcases = Array.length cases in
+      assert(lcases > 0) ;
+      if lcases = 1 then
+        actions.(get_act cases 0) ctx
+
+      else begin
+
+        let w,c = opt_count false cases in
+(*
+  Printf.fprintf stderr
+  "off=%d tactic=%a for %a\n"
+  ctx.off pret w pcases cases ;
+  *)
+    match w with
+    | No -> actions.(get_act cases 0) ctx
+    | Inter (i,j) ->
+        let low,high,inside, outside = coupe_inter i j cases in
+        let _,(cinside,_) = opt_count false inside
+        and _,(coutside,_) = opt_count false outside in
+(* Costs are retrieved to put the code with more remaining tests
+   in the privileged (positive) branch of ``if'' *)
+        if low=high then begin
+          if less_tests coutside cinside then
+            make_if_eq
+              ctx.arg
+              (low+ctx.off)
+              (c_test ctx {s with cases=inside})
+              (c_test ctx {s with cases=outside})
+          else
+            make_if_ne
+              ctx.arg
+              (low+ctx.off)
+              (c_test ctx {s with cases=outside})
+              (c_test ctx {s with cases=inside})
+        end else begin
+          if less_tests coutside cinside then
+            make_if_in
+              ctx
+              (low+ctx.off)
+              (high-low)
+              (fun ctx -> c_test ctx {s with cases=inside})
+              (fun ctx -> c_test ctx {s with cases=outside})
+          else
+            make_if_out
+              ctx
+              (low+ctx.off)
+              (high-low)
+              (fun ctx -> c_test ctx {s with cases=outside})
+              (fun ctx -> c_test ctx {s with cases=inside})
+        end
+    | Sep i ->
+        let lim,left,right = coupe cases i in
+        let _,(cleft,_) = opt_count false left
+        and _,(cright,_) = opt_count false right in
+        let left = {s with cases=left}
+        and right = {s with cases=right} in
+
+        if i=1 && (lim+ctx.off)=1 && get_low cases 0+ctx.off=0 then
+          make_if_ne
+            ctx.arg 0
+            (c_test ctx right) (c_test ctx left)
+        else if less_tests cright cleft then
+          make_if_lt
+            ctx.arg (lim+ctx.off)
+            (c_test ctx left) (c_test ctx right)
+        else
+          make_if_ge
+             ctx.arg (lim+ctx.off)
+            (c_test ctx right) (c_test ctx left)
+
+  end
+
+
+(* Minimal density of switches *)
+let theta = ref 0.33333
+
+(* Minmal number of tests to make a switch *)
+let switch_min = ref 3
+
+(* Particular case 0, 1, 2 *)
+let particular_case cases i j =
+  j-i = 2 &&
+  (let l1,h1,act1 = cases.(i)
+  and  l2,h2,act2 = cases.(i+1)
+  and  l3,h3,act3 = cases.(i+2) in
+  l1+1=l2 && l2+1=l3 && l3=h3 &&
+  act1 <> act3)
+
+let approx_count cases i j n_actions =
+  let l = j-i+1 in
+  if l < !cut then
+     let _,(_,{n=ntests}) = opt_count false (Array.sub cases i l) in
+     ntests
+  else
+    l-1
+
+(* Sends back a boolean that says whether is switch is worth or not *)
+
+let dense {cases=cases ; actions=actions} i j =
+  if i=j then true
+  else
+    let l,_,_ = cases.(i)
+    and _,h,_ = cases.(j) in
+    let ntests =  approx_count cases i j (Array.length actions) in
+(*
+  (ntests+1) >= theta * (h-l+1)
+*)
+    particular_case cases i j ||
+    (ntests >= !switch_min &&
+    float_of_int ntests +. 1.0 >=
+    !theta *. (float_of_int h -. float_of_int l +. 1.0))
+
+(* Compute clusters by dynamic programming
+   Adaptation of the correction to Bernstein
+   ``Correction to `Producing Good Code for the Case Statement' ''
+   S.K. Kannan and T.A. Proebsting
+   Software Practice and Exprience Vol. 24(2) 233 (Feb 1994)
+*)
+
+let comp_clusters ({cases=cases ; actions=actions} as s) =
+  let len = Array.length cases in
+  let min_clusters = Array.make len max_int
+  and k = Array.make len 0 in
+  let get_min i = if i < 0 then 0 else min_clusters.(i) in
+
+  for i = 0 to len-1 do
+    for j = 0 to i do
+      if
+        dense s j i &&
+        get_min (j-1) + 1 < min_clusters.(i)
+      then begin
+        k.(i) <- j ;
+        min_clusters.(i) <- get_min (j-1) + 1
+      end
+    done ;
+  done ;
+  min_clusters.(len-1),k
+
+(* Assume j > i *)
+let make_switch  {cases=cases ; actions=actions} i j =
+  let ll,_,_ = cases.(i)
+  and _,hh,_ = cases.(j) in
+  let tbl = Array.make (hh-ll+1) 0
+  and t = Hashtbl.create 17
+  and index = ref 0 in
+  let get_index act =
+    try
+      Hashtbl.find t act
+    with
+    | Not_found ->
+        let i = !index in
+        incr index ;
+        Hashtbl.add t act i ;
+        i in
+
+  for k=i to j do
+    let l,h,act = cases.(k) in
+    let index = get_index act in
+    for kk=l-ll to h-ll do
+      tbl.(kk) <- index
+    done
+  done ;
+  let acts = Array.make !index actions.(0) in
+  Hashtbl.iter
+    (fun act i -> acts.(i) <- actions.(act))
+    t ;
+  (fun ctx ->
+    match -ll-ctx.off with
+    | 0 -> Arg.make_switch ctx.arg tbl acts
+    | _ ->
+        Arg.bind
+          (Arg.make_offset ctx.arg (-ll-ctx.off))
+          (fun arg -> Arg.make_switch arg tbl acts))
+
+
+let make_clusters ({cases=cases ; actions=actions} as s) n_clusters k =
+  let len = Array.length cases in
+  let r = Array.make n_clusters (0,0,0)
+  and t = Hashtbl.create 17
+  and index = ref 0
+  and bidon = ref (Array.length actions) in
+  let get_index act =
+    try
+      let i,_ = Hashtbl.find t act in
+      i
+    with
+    | Not_found ->
+        let i = !index in
+        incr index ;
+        Hashtbl.add
+          t act
+          (i,(fun _ -> actions.(act))) ;
+        i
+  and add_index act =
+    let i = !index in
+    incr index ;
+    incr bidon ;
+    Hashtbl.add t !bidon (i,act) ;
+    i in
+
+  let rec zyva j ir =
+    let i = k.(j) in
+    begin if i=j then
+      let l,h,act = cases.(i) in
+      r.(ir) <- (l,h,get_index act)
+    else (* assert i < j *)
+      let l,_,_ = cases.(i)
+      and _,h,_ = cases.(j) in
+      r.(ir) <- (l,h,add_index (make_switch s i j))
+    end ;
+    if i > 0 then zyva (i-1) (ir-1) in
+
+  zyva (len-1) (n_clusters-1) ;
+  let acts = Array.make !index (fun _ -> assert false) in
+  Hashtbl.iter (fun _ (i,act) -> acts.(i) <- act) t ;
+  {cases = r ; actions = acts}
+;;
+
+
+let do_zyva (low,high) arg cases actions =
+  let old_ok = !ok_inter in
+  ok_inter := (abs low <= inter_limit && abs high <= inter_limit) ;
+  if !ok_inter <> old_ok then Hashtbl.clear t ;
+
+  let s = {cases=cases ; actions=actions} in
+(*
+  Printf.eprintf "ZYVA: %b\n" !ok_inter ;
+  pcases stderr cases ;
+  prerr_endline "" ;
+*)
+  let n_clusters,k = comp_clusters s in
+  let clusters = make_clusters s n_clusters k in
+  let r = c_test {arg=arg ; off=0} clusters in
+  r
+
+let abstract_shared actions =
+  let handlers = ref (fun x -> x) in
+  let actions =
+    Array.map
+      (fun act -> match  act with
+      | Single act -> act
+      | Shared act ->
+          let i,h = Arg.make_catch act in
+          let oh = !handlers in
+          handlers := (fun act -> h (oh act)) ;
+          Arg.make_exit i)
+      actions in
+  !handlers,actions
+
+let zyva lh arg cases actions =
+  let actions = actions.act_get_shared () in
+  let hs,actions = abstract_shared actions in
+  hs (do_zyva lh arg cases actions)
+
+and test_sequence arg cases actions =
+  let actions = actions.act_get_shared () in
+  let hs,actions = abstract_shared actions in
+  let old_ok = !ok_inter in
+  ok_inter := false ;
+  if !ok_inter <> old_ok then Hashtbl.clear t ;
+  let s =
+    {cases=cases ;
+    actions=Array.map (fun act -> (fun _ -> act)) actions} in
+(*
+  Printf.eprintf "SEQUENCE: %b\n" !ok_inter ;
+  pcases stderr cases ;
+  prerr_endline "" ;
+*)
+  hs (c_test {arg=arg ; off=0} s)
+;;
+
+end
+
+end
+module Typeopt : sig 
+#1 "typeopt.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1998 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Auxiliaries for type-based optimizations, e.g. array kinds *)
+
+val has_base_type : Typedtree.expression -> Path.t -> bool
+val maybe_pointer : Typedtree.expression -> bool
+val array_kind : Typedtree.expression -> Lambda.array_kind
+val array_pattern_kind : Typedtree.pattern -> Lambda.array_kind
+val bigarray_kind_and_layout :
+      Typedtree.expression -> Lambda.bigarray_kind * Lambda.bigarray_layout
+
+end = struct
+#1 "typeopt.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1998 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Auxiliaries for type-based optimizations, e.g. array kinds *)
+
+open Path
+open Types
+open Typedtree
+open Lambda
+
+let scrape env ty =
+  (Ctype.repr (Ctype.expand_head_opt env (Ctype.correct_levels ty))).desc
+
+let has_base_type exp base_ty_path =
+  match scrape exp.exp_env exp.exp_type with
+  | Tconstr(p, _, _) -> Path.same p base_ty_path
+  | _ -> false
+
+let maybe_pointer exp =
+  match scrape exp.exp_env exp.exp_type with
+  | Tconstr(p, args, abbrev) ->
+      not (Path.same p Predef.path_int) &&
+      not (Path.same p Predef.path_char) &&
+      begin try
+        match Env.find_type p exp.exp_env with
+        | {type_kind = Type_variant []} -> true (* type exn *)
+        | {type_kind = Type_variant cstrs} ->
+            List.exists (fun c -> c.Types.cd_args <> []) cstrs
+        | _ -> true
+      with Not_found -> true
+        (* This can happen due to e.g. missing -I options,
+           causing some .cmi files to be unavailable.
+           Maybe we should emit a warning. *)
+      end
+  | _ -> true
+
+let array_element_kind env ty =
+  match scrape env ty with
+  | Tvar _ | Tunivar _ ->
+      Pgenarray
+  | Tconstr(p, args, abbrev) ->
+      if Path.same p Predef.path_int || Path.same p Predef.path_char then
+        Pintarray
+      else if Path.same p Predef.path_float then
+        Pfloatarray
+      else if Path.same p Predef.path_string
+           || Path.same p Predef.path_array
+           || Path.same p Predef.path_nativeint
+           || Path.same p Predef.path_int32
+           || Path.same p Predef.path_int64 then
+        Paddrarray
+      else begin
+        try
+          match Env.find_type p env with
+            {type_kind = Type_abstract} ->
+              Pgenarray
+          | {type_kind = Type_variant cstrs}
+            when List.for_all (fun c -> c.Types.cd_args = []) cstrs ->
+              Pintarray
+          | {type_kind = _} ->
+              Paddrarray
+        with Not_found ->
+          (* This can happen due to e.g. missing -I options,
+             causing some .cmi files to be unavailable.
+             Maybe we should emit a warning. *)
+          Pgenarray
+      end
+  | _ ->
+      Paddrarray
+
+let array_kind_gen ty env =
+  match scrape env ty with
+  | Tconstr(p, [elt_ty], _) | Tpoly({desc = Tconstr(p, [elt_ty], _)}, _)
+    when Path.same p Predef.path_array ->
+      array_element_kind env elt_ty
+  | _ ->
+      (* This can happen with e.g. Obj.field *)
+      Pgenarray
+
+let array_kind exp = array_kind_gen exp.exp_type exp.exp_env
+
+let array_pattern_kind pat = array_kind_gen pat.pat_type pat.pat_env
+
+let bigarray_decode_type env ty tbl dfl =
+  match scrape env ty with
+  | Tconstr(Pdot(Pident mod_id, type_name, _), [], _)
+    when Ident.name mod_id = "Bigarray" ->
+      begin try List.assoc type_name tbl with Not_found -> dfl end
+  | _ ->
+      dfl
+
+let kind_table =
+  ["float32_elt", Pbigarray_float32;
+   "float64_elt", Pbigarray_float64;
+   "int8_signed_elt", Pbigarray_sint8;
+   "int8_unsigned_elt", Pbigarray_uint8;
+   "int16_signed_elt", Pbigarray_sint16;
+   "int16_unsigned_elt", Pbigarray_uint16;
+   "int32_elt", Pbigarray_int32;
+   "int64_elt", Pbigarray_int64;
+   "int_elt", Pbigarray_caml_int;
+   "nativeint_elt", Pbigarray_native_int;
+   "complex32_elt", Pbigarray_complex32;
+   "complex64_elt", Pbigarray_complex64]
+
+let layout_table =
+  ["c_layout", Pbigarray_c_layout;
+   "fortran_layout", Pbigarray_fortran_layout]
+
+let bigarray_kind_and_layout exp =
+  match scrape exp.exp_env exp.exp_type with
+  | Tconstr(p, [caml_type; elt_type; layout_type], abbrev) ->
+      (bigarray_decode_type exp.exp_env elt_type kind_table Pbigarray_unknown,
+       bigarray_decode_type exp.exp_env layout_type layout_table
+                            Pbigarray_unknown_layout)
+  | _ ->
+      (Pbigarray_unknown, Pbigarray_unknown_layout)
+
+end
+module Matching : sig 
+#1 "matching.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Compilation of pattern-matching *)
+
+open Typedtree
+open Lambda
+
+
+(* Entry points to match compiler *)
+val for_function:
+        Location.t -> int ref option -> lambda -> (pattern * lambda) list ->
+        partial -> lambda
+val for_trywith:
+        lambda -> (pattern * lambda) list -> lambda
+val for_let:
+        Location.t -> lambda -> pattern -> lambda -> lambda
+val for_multiple_match:
+        Location.t -> lambda list -> (pattern * lambda) list -> partial ->
+        lambda
+
+val for_tupled_function:
+        Location.t -> Ident.t list -> (pattern list * lambda) list ->
+        partial -> lambda
+
+exception Cannot_flatten
+
+val flatten_pattern: int -> pattern -> pattern list
+
+(* Expand stringswitch to  string test tree *)
+val expand_stringswitch:
+    Location.t -> lambda -> (string * lambda) list -> lambda option -> lambda
+
+val inline_lazy_force : lambda -> Location.t -> lambda
+
+end = struct
+#1 "matching.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Compilation of pattern matching *)
+
+open Misc
+open Asttypes
+open Primitive
+open Types
+open Typedtree
+open Lambda
+open Parmatch
+open Printf
+
+
+let dbg = false
+
+(*  See Peyton-Jones, ``The Implementation of functional programming
+    languages'', chapter 5. *)
+(*
+  Bon, au commencement du monde c'etait vrai.
+  Now, see Lefessant-Maranget ``Optimizing Pattern-Matching'' ICFP'2001
+*)
+
+
+(*
+   Many functions on the various data structures of the algorithm :
+     - Pattern matrices.
+     - Default environments: mapping from matrices to exit numbers.
+     - Contexts:  matrices whose column are partitioned into
+       left and right.
+     - Jump summaries: mapping from exit numbers to contexts
+*)
+
+let string_of_lam lam =
+  Printlambda.lambda Format.str_formatter lam ;
+  Format.flush_str_formatter ()
+
+type matrix = pattern list list
+
+let add_omega_column pss = List.map (fun ps -> omega::ps) pss
+
+type ctx = {left:pattern list ; right:pattern list}
+
+let pretty_ctx ctx =
+  List.iter
+    (fun {left=left ; right=right} ->
+      prerr_string "LEFT:" ;
+      pretty_line left ;
+      prerr_string " RIGHT:" ;
+      pretty_line right ;
+      prerr_endline "")
+    ctx
+
+let le_ctx c1 c2 =
+  le_pats c1.left c2.left &&
+  le_pats c1.right c2.right
+
+let lshift {left=left ; right=right} = match right with
+| x::xs -> {left=x::left ; right=xs}
+| _ ->  assert false
+
+let lforget {left=left ; right=right} = match right with
+| x::xs -> {left=omega::left ; right=xs}
+|  _ -> assert false
+
+let rec small_enough n = function
+  | [] -> true
+  | _::rem ->
+      if n <= 0 then false
+      else small_enough (n-1) rem
+
+let ctx_lshift ctx =
+  if small_enough 31 ctx then
+    List.map lshift ctx
+  else (* Context pruning *) begin
+    get_mins le_ctx (List.map lforget ctx)
+  end
+
+let  rshift {left=left ; right=right} = match left with
+| p::ps -> {left=ps ; right=p::right}
+| _ -> assert false
+
+let ctx_rshift ctx = List.map rshift ctx
+
+let rec nchars n ps =
+  if n <= 0 then [],ps
+  else match ps with
+  | p::rem ->
+    let chars, cdrs = nchars (n-1) rem in
+    p::chars,cdrs
+  | _ -> assert false
+
+let  rshift_num n {left=left ; right=right} =
+  let shifted,left = nchars n left in
+  {left=left ; right = shifted@right}
+
+let ctx_rshift_num n ctx = List.map (rshift_num n) ctx
+
+(* Recombination of contexts (eg: (_,_)::p1::p2::rem ->  (p1,p2)::rem)
+  All mutable fields are replaced by '_', since side-effects in
+  guards can alter these fields *)
+
+let combine {left=left ; right=right} = match left with
+| p::ps -> {left=ps ; right=set_args_erase_mutable p right}
+| _ -> assert false
+
+let ctx_combine ctx = List.map combine ctx
+
+let ncols = function
+  | [] -> 0
+  | ps::_ -> List.length ps
+
+
+exception NoMatch
+exception OrPat
+
+let filter_matrix matcher pss =
+
+  let rec filter_rec = function
+    | (p::ps)::rem ->
+        begin match p.pat_desc with
+        | Tpat_alias (p,_,_) ->
+            filter_rec ((p::ps)::rem)
+        | Tpat_var _ ->
+            filter_rec ((omega::ps)::rem)
+        | _ ->
+            begin
+              let rem = filter_rec rem in
+              try
+                matcher p ps::rem
+              with
+              | NoMatch -> rem
+              | OrPat   ->
+                match p.pat_desc with
+                | Tpat_or (p1,p2,_) -> filter_rec [(p1::ps) ;(p2::ps)]@rem
+                | _ -> assert false
+            end
+        end
+    | [] -> []
+    | _ ->
+        pretty_matrix pss ;
+        fatal_error "Matching.filter_matrix" in
+  filter_rec pss
+
+let make_default matcher env =
+  let rec make_rec = function
+    | [] -> []
+    | ([[]],i)::_ -> [[[]],i]
+    | (pss,i)::rem ->
+        let rem = make_rec rem in
+        match filter_matrix matcher pss with
+        | [] -> rem
+        | ([]::_) -> ([[]],i)::rem
+        | pss -> (pss,i)::rem in
+  make_rec env
+
+let ctx_matcher p =
+  let p = normalize_pat p in
+  match p.pat_desc with
+  | Tpat_construct (_, cstr,omegas) ->
+      begin match cstr.cstr_tag with
+      | Cstr_extension _ ->
+          let nargs = List.length omegas in
+          (fun q rem -> match q.pat_desc with
+          | Tpat_construct (_, cstr',args)
+            when List.length args = nargs ->
+                p,args @ rem
+          | Tpat_any -> p,omegas @ rem
+          | _ -> raise NoMatch)
+      | _ ->
+          (fun q rem -> match q.pat_desc with
+          | Tpat_construct (_, cstr',args)
+            when cstr.cstr_tag=cstr'.cstr_tag ->
+              p,args @ rem
+          | Tpat_any -> p,omegas @ rem
+          | _ -> raise NoMatch)
+      end
+  | Tpat_constant cst ->
+      (fun q rem -> match q.pat_desc with
+      | Tpat_constant cst' when const_compare cst cst' = 0 ->
+          p,rem
+      | Tpat_any -> p,rem
+      | _ -> raise NoMatch)
+  | Tpat_variant (lab,Some omega,_) ->
+      (fun q rem -> match q.pat_desc with
+      | Tpat_variant (lab',Some arg,_) when lab=lab' ->
+          p,arg::rem
+      | Tpat_any -> p,omega::rem
+      | _ -> raise NoMatch)
+  | Tpat_variant (lab,None,_) ->
+      (fun q rem -> match q.pat_desc with
+      | Tpat_variant (lab',None,_) when lab=lab' ->
+          p,rem
+      | Tpat_any -> p,rem
+      | _ -> raise NoMatch)
+  | Tpat_array omegas ->
+      let len = List.length omegas in
+      (fun q rem -> match q.pat_desc with
+      | Tpat_array args when List.length args=len ->
+          p,args @ rem
+      | Tpat_any -> p, omegas @ rem
+      | _ -> raise NoMatch)
+  | Tpat_tuple omegas ->
+      (fun q rem -> match q.pat_desc with
+      | Tpat_tuple args -> p,args @ rem
+      | _          -> p, omegas @ rem)
+  | Tpat_record (l,_) -> (* Records are normalized *)
+      (fun q rem -> match q.pat_desc with
+      | Tpat_record (l',_) ->
+          let l' = all_record_args l' in
+          p, List.fold_right (fun (_, _,p) r -> p::r) l' rem
+      | _ -> p,List.fold_right (fun (_, _,p) r -> p::r) l rem)
+  | Tpat_lazy omega ->
+      (fun q rem -> match q.pat_desc with
+      | Tpat_lazy arg -> p, (arg::rem)
+      | _          -> p, (omega::rem))
+ | _ -> fatal_error "Matching.ctx_matcher"
+
+
+
+
+let filter_ctx q ctx =
+
+  let matcher = ctx_matcher q in
+
+  let rec filter_rec = function
+    | ({right=p::ps} as l)::rem ->
+        begin match p.pat_desc with
+        | Tpat_or (p1,p2,_) ->
+            filter_rec ({l with right=p1::ps}::{l with right=p2::ps}::rem)
+        | Tpat_alias (p,_,_) ->
+            filter_rec ({l with right=p::ps}::rem)
+        | Tpat_var _ ->
+            filter_rec ({l with right=omega::ps}::rem)
+        | _ ->
+            begin let rem = filter_rec rem in
+            try
+              let to_left, right = matcher p ps in
+              {left=to_left::l.left ; right=right}::rem
+            with
+            | NoMatch -> rem
+            end
+        end
+    | [] -> []
+    | _ ->  fatal_error "Matching.filter_ctx" in
+
+  filter_rec ctx
+
+let select_columns pss ctx =
+  let n = ncols pss in
+  List.fold_right
+    (fun ps r ->
+      List.fold_right
+        (fun {left=left ; right=right} r ->
+          let transfert, right = nchars n right in
+          try
+            {left = lubs transfert ps @ left ; right=right}::r
+          with
+          | Empty -> r)
+        ctx r)
+    pss []
+
+let ctx_lub p ctx =
+  List.fold_right
+    (fun {left=left ; right=right} r ->
+      match right with
+      | q::rem ->
+          begin try
+            {left=left ; right = lub p q::rem}::r
+          with
+          | Empty -> r
+          end
+      | _ -> fatal_error "Matching.ctx_lub")
+    ctx []
+
+let ctx_match ctx pss =
+  List.exists
+    (fun {right=qs} ->
+      List.exists
+        (fun ps -> compats qs ps)
+        pss)
+    ctx
+
+type jumps = (int * ctx list) list
+
+let pretty_jumps (env : jumps) = match env with
+| [] -> ()
+| _ ->
+    List.iter
+      (fun (i,ctx) ->
+        Printf.fprintf stderr "jump for %d\n" i ;
+        pretty_ctx ctx)
+      env
+
+
+let rec jumps_extract i = function
+  | [] -> [],[]
+  | (j,pss) as x::rem as all ->
+      if i=j then pss,rem
+      else if j < i then [],all
+      else
+        let r,rem = jumps_extract i rem in
+        r,(x::rem)
+
+let rec jumps_remove i = function
+  | [] -> []
+  | (j,_)::rem when i=j -> rem
+  | x::rem -> x::jumps_remove i rem
+
+let jumps_empty = []
+and jumps_is_empty = function
+  |  [] -> true
+  |  _ -> false
+
+let jumps_singleton i = function
+  | []  -> []
+  | ctx ->  [i,ctx]
+
+let jumps_add i pss jumps = match pss with
+| [] -> jumps
+| _  ->
+    let rec add = function
+      | [] -> [i,pss]
+      | (j,qss) as x::rem as all ->
+          if j > i then x::add rem
+      else if j < i then (i,pss)::all
+      else (i,(get_mins le_ctx (pss@qss)))::rem in
+    add jumps
+
+
+let rec jumps_union (env1:(int*ctx list)list) env2 = match env1,env2 with
+| [],_ -> env2
+| _,[] -> env1
+| ((i1,pss1) as x1::rem1), ((i2,pss2) as x2::rem2) ->
+    if i1=i2 then
+      (i1,get_mins le_ctx (pss1@pss2))::jumps_union rem1 rem2
+    else if i1 > i2 then
+      x1::jumps_union rem1 env2
+    else
+      x2::jumps_union env1 rem2
+
+
+let rec merge = function
+  | env1::env2::rem ->  jumps_union env1 env2::merge rem
+  | envs -> envs
+
+let rec jumps_unions envs = match envs with
+  | [] -> []
+  | [env] -> env
+  | _ -> jumps_unions (merge envs)
+
+let jumps_map f env =
+  List.map
+    (fun (i,pss) -> i,f pss)
+    env
+
+(* Pattern matching before any compilation *)
+
+type pattern_matching =
+  { mutable cases : (pattern list * lambda) list;
+    args : (lambda * let_kind) list ;
+    default : (matrix * int) list}
+
+(* Pattern matching after application of both the or-pat rule and the
+   mixture rule *)
+
+type pm_or_compiled =
+  {body : pattern_matching ;
+   handlers : (matrix * int * Ident.t list * pattern_matching) list ;
+   or_matrix : matrix ; }
+
+type pm_half_compiled =
+  | PmOr of pm_or_compiled
+  | PmVar of pm_var_compiled
+  | Pm of pattern_matching
+
+and pm_var_compiled =
+    {inside : pm_half_compiled ; var_arg : lambda ; }
+
+type pm_half_compiled_info =
+    {me : pm_half_compiled ;
+     matrix : matrix ;
+     top_default : (matrix * int) list ; }
+
+let pretty_cases cases =
+  List.iter
+    (fun ((ps),l) ->
+      List.iter
+        (fun p ->
+          Parmatch.top_pretty Format.str_formatter p ;
+          prerr_string " " ;
+          prerr_string (Format.flush_str_formatter ()))
+        ps ;
+(*
+      prerr_string " -> " ;
+      Printlambda.lambda Format.str_formatter l ;
+      prerr_string (Format.flush_str_formatter ()) ;
+*)
+      prerr_endline "")
+    cases
+
+let pretty_def def =
+  prerr_endline "+++++ Defaults +++++" ;
+  List.iter
+    (fun (pss,i) ->
+      Printf.fprintf stderr "Matrix for %d\n"  i ;
+      pretty_matrix pss)
+    def ;
+  prerr_endline "+++++++++++++++++++++"
+
+let pretty_pm pm = pretty_cases pm.cases
+
+
+let rec pretty_precompiled = function
+  | Pm pm ->
+      prerr_endline "++++ PM ++++" ;
+      pretty_pm pm
+  | PmVar x ->
+      prerr_endline "++++ VAR ++++" ;
+      pretty_precompiled x.inside
+  | PmOr x ->
+      prerr_endline "++++ OR ++++" ;
+      pretty_pm x.body ;
+      pretty_matrix x.or_matrix ;
+      List.iter
+        (fun (_,i,_,pm) ->
+          eprintf "++ Handler %d ++\n" i ;
+          pretty_pm pm)
+        x.handlers
+
+let pretty_precompiled_res first nexts =
+  pretty_precompiled first ;
+  List.iter
+    (fun (e, pmh) ->
+      eprintf "** DEFAULT %d **\n" e ;
+      pretty_precompiled pmh)
+    nexts
+
+
+
+(* Identifing some semantically equivalent lambda-expressions,
+   Our goal here is also to
+   find alpha-equivalent (simple) terms *)
+
+(* However, as shown by PR#6359 such sharing may hinders the
+   lambda-code invariant that all bound idents are unique,
+   when switchs are compiled to test sequences.
+   The definitive fix is the systematic introduction of exit/catch
+   in case action sharing is present.
+*)
+
+
+module StoreExp =
+  Switch.Store
+    (struct
+      type t = lambda
+      type key = lambda
+      let make_key = Lambda.make_key
+    end)
+
+
+let make_exit i = Lstaticraise (i,[])
+
+(* Introduce a catch, if worth it *)
+let make_catch d k = match d with
+| Lstaticraise (_,[]) -> k d
+| _ ->
+    let e = next_raise_count () in
+    Lstaticcatch (k (make_exit e),(e,[]),d)
+
+(* Introduce a catch, if worth it, delayed version *)
+let rec as_simple_exit = function
+  | Lstaticraise (i,[]) -> Some i
+  | Llet (Alias,_,_,e) -> as_simple_exit e
+  | _ -> None
+
+
+let make_catch_delayed handler = match as_simple_exit handler with
+| Some i -> i,(fun act -> act)
+| None ->
+    let i = next_raise_count () in
+(*
+    Printf.eprintf "SHARE LAMBDA: %i\n%s\n" i (string_of_lam handler);
+*)
+    i,
+    (fun body -> match body with
+    | Lstaticraise (j,_) ->
+        if i=j then handler else body
+    | _ -> Lstaticcatch (body,(i,[]),handler))
+
+
+let raw_action l =
+  match make_key l with | Some l -> l | None -> l
+
+
+let tr_raw act = match make_key act with
+| Some act -> act
+| None -> raise Exit
+
+let same_actions = function
+  | [] -> None
+  | [_,act] -> Some act
+  | (_,act0) :: rem ->
+      try
+        let raw_act0 = tr_raw act0 in
+        let rec s_rec = function
+          | [] -> Some act0
+          | (_,act)::rem ->
+              if raw_act0 = tr_raw act then
+                s_rec rem
+              else
+                None in
+        s_rec rem
+      with
+      | Exit -> None
+
+
+(* Test for swapping two clauses *)
+
+let up_ok_action act1 act2 =
+  try
+    let raw1 = tr_raw act1
+    and raw2 = tr_raw act2 in
+    raw1 = raw2
+  with
+  | Exit -> false
+
+(* Nothing is kown about exception/extension patterns,
+   because of potential rebind *)
+let rec exc_inside p = match p.pat_desc with
+  | Tpat_construct (_,{cstr_tag=Cstr_extension _},_) -> true
+  | Tpat_any|Tpat_constant _|Tpat_var _
+  | Tpat_construct (_,_,[])
+  | Tpat_variant (_,None,_)
+    -> false
+  | Tpat_construct (_,_,ps)
+  | Tpat_tuple ps
+  | Tpat_array ps
+      -> exc_insides ps
+  | Tpat_variant (_, Some q,_)
+  | Tpat_alias (q,_,_)
+  | Tpat_lazy q
+    -> exc_inside q
+  | Tpat_record (lps,_) ->
+      List.exists (fun (_,_,p) -> exc_inside p) lps
+  | Tpat_or (p1,p2,_) -> exc_inside p1 || exc_inside p2
+
+and exc_insides ps = List.exists exc_inside ps
+
+let up_ok (ps,act_p) l =
+  if exc_insides ps then match l with [] -> true | _::_ -> false
+  else
+    List.for_all
+      (fun (qs,act_q) ->
+        up_ok_action act_p act_q ||
+        not (Parmatch.compats ps qs))
+      l
+
+
+(*
+   Simplify fonction normalize the first column of the match
+     - records are expanded so that they posses all fields
+     - aliases are removed and replaced by bindings in actions.
+   However or-patterns are simplified differently,
+     - aliases are not removed
+     - or patterns (_|p) are changed into _
+*)
+
+exception Var of pattern
+
+let simplify_or p =
+  let rec simpl_rec p = match p with
+    | {pat_desc = Tpat_any|Tpat_var _} -> raise (Var p)
+    | {pat_desc = Tpat_alias (q,id,s)} ->
+        begin try
+          {p with pat_desc = Tpat_alias (simpl_rec q,id,s)}
+        with
+        | Var q -> raise (Var {p with pat_desc = Tpat_alias (q,id,s)})
+        end
+    | {pat_desc = Tpat_or (p1,p2,o)} ->
+        let q1 = simpl_rec p1 in
+        begin try
+          let q2 = simpl_rec p2 in
+          {p with pat_desc = Tpat_or (q1, q2, o)}
+        with
+        | Var q2 -> raise (Var {p with pat_desc = Tpat_or (q1, q2, o)})
+        end
+    | {pat_desc = Tpat_record (lbls,closed)} ->
+        let all_lbls = all_record_args lbls in
+        {p with pat_desc=Tpat_record (all_lbls, closed)}
+    | _ -> p in
+  try
+    simpl_rec p
+  with
+  | Var p -> p
+
+let simplify_cases args cls = match args with
+| [] -> assert false
+| (arg,_)::_ ->
+    let rec simplify = function
+      | [] -> []
+      | ((pat :: patl, action) as cl) :: rem ->
+          begin match pat.pat_desc with
+          | Tpat_var (id, _) ->
+              (omega :: patl, bind Alias id arg action) ::
+              simplify rem
+          | Tpat_any ->
+              cl :: simplify rem
+          | Tpat_alias(p, id,_) ->
+              simplify ((p :: patl, bind Alias id arg action) :: rem)
+          | Tpat_record ([],_) ->
+              (omega :: patl, action)::
+              simplify rem
+          | Tpat_record (lbls, closed) ->
+              let all_lbls = all_record_args lbls in
+              let full_pat =
+                {pat with pat_desc=Tpat_record (all_lbls, closed)} in
+              (full_pat::patl,action)::
+              simplify rem
+          | Tpat_or _ ->
+              let pat_simple  = simplify_or pat in
+              begin match pat_simple.pat_desc with
+              | Tpat_or _ ->
+                  (pat_simple :: patl, action) ::
+                  simplify rem
+              | _ ->
+                  simplify ((pat_simple::patl,action) :: rem)
+              end
+          | _ -> cl :: simplify rem
+          end
+      | _ -> assert false in
+
+    simplify cls
+
+
+
+(* Once matchings are simplified one easily finds
+   their nature *)
+
+let rec what_is_cases cases = match cases with
+| ({pat_desc=Tpat_any} :: _, _) :: rem -> what_is_cases rem
+| (({pat_desc=(Tpat_var _|Tpat_or (_,_,_)|Tpat_alias (_,_,_))}::_),_)::_
+  -> assert false (* applies to simplified matchings only *)
+| (p::_,_)::_ -> p
+| [] -> omega
+| _ -> assert false
+
+
+
+(* A few operation on default environments *)
+let as_matrix cases = get_mins le_pats (List.map (fun (ps,_) -> ps) cases)
+
+(* For extension matching, record no imformation in matrix *)
+let as_matrix_omega cases =
+  get_mins le_pats
+    (List.map
+       (fun (ps,_) ->
+         match ps with
+         | [] -> assert false
+         | _::ps -> omega::ps)
+       cases)
+
+let cons_default matrix raise_num default =
+  match matrix with
+  | [] -> default
+  | _ -> (matrix,raise_num)::default
+
+let default_compat p def =
+  List.fold_right
+    (fun (pss,i) r ->
+      let qss =
+        List.fold_right
+          (fun qs r -> match qs with
+            | q::rem when Parmatch.compat p q -> rem::r
+            | _ -> r)
+          pss [] in
+      match qss with
+      | [] -> r
+      | _  -> (qss,i)::r)
+    def []
+
+(* Or-pattern expansion, variables are a complication w.r.t. the article *)
+let rec extract_vars r p = match p.pat_desc with
+| Tpat_var (id, _) -> IdentSet.add id r
+| Tpat_alias (p, id,_ ) ->
+    extract_vars (IdentSet.add id r) p
+| Tpat_tuple pats ->
+    List.fold_left extract_vars r pats
+| Tpat_record (lpats,_) ->
+    List.fold_left
+      (fun r (_, _, p) -> extract_vars r p)
+      r lpats
+| Tpat_construct (_, _, pats) ->
+    List.fold_left extract_vars r pats
+| Tpat_array pats ->
+    List.fold_left extract_vars r pats
+| Tpat_variant (_,Some p, _) -> extract_vars r p
+| Tpat_lazy p -> extract_vars r p
+| Tpat_or (p,_,_) -> extract_vars r p
+| Tpat_constant _|Tpat_any|Tpat_variant (_,None,_) -> r
+
+exception Cannot_flatten
+
+let mk_alpha_env arg aliases ids =
+  List.map
+    (fun id -> id,
+      if List.mem id aliases then
+        match arg with
+        | Some v -> v
+        | _      -> raise Cannot_flatten
+      else
+        Ident.create (Ident.name id))
+    ids
+
+let rec explode_or_pat arg patl mk_action rem vars aliases = function
+  | {pat_desc = Tpat_or (p1,p2,_)} ->
+      explode_or_pat
+        arg patl mk_action
+        (explode_or_pat arg patl mk_action rem vars aliases p2)
+        vars aliases p1
+  | {pat_desc = Tpat_alias (p,id, _)} ->
+      explode_or_pat arg patl mk_action rem vars (id::aliases) p
+  | {pat_desc = Tpat_var (x, _)} ->
+      let env = mk_alpha_env arg (x::aliases) vars in
+      (omega::patl,mk_action (List.map snd env))::rem
+  | p ->
+      let env = mk_alpha_env arg aliases vars in
+      (alpha_pat env p::patl,mk_action (List.map snd env))::rem
+
+let pm_free_variables {cases=cases} =
+  List.fold_right
+    (fun (_,act) r -> IdentSet.union (free_variables act) r)
+    cases IdentSet.empty
+
+
+(* Basic grouping predicates *)
+let pat_as_constr = function
+  | {pat_desc=Tpat_construct (_, cstr,_)} -> cstr
+  | _ -> fatal_error "Matching.pat_as_constr"
+
+let group_constant = function
+  | {pat_desc= Tpat_constant _} -> true
+  | _                           -> false
+
+and group_constructor = function
+  | {pat_desc = Tpat_construct (_,_,_)} -> true
+  | _ -> false
+
+and group_variant = function
+  | {pat_desc = Tpat_variant (_, _, _)} -> true
+  | _ -> false
+
+and group_var = function
+  | {pat_desc=Tpat_any} -> true
+  | _ -> false
+
+and group_tuple = function
+  | {pat_desc = (Tpat_tuple _|Tpat_any)} -> true
+  | _ -> false
+
+and group_record = function
+  | {pat_desc = (Tpat_record _|Tpat_any)} -> true
+  | _ -> false
+
+and group_array = function
+  | {pat_desc=Tpat_array _} -> true
+  | _ -> false
+
+and group_lazy = function
+  | {pat_desc = Tpat_lazy _} -> true
+  | _ -> false
+
+let get_group p = match p.pat_desc with
+| Tpat_any -> group_var
+| Tpat_constant _ -> group_constant
+| Tpat_construct _ -> group_constructor
+| Tpat_tuple _ -> group_tuple
+| Tpat_record _ -> group_record
+| Tpat_array _ -> group_array
+| Tpat_variant (_,_,_) -> group_variant
+| Tpat_lazy _ -> group_lazy
+|  _ -> fatal_error "Matching.get_group"
+
+
+
+let is_or p = match p.pat_desc with
+| Tpat_or _ -> true
+| _ -> false
+
+(* Conditions for appending to the Or matrix *)
+let conda p q = not (compat p q)
+and condb act ps qs =  not (is_guarded act) && Parmatch.le_pats qs ps
+
+let or_ok p ps l =
+  List.for_all
+    (function
+      | ({pat_desc=Tpat_or _} as q::qs,act) ->
+          conda p q || condb act ps qs
+      | _ -> true)
+    l
+
+(* Insert or append a pattern in the Or matrix *)
+
+let equiv_pat p q = le_pat p q && le_pat q p
+
+let rec get_equiv p l = match l with
+  | (q::_,_) as cl::rem ->
+      if equiv_pat p q then
+        let others,rem = get_equiv p rem in
+        cl::others,rem
+      else
+        [],l
+  | _ -> [],l
+
+
+let insert_or_append p ps act ors no =
+  let rec attempt seen = function
+    | (q::qs,act_q) as cl::rem ->
+        if is_or q then begin
+          if compat p q then
+            if
+              IdentSet.is_empty (extract_vars IdentSet.empty p) &&
+              IdentSet.is_empty (extract_vars IdentSet.empty q) &&
+              equiv_pat p q
+            then (* attempt insert, for equivalent orpats with no variables *)
+              let _, not_e = get_equiv q rem in
+              if
+                or_ok p ps not_e && (* check append condition for head of O *)
+                List.for_all        (* check insert condition for tail of O *)
+                  (fun cl -> match cl with
+                  | (q::_,_) -> not (compat p q)
+                  | _        -> assert false)
+                  seen
+              then (* insert *)
+                List.rev_append seen ((p::ps,act)::cl::rem), no
+              else (* fail to insert or append *)
+                ors,(p::ps,act)::no
+            else if condb act_q ps qs then (* check condition (b) for append *)
+              attempt (cl::seen) rem
+            else
+              ors,(p::ps,act)::no
+          else (* p # q, go on with append/insert *)
+            attempt (cl::seen) rem
+        end else (* q is not a or-pat, go on with append/insert *)
+          attempt (cl::seen) rem
+    | _  -> (* [] in fact *)
+        (p::ps,act)::ors,no in (* success in appending *)
+  attempt [] ors
+
+(* Reconstruct default information from half_compiled  pm list *)
+
+let rec rebuild_matrix pmh = match pmh with
+  | Pm pm -> as_matrix pm.cases
+  | PmOr {or_matrix=m} -> m
+  | PmVar x -> add_omega_column  (rebuild_matrix x.inside)
+
+let rec rebuild_default nexts def = match nexts with
+| [] -> def
+| (e, pmh)::rem ->
+    (add_omega_column (rebuild_matrix pmh), e)::
+    rebuild_default rem def
+
+let rebuild_nexts arg nexts k =
+  List.fold_right
+    (fun (e, pm) k -> (e, PmVar {inside=pm ; var_arg=arg})::k)
+    nexts k
+
+
+(*
+  Split a matching.
+    Splitting is first directed by or-patterns, then by
+    tests (e.g. constructors)/variable transitions.
+
+    The approach is greedy, every split function attempt to
+    raise rows as much as possible in the top matrix,
+    then splitting applies again to the remaining rows.
+
+    Some precompilation of or-patterns and
+    variable pattern occurs. Mostly this means that bindings
+    are performed now,  being replaced by let-bindings
+    in actions (cf. simplify_cases).
+
+    Additionally, if the match argument is a variable, matchings whose
+    first column is made of variables only are splitted further
+    (cf. precompile_var).
+
+*)
+
+
+let rec split_or argo cls args def =
+
+  let cls = simplify_cases args cls in
+
+  let rec do_split before ors no = function
+    | [] ->
+        cons_next
+          (List.rev before) (List.rev ors) (List.rev no)
+    | ((p::ps,act) as cl)::rem ->
+        if up_ok cl no then
+          if is_or p then
+            let ors, no = insert_or_append p ps act ors no in
+            do_split before ors no rem
+          else begin
+            if up_ok cl ors then
+              do_split (cl::before) ors no rem
+            else if or_ok p ps ors then
+              do_split before (cl::ors) no rem
+            else
+              do_split before ors (cl::no) rem
+          end
+        else
+          do_split before ors (cl::no) rem
+    | _ -> assert false
+
+  and cons_next yes yesor = function
+    | [] ->
+        precompile_or argo yes yesor args def []
+    | rem ->
+        let {me=next ; matrix=matrix ; top_default=def},nexts =
+          do_split [] [] [] rem in
+        let idef = next_raise_count () in
+        precompile_or
+          argo yes yesor args
+          (cons_default matrix idef def)
+          ((idef,next)::nexts) in
+
+  do_split [] [] [] cls
+
+(* Ultra-naive spliting, close to semantics, used for extension,
+   as potential rebind prevents any kind of optimisation *)
+
+and split_naive cls args def k =
+
+  let rec split_exc cstr0 yes = function
+    | [] ->
+        let yes = List.rev yes in
+        { me = Pm {cases=yes; args=args; default=def;} ;
+          matrix = as_matrix_omega yes ;
+          top_default=def},
+        k
+    | (p::_,_ as cl)::rem ->
+        if group_constructor p then
+          let cstr = pat_as_constr p in
+          if cstr = cstr0 then split_exc cstr0 (cl::yes) rem
+          else
+            let yes = List.rev yes in
+            let {me=next ; matrix=matrix ; top_default=def}, nexts =
+              split_exc cstr [cl] rem in
+            let idef = next_raise_count () in
+            let def = cons_default matrix idef def in
+            { me = Pm {cases=yes; args=args; default=def} ;
+              matrix = as_matrix_omega yes ;
+              top_default = def; },
+            (idef,next)::nexts
+        else
+          let yes = List.rev yes in
+          let {me=next ; matrix=matrix ; top_default=def}, nexts =
+              split_noexc [cl] rem in
+            let idef = next_raise_count () in
+            let def = cons_default matrix idef def in
+            { me = Pm {cases=yes; args=args; default=def} ;
+              matrix = as_matrix_omega yes ;
+              top_default = def; },
+            (idef,next)::nexts
+    | _ -> assert false
+
+  and split_noexc yes = function
+    | [] -> precompile_var args (List.rev yes) def k
+    | (p::_,_ as cl)::rem ->
+        if group_constructor p then
+          let yes= List.rev yes in
+          let {me=next; matrix=matrix; top_default=def;},nexts =
+            split_exc (pat_as_constr p) [cl] rem in
+          let idef = next_raise_count () in
+          precompile_var
+            args yes
+            (cons_default matrix idef def)
+            ((idef,next)::nexts)
+        else split_noexc (cl::yes) rem
+    | _ -> assert false in
+
+  match cls with
+  | [] -> assert false
+  | (p::_,_ as cl)::rem ->
+      if group_constructor p then
+        split_exc (pat_as_constr p) [cl] rem
+      else
+        split_noexc [cl] rem
+  | _ -> assert false
+
+and split_constr cls args def k =
+  let ex_pat = what_is_cases cls in
+  match ex_pat.pat_desc with
+  | Tpat_any -> precompile_var args cls def k
+  | Tpat_construct (_,{cstr_tag=Cstr_extension _},_) ->
+      split_naive cls args def k
+  | _ ->
+
+      let group = get_group ex_pat in
+
+      let rec split_ex yes no = function
+        | [] ->
+            let yes = List.rev yes and no = List.rev no in
+            begin match no with
+            | [] ->
+                {me = Pm {cases=yes ; args=args ; default=def} ;
+                  matrix = as_matrix yes ;
+                  top_default = def},
+                k
+            | cl::rem ->
+                begin match yes with
+                | [] ->
+                    (* Could not success in raising up a constr matching up *)
+                    split_noex [cl] [] rem
+                | _ ->
+                    let {me=next ; matrix=matrix ; top_default=def}, nexts =
+                      split_noex [cl] [] rem in
+                    let idef = next_raise_count () in
+                    let def = cons_default matrix idef def in
+                    {me = Pm {cases=yes ; args=args ; default=def} ;
+                      matrix = as_matrix yes ;
+                      top_default = def },
+                    (idef, next)::nexts
+                end
+            end
+        | (p::_,_) as cl::rem ->
+            if group p && up_ok cl no then
+              split_ex (cl::yes) no rem
+            else
+              split_ex yes (cl::no) rem
+        | _ -> assert false
+
+      and split_noex yes no = function
+        | [] ->
+            let yes = List.rev yes and no = List.rev no in
+            begin match no with
+            | [] -> precompile_var args yes def k
+            | cl::rem ->
+                let {me=next ; matrix=matrix ; top_default=def}, nexts =
+                  split_ex [cl] [] rem in
+                let idef = next_raise_count () in
+                precompile_var
+                  args yes
+                  (cons_default matrix idef def)
+                  ((idef,next)::nexts)
+            end
+        | [ps,_ as cl]
+            when List.for_all group_var ps && yes <> [] ->
+       (* This enables an extra division in some frequent case :
+          last row is made of variables only *)
+              split_noex yes (cl::no) []
+        | (p::_,_) as cl::rem ->
+            if not (group p) && up_ok cl no then
+              split_noex (cl::yes) no rem
+            else
+              split_noex yes (cl::no) rem
+        | _ -> assert false in
+
+      match cls with
+      | ((p::_,_) as cl)::rem ->
+          if group p then split_ex [cl] [] rem
+          else split_noex [cl] [] rem
+      | _ ->  assert false
+
+and precompile_var  args cls def k = match args with
+| []  -> assert false
+| _::((Lvar v as av,_) as arg)::rargs ->
+    begin match cls with
+    | [ps,_] -> (* as splitted as it can *)
+        dont_precompile_var args cls def k
+    | _ ->
+(* Precompile *)
+        let var_cls =
+          List.map
+            (fun (ps,act) -> match ps with
+            | _::ps -> ps,act | _     -> assert false)
+            cls
+        and var_def = make_default (fun _ rem -> rem) def in
+        let {me=first ; matrix=matrix}, nexts =
+          split_or (Some v) var_cls (arg::rargs) var_def in
+
+(* Compute top information *)
+        match nexts with
+        | [] -> (* If you need *)
+            dont_precompile_var args cls def k
+        | _  ->
+            let rfirst =
+              {me = PmVar {inside=first ; var_arg = av} ;
+                matrix = add_omega_column matrix ;
+                top_default = rebuild_default nexts def ; }
+            and rnexts = rebuild_nexts av nexts k in
+            rfirst, rnexts
+    end
+|  _ ->
+    dont_precompile_var args cls def k
+
+and dont_precompile_var args cls def k =
+  {me =  Pm {cases = cls ; args = args ; default = def } ;
+    matrix=as_matrix cls ;
+    top_default=def},k
+
+and is_exc p = match p.pat_desc with
+| Tpat_or (p1,p2,_) -> is_exc p1 || is_exc p2
+| Tpat_alias (p,v,_) -> is_exc p
+| Tpat_construct (_,{cstr_tag=Cstr_extension _},_) -> true
+| _ -> false
+
+and precompile_or argo cls ors args def k = match ors with
+| [] -> split_constr cls args def k
+| _  ->
+    let rec do_cases = function
+      | ({pat_desc=Tpat_or _} as orp::patl, action)::rem ->
+          let do_opt = not (is_exc orp) in
+          let others,rem =
+            if do_opt then get_equiv orp rem
+            else [],rem in
+          let orpm =
+            {cases =
+              (patl, action)::
+              List.map
+                (function
+                  | (_::ps,action) -> ps,action
+                  | _ -> assert false)
+                others ;
+              args = (match args with _::r -> r | _ -> assert false) ;
+              default = default_compat (if do_opt then orp else omega) def} in
+          let vars =
+            IdentSet.elements
+              (IdentSet.inter
+                 (extract_vars IdentSet.empty orp)
+                 (pm_free_variables orpm)) in
+          let or_num = next_raise_count () in
+          let new_patl = Parmatch.omega_list patl in
+
+          let mk_new_action vs =
+            Lstaticraise
+              (or_num, List.map (fun v -> Lvar v) vs) in
+
+          let do_optrec,body,handlers = do_cases rem in
+          do_opt && do_optrec,
+          explode_or_pat
+            argo new_patl mk_new_action body vars [] orp,
+          let mat = if do_opt then [[orp]] else [[omega]] in
+          ((mat, or_num, vars , orpm):: handlers)
+      | cl::rem ->
+          let b,new_ord,new_to_catch = do_cases rem in
+          b,cl::new_ord,new_to_catch
+      | [] -> true,[],[] in
+
+    let do_opt,end_body, handlers = do_cases ors in
+    let matrix = (if do_opt then as_matrix else as_matrix_omega) (cls@ors)
+    and body = {cases=cls@end_body ; args=args ; default=def} in
+    {me = PmOr {body=body ; handlers=handlers ; or_matrix=matrix} ;
+      matrix=matrix ;
+      top_default=def},
+    k
+
+let split_precompile argo pm =
+  let {me=next}, nexts = split_or argo pm.cases pm.args pm.default  in
+  if dbg && (nexts <> [] || (match next with PmOr _ -> true | _ -> false))
+  then begin
+    prerr_endline "** SPLIT **" ;
+    pretty_pm pm ;
+    pretty_precompiled_res  next nexts
+  end ;
+  next, nexts
+
+
+(* General divide functions *)
+
+let add_line patl_action pm = pm.cases <- patl_action :: pm.cases; pm
+
+type cell =
+  {pm : pattern_matching ;
+  ctx : ctx list ;
+  pat : pattern}
+
+let add make_matching_fun division eq_key key patl_action args =
+  try
+    let (_,cell) = List.find (fun (k,_) -> eq_key key k) division in
+    cell.pm.cases <- patl_action :: cell.pm.cases;
+    division
+  with Not_found ->
+    let cell = make_matching_fun args in
+    cell.pm.cases <- [patl_action] ;
+    (key, cell) :: division
+
+
+let divide make eq_key get_key get_args ctx pm =
+
+  let rec divide_rec = function
+    | (p::patl,action) :: rem ->
+        let this_match = divide_rec rem in
+        add
+          (make p pm.default ctx)
+          this_match eq_key (get_key p) (get_args p patl,action) pm.args
+    | _ -> [] in
+
+  divide_rec pm.cases
+
+
+let divide_line make_ctx make get_args pat ctx pm =
+  let rec divide_rec = function
+    | (p::patl,action) :: rem ->
+        let this_match = divide_rec rem in
+        add_line (get_args p patl, action) this_match
+    | _ -> make pm.default pm.args in
+
+  {pm = divide_rec pm.cases ;
+  ctx=make_ctx ctx ;
+  pat=pat}
+
+
+
+(* Then come various functions,
+   There is one set of functions per matching style
+   (constants, constructors etc.)
+
+   - matcher function are arguments to make_default (for defaukt handlers)
+   They may raise NoMatch or OrPat and perform the full
+   matching (selection + arguments).
+
+
+   - get_args and get_key are for the compiled matrices, note that
+   selection and geting arguments are separed.
+
+   - make_ _matching combines the previous functions for produicing
+   new  ``pattern_matching'' records.
+*)
+
+
+
+let rec matcher_const cst p rem = match p.pat_desc with
+| Tpat_or (p1,p2,_) ->
+    begin try
+      matcher_const cst p1 rem with
+    | NoMatch -> matcher_const cst p2 rem
+    end
+| Tpat_constant c1 when const_compare c1 cst = 0 -> rem
+| Tpat_any    -> rem
+| _ -> raise NoMatch
+
+let get_key_constant caller = function
+  | {pat_desc= Tpat_constant cst} -> cst
+  | p ->
+      prerr_endline ("BAD: "^caller) ;
+      pretty_pat p ;
+      assert false
+
+let get_args_constant _ rem = rem
+
+let make_constant_matching p def ctx = function
+    [] -> fatal_error "Matching.make_constant_matching"
+  | (_ :: argl) ->
+      let def =
+        make_default
+          (matcher_const (get_key_constant "make" p)) def
+      and ctx =
+        filter_ctx p  ctx in
+      {pm = {cases = []; args = argl ; default = def} ;
+        ctx = ctx ;
+        pat = normalize_pat p}
+
+
+
+
+let divide_constant ctx m =
+  divide
+    make_constant_matching
+    (fun c d -> const_compare c d = 0) (get_key_constant "divide")
+    get_args_constant
+    ctx m
+
+(* Matching against a constructor *)
+
+
+let make_field_args loc binding_kind arg first_pos last_pos argl =
+  let rec make_args pos =
+    if pos > last_pos
+    then argl
+    else (Lprim(Pfield (pos, Fld_na (* TODO*) ), [arg],loc), binding_kind) :: make_args (pos + 1)
+  in make_args first_pos
+
+let get_key_constr = function
+  | {pat_desc=Tpat_construct (_, cstr,_)} -> cstr.cstr_tag
+  | _ -> assert false
+
+let get_args_constr p rem = match p with
+| {pat_desc=Tpat_construct (_, _, args)} -> args @ rem
+| _ -> assert false
+
+let matcher_constr cstr = match cstr.cstr_arity with
+| 0 ->
+    let rec matcher_rec q rem = match q.pat_desc with
+    | Tpat_or (p1,p2,_) ->
+        begin
+          try
+            matcher_rec p1 rem
+          with
+          | NoMatch -> matcher_rec p2 rem
+        end
+    | Tpat_construct (_, cstr1, []) when cstr.cstr_tag = cstr1.cstr_tag ->
+        rem
+    | Tpat_any -> rem
+    | _ -> raise NoMatch in
+    matcher_rec
+| 1 ->
+    let rec matcher_rec q rem = match q.pat_desc with
+    | Tpat_or (p1,p2,_) ->
+        let r1 = try Some (matcher_rec p1 rem) with NoMatch -> None
+        and r2 = try Some (matcher_rec p2 rem) with NoMatch -> None in
+        begin match r1,r2 with
+        | None, None -> raise NoMatch
+        | Some r1, None -> r1
+        | None, Some r2 -> r2
+        | Some (a1::rem1), Some (a2::_) ->
+            {a1 with
+             pat_loc = Location.none ;
+             pat_desc = Tpat_or (a1, a2, None)}::
+            rem
+        | _, _ -> assert false
+        end
+    | Tpat_construct (_, cstr1, [arg])
+      when cstr.cstr_tag = cstr1.cstr_tag -> arg::rem
+    | Tpat_any -> omega::rem
+    | _ -> raise NoMatch in
+    matcher_rec
+| _ ->
+    fun q rem -> match q.pat_desc with
+    | Tpat_or (_,_,_) -> raise OrPat
+    | Tpat_construct (_, cstr1, args)
+      when cstr.cstr_tag = cstr1.cstr_tag -> args @ rem
+    | Tpat_any -> Parmatch.omegas cstr.cstr_arity @ rem
+    | _        -> raise NoMatch
+
+let make_constr_matching p def ctx = function
+    [] -> fatal_error "Matching.make_constr_matching"
+  | ((arg, mut) :: argl) ->
+      let cstr = pat_as_constr p in
+      let newargs =
+        match cstr.cstr_tag with
+          Cstr_constant _ | Cstr_block _ ->
+            make_field_args p.pat_loc Alias arg 0 (cstr.cstr_arity - 1) argl
+        | Cstr_extension _ ->
+            make_field_args p.pat_loc Alias arg 1 cstr.cstr_arity argl in
+      {pm=
+        {cases = []; args = newargs;
+          default = make_default (matcher_constr cstr) def} ;
+        ctx =  filter_ctx p ctx ;
+        pat=normalize_pat p}
+
+
+let divide_constructor ctx pm =
+  divide
+    make_constr_matching
+    (=) get_key_constr get_args_constr
+    ctx pm
+
+(* Matching against a variant *)
+
+let rec matcher_variant_const lab p rem = match p.pat_desc with
+| Tpat_or (p1, p2, _) ->
+    begin
+      try
+        matcher_variant_const lab p1 rem
+      with
+      | NoMatch -> matcher_variant_const lab p2 rem
+    end
+| Tpat_variant (lab1,_,_) when lab1=lab -> rem
+| Tpat_any -> rem
+| _   -> raise NoMatch
+
+
+let make_variant_matching_constant p lab def ctx = function
+    [] -> fatal_error "Matching.make_variant_matching_constant"
+  | ((arg, mut) :: argl) ->
+      let def = make_default (matcher_variant_const lab) def
+      and ctx = filter_ctx p ctx in
+      {pm={ cases = []; args = argl ; default=def} ;
+        ctx=ctx ;
+        pat = normalize_pat p}
+
+let matcher_variant_nonconst lab p rem = match p.pat_desc with
+| Tpat_or (_,_,_) -> raise OrPat
+| Tpat_variant (lab1,Some arg,_) when lab1=lab -> arg::rem
+| Tpat_any -> omega::rem
+| _   -> raise NoMatch
+
+
+let make_variant_matching_nonconst p lab def ctx = function
+    [] -> fatal_error "Matching.make_variant_matching_nonconst"
+  | ((arg, mut) :: argl) ->
+      let def = make_default (matcher_variant_nonconst lab) def
+      and ctx = filter_ctx p ctx in
+      {pm=
+        {cases = []; args = (Lprim(Pfield (1, Fld_na (* TODO*)), [arg], p.pat_loc), Alias) :: argl;
+          default=def} ;
+        ctx=ctx ;
+        pat = normalize_pat p}
+
+let get_key_variant p = match p.pat_desc with
+| Tpat_variant(lab, Some _ , _) ->  Cstr_block (Btype.hash_variant lab)
+| Tpat_variant(lab, None , _) -> Cstr_constant (Btype.hash_variant lab)
+|  _ -> assert false
+
+let divide_variant row ctx {cases = cl; args = al; default=def} =
+  let row = Btype.row_repr row in
+  let rec divide = function
+      ({pat_desc = Tpat_variant(lab, pato, _)} as p:: patl, action) :: rem ->
+        let variants = divide rem in
+        if try Btype.row_field_repr (List.assoc lab row.row_fields) = Rabsent
+        with Not_found -> true
+        then
+          variants
+        else begin
+          let tag = Btype.hash_variant lab in
+          match pato with
+            None ->
+              add (make_variant_matching_constant p lab def ctx) variants
+                (=) (Cstr_constant tag) (patl, action) al
+          | Some pat ->
+              add (make_variant_matching_nonconst p lab def ctx) variants
+                (=) (Cstr_block tag) (pat :: patl, action) al
+        end
+    | cl -> []
+  in
+  divide cl
+
+(*
+  Three ``no-test'' cases
+  *)
+
+(* Matching against a variable *)
+
+let get_args_var _ rem = rem
+
+
+let make_var_matching def = function
+  | [] ->  fatal_error "Matching.make_var_matching"
+  | _::argl ->
+      {cases=[] ;
+        args = argl ;
+        default= make_default get_args_var def}
+
+let divide_var ctx pm =
+  divide_line ctx_lshift make_var_matching get_args_var omega ctx pm
+
+(* Matching and forcing a lazy value *)
+
+let get_arg_lazy p rem = match p with
+| {pat_desc = Tpat_any} -> omega :: rem
+| {pat_desc = Tpat_lazy arg} -> arg :: rem
+| _ ->  assert false
+
+let matcher_lazy p rem = match p.pat_desc with
+| Tpat_or (_,_,_)     -> raise OrPat
+| Tpat_var _          -> get_arg_lazy omega rem
+| _                   -> get_arg_lazy p rem
+
+(* Inlining the tag tests before calling the primitive that works on
+   lazy blocks. This is alse used in translcore.ml.
+   No call other than Obj.tag when the value has been forced before.
+*)
+
+let prim_obj_tag =
+  {prim_name = "caml_obj_tag";
+   prim_arity = 1; prim_alloc = false;
+   prim_native_name = "";
+   prim_native_float = false}
+
+let get_mod_field modname field =
+  lazy (
+    try
+      let mod_ident = Ident.create_persistent modname in
+      let env = Env.open_pers_signature modname Env.initial_safe_string in
+      let p = try
+        match Env.lookup_value (Longident.Lident field) env with
+        | (Path.Pdot(_,_,i), _) -> i
+        | _ -> fatal_error ("Primitive "^modname^"."^field^" not found.")
+      with Not_found ->
+        fatal_error ("Primitive "^modname^"."^field^" not found.")
+      in
+      Lprim(Pfield (p, Fld_na (* TODO - then we dont need query any more*)), 
+            [Lprim(Pgetglobal mod_ident, [], Location.none)], Location.none)
+    with Not_found -> fatal_error ("Module "^modname^" unavailable.")
+  )
+
+let code_force_lazy_block =
+  get_mod_field "CamlinternalLazy" "force_lazy_block"
+;;
+
+(* inline_lazy_force inlines the beginning of the code of Lazy.force. When
+   the value argument is tagged as:
+   - forward, take field 0
+   - lazy, call the primitive that forces (without testing again the tag)
+   - anything else, return it
+
+   Using Lswitch below relies on the fact that the GC does not shortcut
+   Forward(val_out_of_heap).
+*)
+
+let inline_lazy_force_cond arg loc =
+  let idarg = Ident.create "lzarg" in
+  let varg = Lvar idarg in
+  let tag = Ident.create "tag" in
+  let force_fun = Lazy.force code_force_lazy_block in
+  Llet(Strict, idarg, arg,
+       Llet(Alias, tag, Lprim(Pccall prim_obj_tag, [varg], loc),
+            Lifthenelse(
+              (* if (tag == Obj.forward_tag) then varg.(0) else ... *)
+              Lprim(Pintcomp Ceq,
+                    [Lvar tag; Lconst(Const_base(Const_int Obj.forward_tag))],
+                   loc),
+              Lprim(Pfield (0, Fld_na (* TODO: lazy *)), [varg],
+                   loc),
+              Lifthenelse(
+                (* ... if (tag == Obj.lazy_tag) then Lazy.force varg else ... *)
+                Lprim(Pintcomp Ceq,
+                      [Lvar tag; Lconst(Const_base(Const_int Obj.lazy_tag))],
+                     loc),
+                Lapply(force_fun, [varg], loc),
+                (* ... arg *)
+                  varg))))
+
+let inline_lazy_force_switch arg loc =
+  let idarg = Ident.create "lzarg" in
+  let varg = Lvar idarg in
+  let force_fun = Lazy.force code_force_lazy_block in
+  Llet(Strict, idarg, arg,
+       Lifthenelse(
+         Lprim(Pisint, [varg],loc), varg,
+         (Lswitch
+            (varg,
+             { sw_numconsts = 0; sw_consts = [];
+               sw_numblocks = 256;  (* PR#6033 - tag ranges from 0 to 255 *)
+               sw_blocks =
+                 [ (Obj.forward_tag, Lprim(Pfield (0, Fld_na (* TODO: lazy *)), [varg],loc));
+                   (Obj.lazy_tag,
+                    Lapply(force_fun, [varg], loc)) ];
+               sw_failaction = Some varg } ))))
+
+let inline_lazy_force arg loc =
+  if !Clflags.native_code then
+    (* Lswitch generates compact and efficient native code *)
+    inline_lazy_force_switch arg loc
+  else
+    (* generating bytecode: Lswitch would generate too many rather big
+       tables (~ 250 elts); conditionals are better *)
+    inline_lazy_force_cond arg loc
+
+let make_lazy_matching def = function
+    [] -> fatal_error "Matching.make_lazy_matching"
+  | (arg,mut) :: argl ->
+      { cases = [];
+        args =
+          (inline_lazy_force arg Location.none, Strict) :: argl;
+        default = make_default matcher_lazy def }
+
+let divide_lazy p ctx pm =
+  divide_line
+    (filter_ctx p)
+    make_lazy_matching
+    get_arg_lazy
+    p ctx pm
+
+(* Matching against a tuple pattern *)
+
+
+let get_args_tuple arity p rem = match p with
+| {pat_desc = Tpat_any} -> omegas arity @ rem
+| {pat_desc = Tpat_tuple args} ->
+    args @ rem
+| _ ->  assert false
+
+let matcher_tuple arity p rem = match p.pat_desc with
+| Tpat_or (_,_,_)     -> raise OrPat
+| Tpat_var _          -> get_args_tuple arity omega rem
+| _                   ->  get_args_tuple arity p rem
+
+let make_tuple_matching loc arity def = function
+    [] -> fatal_error "Matching.make_tuple_matching"
+  | (arg, mut) :: argl ->
+      let rec make_args pos =
+        if pos >= arity
+        then argl
+        else (Lprim(Pfield (pos, Fld_na (* TODO: tuple*)) , [arg], loc), Alias) :: make_args (pos + 1) in
+      {cases = []; args = make_args 0 ;
+        default=make_default (matcher_tuple arity) def}
+
+
+let divide_tuple arity p ctx pm =
+  divide_line
+    (filter_ctx p)
+    (make_tuple_matching p.pat_loc arity)
+    (get_args_tuple  arity) p ctx pm
+
+(* Matching against a record pattern *)
+
+
+let record_matching_line num_fields lbl_pat_list =
+  let patv = Array.make num_fields omega in
+  List.iter (fun (_, lbl, pat) -> patv.(lbl.lbl_pos) <- pat) lbl_pat_list;
+  Array.to_list patv
+
+let get_args_record num_fields p rem = match p with
+| {pat_desc=Tpat_any} ->
+    record_matching_line num_fields [] @ rem
+| {pat_desc=Tpat_record (lbl_pat_list,_)} ->
+    record_matching_line num_fields lbl_pat_list @ rem
+| _ -> assert false
+
+let matcher_record num_fields p rem = match p.pat_desc with
+| Tpat_or (_,_,_) -> raise OrPat
+| Tpat_var _      -> get_args_record num_fields omega rem
+| _               -> get_args_record num_fields p rem
+
+let make_record_matching loc all_labels def = function
+    [] -> fatal_error "Matching.make_record_matching"
+  | ((arg, mut) :: argl) ->
+      let rec make_args pos =
+        if pos >= Array.length all_labels then argl else begin
+          let lbl = all_labels.(pos) in
+          let access =
+            match lbl.lbl_repres with
+              Record_regular -> Pfield (lbl.lbl_pos, Fld_record lbl.lbl_name)
+            | Record_float -> Pfloatfield (lbl.lbl_pos, Fld_record lbl.lbl_name) in
+          let str =
+            match lbl.lbl_mut with
+              Immutable -> Alias
+            | Mutable -> StrictOpt in
+          (Lprim(access, [arg], loc), str) :: make_args(pos + 1)
+        end in
+      let nfields = Array.length all_labels in
+      let def= make_default (matcher_record nfields) def in
+      {cases = []; args = make_args 0 ; default = def}
+
+
+let divide_record all_labels p ctx pm =
+  let get_args = get_args_record (Array.length all_labels) in
+  divide_line
+    (filter_ctx p)
+    (make_record_matching p.pat_loc all_labels)
+    get_args
+    p ctx pm
+
+(* Matching against an array pattern *)
+
+let get_key_array = function
+  | {pat_desc=Tpat_array patl} -> List.length patl
+  | _ -> assert false
+
+let get_args_array p rem = match p with
+| {pat_desc=Tpat_array patl} -> patl@rem
+| _ -> assert false
+
+let matcher_array len p rem = match p.pat_desc with
+| Tpat_or (_,_,_) -> raise OrPat
+| Tpat_array args when List.length args=len -> args @ rem
+| Tpat_any -> Parmatch.omegas len @ rem
+| _ -> raise NoMatch
+
+let make_array_matching kind p def ctx = function
+  | [] -> fatal_error "Matching.make_array_matching"
+  | ((arg, mut) :: argl) ->
+      let len = get_key_array p in
+      let rec make_args pos =
+        if pos >= len
+        then argl
+        else (Lprim(Parrayrefu kind, [arg; Lconst(Const_base(Const_int pos))],p.pat_loc),
+              StrictOpt) :: make_args (pos + 1) in
+      let def = make_default (matcher_array len) def
+      and ctx = filter_ctx p ctx in
+      {pm={cases = []; args = make_args 0 ; default = def} ;
+        ctx=ctx ;
+        pat = normalize_pat p}
+
+let divide_array kind ctx pm =
+  divide
+    (make_array_matching kind)
+    (=) get_key_array get_args_array ctx pm
+
+
+(*
+   Specific string test sequence
+   Will be called by the bytecode compiler, from bytegen.ml.
+   The strategy is first dichotomic search (we perform 3-way tests
+   with compare_string), then sequence of equality tests
+   when there are less then T=strings_test_threshold static strings to match.
+
+  Increasing T entails (slightly) less code, decreasing T
+  (slightly) favors runtime speed.
+  T=8 looks a decent tradeoff.
+*)
+
+(* Utilities *)
+
+let strings_test_threshold = 8
+
+let prim_string_notequal =
+  Pccall{prim_name = "caml_string_notequal";
+         prim_arity = 2; prim_alloc = false;
+         prim_native_name = ""; prim_native_float = false}
+
+let prim_string_compare =
+  Pccall{prim_name = "caml_string_compare";
+         prim_arity = 2; prim_alloc = false;
+         prim_native_name = ""; prim_native_float = false}
+
+let bind_sw arg k = match arg with
+| Lvar _ -> k arg
+| _ ->
+    let id = Ident.create "switch" in
+    Llet (Strict,id,arg,k (Lvar id))
+
+
+(* Sequential equality tests *)
+
+let make_string_test_sequence loc arg sw d =
+  let d,sw = match d with
+  | None ->
+      begin match sw with
+      | (_,d)::sw -> d,sw
+      | [] -> assert false
+      end
+  | Some d -> d,sw in
+  bind_sw arg
+    (fun arg ->
+      List.fold_right
+        (fun (s,lam) k ->
+          Lifthenelse
+            (Lprim
+               (prim_string_notequal,
+                [arg; Lconst (Const_immstring s)], loc),
+             k,lam))
+        sw d)
+
+let rec split k xs = match xs with
+| [] -> assert false
+| x0::xs ->
+    if k <= 1 then [],x0,xs
+    else
+      let xs,y0,ys = split (k-2) xs in
+      x0::xs,y0,ys
+
+let zero_lam  = Lconst (Const_base (Const_int 0))
+
+let tree_way_test loc arg lt eq gt =
+  Lifthenelse
+    (Lprim (Pintcomp Clt,[arg;zero_lam], loc),lt,
+     Lifthenelse(Lprim (Pintcomp Clt,[zero_lam;arg], loc),gt,eq))
+
+(* Dichotomic tree *)
+
+
+let rec do_make_string_test_tree loc arg sw delta d =
+  let len = List.length sw in
+  if len <= strings_test_threshold+delta then
+    make_string_test_sequence loc arg sw d
+  else
+    let lt,(s,act),gt = split len sw in
+    bind_sw
+      (Lprim
+         (prim_string_compare,
+          [arg; Lconst (Const_immstring s)], loc;))
+      (fun r ->
+        tree_way_test loc r
+          (do_make_string_test_tree  loc arg lt delta d)
+          act
+          (do_make_string_test_tree loc arg gt delta d))
+
+(* Entry point *)
+let expand_stringswitch loc arg sw d = match d with
+| None ->
+    bind_sw arg
+      (fun arg -> do_make_string_test_tree loc  arg sw 0 None)
+| Some e ->
+    bind_sw arg
+      (fun arg ->
+        make_catch e
+          (fun d -> do_make_string_test_tree loc arg sw 1 (Some d)))
+
+(**********************)
+(* Generic test trees *)
+(**********************)
+
+(* Sharing *)
+
+(* Add handler, if shared *)
+let handle_shared () =
+  let hs = ref (fun x -> x) in
+  let handle_shared act = match act with
+  | Switch.Single act -> act
+  | Switch.Shared act ->
+      let i,h = make_catch_delayed act in
+      let ohs = !hs in
+      hs := (fun act -> h (ohs act)) ;
+      make_exit i in
+  hs,handle_shared
+
+
+let share_actions_tree sw d =
+  let store = StoreExp.mk_store () in
+(* Default action is always shared *)
+  let d =
+    match d with
+    | None -> None
+    | Some d -> Some (store.Switch.act_store_shared d) in
+(* Store all other actions *)
+  let sw =
+    List.map  (fun (cst,act) -> cst,store.Switch.act_store act) sw in
+
+(* Retrieve all actions, includint potentiel default *)
+  let acts = store.Switch.act_get_shared () in
+
+(* Array of actual actions *)
+  let hs,handle_shared = handle_shared () in
+  let acts = Array.map handle_shared acts in
+
+(* Recontruct default and switch list *)
+  let d = match d with
+  | None -> None
+  | Some d -> Some (acts.(d)) in
+  let sw = List.map (fun (cst,j) -> cst,acts.(j)) sw in
+  !hs,sw,d
+
+(* Note: dichotomic search requires sorted input with no duplicates *)
+let rec uniq_lambda_list sw = match sw with
+  | []|[_] -> sw
+  | (c1,_ as p1)::((c2,_)::sw2 as sw1) ->
+      if const_compare c1 c2 = 0 then uniq_lambda_list (p1::sw2)
+      else p1::uniq_lambda_list sw1
+
+let sort_lambda_list l =
+  let l =
+    List.stable_sort (fun (x,_) (y,_) -> const_compare x y) l in
+  uniq_lambda_list l
+
+let rec cut n l =
+  if n = 0 then [],l
+  else match l with
+    [] -> raise (Invalid_argument "cut")
+  | a::l -> let l1,l2 = cut (n-1) l in a::l1, l2
+
+let rec do_tests_fail loc fail tst arg = function
+  | [] -> fail
+  | (c, act)::rem ->
+      Lifthenelse
+        (Lprim (tst, [arg ; Lconst (Const_base c)], loc),
+         do_tests_fail loc fail tst arg rem,
+         act)
+
+let rec do_tests_nofail loc tst arg = function
+  | [] -> fatal_error "Matching.do_tests_nofail"
+  | [_,act] -> act
+  | (c,act)::rem ->
+      Lifthenelse
+        (Lprim (tst, [arg ; Lconst (Const_base c)], loc),
+         do_tests_nofail loc tst arg rem,
+         act)
+
+let make_test_sequence loc fail tst lt_tst arg const_lambda_list =
+  let const_lambda_list = sort_lambda_list const_lambda_list in
+  let hs,const_lambda_list,fail =
+    share_actions_tree const_lambda_list fail in
+
+  let rec make_test_sequence const_lambda_list =
+    if List.length const_lambda_list >= 4 && lt_tst <> Pignore then
+      split_sequence const_lambda_list
+    else match fail with
+    | None -> do_tests_nofail loc tst arg const_lambda_list
+    | Some fail -> do_tests_fail loc fail tst arg const_lambda_list
+
+  and split_sequence const_lambda_list =
+    let list1, list2 =
+      cut (List.length const_lambda_list / 2) const_lambda_list in
+    Lifthenelse(Lprim(lt_tst,[arg; Lconst(Const_base (fst(List.hd list2)))], loc),
+                make_test_sequence list1, make_test_sequence list2)
+  in
+  hs (make_test_sequence const_lambda_list)
+
+
+let rec explode_inter offset i j act k =
+  if i <= j then
+    explode_inter offset i (j-1) act ((j-offset,act)::k)
+  else
+    k
+
+let max_vals cases acts =
+  let vals = Array.make (Array.length acts) 0 in
+  for i=Array.length cases-1 downto 0 do
+    let l,h,act = cases.(i) in
+    vals.(act) <- h - l + 1 + vals.(act)
+  done ;
+  let max = ref 0 in
+  for i = Array.length vals-1 downto 0 do
+    if vals.(i) >= vals.(!max) then
+      max := i
+  done ;
+  if vals.(!max) > 1 then
+    !max
+  else
+    -1
+
+let as_int_list cases acts =
+  let default = max_vals cases acts in
+  let min_key,_,_ = cases.(0)
+  and _,max_key,_ = cases.(Array.length cases-1) in
+
+  let rec do_rec i k =
+    if i >= 0 then
+      let low, high, act =  cases.(i) in
+      if act = default then
+        do_rec (i-1) k
+      else
+        do_rec (i-1) (explode_inter min_key low high acts.(act) k)
+    else
+      k in
+  min_key, max_key,do_rec (Array.length cases-1) [],
+  (if default >= 0 then Some acts.(default) else None)
+
+
+module SArg = struct
+  type primitive = Lambda.primitive
+
+  let eqint = Pintcomp Ceq
+  let neint = Pintcomp Cneq
+  let leint = Pintcomp Cle
+  let ltint = Pintcomp Clt
+  let geint = Pintcomp Cge
+  let gtint = Pintcomp Cgt
+
+  type act = Lambda.lambda
+
+  let make_prim p args = Lprim (p,args, Location.none)
+  let make_offset arg n = match n with
+  | 0 -> arg
+  | _ -> Lprim (Poffsetint n,[arg], Location.none)
+
+  let bind arg body =
+    let newvar,newarg = match arg with
+    | Lvar v -> v,arg
+    | _      ->
+        let newvar = Ident.create "switcher" in
+        newvar,Lvar newvar in
+    bind Alias newvar arg (body newarg)
+  let make_const i = Lconst (Const_base (Const_int i))
+  let make_isout h arg = Lprim (Pisout, [h ; arg], Location.none)
+  let make_isin h arg = Lprim (Pnot,[make_isout h arg], Location.none)
+  let make_if cond ifso ifnot = Lifthenelse (cond, ifso, ifnot)
+  let make_switch arg cases acts =
+    let l = ref [] in
+    for i = Array.length cases-1 downto 0 do
+      l := (i,acts.(cases.(i))) ::  !l
+    done ;
+    Lswitch(arg,
+            {sw_numconsts = Array.length cases ; sw_consts = !l ;
+             sw_numblocks = 0 ; sw_blocks =  []  ;
+             sw_failaction = None})
+  let make_catch  = make_catch_delayed
+  let make_exit = make_exit
+
+end
+
+(* Action sharing for Lswitch argument *)
+let share_actions_sw sw =
+(* Attempt sharing on all actions *)
+  let store = StoreExp.mk_store () in
+  let fail = match sw.sw_failaction with
+  | None -> None
+  | Some fail ->
+      (* Fail is translated to exit, whatever happens *)
+      Some (store.Switch.act_store_shared fail) in
+  let consts =
+    List.map
+      (fun (i,e) -> i,store.Switch.act_store e)
+      sw.sw_consts
+  and blocks =
+    List.map
+      (fun (i,e) -> i,store.Switch.act_store e)
+      sw.sw_blocks in
+  let acts = store.Switch.act_get_shared () in
+  let hs,handle_shared = handle_shared () in
+  let acts = Array.map handle_shared acts in
+  let fail = match fail with
+  | None -> None
+  | Some fail -> Some (acts.(fail)) in
+  !hs,
+  { sw with
+    sw_consts = List.map (fun (i,j) -> i,acts.(j)) consts ;
+    sw_blocks = List.map (fun (i,j) -> i,acts.(j)) blocks ;
+    sw_failaction = fail; }
+
+(* Reintroduce fail action in switch argument,
+   for the sake of avoiding carrying over huge switches *)
+
+let reintroduce_fail sw = match sw.sw_failaction with
+| None ->
+    let t = Hashtbl.create 17 in
+    let seen (_,l) = match as_simple_exit l with
+    | Some i ->
+        let old = try Hashtbl.find t i with Not_found -> 0 in
+        Hashtbl.replace t i (old+1)
+    | None -> () in
+    List.iter seen sw.sw_consts ;
+    List.iter seen sw.sw_blocks ;
+    let i_max = ref (-1)
+    and max = ref (-1) in
+    Hashtbl.iter
+      (fun i c ->
+        if c > !max then begin
+          i_max := i ;
+          max := c
+        end) t ;
+    if !max >= 3 then
+      let default = !i_max in
+      let remove =
+        List.filter
+          (fun (_,lam) -> match as_simple_exit lam with
+          | Some j -> j <> default
+          | None -> true) in
+      {sw with
+       sw_consts = remove sw.sw_consts ;
+       sw_blocks = remove sw.sw_blocks ;
+       sw_failaction = Some (make_exit default)}
+    else sw
+| Some _ -> sw
+
+
+module Switcher = Switch.Make(SArg)
+open Switch
+
+let lambda_of_int i =  Lconst (Const_base (Const_int i))
+
+let rec last def = function
+  | [] -> def
+  | [x,_] -> x
+  | _::rem -> last def rem
+
+let get_edges low high l = match l with
+| [] -> low, high
+| (x,_)::_ -> x, last high l
+
+
+let as_interval_canfail fail low high l =
+  let store = StoreExp.mk_store () in
+
+  let do_store tag act =
+    let i =  store.act_store act in
+(*
+    Printlambda.lambda Format.str_formatter act ;
+    eprintf "STORE [%s] %i %s\n" tag i (Format.flush_str_formatter ()) ;
+*)
+    i in
+
+  let rec nofail_rec cur_low cur_high cur_act = function
+    | [] ->
+        if cur_high = high then
+          [cur_low,cur_high,cur_act]
+        else
+          [(cur_low,cur_high,cur_act) ; (cur_high+1,high, 0)]
+    | ((i,act_i)::rem) as all ->
+        let act_index = do_store "NO" act_i in
+        if cur_high+1= i then
+          if act_index=cur_act then
+            nofail_rec cur_low i cur_act rem
+          else if act_index=0 then
+            (cur_low,i-1, cur_act)::fail_rec i i rem
+          else
+            (cur_low, i-1, cur_act)::nofail_rec i i act_index rem
+        else if act_index = 0 then
+          (cur_low, cur_high, cur_act)::
+          fail_rec (cur_high+1) (cur_high+1) all
+        else
+          (cur_low, cur_high, cur_act)::
+          (cur_high+1,i-1,0)::
+          nofail_rec i i act_index rem
+
+  and fail_rec cur_low cur_high = function
+    | [] -> [(cur_low, cur_high, 0)]
+    | (i,act_i)::rem ->
+        let index = do_store "YES" act_i in
+        if index=0 then fail_rec cur_low i rem
+        else
+          (cur_low,i-1,0)::
+          nofail_rec i i index rem in
+
+  let init_rec = function
+    | [] -> []
+    | (i,act_i)::rem ->
+        let index = do_store "INIT" act_i in
+        if index=0 then
+          fail_rec low i rem
+        else
+          if low < i then
+            (low,i-1,0)::nofail_rec i i index rem
+          else
+            nofail_rec i i index rem in
+
+  assert (do_store "FAIL" fail = 0) ; (* fail has action index 0 *)
+  let r = init_rec l in
+  Array.of_list r,  store
+
+let as_interval_nofail l =
+  let store = StoreExp.mk_store () in
+
+  let rec i_rec cur_low cur_high cur_act = function
+    | [] ->
+        [cur_low, cur_high, cur_act]
+    | (i,act)::rem ->
+        let act_index = store.act_store act in
+        if act_index = cur_act then
+          i_rec cur_low i cur_act rem
+        else
+          (cur_low, cur_high, cur_act)::
+          i_rec i i act_index rem in
+  let inters = match l with
+  | (i,act)::rem ->
+      let act_index = store.act_store act in
+      i_rec i i act_index rem
+  | _ -> assert false in
+
+  Array.of_list inters, store
+
+
+let sort_int_lambda_list l =
+  List.sort
+    (fun (i1,_) (i2,_) ->
+      if i1 < i2 then -1
+      else if i2 < i1 then 1
+      else 0)
+    l
+
+let as_interval fail low high l =
+  let l = sort_int_lambda_list l in
+  get_edges low high l,
+  (match fail with
+  | None -> as_interval_nofail l
+  | Some act -> as_interval_canfail act low high l)
+
+let call_switcher fail arg low high int_lambda_list =
+  let edges, (cases, actions) =
+    as_interval fail low high int_lambda_list in
+  Switcher.zyva edges arg cases actions
+
+
+let exists_ctx ok ctx =
+  List.exists
+    (function
+      | {right=p::_} -> ok p
+      | _ -> assert false)
+    ctx
+
+let rec list_as_pat = function
+  | [] -> fatal_error "Matching.list_as_pat"
+  | [pat] -> pat
+  | pat::rem ->
+      {pat with pat_desc = Tpat_or (pat,list_as_pat rem,None)}
+
+
+let rec pat_as_list k = function
+  | {pat_desc=Tpat_or (p1,p2,_)} ->
+      pat_as_list (pat_as_list k p2) p1
+  | p -> p::k
+
+(* Extracting interesting patterns *)
+exception All
+
+let rec extract_pat seen k p = match p.pat_desc with
+| Tpat_or (p1,p2,_) ->
+    let k1,seen1 = extract_pat seen k p1 in
+    extract_pat seen1 k1 p2
+| Tpat_alias (p,_,_) ->
+    extract_pat  seen k p
+| Tpat_var _|Tpat_any ->
+    raise All
+| _ ->
+    let q = normalize_pat p in
+    if  List.exists (compat q) seen then
+      k, seen
+    else
+      q::k, q::seen
+
+let extract_mat seen pss =
+  let r,_ =
+    List.fold_left
+      (fun (k,seen) ps -> match ps with
+      | p::_ -> extract_pat seen k p
+      | _ -> assert false)
+      ([],seen)
+      pss in
+  r
+
+
+
+let complete_pats_constrs = function
+  | p::_ as pats ->
+      List.map
+        (pat_of_constr p)
+        (complete_constrs p (List.map get_key_constr pats))
+  | _ -> assert false
+
+
+let mk_res get_key env last_choice idef cant_fail ctx =
+
+  let env,fail,jumps_fail = match last_choice with
+  | [] ->
+      env, None, jumps_empty
+  | [p] when group_var p ->
+      env,
+      Some (Lstaticraise (idef,[])),
+      jumps_singleton idef ctx
+  | _ ->
+      (idef,cant_fail,last_choice)::env,
+      None, jumps_empty in
+  let klist,jumps =
+    List.fold_right
+      (fun (i,cant_fail,pats) (klist,jumps) ->
+        let act = Lstaticraise (i,[])
+        and pat = list_as_pat pats in
+        let klist =
+          List.fold_right
+            (fun pat klist -> (get_key pat,act)::klist)
+            pats klist
+        and ctx = if cant_fail then ctx else ctx_lub pat ctx in
+        klist,jumps_add i ctx jumps)
+      env ([],jumps_fail) in
+  fail, klist, jumps
+
+
+(*
+     Following two ``failaction'' function compute n, the trap handler
+    to jump to in case of failure of elementary tests
+*)
+
+let mk_failaction_neg partial ctx def = match partial with
+| Partial ->
+    begin match def with
+    | (_,idef)::_ ->
+        Some (Lstaticraise (idef,[])),[],jumps_singleton idef ctx
+    | _ ->
+       (* Act as Total, this means
+          If no appropriate default matrix exists,
+          then this switch cannot fail *)
+        None, [], jumps_empty
+    end
+| Total ->
+    None, [], jumps_empty
+
+
+
+(* Conforme a l'article et plus simple qu'avant *)
+and mk_failaction_pos partial seen ctx defs  =
+  if dbg then begin
+    prerr_endline "**POS**" ;
+    pretty_def defs ;
+    ()
+  end ;
+  let rec scan_def env to_test defs = match to_test,defs with
+  | ([],_)|(_,[]) ->
+      List.fold_left
+        (fun  (klist,jumps) (pats,i)->
+          let action = Lstaticraise (i,[]) in
+          let klist =
+            List.fold_right
+              (fun pat r -> (get_key_constr pat,action)::r)
+              pats klist
+          and jumps =
+            jumps_add i (ctx_lub (list_as_pat pats) ctx) jumps in
+          klist,jumps)
+        ([],jumps_empty) env
+  | _,(pss,idef)::rem ->
+      let now, later =
+        List.partition
+          (fun (p,p_ctx) -> ctx_match p_ctx pss) to_test in
+      match now with
+      | [] -> scan_def env to_test rem
+      | _  -> scan_def ((List.map fst now,idef)::env) later rem in
+
+  scan_def
+    []
+    (List.map
+       (fun pat -> pat, ctx_lub pat ctx)
+       (complete_pats_constrs seen))
+    defs
+
+
+let combine_constant loc arg cst partial ctx def
+    (const_lambda_list, total, pats) =
+  let fail, to_add, local_jumps =
+    mk_failaction_neg partial ctx def in
+  let const_lambda_list = to_add@const_lambda_list in
+  let lambda1 =
+    match cst with
+    | Const_int _ ->
+        let int_lambda_list =
+          List.map (function Const_int n, l -> n,l | _ -> assert false)
+            const_lambda_list in
+        call_switcher fail arg min_int max_int int_lambda_list
+    | Const_char _ ->
+        let int_lambda_list =
+          List.map (function Const_char c, l -> (Char.code c, l)
+            | _ -> assert false)
+            const_lambda_list in
+        call_switcher fail arg 0 255 int_lambda_list
+    | Const_string _ ->
+(* Note as the bytecode compiler may resort to dichotmic search,
+   the clauses of strinswitch  are sorted with duplicate removed.
+   This partly applies to the native code compiler, which requires
+   no duplicates *)
+        let const_lambda_list = sort_lambda_list const_lambda_list in
+        let sw =
+          List.map
+            (fun (c,act) -> match c with
+            | Const_string (s,_) -> s,act
+            | _ -> assert false)
+            const_lambda_list in
+        let hs,sw,fail = share_actions_tree sw fail in
+        hs (Lstringswitch (arg,sw,fail,loc))
+    | Const_float _ ->
+        make_test_sequence loc 
+          fail
+          (Pfloatcomp Cneq) (Pfloatcomp Clt)
+          arg const_lambda_list
+    | Const_int32 _ ->
+        make_test_sequence loc
+          fail
+          (Pbintcomp(Pint32, Cneq)) (Pbintcomp(Pint32, Clt))
+          arg const_lambda_list
+    | Const_int64 _ ->
+        make_test_sequence loc
+          fail
+          (Pbintcomp(Pint64, Cneq)) (Pbintcomp(Pint64, Clt))
+          arg const_lambda_list
+    | Const_nativeint _ ->
+        make_test_sequence loc
+          fail
+          (Pbintcomp(Pnativeint, Cneq)) (Pbintcomp(Pnativeint, Clt))
+          arg const_lambda_list
+  in lambda1,jumps_union local_jumps total
+
+
+
+let split_cases tag_lambda_list =
+  let rec split_rec = function
+      [] -> ([], [])
+    | (cstr, act) :: rem ->
+        let (consts, nonconsts) = split_rec rem in
+        match cstr with
+          Cstr_constant n -> ((n, act) :: consts, nonconsts)
+        | Cstr_block n    -> (consts, (n, act) :: nonconsts)
+        | _ -> assert false in
+  let const, nonconst = split_rec tag_lambda_list in
+  sort_int_lambda_list const,
+  sort_int_lambda_list nonconst
+
+let split_extension_cases tag_lambda_list =
+  let rec split_rec = function
+      [] -> ([], [])
+    | (cstr, act) :: rem ->
+        let (consts, nonconsts) = split_rec rem in
+        match cstr with
+          Cstr_extension(path, true) -> ((path, act) :: consts, nonconsts)
+        | Cstr_extension(path, false) -> (consts, (path, act) :: nonconsts)
+        | _ -> assert false in
+  split_rec tag_lambda_list
+
+
+let combine_constructor loc arg ex_pat cstr partial ctx def
+    (tag_lambda_list, total1, pats) =
+  if cstr.cstr_consts < 0 then begin
+    (* Special cases for extensions *)
+    let fail, to_add, local_jumps =
+      mk_failaction_neg partial ctx def in
+    let tag_lambda_list = to_add@tag_lambda_list in
+    let lambda1 =
+      let consts, nonconsts = split_extension_cases tag_lambda_list in
+      let default, consts, nonconsts =
+        match fail with
+        | None ->
+            begin match consts, nonconsts with
+            | _, (_, act)::rem -> act, consts, rem
+            | (_, act)::rem, _ -> act, rem, nonconsts
+            | _ -> assert false
+            end
+        | Some fail -> fail, consts, nonconsts in
+      let nonconst_lambda =
+        match nonconsts with
+          [] -> default
+        | _ ->
+            let tag = Ident.create "tag" in
+            let tests =
+              List.fold_right
+                (fun (path, act) rem ->
+                   Lifthenelse(Lprim(Pintcomp Ceq,
+                                     [Lvar tag;
+                                      transl_path ex_pat.pat_env path], loc),
+                               act, rem))
+                nonconsts
+                default
+            in
+              Llet(Alias, tag, Lprim(Pfield (0, Fld_na), [arg], loc), tests)
+      in
+        List.fold_right
+          (fun (path, act) rem ->
+             Lifthenelse(Lprim(Pintcomp Ceq,
+                               [arg; transl_path ex_pat.pat_env path], loc),
+                         act, rem))
+          consts
+          nonconst_lambda
+    in
+    lambda1, jumps_union local_jumps total1
+  end else begin
+    (* Regular concrete type *)
+    let ncases = List.length tag_lambda_list
+    and nconstrs =  cstr.cstr_consts + cstr.cstr_nonconsts in
+    let sig_complete = ncases = nconstrs in
+    let fails,local_jumps =
+      if sig_complete then [],jumps_empty
+      else
+        mk_failaction_pos partial pats ctx def in
+
+    let tag_lambda_list = fails @ tag_lambda_list in
+    let (consts, nonconsts) = split_cases tag_lambda_list in
+    let lambda1 =
+      match same_actions tag_lambda_list with
+      | Some act -> act
+      | _ ->
+          match
+            (cstr.cstr_consts, cstr.cstr_nonconsts, consts, nonconsts)
+          with
+          | (1, 1, [0, act1], [0, act2]) ->
+              Lifthenelse(arg, act2, act1)
+          | (n,_,_,[])  ->
+              call_switcher None arg 0 (n-1) consts
+          | (n, _, _, _) ->
+              match same_actions nonconsts with
+              | None ->
+(* Emit a switch, as bytecode implements this sophisticated instruction *)
+                  let sw =
+                    {sw_numconsts = cstr.cstr_consts; sw_consts = consts;
+                     sw_numblocks = cstr.cstr_nonconsts; sw_blocks = nonconsts;
+                     sw_failaction = None} in
+                  let hs,sw = share_actions_sw sw in
+                  let sw = reintroduce_fail sw in
+                  hs (Lswitch (arg,sw))
+              | Some act ->
+                  Lifthenelse
+                    (Lprim (Pisint, [arg], loc),
+                     call_switcher
+                       None arg
+                       0 (n-1) consts,
+                     act) in
+    lambda1, jumps_union local_jumps total1
+  end
+
+let make_test_sequence_variant_constant fail arg int_lambda_list =
+  let _, (cases, actions) =
+    as_interval fail min_int max_int int_lambda_list in
+  Switcher.test_sequence arg cases actions
+
+let call_switcher_variant_constant fail arg int_lambda_list =
+  call_switcher fail arg min_int max_int int_lambda_list
+
+
+let call_switcher_variant_constr loc fail arg int_lambda_list =
+  let v = Ident.create "variant" in
+  Llet(Alias, v, Lprim(Pfield (0, Fld_na), [arg], loc),
+       call_switcher
+         fail (Lvar v) min_int max_int int_lambda_list)
+
+let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) =
+  let row = Btype.row_repr row in
+  let num_constr = ref 0 in
+  if row.row_closed then
+    List.iter
+      (fun (_, f) ->
+        match Btype.row_field_repr f with
+          Rabsent | Reither(true, _::_, _, _) -> ()
+        | _ -> incr num_constr)
+      row.row_fields
+  else
+    num_constr := max_int;
+  let test_int_or_block arg if_int if_block =
+    Lifthenelse(Lprim (Pisint, [arg], loc), if_int, if_block) in
+  let sig_complete =  List.length tag_lambda_list = !num_constr
+  and one_action = same_actions tag_lambda_list in
+  let fail, to_add, local_jumps =
+    if
+      sig_complete  || (match partial with Total -> true | _ -> false)
+    then
+      None, [], jumps_empty
+    else
+      mk_failaction_neg partial ctx def in
+  let tag_lambda_list = to_add@tag_lambda_list in
+  let (consts, nonconsts) = split_cases tag_lambda_list in
+  let lambda1 = match fail, one_action with
+  | None, Some act -> act
+  | _,_ ->
+      match (consts, nonconsts) with
+      | ([n, act1], [m, act2]) when fail=None ->
+          test_int_or_block arg act1 act2
+      | (_, []) -> (* One can compare integers and pointers *)
+          make_test_sequence_variant_constant fail arg consts
+      | ([], _) ->
+          let lam = call_switcher_variant_constr loc
+              fail arg nonconsts in
+          (* One must not dereference integers *)
+          begin match fail with
+          | None -> lam
+          | Some fail -> test_int_or_block arg fail lam
+          end
+      | (_, _) ->
+          let lam_const =
+            call_switcher_variant_constant
+              fail arg consts
+          and lam_nonconst =
+            call_switcher_variant_constr loc
+              fail arg nonconsts in
+          test_int_or_block arg lam_const lam_nonconst
+  in
+  lambda1, jumps_union local_jumps total1
+
+
+let combine_array loc arg kind partial ctx def
+    (len_lambda_list, total1, pats)  =
+  let fail, to_add, local_jumps = mk_failaction_neg partial  ctx def in
+  let len_lambda_list = to_add @ len_lambda_list in
+  let lambda1 =
+    let newvar = Ident.create "len" in
+    let switch =
+      call_switcher
+        fail (Lvar newvar)
+        0 max_int len_lambda_list in
+    bind
+      Alias newvar (Lprim(Parraylength kind, [arg], loc)) switch in
+  lambda1, jumps_union local_jumps total1
+
+(* Insertion of debugging events *)
+
+let rec event_branch repr lam =
+  begin match lam, repr with
+    (_, None) ->
+      lam
+  | (Levent(lam', ev), Some r) ->
+      incr r;
+      Levent(lam', {lev_loc = ev.lev_loc;
+                    lev_kind = ev.lev_kind;
+                    lev_repr = repr;
+                    lev_env = ev.lev_env})
+  | (Llet(str, id, lam, body), _) ->
+      Llet(str, id, lam, event_branch repr body)
+  | Lstaticraise _,_ -> lam
+  | (_, Some r) ->
+      Printlambda.lambda Format.str_formatter lam ;
+      fatal_error
+        ("Matching.event_branch: "^Format.flush_str_formatter ())
+  end
+
+
+(*
+   This exception is raised when the compiler cannot produce code
+   because control cannot reach the compiled clause,
+
+   Unused is raised initialy in compile_test.
+
+   compile_list (for compiling switch results) catch Unused
+
+   comp_match_handlers (for compililing splitted matches)
+   may reraise Unused
+
+
+*)
+
+exception Unused
+
+let compile_list compile_fun division =
+
+  let rec c_rec totals = function
+  | [] -> [], jumps_unions totals, []
+  | (key, cell) :: rem ->
+      begin match cell.ctx with
+      | [] -> c_rec totals rem
+      | _  ->
+          try
+            let (lambda1, total1) = compile_fun cell.ctx cell.pm in
+            let c_rem, total, new_pats =
+              c_rec
+                (jumps_map ctx_combine total1::totals) rem in
+            ((key,lambda1)::c_rem), total, (cell.pat::new_pats)
+          with
+          | Unused -> c_rec totals rem
+      end in
+  c_rec [] division
+
+
+let compile_orhandlers compile_fun lambda1 total1 ctx to_catch =
+  let rec do_rec r total_r = function
+    | [] -> r,total_r
+    | (mat,i,vars,pm)::rem ->
+        begin try
+          let ctx = select_columns mat ctx in
+          let handler_i, total_i = compile_fun ctx pm in
+          match raw_action r with
+          | Lstaticraise (j,args) ->
+              if i=j then
+                List.fold_right2 (bind Alias) vars args handler_i,
+                jumps_map (ctx_rshift_num (ncols mat)) total_i
+              else
+                do_rec r total_r rem
+          | _ ->
+              do_rec
+                (Lstaticcatch (r,(i,vars), handler_i))
+                (jumps_union
+                   (jumps_remove i total_r)
+                   (jumps_map (ctx_rshift_num (ncols mat)) total_i))
+              rem
+        with
+        | Unused ->
+            do_rec (Lstaticcatch (r, (i,vars), lambda_unit)) total_r rem
+        end in
+  do_rec lambda1 total1 to_catch
+
+
+let compile_test compile_fun partial divide combine ctx to_match =
+  let division = divide ctx to_match in
+  let c_div = compile_list compile_fun division in
+  match c_div with
+  | [],_,_ ->
+     begin match mk_failaction_neg partial ctx to_match.default with
+     | None,_,_ -> raise Unused
+     | Some l,_,total -> l,total
+     end
+  | _ ->
+      combine ctx to_match.default c_div
+
+(* Attempt to avoid some useless bindings by lowering them *)
+
+(* Approximation of v present in lam *)
+let rec approx_present v = function
+  | Lconst _ -> false
+  | Lstaticraise (_,args) ->
+      List.exists (fun lam -> approx_present v lam) args
+  | Lprim (_,args,_) ->
+      List.exists (fun lam -> approx_present v lam) args
+  | Llet (Alias, _, l1, l2) ->
+      approx_present v l1 || approx_present v l2
+  | Lvar vv -> Ident.same v vv
+  | _ -> true
+
+let rec lower_bind v arg lam = match lam with
+| Lifthenelse (cond, ifso, ifnot) ->
+    let pcond = approx_present v cond
+    and pso = approx_present v ifso
+    and pnot = approx_present v ifnot in
+    begin match pcond, pso, pnot with
+    | false, false, false -> lam
+    | false, true, false ->
+        Lifthenelse (cond, lower_bind v arg ifso, ifnot)
+    | false, false, true ->
+        Lifthenelse (cond, ifso, lower_bind v arg ifnot)
+    | _,_,_ -> bind Alias v arg lam
+    end
+| Lswitch (ls,({sw_consts=[i,act] ; sw_blocks = []} as sw))
+    when not (approx_present v ls) ->
+      Lswitch (ls, {sw with sw_consts = [i,lower_bind v arg act]})
+| Lswitch (ls,({sw_consts=[] ; sw_blocks = [i,act]} as sw))
+    when not (approx_present v ls) ->
+      Lswitch (ls, {sw with sw_blocks = [i,lower_bind v arg act]})
+| Llet (Alias, vv, lv, l) ->
+    if approx_present v lv then
+      bind Alias v arg lam
+    else
+      Llet (Alias, vv, lv, lower_bind v arg l)
+| _ ->
+    bind Alias v arg lam
+
+let bind_check str v arg lam = match str,arg with
+| _, Lvar _ ->bind str v arg lam
+| Alias,_ -> lower_bind v arg lam
+| _,_     -> bind str v arg lam
+
+let comp_exit ctx m = match m.default with
+| (_,i)::_ -> Lstaticraise (i,[]), jumps_singleton i ctx
+| _        -> fatal_error "Matching.comp_exit"
+
+
+
+let rec comp_match_handlers comp_fun partial ctx arg first_match next_matchs =
+  match next_matchs with
+  | [] -> comp_fun partial ctx arg first_match
+  | rem ->
+      let rec c_rec body total_body = function
+        | [] -> body, total_body
+        (* Hum, -1 meant never taken
+        | (-1,pm)::rem -> c_rec body total_body rem *)
+        | (i,pm)::rem ->
+            let ctx_i,total_rem = jumps_extract i total_body in
+            begin match ctx_i with
+            | [] -> c_rec body total_body rem
+            | _ ->
+                try
+                  let li,total_i =
+                    comp_fun
+                      (match rem with [] -> partial | _ -> Partial)
+                      ctx_i arg pm in
+                  c_rec
+                    (Lstaticcatch (body,(i,[]),li))
+                    (jumps_union total_i total_rem)
+                    rem
+                with
+                | Unused ->
+                    c_rec (Lstaticcatch (body,(i,[]),lambda_unit))
+                      total_rem  rem
+            end in
+   try
+      let first_lam,total = comp_fun Partial ctx arg first_match in
+      c_rec first_lam total rem
+   with Unused -> match next_matchs with
+   | [] -> raise Unused
+   | (_,x)::xs ->  comp_match_handlers comp_fun partial ctx arg x xs
+
+(* To find reasonable names for variables *)
+
+let rec name_pattern default = function
+    (pat :: patl, action) :: rem ->
+      begin match pat.pat_desc with
+        Tpat_var (id, _) -> id
+      | Tpat_alias(p, id, _) -> id
+      | _ -> name_pattern default rem
+      end
+  | _ -> Ident.create default
+
+let arg_to_var arg cls = match arg with
+| Lvar v -> v,arg
+| _ ->
+    let v = name_pattern "match" cls in
+    v,Lvar v
+
+
+(*
+  The main compilation function.
+   Input:
+      repr=used for inserting debug events
+      partial=exhaustiveness information from Parmatch
+      ctx=a context
+      m=a pattern matching
+
+   Output: a lambda term, a jump summary {..., exit number -> context, .. }
+*)
+
+let rec compile_match repr partial ctx m = match m with
+| { cases = [] } -> comp_exit ctx m
+| { cases = ([], action) :: rem } ->
+    if is_guarded action then begin
+      let (lambda, total) =
+        compile_match None partial ctx { m with cases = rem } in
+      event_branch repr (patch_guarded lambda action), total
+    end else
+      (event_branch repr action, jumps_empty)
+| { args = (arg, str)::argl } ->
+    let v,newarg = arg_to_var arg m.cases in
+    let first_match,rem =
+      split_precompile (Some v)
+        { m with args = (newarg, Alias) :: argl } in
+    let (lam, total) =
+      comp_match_handlers
+        ((if dbg then do_compile_matching_pr else do_compile_matching) repr)
+        partial ctx newarg first_match rem in
+    bind_check str v arg lam, total
+| _ -> assert false
+
+
+(* verbose version of do_compile_matching, for debug *)
+
+and do_compile_matching_pr repr partial ctx arg x =
+  prerr_string "COMPILE: " ;
+  prerr_endline (match partial with Partial -> "Partial" | Total -> "Total") ;
+  prerr_endline "MATCH" ;
+  pretty_precompiled x ;
+  prerr_endline "CTX" ;
+  pretty_ctx ctx ;
+  let (_, jumps) as r =  do_compile_matching repr partial ctx arg x in
+  prerr_endline "JUMPS" ;
+  pretty_jumps jumps ;
+  r
+
+and do_compile_matching repr partial ctx arg pmh = match pmh with
+| Pm pm ->
+  let pat = what_is_cases pm.cases in
+  begin match pat.pat_desc with
+  | Tpat_any ->
+      compile_no_test
+        divide_var ctx_rshift repr partial ctx pm
+  | Tpat_tuple patl ->
+      compile_no_test
+        (divide_tuple (List.length patl) (normalize_pat pat)) ctx_combine
+        repr partial ctx pm
+  | Tpat_record ((_, lbl,_)::_,_) ->
+      compile_no_test
+        (divide_record lbl.lbl_all (normalize_pat pat))
+        ctx_combine repr partial ctx pm
+  | Tpat_constant cst ->
+      compile_test
+        (compile_match repr partial) partial
+        divide_constant
+        (combine_constant pat.pat_loc arg cst partial)
+        ctx pm
+  | Tpat_construct (_, cstr, _) ->
+      compile_test
+        (compile_match repr partial) partial
+        divide_constructor (combine_constructor pat.pat_loc arg pat cstr partial)
+        ctx pm
+  | Tpat_array _ ->
+      let kind = Typeopt.array_pattern_kind pat in
+      compile_test (compile_match repr partial) partial
+        (divide_array kind) (combine_array pat.pat_loc arg kind partial)
+        ctx pm
+  | Tpat_lazy _ ->
+      compile_no_test
+        (divide_lazy (normalize_pat pat))
+        ctx_combine repr partial ctx pm
+  | Tpat_variant(lab, _, row) ->
+      compile_test (compile_match repr partial) partial
+        (divide_variant !row)
+        (combine_variant pat.pat_loc !row arg partial)
+        ctx pm
+  | _ -> assert false
+  end
+| PmVar {inside=pmh ; var_arg=arg} ->
+    let lam, total =
+      do_compile_matching repr partial (ctx_lshift ctx) arg pmh in
+    lam, jumps_map ctx_rshift total
+| PmOr {body=body ; handlers=handlers} ->
+    let lam, total = compile_match repr partial ctx body in
+    compile_orhandlers (compile_match repr partial) lam total ctx handlers
+
+and compile_no_test divide up_ctx repr partial ctx to_match =
+  let {pm=this_match ; ctx=this_ctx } = divide ctx to_match in
+  let lambda,total = compile_match repr partial this_ctx this_match in
+  lambda, jumps_map up_ctx total
+
+
+
+
+(* The entry points *)
+
+(*
+   If there is a guard in a matching or a lazy pattern,
+   then set exhaustiveness info to Partial.
+   (because of side effects, assume the worst).
+
+   Notice that exhaustiveness information is trusted by the compiler,
+   that is, a match flagged as Total should not fail at runtime.
+   More specifically, for instance if match y with x::_ -> x uis flagged
+   total (as it happens during JoCaml compilation) then y cannot be []
+   at runtime. As a consequence, the static Total exhaustiveness information
+   have to to be downgraded to Partial, in the dubious cases where guards
+   or lazy pattern execute arbitrary code that may perform side effects
+   and change the subject values.
+LM:
+   Lazy pattern was PR #5992, initial patch by lwp25.
+   I have  generalized teh patch, so as to also find mutable fields.
+*)
+
+let find_in_pat pred =
+  let rec find_rec p =
+    pred p.pat_desc ||
+    begin match p.pat_desc with
+    | Tpat_alias (p,_,_) | Tpat_variant (_,Some p,_) | Tpat_lazy p ->
+        find_rec p
+    | Tpat_tuple ps|Tpat_construct (_,_,ps) | Tpat_array ps ->
+        List.exists find_rec ps
+    | Tpat_record (lpats,_) ->
+        List.exists
+          (fun (_, _, p) -> find_rec p)
+          lpats
+    | Tpat_or (p,q,_) ->
+        find_rec p || find_rec q
+    | Tpat_constant _ | Tpat_var _
+    | Tpat_any | Tpat_variant (_,None,_) -> false
+  end in
+  find_rec
+
+let is_lazy_pat = function
+  | Tpat_lazy _ -> true
+  | Tpat_alias _ | Tpat_variant _ | Tpat_record _
+  | Tpat_tuple _|Tpat_construct _ | Tpat_array _
+  | Tpat_or _ | Tpat_constant _ | Tpat_var _ | Tpat_any
+      -> false
+
+let is_lazy p = find_in_pat is_lazy_pat p
+
+let have_mutable_field p = match p with
+| Tpat_record (lps,_) ->
+    List.exists
+      (fun (_,lbl,_) ->
+        match lbl.Types.lbl_mut with
+        | Mutable -> true
+        | Immutable -> false)
+      lps
+| Tpat_alias _ | Tpat_variant _ | Tpat_lazy _
+| Tpat_tuple _|Tpat_construct _ | Tpat_array _
+| Tpat_or _
+| Tpat_constant _ | Tpat_var _ | Tpat_any
+  -> false
+
+let is_mutable p = find_in_pat have_mutable_field p
+
+(* Downgrade Total when
+   1. Matching accesses some mutable fields;
+   2. And there are  guards or lazy patterns.
+*)
+
+let check_partial is_mutable is_lazy pat_act_list = function
+  | Partial -> Partial
+  | Total ->
+      if
+        List.exists
+          (fun (pats, lam) ->
+            is_mutable pats && (is_guarded lam || is_lazy pats))
+          pat_act_list
+      then Partial
+      else Total
+
+let check_partial_list =
+  check_partial (List.exists is_mutable) (List.exists is_lazy)
+let check_partial = check_partial is_mutable is_lazy
+
+(* have toplevel handler when appropriate *)
+
+let start_ctx n = [{left=[] ; right = omegas n}]
+
+let check_total total lambda i handler_fun =
+  if jumps_is_empty total then
+    lambda
+  else begin
+    Lstaticcatch(lambda, (i,[]), handler_fun())
+  end
+
+let compile_matching loc repr handler_fun arg pat_act_list partial =
+  let partial = check_partial pat_act_list partial in
+  match partial with
+  | Partial ->
+      let raise_num = next_raise_count () in
+      let pm =
+        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
+          args = [arg, Strict] ;
+          default = [[[omega]],raise_num]} in
+      begin try
+        let (lambda, total) = compile_match repr partial (start_ctx 1) pm in
+        check_total total lambda raise_num handler_fun
+      with
+      | Unused -> assert false (* ; handler_fun() *)
+      end
+  | Total ->
+      let pm =
+        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
+          args = [arg, Strict] ;
+          default = []} in
+      let (lambda, total) = compile_match repr partial (start_ctx 1) pm in
+      assert (jumps_is_empty total) ;
+      lambda
+
+
+let partial_function loc () =
+  (* [Location.get_pos_info] is too expensive *)
+  let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
+  Lprim(Praise Raise_regular, [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+          [transl_normal_path Predef.path_match_failure;
+           Lconst(Const_block(0, Lambda.default_tag_info,
+              [Const_base(Const_string (fname, None));
+               Const_base(Const_int line);
+               Const_base(Const_int char)]))], loc)], loc)
+
+let for_function loc repr param pat_act_list partial =
+  compile_matching loc repr (partial_function loc) param pat_act_list partial
+
+(* In the following two cases, exhaustiveness info is not available! *)
+let for_trywith param pat_act_list =
+  compile_matching Location.none None
+    (fun () -> Lprim(Praise Raise_reraise, [param], Location.none))
+    param pat_act_list Partial
+
+let for_let loc param pat body =
+  compile_matching loc None (partial_function loc) param [pat, body] Partial
+
+(* Handling of tupled functions and matchings *)
+
+(* Easy case since variables are available *)
+let for_tupled_function loc paraml pats_act_list partial =
+  let partial = check_partial_list pats_act_list partial in
+  let raise_num = next_raise_count () in
+  let omegas = [List.map (fun _ -> omega) paraml] in
+  let pm =
+    { cases = pats_act_list;
+      args = List.map (fun id -> (Lvar id, Strict)) paraml ;
+      default = [omegas,raise_num]
+    } in
+  try
+    let (lambda, total) = compile_match None partial
+        (start_ctx (List.length paraml)) pm in
+    check_total total lambda raise_num (partial_function loc)
+  with
+  | Unused -> partial_function loc ()
+
+
+
+let flatten_pattern size p = match p.pat_desc with
+| Tpat_tuple args -> args
+| Tpat_any -> omegas size
+| _ -> raise Cannot_flatten
+
+let rec flatten_pat_line size p k = match p.pat_desc with
+| Tpat_any ->  omegas size::k
+| Tpat_tuple args -> args::k
+| Tpat_or (p1,p2,_) ->  flatten_pat_line size p1 (flatten_pat_line size p2 k)
+| Tpat_alias (p,_,_) -> (* Note: if this 'as' pat is here, then this is a
+                           useless binding, solves PR #3780 *)
+    flatten_pat_line size p k
+| _ -> fatal_error "Matching.flatten_pat_line"
+
+let flatten_cases size cases =
+  List.map
+    (fun (ps,action) -> match ps with
+    | [p] -> flatten_pattern size p,action
+    | _ -> fatal_error "Matching.flatten_case")
+    cases
+
+let flatten_matrix size pss =
+  List.fold_right
+    (fun ps r -> match ps with
+    | [p] -> flatten_pat_line size p r
+    | _   -> fatal_error "Matching.flatten_matrix")
+    pss []
+
+let flatten_def size def =
+  List.map
+    (fun (pss,i) -> flatten_matrix size pss,i)
+    def
+
+let flatten_pm size args pm =
+    {args = args ; cases = flatten_cases size pm.cases ;
+     default = flatten_def size pm.default}
+
+
+let flatten_precompiled size args  pmh = match pmh with
+| Pm pm -> Pm (flatten_pm size args pm)
+| PmOr {body=b ; handlers=hs ; or_matrix=m} ->
+    PmOr
+      {body=flatten_pm size args b ;
+       handlers=
+         List.map
+          (fun (mat,i,vars,pm) -> flatten_matrix size mat,i,vars,pm)
+          hs ;
+       or_matrix=flatten_matrix size m ;}
+| PmVar _ -> assert false
+
+(*
+   compiled_flattened is a ``comp_fun'' argument to comp_match_handlers.
+   Hence it needs a fourth argument, which it ignores
+*)
+
+let compile_flattened repr partial ctx _ pmh = match pmh with
+| Pm pm -> compile_match repr partial ctx pm
+| PmOr {body=b ; handlers=hs} ->
+    let lam, total = compile_match repr partial ctx b in
+    compile_orhandlers (compile_match repr partial) lam total ctx hs
+| PmVar _ -> assert false
+
+let do_for_multiple_match loc paraml pat_act_list partial =
+  let repr = None in
+  let partial = check_partial pat_act_list partial in
+  let raise_num,pm1 =
+    match partial with
+    | Partial ->
+        let raise_num = next_raise_count () in
+        raise_num,
+        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
+          args = [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), paraml, loc), Strict] ;
+          default = [[[omega]],raise_num] }
+    | _ ->
+        -1,
+        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
+          args = [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), paraml, loc), Strict] ;
+          default = [] } in
+
+  try
+    try
+(* Once for checking that compilation is possible *)
+      let next, nexts = split_precompile None pm1 in
+
+      let size = List.length paraml
+      and idl = List.map (fun _ -> Ident.create "match") paraml in
+      let args =  List.map (fun id -> Lvar id, Alias) idl in
+
+      let flat_next = flatten_precompiled size args next
+      and flat_nexts =
+        List.map
+          (fun (e,pm) ->  e,flatten_precompiled size args pm)
+          nexts in
+
+      let lam, total =
+        comp_match_handlers
+          (compile_flattened repr)
+          partial (start_ctx size) () flat_next flat_nexts in
+      List.fold_right2 (bind Strict) idl paraml
+        (match partial with
+        | Partial ->
+            check_total total lam raise_num (partial_function loc)
+        | Total ->
+            assert (jumps_is_empty total) ;
+            lam)
+    with Cannot_flatten ->
+      let (lambda, total) = compile_match None partial (start_ctx 1) pm1 in
+      begin match partial with
+      | Partial ->
+          check_total total lambda raise_num (partial_function loc)
+      | Total ->
+          assert (jumps_is_empty total) ;
+          lambda
+      end
+  with Unused ->
+    assert false (* ; partial_function loc () *)
+
+(* #PR4828: Believe it or not, the 'paraml' argument below
+   may not be side effect free. *)
+
+let arg_to_var arg cls = match arg with
+| Lvar v -> v,arg
+| _ ->
+    let v = name_pattern "match" cls in
+    v,Lvar v
+
+
+let param_to_var param = match param with
+| Lvar v -> v,None
+| _ -> Ident.create "match",Some param
+
+let bind_opt (v,eo) k = match eo with
+| None -> k
+| Some e ->  Lambda.bind Strict v e k
+
+let for_multiple_match loc paraml pat_act_list partial =
+  let v_paraml = List.map param_to_var paraml in
+  let paraml = List.map (fun (v,_) -> Lvar v) v_paraml in
+  List.fold_right bind_opt v_paraml
+    (do_for_multiple_match loc paraml pat_act_list partial)
+
+end
+module Translobj : sig 
+#1 "translobj.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Lambda
+
+val oo_prim: string -> lambda
+
+val share: structured_constant -> lambda
+val meth: lambda -> string -> lambda * lambda list
+
+val reset_labels: unit -> unit
+val transl_label_init: lambda -> lambda
+val transl_store_label_init:
+    Ident.t -> int -> ('a -> lambda) -> 'a -> int * lambda
+
+val method_ids: IdentSet.t ref (* reset when starting a new wrapper *)
+
+val oo_wrap: Env.t -> bool -> ('a -> lambda) -> 'a -> lambda
+val oo_add_class: Ident.t -> Env.t * bool
+
+val reset: unit -> unit
+
+end = struct
+#1 "translobj.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Misc
+open Primitive
+open Asttypes
+open Longident
+open Lambda
+
+(* Get oo primitives identifiers *)
+
+let oo_prim name =
+  try
+    transl_normal_path
+      (fst (Env.lookup_value (Ldot (Lident "CamlinternalOO", name)) Env.empty))
+  with Not_found ->
+    fatal_error ("Primitive " ^ name ^ " not found.")
+
+(* Share blocks *)
+
+let consts : (structured_constant, Ident.t) Hashtbl.t = Hashtbl.create 17
+
+let share c =
+  match c with
+    Const_block (n, _,  l) when l <> [] ->
+      begin try
+        Lvar (Hashtbl.find consts c)
+      with Not_found ->
+        let id = Ident.create "shared" in
+        Hashtbl.add consts c id;
+        Lvar id
+      end
+  | _ -> Lconst c
+
+(* Collect labels *)
+
+let cache_required = ref false
+let method_cache = ref lambda_unit
+let method_count = ref 0
+let method_table = ref []
+
+let meth_tag s = Lconst(Const_base(Const_int(Btype.hash_variant s)))
+
+let next_cache tag =
+  let n = !method_count in
+  incr method_count;
+  (tag, [!method_cache; Lconst(Const_base(Const_int n))])
+
+let rec is_path = function
+    Lvar _ | Lprim (Pgetglobal _, [], _) | Lconst _ -> true
+  | Lprim (Pfield _, [lam], _) -> is_path lam
+  | Lprim ((Parrayrefu _ | Parrayrefs _), [lam1; lam2], _) ->
+      is_path lam1 && is_path lam2
+  | _ -> false
+
+let meth obj lab =
+  let tag = meth_tag lab in
+  if not (!cache_required && !Clflags.native_code) then (tag, []) else
+  if not (is_path obj) then next_cache tag else
+  try
+    let r = List.assoc obj !method_table in
+    try
+      (tag, List.assoc tag !r)
+    with Not_found ->
+      let p = next_cache tag in
+      r := p :: !r;
+      p
+  with Not_found ->
+    let p = next_cache tag in
+    method_table := (obj, ref [p]) :: !method_table;
+    p
+
+let reset_labels () =
+  Hashtbl.clear consts;
+  method_count := 0;
+  method_table := []
+
+(* Insert labels *)
+
+let string s = Lconst (Const_base (Const_string (s, None)))
+let int n = Lconst (Const_base (Const_int n))
+
+let prim_makearray =
+  { prim_name = "caml_make_vect"; prim_arity = 2; prim_alloc = true;
+    prim_native_name = ""; prim_native_float = false}
+
+(* Also use it for required globals *)
+let transl_label_init expr =
+  let expr =
+    Hashtbl.fold
+      (fun c id expr -> Llet(Alias, id, Lconst c, expr))
+      consts expr
+  in
+  let expr =
+    List.fold_right
+      (fun id expr -> Lsequence(Lprim(Pgetglobal id, [], Location.none), expr))
+      (Env.get_required_globals ()) expr
+  in
+  Env.reset_required_globals ();
+  reset_labels ();
+  expr
+
+let transl_store_label_init glob size f arg =
+  method_cache := Lprim(Pfield (size, Fld_na), [Lprim(Pgetglobal glob, [], Location.none)], Location.none);
+  let expr = f arg in
+  let (size, expr) =
+    if !method_count = 0 then (size, expr) else
+    (size+1,
+     Lsequence(
+     Lprim(Psetfield(size, false, Fld_set_na),
+           [Lprim(Pgetglobal glob, [], Location.none);
+            Lprim (Pccall prim_makearray, [int !method_count; int 0], Location.none)], Location.none),
+     expr))
+  in
+  (size, transl_label_init expr)
+
+(* Share classes *)
+
+let wrapping = ref false
+let top_env = ref Env.empty
+let classes = ref []
+let method_ids = ref IdentSet.empty
+
+let oo_add_class id =
+  classes := id :: !classes;
+  (!top_env, !cache_required)
+
+let oo_wrap env req f x =
+  if !wrapping then
+    if !cache_required then f x else
+    try cache_required := true; let lam = f x in cache_required := false; lam
+    with exn -> cache_required := false; raise exn
+  else try
+    wrapping := true;
+    cache_required := req;
+    top_env := env;
+    classes := [];
+    method_ids := IdentSet.empty;
+    let lambda = f x in
+    let lambda =
+      List.fold_left
+        (fun lambda id ->
+          Llet(StrictOpt, id,
+               Lprim(Pmakeblock(0, Lambda.default_tag_info, Mutable),
+                     [lambda_unit; lambda_unit; lambda_unit], Location.none),
+               lambda))
+        lambda !classes
+    in
+    wrapping := false;
+    top_env := Env.empty;
+    lambda
+  with exn ->
+    wrapping := false;
+    top_env := Env.empty;
+    raise exn
+
+let reset () =
+  Hashtbl.clear consts;
+  cache_required := false;
+  method_cache := lambda_unit;
+  method_count := 0;
+  method_table := [];
+  wrapping := false;
+  top_env := Env.empty;
+  classes := [];
+  method_ids := IdentSet.empty
+
+end
+module Translcore : sig 
+#1 "translcore.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Translation from typed abstract syntax to lambda terms,
+   for the core language *)
+
+open Asttypes
+open Typedtree
+open Lambda
+
+val transl_exp: expression -> lambda
+val transl_apply: lambda -> (label * expression option * optional) list
+                  -> Location.t -> lambda
+val transl_let: rec_flag -> value_binding list -> lambda -> lambda
+val transl_primitive: Location.t -> Primitive.description -> lambda
+
+val check_recursive_lambda: Ident.t list -> lambda -> bool
+
+type error =
+    Illegal_letrec_pat
+  | Illegal_letrec_expr
+  | Free_super_var
+  | Unknown_builtin_primitive of string
+
+exception Error of Location.t * error
+
+open Format
+
+val report_error: formatter -> error -> unit
+
+(* Forward declaration -- to be filled in by Translmod.transl_module *)
+val transl_module :
+      (module_coercion -> Path.t option -> module_expr -> lambda) ref
+val transl_object :
+      (Ident.t -> string list -> class_expr -> lambda) ref
+
+end = struct
+#1 "translcore.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Translation from typed abstract syntax to lambda terms,
+   for the core language *)
+
+open Misc
+open Asttypes
+open Primitive
+open Types
+open Typedtree
+open Typeopt
+open Lambda
+
+type error =
+    Illegal_letrec_pat
+  | Illegal_letrec_expr
+  | Free_super_var
+  | Unknown_builtin_primitive of string
+
+exception Error of Location.t * error
+
+(* Forward declaration -- to be filled in by Translmod.transl_module *)
+let transl_module =
+  ref((fun cc rootpath modl -> assert false) :
+      module_coercion -> Path.t option -> module_expr -> lambda)
+
+let transl_object =
+  ref (fun id s cl -> assert false :
+       Ident.t -> string list -> class_expr -> lambda)
+
+(* Translation of primitives *)
+
+let comparisons_table = create_hashtable 11 [
+  "%equal",
+      (Pccall{prim_name = "caml_equal"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pintcomp Ceq,
+       Pfloatcomp Ceq,
+       Pccall{prim_name = "caml_string_equal"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},
+       Pbintcomp(Pnativeint, Ceq),
+       Pbintcomp(Pint32, Ceq),
+       Pbintcomp(Pint64, Ceq),
+       true);
+  "%notequal",
+      (Pccall{prim_name = "caml_notequal"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pintcomp Cneq,
+       Pfloatcomp Cneq,
+       Pccall{prim_name = "caml_string_notequal"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pbintcomp(Pnativeint, Cneq),
+       Pbintcomp(Pint32, Cneq),
+       Pbintcomp(Pint64, Cneq),
+       true);
+  "%lessthan",
+      (Pccall{prim_name = "caml_lessthan"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pintcomp Clt,
+       Pfloatcomp Clt,
+       Pccall{prim_name = "caml_string_lessthan"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pbintcomp(Pnativeint, Clt),
+       Pbintcomp(Pint32, Clt),
+       Pbintcomp(Pint64, Clt),
+       false);
+  "%greaterthan",
+      (Pccall{prim_name = "caml_greaterthan"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pintcomp Cgt,
+       Pfloatcomp Cgt,
+       Pccall{prim_name = "caml_string_greaterthan"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pbintcomp(Pnativeint, Cgt),
+       Pbintcomp(Pint32, Cgt),
+       Pbintcomp(Pint64, Cgt),
+       false);
+  "%lessequal",
+      (Pccall{prim_name = "caml_lessequal"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pintcomp Cle,
+       Pfloatcomp Cle,
+       Pccall{prim_name = "caml_string_lessequal"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pbintcomp(Pnativeint, Cle),
+       Pbintcomp(Pint32, Cle),
+       Pbintcomp(Pint64, Cle),
+       false);
+  "%greaterequal",
+      (Pccall{prim_name = "caml_greaterequal"; prim_arity = 2;
+              prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pintcomp Cge,
+       Pfloatcomp Cge,
+       Pccall{prim_name = "caml_string_greaterequal"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pbintcomp(Pnativeint, Cge),
+       Pbintcomp(Pint32, Cge),
+       Pbintcomp(Pint64, Cge),
+       false);
+  "%compare",
+      (Pccall{prim_name = "caml_compare"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_int_compare"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pccall{prim_name = "caml_float_compare"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pccall{prim_name = "caml_string_compare"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pccall{prim_name = "caml_nativeint_compare"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pccall{prim_name = "caml_int32_compare"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       Pccall{prim_name = "caml_int64_compare"; prim_arity = 2;
+              prim_alloc = false; prim_native_name = "";
+              prim_native_float = false},
+       false)
+]
+
+let primitives_table = create_hashtable 57 [
+  "%bytes_to_string", Pbytes_to_string;
+  "%bytes_of_string", Pbytes_of_string;
+  "%identity", Pidentity;
+  "%ignore", Pignore;
+  "%field0", Pfield (0, Fld_na);
+  "%field1", Pfield (1, Fld_na);
+  "%setfield0", Psetfield(0, true, Fld_set_na);
+  "%makeblock", Pmakeblock(0, Lambda.default_tag_info, Immutable);
+  "%makemutable", Pmakeblock(0,Lambda.default_tag_info,  Mutable);
+  "%raise", Praise Raise_regular;
+  "%reraise", Praise Raise_reraise;
+  "%raise_notrace", Praise Raise_notrace;
+  "%sequand", Psequand;
+  "%sequor", Psequor;
+  "%boolnot", Pnot;
+  "%big_endian", Pctconst Big_endian;
+  "%word_size", Pctconst Word_size;
+  "%ostype_unix", Pctconst Ostype_unix;
+  "%ostype_win32", Pctconst Ostype_win32;
+  "%ostype_cygwin", Pctconst Ostype_cygwin;
+  "%negint", Pnegint;
+  "%succint", Poffsetint 1;
+  "%predint", Poffsetint(-1);
+  "%addint", Paddint;
+  "%subint", Psubint;
+  "%mulint", Pmulint;
+  "%divint", Pdivint;
+  "%modint", Pmodint;
+  "%andint", Pandint;
+  "%orint", Porint;
+  "%xorint", Pxorint;
+  "%lslint", Plslint;
+  "%lsrint", Plsrint;
+  "%asrint", Pasrint;
+  "%eq", Pintcomp Ceq;
+  "%noteq", Pintcomp Cneq;
+  "%ltint", Pintcomp Clt;
+  "%leint", Pintcomp Cle;
+  "%gtint", Pintcomp Cgt;
+  "%geint", Pintcomp Cge;
+  "%incr", Poffsetref(1);
+  "%decr", Poffsetref(-1);
+  "%intoffloat", Pintoffloat;
+  "%floatofint", Pfloatofint;
+  "%negfloat", Pnegfloat;
+  "%absfloat", Pabsfloat;
+  "%addfloat", Paddfloat;
+  "%subfloat", Psubfloat;
+  "%mulfloat", Pmulfloat;
+  "%divfloat", Pdivfloat;
+  "%eqfloat", Pfloatcomp Ceq;
+  "%noteqfloat", Pfloatcomp Cneq;
+  "%ltfloat", Pfloatcomp Clt;
+  "%lefloat", Pfloatcomp Cle;
+  "%gtfloat", Pfloatcomp Cgt;
+  "%gefloat", Pfloatcomp Cge;
+  "%string_length", Pstringlength;
+  "%string_safe_get", Pstringrefs;
+  "%string_safe_set", Pstringsets;
+  "%string_unsafe_get", Pstringrefu;
+  "%string_unsafe_set", Pstringsetu;
+
+  "%bytes_length", Pbyteslength;
+  "%bytes_safe_get", Pbytesrefs;
+  "%bytes_safe_set", Pbytessets;
+  "%bytes_unsafe_get", Pbytesrefu;
+  "%bytes_unsafe_set", Pbytessetu;
+
+  "%array_length", Parraylength Pgenarray;
+  "%array_safe_get", Parrayrefs Pgenarray;
+  "%array_safe_set", Parraysets Pgenarray;
+  "%array_unsafe_get", Parrayrefu Pgenarray;
+  "%array_unsafe_set", Parraysetu Pgenarray;
+  "%obj_size", Parraylength Pgenarray;
+  "%obj_field", Parrayrefu Pgenarray;
+  "%obj_set_field", Parraysetu Pgenarray;
+  "%obj_is_int", Pisint;
+  "%lazy_force", Plazyforce;
+  "%nativeint_of_int", Pbintofint Pnativeint;
+  "%nativeint_to_int", Pintofbint Pnativeint;
+  "%nativeint_neg", Pnegbint Pnativeint;
+  "%nativeint_add", Paddbint Pnativeint;
+  "%nativeint_sub", Psubbint Pnativeint;
+  "%nativeint_mul", Pmulbint Pnativeint;
+  "%nativeint_div", Pdivbint Pnativeint;
+  "%nativeint_mod", Pmodbint Pnativeint;
+  "%nativeint_and", Pandbint Pnativeint;
+  "%nativeint_or",  Porbint Pnativeint;
+  "%nativeint_xor", Pxorbint Pnativeint;
+  "%nativeint_lsl", Plslbint Pnativeint;
+  "%nativeint_lsr", Plsrbint Pnativeint;
+  "%nativeint_asr", Pasrbint Pnativeint;
+  "%int32_of_int", Pbintofint Pint32;
+  "%int32_to_int", Pintofbint Pint32;
+  "%int32_neg", Pnegbint Pint32;
+  "%int32_add", Paddbint Pint32;
+  "%int32_sub", Psubbint Pint32;
+  "%int32_mul", Pmulbint Pint32;
+  "%int32_div", Pdivbint Pint32;
+  "%int32_mod", Pmodbint Pint32;
+  "%int32_and", Pandbint Pint32;
+  "%int32_or",  Porbint Pint32;
+  "%int32_xor", Pxorbint Pint32;
+  "%int32_lsl", Plslbint Pint32;
+  "%int32_lsr", Plsrbint Pint32;
+  "%int32_asr", Pasrbint Pint32;
+  "%int64_of_int", Pbintofint Pint64;
+  "%int64_to_int", Pintofbint Pint64;
+  "%int64_neg", Pnegbint Pint64;
+  "%int64_add", Paddbint Pint64;
+  "%int64_sub", Psubbint Pint64;
+  "%int64_mul", Pmulbint Pint64;
+  "%int64_div", Pdivbint Pint64;
+  "%int64_mod", Pmodbint Pint64;
+  "%int64_and", Pandbint Pint64;
+  "%int64_or",  Porbint Pint64;
+  "%int64_xor", Pxorbint Pint64;
+  "%int64_lsl", Plslbint Pint64;
+  "%int64_lsr", Plsrbint Pint64;
+  "%int64_asr", Pasrbint Pint64;
+  "%nativeint_of_int32", Pcvtbint(Pint32, Pnativeint);
+  "%nativeint_to_int32", Pcvtbint(Pnativeint, Pint32);
+  "%int64_of_int32", Pcvtbint(Pint32, Pint64);
+  "%int64_to_int32", Pcvtbint(Pint64, Pint32);
+  "%int64_of_nativeint", Pcvtbint(Pnativeint, Pint64);
+  "%int64_to_nativeint", Pcvtbint(Pint64, Pnativeint);
+  "%caml_ba_ref_1",
+    Pbigarrayref(false, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_ref_2",
+    Pbigarrayref(false, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_ref_3",
+    Pbigarrayref(false, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_set_1",
+    Pbigarrayset(false, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_set_2",
+    Pbigarrayset(false, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_set_3",
+    Pbigarrayset(false, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_unsafe_ref_1",
+    Pbigarrayref(true, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_unsafe_ref_2",
+    Pbigarrayref(true, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_unsafe_ref_3",
+    Pbigarrayref(true, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_unsafe_set_1",
+    Pbigarrayset(true, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_unsafe_set_2",
+    Pbigarrayset(true, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_unsafe_set_3",
+    Pbigarrayset(true, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
+  "%caml_ba_dim_1", Pbigarraydim(1);
+  "%caml_ba_dim_2", Pbigarraydim(2);
+  "%caml_ba_dim_3", Pbigarraydim(3);
+  "%caml_string_get16", Pstring_load_16(false);
+  "%caml_string_get16u", Pstring_load_16(true);
+  "%caml_string_get32", Pstring_load_32(false);
+  "%caml_string_get32u", Pstring_load_32(true);
+  "%caml_string_get64", Pstring_load_64(false);
+  "%caml_string_get64u", Pstring_load_64(true);
+  "%caml_string_set16", Pstring_set_16(false);
+  "%caml_string_set16u", Pstring_set_16(true);
+  "%caml_string_set32", Pstring_set_32(false);
+  "%caml_string_set32u", Pstring_set_32(true);
+  "%caml_string_set64", Pstring_set_64(false);
+  "%caml_string_set64u", Pstring_set_64(true);
+  "%caml_bigstring_get16", Pbigstring_load_16(false);
+  "%caml_bigstring_get16u", Pbigstring_load_16(true);
+  "%caml_bigstring_get32", Pbigstring_load_32(false);
+  "%caml_bigstring_get32u", Pbigstring_load_32(true);
+  "%caml_bigstring_get64", Pbigstring_load_64(false);
+  "%caml_bigstring_get64u", Pbigstring_load_64(true);
+  "%caml_bigstring_set16", Pbigstring_set_16(false);
+  "%caml_bigstring_set16u", Pbigstring_set_16(true);
+  "%caml_bigstring_set32", Pbigstring_set_32(false);
+  "%caml_bigstring_set32u", Pbigstring_set_32(true);
+  "%caml_bigstring_set64", Pbigstring_set_64(false);
+  "%caml_bigstring_set64u", Pbigstring_set_64(true);
+  "%bswap16", Pbswap16;
+  "%bswap_int32", Pbbswap(Pint32);
+  "%bswap_int64", Pbbswap(Pint64);
+  "%bswap_native", Pbbswap(Pnativeint);
+  "%int_as_pointer", Pint_as_pointer;
+]
+
+let prim_makearray =
+  { prim_name = "caml_make_vect"; prim_arity = 2; prim_alloc = true;
+    prim_native_name = ""; prim_native_float = false }
+
+let prim_obj_dup =
+  { prim_name = "caml_obj_dup"; prim_arity = 1; prim_alloc = true;
+    prim_native_name = ""; prim_native_float = false }
+
+let find_primitive loc prim_name =
+  match prim_name with
+      "%revapply" -> Prevapply 
+    | "%apply" -> Pdirapply 
+    | "%loc_LOC" -> Ploc Loc_LOC
+    | "%loc_FILE" -> Ploc Loc_FILE
+    | "%loc_LINE" -> Ploc Loc_LINE
+    | "%loc_POS" -> Ploc Loc_POS
+    | "%loc_MODULE" -> Ploc Loc_MODULE
+    | name -> Hashtbl.find primitives_table name
+
+let transl_prim loc prim args =
+  let prim_name = prim.prim_name in
+  try
+    let (gencomp, intcomp, floatcomp, stringcomp,
+         nativeintcomp, int32comp, int64comp,
+         simplify_constant_constructor) =
+      Hashtbl.find comparisons_table prim_name in
+    begin match args with
+      [arg1; {exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}]
+      when simplify_constant_constructor ->
+        intcomp
+    | [{exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}; arg2]
+      when simplify_constant_constructor ->
+        intcomp
+    | [arg1; {exp_desc = Texp_variant(_, None)}]
+      when simplify_constant_constructor ->
+        intcomp
+    | [{exp_desc = Texp_variant(_, None)}; exp2]
+      when simplify_constant_constructor ->
+        intcomp
+    | [arg1; arg2] when has_base_type arg1 Predef.path_int
+                     || has_base_type arg1 Predef.path_char ->
+        intcomp
+    | [arg1; arg2] when has_base_type arg1 Predef.path_float ->
+        floatcomp
+    | [arg1; arg2] when has_base_type arg1 Predef.path_string ->
+        stringcomp
+    | [arg1; arg2] when has_base_type arg1 Predef.path_nativeint ->
+        nativeintcomp
+    | [arg1; arg2] when has_base_type arg1 Predef.path_int32 ->
+        int32comp
+    | [arg1; arg2] when has_base_type arg1 Predef.path_int64 ->
+        int64comp
+    | _ ->
+        gencomp
+    end
+  with Not_found ->
+  try
+    let p = find_primitive loc prim_name in
+    (* Try strength reduction based on the type of the argument *)
+    begin match (p, args) with
+        (Psetfield(n, _, dbg_info), [arg1; arg2]) -> Psetfield(n, maybe_pointer arg2, dbg_info)
+      | (Parraylength Pgenarray, [arg])   -> Parraylength(array_kind arg)
+      | (Parrayrefu Pgenarray, arg1 :: _) -> Parrayrefu(array_kind arg1)
+      | (Parraysetu Pgenarray, arg1 :: _) -> Parraysetu(array_kind arg1)
+      | (Parrayrefs Pgenarray, arg1 :: _) -> Parrayrefs(array_kind arg1)
+      | (Parraysets Pgenarray, arg1 :: _) -> Parraysets(array_kind arg1)
+      | (Pbigarrayref(unsafe, n, Pbigarray_unknown, Pbigarray_unknown_layout),
+                      arg1 :: _) ->
+            let (k, l) = bigarray_kind_and_layout arg1 in
+            Pbigarrayref(unsafe, n, k, l)
+      | (Pbigarrayset(unsafe, n, Pbigarray_unknown, Pbigarray_unknown_layout),
+                      arg1 :: _) ->
+            let (k, l) = bigarray_kind_and_layout arg1 in
+            Pbigarrayset(unsafe, n, k, l)
+      | _ -> p
+    end
+  with Not_found ->
+    if String.length prim_name > 0 && prim_name.[0] = '%' then
+      raise(Error(loc, Unknown_builtin_primitive prim_name));
+    Pccall prim
+
+
+(* Eta-expand a primitive without knowing the types of its arguments *)
+
+let transl_primitive loc p =
+  let prim =
+    try
+      let (gencomp, _, _, _, _, _, _, _) =
+        Hashtbl.find comparisons_table p.prim_name in
+      gencomp
+    with Not_found ->
+    try
+      find_primitive loc p.prim_name
+    with Not_found ->
+      Pccall p in
+  match prim with
+  | Plazyforce ->
+      let parm = Ident.create "prim" in
+      Lfunction(Curried, [parm],
+                Matching.inline_lazy_force (Lvar parm) Location.none)
+  | Ploc kind ->
+    let lam = lam_of_loc kind loc in
+    begin match p.prim_arity with
+      | 0 -> lam
+      | 1 -> (* TODO: we should issue a warning ? *)
+        let param = Ident.create "prim" in
+        Lfunction(Curried, [param],
+          Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), [lam; Lvar param], loc))
+      | _ -> assert false
+    end
+  | _ ->
+      let rec make_params n =
+        if n <= 0 then [] else Ident.create "prim" :: make_params (n-1) in
+      let params = make_params p.prim_arity in
+      if params = [] then  Lprim(prim,[], loc) (* arity = 0 in Buckle? TODO: unneeded *)
+      else Lfunction(Curried, params,
+                Lprim(prim, List.map (fun id -> Lvar id) params, loc))
+
+(* To check the well-formedness of r.h.s. of "let rec" definitions *)
+
+let check_recursive_lambda idlist lam =
+  let rec check_top idlist = function
+    | Lvar v -> not (List.mem v idlist)
+    | Llet (_, _, _, _) as lam when check_recursive_recordwith idlist lam ->
+        true
+    | Llet(str, id, arg, body) ->
+        check idlist arg && check_top (add_let id arg idlist) body
+    | Lletrec(bindings, body) ->
+        let idlist' = add_letrec bindings idlist in
+        List.for_all (fun (id, arg) -> check idlist' arg) bindings &&
+        check_top idlist' body
+    | Lprim (Pmakearray (Pgenarray), args, _) -> false
+    | Lsequence (lam1, lam2) -> check idlist lam1 && check_top idlist lam2
+    | Levent (lam, _) -> check_top idlist lam
+    | lam -> check idlist lam
+
+  and check idlist = function
+    | Lvar _ -> true
+    | Lfunction(kind, params, body) -> true
+    | Llet (_, _, _, _) as lam when check_recursive_recordwith idlist lam ->
+        true
+    | Llet(str, id, arg, body) ->
+        check idlist arg && check (add_let id arg idlist) body
+    | Lletrec(bindings, body) ->
+        let idlist' = add_letrec bindings idlist in
+        List.for_all (fun (id, arg) -> check idlist' arg) bindings &&
+        check idlist' body
+    | Lprim(Pmakeblock(tag, _,  mut), args, _) ->
+        List.for_all (check idlist) args
+    | Lprim(Pmakearray(_), args, _) ->
+        List.for_all (check idlist) args
+    | Lsequence (lam1, lam2) -> check idlist lam1 && check idlist lam2
+    | Levent (lam, _) -> check idlist lam
+    | lam ->
+        let fv = free_variables lam in
+        not (List.exists (fun id -> IdentSet.mem id fv) idlist)
+
+  and add_let id arg idlist =
+    let fv = free_variables arg in
+    if List.exists (fun id -> IdentSet.mem id fv) idlist
+    then id :: idlist
+    else idlist
+
+  and add_letrec bindings idlist =
+    List.fold_right (fun (id, arg) idl -> add_let id arg idl)
+                    bindings idlist
+
+  (* reverse-engineering the code generated by transl_record case 2 *)
+  (* If you change this, you probably need to change Bytegen.size_of_lambda. *)
+  and check_recursive_recordwith idlist = function
+    | Llet (Strict, id1, Lprim (Pduprecord _, [e1], _), body) ->
+       check_top idlist e1
+       && check_recordwith_updates idlist id1 body
+    | _ -> false
+
+  and check_recordwith_updates idlist id1 = function
+    | Lsequence (Lprim ((Psetfield _ | Psetfloatfield _), [Lvar id2; e1], _), cont)
+        -> id2 = id1 && check idlist e1
+           && check_recordwith_updates idlist id1 cont
+    | Lvar id2 -> id2 = id1
+    | _ -> false
+
+  in check_top idlist lam
+
+(* To propagate structured constants *)
+
+exception Not_constant
+
+let extract_constant = function
+    Lconst sc -> sc
+  | _ -> raise Not_constant
+
+let extract_float = function
+    Const_base(Const_float f) -> f
+  | _ -> fatal_error "Translcore.extract_float"
+
+(* To find reasonable names for let-bound and lambda-bound idents *)
+
+let rec name_pattern default = function
+    [] -> Ident.create default
+  | {c_lhs=p; _} :: rem ->
+      match p.pat_desc with
+        Tpat_var (id, _) -> id
+      | Tpat_alias(p, id, _) -> id
+      | _ -> name_pattern default rem
+
+(* Push the default values under the functional abstractions *)
+
+let rec push_defaults loc bindings cases partial =
+  match cases with
+    [{c_lhs=pat; c_guard=None;
+      c_rhs={exp_desc = Texp_function(l, pl,partial)} as exp}] ->
+      let pl = push_defaults exp.exp_loc bindings pl partial in
+      [{c_lhs=pat; c_guard=None;
+        c_rhs={exp with exp_desc = Texp_function(l, pl, partial)}}]
+  | [{c_lhs=pat; c_guard=None;
+      c_rhs={exp_attributes=[{txt="#default"},_];
+             exp_desc = Texp_let
+               (Nonrecursive, binds, ({exp_desc = Texp_function _} as e2))}}] ->
+      push_defaults loc (binds :: bindings) [{c_lhs=pat;c_guard=None;c_rhs=e2}]
+                    partial
+  | [case] ->
+      let exp =
+        List.fold_left
+          (fun exp binds ->
+            {exp with exp_desc = Texp_let(Nonrecursive, binds, exp)})
+          case.c_rhs bindings
+      in
+      [{case with c_rhs=exp}]
+  | {c_lhs=pat; c_rhs=exp; c_guard=_} :: _ when bindings <> [] ->
+      let param = name_pattern "param" cases in
+      let name = Ident.name param in
+      let exp =
+        { exp with exp_loc = loc; exp_desc =
+          Texp_match
+            ({exp with exp_type = pat.pat_type; exp_desc =
+              Texp_ident (Path.Pident param, mknoloc (Longident.Lident name),
+                          {val_type = pat.pat_type; val_kind = Val_reg;
+                           val_attributes = [];
+                           Types.val_loc = Location.none;
+                          })},
+             cases, [], partial) }
+      in
+      push_defaults loc bindings
+        [{c_lhs={pat with pat_desc = Tpat_var (param, mknoloc name)};
+          c_guard=None; c_rhs=exp}]
+        Total
+  | _ ->
+      cases
+
+(* Insertion of debugging events *)
+
+let event_before exp lam = match lam with
+| Lstaticraise (_,_) -> lam
+| _ ->
+  if !Clflags.debug
+  then Levent(lam, {lev_loc = exp.exp_loc;
+                    lev_kind = Lev_before;
+                    lev_repr = None;
+                    lev_env = Env.summary exp.exp_env})
+  else lam
+
+let event_after exp lam =
+  if !Clflags.debug
+  then Levent(lam, {lev_loc = exp.exp_loc;
+                    lev_kind = Lev_after exp.exp_type;
+                    lev_repr = None;
+                    lev_env = Env.summary exp.exp_env})
+  else lam
+
+let event_function exp lam =
+  if !Clflags.debug then
+    let repr = Some (ref 0) in
+    let (info, body) = lam repr in
+    (info,
+     Levent(body, {lev_loc = exp.exp_loc;
+                   lev_kind = Lev_function;
+                   lev_repr = repr;
+                   lev_env = Env.summary exp.exp_env}))
+  else
+    lam None
+
+let primitive_is_ccall = function
+  (* Determine if a primitive is a Pccall or will be turned later into
+     a C function call that may raise an exception *)
+  | Pccall _ | Pstringrefs | Pstringsets | Parrayrefs _ | Parraysets _ |
+    Pbigarrayref _ | Pbigarrayset _ | Pduprecord _ -> true
+  | _ -> false
+
+(* Assertions *)
+
+let assert_failed exp =
+  let (fname, line, char) =
+    Location.get_pos_info exp.exp_loc.Location.loc_start in
+  Lprim(Praise Raise_regular, [event_after exp
+    (Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+          [transl_normal_path Predef.path_assert_failure;
+           Lconst(Const_block(0, Lambda.default_tag_info,
+              [Const_base(Const_string (fname, None));
+               Const_base(Const_int line);
+               Const_base(Const_int char)]))], exp.exp_loc))], exp.exp_loc)
+;;
+
+let rec cut n l =
+  if n = 0 then ([],l) else
+  match l with [] -> failwith "Translcore.cut"
+  | a::l -> let (l1,l2) = cut (n-1) l in (a::l1,l2)
+
+(* Translation of expressions *)
+
+let try_ids = Hashtbl.create 8
+
+let rec transl_exp e =
+  let eval_once =
+    (* Whether classes for immediate objects must be cached *)
+    match e.exp_desc with
+      Texp_function _ | Texp_for _ | Texp_while _ -> false
+    | _ -> true
+  in
+  if eval_once then transl_exp0 e else
+  Translobj.oo_wrap e.exp_env true transl_exp0 e
+
+and transl_exp0 e =
+  match e.exp_desc with
+    Texp_ident(path, _, {val_kind = Val_prim p}) ->
+      let public_send = p.prim_name = "%send" in
+      if public_send || p.prim_name = "%sendself" then
+        let kind = if public_send then Public None else Self in
+        let obj = Ident.create "obj" and meth = Ident.create "meth" in
+        Lfunction(Curried, [obj; meth], Lsend(kind, Lvar meth, Lvar obj, [],
+                                              e.exp_loc))
+      else if p.prim_name = "%sendcache" then
+        let obj = Ident.create "obj" and meth = Ident.create "meth" in
+        let cache = Ident.create "cache" and pos = Ident.create "pos" in
+        Lfunction(Curried, [obj; meth; cache; pos],
+                  Lsend(Cached, Lvar meth, Lvar obj, [Lvar cache; Lvar pos],
+                        e.exp_loc))
+      else
+        transl_primitive e.exp_loc p
+  | Texp_ident(path, _, {val_kind = Val_anc _}) ->
+      raise(Error(e.exp_loc, Free_super_var))
+  | Texp_ident(path, _, {val_kind = Val_reg | Val_self _}) ->
+      transl_path ~loc:e.exp_loc e.exp_env path
+  | Texp_ident _ -> fatal_error "Translcore.transl_exp: bad Texp_ident"
+  | Texp_constant cst ->
+      Lconst(Const_base cst)
+  | Texp_let(rec_flag, pat_expr_list, body) ->
+      transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
+  | Texp_function (_, pat_expr_list, partial) ->
+      let ((kind, params), body) =
+        event_function e
+          (function repr ->
+            let pl = push_defaults e.exp_loc [] pat_expr_list partial in
+            transl_function e.exp_loc !Clflags.native_code repr partial pl)
+      in
+      Lfunction(kind, params, body)
+  | Texp_apply({exp_desc = Texp_ident(path, _, {val_kind = Val_prim p})},
+               oargs)
+    when List.length oargs >= p.prim_arity
+    && List.for_all (fun (_, arg,_) -> arg <> None) oargs ->
+      let args, args' = cut p.prim_arity oargs in
+      let wrap f =
+        if args' = []
+        then event_after e f
+        else event_after e (transl_apply f args' e.exp_loc)
+      in
+      let wrap0 f =
+        if args' = [] then f else wrap f in
+      let args =
+         List.map (function _, Some x, _ -> x | _ -> assert false) args in
+      let argl = transl_list args in
+      let public_send = p.prim_name = "%send"
+        || not !Clflags.native_code && p.prim_name = "%sendcache"in
+      if public_send || p.prim_name = "%sendself" then
+        let kind = if public_send then Public None else Self in
+        let obj = List.hd argl in
+        wrap (Lsend (kind, List.nth argl 1, obj, [], e.exp_loc))
+      else if p.prim_name = "%sendcache" then
+        match argl with [obj; meth; cache; pos] ->
+          wrap (Lsend(Cached, meth, obj, [cache; pos], e.exp_loc))
+        | _ -> assert false
+      else begin
+        let prim = transl_prim e.exp_loc p args in
+        match (prim, args) with
+          (Praise k, [arg1]) ->
+            let targ = List.hd argl in
+            let k =
+              match k, targ with
+              | Raise_regular, Lvar id
+                when Hashtbl.mem try_ids id ->
+                  Raise_reraise
+              | _ ->
+                  k
+            in
+            wrap0 (Lprim(Praise k, [event_after arg1 targ], e.exp_loc))
+        | (Ploc kind, []) ->
+          lam_of_loc kind e.exp_loc
+        | (Ploc kind, [arg1]) ->
+          let lam = lam_of_loc kind arg1.exp_loc in
+          Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), lam :: argl, e.exp_loc)
+        | (Ploc _, _) -> assert false
+        | (_, _) ->
+            begin match (prim, argl) with
+            | (Plazyforce, [a]) ->
+                wrap (Matching.inline_lazy_force a e.exp_loc)
+            | (Plazyforce, _) -> assert false
+            |_ -> let p = Lprim(prim, argl, e.exp_loc) in
+               if primitive_is_ccall prim then wrap p else wrap0 p
+            end
+      end
+  | Texp_apply(funct, oargs) ->
+      event_after e (transl_apply (transl_exp funct) oargs e.exp_loc)
+  | Texp_match(arg, pat_expr_list, exn_pat_expr_list, partial) ->
+    transl_match e arg pat_expr_list exn_pat_expr_list partial
+  | Texp_try(body, pat_expr_list) ->
+      let id = name_pattern "exn" pat_expr_list in
+      Ltrywith(transl_exp body, id,
+               Matching.for_trywith (Lvar id) (transl_cases_try pat_expr_list))
+  | Texp_tuple el ->
+      let ll = transl_list el in
+      let tag_info = Lambda.Blk_tuple in 
+      begin try
+        Lconst(Const_block(0, tag_info, List.map extract_constant ll))
+      with Not_constant ->
+        Lprim(Pmakeblock(0,  tag_info, Immutable), ll, e.exp_loc)
+      end
+  | Texp_construct(_, cstr, args) ->
+      let ll = transl_list args in
+      begin match cstr.cstr_tag with
+        Cstr_constant n ->
+          Lconst(Const_pointer (n, Lambda.Pt_constructor cstr.cstr_name))
+      | Cstr_block n ->
+          let tag_info = (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
+          begin try
+            Lconst(Const_block(n,tag_info, List.map extract_constant ll))
+          with Not_constant ->
+            Lprim(Pmakeblock(n, tag_info, Immutable), ll, e.exp_loc)
+          end
+      | Cstr_extension(path, is_const) ->
+          if is_const then
+            transl_path e.exp_env path
+          else
+            Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+                  transl_path e.exp_env path :: ll, e.exp_loc)
+      end
+  | Texp_variant(l, arg) ->
+      let tag = Btype.hash_variant l in
+      begin match arg with
+        None -> Lconst(Const_pointer (tag, Lambda.Pt_variant l))
+      | Some arg ->
+          let lam = transl_exp arg in
+          let tag_info = Lambda.Blk_variant l in
+          try
+            Lconst(Const_block(0, tag_info, [Const_base(Const_int tag);
+                                   extract_constant lam]))
+          with Not_constant ->
+            Lprim(Pmakeblock(0, tag_info, Immutable),
+                  [Lconst(Const_base(Const_int tag)); lam], e.exp_loc)
+      end
+  | Texp_record ((_, lbl1, _) :: _ as lbl_expr_list, opt_init_expr) ->
+      transl_record e.exp_loc lbl1.lbl_all lbl1.lbl_repres lbl_expr_list opt_init_expr
+  | Texp_record ([], _) ->
+      fatal_error "Translcore.transl_exp: bad Texp_record"
+  | Texp_field(arg, _, lbl) ->
+      let access =
+        match lbl.lbl_repres with
+          Record_regular -> Pfield (lbl.lbl_pos, Fld_record lbl.lbl_name)
+        | Record_float -> Pfloatfield (lbl.lbl_pos, Fld_record lbl.lbl_name) in
+      Lprim(access, [transl_exp arg], e.exp_loc)
+  | Texp_setfield(arg, _, lbl, newval) ->
+      let access =
+        match lbl.lbl_repres with
+          Record_regular -> Psetfield(lbl.lbl_pos, maybe_pointer newval, Fld_record_set lbl.lbl_name)
+        | Record_float -> Psetfloatfield (lbl.lbl_pos, Fld_record_set lbl.lbl_name) in
+      Lprim(access, [transl_exp arg; transl_exp newval], e.exp_loc)
+  | Texp_array expr_list ->
+      let kind = array_kind e in
+      let ll = transl_list expr_list in
+      begin try
+        (* Deactivate constant optimization if array is small enough *)
+        if List.length ll <= 4 then raise Not_constant;
+        let cl = List.map extract_constant ll in
+        let master =
+          match kind with
+          | Paddrarray | Pintarray ->
+              Lconst(Const_block(0, Lambda.Blk_array, cl)) (* ATTENTION: ? [|1;2;3;4|]*)
+          | Pfloatarray ->
+              Lconst(Const_float_array(List.map extract_float cl))
+          | Pgenarray ->
+              raise Not_constant in             (* can this really happen? *)
+        Lprim(Pccall prim_obj_dup, [master], e.exp_loc)
+      with Not_constant ->
+        Lprim(Pmakearray kind, ll, e.exp_loc)
+      end
+  | Texp_ifthenelse(cond, ifso, Some ifnot) ->
+      Lifthenelse(transl_exp cond,
+                  event_before ifso (transl_exp ifso),
+                  event_before ifnot (transl_exp ifnot))
+  | Texp_ifthenelse(cond, ifso, None) ->
+      Lifthenelse(transl_exp cond,
+                  event_before ifso (transl_exp ifso),
+                  lambda_unit)
+  | Texp_sequence(expr1, expr2) ->
+      Lsequence(transl_exp expr1, event_before expr2 (transl_exp expr2))
+  | Texp_while(cond, body) ->
+      Lwhile(transl_exp cond, event_before body (transl_exp body))
+  | Texp_for(param, _, low, high, dir, body) ->
+      Lfor(param, transl_exp low, transl_exp high, dir,
+           event_before body (transl_exp body))
+  | Texp_send(_, _, Some exp) -> transl_exp exp
+  | Texp_send(expr, met, None) ->
+      let obj = transl_exp expr in
+      let lam =
+        match met with
+          Tmeth_val id -> Lsend (Self, Lvar id, obj, [], e.exp_loc)
+        | Tmeth_name nm ->
+            let (tag, cache) = Translobj.meth obj nm in
+            let kind = if cache = [] then Public (Some nm) else Cached in
+            Lsend (kind, tag, obj, cache, e.exp_loc)
+      in
+      event_after e lam
+  | Texp_new (cl, {Location.loc=loc}, _) ->
+      Lapply(Lprim(Pfield (0, Fld_na), [transl_path ~loc e.exp_env cl], loc),
+             [lambda_unit], Location.none)
+  | Texp_instvar(path_self, path, _) ->
+      Lprim(Parrayrefu Paddrarray,
+            [transl_normal_path path_self; transl_normal_path path], e.exp_loc)
+  | Texp_setinstvar(path_self, path, _, expr) ->
+      transl_setinstvar e.exp_loc (transl_normal_path path_self) path expr
+  | Texp_override(path_self, modifs) ->
+      let cpy = Ident.create "copy" in
+      Llet(Strict, cpy,
+           Lapply(Translobj.oo_prim "copy", [transl_normal_path path_self],
+                  Location.none),
+           List.fold_right
+             (fun (path, _, expr) rem ->
+                Lsequence(transl_setinstvar Location.none (Lvar cpy) path expr, rem))
+             modifs
+             (Lvar cpy))
+  | Texp_letmodule(id, _, modl, body) ->
+      Llet(Strict, id, !transl_module Tcoerce_none None modl, transl_exp body)
+  | Texp_pack modl ->
+      !transl_module Tcoerce_none None modl
+  | Texp_assert {exp_desc=Texp_construct(_, {cstr_name="false"}, _)} ->
+      assert_failed e
+  | Texp_assert (cond) ->
+      if !Clflags.noassert
+      then lambda_unit
+      else Lifthenelse (transl_exp cond, lambda_unit, assert_failed e)
+  | Texp_lazy e ->
+      (* when e needs no computation (constants, identifiers, ...), we
+         optimize the translation just as Lazy.lazy_from_val would
+         do *)
+      begin match e.exp_desc with
+        (* a constant expr of type <> float gets compiled as itself *)
+      | Texp_constant
+          ( Const_int _ | Const_char _ | Const_string _
+          | Const_int32 _ | Const_int64 _ | Const_nativeint _ )
+      | Texp_function(_, _, _)
+      | Texp_construct (_, {cstr_arity = 0}, _)
+        -> transl_exp e
+      | Texp_constant(Const_float _) ->
+          Lprim(Pmakeblock(Obj.forward_tag, Lambda.default_tag_info, Immutable), [transl_exp e], e.exp_loc)
+      | Texp_ident(_, _, _) -> (* according to the type *)
+          begin match e.exp_type.desc with
+          (* the following may represent a float/forward/lazy: need a
+             forward_tag *)
+          | Tvar _ | Tlink _ | Tsubst _ | Tunivar _
+          | Tpoly(_,_) | Tfield(_,_,_,_) ->
+              Lprim(Pmakeblock(Obj.forward_tag, Lambda.default_tag_info, Immutable), [transl_exp e], e.exp_loc)
+          (* the following cannot be represented as float/forward/lazy:
+             optimize *)
+          | Tarrow(_,_,_,_) | Ttuple _ | Tpackage _ | Tobject(_,_) | Tnil
+          | Tvariant _
+              -> transl_exp e
+          (* optimize predefined types (excepted float) *)
+          | Tconstr(_,_,_) ->
+              if has_base_type e Predef.path_int
+                || has_base_type e Predef.path_char
+                || has_base_type e Predef.path_string
+                || has_base_type e Predef.path_bool
+                || has_base_type e Predef.path_unit
+                || has_base_type e Predef.path_exn
+                || has_base_type e Predef.path_array
+                || has_base_type e Predef.path_list
+                || has_base_type e Predef.path_option
+                || has_base_type e Predef.path_nativeint
+                || has_base_type e Predef.path_int32
+                || has_base_type e Predef.path_int64
+              then transl_exp e
+              else
+                Lprim(Pmakeblock(Obj.forward_tag, Lambda.default_tag_info, Immutable), [transl_exp e], e.exp_loc)
+          end
+      (* other cases compile to a lazy block holding a function *)
+      | _ ->
+          let fn = Lfunction (Curried, [Ident.create "param"], transl_exp e) in
+          Lprim(Pmakeblock(Config.lazy_tag, Lambda.default_tag_info, Mutable), [fn], e.exp_loc)
+      end
+  | Texp_object (cs, meths) ->
+      let cty = cs.cstr_type in
+      let cl = Ident.create "class" in
+      !transl_object cl meths
+        { cl_desc = Tcl_structure cs;
+          cl_loc = e.exp_loc;
+          cl_type = Cty_signature cty;
+          cl_env = e.exp_env;
+          cl_attributes = [];
+         }
+
+and transl_list expr_list =
+  List.map transl_exp expr_list
+
+and transl_guard guard rhs =
+  let expr = event_before rhs (transl_exp rhs) in
+  match guard with
+  | None -> expr
+  | Some cond ->
+      event_before cond (Lifthenelse(transl_exp cond, expr, staticfail))
+
+and transl_case {c_lhs; c_guard; c_rhs} =
+  c_lhs, transl_guard c_guard c_rhs
+
+and transl_cases cases =
+  List.map transl_case cases
+
+and transl_case_try {c_lhs; c_guard; c_rhs} =
+  match c_lhs.pat_desc with
+  | Tpat_var (id, _)
+  | Tpat_alias (_, id, _) ->
+      Hashtbl.replace try_ids id ();
+      Misc.try_finally
+        (fun () -> c_lhs, transl_guard c_guard c_rhs)
+        (fun () -> Hashtbl.remove try_ids id)
+  | _ ->
+      c_lhs, transl_guard c_guard c_rhs
+
+and transl_cases_try cases =
+  List.map transl_case_try cases
+
+and transl_tupled_cases patl_expr_list =
+  List.map (fun (patl, guard, expr) -> (patl, transl_guard guard expr))
+    patl_expr_list
+
+and transl_apply lam sargs loc =
+  let lapply funct args =
+    match funct with
+      Lsend(k, lmet, lobj, largs, loc) ->
+        Lsend(k, lmet, lobj, largs @ args, loc)
+    | Levent(Lsend(k, lmet, lobj, largs, loc), _) ->
+        Lsend(k, lmet, lobj, largs @ args, loc)
+    | Lapply(lexp, largs, _) ->
+        Lapply(lexp, largs @ args, loc)
+    | lexp ->
+        Lapply(lexp, args, loc)
+  in
+  let rec build_apply lam args = function
+      (None, optional) :: l ->
+        let defs = ref [] in
+        let protect name lam =
+          match lam with
+            Lvar _ | Lconst _ -> lam
+          | _ ->
+              let id = Ident.create name in
+              defs := (id, lam) :: !defs;
+              Lvar id
+        in
+        let args, args' =
+          if List.for_all (fun (_,opt) -> opt = Optional) args then [], args
+          else args, [] in
+        let lam =
+          if args = [] then lam else lapply lam (List.rev_map fst args) in
+        let handle = protect "func" lam
+        and l = List.map (fun (arg, opt) -> may_map (protect "arg") arg, opt) l
+        and id_arg = Ident.create "param" in
+        let body =
+          match build_apply handle ((Lvar id_arg, optional)::args') l with
+            Lfunction(Curried, ids, lam) ->
+              Lfunction(Curried, id_arg::ids, lam)
+          | Levent(Lfunction(Curried, ids, lam), _) ->
+              Lfunction(Curried, id_arg::ids, lam)
+          | lam ->
+              Lfunction(Curried, [id_arg], lam)
+        in
+        List.fold_left
+          (fun body (id, lam) -> Llet(Strict, id, lam, body))
+          body !defs
+    | (Some arg, optional) :: l ->
+        build_apply lam ((arg, optional) :: args) l
+    | [] ->
+        lapply lam (List.rev_map fst args)
+  in
+  build_apply lam [] (List.map (fun (l, x,o) -> may_map transl_exp x, o) sargs)
+
+and transl_function loc untuplify_fn repr partial cases =
+  match cases with
+    [{c_lhs=pat; c_guard=None;
+      c_rhs={exp_desc = Texp_function(_, pl,partial')} as exp}]
+    when Parmatch.fluid pat ->
+      let param = name_pattern "param" cases in
+      let ((_, params), body) =
+        transl_function exp.exp_loc false repr partial' pl in
+      ((Curried, param :: params),
+       Matching.for_function loc None (Lvar param) [pat, body] partial)
+  | {c_lhs={pat_desc = Tpat_tuple pl}} :: _ when untuplify_fn ->
+      begin try
+        let size = List.length pl in
+        let pats_expr_list =
+          List.map
+            (fun {c_lhs; c_guard; c_rhs} ->
+              (Matching.flatten_pattern size c_lhs, c_guard, c_rhs))
+            cases in
+        let params = List.map (fun p -> Ident.create "param") pl in
+        ((Tupled, params),
+         Matching.for_tupled_function loc params
+           (transl_tupled_cases pats_expr_list) partial)
+      with Matching.Cannot_flatten ->
+        let param = name_pattern "param" cases in
+        ((Curried, [param]),
+         Matching.for_function loc repr (Lvar param)
+           (transl_cases cases) partial)
+      end
+  | _ ->
+      let param = name_pattern "param" cases in
+      ((Curried, [param]),
+       Matching.for_function loc repr (Lvar param)
+         (transl_cases cases) partial)
+
+and transl_let rec_flag pat_expr_list body =
+  match rec_flag with
+    Nonrecursive ->
+      let rec transl = function
+        [] ->
+          body
+      | {vb_pat=pat; vb_expr=expr} :: rem ->
+          Matching.for_let pat.pat_loc (transl_exp expr) pat (transl rem)
+      in transl pat_expr_list
+  | Recursive ->
+      let idlist =
+        List.map
+          (fun {vb_pat=pat} -> match pat.pat_desc with
+              Tpat_var (id,_) -> id
+            | Tpat_alias ({pat_desc=Tpat_any}, id,_) -> id
+            | _ -> raise(Error(pat.pat_loc, Illegal_letrec_pat)))
+        pat_expr_list in
+      let transl_case {vb_pat=pat; vb_expr=expr} id =
+        let lam = transl_exp expr in
+        if not (check_recursive_lambda idlist lam) then
+          raise(Error(expr.exp_loc, Illegal_letrec_expr));
+        (id, lam) in
+      Lletrec(List.map2 transl_case pat_expr_list idlist, body)
+
+and transl_setinstvar loc self var expr =
+  Lprim(Parraysetu (if maybe_pointer expr then Paddrarray else Pintarray),
+                    [self; transl_normal_path var; transl_exp expr], loc)
+
+and transl_record loc all_labels repres lbl_expr_list opt_init_expr =
+  let size = Array.length all_labels in
+  (* Determine if there are "enough" new fields *)
+  if 3 + 2 * List.length lbl_expr_list >= size
+  then begin
+    (* Allocate new record with given fields (and remaining fields
+       taken from init_expr if any *)
+    let lv = Array.make (Array.length all_labels) staticfail in
+    let init_id = Ident.create "init" in
+    begin match opt_init_expr with
+      None -> ()
+    | Some init_expr ->
+        for i = 0 to Array.length all_labels - 1 do
+          let access =
+            let lbl = all_labels.(i) in
+            match lbl.lbl_repres with
+              Record_regular -> Pfield (i, Fld_record lbl.lbl_name)
+            | Record_float -> Pfloatfield (i, Fld_record lbl.lbl_name)  in
+          lv.(i) <- Lprim(access, [Lvar init_id], loc)
+        done
+    end;
+    List.iter
+      (fun (_, lbl, expr) -> lv.(lbl.lbl_pos) <- transl_exp expr)
+      lbl_expr_list;
+    let ll = Array.to_list lv in
+    let mut =
+      if List.exists (fun (_, lbl, expr) -> lbl.lbl_mut = Mutable) lbl_expr_list
+      then Mutable
+      else Immutable in
+    let all_labels_info = all_labels |> Array.map (fun x -> x.Types.lbl_name) in
+    let lam =
+      try
+        if mut = Mutable then raise Not_constant;
+        let cl = List.map extract_constant ll in
+        match repres with
+          Record_regular -> Lconst(Const_block(0, Lambda.Blk_record all_labels_info, cl))
+        | Record_float ->
+            Lconst(Const_float_array(List.map extract_float cl))
+      with Not_constant ->
+        match repres with
+          Record_regular -> Lprim(Pmakeblock(0, Lambda.Blk_record all_labels_info, mut), ll,loc)
+        | Record_float -> Lprim(Pmakearray Pfloatarray, ll, loc) in
+    begin match opt_init_expr with
+      None -> lam
+    | Some init_expr -> Llet(Strict, init_id, transl_exp init_expr, lam)
+    end
+  end else begin
+    (* Take a shallow copy of the init record, then mutate the fields
+       of the copy *)
+    (* If you change anything here, you will likely have to change
+       [check_recursive_recordwith] in this file. *)
+    let copy_id = Ident.create "newrecord" in
+    let update_field (_, lbl, expr) cont =
+      let upd =
+        match lbl.lbl_repres with
+          Record_regular -> Psetfield(lbl.lbl_pos, maybe_pointer expr, Fld_record_set lbl.lbl_name)
+        | Record_float -> Psetfloatfield (lbl.lbl_pos, Fld_record_set lbl.lbl_name) in
+      Lsequence(Lprim(upd, [Lvar copy_id; transl_exp expr], loc), cont) in
+    begin match opt_init_expr with
+      None -> assert false
+    | Some init_expr ->
+        Llet(Strict, copy_id,
+             Lprim(Pduprecord (repres, size), [transl_exp init_expr], loc),
+             List.fold_right update_field lbl_expr_list (Lvar copy_id))
+    end
+  end
+
+and transl_match e arg pat_expr_list exn_pat_expr_list partial =
+  let id = name_pattern "exn" exn_pat_expr_list
+  and cases = transl_cases pat_expr_list
+  and exn_cases = transl_cases exn_pat_expr_list in
+  let static_catch body val_ids handler =
+    let static_exception_id = next_negative_raise_count () in
+    Lstaticcatch
+      (Ltrywith (Lstaticraise (static_exception_id, body), id,
+                 Matching.for_trywith (Lvar id) exn_cases),
+       (static_exception_id, val_ids),
+       handler)
+  in
+  match arg, exn_cases with
+  | {exp_desc = Texp_tuple argl}, [] ->
+    Matching.for_multiple_match e.exp_loc (transl_list argl) cases partial
+  | {exp_desc = Texp_tuple argl}, _ :: _ ->
+    let val_ids = List.map (fun _ -> name_pattern "val" []) argl in
+    let lvars = List.map (fun id -> Lvar id) val_ids in
+    static_catch (transl_list argl) val_ids
+      (Matching.for_multiple_match e.exp_loc lvars cases partial)
+  | arg, [] ->
+    Matching.for_function e.exp_loc None (transl_exp arg) cases partial
+  | arg, _ :: _ ->
+    let val_id = name_pattern "val" pat_expr_list in
+    static_catch [transl_exp arg] [val_id]
+      (Matching.for_function e.exp_loc None (Lvar val_id) cases partial)
+
+
+(* Wrapper for class compilation *)
+
+(*
+let transl_exp = transl_exp_wrap
+
+let transl_let rec_flag pat_expr_list body =
+  match pat_expr_list with
+    [] -> body
+  | (_, expr) :: _ ->
+      Translobj.oo_wrap expr.exp_env false
+        (transl_let rec_flag pat_expr_list) body
+*)
+
+(* Error report *)
+
+open Format
+
+let report_error ppf = function
+  | Illegal_letrec_pat ->
+      fprintf ppf
+        "Only variables are allowed as left-hand side of `let rec'"
+  | Illegal_letrec_expr ->
+      fprintf ppf
+        "This kind of expression is not allowed as right-hand side of `let rec'"
+  | Free_super_var ->
+      fprintf ppf
+        "Ancestor names can only be used to select inherited methods"
+  | Unknown_builtin_primitive prim_name ->
+    fprintf ppf  "Unknown builtin primitive \"%s\"" prim_name
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error (loc, err) ->
+          Some (Location.error_of_printer loc report_error err)
+      | _ ->
+        None
+    )
+
+end
+module Translclass : sig 
+#1 "translclass.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Typedtree
+open Lambda
+
+val transl_class :
+  Ident.t list -> Ident.t ->
+  string list -> class_expr -> Asttypes.virtual_flag -> lambda;;
+
+type error = Illegal_class_expr | Tags of string * string
+
+exception Error of Location.t * error
+
+open Format
+
+val report_error: formatter -> error -> unit
+
+end = struct
+#1 "translclass.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+open Asttypes
+open Types
+open Typedtree
+open Lambda
+open Translobj
+open Translcore
+
+(* XXX Rajouter des evenements... *)
+
+type error = Illegal_class_expr | Tags of label * label
+
+exception Error of Location.t * error
+
+let lfunction params body =
+  if params = [] then body else
+  match body with
+    Lfunction (Curried, params', body') ->
+      Lfunction (Curried, params @ params', body')
+  |  _ ->
+      Lfunction (Curried, params, body)
+
+let lapply func args loc =
+  match func with
+    Lapply(func', args', _) ->
+      Lapply(func', args' @ args, loc)
+  | _ ->
+      Lapply(func, args, loc)
+
+let mkappl (func, args) = Lapply (func, args, Location.none);;
+
+let lsequence l1 l2 =
+  if l2 = lambda_unit then l1 else Lsequence(l1, l2)
+
+let lfield v i = Lprim(Pfield (i, Fld_na), [Lvar v], Location.none)
+
+let transl_label l = share (Const_immstring l)
+
+let transl_meth_list lst =
+  if lst = [] then Lconst (Const_pointer (0, Lambda.Pt_na)) else
+  share (Const_block
+            (0, Lambda.Blk_na, List.map (fun lab -> Const_immstring lab) lst))
+
+let set_inst_var obj id expr =
+  let kind = if Typeopt.maybe_pointer expr then Paddrarray else Pintarray in
+  Lprim(Parraysetu kind, [Lvar obj; Lvar id; transl_exp expr],Location.none)
+
+let copy_inst_var obj id expr templ offset =
+  let kind = if Typeopt.maybe_pointer expr then Paddrarray else Pintarray in
+  let id' = Ident.create (Ident.name id) in
+  Llet(Strict, id', Lprim (Pidentity, [Lvar id], Location.none),
+  Lprim(Parraysetu kind,
+        [Lvar obj; Lvar id';
+         Lprim(Parrayrefu kind, [Lvar templ; Lprim(Paddint,
+                                                   [Lvar id';
+                                                    Lvar offset], Location.none)], Location.none)], Location.none))
+
+let transl_val tbl create name =
+  mkappl (oo_prim (if create then "new_variable" else "get_variable"),
+          [Lvar tbl; transl_label name])
+
+let transl_vals tbl create strict vals rem =
+  List.fold_right
+    (fun (name, id) rem ->
+      Llet(strict, id, transl_val tbl create name, rem))
+    vals rem
+
+let meths_super tbl meths inh_meths =
+  List.fold_right
+    (fun (nm, id) rem ->
+       try
+         (nm, id,
+          mkappl(oo_prim "get_method", [Lvar tbl; Lvar (Meths.find nm meths)]))
+         :: rem
+       with Not_found -> rem)
+    inh_meths []
+
+let bind_super tbl (vals, meths) cl_init =
+  transl_vals tbl false StrictOpt vals
+    (List.fold_right (fun (nm, id, def) rem -> Llet(StrictOpt, id, def, rem))
+       meths cl_init)
+
+let create_object cl obj init =
+  let obj' = Ident.create "self" in
+  let (inh_init, obj_init, has_init) = init obj' in
+  if obj_init = lambda_unit then
+    (inh_init,
+     mkappl (oo_prim (if has_init then "create_object_and_run_initializers"
+                      else"create_object_opt"),
+             [obj; Lvar cl]))
+  else begin
+   (inh_init,
+    Llet(Strict, obj',
+            mkappl (oo_prim "create_object_opt", [obj; Lvar cl]),
+         Lsequence(obj_init,
+                   if not has_init then Lvar obj' else
+                   mkappl (oo_prim "run_initializers_opt",
+                           [obj; Lvar obj'; Lvar cl]))))
+  end
+
+let name_pattern default p =
+  match p.pat_desc with
+  | Tpat_var (id, _) -> id
+  | Tpat_alias(p, id, _) -> id
+  | _ -> Ident.create default
+
+let normalize_cl_path cl path =
+  Env.normalize_path (Some cl.cl_loc) cl.cl_env path
+
+let rec build_object_init cl_table obj params inh_init obj_init cl =
+  match cl.cl_desc with
+    Tcl_ident ( path, _, _) ->
+      let obj_init = Ident.create "obj_init" in
+      let envs, inh_init = inh_init in
+      let env =
+        match envs with None -> []
+        | Some envs -> [Lprim(Pfield (List.length inh_init + 1, Fld_na), [Lvar envs], Location.none)]
+      in
+      ((envs, (obj_init, normalize_cl_path cl path)
+        ::inh_init),
+       mkappl(Lvar obj_init, env @ [obj]))
+  | Tcl_structure str ->
+      create_object cl_table obj (fun obj ->
+        let (inh_init, obj_init, has_init) =
+          List.fold_right
+            (fun field (inh_init, obj_init, has_init) ->
+               match field.cf_desc with
+                 Tcf_inherit (_, cl, _, _, _) ->
+                   let (inh_init, obj_init') =
+                     build_object_init cl_table (Lvar obj) [] inh_init
+                       (fun _ -> lambda_unit) cl
+                   in
+                   (inh_init, lsequence obj_init' obj_init, true)
+               | Tcf_val (_, _, id, Tcfk_concrete (_, exp), _) ->
+                   (inh_init, lsequence (set_inst_var obj id exp) obj_init,
+                    has_init)
+               | Tcf_method _ | Tcf_val _ | Tcf_constraint _ | Tcf_attribute _->
+                   (inh_init, obj_init, has_init)
+               | Tcf_initializer _ ->
+                   (inh_init, obj_init, true)
+            )
+            str.cstr_fields
+            (inh_init, obj_init obj, false)
+        in
+        (inh_init,
+         List.fold_right
+           (fun (id, expr) rem ->
+              lsequence (Lifused (id, set_inst_var obj id expr)) rem)
+           params obj_init,
+         has_init))
+  | Tcl_fun (_, pat, vals, cl, partial) ->
+      let vals = List.map (fun (id, _, e) -> id,e) vals in
+      let (inh_init, obj_init) =
+        build_object_init cl_table obj (vals @ params) inh_init obj_init cl
+      in
+      (inh_init,
+       let build params rem =
+         let param = name_pattern "param" pat in
+         Lfunction (Curried, param::params,
+                    Matching.for_function
+                      pat.pat_loc None (Lvar param) [pat, rem] partial)
+       in
+       begin match obj_init with
+         Lfunction (Curried, params, rem) -> build params rem
+       | rem                              -> build [] rem
+       end)
+  | Tcl_apply (cl, oexprs) ->
+      let (inh_init, obj_init) =
+        build_object_init cl_table obj params inh_init obj_init cl
+      in
+      (inh_init, transl_apply obj_init oexprs Location.none)
+  | Tcl_let (rec_flag, defs, vals, cl) ->
+      let vals = List.map (fun (id, _, e) -> id,e) vals in
+      let (inh_init, obj_init) =
+        build_object_init cl_table obj (vals @ params) inh_init obj_init cl
+      in
+      (inh_init, Translcore.transl_let rec_flag defs obj_init)
+  | Tcl_constraint (cl, _, vals, pub_meths, concr_meths) ->
+      build_object_init cl_table obj params inh_init obj_init cl
+
+let rec build_object_init_0 cl_table params cl copy_env subst_env top ids =
+  match cl.cl_desc with
+    Tcl_let (rec_flag, defs, vals, cl) ->
+      let vals = List.map (fun (id, _, e) -> id,e) vals in
+      build_object_init_0 cl_table (vals@params) cl copy_env subst_env top ids
+  | _ ->
+      let self = Ident.create "self" in
+      let env = Ident.create "env" in
+      let obj = if ids = [] then lambda_unit else Lvar self in
+      let envs = if top then None else Some env in
+      let ((_,inh_init), obj_init) =
+        build_object_init cl_table obj params (envs,[]) (copy_env env) cl in
+      let obj_init =
+        if ids = [] then obj_init else lfunction [self] obj_init in
+      (inh_init, lfunction [env] (subst_env env inh_init obj_init))
+
+
+let bind_method tbl lab id cl_init =
+  Llet(Strict, id, mkappl (oo_prim "get_method_label",
+                           [Lvar tbl; transl_label lab]),
+       cl_init)
+
+let bind_methods tbl meths vals cl_init =
+  let methl = Meths.fold (fun lab id tl -> (lab,id) :: tl) meths [] in
+  let len = List.length methl and nvals = List.length vals in
+  if len < 2 && nvals = 0 then Meths.fold (bind_method tbl) meths cl_init else
+  if len = 0 && nvals < 2 then transl_vals tbl true Strict vals cl_init else
+  let ids = Ident.create "ids" in
+  let i = ref (len + nvals) in
+  let getter, names =
+    if nvals = 0 then "get_method_labels", [] else
+    "new_methods_variables", [transl_meth_list (List.map fst vals)]
+  in
+  Llet(Strict, ids,
+       mkappl (oo_prim getter,
+               [Lvar tbl; transl_meth_list (List.map fst methl)] @ names),
+       List.fold_right
+         (fun (lab,id) lam -> decr i; Llet(StrictOpt, id, lfield ids !i, lam))
+         (methl @ vals) cl_init)
+
+let output_methods tbl methods lam =
+  match methods with
+    [] -> lam
+  | [lab; code] ->
+      lsequence (mkappl(oo_prim "set_method", [Lvar tbl; lab; code])) lam
+  | _ ->
+      lsequence (mkappl(oo_prim "set_methods",
+                        [Lvar tbl; Lprim(Pmakeblock(0, Lambda.Blk_array, Immutable), methods, Location.none)]))
+        lam
+
+let rec ignore_cstrs cl =
+  match cl.cl_desc with
+    Tcl_constraint (cl, _, _, _, _) -> ignore_cstrs cl
+  | Tcl_apply (cl, _) -> ignore_cstrs cl
+  | _ -> cl
+
+let rec index a = function
+    [] -> raise Not_found
+  | b :: l ->
+      if b = a then 0 else 1 + index a l
+
+let bind_id_as_val (id, _, _) = ("", id)
+
+let rec build_class_init cla cstr super inh_init cl_init msubst top cl =
+  match cl.cl_desc with
+    Tcl_ident ( path, _, _) ->
+      begin match inh_init with
+        (obj_init, path')::inh_init ->
+          let lpath = transl_path ~loc:cl.cl_loc cl.cl_env path in
+          (inh_init,
+           Llet (Strict, obj_init,
+                 mkappl(Lprim(Pfield (1, Fld_na), [lpath], Location.none), Lvar cla ::
+                        if top then [Lprim(Pfield (3, Fld_na), [lpath], Location.none)] else []),
+                 bind_super cla super cl_init))
+      | _ ->
+          assert false
+      end
+  | Tcl_structure str ->
+      let cl_init = bind_super cla super cl_init in
+      let (inh_init, cl_init, methods, values) =
+        List.fold_right
+          (fun field (inh_init, cl_init, methods, values) ->
+            match field.cf_desc with
+              Tcf_inherit (_, cl, _, vals, meths) ->
+                let cl_init = output_methods cla methods cl_init in
+                let inh_init, cl_init =
+                  build_class_init cla false
+                    (vals, meths_super cla str.cstr_meths meths)
+                    inh_init cl_init msubst top cl in
+                (inh_init, cl_init, [], values)
+            | Tcf_val (name, _, id, _, over) ->
+                let values =
+                  if over then values else (name.txt, id) :: values
+                in
+                (inh_init, cl_init, methods, values)
+            | Tcf_method (_, _, Tcfk_virtual _)
+            | Tcf_constraint _
+              ->
+                (inh_init, cl_init, methods, values)
+            | Tcf_method (name, _, Tcfk_concrete (_, exp)) ->
+                let met_code = msubst true (transl_exp exp) in
+                let met_code =
+                  if !Clflags.native_code && List.length met_code = 1 then
+                    (* Force correct naming of method for profiles *)
+                    let met = Ident.create ("method_" ^ name.txt) in
+                    [Llet(Strict, met, List.hd met_code, Lvar met)]
+                  else met_code
+                in
+                (inh_init, cl_init,
+                 Lvar(Meths.find name.txt str.cstr_meths) :: met_code @ methods,
+                 values)
+            | Tcf_initializer exp ->
+                (inh_init,
+                 Lsequence(mkappl (oo_prim "add_initializer",
+                                   Lvar cla :: msubst false (transl_exp exp)),
+                           cl_init),
+                 methods, values)
+            | Tcf_attribute _ ->
+                (inh_init, cl_init, methods, values))
+          str.cstr_fields
+          (inh_init, cl_init, [], [])
+      in
+      let cl_init = output_methods cla methods cl_init in
+      (inh_init, bind_methods cla str.cstr_meths values cl_init)
+  | Tcl_fun (_, pat, vals, cl, _) ->
+      let (inh_init, cl_init) =
+        build_class_init cla cstr super inh_init cl_init msubst top cl
+      in
+      let vals = List.map bind_id_as_val vals in
+      (inh_init, transl_vals cla true StrictOpt vals cl_init)
+  | Tcl_apply (cl, exprs) ->
+      build_class_init cla cstr super inh_init cl_init msubst top cl
+  | Tcl_let (rec_flag, defs, vals, cl) ->
+      let (inh_init, cl_init) =
+        build_class_init cla cstr super inh_init cl_init msubst top cl
+      in
+      let vals = List.map bind_id_as_val vals in
+      (inh_init, transl_vals cla true StrictOpt vals cl_init)
+  | Tcl_constraint (cl, _, vals, meths, concr_meths) ->
+      let virt_meths =
+        List.filter (fun lab -> not (Concr.mem lab concr_meths)) meths in
+      let concr_meths = Concr.elements concr_meths in
+      let narrow_args =
+        [Lvar cla;
+         transl_meth_list vals;
+         transl_meth_list virt_meths;
+         transl_meth_list concr_meths] in
+      let cl = ignore_cstrs cl in
+      begin match cl.cl_desc, inh_init with
+        Tcl_ident (path, _, _), (obj_init, path')::inh_init ->
+          assert (Path.same (normalize_cl_path cl path) path');
+          let lpath = transl_normal_path path' in
+          let inh = Ident.create "inh"
+          and ofs = List.length vals + 1
+          and valids, methids = super in
+          let cl_init =
+            List.fold_left
+              (fun init (nm, id, _) ->
+                Llet(StrictOpt, id, lfield inh (index nm concr_meths + ofs),
+                     init))
+              cl_init methids in
+          let cl_init =
+            List.fold_left
+              (fun init (nm, id) ->
+                Llet(StrictOpt, id, lfield inh (index nm vals + 1), init))
+              cl_init valids in
+          (inh_init,
+           Llet (Strict, inh,
+                 mkappl(oo_prim "inherits", narrow_args @
+                        [lpath; Lconst(Const_pointer ((if top then 1 else 0), Lambda.Pt_na))]),
+                 Llet(StrictOpt, obj_init, lfield inh 0, cl_init)))
+      | _ ->
+          let core cl_init =
+            build_class_init cla true super inh_init cl_init msubst top cl
+          in
+          if cstr then core cl_init else
+          let (inh_init, cl_init) =
+            core (Lsequence (mkappl (oo_prim "widen", [Lvar cla]), cl_init))
+          in
+          (inh_init,
+           Lsequence(mkappl (oo_prim "narrow", narrow_args),
+                     cl_init))
+      end
+
+let rec build_class_lets cl ids =
+  match cl.cl_desc with
+    Tcl_let (rec_flag, defs, vals, cl') ->
+      let env, wrap = build_class_lets cl' [] in
+      (env, fun x ->
+        let lam = Translcore.transl_let rec_flag defs (wrap x) in
+        (* Check recursion in toplevel let-definitions *)
+        if ids = [] || Translcore.check_recursive_lambda ids lam then lam
+        else raise(Error(cl.cl_loc, Illegal_class_expr)))
+  | _ ->
+      (cl.cl_env, fun x -> x)
+
+let rec get_class_meths cl =
+  match cl.cl_desc with
+    Tcl_structure cl ->
+      Meths.fold (fun _ -> IdentSet.add) cl.cstr_meths IdentSet.empty
+  | Tcl_ident _ -> IdentSet.empty
+  | Tcl_fun (_, _, _, cl, _)
+  | Tcl_let (_, _, _, cl)
+  | Tcl_apply (cl, _)
+  | Tcl_constraint (cl, _, _, _, _) -> get_class_meths cl
+
+(*
+   XXX Il devrait etre peu couteux d'ecrire des classes :
+     class c x y = d e f
+*)
+let rec transl_class_rebind obj_init cl vf =
+  match cl.cl_desc with
+    Tcl_ident (path, _, _) ->
+      if vf = Concrete then begin
+        try if (Env.find_class path cl.cl_env).cty_new = None then raise Exit
+        with Not_found -> raise Exit
+      end;
+      (normalize_cl_path cl path, obj_init)
+  | Tcl_fun (_, pat, _, cl, partial) ->
+      let path, obj_init = transl_class_rebind obj_init cl vf in
+      let build params rem =
+        let param = name_pattern "param" pat in
+        Lfunction (Curried, param::params,
+                   Matching.for_function
+                     pat.pat_loc None (Lvar param) [pat, rem] partial)
+      in
+      (path,
+       match obj_init with
+         Lfunction (Curried, params, rem) -> build params rem
+       | rem                              -> build [] rem)
+  | Tcl_apply (cl, oexprs) ->
+      let path, obj_init = transl_class_rebind obj_init cl vf in
+      (path, transl_apply obj_init oexprs Location.none)
+  | Tcl_let (rec_flag, defs, vals, cl) ->
+      let path, obj_init = transl_class_rebind obj_init cl vf in
+      (path, Translcore.transl_let rec_flag defs obj_init)
+  | Tcl_structure _ -> raise Exit
+  | Tcl_constraint (cl', _, _, _, _) ->
+      let path, obj_init = transl_class_rebind obj_init cl' vf in
+      let rec check_constraint = function
+          Cty_constr(path', _, _) when Path.same path path' -> ()
+        | Cty_arrow (_, _, cty) -> check_constraint cty
+        | _ -> raise Exit
+      in
+      check_constraint cl.cl_type;
+      (path, obj_init)
+
+let rec transl_class_rebind_0 self obj_init cl vf =
+  match cl.cl_desc with
+    Tcl_let (rec_flag, defs, vals, cl) ->
+      let path, obj_init = transl_class_rebind_0 self obj_init cl vf in
+      (path, Translcore.transl_let rec_flag defs obj_init)
+  | _ ->
+      let path, obj_init = transl_class_rebind obj_init cl vf in
+      (path, lfunction [self] obj_init)
+
+let transl_class_rebind ids cl vf =
+  try
+    let obj_init = Ident.create "obj_init"
+    and self = Ident.create "self" in
+    let obj_init0 = lapply (Lvar obj_init) [Lvar self] Location.none in
+    let path, obj_init' = transl_class_rebind_0 self obj_init0 cl vf in
+    if not (Translcore.check_recursive_lambda ids obj_init') then
+      raise(Error(cl.cl_loc, Illegal_class_expr));
+    let id = (obj_init' = lfunction [self] obj_init0) in
+    if id then transl_normal_path path else
+
+    let cla = Ident.create "class"
+    and new_init = Ident.create "new_init"
+    and env_init = Ident.create "env_init"
+    and table = Ident.create "table"
+    and envs = Ident.create "envs" in
+    Llet(
+    Strict, new_init, lfunction [obj_init] obj_init',
+    Llet(
+    Alias, cla, transl_normal_path path,
+    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+          [mkappl(Lvar new_init, [lfield cla 0]);
+           lfunction [table]
+             (Llet(Strict, env_init,
+                   mkappl(lfield cla 1, [Lvar table]),
+                   lfunction [envs]
+                     (mkappl(Lvar new_init,
+                             [mkappl(Lvar env_init, [Lvar envs])]))));
+           lfield cla 2;
+           lfield cla 3], Location.none)))
+  with Exit ->
+    lambda_unit
+
+(* Rewrite a closure using builtins. Improves native code size. *)
+
+let rec module_path = function
+    Lvar id ->
+      let s = Ident.name id in s <> "" && s.[0] >= 'A' && s.[0] <= 'Z'
+  | Lprim(Pfield _, [p], _)    -> module_path p
+  | Lprim(Pgetglobal _, [], _) -> true
+  | _                       -> false
+
+let const_path local = function
+    Lvar id -> not (List.mem id local)
+  | Lconst _ -> true
+  | Lfunction (Curried, _, body) ->
+      let fv = free_variables body in
+      List.for_all (fun x -> not (IdentSet.mem x fv)) local
+  | p -> module_path p
+
+let rec builtin_meths self env env2 body =
+  let const_path = const_path (env::self) in
+  let conv = function
+    (* Lvar s when List.mem s self ->  "_self", [] *)
+    | p when const_path p -> "const", [p]
+    | Lprim(Parrayrefu _, [Lvar s; Lvar n], _) when List.mem s self ->
+        "var", [Lvar n]
+    | Lprim(Pfield (n,_), [Lvar e], _) when Ident.same e env ->
+        "env", [Lvar env2; Lconst(Const_pointer (n, Lambda.Pt_na))]
+    | Lsend(Self, met, Lvar s, [], _) when List.mem s self ->
+        "meth", [met]
+    | _ -> raise Not_found
+  in
+  match body with
+  | Llet(_, s', Lvar s, body) when List.mem s self ->
+      builtin_meths (s'::self) env env2 body
+  | Lapply(f, [arg], _) when const_path f ->
+      let s, args = conv arg in ("app_"^s, f :: args)
+  | Lapply(f, [arg; p], _) when const_path f && const_path p ->
+      let s, args = conv arg in
+      ("app_"^s^"_const", f :: args @ [p])
+  | Lapply(f, [p; arg], _) when const_path f && const_path p ->
+      let s, args = conv arg in
+      ("app_const_"^s, f :: p :: args)
+  | Lsend(Self, Lvar n, Lvar s, [arg], _) when List.mem s self ->
+      let s, args = conv arg in
+      ("meth_app_"^s, Lvar n :: args)
+  | Lsend(Self, met, Lvar s, [], _) when List.mem s self ->
+      ("get_meth", [met])
+  | Lsend(Public _, met, arg, [], _) ->
+      let s, args = conv arg in
+      ("send_"^s, met :: args)
+  | Lsend(Cached, met, arg, [_;_], _) ->
+      let s, args = conv arg in
+      ("send_"^s, met :: args)
+  | Lfunction (Curried, [x], body) ->
+      let rec enter self = function
+        | Lprim(Parraysetu _, [Lvar s; Lvar n; Lvar x'], _)
+          when Ident.same x x' && List.mem s self ->
+            ("set_var", [Lvar n])
+        | Llet(_, s', Lvar s, body) when List.mem s self ->
+            enter (s'::self) body
+        | _ -> raise Not_found
+      in enter self body
+  | Lfunction _ -> raise Not_found
+  | _ ->
+      let s, args = conv body in ("get_"^s, args)
+
+module M = struct
+  open CamlinternalOO
+  let builtin_meths self env env2 body =
+    let builtin, args = builtin_meths self env env2 body in
+    (* if not arr then [mkappl(oo_prim builtin, args)] else *)
+    let tag = match builtin with
+      "get_const" -> GetConst
+    | "get_var"   -> GetVar
+    | "get_env"   -> GetEnv
+    | "get_meth"  -> GetMeth
+    | "set_var"   -> SetVar
+    | "app_const" -> AppConst
+    | "app_var"   -> AppVar
+    | "app_env"   -> AppEnv
+    | "app_meth"  -> AppMeth
+    | "app_const_const" -> AppConstConst
+    | "app_const_var"   -> AppConstVar
+    | "app_const_env"   -> AppConstEnv
+    | "app_const_meth"  -> AppConstMeth
+    | "app_var_const"   -> AppVarConst
+    | "app_env_const"   -> AppEnvConst
+    | "app_meth_const"  -> AppMethConst
+    | "meth_app_const"  -> MethAppConst
+    | "meth_app_var"    -> MethAppVar
+    | "meth_app_env"    -> MethAppEnv
+    | "meth_app_meth"   -> MethAppMeth
+    | "send_const" -> SendConst
+    | "send_var"   -> SendVar
+    | "send_env"   -> SendEnv
+    | "send_meth"  -> SendMeth
+    | _ -> assert false
+    in Lconst(Const_pointer(Obj.magic tag, Lambda.Pt_na)) :: args
+end
+open M
+
+
+(*
+   Traduction d'une classe.
+   Plusieurs cas:
+    * reapplication d'une classe connue -> transl_class_rebind
+    * classe sans dependances locales -> traduction directe
+    * avec dependances locale -> creation d'un arbre de stubs,
+      avec un noeud pour chaque classe locale heritee
+   Une classe est un 4-uplet:
+    (obj_init, class_init, env_init, env)
+    obj_init: fonction de creation d'objet (unit -> obj)
+    class_init: fonction d'heritage (table -> env_init)
+      (une seule par code source)
+    env_init: parametrage par l'environnement local (env -> params -> obj_init)
+      (une par combinaison de class_init herites)
+    env: environnement local
+   Si ids=0 (objet immediat), alors on ne conserve que env_init.
+*)
+
+let prerr_ids msg ids =
+  let names = List.map Ident.unique_toplevel_name ids in
+  prerr_endline (String.concat " " (msg :: names))
+
+let transl_class ids cl_id pub_meths cl vflag =
+  (* First check if it is not only a rebind *)
+  let rebind = transl_class_rebind ids cl vflag in
+  if rebind <> lambda_unit then rebind else
+
+  (* Prepare for heavy environment handling *)
+  let tables = Ident.create (Ident.name cl_id ^ "_tables") in
+  let (top_env, req) = oo_add_class tables in
+  let top = not req in
+  let cl_env, llets = build_class_lets cl ids in
+  let new_ids = if top then [] else Env.diff top_env cl_env in
+  let env2 = Ident.create "env" in
+  let meth_ids = get_class_meths cl in
+  let subst env lam i0 new_ids' =
+    let fv = free_variables lam in
+    (* prerr_ids "cl_id =" [cl_id]; prerr_ids "fv =" (IdentSet.elements fv); *)
+    let fv = List.fold_right IdentSet.remove !new_ids' fv in
+    (* We need to handle method ids specially, as they do not appear
+       in the typing environment (PR#3576, PR#4560) *)
+    (* very hacky: we add and remove free method ids on the fly,
+       depending on the visit order... *)
+    method_ids :=
+      IdentSet.diff (IdentSet.union (free_methods lam) !method_ids) meth_ids;
+    (* prerr_ids "meth_ids =" (IdentSet.elements meth_ids);
+       prerr_ids "method_ids =" (IdentSet.elements !method_ids); *)
+    let new_ids = List.fold_right IdentSet.add new_ids !method_ids in
+    let fv = IdentSet.inter fv new_ids in
+    new_ids' := !new_ids' @ IdentSet.elements fv;
+    (* prerr_ids "new_ids' =" !new_ids'; *)
+    let i = ref (i0-1) in
+    List.fold_left
+      (fun subst id ->
+        incr i; Ident.add id (lfield env !i)  subst)
+      Ident.empty !new_ids'
+  in
+  let new_ids_meths = ref [] in
+  let msubst arr = function
+      Lfunction (Curried, self :: args, body) ->
+        let env = Ident.create "env" in
+        let body' =
+          if new_ids = [] then body else
+          subst_lambda (subst env body 0 new_ids_meths) body in
+        begin try
+          (* Doesn't seem to improve size for bytecode *)
+          (* if not !Clflags.native_code then raise Not_found; *)
+          if not arr || !Clflags.debug then raise Not_found;
+          builtin_meths [self] env env2 (lfunction args body')
+        with Not_found ->
+          [lfunction (self :: args)
+             (if not (IdentSet.mem env (free_variables body')) then body' else
+              Llet(Alias, env,
+                   Lprim(Parrayrefu Paddrarray,
+                         [Lvar self; Lvar env2], Location.none), body'))]
+        end
+      | _ -> assert false
+  in
+  let new_ids_init = ref [] in
+  let env1 = Ident.create "env" and env1' = Ident.create "env'" in
+  let copy_env envs self =
+    if top then lambda_unit else
+    Lifused(env2, Lprim(Parraysetu Paddrarray,
+                        [Lvar self; Lvar env2; Lvar env1'], Location.none))
+  and subst_env envs l lam =
+    if top then lam else
+    (* must be called only once! *)
+    let lam = subst_lambda (subst env1 lam 1 new_ids_init) lam in
+    Llet(Alias, env1, (if l = [] then Lvar envs else lfield envs 0),
+    Llet(Alias, env1',
+         (if !new_ids_init = [] then Lvar env1 else lfield env1 0),
+         lam))
+  in
+
+  (* Now we start compiling the class *)
+  let cla = Ident.create "class" in
+  let (inh_init, obj_init) =
+    build_object_init_0 cla [] cl copy_env subst_env top ids in
+  let inh_init' = List.rev inh_init in
+  let (inh_init', cl_init) =
+    build_class_init cla true ([],[]) inh_init' obj_init msubst top cl
+  in
+  assert (inh_init' = []);
+  let table = Ident.create "table"
+  and class_init = Ident.create (Ident.name cl_id ^ "_init")
+  and env_init = Ident.create "env_init"
+  and obj_init = Ident.create "obj_init" in
+  let pub_meths =
+    List.sort
+      (fun s s' -> compare (Btype.hash_variant s) (Btype.hash_variant s'))
+      pub_meths in
+  let tags = List.map Btype.hash_variant pub_meths in
+  let rev_map = List.combine tags pub_meths in
+  List.iter2
+    (fun tag name ->
+      let name' = List.assoc tag rev_map in
+      if name' <> name then raise(Error(cl.cl_loc, Tags(name, name'))))
+    tags pub_meths;
+  let ltable table lam =
+    Llet(Strict, table,
+         mkappl (oo_prim "create_table", [transl_meth_list pub_meths]), lam)
+  and ldirect obj_init =
+    Llet(Strict, obj_init, cl_init,
+         Lsequence(mkappl (oo_prim "init_class", [Lvar cla]),
+                   mkappl (Lvar obj_init, [lambda_unit])))
+  in
+  (* Simplest case: an object defined at toplevel (ids=[]) *)
+  if top && ids = [] then llets (ltable cla (ldirect obj_init)) else
+
+  let concrete = (vflag = Concrete)
+  and lclass lam =
+    let cl_init = llets (Lfunction(Curried, [cla], cl_init)) in
+    Llet(Strict, class_init, cl_init, lam (free_variables cl_init))
+  and lbody fv =
+    if List.for_all (fun id -> not (IdentSet.mem id fv)) ids then
+      mkappl (oo_prim "make_class",[transl_meth_list pub_meths;
+                                    Lvar class_init])
+    else
+      ltable table (
+      Llet(
+      Strict, env_init, mkappl (Lvar class_init, [Lvar table]),
+      Lsequence(
+      mkappl (oo_prim "init_class", [Lvar table]),
+      Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+            [mkappl (Lvar env_init, [lambda_unit]);
+             Lvar class_init; Lvar env_init; lambda_unit], Location.none))))
+  and lbody_virt lenvs =
+    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+          [lambda_unit; Lfunction(Curried,[cla], cl_init); lambda_unit; lenvs], Location.none)
+  in
+  (* Still easy: a class defined at toplevel *)
+  if top && concrete then lclass lbody else
+  if top then llets (lbody_virt lambda_unit) else
+
+  (* Now for the hard stuff: prepare for table cacheing *)
+  let envs = Ident.create "envs"
+  and cached = Ident.create "cached" in
+  let lenvs =
+    if !new_ids_meths = [] && !new_ids_init = [] && inh_init = []
+    then lambda_unit
+    else Lvar envs in
+  let lenv =
+    let menv =
+      if !new_ids_meths = [] then lambda_unit else
+      Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+            List.map (fun id -> Lvar id) !new_ids_meths, Location.none) in
+    if !new_ids_init = [] then menv else
+    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+          menv :: List.map (fun id -> Lvar id) !new_ids_init, Location.none)
+  and linh_envs =
+    List.map (fun (_, p) -> Lprim(Pfield (3, Fld_na), [transl_normal_path p], Location.none))
+      (List.rev inh_init)
+  in
+  let make_envs lam =
+    Llet(StrictOpt, envs,
+         (if linh_envs = [] then lenv else
+         Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), lenv :: linh_envs, Location.none)),
+         lam)
+  and def_ids cla lam =
+    Llet(StrictOpt, env2,
+         mkappl (oo_prim "new_variable", [Lvar cla; transl_label ""]),
+         lam)
+  in
+  let inh_paths =
+    List.filter
+      (fun (_,path) -> List.mem (Path.head path) new_ids) inh_init in
+  let inh_keys =
+    List.map (fun (_,p) -> Lprim(Pfield (1, Fld_na), [transl_normal_path p], Location.none)) inh_paths in
+  let lclass lam =
+    Llet(Strict, class_init,
+         Lfunction(Curried, [cla], def_ids cla cl_init), lam)
+  and lcache lam =
+    if inh_keys = [] then Llet(Alias, cached, Lvar tables, lam) else
+    Llet(Strict, cached,
+         mkappl (oo_prim "lookup_tables",
+                [Lvar tables; Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), inh_keys, Location.none)]),
+         lam)
+  and lset cached i lam =
+    Lprim(Psetfield(i, true, Fld_set_na), [Lvar cached; lam], Location.none)
+  in
+  let ldirect () =
+    ltable cla
+      (Llet(Strict, env_init, def_ids cla cl_init,
+            Lsequence(mkappl (oo_prim "init_class", [Lvar cla]),
+                      lset cached 0 (Lvar env_init))))
+  and lclass_virt () =
+    lset cached 0 (Lfunction(Curried, [cla], def_ids cla cl_init))
+  in
+  llets (
+  lcache (
+  Lsequence(
+  Lifthenelse(lfield cached 0, lambda_unit,
+              if ids = [] then ldirect () else
+              if not concrete then lclass_virt () else
+              lclass (
+              mkappl (oo_prim "make_class_store",
+                      [transl_meth_list pub_meths;
+                       Lvar class_init; Lvar cached]))),
+  make_envs (
+  if ids = [] then mkappl (lfield cached 0, [lenvs]) else
+  Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+        (if concrete then
+          [mkappl (lfield cached 0, [lenvs]);
+           lfield cached 1;
+           lfield cached 0;
+           lenvs]
+        else [lambda_unit; lfield cached 0; lambda_unit; lenvs])
+       , Location.none)))))
+
+(* Wrapper for class compilation *)
+(*
+    let cl_id = ci.ci_id_class in
+(* TODO: cl_id is used somewhere else as typesharp ? *)
+  let _arity = List.length ci.ci_params in
+  let pub_meths = m in
+  let cl = ci.ci_expr in
+  let vflag = vf in
+*)
+
+let transl_class ids id pub_meths cl vf =
+  oo_wrap cl.cl_env false (transl_class ids id pub_meths cl) vf
+
+let () =
+  transl_object := (fun id meths cl -> transl_class [] id meths cl Concrete)
+
+(* Error report *)
+
+open Format
+
+let report_error ppf = function
+  | Illegal_class_expr ->
+      fprintf ppf "This kind of recursive class expression is not allowed"
+  | Tags (lab1, lab2) ->
+      fprintf ppf "Method labels `%s' and `%s' are incompatible.@ %s"
+        lab1 lab2 "Change one of them."
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error (loc, err) ->
+        Some (Location.error_of_printer loc report_error err)
+      | _ ->
+        None
+    )
+
+end
+module Translmod : sig 
+#1 "translmod.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Translation from typed abstract syntax to lambda terms,
+   for the module language *)
+
+open Typedtree
+open Lambda
+
+val transl_implementation: string -> structure * module_coercion -> lambda
+val transl_store_phrases: string -> structure -> int * lambda
+val transl_store_implementation:
+      string -> structure * module_coercion -> int * lambda
+val transl_toplevel_definition: structure -> lambda
+val transl_package:
+      Ident.t option list -> Ident.t -> module_coercion -> lambda
+val transl_store_package:
+      Ident.t option list -> Ident.t -> module_coercion -> int * lambda
+
+val toplevel_name: Ident.t -> string
+val nat_toplevel_name: Ident.t -> Ident.t * int
+
+val primitive_declarations: Primitive.description list ref
+
+type error =
+  Circular_dependency of Ident.t
+
+exception Error of Location.t * error
+
+val report_error: Format.formatter -> error -> unit
+
+val reset: unit -> unit
+
+
+(** make it an array for better performance*)
+val get_export_identifiers : unit -> Ident.t list 
+
+end = struct
+#1 "translmod.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Translation from typed abstract syntax to lambda terms,
+   for the module language *)
+
+open Misc
+open Asttypes
+open Longident
+open Path
+open Types
+open Typedtree
+open Lambda
+open Translobj
+open Translcore
+open Translclass
+
+type error =
+  Circular_dependency of Ident.t
+
+
+exception Error of Location.t * error
+
+(* Keep track of the root path (from the root of the namespace to the
+   currently compiled module expression).  Useful for naming extensions. *)
+
+let global_path glob = Some(Pident glob)
+let is_top rootpath = 
+  match rootpath with 
+  | Some (Pident _ ) -> true
+  | _ -> false 
+
+let functor_path path param =
+  match path with
+    None -> None
+  | Some p -> Some(Papply(p, Pident param))
+let field_path path field =
+  match path with
+    None -> None
+  | Some p -> Some(Pdot(p, Ident.name field, Path.nopos))
+
+(* Compile type extensions *)
+
+let prim_set_oo_id =
+  Pccall {Primitive.prim_name = "caml_set_oo_id"; prim_arity = 1;
+          prim_alloc = false; prim_native_name = "";
+          prim_native_float = false}
+
+let transl_extension_constructor env path ext =
+  let name =
+    match path with
+      None -> Ident.name ext.ext_id
+    | Some p -> Path.name p
+  in
+  let loc = ext.ext_loc in
+  match ext.ext_kind with
+    Text_decl(args, ret) ->
+      Lprim(prim_set_oo_id,
+            [Lprim(Pmakeblock(Obj.object_tag, Lambda.default_tag_info, Mutable),
+                   [Lconst(Const_base(Const_string (name,None)));
+                    Lconst(Const_base(Const_int 0))], loc)], loc)
+  | Text_rebind(path, lid) ->
+      transl_path ~loc env path
+
+let transl_type_extension env rootpath tyext body =
+  List.fold_right
+    (fun ext body ->
+      let lam =
+        transl_extension_constructor env (field_path rootpath ext.ext_id) ext
+      in
+      Llet(Strict, ext.ext_id, lam, body))
+    tyext.tyext_constructors
+    body
+
+(* Compile a coercion *)
+
+let rec apply_coercion loc strict restr arg =
+  match restr with
+    Tcoerce_none ->
+      arg
+  | Tcoerce_structure(pos_cc_list, id_pos_list) ->
+      name_lambda strict arg (fun id ->
+        let get_field pos = Lprim(Pfield (pos, Fld_na (*TODO*)),[Lvar id], loc) in
+        let lam =
+          Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+                List.map (apply_coercion_field loc get_field) pos_cc_list, loc)
+        in
+        wrap_id_pos_list loc id_pos_list get_field lam)
+  | Tcoerce_functor(cc_arg, cc_res) ->
+      let param = Ident.create "funarg" in
+      name_lambda strict arg (fun id ->
+        Lfunction(Curried, [param],
+          apply_coercion loc Strict cc_res
+            (Lapply(Lvar id, [apply_coercion loc Alias cc_arg (Lvar param)],
+                   Location.none))))
+  | Tcoerce_primitive (_,p) ->
+      transl_primitive Location.none p
+  | Tcoerce_alias (path, cc) ->
+      name_lambda strict arg
+        (fun id -> apply_coercion loc Alias cc (transl_normal_path path))
+
+and apply_coercion_field loc get_field (pos, cc) =
+  apply_coercion loc Alias cc (get_field pos)
+
+and wrap_id_pos_list loc id_pos_list get_field lam =
+  let fv = free_variables lam in
+  (*Format.eprintf "%a@." Printlambda.lambda lam;
+  IdentSet.iter (fun id -> Format.eprintf "%a " Ident.print id) fv;
+  Format.eprintf "@.";*)
+  let (lam,s) =
+    List.fold_left (fun (lam,s) (id',pos,c) ->
+      if IdentSet.mem id' fv then
+        let id'' = Ident.create (Ident.name id') in
+        (Llet(Alias,id'',
+              apply_coercion loc Alias c (get_field pos),lam),
+         Ident.add id' (Lvar id'') s)
+      else (lam,s))
+      (lam, Ident.empty) id_pos_list
+  in
+  if s == Ident.empty then lam else subst_lambda s lam
+
+
+(* Compose two coercions
+   apply_coercion c1 (apply_coercion c2 e) behaves like
+   apply_coercion (compose_coercions c1 c2) e. *)
+
+let rec compose_coercions c1 c2 =
+  match (c1, c2) with
+    (Tcoerce_none, c2) -> c2
+  | (c1, Tcoerce_none) -> c1
+  | (Tcoerce_structure (pc1, ids1), Tcoerce_structure (pc2, ids2)) ->
+      let v2 = Array.of_list pc2 in
+      let ids1 =
+        List.map (fun (id,pos1,c1) ->
+          let (pos2,c2) = v2.(pos1) in (id, pos2, compose_coercions c1 c2))
+          ids1
+      in
+      Tcoerce_structure
+        (List.map
+          (function (p1, Tcoerce_primitive _) as x ->
+                      x (* (p1, Tcoerce_primitive p) *)
+                  | (p1, c1) ->
+                      let (p2, c2) = v2.(p1) in (p2, compose_coercions c1 c2))
+             pc1,
+         ids1 @ ids2)
+  | (Tcoerce_functor(arg1, res1), Tcoerce_functor(arg2, res2)) ->
+      Tcoerce_functor(compose_coercions arg2 arg1,
+                      compose_coercions res1 res2)
+  | (c1, Tcoerce_alias (path, c2)) ->
+      Tcoerce_alias (path, compose_coercions c1 c2)
+  | (_, _) ->
+      fatal_error "Translmod.compose_coercions"
+
+(*
+let apply_coercion a b c =
+  Format.eprintf "@[<2>apply_coercion@ %a@]@." Includemod.print_coercion b;
+  apply_coercion a b c
+
+let compose_coercions c1 c2 =
+  let c3 = compose_coercions c1 c2 in
+  let open Includemod in
+  Format.eprintf "@[<2>compose_coercions@ (%a)@ (%a) =@ %a@]@."
+    print_coercion c1 print_coercion c2 print_coercion c3;
+  c3
+*)
+
+(* Record the primitive declarations occuring in the module compiled *)
+
+let primitive_declarations = ref ([] :  Primitive.description list)
+let record_primitive = function
+  | {val_kind=Val_prim p} ->
+      primitive_declarations := p :: !primitive_declarations
+  | _ -> ()
+
+(* Utilities for compiling "module rec" definitions *)
+
+let mod_prim name =
+  try
+    transl_normal_path
+      (fst (Env.lookup_value (Ldot (Lident "CamlinternalMod", name))
+                             Env.empty))
+  with Not_found ->
+    fatal_error ("Primitive " ^ name ^ " not found.")
+
+let undefined_location loc =
+  let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
+  Lconst(Const_block(0, Lambda.default_tag_info,
+                     [Const_base(Const_string (fname, None));
+                      Const_base(Const_int line);
+                      Const_base(Const_int char)]))
+
+let init_shape modl =
+  let rec init_shape_mod env mty =
+    match Mtype.scrape env mty with
+      Mty_ident _ ->
+        raise Not_found
+    | Mty_alias _ ->
+        Const_block (1, Lambda.default_tag_info, [Const_pointer (0, Lambda.Pt_module_alias)])
+    | Mty_signature sg ->
+        Const_block(0,  Lambda.default_tag_info, [Const_block(0, Lambda.default_tag_info, init_shape_struct env sg)])
+    | Mty_functor(id, arg, res) ->
+        raise Not_found (* can we do better? *)
+  and init_shape_struct env sg =
+    match sg with
+      [] -> []
+    | Sig_value(id, vdesc) :: rem ->
+        let init_v =
+          match Ctype.expand_head env vdesc.val_type with
+            {desc = Tarrow(_,_,_,_)} ->
+              Const_pointer (0,Lambda.default_pointer_info) (* camlinternalMod.Function *)
+          | {desc = Tconstr(p, _, _)} when Path.same p Predef.path_lazy_t ->
+              Const_pointer (1, Lambda.default_pointer_info) (* camlinternalMod.Lazy *)
+          | _ -> raise Not_found in
+        init_v :: init_shape_struct env rem
+    | Sig_type(id, tdecl, _) :: rem ->
+        init_shape_struct (Env.add_type ~check:false id tdecl env) rem
+    | Sig_typext(id, ext, _) :: rem ->
+        raise Not_found
+    | Sig_module(id, md, _) :: rem ->
+        init_shape_mod env md.md_type ::
+        init_shape_struct (Env.add_module_declaration id md env) rem
+    | Sig_modtype(id, minfo) :: rem ->
+        init_shape_struct (Env.add_modtype id minfo env) rem
+    | Sig_class(id, cdecl, _) :: rem ->
+        Const_pointer (2, Lambda.default_pointer_info) (* camlinternalMod.Class *)
+        :: init_shape_struct env rem
+    | Sig_class_type(id, ctyp, _) :: rem ->
+        init_shape_struct env rem
+  in
+  try
+    Some(undefined_location modl.mod_loc,
+         Lconst(init_shape_mod modl.mod_env modl.mod_type))
+  with Not_found ->
+    None
+
+(* Reorder bindings to honor dependencies.  *)
+
+type binding_status = Undefined | Inprogress | Defined
+
+let reorder_rec_bindings bindings =
+  let id = Array.of_list (List.map (fun (id,_,_,_) -> id) bindings)
+  and loc = Array.of_list (List.map (fun (_,loc,_,_) -> loc) bindings)
+  and init = Array.of_list (List.map (fun (_,_,init,_) -> init) bindings)
+  and rhs = Array.of_list (List.map (fun (_,_,_,rhs) -> rhs) bindings) in
+  let fv = Array.map Lambda.free_variables rhs in
+  let num_bindings = Array.length id in
+  let status = Array.make num_bindings Undefined in
+  let res = ref [] in
+  let rec emit_binding i =
+    match status.(i) with
+      Defined -> ()
+    | Inprogress -> raise(Error(loc.(i), Circular_dependency id.(i)))
+    | Undefined ->
+        if init.(i) = None then begin
+          status.(i) <- Inprogress;
+          for j = 0 to num_bindings - 1 do
+            if IdentSet.mem id.(j) fv.(i) then emit_binding j
+          done
+        end;
+        res := (id.(i), init.(i), rhs.(i)) :: !res;
+        status.(i) <- Defined in
+  for i = 0 to num_bindings - 1 do
+    match status.(i) with
+      Undefined -> emit_binding i
+    | Inprogress -> assert false
+    | Defined -> ()
+  done;
+  List.rev !res
+
+(* Generate lambda-code for a reordered list of bindings *)
+
+let eval_rec_bindings bindings cont =
+  let rec bind_inits = function
+    [] ->
+      bind_strict bindings
+  | (id, None, rhs) :: rem ->
+      bind_inits rem
+  | (id, Some(loc, shape), rhs) :: rem ->
+      Llet(Strict, id, Lapply(mod_prim "init_mod", [loc; shape], Location.none),
+           bind_inits rem)
+  and bind_strict = function
+    [] ->
+      patch_forwards bindings
+  | (id, None, rhs) :: rem ->
+      Llet(Strict, id, rhs, bind_strict rem)
+  | (id, Some(loc, shape), rhs) :: rem ->
+      bind_strict rem
+  and patch_forwards = function
+    [] ->
+      cont
+  | (id, None, rhs) :: rem ->
+      patch_forwards rem
+  | (id, Some(loc, shape), rhs) :: rem ->
+      Lsequence(Lapply(mod_prim "update_mod", [shape; Lvar id; rhs],
+                       Location.none),
+                patch_forwards rem)
+  in
+    bind_inits bindings
+
+let compile_recmodule compile_rhs bindings cont =
+  eval_rec_bindings
+    (reorder_rec_bindings
+       (List.map
+          (fun {mb_id=id; mb_expr=modl; _} ->
+            (id, modl.mod_loc, init_shape modl, compile_rhs id modl))
+          bindings))
+    cont
+
+(* Extract the list of "value" identifiers bound by a signature.
+   "Value" identifiers are identifiers for signature components that
+   correspond to a run-time value: values, extensions, modules, classes.
+   Note: manifest primitives do not correspond to a run-time value! *)
+
+let rec bound_value_identifiers = function
+    [] -> []
+  | Sig_value(id, {val_kind = Val_reg}) :: rem ->
+      id :: bound_value_identifiers rem
+  | Sig_typext(id, ext, _) :: rem -> id :: bound_value_identifiers rem
+  | Sig_module(id, mty, _) :: rem -> id :: bound_value_identifiers rem
+  | Sig_class(id, decl, _) :: rem -> id :: bound_value_identifiers rem
+  | _ :: rem -> bound_value_identifiers rem
+
+(* Compile a module expression *)
+ 
+let export_identifiers  : Ident.t list ref = ref []
+let get_export_identifiers () = 
+  !export_identifiers
+
+let rec transl_module cc rootpath mexp =
+  let loc = mexp.mod_loc in
+  match mexp.mod_type with
+    Mty_alias _ -> apply_coercion loc Alias cc lambda_unit
+  | _ ->
+  match mexp.mod_desc with
+    Tmod_ident (path,_) ->
+      apply_coercion loc Strict cc
+        (transl_path ~loc mexp.mod_env path)
+  | Tmod_structure str ->
+      transl_struct loc [] cc rootpath str
+  | Tmod_functor( param, _, mty, body) ->
+      let bodypath = functor_path rootpath param in
+      oo_wrap mexp.mod_env true
+        (function
+        | Tcoerce_none ->
+            Lfunction(Curried, [param],
+                      transl_module Tcoerce_none bodypath body)
+        | Tcoerce_functor(ccarg, ccres) ->
+            let param' = Ident.create "funarg" in
+            Lfunction(Curried, [param'],
+                      Llet(Alias, param,
+                           apply_coercion loc Alias ccarg (Lvar param'),
+                           transl_module ccres bodypath body))
+        | _ ->
+            fatal_error "Translmod.transl_module")
+        cc
+  | Tmod_apply(funct, arg, ccarg) ->
+      oo_wrap mexp.mod_env true
+        (apply_coercion loc Strict cc)
+        (Lapply(transl_module Tcoerce_none None funct,
+                [transl_module ccarg None arg], loc))
+  | Tmod_constraint(arg, mty, _, ccarg) ->
+      transl_module (compose_coercions cc ccarg) rootpath arg
+  | Tmod_unpack(arg, _) ->
+      apply_coercion loc  Strict cc (Translcore.transl_exp arg)
+
+and transl_struct loc fields cc rootpath str =
+  transl_structure loc fields cc rootpath str.str_items
+
+and transl_structure loc fields cc rootpath = function
+    [] ->
+      begin match cc with
+        Tcoerce_none ->
+          let fields =  List.rev fields in
+          let field_names = List.map (fun id -> id.Ident.name) fields in
+          Lprim(Pmakeblock(0, Lambda.Blk_module (Some field_names) , Immutable),
+                List.fold_right (fun id acc -> begin
+                      (if is_top rootpath then 
+                         export_identifiers :=  id :: !export_identifiers);
+                      (Lvar id :: acc) end) fields [] , loc
+                 )
+      | Tcoerce_structure(pos_cc_list, id_pos_list) ->
+              (* Do not ignore id_pos_list ! *)
+          (*Format.eprintf "%a@.@[" Includemod.print_coercion cc;
+          List.iter (fun l -> Format.eprintf "%a@ " Ident.print l)
+            fields;
+          Format.eprintf "@]@.";*)
+          let v = Array.of_list (List.rev fields) in
+          let get_field pos = Lvar v.(pos)
+          and ids = List.fold_right IdentSet.add fields IdentSet.empty in
+          let (result, names) = List.fold_right
+              (fun  (pos, cc) (code, name) ->
+                 begin match cc with
+                 | Tcoerce_primitive (id,p) -> 
+                     (if is_top rootpath then 
+                        export_identifiers := id:: !export_identifiers);
+                     (transl_primitive Location.none p :: code, p.Primitive.prim_name ::name)
+                 | _ -> 
+                     (if is_top rootpath then 
+                        export_identifiers :=  v.(pos) :: !export_identifiers);
+                     (apply_coercion loc Strict cc (get_field pos) :: code, v.(pos).Ident.name :: name)
+                 end)
+              pos_cc_list ([], [])in 
+          let lam =
+            (Lprim(Pmakeblock(0, Blk_module (Some names), Immutable),
+                   result, loc))
+          and id_pos_list =
+            List.filter (fun (id,_,_) -> not (IdentSet.mem id ids)) id_pos_list
+          in
+          wrap_id_pos_list loc id_pos_list get_field lam
+      | _ ->
+          fatal_error "Translmod.transl_structure"
+      end
+  | item :: rem ->
+      match item.str_desc with
+      | Tstr_eval (expr, _) ->
+      Lsequence(transl_exp expr, transl_structure loc fields cc rootpath rem)
+  | Tstr_value(rec_flag, pat_expr_list) ->
+      let ext_fields = rev_let_bound_idents pat_expr_list @ fields in
+      transl_let rec_flag pat_expr_list
+                 (transl_structure loc ext_fields cc rootpath rem)
+  | Tstr_primitive descr ->
+      record_primitive descr.val_val;
+      transl_structure loc fields cc rootpath rem
+  | Tstr_type decls ->
+      transl_structure loc  fields cc rootpath rem
+  | Tstr_typext(tyext) ->
+      let ids = List.map (fun ext -> ext.ext_id) tyext.tyext_constructors in
+      transl_type_extension item.str_env rootpath tyext
+        (transl_structure loc (List.rev_append ids fields) cc rootpath rem)
+  | Tstr_exception ext ->
+      let id = ext.ext_id in
+      let path = field_path rootpath id in
+      Llet(Strict, id, transl_extension_constructor item.str_env path ext,
+           transl_structure loc (id :: fields) cc rootpath rem)
+  | Tstr_module mb ->
+      let id = mb.mb_id in
+      Llet(pure_module mb.mb_expr, id,
+           transl_module Tcoerce_none (field_path rootpath id) mb.mb_expr,
+           transl_structure loc (id :: fields) cc rootpath rem)
+  | Tstr_recmodule bindings ->
+      let ext_fields =
+        List.rev_append (List.map (fun mb -> mb.mb_id) bindings) fields
+      in
+      compile_recmodule
+        (fun id modl ->
+          transl_module Tcoerce_none (field_path rootpath id) modl)
+        bindings
+        (transl_structure loc ext_fields cc rootpath rem)
+  | Tstr_class cl_list ->
+      let ids = List.map (fun (ci,_,_) -> ci.ci_id_class) cl_list in
+      Lletrec(List.map
+              (fun (ci, meths, vf) ->
+                let id = ci.ci_id_class in
+                let cl = ci.ci_expr in
+                  (id, transl_class ids id meths cl vf ))
+                cl_list,
+              transl_structure loc (List.rev_append ids fields) cc rootpath rem)
+  | Tstr_include incl ->
+      let ids = bound_value_identifiers incl.incl_type in
+      let modl = incl.incl_mod in
+      let mid = Ident.create "include" in
+      let rec rebind_idents pos newfields = function
+        [] ->
+          transl_structure loc newfields cc rootpath rem
+      | id :: ids ->
+          Llet(Alias, id, Lprim(Pfield (pos, Fld_na), [Lvar mid], incl.incl_loc),
+               rebind_idents (pos + 1) (id :: newfields) ids) in
+      Llet(pure_module modl, mid, transl_module Tcoerce_none None modl,
+           rebind_idents 0 fields ids)
+
+  | Tstr_modtype _
+  | Tstr_open _
+  | Tstr_class_type _
+  | Tstr_attribute _ ->
+      transl_structure loc fields cc rootpath rem
+
+and pure_module m =
+  match m.mod_desc with
+    Tmod_ident _ -> Alias
+  | Tmod_constraint (m,_,_,_) -> pure_module m
+  | _ -> Strict
+
+(* Update forward declaration in Translcore *)
+let _ =
+  Translcore.transl_module := transl_module
+
+(* Compile an implementation *)
+
+let transl_implementation module_name (str, cc) =
+  reset_labels ();
+  primitive_declarations := [];
+  let module_id = Ident.create_persistent module_name in
+  Lprim(Psetglobal module_id,
+        [transl_label_init
+            (transl_struct Location.none [] cc (global_path module_id) str)], Location.none)
+
+
+(* Build the list of value identifiers defined by a toplevel structure
+   (excluding primitive declarations). *)
+
+let rec defined_idents = function
+    [] -> []
+  | item :: rem ->
+    match item.str_desc with
+    | Tstr_eval (expr, _) -> defined_idents rem
+    | Tstr_value(rec_flag, pat_expr_list) ->
+      let_bound_idents pat_expr_list @ defined_idents rem
+    | Tstr_primitive desc -> defined_idents rem
+    | Tstr_type decls -> defined_idents rem
+    | Tstr_typext tyext ->
+      List.map (fun ext -> ext.ext_id) tyext.tyext_constructors
+      @ defined_idents rem
+    | Tstr_exception ext -> ext.ext_id :: defined_idents rem
+    | Tstr_module mb -> mb.mb_id :: defined_idents rem
+    | Tstr_recmodule decls ->
+      List.map (fun mb -> mb.mb_id) decls @ defined_idents rem
+    | Tstr_modtype _ -> defined_idents rem
+    | Tstr_open _ -> defined_idents rem
+    | Tstr_class cl_list ->
+      List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list @ defined_idents rem
+    | Tstr_class_type cl_list -> defined_idents rem
+    | Tstr_include incl ->
+      bound_value_identifiers incl.incl_type @ defined_idents rem
+    | Tstr_attribute _ -> defined_idents rem
+
+(* second level idents (module M = struct ... let id = ... end),
+   and all sub-levels idents *)
+let rec more_idents = function
+    [] -> []
+  | item :: rem ->
+    match item.str_desc with
+    | Tstr_eval (expr, _attrs) -> more_idents rem
+    | Tstr_value(rec_flag, pat_expr_list) -> more_idents rem
+    | Tstr_primitive _ -> more_idents rem
+    | Tstr_type decls -> more_idents rem
+    | Tstr_typext tyext -> more_idents rem
+    | Tstr_exception _ -> more_idents rem
+    | Tstr_recmodule decls -> more_idents rem
+    | Tstr_modtype _ -> more_idents rem
+    | Tstr_open _ -> more_idents rem
+    | Tstr_class cl_list -> more_idents rem
+    | Tstr_class_type cl_list -> more_idents rem
+    | Tstr_include _ -> more_idents rem
+    | Tstr_module {mb_expr={mod_desc = Tmod_structure str}} ->
+        all_idents str.str_items @ more_idents rem
+    | Tstr_module _ -> more_idents rem
+    | Tstr_attribute _ -> more_idents rem
+
+and all_idents = function
+    [] -> []
+  | item :: rem ->
+    match item.str_desc with
+    | Tstr_eval (expr, _attrs) -> all_idents rem
+    | Tstr_value(rec_flag, pat_expr_list) ->
+      let_bound_idents pat_expr_list @ all_idents rem
+    | Tstr_primitive _ -> all_idents rem
+    | Tstr_type decls -> all_idents rem
+    | Tstr_typext tyext ->
+      List.map (fun ext -> ext.ext_id) tyext.tyext_constructors
+      @ all_idents rem
+    | Tstr_exception ext -> ext.ext_id :: all_idents rem
+    | Tstr_recmodule decls ->
+      List.map (fun mb -> mb.mb_id) decls @ all_idents rem
+    | Tstr_modtype _ -> all_idents rem
+    | Tstr_open _ -> all_idents rem
+    | Tstr_class cl_list ->
+      List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list @ all_idents rem
+    | Tstr_class_type cl_list -> all_idents rem
+    | Tstr_include incl ->
+      bound_value_identifiers incl.incl_type @ all_idents rem
+    | Tstr_module {mb_id;mb_expr={mod_desc = Tmod_structure str}} ->
+        mb_id :: all_idents str.str_items @ all_idents rem
+    | Tstr_module mb -> mb.mb_id :: all_idents rem
+    | Tstr_attribute _ -> all_idents rem
+
+
+(* A variant of transl_structure used to compile toplevel structure definitions
+   for the native-code compiler. Store the defined values in the fields
+   of the global as soon as they are defined, in order to reduce register
+   pressure.  Also rewrites the defining expressions so that they
+   refer to earlier fields of the structure through the fields of
+   the global, not by their names.
+   "map" is a table from defined idents to (pos in global block, coercion).
+   "prim" is a list of (pos in global block, primitive declaration). *)
+
+let transl_store_subst = ref Ident.empty
+  (** In the native toplevel, this reference is threaded through successive
+      calls of transl_store_structure *)
+
+let nat_toplevel_name id =
+  try match Ident.find_same id !transl_store_subst with
+    | Lprim(Pfield (pos, _), [Lprim(Pgetglobal glob, [], _)] ,_) -> (glob,pos)
+    | _ -> raise Not_found
+  with Not_found ->
+    fatal_error("Translmod.nat_toplevel_name: " ^ Ident.unique_name id)
+
+let transl_store_structure glob map prims str =
+  let rec transl_store rootpath subst = function
+    [] ->
+      transl_store_subst := subst;
+        lambda_unit
+    | item :: rem ->
+        match item.str_desc with
+  | Tstr_eval (expr, _attrs) ->
+      Lsequence(subst_lambda subst (transl_exp expr),
+                transl_store rootpath subst rem)
+  | Tstr_value(rec_flag, pat_expr_list) ->
+      let ids = let_bound_idents pat_expr_list in
+      let lam = transl_let rec_flag pat_expr_list (store_idents Location.none ids) in
+      Lsequence(subst_lambda subst lam,
+                transl_store rootpath (add_idents false ids subst) rem)
+  | Tstr_primitive descr ->
+      record_primitive descr.val_val;
+      transl_store rootpath subst rem
+  | Tstr_type decls ->
+      transl_store rootpath subst rem
+  | Tstr_typext(tyext) ->
+      let ids = List.map (fun ext -> ext.ext_id) tyext.tyext_constructors in
+      let lam =
+        transl_type_extension item.str_env rootpath tyext (store_idents Location.none ids)
+      in
+        Lsequence(subst_lambda subst lam,
+                  transl_store rootpath (add_idents false ids subst) rem)
+  | Tstr_exception ext ->
+      let id = ext.ext_id in
+      let path = field_path rootpath id in
+      let lam = transl_extension_constructor item.str_env path ext in
+      Lsequence(Llet(Strict, id, subst_lambda subst lam, store_ident ext.ext_loc id),
+                transl_store rootpath (add_ident false id subst) rem)
+  | Tstr_module{mb_id=id; mb_expr={mod_desc = Tmod_structure str}; mb_loc = loc} ->
+    let lam = transl_store (field_path rootpath id) subst str.str_items in
+      (* Careful: see next case *)
+    let subst = !transl_store_subst in
+    Lsequence(lam,
+              Llet(Strict, id,
+                   subst_lambda subst
+                   (Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
+                          List.map (fun id -> Lvar id)
+                                   (defined_idents str.str_items),loc)),
+                   Lsequence(store_ident loc id,
+                             transl_store rootpath (add_ident true id subst)
+                                          rem)))
+  | Tstr_module{mb_id=id; mb_expr=modl; mb_loc = loc} ->
+      let lam = transl_module Tcoerce_none (field_path rootpath id) modl in
+      (* Careful: the module value stored in the global may be different
+         from the local module value, in case a coercion is applied.
+         If so, keep using the local module value (id) in the remainder of
+         the compilation unit (add_ident true returns subst unchanged).
+         If not, we can use the value from the global
+         (add_ident true adds id -> Pgetglobal... to subst). *)
+      Llet(Strict, id, subst_lambda subst lam,
+        Lsequence(store_ident loc id,
+                  transl_store rootpath (add_ident true id subst) rem))
+  | Tstr_recmodule bindings ->
+      let ids = List.map (fun mb -> mb.mb_id) bindings in
+      compile_recmodule
+        (fun id modl ->
+          subst_lambda subst
+            (transl_module Tcoerce_none
+                           (field_path rootpath id) modl))
+        bindings
+        (Lsequence(store_idents Location.none ids,
+                   transl_store rootpath (add_idents true ids subst) rem))
+  | Tstr_class cl_list ->
+      let ids = List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list in
+      let lam =
+        Lletrec(List.map
+              (fun (ci, meths, vf) ->
+                let id = ci.ci_id_class in
+                let cl = ci.ci_expr in
+                     (id, transl_class ids id meths cl vf))
+                  cl_list,
+                store_idents Location.none ids) in
+      Lsequence(subst_lambda subst lam,
+                transl_store rootpath (add_idents false ids subst) rem)
+  | Tstr_include incl ->
+      let ids = bound_value_identifiers incl.incl_type in
+      let modl = incl.incl_mod in
+      let mid = Ident.create "include" in
+      let loc = incl.incl_loc in
+      let rec store_idents pos = function
+        [] -> transl_store rootpath (add_idents true ids subst) rem
+      | id :: idl ->
+          Llet(Alias, id, Lprim(Pfield (pos, Fld_na), [Lvar mid],loc),
+               Lsequence(store_ident loc id, store_idents (pos + 1) idl)) in
+      Llet(Strict, mid,
+           subst_lambda subst (transl_module Tcoerce_none None modl),
+           store_idents 0 ids)
+  | Tstr_modtype _
+  | Tstr_open _
+  | Tstr_class_type _
+  | Tstr_attribute _ ->
+      transl_store rootpath subst rem
+
+  and store_ident loc id =
+    try
+      let (pos, cc) = Ident.find_same id map in
+      let init_val = apply_coercion loc Alias cc (Lvar id) in
+      Lprim(Psetfield(pos, false, Fld_set_na), [Lprim(Pgetglobal glob, [], loc); init_val], loc)
+    with Not_found ->
+      fatal_error("Translmod.store_ident: " ^ Ident.unique_name id)
+
+  and store_idents loc idlist =
+    make_sequence (store_ident loc) idlist
+
+  and add_ident may_coerce id subst =
+    try
+      let (pos, cc) = Ident.find_same id map in
+      match cc with
+        Tcoerce_none ->
+          Ident.add id (Lprim(Pfield (pos, Fld_na), [Lprim(Pgetglobal glob, [], Location.none)], Location.none)) subst
+      | _ ->
+          if may_coerce then subst else assert false
+    with Not_found ->
+      assert false
+
+  and add_idents may_coerce idlist subst =
+    List.fold_right (add_ident may_coerce) idlist subst
+
+  and store_primitive (pos, prim) cont =
+    Lsequence(Lprim(Psetfield(pos, false, Fld_set_na),
+                    [Lprim(Pgetglobal glob, [], Location.none);
+                     transl_primitive Location.none prim], Location.none),
+              cont)
+
+  in List.fold_right store_primitive prims
+                     (transl_store (global_path glob) !transl_store_subst str)
+
+(* Transform a coercion and the list of value identifiers defined by
+   a toplevel structure into a table [id -> (pos, coercion)],
+   with [pos] being the position in the global block where the value of
+   [id] must be stored, and [coercion] the coercion to be applied to it.
+   A given identifier may appear several times
+   in the coercion (if it occurs several times in the signature); remember
+   to assign it the position of its last occurrence.
+   Identifiers that are not exported are assigned positions at the
+   end of the block (beyond the positions of all exported idents).
+   Also compute the total size of the global block,
+   and the list of all primitives exported as values. *)
+
+let build_ident_map restr idlist more_ids =
+  let rec natural_map pos map prims = function
+    [] ->
+      (map, prims, pos)
+  | id :: rem ->
+      natural_map (pos+1) (Ident.add id (pos, Tcoerce_none) map) prims rem in
+  let (map, prims, pos) =
+    match restr with
+        Tcoerce_none ->
+          natural_map 0 Ident.empty [] idlist
+      | Tcoerce_structure (pos_cc_list, _id_pos_list) ->
+              (* ignore _id_pos_list as the ids are already bound *)
+        let idarray = Array.of_list idlist in
+        let rec export_map pos map prims undef = function
+        [] ->
+          natural_map pos map prims undef
+          | (source_pos, Tcoerce_primitive (_,p)) :: rem ->
+            export_map (pos + 1) map ((pos, p) :: prims) undef rem
+          | (source_pos, cc) :: rem ->
+            let id = idarray.(source_pos) in
+            export_map (pos + 1) (Ident.add id (pos, cc) map)
+              prims (list_remove id undef) rem
+        in export_map 0 Ident.empty [] idlist pos_cc_list
+      | _ ->
+        fatal_error "Translmod.build_ident_map"
+  in
+  natural_map pos map prims more_ids
+
+(* Compile an implementation using transl_store_structure
+   (for the native-code compiler). *)
+
+let transl_store_gen module_name ({ str_items = str }, restr) topl =
+  reset_labels ();
+  primitive_declarations := [];
+  let module_id = Ident.create_persistent module_name in
+  let (map, prims, size) =
+    build_ident_map restr (defined_idents str) (more_idents str) in
+  let f = function
+    | [ { str_desc = Tstr_eval (expr, _attrs) } ] when topl ->
+        assert (size = 0);
+        subst_lambda !transl_store_subst (transl_exp expr)
+    | str -> transl_store_structure module_id map prims str in
+  transl_store_label_init module_id size f str
+  (*size, transl_label_init (transl_store_structure module_id map prims str)*)
+
+let transl_store_phrases module_name str =
+  transl_store_gen module_name (str,Tcoerce_none) true
+
+let transl_store_implementation module_name (str, restr) =
+  let s = !transl_store_subst in
+  transl_store_subst := Ident.empty;
+  let r = transl_store_gen module_name (str, restr) false in
+  transl_store_subst := s;
+  r
+
+(* Compile a toplevel phrase *)
+
+let toploop_ident = Ident.create_persistent "Toploop"
+let toploop_getvalue_pos = 0 (* position of getvalue in module Toploop *)
+let toploop_setvalue_pos = 1 (* position of setvalue in module Toploop *)
+
+let aliased_idents = ref Ident.empty
+
+let set_toplevel_unique_name id =
+  aliased_idents :=
+    Ident.add id (Ident.unique_toplevel_name id) !aliased_idents
+
+let toplevel_name id =
+  try Ident.find_same id !aliased_idents
+  with Not_found -> Ident.name id
+
+let toploop_getvalue id =
+  Lapply(Lprim(Pfield (toploop_getvalue_pos, Fld_na),
+                 [Lprim(Pgetglobal toploop_ident, [], Location.none)], Location.none),
+         [Lconst(Const_base(Const_string (toplevel_name id, None)))],
+         Location.none)
+
+let toploop_setvalue id lam =
+  Lapply(Lprim(Pfield (toploop_setvalue_pos, Fld_na),
+                 [Lprim(Pgetglobal toploop_ident, [], Location.none)], Location.none),
+         [Lconst(Const_base(Const_string (toplevel_name id, None))); lam],
+         Location.none)
+
+let toploop_setvalue_id id = toploop_setvalue id (Lvar id)
+
+let close_toplevel_term lam =
+  IdentSet.fold (fun id l -> Llet(Strict, id, toploop_getvalue id, l))
+                (free_variables lam) lam
+
+let transl_toplevel_item item =
+  match item.str_desc with
+    Tstr_eval (expr, _attrs) ->
+      transl_exp expr
+  | Tstr_value(rec_flag, pat_expr_list) ->
+      let idents = let_bound_idents pat_expr_list in
+      transl_let rec_flag pat_expr_list
+                 (make_sequence toploop_setvalue_id idents)
+  | Tstr_typext(tyext) ->
+      let idents =
+        List.map (fun ext -> ext.ext_id) tyext.tyext_constructors
+      in
+        transl_type_extension item.str_env None tyext
+          (make_sequence toploop_setvalue_id idents)
+  | Tstr_exception ext ->
+      toploop_setvalue ext.ext_id
+        (transl_extension_constructor item.str_env None ext)
+  | Tstr_module {mb_id=id; mb_expr=modl} ->
+      (* we need to use the unique name for the module because of issues
+         with "open" (PR#1672) *)
+      set_toplevel_unique_name id;
+      let lam = transl_module Tcoerce_none (Some(Pident id)) modl in
+      toploop_setvalue id lam
+  | Tstr_recmodule bindings ->
+      let idents = List.map (fun mb -> mb.mb_id) bindings in
+      compile_recmodule
+        (fun id modl -> transl_module Tcoerce_none (Some(Pident id)) modl)
+        bindings
+        (make_sequence toploop_setvalue_id idents)
+  | Tstr_class cl_list ->
+      (* we need to use unique names for the classes because there might
+         be a value named identically *)
+      let ids = List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list in
+      List.iter set_toplevel_unique_name ids;
+      Lletrec(List.map
+          (fun (ci, meths, vf) ->
+            let id = ci.ci_id_class in
+            let cl = ci.ci_expr in
+                   (id, transl_class ids id meths cl vf))
+                cl_list,
+              make_sequence
+                (fun (ci, _, _) -> toploop_setvalue_id ci.ci_id_class)
+                cl_list)
+  | Tstr_include incl ->
+      let ids = bound_value_identifiers incl.incl_type in
+      let modl = incl.incl_mod in
+      let mid = Ident.create "include" in
+      let rec set_idents pos = function
+        [] ->
+          lambda_unit
+      | id :: ids ->
+          Lsequence(toploop_setvalue id (Lprim(Pfield (pos, Fld_na), [Lvar mid], Location.none)),
+                    set_idents (pos + 1) ids) in
+      Llet(Strict, mid, transl_module Tcoerce_none None modl, set_idents 0 ids)
+  | Tstr_modtype _
+  | Tstr_open _
+  | Tstr_primitive _
+  | Tstr_type _
+  | Tstr_class_type _
+  | Tstr_attribute _ ->
+      lambda_unit
+
+let transl_toplevel_item_and_close itm =
+  close_toplevel_term (transl_label_init (transl_toplevel_item itm))
+
+let transl_toplevel_definition str =
+  reset_labels ();
+  make_sequence transl_toplevel_item_and_close str.str_items
+
+(* Compile the initialization code for a packed library *)
+
+let get_component = function
+    None -> Lconst const_unit
+  | Some id -> Lprim(Pgetglobal id, [], Location.none)
+
+let transl_package component_names target_name coercion =
+  let components =
+    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), List.map get_component component_names, Location.none) in
+  Lprim(Psetglobal target_name, [apply_coercion Location.none Strict coercion components], Location.none)
+  (*
+  let components =
+    match coercion with
+      Tcoerce_none ->
+        List.map get_component component_names
+    | Tcoerce_structure (pos_cc_list, id_pos_list) ->
+              (* ignore id_pos_list as the ids are already bound *)
+        let g = Array.of_list component_names in
+        List.map
+          (fun (pos, cc) -> apply_coercion Strict cc (get_component g.(pos)))
+          pos_cc_list
+    | _ ->
+        assert false in
+  Lprim(Psetglobal target_name, [Lprim(Pmakeblock(0, Immutable), components)])
+   *)
+
+let transl_store_package component_names target_name coercion =
+  let rec make_sequence fn pos arg =
+    match arg with
+      [] -> lambda_unit
+    | hd :: tl -> Lsequence(fn pos hd, make_sequence fn (pos + 1) tl) in
+  match coercion with
+    Tcoerce_none ->
+      (List.length component_names,
+       make_sequence
+         (fun pos id ->
+           Lprim(Psetfield(pos, false, Fld_set_na),
+                 [Lprim(Pgetglobal target_name, [], Location.none);
+                  get_component id], Location.none))
+         0 component_names)
+  | Tcoerce_structure (pos_cc_list, id_pos_list) ->
+      let components =
+        Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), List.map get_component component_names, Location.none)
+      in
+      let blk = Ident.create "block" in
+      (List.length pos_cc_list,
+       Llet (Strict, blk, apply_coercion Location.none Strict coercion components,
+             make_sequence
+               (fun pos id ->
+                 Lprim(Psetfield(pos, false, Fld_set_na),
+                       [Lprim(Pgetglobal target_name, [], Location.none);
+                        Lprim(Pfield (pos, Fld_na), [Lvar blk], Location.none)], Location.none))
+               0 pos_cc_list))
+  (*
+              (* ignore id_pos_list as the ids are already bound *)
+      let id = Array.of_list component_names in
+      (List.length pos_cc_list,
+       make_sequence
+         (fun dst (src, cc) ->
+           Lprim(Psetfield(dst, false),
+                 [Lprim(Pgetglobal target_name, []);
+                  apply_coercion Strict cc (get_component id.(src))]))
+         0 pos_cc_list)
+  *)
+  | _ -> assert false
+
+(* Error report *)
+
+open Format
+
+let report_error ppf = function
+    Circular_dependency id ->
+      fprintf ppf
+        "@[Cannot safely evaluate the definition@ \
+         of the recursively-defined module %a@]"
+        Printtyp.ident id
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error (loc, err) ->
+        Some (Location.error_of_printer loc report_error err)
+      | _ ->
+        None
+    )
+
+let reset () =
+  export_identifiers := [];
+  primitive_declarations := [];
+  transl_store_subst := Ident.empty;
+  toploop_ident.Ident.flags <- 0;
+  aliased_idents := Ident.empty
+
+end
 module Type_int_to_string
 = struct
 #1 "type_int_to_string.ml"
@@ -70984,6 +79331,7 @@ let cached_tbl  = Lam_module_ident.Hash.create 31
 
 (* For each compilation we need reset to make it re-entrant *)
 let reset () = 
+  Translmod.reset ();
   Lam_module_ident.Hash.clear cached_tbl 
 
 (* FIXME: JS external instead *)
@@ -87635,8353 +95983,6 @@ let export_to_cmj
 
 
 end
-module Printlambda : sig 
-#1 "printlambda.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Lambda
-
-open Format
-
-val structured_constant: formatter -> structured_constant -> unit
-
-val env_lambda : Env.t -> formatter -> lambda -> unit
-val lambda : formatter -> lambda -> unit
-val primitive: formatter -> primitive -> unit
-
-val lambda_as_module : Env.t  -> Format.formatter -> Lambda.lambda -> unit
-
-
-val seriaize: Env.t -> string -> lambda -> unit
-
-val serialize_raw_js: 
-    (Env.t -> Types.signature ->  string  -> lambda  -> unit) ref
-val serialize_js: (Env.t -> string  -> lambda  -> unit) ref
-
-end = struct
-#1 "printlambda.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-[@@@ocaml.warning "-40"]
-open Format
-open Asttypes
-open Primitive
-open Types
-open Lambda
-
-
-let rec struct_const ppf = function
-  | Const_base(Const_int n) -> fprintf ppf "%i" n
-  | Const_base(Const_char c) -> fprintf ppf "%C" c
-  | Const_base(Const_string (s, _)) -> fprintf ppf "%S" s
-  | Const_immstring s -> fprintf ppf "#%S" s
-  | Const_base(Const_float f) -> fprintf ppf "%s" f
-  | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
-  | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
-  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
-  | Const_pointer (n,_) -> fprintf ppf "%ia" n
-  | Const_block(tag,_, []) ->
-      fprintf ppf "[%i]" tag
-  | Const_block(tag,_, sc1::scl) ->
-      let sconsts ppf scl =
-        List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
-      fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
-  | Const_float_array [] ->
-      fprintf ppf "[| |]"
-  | Const_float_array (f1 :: fl) ->
-      let floats ppf fl =
-        List.iter (fun f -> fprintf ppf "@ %s" f) fl in
-      fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
-
-let boxed_integer_name = function
-  | Pnativeint -> "nativeint"
-  | Pint32 -> "int32"
-  | Pint64 -> "int64"
-
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s_%s" (boxed_integer_name bi) name
-
-let print_boxed_integer_conversion ppf bi1 bi2 =
-  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
-
-let boxed_integer_mark name = function
-  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
-  | Pint32 -> Printf.sprintf "Int32.%s" name
-  | Pint64 -> Printf.sprintf "Int64.%s" name
-
-let print_boxed_integer name ppf bi =
-  fprintf ppf "%s" (boxed_integer_mark name bi);;
-
-let print_bigarray name unsafe kind ppf layout =
-  fprintf ppf "Bigarray.%s[%s,%s]"
-    (if unsafe then "unsafe_"^ name else name)
-    (match kind with
-     | Pbigarray_unknown -> "generic"
-     | Pbigarray_float32 -> "float32"
-     | Pbigarray_float64 -> "float64"
-     | Pbigarray_sint8 -> "sint8"
-     | Pbigarray_uint8 -> "uint8"
-     | Pbigarray_sint16 -> "sint16"
-     | Pbigarray_uint16 -> "uint16"
-     | Pbigarray_int32 -> "int32"
-     | Pbigarray_int64 -> "int64"
-     | Pbigarray_caml_int -> "camlint"
-     | Pbigarray_native_int -> "nativeint"
-     | Pbigarray_complex32 -> "complex32"
-     | Pbigarray_complex64 -> "complex64")
-    (match layout with
-    |  Pbigarray_unknown_layout -> "unknown"
-     | Pbigarray_c_layout -> "C"
-     | Pbigarray_fortran_layout -> "Fortran")
-
-let record_rep ppf r =
-  match r with
-  | Record_regular -> fprintf ppf "regular"
-  | Record_float -> fprintf ppf "float"
-;;
-
-let string_of_loc_kind = function
-  | Loc_FILE -> "loc_FILE"
-  | Loc_LINE -> "loc_LINE"
-  | Loc_MODULE -> "loc_MODULE"
-  | Loc_POS -> "loc_POS"
-  | Loc_LOC -> "loc_LOC"
-
-let primitive ppf = function
-  | Pidentity -> fprintf ppf "id"
-  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
-  | Pbytes_of_string -> fprintf ppf "bytes_of_string"
-  | Pignore -> fprintf ppf "ignore"
-  | Prevapply  -> fprintf ppf "revapply"
-  | Pdirapply  -> fprintf ppf "dirapply"
-  | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
-  | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
-  | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
-  | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
-  | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
-  | Pfield (n,_) -> fprintf ppf "field %i" n
-  | Psetfield(n, ptr, _) ->
-      let instr = if ptr then "setfield_ptr " else "setfield_imm " in
-      fprintf ppf "%s%i" instr n
-  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
-  | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
-  | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
-  | Plazyforce -> fprintf ppf "force"
-  | Pccall p -> fprintf ppf "%s" p.prim_name
-  | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
-  | Psequand -> fprintf ppf "&&"
-  | Psequor -> fprintf ppf "||"
-  | Pnot -> fprintf ppf "not"
-  | Pnegint -> fprintf ppf "~"
-  | Paddint -> fprintf ppf "+"
-  | Psubint -> fprintf ppf "-"
-  | Pmulint -> fprintf ppf "*"
-  | Pdivint -> fprintf ppf "/"
-  | Pmodint -> fprintf ppf "mod"
-  | Pandint -> fprintf ppf "and"
-  | Porint -> fprintf ppf "or"
-  | Pxorint -> fprintf ppf "xor"
-  | Plslint -> fprintf ppf "lsl"
-  | Plsrint -> fprintf ppf "lsr"
-  | Pasrint -> fprintf ppf "asr"
-  | Pintcomp(Ceq) -> fprintf ppf "=="
-  | Pintcomp(Cneq) -> fprintf ppf "!="
-  | Pintcomp(Clt) -> fprintf ppf "<"
-  | Pintcomp(Cle) -> fprintf ppf "<="
-  | Pintcomp(Cgt) -> fprintf ppf ">"
-  | Pintcomp(Cge) -> fprintf ppf ">="
-  | Poffsetint n -> fprintf ppf "%i+" n
-  | Poffsetref n -> fprintf ppf "+:=%i"n
-  | Pintoffloat -> fprintf ppf "int_of_float"
-  | Pfloatofint -> fprintf ppf "float_of_int"
-  | Pnegfloat -> fprintf ppf "~."
-  | Pabsfloat -> fprintf ppf "abs."
-  | Paddfloat -> fprintf ppf "+."
-  | Psubfloat -> fprintf ppf "-."
-  | Pmulfloat -> fprintf ppf "*."
-  | Pdivfloat -> fprintf ppf "/."
-  | Pfloatcomp(Ceq) -> fprintf ppf "==."
-  | Pfloatcomp(Cneq) -> fprintf ppf "!=."
-  | Pfloatcomp(Clt) -> fprintf ppf "<."
-  | Pfloatcomp(Cle) -> fprintf ppf "<=."
-  | Pfloatcomp(Cgt) -> fprintf ppf ">."
-  | Pfloatcomp(Cge) -> fprintf ppf ">=."
-  | Pstringlength -> fprintf ppf "string.length"
-  | Pstringrefu -> fprintf ppf "string.unsafe_get"
-  | Pstringsetu -> fprintf ppf "string.unsafe_set"
-  | Pstringrefs -> fprintf ppf "string.get"
-  | Pstringsets -> fprintf ppf "string.set"
-  | Pbyteslength -> fprintf ppf "bytes.length"
-  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
-  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
-  | Pbytesrefs -> fprintf ppf "bytes.get"
-  | Pbytessets -> fprintf ppf "bytes.set"
-
-  | Parraylength _ -> fprintf ppf "array.length"
-  | Pmakearray _ -> fprintf ppf "makearray "
-  | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
-  | Parraysetu _ -> fprintf ppf "array.unsafe_set"
-  | Parrayrefs _ -> fprintf ppf "array.get"
-  | Parraysets _ -> fprintf ppf "array.set"
-  | Pctconst c ->
-     let const_name = match c with
-       | Big_endian -> "big_endian"
-       | Word_size -> "word_size"
-       | Ostype_unix -> "ostype_unix"
-       | Ostype_win32 -> "ostype_win32"
-       | Ostype_cygwin -> "ostype_cygwin" in
-     fprintf ppf "sys.constant_%s" const_name
-  | Pisint -> fprintf ppf "isint"
-  | Pisout -> fprintf ppf "isout"
-  | Pbittest -> fprintf ppf "testbit"
-  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
-  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
-  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
-  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
-  | Paddbint bi -> print_boxed_integer "add" ppf bi
-  | Psubbint bi -> print_boxed_integer "sub" ppf bi
-  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
-  | Pdivbint bi -> print_boxed_integer "div" ppf bi
-  | Pmodbint bi -> print_boxed_integer "mod" ppf bi
-  | Pandbint bi -> print_boxed_integer "and" ppf bi
-  | Porbint bi -> print_boxed_integer "or" ppf bi
-  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
-  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
-  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
-  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
-  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
-  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
-  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
-  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
-  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
-  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
-  | Pbigarrayref(unsafe, n, kind, layout) ->
-      print_bigarray "get" unsafe kind ppf layout
-  | Pbigarrayset(unsafe, n, kind, layout) ->
-      print_bigarray "set" unsafe kind ppf layout
-  | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
-  | Pstring_load_16(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get16"
-     else fprintf ppf "string.get16"
-  | Pstring_load_32(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get32"
-     else fprintf ppf "string.get32"
-  | Pstring_load_64(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get64"
-     else fprintf ppf "string.get64"
-  | Pstring_set_16(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set16"
-     else fprintf ppf "string.set16"
-  | Pstring_set_32(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set32"
-     else fprintf ppf "string.set32"
-  | Pstring_set_64(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set64"
-     else fprintf ppf "string.set64"
-  | Pbigstring_load_16(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
-     else fprintf ppf "bigarray.array1.get16"
-  | Pbigstring_load_32(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
-     else fprintf ppf "bigarray.array1.get32"
-  | Pbigstring_load_64(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
-     else fprintf ppf "bigarray.array1.get64"
-  | Pbigstring_set_16(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
-     else fprintf ppf "bigarray.array1.set16"
-  | Pbigstring_set_32(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
-     else fprintf ppf "bigarray.array1.set32"
-  | Pbigstring_set_64(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
-     else fprintf ppf "bigarray.array1.set64"
-  | Pbswap16 -> fprintf ppf "bswap16"
-  | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
-  | Pint_as_pointer -> fprintf ppf "int_as_pointer"
-
-type print_kind = 
-  | Alias 
-  | Strict 
-  | StrictOpt 
-  | Variable 
-  | Recursive 
-
-let kind = function
-  | Alias -> "a"
-  | Strict -> ""
-  | StrictOpt -> "o"
-  | Variable -> "v" 
-  | Recursive -> "r"
-
-let to_print_kind (k : Lambda.let_kind) : print_kind = 
-  match k with 
-  | Alias -> Alias 
-  | Strict -> Strict
-  | StrictOpt -> StrictOpt
-  | Variable -> Variable
-  
-let rec aux (acc : (print_kind * Ident.t * lambda ) list) lam = 
-  match lam with 
-  | Llet (str3, id3, arg3, body3) ->
-      aux ((to_print_kind str3,id3, arg3)::acc) body3
-  | Lletrec (bind_args, body) ->
-      aux 
-        (List.map (fun (id,l) -> (Recursive,id,l)) bind_args 
-         @ acc) body
-  | e ->  (acc , e) 
-
-type left_var = 
-    {
-     kind : print_kind ;
-     id : Ident.t
-   }
-
-type left = 
-  | Id of left_var
-  | Nop
-
-
-
-
-let  flatten lam : (print_kind * Ident.t * lambda ) list * lambda = 
-  match lam with 
-  | Llet(str,id, arg, body) ->
-      aux [to_print_kind str, id, arg] body
-  | Lletrec(bind_args, body) ->
-      aux 
-        (List.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
-        body
-  | _ -> assert false
-
-        
-let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
-  match  Env.find_module (Pident id) env with 
-  | {md_type = Mty_signature signature  ; _ } -> 
-      (* Env.prefix_idents, could be cached  *)
-      let serializable_sigs = 
-        List.filter (fun x ->
-            match x with 
-            | Sig_typext _ 
-            | Sig_module _
-            | Sig_class _ -> true
-            | Sig_value(_, {val_kind = Val_prim _}) -> false
-            | Sig_value _ -> true
-            | _ -> false
-                    ) signature  in
-      (begin match List.nth  serializable_sigs  pos  with 
-      | Sig_value (i,_) 
-      | Sig_module (i,_,_) -> i 
-      | Sig_typext (i,_,_) -> i 
-      | Sig_modtype(i,_) -> i 
-      | Sig_class (i,_,_) -> i 
-      | Sig_class_type(i,_,_) -> i 
-      | Sig_type(i,_,_) -> i 
-      end).name
-  | _ -> assert false
-
-
-
-let lambda use_env env ppf v  =
-  let rec lam ppf = function
-  | Lvar id ->
-      Ident.print ppf id
-  | Lconst cst ->
-      struct_const ppf cst
-  | Lapply(lfun, largs, _) ->
-      let lams ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(apply@ %a%a)@]" lam lfun lams largs
-  | Lfunction(kind, params, body) ->
-      let pr_params ppf params =
-        match kind with
-        | Curried ->
-            List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-        | Tupled ->
-            fprintf ppf " (";
-            let first = ref true in
-            List.iter
-              (fun param ->
-                if !first then first := false else fprintf ppf ",@ ";
-                Ident.print ppf param)
-              params;
-            fprintf ppf ")" in
-      fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
-  | Llet _ | Lletrec _ as x ->
-      let args, body =   flatten x  in
-      let bindings ppf id_arg_list =
-        let spc = ref false in
-        List.iter
-          (fun (k, id, l) ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
-          id_arg_list in
-      fprintf ppf
-        "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
-      fprintf ppf ")@ %a)@]"  lam body
-  | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[],_)],_) when use_env ->
-      fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
-
-  | Lprim(Psetfield (n,_,_), [ Lprim(Pgetglobal id,[],_) ;  e ], _) when use_env  ->
-      fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
-        lam e
-  | Lprim(prim, largs,_) ->
-      let lams ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
-  | Lswitch(larg, sw) ->
-      let switch ppf sw =
-        let spc = ref false in
-        List.iter
-         (fun (n, l) ->
-           if !spc then fprintf ppf "@ " else spc := true;
-           fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
-         sw.sw_consts;
-        List.iter
-          (fun (n, l) ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
-          sw.sw_blocks ;
-        begin match sw.sw_failaction with
-        | None  -> ()
-        | Some l ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<hv 1>default:@ %a@]" lam l
-        end in
-      fprintf ppf
-       "@[<1>(%s %a@ @[<v 0>%a@])@]"
-       (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
-       lam larg switch sw
-  | Lstringswitch(arg, cases, default,_) ->
-      let switch ppf cases =
-        let spc = ref false in
-        List.iter
-         (fun (s, l) ->
-           if !spc then fprintf ppf "@ " else spc := true;
-           fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
-          cases;
-        begin match default with
-        | Some default ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<hv 1>default:@ %a@]" lam default
-        | None -> ()
-        end in
-      fprintf ppf
-       "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
-  | Lstaticraise (i, ls)  ->
-      let lams ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls;
-  | Lstaticcatch(lbody, (i, vars), lhandler) ->
-      fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]"
-        lam lbody i
-        (fun ppf vars -> match vars with
-          | [] -> ()
-          | _ ->
-              List.iter
-                (fun x -> fprintf ppf " %a" Ident.print x)
-                vars)
-        vars
-        lam lhandler
-  | Ltrywith(lbody, param, lhandler) ->
-      fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]"
-        lam lbody Ident.print param lam lhandler
-  | Lifthenelse(lcond, lif, lelse) ->
-      fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
-  | Lsequence(l1, l2) ->
-      fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
-  | Lwhile(lcond, lbody) ->
-      fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
-  | Lfor(param, lo, hi, dir, body) ->
-      fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]"
-       Ident.print param lam lo
-       (match dir with Upto -> "to" | Downto -> "downto")
-       lam hi lam body
-  | Lassign(id, expr) ->
-      fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
-  | Lsend (k, met, obj, largs, _) ->
-      let args ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      let kind =
-        if k = Self then "self" else if k = Cached then "cache" else "" in
-      fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
-  | Levent(expr, _ev) ->
-      lam ppf expr
-      (* let kind = *)
-      (*  match ev.lev_kind with *)
-      (*  | Lev_before -> "before" *)
-      (*  | Lev_after _  -> "after" *)
-      (*  | Lev_function -> "funct-body" in *)
-      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
-      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
-      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
-      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
-      (*         lam expr *)
-  | Lifused(id, expr) ->
-      fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
-
-and sequence ppf = function
-  | Lsequence(l1, l2) ->
-      fprintf ppf "%a@ %a" sequence l1 sequence l2
-  | l ->
-      lam ppf l
-  in 
-  lam ppf v
-
-let structured_constant = struct_const
-
-let env_lambda = lambda true 
-let lambda = lambda false Env.empty
-
-let rec flatten_seq acc lam =
-  match lam with 
-  | Lsequence(l1,l2) -> 
-      flatten_seq (flatten_seq acc l1) l2
-  | x -> x :: acc 
-
-exception Not_a_module
-
-let rec flat (acc : (left * lambda) list ) (lam : lambda) = 
-  match lam with 
-  | Llet (str,id,arg,body) ->
-      flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
-  | Lletrec (bind_args, body) ->
-      flat ( List.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args @ acc) body 
-  | Lsequence (l,r) -> 
-      flat (flat acc l) r
-  | x -> (Nop, x) :: acc 
-
-let lambda_as_module env  ppf lam = 
-  try
-  match lam with
-  | Lprim(Psetglobal(id), [biglambda],_)  (* might be wrong in toplevel *) ->
-      
-      begin match flat [] biglambda  with 
-      | (Nop, Lprim (Pmakeblock (_, _, _), toplevels,_)) :: rest ->
-          (* let spc = ref false in *)
-          List.iter
-            (fun (left, l) ->
-              match left with 
-              | Id { kind = k; id } ->
-                  fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
-              | Nop -> 
-
-                  fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
-            )
-
-            @@ List.rev rest
-          
-          
-      | _ -> raise Not_a_module
-      end
-  | _ -> raise Not_a_module
-  with _ -> 
-    env_lambda env ppf lam;
-    fprintf ppf "; lambda-failure"
-let seriaize env (filename : string) (lam : Lambda.lambda) : unit =
-  let ou = open_out filename  in
-  let old = Format.get_margin () in
-  let () = Format.set_margin 10000 in
-  let fmt = Format.formatter_of_out_channel ou in
-  begin
-    (* lambda_as_module env fmt lambda; *)
-    lambda fmt lam;
-    Format.pp_print_flush fmt ();
-    close_out ou;
-    Format.set_margin old
-  end
-
-let serialize_raw_js = ref(fun _ _ _ _ -> ())    
-let serialize_js = ref (fun _ _ _ -> ())
-
-end
-module Switch : sig 
-#1 "switch.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Luc Maranget, projet Moscova, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2000 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(*
-  This module transforms generic switches in combinations
-  of if tests and switches.
-*)
-
-(* For detecting action sharing, object style *)
-
-(* Store for actions in object style:
-  act_store : store an action, returns index in table
-              In case an action with equal key exists, returns index
-              of the stored action. Otherwise add entry in table.
-  act_store_shared : This stored action will always be shared.
-  act_get   : retrieve table
-  act_get_shared : retrieve table, with sharing explicit
-*)
-
-type 'a shared = Shared of 'a | Single of 'a
-
-type 'a t_store =
-    {act_get : unit -> 'a array ;
-     act_get_shared : unit -> 'a shared array ;
-     act_store : 'a -> int ;
-     act_store_shared : 'a -> int ; }
-
-exception Not_simple
-
-module type Stored = sig
-  type t
-  type key
-  val make_key : t -> key option
-end
-
-module Store(A:Stored) :
-    sig
-      val mk_store : unit -> A.t t_store
-    end
-
-(* Arguments to the Make functor *)
-module type S =
-  sig
-    (* type of basic tests *)
-    type primitive
-    (* basic tests themselves *)
-    val eqint : primitive
-    val neint : primitive
-    val leint : primitive
-    val ltint : primitive
-    val geint : primitive
-    val gtint : primitive
-    (* type of actions *)
-    type act
-
-    (* Various constructors, for making a binder,
-        adding one integer, etc. *)
-    val bind : act -> (act -> act) -> act
-    val make_const : int -> act
-    val make_offset : act -> int -> act
-    val make_prim : primitive -> act list -> act
-    val make_isout : act -> act -> act
-    val make_isin : act -> act -> act
-    val make_if : act -> act -> act -> act
-   (* construct an actual switch :
-      make_switch arg cases acts
-      NB:  cases is in the value form *)
-    val make_switch :
-        act -> int array -> act array -> act
-   (* Build last minute sharing of action stuff *)
-   val make_catch : act -> int * (act -> act)
-   val make_exit : int -> act
-
-  end
-
-
-(*
-  Make.zyva arg low high cases actions where
-    - arg is the argument of the switch.
-    - low, high are the interval limits.
-    - cases is a list of sub-interval and action indices
-    - actions is an array of actions.
-
-  All these arguments specify a switch construct and zyva
-  returns an action that performs the switch,
-*)
-module Make :
-  functor (Arg : S) ->
-    sig
-(* Standard entry point, sharing is tracked *)
-      val zyva :
-          (int * int) ->
-           Arg.act ->
-           (int * int * int) array ->
-           Arg.act t_store ->
-           Arg.act
-
-(* Output test sequence, sharing tracked *)
-     val test_sequence :
-           Arg.act ->
-           (int * int * int) array ->
-           Arg.act t_store ->
-           Arg.act
-    end
-
-end = struct
-#1 "switch.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Luc Maranget, projet Moscova, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 2000 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-
-type 'a shared = Shared of 'a | Single of 'a
-
-let share_out = function
-  | Shared act|Single act -> act
-
-
-type 'a t_store =
-    {act_get : unit -> 'a array ;
-     act_get_shared : unit -> 'a shared array ;
-     act_store : 'a -> int ;
-     act_store_shared : 'a -> int ; }
-
-exception Not_simple
-
-module type Stored = sig
-  type t
-  type key
-  val make_key : t -> key option
-end
-
-module Store(A:Stored) = struct
-  module AMap =
-    Map.Make(struct type t = A.key let compare = Pervasives.compare end)
-
-  type intern =
-      { mutable map : (bool * int)  AMap.t ;
-        mutable next : int ;
-        mutable acts : (bool * A.t) list; }
-
-  let mk_store () =
-    let st =
-      { map = AMap.empty ;
-        next = 0 ;
-        acts = [] ; } in
-
-    let add mustshare act =
-      let i = st.next in
-      st.acts <- (mustshare,act) :: st.acts ;
-      st.next <- i+1 ;
-      i in
-
-    let store mustshare act = match A.make_key act with
-    | Some key ->
-        begin try
-          let (shared,i) = AMap.find key st.map in
-          if not shared then st.map <- AMap.add key (true,i) st.map ;
-          i
-        with Not_found ->
-          let i = add mustshare act in
-          st.map <- AMap.add key (mustshare,i) st.map ;
-          i
-        end
-    | None ->
-        add mustshare act
-
-    and get () = Array.of_list (List.rev_map (fun (_,act) -> act) st.acts)
-
-    and get_shared () =
-      let acts =
-        Array.of_list
-          (List.rev_map
-             (fun (shared,act) ->
-               if shared then Shared act else Single act)
-             st.acts) in
-      AMap.iter
-        (fun _ (shared,i) ->
-          if shared then match acts.(i) with
-          | Single act -> acts.(i) <- Shared act
-          | Shared _ -> ())
-        st.map ;
-      acts in
-    {act_store = store false ; act_store_shared = store true ;
-     act_get = get; act_get_shared = get_shared; }
-end
-
-
-
-module type S =
- sig
-   type primitive
-   val eqint : primitive
-   val neint : primitive
-   val leint : primitive
-   val ltint : primitive
-   val geint : primitive
-   val gtint : primitive
-   type act
-
-   val bind : act -> (act -> act) -> act
-   val make_const : int -> act
-   val make_offset : act -> int -> act
-   val make_prim : primitive -> act list -> act
-   val make_isout : act -> act -> act
-   val make_isin : act -> act -> act
-   val make_if : act -> act -> act -> act
-   val make_switch : act -> int array -> act array -> act
-   val make_catch : act -> int * (act -> act)
-   val make_exit : int -> act
- end
-
-(* The module will ``produce good code for the case statement'' *)
-(*
-  Adaptation of
-   R.L. Berstein
-   ``Producing good code for the case statement''
-   Sofware Practice and Experience, 15(10) (1985)
- and
-   D.L. Spuler
-    ``Two-Way Comparison Search Trees, a Generalisation of Binary Search Trees
-      and Split Trees''
-    ``Compiler Code Generation for Multiway Branch Statement as
-      a Static Search Problem''
-   Technical Reports, James Cook University
-*)
-(*
-  Main adaptation is considering interval tests
- (implemented as one addition + one unsigned test and branch)
-  which leads to exhaustive search for finding the optimal
-  test sequence in small cases and heuristics otherwise.
-*)
-module Make (Arg : S) =
-  struct
-
-    type 'a inter =
-        {cases : (int * int * int) array ;
-          actions : 'a array}
-
-type 'a t_ctx =  {off : int ; arg : 'a}
-
-let cut = ref 8
-and more_cut = ref 16
-
-let pint chan i =
-  if i = min_int then Printf.fprintf chan "-oo"
-  else if i=max_int then Printf.fprintf chan "oo"
-  else Printf.fprintf chan "%d" i
-
-let pcases chan cases =
-  for i =0 to Array.length cases-1 do
-    let l,h,act = cases.(i) in
-    if l=h then
-      Printf.fprintf chan "%d:%d " l act
-    else
-      Printf.fprintf chan "%a..%a:%d " pint l pint h act
-  done
-
-    let prerr_inter i = Printf.fprintf stderr
-        "cases=%a" pcases i.cases
-
-let get_act cases i =
-  let _,_,r = cases.(i) in
-  r
-and get_low cases i =
-  let r,_,_ = cases.(i) in
-  r
-
-type ctests = {
-    mutable n : int ;
-    mutable ni : int ;
-  }
-
-let too_much = {n=max_int ; ni=max_int}
-
-let ptests chan {n=n ; ni=ni} =
-  Printf.fprintf chan "{n=%d ; ni=%d}" n ni
-
-let pta chan t =
-  for i =0 to Array.length t-1 do
-    Printf.fprintf chan "%d: %a\n" i ptests t.(i)
-  done
-
-let count_tests s =
-  let r =
-    Array.init
-      (Array.length s.actions)
-      (fun _ -> {n=0 ; ni=0 }) in
-  let c = s.cases in
-  let imax = Array.length c-1 in
-  for i=0 to imax do
-    let l,h,act = c.(i) in
-    let x = r.(act) in
-    x.n <- x.n+1 ;
-    if l < h && i<> 0 && i<>imax then
-      x.ni <- x.ni+1 ;
-  done ;
-  r
-
-
-let less_tests c1 c2 =
-  if c1.n < c2.n then
-    true
-  else if c1.n = c2.n then begin
-    if c1.ni < c2.ni then
-      true
-    else
-      false
-  end else
-    false
-
-and eq_tests c1 c2 = c1.n = c2.n && c1.ni=c2.ni
-
-let min_tests c1 c2 = if less_tests c1 c2 then c1 else c2
-
-let less2tests (c1,d1) (c2,d2) =
-  if eq_tests c1 c2 then
-    less_tests d1 d2
-  else
-    less_tests c1 c2
-
-let add_test t1 t2 =
-  t1.n <- t1.n + t2.n ;
-  t1.ni <- t1.ni + t2.ni ;
-
-type t_ret = Inter of int * int  | Sep of int | No
-
-let pret chan = function
-  | Inter (i,j)-> Printf.fprintf chan "Inter %d %d" i j
-  | Sep i -> Printf.fprintf chan "Sep %d" i
-  | No -> Printf.fprintf chan "No"
-
-let coupe cases i =
-  let l,_,_ = cases.(i) in
-  l,
-  Array.sub cases 0 i,
-  Array.sub cases i (Array.length cases-i)
-
-
-let case_append c1 c2 =
-  let len1 = Array.length c1
-  and len2 = Array.length c2 in
-  match len1,len2 with
-  | 0,_ -> c2
-  | _,0 -> c1
-  | _,_ ->
-      let l1,h1,act1 = c1.(Array.length c1-1)
-      and l2,h2,act2 = c2.(0) in
-      if act1 = act2 then
-        let r = Array.make (len1+len2-1) c1.(0) in
-        for i = 0 to len1-2 do
-          r.(i) <- c1.(i)
-        done ;
-
-        let l =
-          if len1-2 >= 0 then begin
-            let _,h,_ = r.(len1-2) in
-            if h+1 < l1 then
-              h+1
-            else
-              l1
-          end else
-            l1
-        and h =
-          if 1 < len2-1 then begin
-            let l,_,_ = c2.(1) in
-            if h2+1 < l then
-              l-1
-            else
-              h2
-          end else
-            h2 in
-        r.(len1-1) <- (l,h,act1) ;
-        for i=1 to len2-1  do
-          r.(len1-1+i) <- c2.(i)
-        done ;
-        r
-      else if h1 > l1 then
-        let r = Array.make (len1+len2) c1.(0) in
-        for i = 0 to len1-2 do
-          r.(i) <- c1.(i)
-        done ;
-        r.(len1-1) <- (l1,l2-1,act1) ;
-        for i=0 to len2-1  do
-          r.(len1+i) <- c2.(i)
-        done ;
-        r
-      else if h2 > l2 then
-        let r = Array.make (len1+len2) c1.(0) in
-        for i = 0 to len1-1 do
-          r.(i) <- c1.(i)
-        done ;
-        r.(len1) <- (h1+1,h2,act2) ;
-        for i=1 to len2-1  do
-          r.(len1+i) <- c2.(i)
-        done ;
-        r
-      else
-        Array.append c1 c2
-
-
-let coupe_inter i j cases =
-  let lcases = Array.length cases in
-  let low,_,_ = cases.(i)
-  and _,high,_ = cases.(j) in
-  low,high,
-  Array.sub cases i (j-i+1),
-  case_append (Array.sub cases 0 i) (Array.sub cases (j+1) (lcases-(j+1)))
-
-type kind = Kvalue of int | Kinter of int | Kempty
-
-let pkind chan = function
-  | Kvalue i ->Printf.fprintf chan "V%d" i
-  | Kinter i -> Printf.fprintf chan "I%d" i
-  | Kempty -> Printf.fprintf chan "E"
-
-let rec pkey chan  = function
-  | [] -> ()
-  | [k] -> pkind chan k
-  | k::rem ->
-      Printf.fprintf chan "%a %a" pkey rem pkind k
-
-let t = Hashtbl.create 17
-
-let make_key  cases =
-  let seen = ref []
-  and count = ref 0 in
-  let rec got_it act = function
-    | [] ->
-        seen := (act,!count):: !seen ;
-        let r = !count in
-        incr count ;
-        r
-    | (act0,index) :: rem ->
-        if act0 = act then
-          index
-        else
-          got_it act rem in
-
-  let make_one l h act =
-    if l=h then
-      Kvalue (got_it act !seen)
-    else
-      Kinter (got_it act !seen) in
-
-  let rec make_rec i pl =
-    if i < 0 then
-      []
-    else
-      let l,h,act = cases.(i) in
-      if pl = h+1 then
-        make_one l h act::make_rec (i-1) l
-      else
-        Kempty::make_one l h act::make_rec (i-1) l in
-
-  let l,h,act = cases.(Array.length cases-1) in
-  make_one l h act::make_rec (Array.length cases-2) l
-
-
-    let same_act t =
-      let len = Array.length t in
-      let a = get_act t (len-1) in
-      let rec do_rec i =
-        if i < 0 then true
-        else
-          let b = get_act t i in
-          b=a && do_rec (i-1) in
-      do_rec (len-2)
-
-
-(*
-  Intervall test x in [l,h] works by checking x-l in [0,h-l]
-   * This may be false for arithmetic modulo 2^31
-   * Subtracting l may change the relative ordering of values
-     and invalid the invariant that matched values are given in
-     increasing order
-
-   To avoid this, interval check is allowed only when the
-   integers indeed present in the whole case interval are
-   in [-2^16 ; 2^16]
-
-   This condition is checked by zyva
-*)
-
-let inter_limit = 1 lsl 16
-
-let ok_inter = ref false
-
-let rec opt_count top cases =
-  let key = make_key cases in
-  try
-    let r = Hashtbl.find t key in
-    r
-  with
-  | Not_found ->
-      let r =
-        let lcases = Array.length cases in
-        match lcases with
-        | 0 -> assert false
-        | _ when same_act cases -> No, ({n=0; ni=0},{n=0; ni=0})
-        | _ ->
-            if lcases < !cut then
-              enum top cases
-            else if lcases < !more_cut then
-              heuristic top cases
-            else
-              divide top cases in
-      Hashtbl.add t key r ;
-      r
-
-and divide top cases =
-  let lcases = Array.length cases in
-  let m = lcases/2 in
-  let _,left,right = coupe cases m in
-  let ci = {n=1 ; ni=0}
-  and cm = {n=1 ; ni=0}
-  and _,(cml,cleft) = opt_count false left
-  and _,(cmr,cright) = opt_count false right in
-  add_test ci cleft ;
-  add_test ci cright ;
-  if less_tests cml cmr then
-    add_test cm cmr
-  else
-    add_test cm cml ;
-  Sep m,(cm, ci)
-
-and heuristic top cases =
-  let lcases = Array.length cases in
-
-  let sep,csep = divide false cases
-
-  and inter,cinter =
-    if !ok_inter then begin
-      let _,_,act0 = cases.(0)
-      and _,_,act1 = cases.(lcases-1) in
-      if act0 = act1 then begin
-        let low, high, inside, outside = coupe_inter 1 (lcases-2) cases in
-        let _,(cmi,cinside) = opt_count false inside
-        and _,(cmo,coutside) = opt_count false outside
-        and cmij = {n=1 ; ni=(if low=high then 0 else 1)}
-        and cij = {n=1 ; ni=(if low=high then 0 else 1)} in
-        add_test cij cinside ;
-        add_test cij coutside ;
-        if less_tests cmi cmo then
-          add_test cmij cmo
-        else
-          add_test cmij cmi ;
-        Inter (1,lcases-2),(cmij,cij)
-      end else
-        Inter (-1,-1),(too_much, too_much)
-    end else
-      Inter (-1,-1),(too_much, too_much) in
-  if less2tests csep cinter then
-    sep,csep
-  else
-    inter,cinter
-
-
-and enum top cases =
-  let lcases = Array.length cases in
-  let lim, with_sep =
-    let best = ref (-1) and best_cost = ref (too_much,too_much) in
-
-    for i = 1 to lcases-(1) do
-      let _,left,right = coupe cases i in
-      let ci = {n=1 ; ni=0}
-      and cm = {n=1 ; ni=0}
-      and _,(cml,cleft) = opt_count false left
-      and _,(cmr,cright) = opt_count false right in
-      add_test ci cleft ;
-      add_test ci cright ;
-      if less_tests cml cmr then
-        add_test cm cmr
-      else
-        add_test cm cml ;
-
-      if
-        less2tests (cm,ci) !best_cost
-      then begin
-        if top then
-          Printf.fprintf stderr "Get it: %d\n" i ;
-        best := i ;
-        best_cost := (cm,ci)
-      end
-    done ;
-    !best, !best_cost in
-
-  let ilow, ihigh, with_inter =
-    if not !ok_inter then
-      let rlow = ref (-1) and rhigh = ref (-1)
-      and best_cost= ref (too_much,too_much) in
-      for i=1 to lcases-2 do
-        let low, high, inside, outside = coupe_inter i i cases in
-         if low=high then begin
-           let _,(cmi,cinside) = opt_count false inside
-           and _,(cmo,coutside) = opt_count false outside
-           and cmij = {n=1 ; ni=0}
-           and cij = {n=1 ; ni=0} in
-           add_test cij cinside ;
-           add_test cij coutside ;
-           if less_tests cmi cmo then
-             add_test cmij cmo
-           else
-             add_test cmij cmi ;
-           if less2tests (cmij,cij) !best_cost then begin
-             rlow := i ;
-             rhigh := i ;
-             best_cost := (cmij,cij)
-           end
-         end
-      done ;
-      !rlow, !rhigh, !best_cost
-    else
-      let rlow = ref (-1) and rhigh = ref (-1)
-      and best_cost= ref (too_much,too_much) in
-      for i=1 to lcases-2 do
-        for j=i to lcases-2 do
-          let low, high, inside, outside = coupe_inter i j cases in
-          let _,(cmi,cinside) = opt_count false inside
-          and _,(cmo,coutside) = opt_count false outside
-          and cmij = {n=1 ; ni=(if low=high then 0 else 1)}
-          and cij = {n=1 ; ni=(if low=high then 0 else 1)} in
-          add_test cij cinside ;
-          add_test cij coutside ;
-          if less_tests cmi cmo then
-            add_test cmij cmo
-          else
-            add_test cmij cmi ;
-          if less2tests (cmij,cij) !best_cost then begin
-            rlow := i ;
-            rhigh := j ;
-            best_cost := (cmij,cij)
-          end
-        done
-      done ;
-      !rlow, !rhigh, !best_cost in
-  let r = ref (Inter (ilow,ihigh)) and rc = ref with_inter in
-  if less2tests with_sep !rc then begin
-    r := Sep lim ; rc := with_sep
-  end ;
-  !r, !rc
-
-    let make_if_test test arg i ifso ifnot =
-      Arg.make_if
-        (Arg.make_prim test [arg ; Arg.make_const i])
-        ifso ifnot
-
-    let make_if_lt arg i  ifso ifnot = match i with
-    | 1 ->
-        make_if_test Arg.leint arg 0 ifso ifnot
-    | _ ->
-        make_if_test Arg.ltint arg i ifso ifnot
-
-    and make_if_le arg i ifso ifnot = match i with
-    | -1 ->
-        make_if_test Arg.ltint arg 0 ifso ifnot
-    | _ ->
-        make_if_test Arg.leint arg i ifso ifnot
-
-    and make_if_gt arg i  ifso ifnot = match i with
-    | -1 ->
-        make_if_test Arg.geint arg 0 ifso ifnot
-    | _ ->
-        make_if_test Arg.gtint arg i ifso ifnot
-
-    and make_if_ge arg i  ifso ifnot = match i with
-    | 1 ->
-        make_if_test Arg.gtint arg 0 ifso ifnot
-    | _ ->
-        make_if_test Arg.geint arg i ifso ifnot
-
-    and make_if_eq  arg i ifso ifnot =
-      make_if_test Arg.eqint arg i ifso ifnot
-
-    and make_if_ne  arg i ifso ifnot =
-      make_if_test Arg.neint arg i ifso ifnot
-
-    let do_make_if_out h arg ifso ifno =
-      Arg.make_if (Arg.make_isout h arg) ifso ifno
-
-    let make_if_out ctx l d mk_ifso mk_ifno = match l with
-    | 0 ->
-        do_make_if_out
-          (Arg.make_const d) ctx.arg (mk_ifso ctx) (mk_ifno ctx)
-    | _ ->
-        Arg.bind
-          (Arg.make_offset ctx.arg (-l))
-          (fun arg ->
-            let ctx = {off= (-l+ctx.off) ; arg=arg} in
-            do_make_if_out
-              (Arg.make_const d) arg (mk_ifso ctx) (mk_ifno ctx))
-
-    let do_make_if_in h arg ifso ifno =
-      Arg.make_if (Arg.make_isin h arg) ifso ifno
-
-    let make_if_in ctx l d mk_ifso mk_ifno = match l with
-    | 0 ->
-        do_make_if_in
-          (Arg.make_const d) ctx.arg (mk_ifso ctx) (mk_ifno ctx)
-    | _ ->
-        Arg.bind
-          (Arg.make_offset ctx.arg (-l))
-          (fun arg ->
-            let ctx = {off= (-l+ctx.off) ; arg=arg} in
-            do_make_if_in
-              (Arg.make_const d) arg (mk_ifso ctx) (mk_ifno ctx))
-
-    let rec c_test ctx ({cases=cases ; actions=actions} as s) =
-      let lcases = Array.length cases in
-      assert(lcases > 0) ;
-      if lcases = 1 then
-        actions.(get_act cases 0) ctx
-
-      else begin
-
-        let w,c = opt_count false cases in
-(*
-  Printf.fprintf stderr
-  "off=%d tactic=%a for %a\n"
-  ctx.off pret w pcases cases ;
-  *)
-    match w with
-    | No -> actions.(get_act cases 0) ctx
-    | Inter (i,j) ->
-        let low,high,inside, outside = coupe_inter i j cases in
-        let _,(cinside,_) = opt_count false inside
-        and _,(coutside,_) = opt_count false outside in
-(* Costs are retrieved to put the code with more remaining tests
-   in the privileged (positive) branch of ``if'' *)
-        if low=high then begin
-          if less_tests coutside cinside then
-            make_if_eq
-              ctx.arg
-              (low+ctx.off)
-              (c_test ctx {s with cases=inside})
-              (c_test ctx {s with cases=outside})
-          else
-            make_if_ne
-              ctx.arg
-              (low+ctx.off)
-              (c_test ctx {s with cases=outside})
-              (c_test ctx {s with cases=inside})
-        end else begin
-          if less_tests coutside cinside then
-            make_if_in
-              ctx
-              (low+ctx.off)
-              (high-low)
-              (fun ctx -> c_test ctx {s with cases=inside})
-              (fun ctx -> c_test ctx {s with cases=outside})
-          else
-            make_if_out
-              ctx
-              (low+ctx.off)
-              (high-low)
-              (fun ctx -> c_test ctx {s with cases=outside})
-              (fun ctx -> c_test ctx {s with cases=inside})
-        end
-    | Sep i ->
-        let lim,left,right = coupe cases i in
-        let _,(cleft,_) = opt_count false left
-        and _,(cright,_) = opt_count false right in
-        let left = {s with cases=left}
-        and right = {s with cases=right} in
-
-        if i=1 && (lim+ctx.off)=1 && get_low cases 0+ctx.off=0 then
-          make_if_ne
-            ctx.arg 0
-            (c_test ctx right) (c_test ctx left)
-        else if less_tests cright cleft then
-          make_if_lt
-            ctx.arg (lim+ctx.off)
-            (c_test ctx left) (c_test ctx right)
-        else
-          make_if_ge
-             ctx.arg (lim+ctx.off)
-            (c_test ctx right) (c_test ctx left)
-
-  end
-
-
-(* Minimal density of switches *)
-let theta = ref 0.33333
-
-(* Minmal number of tests to make a switch *)
-let switch_min = ref 3
-
-(* Particular case 0, 1, 2 *)
-let particular_case cases i j =
-  j-i = 2 &&
-  (let l1,h1,act1 = cases.(i)
-  and  l2,h2,act2 = cases.(i+1)
-  and  l3,h3,act3 = cases.(i+2) in
-  l1+1=l2 && l2+1=l3 && l3=h3 &&
-  act1 <> act3)
-
-let approx_count cases i j n_actions =
-  let l = j-i+1 in
-  if l < !cut then
-     let _,(_,{n=ntests}) = opt_count false (Array.sub cases i l) in
-     ntests
-  else
-    l-1
-
-(* Sends back a boolean that says whether is switch is worth or not *)
-
-let dense {cases=cases ; actions=actions} i j =
-  if i=j then true
-  else
-    let l,_,_ = cases.(i)
-    and _,h,_ = cases.(j) in
-    let ntests =  approx_count cases i j (Array.length actions) in
-(*
-  (ntests+1) >= theta * (h-l+1)
-*)
-    particular_case cases i j ||
-    (ntests >= !switch_min &&
-    float_of_int ntests +. 1.0 >=
-    !theta *. (float_of_int h -. float_of_int l +. 1.0))
-
-(* Compute clusters by dynamic programming
-   Adaptation of the correction to Bernstein
-   ``Correction to `Producing Good Code for the Case Statement' ''
-   S.K. Kannan and T.A. Proebsting
-   Software Practice and Exprience Vol. 24(2) 233 (Feb 1994)
-*)
-
-let comp_clusters ({cases=cases ; actions=actions} as s) =
-  let len = Array.length cases in
-  let min_clusters = Array.make len max_int
-  and k = Array.make len 0 in
-  let get_min i = if i < 0 then 0 else min_clusters.(i) in
-
-  for i = 0 to len-1 do
-    for j = 0 to i do
-      if
-        dense s j i &&
-        get_min (j-1) + 1 < min_clusters.(i)
-      then begin
-        k.(i) <- j ;
-        min_clusters.(i) <- get_min (j-1) + 1
-      end
-    done ;
-  done ;
-  min_clusters.(len-1),k
-
-(* Assume j > i *)
-let make_switch  {cases=cases ; actions=actions} i j =
-  let ll,_,_ = cases.(i)
-  and _,hh,_ = cases.(j) in
-  let tbl = Array.make (hh-ll+1) 0
-  and t = Hashtbl.create 17
-  and index = ref 0 in
-  let get_index act =
-    try
-      Hashtbl.find t act
-    with
-    | Not_found ->
-        let i = !index in
-        incr index ;
-        Hashtbl.add t act i ;
-        i in
-
-  for k=i to j do
-    let l,h,act = cases.(k) in
-    let index = get_index act in
-    for kk=l-ll to h-ll do
-      tbl.(kk) <- index
-    done
-  done ;
-  let acts = Array.make !index actions.(0) in
-  Hashtbl.iter
-    (fun act i -> acts.(i) <- actions.(act))
-    t ;
-  (fun ctx ->
-    match -ll-ctx.off with
-    | 0 -> Arg.make_switch ctx.arg tbl acts
-    | _ ->
-        Arg.bind
-          (Arg.make_offset ctx.arg (-ll-ctx.off))
-          (fun arg -> Arg.make_switch arg tbl acts))
-
-
-let make_clusters ({cases=cases ; actions=actions} as s) n_clusters k =
-  let len = Array.length cases in
-  let r = Array.make n_clusters (0,0,0)
-  and t = Hashtbl.create 17
-  and index = ref 0
-  and bidon = ref (Array.length actions) in
-  let get_index act =
-    try
-      let i,_ = Hashtbl.find t act in
-      i
-    with
-    | Not_found ->
-        let i = !index in
-        incr index ;
-        Hashtbl.add
-          t act
-          (i,(fun _ -> actions.(act))) ;
-        i
-  and add_index act =
-    let i = !index in
-    incr index ;
-    incr bidon ;
-    Hashtbl.add t !bidon (i,act) ;
-    i in
-
-  let rec zyva j ir =
-    let i = k.(j) in
-    begin if i=j then
-      let l,h,act = cases.(i) in
-      r.(ir) <- (l,h,get_index act)
-    else (* assert i < j *)
-      let l,_,_ = cases.(i)
-      and _,h,_ = cases.(j) in
-      r.(ir) <- (l,h,add_index (make_switch s i j))
-    end ;
-    if i > 0 then zyva (i-1) (ir-1) in
-
-  zyva (len-1) (n_clusters-1) ;
-  let acts = Array.make !index (fun _ -> assert false) in
-  Hashtbl.iter (fun _ (i,act) -> acts.(i) <- act) t ;
-  {cases = r ; actions = acts}
-;;
-
-
-let do_zyva (low,high) arg cases actions =
-  let old_ok = !ok_inter in
-  ok_inter := (abs low <= inter_limit && abs high <= inter_limit) ;
-  if !ok_inter <> old_ok then Hashtbl.clear t ;
-
-  let s = {cases=cases ; actions=actions} in
-(*
-  Printf.eprintf "ZYVA: %b\n" !ok_inter ;
-  pcases stderr cases ;
-  prerr_endline "" ;
-*)
-  let n_clusters,k = comp_clusters s in
-  let clusters = make_clusters s n_clusters k in
-  let r = c_test {arg=arg ; off=0} clusters in
-  r
-
-let abstract_shared actions =
-  let handlers = ref (fun x -> x) in
-  let actions =
-    Array.map
-      (fun act -> match  act with
-      | Single act -> act
-      | Shared act ->
-          let i,h = Arg.make_catch act in
-          let oh = !handlers in
-          handlers := (fun act -> h (oh act)) ;
-          Arg.make_exit i)
-      actions in
-  !handlers,actions
-
-let zyva lh arg cases actions =
-  let actions = actions.act_get_shared () in
-  let hs,actions = abstract_shared actions in
-  hs (do_zyva lh arg cases actions)
-
-and test_sequence arg cases actions =
-  let actions = actions.act_get_shared () in
-  let hs,actions = abstract_shared actions in
-  let old_ok = !ok_inter in
-  ok_inter := false ;
-  if !ok_inter <> old_ok then Hashtbl.clear t ;
-  let s =
-    {cases=cases ;
-    actions=Array.map (fun act -> (fun _ -> act)) actions} in
-(*
-  Printf.eprintf "SEQUENCE: %b\n" !ok_inter ;
-  pcases stderr cases ;
-  prerr_endline "" ;
-*)
-  hs (c_test {arg=arg ; off=0} s)
-;;
-
-end
-
-end
-module Typeopt : sig 
-#1 "typeopt.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1998 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Auxiliaries for type-based optimizations, e.g. array kinds *)
-
-val has_base_type : Typedtree.expression -> Path.t -> bool
-val maybe_pointer : Typedtree.expression -> bool
-val array_kind : Typedtree.expression -> Lambda.array_kind
-val array_pattern_kind : Typedtree.pattern -> Lambda.array_kind
-val bigarray_kind_and_layout :
-      Typedtree.expression -> Lambda.bigarray_kind * Lambda.bigarray_layout
-
-end = struct
-#1 "typeopt.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1998 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Auxiliaries for type-based optimizations, e.g. array kinds *)
-
-open Path
-open Types
-open Typedtree
-open Lambda
-
-let scrape env ty =
-  (Ctype.repr (Ctype.expand_head_opt env (Ctype.correct_levels ty))).desc
-
-let has_base_type exp base_ty_path =
-  match scrape exp.exp_env exp.exp_type with
-  | Tconstr(p, _, _) -> Path.same p base_ty_path
-  | _ -> false
-
-let maybe_pointer exp =
-  match scrape exp.exp_env exp.exp_type with
-  | Tconstr(p, args, abbrev) ->
-      not (Path.same p Predef.path_int) &&
-      not (Path.same p Predef.path_char) &&
-      begin try
-        match Env.find_type p exp.exp_env with
-        | {type_kind = Type_variant []} -> true (* type exn *)
-        | {type_kind = Type_variant cstrs} ->
-            List.exists (fun c -> c.Types.cd_args <> []) cstrs
-        | _ -> true
-      with Not_found -> true
-        (* This can happen due to e.g. missing -I options,
-           causing some .cmi files to be unavailable.
-           Maybe we should emit a warning. *)
-      end
-  | _ -> true
-
-let array_element_kind env ty =
-  match scrape env ty with
-  | Tvar _ | Tunivar _ ->
-      Pgenarray
-  | Tconstr(p, args, abbrev) ->
-      if Path.same p Predef.path_int || Path.same p Predef.path_char then
-        Pintarray
-      else if Path.same p Predef.path_float then
-        Pfloatarray
-      else if Path.same p Predef.path_string
-           || Path.same p Predef.path_array
-           || Path.same p Predef.path_nativeint
-           || Path.same p Predef.path_int32
-           || Path.same p Predef.path_int64 then
-        Paddrarray
-      else begin
-        try
-          match Env.find_type p env with
-            {type_kind = Type_abstract} ->
-              Pgenarray
-          | {type_kind = Type_variant cstrs}
-            when List.for_all (fun c -> c.Types.cd_args = []) cstrs ->
-              Pintarray
-          | {type_kind = _} ->
-              Paddrarray
-        with Not_found ->
-          (* This can happen due to e.g. missing -I options,
-             causing some .cmi files to be unavailable.
-             Maybe we should emit a warning. *)
-          Pgenarray
-      end
-  | _ ->
-      Paddrarray
-
-let array_kind_gen ty env =
-  match scrape env ty with
-  | Tconstr(p, [elt_ty], _) | Tpoly({desc = Tconstr(p, [elt_ty], _)}, _)
-    when Path.same p Predef.path_array ->
-      array_element_kind env elt_ty
-  | _ ->
-      (* This can happen with e.g. Obj.field *)
-      Pgenarray
-
-let array_kind exp = array_kind_gen exp.exp_type exp.exp_env
-
-let array_pattern_kind pat = array_kind_gen pat.pat_type pat.pat_env
-
-let bigarray_decode_type env ty tbl dfl =
-  match scrape env ty with
-  | Tconstr(Pdot(Pident mod_id, type_name, _), [], _)
-    when Ident.name mod_id = "Bigarray" ->
-      begin try List.assoc type_name tbl with Not_found -> dfl end
-  | _ ->
-      dfl
-
-let kind_table =
-  ["float32_elt", Pbigarray_float32;
-   "float64_elt", Pbigarray_float64;
-   "int8_signed_elt", Pbigarray_sint8;
-   "int8_unsigned_elt", Pbigarray_uint8;
-   "int16_signed_elt", Pbigarray_sint16;
-   "int16_unsigned_elt", Pbigarray_uint16;
-   "int32_elt", Pbigarray_int32;
-   "int64_elt", Pbigarray_int64;
-   "int_elt", Pbigarray_caml_int;
-   "nativeint_elt", Pbigarray_native_int;
-   "complex32_elt", Pbigarray_complex32;
-   "complex64_elt", Pbigarray_complex64]
-
-let layout_table =
-  ["c_layout", Pbigarray_c_layout;
-   "fortran_layout", Pbigarray_fortran_layout]
-
-let bigarray_kind_and_layout exp =
-  match scrape exp.exp_env exp.exp_type with
-  | Tconstr(p, [caml_type; elt_type; layout_type], abbrev) ->
-      (bigarray_decode_type exp.exp_env elt_type kind_table Pbigarray_unknown,
-       bigarray_decode_type exp.exp_env layout_type layout_table
-                            Pbigarray_unknown_layout)
-  | _ ->
-      (Pbigarray_unknown, Pbigarray_unknown_layout)
-
-end
-module Matching : sig 
-#1 "matching.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Compilation of pattern-matching *)
-
-open Typedtree
-open Lambda
-
-
-(* Entry points to match compiler *)
-val for_function:
-        Location.t -> int ref option -> lambda -> (pattern * lambda) list ->
-        partial -> lambda
-val for_trywith:
-        lambda -> (pattern * lambda) list -> lambda
-val for_let:
-        Location.t -> lambda -> pattern -> lambda -> lambda
-val for_multiple_match:
-        Location.t -> lambda list -> (pattern * lambda) list -> partial ->
-        lambda
-
-val for_tupled_function:
-        Location.t -> Ident.t list -> (pattern list * lambda) list ->
-        partial -> lambda
-
-exception Cannot_flatten
-
-val flatten_pattern: int -> pattern -> pattern list
-
-(* Expand stringswitch to  string test tree *)
-val expand_stringswitch:
-    Location.t -> lambda -> (string * lambda) list -> lambda option -> lambda
-
-val inline_lazy_force : lambda -> Location.t -> lambda
-
-end = struct
-#1 "matching.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Compilation of pattern matching *)
-
-open Misc
-open Asttypes
-open Primitive
-open Types
-open Typedtree
-open Lambda
-open Parmatch
-open Printf
-
-
-let dbg = false
-
-(*  See Peyton-Jones, ``The Implementation of functional programming
-    languages'', chapter 5. *)
-(*
-  Bon, au commencement du monde c'etait vrai.
-  Now, see Lefessant-Maranget ``Optimizing Pattern-Matching'' ICFP'2001
-*)
-
-
-(*
-   Many functions on the various data structures of the algorithm :
-     - Pattern matrices.
-     - Default environments: mapping from matrices to exit numbers.
-     - Contexts:  matrices whose column are partitioned into
-       left and right.
-     - Jump summaries: mapping from exit numbers to contexts
-*)
-
-let string_of_lam lam =
-  Printlambda.lambda Format.str_formatter lam ;
-  Format.flush_str_formatter ()
-
-type matrix = pattern list list
-
-let add_omega_column pss = List.map (fun ps -> omega::ps) pss
-
-type ctx = {left:pattern list ; right:pattern list}
-
-let pretty_ctx ctx =
-  List.iter
-    (fun {left=left ; right=right} ->
-      prerr_string "LEFT:" ;
-      pretty_line left ;
-      prerr_string " RIGHT:" ;
-      pretty_line right ;
-      prerr_endline "")
-    ctx
-
-let le_ctx c1 c2 =
-  le_pats c1.left c2.left &&
-  le_pats c1.right c2.right
-
-let lshift {left=left ; right=right} = match right with
-| x::xs -> {left=x::left ; right=xs}
-| _ ->  assert false
-
-let lforget {left=left ; right=right} = match right with
-| x::xs -> {left=omega::left ; right=xs}
-|  _ -> assert false
-
-let rec small_enough n = function
-  | [] -> true
-  | _::rem ->
-      if n <= 0 then false
-      else small_enough (n-1) rem
-
-let ctx_lshift ctx =
-  if small_enough 31 ctx then
-    List.map lshift ctx
-  else (* Context pruning *) begin
-    get_mins le_ctx (List.map lforget ctx)
-  end
-
-let  rshift {left=left ; right=right} = match left with
-| p::ps -> {left=ps ; right=p::right}
-| _ -> assert false
-
-let ctx_rshift ctx = List.map rshift ctx
-
-let rec nchars n ps =
-  if n <= 0 then [],ps
-  else match ps with
-  | p::rem ->
-    let chars, cdrs = nchars (n-1) rem in
-    p::chars,cdrs
-  | _ -> assert false
-
-let  rshift_num n {left=left ; right=right} =
-  let shifted,left = nchars n left in
-  {left=left ; right = shifted@right}
-
-let ctx_rshift_num n ctx = List.map (rshift_num n) ctx
-
-(* Recombination of contexts (eg: (_,_)::p1::p2::rem ->  (p1,p2)::rem)
-  All mutable fields are replaced by '_', since side-effects in
-  guards can alter these fields *)
-
-let combine {left=left ; right=right} = match left with
-| p::ps -> {left=ps ; right=set_args_erase_mutable p right}
-| _ -> assert false
-
-let ctx_combine ctx = List.map combine ctx
-
-let ncols = function
-  | [] -> 0
-  | ps::_ -> List.length ps
-
-
-exception NoMatch
-exception OrPat
-
-let filter_matrix matcher pss =
-
-  let rec filter_rec = function
-    | (p::ps)::rem ->
-        begin match p.pat_desc with
-        | Tpat_alias (p,_,_) ->
-            filter_rec ((p::ps)::rem)
-        | Tpat_var _ ->
-            filter_rec ((omega::ps)::rem)
-        | _ ->
-            begin
-              let rem = filter_rec rem in
-              try
-                matcher p ps::rem
-              with
-              | NoMatch -> rem
-              | OrPat   ->
-                match p.pat_desc with
-                | Tpat_or (p1,p2,_) -> filter_rec [(p1::ps) ;(p2::ps)]@rem
-                | _ -> assert false
-            end
-        end
-    | [] -> []
-    | _ ->
-        pretty_matrix pss ;
-        fatal_error "Matching.filter_matrix" in
-  filter_rec pss
-
-let make_default matcher env =
-  let rec make_rec = function
-    | [] -> []
-    | ([[]],i)::_ -> [[[]],i]
-    | (pss,i)::rem ->
-        let rem = make_rec rem in
-        match filter_matrix matcher pss with
-        | [] -> rem
-        | ([]::_) -> ([[]],i)::rem
-        | pss -> (pss,i)::rem in
-  make_rec env
-
-let ctx_matcher p =
-  let p = normalize_pat p in
-  match p.pat_desc with
-  | Tpat_construct (_, cstr,omegas) ->
-      begin match cstr.cstr_tag with
-      | Cstr_extension _ ->
-          let nargs = List.length omegas in
-          (fun q rem -> match q.pat_desc with
-          | Tpat_construct (_, cstr',args)
-            when List.length args = nargs ->
-                p,args @ rem
-          | Tpat_any -> p,omegas @ rem
-          | _ -> raise NoMatch)
-      | _ ->
-          (fun q rem -> match q.pat_desc with
-          | Tpat_construct (_, cstr',args)
-            when cstr.cstr_tag=cstr'.cstr_tag ->
-              p,args @ rem
-          | Tpat_any -> p,omegas @ rem
-          | _ -> raise NoMatch)
-      end
-  | Tpat_constant cst ->
-      (fun q rem -> match q.pat_desc with
-      | Tpat_constant cst' when const_compare cst cst' = 0 ->
-          p,rem
-      | Tpat_any -> p,rem
-      | _ -> raise NoMatch)
-  | Tpat_variant (lab,Some omega,_) ->
-      (fun q rem -> match q.pat_desc with
-      | Tpat_variant (lab',Some arg,_) when lab=lab' ->
-          p,arg::rem
-      | Tpat_any -> p,omega::rem
-      | _ -> raise NoMatch)
-  | Tpat_variant (lab,None,_) ->
-      (fun q rem -> match q.pat_desc with
-      | Tpat_variant (lab',None,_) when lab=lab' ->
-          p,rem
-      | Tpat_any -> p,rem
-      | _ -> raise NoMatch)
-  | Tpat_array omegas ->
-      let len = List.length omegas in
-      (fun q rem -> match q.pat_desc with
-      | Tpat_array args when List.length args=len ->
-          p,args @ rem
-      | Tpat_any -> p, omegas @ rem
-      | _ -> raise NoMatch)
-  | Tpat_tuple omegas ->
-      (fun q rem -> match q.pat_desc with
-      | Tpat_tuple args -> p,args @ rem
-      | _          -> p, omegas @ rem)
-  | Tpat_record (l,_) -> (* Records are normalized *)
-      (fun q rem -> match q.pat_desc with
-      | Tpat_record (l',_) ->
-          let l' = all_record_args l' in
-          p, List.fold_right (fun (_, _,p) r -> p::r) l' rem
-      | _ -> p,List.fold_right (fun (_, _,p) r -> p::r) l rem)
-  | Tpat_lazy omega ->
-      (fun q rem -> match q.pat_desc with
-      | Tpat_lazy arg -> p, (arg::rem)
-      | _          -> p, (omega::rem))
- | _ -> fatal_error "Matching.ctx_matcher"
-
-
-
-
-let filter_ctx q ctx =
-
-  let matcher = ctx_matcher q in
-
-  let rec filter_rec = function
-    | ({right=p::ps} as l)::rem ->
-        begin match p.pat_desc with
-        | Tpat_or (p1,p2,_) ->
-            filter_rec ({l with right=p1::ps}::{l with right=p2::ps}::rem)
-        | Tpat_alias (p,_,_) ->
-            filter_rec ({l with right=p::ps}::rem)
-        | Tpat_var _ ->
-            filter_rec ({l with right=omega::ps}::rem)
-        | _ ->
-            begin let rem = filter_rec rem in
-            try
-              let to_left, right = matcher p ps in
-              {left=to_left::l.left ; right=right}::rem
-            with
-            | NoMatch -> rem
-            end
-        end
-    | [] -> []
-    | _ ->  fatal_error "Matching.filter_ctx" in
-
-  filter_rec ctx
-
-let select_columns pss ctx =
-  let n = ncols pss in
-  List.fold_right
-    (fun ps r ->
-      List.fold_right
-        (fun {left=left ; right=right} r ->
-          let transfert, right = nchars n right in
-          try
-            {left = lubs transfert ps @ left ; right=right}::r
-          with
-          | Empty -> r)
-        ctx r)
-    pss []
-
-let ctx_lub p ctx =
-  List.fold_right
-    (fun {left=left ; right=right} r ->
-      match right with
-      | q::rem ->
-          begin try
-            {left=left ; right = lub p q::rem}::r
-          with
-          | Empty -> r
-          end
-      | _ -> fatal_error "Matching.ctx_lub")
-    ctx []
-
-let ctx_match ctx pss =
-  List.exists
-    (fun {right=qs} ->
-      List.exists
-        (fun ps -> compats qs ps)
-        pss)
-    ctx
-
-type jumps = (int * ctx list) list
-
-let pretty_jumps (env : jumps) = match env with
-| [] -> ()
-| _ ->
-    List.iter
-      (fun (i,ctx) ->
-        Printf.fprintf stderr "jump for %d\n" i ;
-        pretty_ctx ctx)
-      env
-
-
-let rec jumps_extract i = function
-  | [] -> [],[]
-  | (j,pss) as x::rem as all ->
-      if i=j then pss,rem
-      else if j < i then [],all
-      else
-        let r,rem = jumps_extract i rem in
-        r,(x::rem)
-
-let rec jumps_remove i = function
-  | [] -> []
-  | (j,_)::rem when i=j -> rem
-  | x::rem -> x::jumps_remove i rem
-
-let jumps_empty = []
-and jumps_is_empty = function
-  |  [] -> true
-  |  _ -> false
-
-let jumps_singleton i = function
-  | []  -> []
-  | ctx ->  [i,ctx]
-
-let jumps_add i pss jumps = match pss with
-| [] -> jumps
-| _  ->
-    let rec add = function
-      | [] -> [i,pss]
-      | (j,qss) as x::rem as all ->
-          if j > i then x::add rem
-      else if j < i then (i,pss)::all
-      else (i,(get_mins le_ctx (pss@qss)))::rem in
-    add jumps
-
-
-let rec jumps_union (env1:(int*ctx list)list) env2 = match env1,env2 with
-| [],_ -> env2
-| _,[] -> env1
-| ((i1,pss1) as x1::rem1), ((i2,pss2) as x2::rem2) ->
-    if i1=i2 then
-      (i1,get_mins le_ctx (pss1@pss2))::jumps_union rem1 rem2
-    else if i1 > i2 then
-      x1::jumps_union rem1 env2
-    else
-      x2::jumps_union env1 rem2
-
-
-let rec merge = function
-  | env1::env2::rem ->  jumps_union env1 env2::merge rem
-  | envs -> envs
-
-let rec jumps_unions envs = match envs with
-  | [] -> []
-  | [env] -> env
-  | _ -> jumps_unions (merge envs)
-
-let jumps_map f env =
-  List.map
-    (fun (i,pss) -> i,f pss)
-    env
-
-(* Pattern matching before any compilation *)
-
-type pattern_matching =
-  { mutable cases : (pattern list * lambda) list;
-    args : (lambda * let_kind) list ;
-    default : (matrix * int) list}
-
-(* Pattern matching after application of both the or-pat rule and the
-   mixture rule *)
-
-type pm_or_compiled =
-  {body : pattern_matching ;
-   handlers : (matrix * int * Ident.t list * pattern_matching) list ;
-   or_matrix : matrix ; }
-
-type pm_half_compiled =
-  | PmOr of pm_or_compiled
-  | PmVar of pm_var_compiled
-  | Pm of pattern_matching
-
-and pm_var_compiled =
-    {inside : pm_half_compiled ; var_arg : lambda ; }
-
-type pm_half_compiled_info =
-    {me : pm_half_compiled ;
-     matrix : matrix ;
-     top_default : (matrix * int) list ; }
-
-let pretty_cases cases =
-  List.iter
-    (fun ((ps),l) ->
-      List.iter
-        (fun p ->
-          Parmatch.top_pretty Format.str_formatter p ;
-          prerr_string " " ;
-          prerr_string (Format.flush_str_formatter ()))
-        ps ;
-(*
-      prerr_string " -> " ;
-      Printlambda.lambda Format.str_formatter l ;
-      prerr_string (Format.flush_str_formatter ()) ;
-*)
-      prerr_endline "")
-    cases
-
-let pretty_def def =
-  prerr_endline "+++++ Defaults +++++" ;
-  List.iter
-    (fun (pss,i) ->
-      Printf.fprintf stderr "Matrix for %d\n"  i ;
-      pretty_matrix pss)
-    def ;
-  prerr_endline "+++++++++++++++++++++"
-
-let pretty_pm pm = pretty_cases pm.cases
-
-
-let rec pretty_precompiled = function
-  | Pm pm ->
-      prerr_endline "++++ PM ++++" ;
-      pretty_pm pm
-  | PmVar x ->
-      prerr_endline "++++ VAR ++++" ;
-      pretty_precompiled x.inside
-  | PmOr x ->
-      prerr_endline "++++ OR ++++" ;
-      pretty_pm x.body ;
-      pretty_matrix x.or_matrix ;
-      List.iter
-        (fun (_,i,_,pm) ->
-          eprintf "++ Handler %d ++\n" i ;
-          pretty_pm pm)
-        x.handlers
-
-let pretty_precompiled_res first nexts =
-  pretty_precompiled first ;
-  List.iter
-    (fun (e, pmh) ->
-      eprintf "** DEFAULT %d **\n" e ;
-      pretty_precompiled pmh)
-    nexts
-
-
-
-(* Identifing some semantically equivalent lambda-expressions,
-   Our goal here is also to
-   find alpha-equivalent (simple) terms *)
-
-(* However, as shown by PR#6359 such sharing may hinders the
-   lambda-code invariant that all bound idents are unique,
-   when switchs are compiled to test sequences.
-   The definitive fix is the systematic introduction of exit/catch
-   in case action sharing is present.
-*)
-
-
-module StoreExp =
-  Switch.Store
-    (struct
-      type t = lambda
-      type key = lambda
-      let make_key = Lambda.make_key
-    end)
-
-
-let make_exit i = Lstaticraise (i,[])
-
-(* Introduce a catch, if worth it *)
-let make_catch d k = match d with
-| Lstaticraise (_,[]) -> k d
-| _ ->
-    let e = next_raise_count () in
-    Lstaticcatch (k (make_exit e),(e,[]),d)
-
-(* Introduce a catch, if worth it, delayed version *)
-let rec as_simple_exit = function
-  | Lstaticraise (i,[]) -> Some i
-  | Llet (Alias,_,_,e) -> as_simple_exit e
-  | _ -> None
-
-
-let make_catch_delayed handler = match as_simple_exit handler with
-| Some i -> i,(fun act -> act)
-| None ->
-    let i = next_raise_count () in
-(*
-    Printf.eprintf "SHARE LAMBDA: %i\n%s\n" i (string_of_lam handler);
-*)
-    i,
-    (fun body -> match body with
-    | Lstaticraise (j,_) ->
-        if i=j then handler else body
-    | _ -> Lstaticcatch (body,(i,[]),handler))
-
-
-let raw_action l =
-  match make_key l with | Some l -> l | None -> l
-
-
-let tr_raw act = match make_key act with
-| Some act -> act
-| None -> raise Exit
-
-let same_actions = function
-  | [] -> None
-  | [_,act] -> Some act
-  | (_,act0) :: rem ->
-      try
-        let raw_act0 = tr_raw act0 in
-        let rec s_rec = function
-          | [] -> Some act0
-          | (_,act)::rem ->
-              if raw_act0 = tr_raw act then
-                s_rec rem
-              else
-                None in
-        s_rec rem
-      with
-      | Exit -> None
-
-
-(* Test for swapping two clauses *)
-
-let up_ok_action act1 act2 =
-  try
-    let raw1 = tr_raw act1
-    and raw2 = tr_raw act2 in
-    raw1 = raw2
-  with
-  | Exit -> false
-
-(* Nothing is kown about exception/extension patterns,
-   because of potential rebind *)
-let rec exc_inside p = match p.pat_desc with
-  | Tpat_construct (_,{cstr_tag=Cstr_extension _},_) -> true
-  | Tpat_any|Tpat_constant _|Tpat_var _
-  | Tpat_construct (_,_,[])
-  | Tpat_variant (_,None,_)
-    -> false
-  | Tpat_construct (_,_,ps)
-  | Tpat_tuple ps
-  | Tpat_array ps
-      -> exc_insides ps
-  | Tpat_variant (_, Some q,_)
-  | Tpat_alias (q,_,_)
-  | Tpat_lazy q
-    -> exc_inside q
-  | Tpat_record (lps,_) ->
-      List.exists (fun (_,_,p) -> exc_inside p) lps
-  | Tpat_or (p1,p2,_) -> exc_inside p1 || exc_inside p2
-
-and exc_insides ps = List.exists exc_inside ps
-
-let up_ok (ps,act_p) l =
-  if exc_insides ps then match l with [] -> true | _::_ -> false
-  else
-    List.for_all
-      (fun (qs,act_q) ->
-        up_ok_action act_p act_q ||
-        not (Parmatch.compats ps qs))
-      l
-
-
-(*
-   Simplify fonction normalize the first column of the match
-     - records are expanded so that they posses all fields
-     - aliases are removed and replaced by bindings in actions.
-   However or-patterns are simplified differently,
-     - aliases are not removed
-     - or patterns (_|p) are changed into _
-*)
-
-exception Var of pattern
-
-let simplify_or p =
-  let rec simpl_rec p = match p with
-    | {pat_desc = Tpat_any|Tpat_var _} -> raise (Var p)
-    | {pat_desc = Tpat_alias (q,id,s)} ->
-        begin try
-          {p with pat_desc = Tpat_alias (simpl_rec q,id,s)}
-        with
-        | Var q -> raise (Var {p with pat_desc = Tpat_alias (q,id,s)})
-        end
-    | {pat_desc = Tpat_or (p1,p2,o)} ->
-        let q1 = simpl_rec p1 in
-        begin try
-          let q2 = simpl_rec p2 in
-          {p with pat_desc = Tpat_or (q1, q2, o)}
-        with
-        | Var q2 -> raise (Var {p with pat_desc = Tpat_or (q1, q2, o)})
-        end
-    | {pat_desc = Tpat_record (lbls,closed)} ->
-        let all_lbls = all_record_args lbls in
-        {p with pat_desc=Tpat_record (all_lbls, closed)}
-    | _ -> p in
-  try
-    simpl_rec p
-  with
-  | Var p -> p
-
-let simplify_cases args cls = match args with
-| [] -> assert false
-| (arg,_)::_ ->
-    let rec simplify = function
-      | [] -> []
-      | ((pat :: patl, action) as cl) :: rem ->
-          begin match pat.pat_desc with
-          | Tpat_var (id, _) ->
-              (omega :: patl, bind Alias id arg action) ::
-              simplify rem
-          | Tpat_any ->
-              cl :: simplify rem
-          | Tpat_alias(p, id,_) ->
-              simplify ((p :: patl, bind Alias id arg action) :: rem)
-          | Tpat_record ([],_) ->
-              (omega :: patl, action)::
-              simplify rem
-          | Tpat_record (lbls, closed) ->
-              let all_lbls = all_record_args lbls in
-              let full_pat =
-                {pat with pat_desc=Tpat_record (all_lbls, closed)} in
-              (full_pat::patl,action)::
-              simplify rem
-          | Tpat_or _ ->
-              let pat_simple  = simplify_or pat in
-              begin match pat_simple.pat_desc with
-              | Tpat_or _ ->
-                  (pat_simple :: patl, action) ::
-                  simplify rem
-              | _ ->
-                  simplify ((pat_simple::patl,action) :: rem)
-              end
-          | _ -> cl :: simplify rem
-          end
-      | _ -> assert false in
-
-    simplify cls
-
-
-
-(* Once matchings are simplified one easily finds
-   their nature *)
-
-let rec what_is_cases cases = match cases with
-| ({pat_desc=Tpat_any} :: _, _) :: rem -> what_is_cases rem
-| (({pat_desc=(Tpat_var _|Tpat_or (_,_,_)|Tpat_alias (_,_,_))}::_),_)::_
-  -> assert false (* applies to simplified matchings only *)
-| (p::_,_)::_ -> p
-| [] -> omega
-| _ -> assert false
-
-
-
-(* A few operation on default environments *)
-let as_matrix cases = get_mins le_pats (List.map (fun (ps,_) -> ps) cases)
-
-(* For extension matching, record no imformation in matrix *)
-let as_matrix_omega cases =
-  get_mins le_pats
-    (List.map
-       (fun (ps,_) ->
-         match ps with
-         | [] -> assert false
-         | _::ps -> omega::ps)
-       cases)
-
-let cons_default matrix raise_num default =
-  match matrix with
-  | [] -> default
-  | _ -> (matrix,raise_num)::default
-
-let default_compat p def =
-  List.fold_right
-    (fun (pss,i) r ->
-      let qss =
-        List.fold_right
-          (fun qs r -> match qs with
-            | q::rem when Parmatch.compat p q -> rem::r
-            | _ -> r)
-          pss [] in
-      match qss with
-      | [] -> r
-      | _  -> (qss,i)::r)
-    def []
-
-(* Or-pattern expansion, variables are a complication w.r.t. the article *)
-let rec extract_vars r p = match p.pat_desc with
-| Tpat_var (id, _) -> IdentSet.add id r
-| Tpat_alias (p, id,_ ) ->
-    extract_vars (IdentSet.add id r) p
-| Tpat_tuple pats ->
-    List.fold_left extract_vars r pats
-| Tpat_record (lpats,_) ->
-    List.fold_left
-      (fun r (_, _, p) -> extract_vars r p)
-      r lpats
-| Tpat_construct (_, _, pats) ->
-    List.fold_left extract_vars r pats
-| Tpat_array pats ->
-    List.fold_left extract_vars r pats
-| Tpat_variant (_,Some p, _) -> extract_vars r p
-| Tpat_lazy p -> extract_vars r p
-| Tpat_or (p,_,_) -> extract_vars r p
-| Tpat_constant _|Tpat_any|Tpat_variant (_,None,_) -> r
-
-exception Cannot_flatten
-
-let mk_alpha_env arg aliases ids =
-  List.map
-    (fun id -> id,
-      if List.mem id aliases then
-        match arg with
-        | Some v -> v
-        | _      -> raise Cannot_flatten
-      else
-        Ident.create (Ident.name id))
-    ids
-
-let rec explode_or_pat arg patl mk_action rem vars aliases = function
-  | {pat_desc = Tpat_or (p1,p2,_)} ->
-      explode_or_pat
-        arg patl mk_action
-        (explode_or_pat arg patl mk_action rem vars aliases p2)
-        vars aliases p1
-  | {pat_desc = Tpat_alias (p,id, _)} ->
-      explode_or_pat arg patl mk_action rem vars (id::aliases) p
-  | {pat_desc = Tpat_var (x, _)} ->
-      let env = mk_alpha_env arg (x::aliases) vars in
-      (omega::patl,mk_action (List.map snd env))::rem
-  | p ->
-      let env = mk_alpha_env arg aliases vars in
-      (alpha_pat env p::patl,mk_action (List.map snd env))::rem
-
-let pm_free_variables {cases=cases} =
-  List.fold_right
-    (fun (_,act) r -> IdentSet.union (free_variables act) r)
-    cases IdentSet.empty
-
-
-(* Basic grouping predicates *)
-let pat_as_constr = function
-  | {pat_desc=Tpat_construct (_, cstr,_)} -> cstr
-  | _ -> fatal_error "Matching.pat_as_constr"
-
-let group_constant = function
-  | {pat_desc= Tpat_constant _} -> true
-  | _                           -> false
-
-and group_constructor = function
-  | {pat_desc = Tpat_construct (_,_,_)} -> true
-  | _ -> false
-
-and group_variant = function
-  | {pat_desc = Tpat_variant (_, _, _)} -> true
-  | _ -> false
-
-and group_var = function
-  | {pat_desc=Tpat_any} -> true
-  | _ -> false
-
-and group_tuple = function
-  | {pat_desc = (Tpat_tuple _|Tpat_any)} -> true
-  | _ -> false
-
-and group_record = function
-  | {pat_desc = (Tpat_record _|Tpat_any)} -> true
-  | _ -> false
-
-and group_array = function
-  | {pat_desc=Tpat_array _} -> true
-  | _ -> false
-
-and group_lazy = function
-  | {pat_desc = Tpat_lazy _} -> true
-  | _ -> false
-
-let get_group p = match p.pat_desc with
-| Tpat_any -> group_var
-| Tpat_constant _ -> group_constant
-| Tpat_construct _ -> group_constructor
-| Tpat_tuple _ -> group_tuple
-| Tpat_record _ -> group_record
-| Tpat_array _ -> group_array
-| Tpat_variant (_,_,_) -> group_variant
-| Tpat_lazy _ -> group_lazy
-|  _ -> fatal_error "Matching.get_group"
-
-
-
-let is_or p = match p.pat_desc with
-| Tpat_or _ -> true
-| _ -> false
-
-(* Conditions for appending to the Or matrix *)
-let conda p q = not (compat p q)
-and condb act ps qs =  not (is_guarded act) && Parmatch.le_pats qs ps
-
-let or_ok p ps l =
-  List.for_all
-    (function
-      | ({pat_desc=Tpat_or _} as q::qs,act) ->
-          conda p q || condb act ps qs
-      | _ -> true)
-    l
-
-(* Insert or append a pattern in the Or matrix *)
-
-let equiv_pat p q = le_pat p q && le_pat q p
-
-let rec get_equiv p l = match l with
-  | (q::_,_) as cl::rem ->
-      if equiv_pat p q then
-        let others,rem = get_equiv p rem in
-        cl::others,rem
-      else
-        [],l
-  | _ -> [],l
-
-
-let insert_or_append p ps act ors no =
-  let rec attempt seen = function
-    | (q::qs,act_q) as cl::rem ->
-        if is_or q then begin
-          if compat p q then
-            if
-              IdentSet.is_empty (extract_vars IdentSet.empty p) &&
-              IdentSet.is_empty (extract_vars IdentSet.empty q) &&
-              equiv_pat p q
-            then (* attempt insert, for equivalent orpats with no variables *)
-              let _, not_e = get_equiv q rem in
-              if
-                or_ok p ps not_e && (* check append condition for head of O *)
-                List.for_all        (* check insert condition for tail of O *)
-                  (fun cl -> match cl with
-                  | (q::_,_) -> not (compat p q)
-                  | _        -> assert false)
-                  seen
-              then (* insert *)
-                List.rev_append seen ((p::ps,act)::cl::rem), no
-              else (* fail to insert or append *)
-                ors,(p::ps,act)::no
-            else if condb act_q ps qs then (* check condition (b) for append *)
-              attempt (cl::seen) rem
-            else
-              ors,(p::ps,act)::no
-          else (* p # q, go on with append/insert *)
-            attempt (cl::seen) rem
-        end else (* q is not a or-pat, go on with append/insert *)
-          attempt (cl::seen) rem
-    | _  -> (* [] in fact *)
-        (p::ps,act)::ors,no in (* success in appending *)
-  attempt [] ors
-
-(* Reconstruct default information from half_compiled  pm list *)
-
-let rec rebuild_matrix pmh = match pmh with
-  | Pm pm -> as_matrix pm.cases
-  | PmOr {or_matrix=m} -> m
-  | PmVar x -> add_omega_column  (rebuild_matrix x.inside)
-
-let rec rebuild_default nexts def = match nexts with
-| [] -> def
-| (e, pmh)::rem ->
-    (add_omega_column (rebuild_matrix pmh), e)::
-    rebuild_default rem def
-
-let rebuild_nexts arg nexts k =
-  List.fold_right
-    (fun (e, pm) k -> (e, PmVar {inside=pm ; var_arg=arg})::k)
-    nexts k
-
-
-(*
-  Split a matching.
-    Splitting is first directed by or-patterns, then by
-    tests (e.g. constructors)/variable transitions.
-
-    The approach is greedy, every split function attempt to
-    raise rows as much as possible in the top matrix,
-    then splitting applies again to the remaining rows.
-
-    Some precompilation of or-patterns and
-    variable pattern occurs. Mostly this means that bindings
-    are performed now,  being replaced by let-bindings
-    in actions (cf. simplify_cases).
-
-    Additionally, if the match argument is a variable, matchings whose
-    first column is made of variables only are splitted further
-    (cf. precompile_var).
-
-*)
-
-
-let rec split_or argo cls args def =
-
-  let cls = simplify_cases args cls in
-
-  let rec do_split before ors no = function
-    | [] ->
-        cons_next
-          (List.rev before) (List.rev ors) (List.rev no)
-    | ((p::ps,act) as cl)::rem ->
-        if up_ok cl no then
-          if is_or p then
-            let ors, no = insert_or_append p ps act ors no in
-            do_split before ors no rem
-          else begin
-            if up_ok cl ors then
-              do_split (cl::before) ors no rem
-            else if or_ok p ps ors then
-              do_split before (cl::ors) no rem
-            else
-              do_split before ors (cl::no) rem
-          end
-        else
-          do_split before ors (cl::no) rem
-    | _ -> assert false
-
-  and cons_next yes yesor = function
-    | [] ->
-        precompile_or argo yes yesor args def []
-    | rem ->
-        let {me=next ; matrix=matrix ; top_default=def},nexts =
-          do_split [] [] [] rem in
-        let idef = next_raise_count () in
-        precompile_or
-          argo yes yesor args
-          (cons_default matrix idef def)
-          ((idef,next)::nexts) in
-
-  do_split [] [] [] cls
-
-(* Ultra-naive spliting, close to semantics, used for extension,
-   as potential rebind prevents any kind of optimisation *)
-
-and split_naive cls args def k =
-
-  let rec split_exc cstr0 yes = function
-    | [] ->
-        let yes = List.rev yes in
-        { me = Pm {cases=yes; args=args; default=def;} ;
-          matrix = as_matrix_omega yes ;
-          top_default=def},
-        k
-    | (p::_,_ as cl)::rem ->
-        if group_constructor p then
-          let cstr = pat_as_constr p in
-          if cstr = cstr0 then split_exc cstr0 (cl::yes) rem
-          else
-            let yes = List.rev yes in
-            let {me=next ; matrix=matrix ; top_default=def}, nexts =
-              split_exc cstr [cl] rem in
-            let idef = next_raise_count () in
-            let def = cons_default matrix idef def in
-            { me = Pm {cases=yes; args=args; default=def} ;
-              matrix = as_matrix_omega yes ;
-              top_default = def; },
-            (idef,next)::nexts
-        else
-          let yes = List.rev yes in
-          let {me=next ; matrix=matrix ; top_default=def}, nexts =
-              split_noexc [cl] rem in
-            let idef = next_raise_count () in
-            let def = cons_default matrix idef def in
-            { me = Pm {cases=yes; args=args; default=def} ;
-              matrix = as_matrix_omega yes ;
-              top_default = def; },
-            (idef,next)::nexts
-    | _ -> assert false
-
-  and split_noexc yes = function
-    | [] -> precompile_var args (List.rev yes) def k
-    | (p::_,_ as cl)::rem ->
-        if group_constructor p then
-          let yes= List.rev yes in
-          let {me=next; matrix=matrix; top_default=def;},nexts =
-            split_exc (pat_as_constr p) [cl] rem in
-          let idef = next_raise_count () in
-          precompile_var
-            args yes
-            (cons_default matrix idef def)
-            ((idef,next)::nexts)
-        else split_noexc (cl::yes) rem
-    | _ -> assert false in
-
-  match cls with
-  | [] -> assert false
-  | (p::_,_ as cl)::rem ->
-      if group_constructor p then
-        split_exc (pat_as_constr p) [cl] rem
-      else
-        split_noexc [cl] rem
-  | _ -> assert false
-
-and split_constr cls args def k =
-  let ex_pat = what_is_cases cls in
-  match ex_pat.pat_desc with
-  | Tpat_any -> precompile_var args cls def k
-  | Tpat_construct (_,{cstr_tag=Cstr_extension _},_) ->
-      split_naive cls args def k
-  | _ ->
-
-      let group = get_group ex_pat in
-
-      let rec split_ex yes no = function
-        | [] ->
-            let yes = List.rev yes and no = List.rev no in
-            begin match no with
-            | [] ->
-                {me = Pm {cases=yes ; args=args ; default=def} ;
-                  matrix = as_matrix yes ;
-                  top_default = def},
-                k
-            | cl::rem ->
-                begin match yes with
-                | [] ->
-                    (* Could not success in raising up a constr matching up *)
-                    split_noex [cl] [] rem
-                | _ ->
-                    let {me=next ; matrix=matrix ; top_default=def}, nexts =
-                      split_noex [cl] [] rem in
-                    let idef = next_raise_count () in
-                    let def = cons_default matrix idef def in
-                    {me = Pm {cases=yes ; args=args ; default=def} ;
-                      matrix = as_matrix yes ;
-                      top_default = def },
-                    (idef, next)::nexts
-                end
-            end
-        | (p::_,_) as cl::rem ->
-            if group p && up_ok cl no then
-              split_ex (cl::yes) no rem
-            else
-              split_ex yes (cl::no) rem
-        | _ -> assert false
-
-      and split_noex yes no = function
-        | [] ->
-            let yes = List.rev yes and no = List.rev no in
-            begin match no with
-            | [] -> precompile_var args yes def k
-            | cl::rem ->
-                let {me=next ; matrix=matrix ; top_default=def}, nexts =
-                  split_ex [cl] [] rem in
-                let idef = next_raise_count () in
-                precompile_var
-                  args yes
-                  (cons_default matrix idef def)
-                  ((idef,next)::nexts)
-            end
-        | [ps,_ as cl]
-            when List.for_all group_var ps && yes <> [] ->
-       (* This enables an extra division in some frequent case :
-          last row is made of variables only *)
-              split_noex yes (cl::no) []
-        | (p::_,_) as cl::rem ->
-            if not (group p) && up_ok cl no then
-              split_noex (cl::yes) no rem
-            else
-              split_noex yes (cl::no) rem
-        | _ -> assert false in
-
-      match cls with
-      | ((p::_,_) as cl)::rem ->
-          if group p then split_ex [cl] [] rem
-          else split_noex [cl] [] rem
-      | _ ->  assert false
-
-and precompile_var  args cls def k = match args with
-| []  -> assert false
-| _::((Lvar v as av,_) as arg)::rargs ->
-    begin match cls with
-    | [ps,_] -> (* as splitted as it can *)
-        dont_precompile_var args cls def k
-    | _ ->
-(* Precompile *)
-        let var_cls =
-          List.map
-            (fun (ps,act) -> match ps with
-            | _::ps -> ps,act | _     -> assert false)
-            cls
-        and var_def = make_default (fun _ rem -> rem) def in
-        let {me=first ; matrix=matrix}, nexts =
-          split_or (Some v) var_cls (arg::rargs) var_def in
-
-(* Compute top information *)
-        match nexts with
-        | [] -> (* If you need *)
-            dont_precompile_var args cls def k
-        | _  ->
-            let rfirst =
-              {me = PmVar {inside=first ; var_arg = av} ;
-                matrix = add_omega_column matrix ;
-                top_default = rebuild_default nexts def ; }
-            and rnexts = rebuild_nexts av nexts k in
-            rfirst, rnexts
-    end
-|  _ ->
-    dont_precompile_var args cls def k
-
-and dont_precompile_var args cls def k =
-  {me =  Pm {cases = cls ; args = args ; default = def } ;
-    matrix=as_matrix cls ;
-    top_default=def},k
-
-and is_exc p = match p.pat_desc with
-| Tpat_or (p1,p2,_) -> is_exc p1 || is_exc p2
-| Tpat_alias (p,v,_) -> is_exc p
-| Tpat_construct (_,{cstr_tag=Cstr_extension _},_) -> true
-| _ -> false
-
-and precompile_or argo cls ors args def k = match ors with
-| [] -> split_constr cls args def k
-| _  ->
-    let rec do_cases = function
-      | ({pat_desc=Tpat_or _} as orp::patl, action)::rem ->
-          let do_opt = not (is_exc orp) in
-          let others,rem =
-            if do_opt then get_equiv orp rem
-            else [],rem in
-          let orpm =
-            {cases =
-              (patl, action)::
-              List.map
-                (function
-                  | (_::ps,action) -> ps,action
-                  | _ -> assert false)
-                others ;
-              args = (match args with _::r -> r | _ -> assert false) ;
-              default = default_compat (if do_opt then orp else omega) def} in
-          let vars =
-            IdentSet.elements
-              (IdentSet.inter
-                 (extract_vars IdentSet.empty orp)
-                 (pm_free_variables orpm)) in
-          let or_num = next_raise_count () in
-          let new_patl = Parmatch.omega_list patl in
-
-          let mk_new_action vs =
-            Lstaticraise
-              (or_num, List.map (fun v -> Lvar v) vs) in
-
-          let do_optrec,body,handlers = do_cases rem in
-          do_opt && do_optrec,
-          explode_or_pat
-            argo new_patl mk_new_action body vars [] orp,
-          let mat = if do_opt then [[orp]] else [[omega]] in
-          ((mat, or_num, vars , orpm):: handlers)
-      | cl::rem ->
-          let b,new_ord,new_to_catch = do_cases rem in
-          b,cl::new_ord,new_to_catch
-      | [] -> true,[],[] in
-
-    let do_opt,end_body, handlers = do_cases ors in
-    let matrix = (if do_opt then as_matrix else as_matrix_omega) (cls@ors)
-    and body = {cases=cls@end_body ; args=args ; default=def} in
-    {me = PmOr {body=body ; handlers=handlers ; or_matrix=matrix} ;
-      matrix=matrix ;
-      top_default=def},
-    k
-
-let split_precompile argo pm =
-  let {me=next}, nexts = split_or argo pm.cases pm.args pm.default  in
-  if dbg && (nexts <> [] || (match next with PmOr _ -> true | _ -> false))
-  then begin
-    prerr_endline "** SPLIT **" ;
-    pretty_pm pm ;
-    pretty_precompiled_res  next nexts
-  end ;
-  next, nexts
-
-
-(* General divide functions *)
-
-let add_line patl_action pm = pm.cases <- patl_action :: pm.cases; pm
-
-type cell =
-  {pm : pattern_matching ;
-  ctx : ctx list ;
-  pat : pattern}
-
-let add make_matching_fun division eq_key key patl_action args =
-  try
-    let (_,cell) = List.find (fun (k,_) -> eq_key key k) division in
-    cell.pm.cases <- patl_action :: cell.pm.cases;
-    division
-  with Not_found ->
-    let cell = make_matching_fun args in
-    cell.pm.cases <- [patl_action] ;
-    (key, cell) :: division
-
-
-let divide make eq_key get_key get_args ctx pm =
-
-  let rec divide_rec = function
-    | (p::patl,action) :: rem ->
-        let this_match = divide_rec rem in
-        add
-          (make p pm.default ctx)
-          this_match eq_key (get_key p) (get_args p patl,action) pm.args
-    | _ -> [] in
-
-  divide_rec pm.cases
-
-
-let divide_line make_ctx make get_args pat ctx pm =
-  let rec divide_rec = function
-    | (p::patl,action) :: rem ->
-        let this_match = divide_rec rem in
-        add_line (get_args p patl, action) this_match
-    | _ -> make pm.default pm.args in
-
-  {pm = divide_rec pm.cases ;
-  ctx=make_ctx ctx ;
-  pat=pat}
-
-
-
-(* Then come various functions,
-   There is one set of functions per matching style
-   (constants, constructors etc.)
-
-   - matcher function are arguments to make_default (for defaukt handlers)
-   They may raise NoMatch or OrPat and perform the full
-   matching (selection + arguments).
-
-
-   - get_args and get_key are for the compiled matrices, note that
-   selection and geting arguments are separed.
-
-   - make_ _matching combines the previous functions for produicing
-   new  ``pattern_matching'' records.
-*)
-
-
-
-let rec matcher_const cst p rem = match p.pat_desc with
-| Tpat_or (p1,p2,_) ->
-    begin try
-      matcher_const cst p1 rem with
-    | NoMatch -> matcher_const cst p2 rem
-    end
-| Tpat_constant c1 when const_compare c1 cst = 0 -> rem
-| Tpat_any    -> rem
-| _ -> raise NoMatch
-
-let get_key_constant caller = function
-  | {pat_desc= Tpat_constant cst} -> cst
-  | p ->
-      prerr_endline ("BAD: "^caller) ;
-      pretty_pat p ;
-      assert false
-
-let get_args_constant _ rem = rem
-
-let make_constant_matching p def ctx = function
-    [] -> fatal_error "Matching.make_constant_matching"
-  | (_ :: argl) ->
-      let def =
-        make_default
-          (matcher_const (get_key_constant "make" p)) def
-      and ctx =
-        filter_ctx p  ctx in
-      {pm = {cases = []; args = argl ; default = def} ;
-        ctx = ctx ;
-        pat = normalize_pat p}
-
-
-
-
-let divide_constant ctx m =
-  divide
-    make_constant_matching
-    (fun c d -> const_compare c d = 0) (get_key_constant "divide")
-    get_args_constant
-    ctx m
-
-(* Matching against a constructor *)
-
-
-let make_field_args loc binding_kind arg first_pos last_pos argl =
-  let rec make_args pos =
-    if pos > last_pos
-    then argl
-    else (Lprim(Pfield (pos, Fld_na (* TODO*) ), [arg],loc), binding_kind) :: make_args (pos + 1)
-  in make_args first_pos
-
-let get_key_constr = function
-  | {pat_desc=Tpat_construct (_, cstr,_)} -> cstr.cstr_tag
-  | _ -> assert false
-
-let get_args_constr p rem = match p with
-| {pat_desc=Tpat_construct (_, _, args)} -> args @ rem
-| _ -> assert false
-
-let matcher_constr cstr = match cstr.cstr_arity with
-| 0 ->
-    let rec matcher_rec q rem = match q.pat_desc with
-    | Tpat_or (p1,p2,_) ->
-        begin
-          try
-            matcher_rec p1 rem
-          with
-          | NoMatch -> matcher_rec p2 rem
-        end
-    | Tpat_construct (_, cstr1, []) when cstr.cstr_tag = cstr1.cstr_tag ->
-        rem
-    | Tpat_any -> rem
-    | _ -> raise NoMatch in
-    matcher_rec
-| 1 ->
-    let rec matcher_rec q rem = match q.pat_desc with
-    | Tpat_or (p1,p2,_) ->
-        let r1 = try Some (matcher_rec p1 rem) with NoMatch -> None
-        and r2 = try Some (matcher_rec p2 rem) with NoMatch -> None in
-        begin match r1,r2 with
-        | None, None -> raise NoMatch
-        | Some r1, None -> r1
-        | None, Some r2 -> r2
-        | Some (a1::rem1), Some (a2::_) ->
-            {a1 with
-             pat_loc = Location.none ;
-             pat_desc = Tpat_or (a1, a2, None)}::
-            rem
-        | _, _ -> assert false
-        end
-    | Tpat_construct (_, cstr1, [arg])
-      when cstr.cstr_tag = cstr1.cstr_tag -> arg::rem
-    | Tpat_any -> omega::rem
-    | _ -> raise NoMatch in
-    matcher_rec
-| _ ->
-    fun q rem -> match q.pat_desc with
-    | Tpat_or (_,_,_) -> raise OrPat
-    | Tpat_construct (_, cstr1, args)
-      when cstr.cstr_tag = cstr1.cstr_tag -> args @ rem
-    | Tpat_any -> Parmatch.omegas cstr.cstr_arity @ rem
-    | _        -> raise NoMatch
-
-let make_constr_matching p def ctx = function
-    [] -> fatal_error "Matching.make_constr_matching"
-  | ((arg, mut) :: argl) ->
-      let cstr = pat_as_constr p in
-      let newargs =
-        match cstr.cstr_tag with
-          Cstr_constant _ | Cstr_block _ ->
-            make_field_args p.pat_loc Alias arg 0 (cstr.cstr_arity - 1) argl
-        | Cstr_extension _ ->
-            make_field_args p.pat_loc Alias arg 1 cstr.cstr_arity argl in
-      {pm=
-        {cases = []; args = newargs;
-          default = make_default (matcher_constr cstr) def} ;
-        ctx =  filter_ctx p ctx ;
-        pat=normalize_pat p}
-
-
-let divide_constructor ctx pm =
-  divide
-    make_constr_matching
-    (=) get_key_constr get_args_constr
-    ctx pm
-
-(* Matching against a variant *)
-
-let rec matcher_variant_const lab p rem = match p.pat_desc with
-| Tpat_or (p1, p2, _) ->
-    begin
-      try
-        matcher_variant_const lab p1 rem
-      with
-      | NoMatch -> matcher_variant_const lab p2 rem
-    end
-| Tpat_variant (lab1,_,_) when lab1=lab -> rem
-| Tpat_any -> rem
-| _   -> raise NoMatch
-
-
-let make_variant_matching_constant p lab def ctx = function
-    [] -> fatal_error "Matching.make_variant_matching_constant"
-  | ((arg, mut) :: argl) ->
-      let def = make_default (matcher_variant_const lab) def
-      and ctx = filter_ctx p ctx in
-      {pm={ cases = []; args = argl ; default=def} ;
-        ctx=ctx ;
-        pat = normalize_pat p}
-
-let matcher_variant_nonconst lab p rem = match p.pat_desc with
-| Tpat_or (_,_,_) -> raise OrPat
-| Tpat_variant (lab1,Some arg,_) when lab1=lab -> arg::rem
-| Tpat_any -> omega::rem
-| _   -> raise NoMatch
-
-
-let make_variant_matching_nonconst p lab def ctx = function
-    [] -> fatal_error "Matching.make_variant_matching_nonconst"
-  | ((arg, mut) :: argl) ->
-      let def = make_default (matcher_variant_nonconst lab) def
-      and ctx = filter_ctx p ctx in
-      {pm=
-        {cases = []; args = (Lprim(Pfield (1, Fld_na (* TODO*)), [arg], p.pat_loc), Alias) :: argl;
-          default=def} ;
-        ctx=ctx ;
-        pat = normalize_pat p}
-
-let get_key_variant p = match p.pat_desc with
-| Tpat_variant(lab, Some _ , _) ->  Cstr_block (Btype.hash_variant lab)
-| Tpat_variant(lab, None , _) -> Cstr_constant (Btype.hash_variant lab)
-|  _ -> assert false
-
-let divide_variant row ctx {cases = cl; args = al; default=def} =
-  let row = Btype.row_repr row in
-  let rec divide = function
-      ({pat_desc = Tpat_variant(lab, pato, _)} as p:: patl, action) :: rem ->
-        let variants = divide rem in
-        if try Btype.row_field_repr (List.assoc lab row.row_fields) = Rabsent
-        with Not_found -> true
-        then
-          variants
-        else begin
-          let tag = Btype.hash_variant lab in
-          match pato with
-            None ->
-              add (make_variant_matching_constant p lab def ctx) variants
-                (=) (Cstr_constant tag) (patl, action) al
-          | Some pat ->
-              add (make_variant_matching_nonconst p lab def ctx) variants
-                (=) (Cstr_block tag) (pat :: patl, action) al
-        end
-    | cl -> []
-  in
-  divide cl
-
-(*
-  Three ``no-test'' cases
-  *)
-
-(* Matching against a variable *)
-
-let get_args_var _ rem = rem
-
-
-let make_var_matching def = function
-  | [] ->  fatal_error "Matching.make_var_matching"
-  | _::argl ->
-      {cases=[] ;
-        args = argl ;
-        default= make_default get_args_var def}
-
-let divide_var ctx pm =
-  divide_line ctx_lshift make_var_matching get_args_var omega ctx pm
-
-(* Matching and forcing a lazy value *)
-
-let get_arg_lazy p rem = match p with
-| {pat_desc = Tpat_any} -> omega :: rem
-| {pat_desc = Tpat_lazy arg} -> arg :: rem
-| _ ->  assert false
-
-let matcher_lazy p rem = match p.pat_desc with
-| Tpat_or (_,_,_)     -> raise OrPat
-| Tpat_var _          -> get_arg_lazy omega rem
-| _                   -> get_arg_lazy p rem
-
-(* Inlining the tag tests before calling the primitive that works on
-   lazy blocks. This is alse used in translcore.ml.
-   No call other than Obj.tag when the value has been forced before.
-*)
-
-let prim_obj_tag =
-  {prim_name = "caml_obj_tag";
-   prim_arity = 1; prim_alloc = false;
-   prim_native_name = "";
-   prim_native_float = false}
-
-let get_mod_field modname field =
-  lazy (
-    try
-      let mod_ident = Ident.create_persistent modname in
-      let env = Env.open_pers_signature modname Env.initial_safe_string in
-      let p = try
-        match Env.lookup_value (Longident.Lident field) env with
-        | (Path.Pdot(_,_,i), _) -> i
-        | _ -> fatal_error ("Primitive "^modname^"."^field^" not found.")
-      with Not_found ->
-        fatal_error ("Primitive "^modname^"."^field^" not found.")
-      in
-      Lprim(Pfield (p, Fld_na (* TODO - then we dont need query any more*)), 
-            [Lprim(Pgetglobal mod_ident, [], Location.none)], Location.none)
-    with Not_found -> fatal_error ("Module "^modname^" unavailable.")
-  )
-
-let code_force_lazy_block =
-  get_mod_field "CamlinternalLazy" "force_lazy_block"
-;;
-
-(* inline_lazy_force inlines the beginning of the code of Lazy.force. When
-   the value argument is tagged as:
-   - forward, take field 0
-   - lazy, call the primitive that forces (without testing again the tag)
-   - anything else, return it
-
-   Using Lswitch below relies on the fact that the GC does not shortcut
-   Forward(val_out_of_heap).
-*)
-
-let inline_lazy_force_cond arg loc =
-  let idarg = Ident.create "lzarg" in
-  let varg = Lvar idarg in
-  let tag = Ident.create "tag" in
-  let force_fun = Lazy.force code_force_lazy_block in
-  Llet(Strict, idarg, arg,
-       Llet(Alias, tag, Lprim(Pccall prim_obj_tag, [varg], loc),
-            Lifthenelse(
-              (* if (tag == Obj.forward_tag) then varg.(0) else ... *)
-              Lprim(Pintcomp Ceq,
-                    [Lvar tag; Lconst(Const_base(Const_int Obj.forward_tag))],
-                   loc),
-              Lprim(Pfield (0, Fld_na (* TODO: lazy *)), [varg],
-                   loc),
-              Lifthenelse(
-                (* ... if (tag == Obj.lazy_tag) then Lazy.force varg else ... *)
-                Lprim(Pintcomp Ceq,
-                      [Lvar tag; Lconst(Const_base(Const_int Obj.lazy_tag))],
-                     loc),
-                Lapply(force_fun, [varg], loc),
-                (* ... arg *)
-                  varg))))
-
-let inline_lazy_force_switch arg loc =
-  let idarg = Ident.create "lzarg" in
-  let varg = Lvar idarg in
-  let force_fun = Lazy.force code_force_lazy_block in
-  Llet(Strict, idarg, arg,
-       Lifthenelse(
-         Lprim(Pisint, [varg],loc), varg,
-         (Lswitch
-            (varg,
-             { sw_numconsts = 0; sw_consts = [];
-               sw_numblocks = 256;  (* PR#6033 - tag ranges from 0 to 255 *)
-               sw_blocks =
-                 [ (Obj.forward_tag, Lprim(Pfield (0, Fld_na (* TODO: lazy *)), [varg],loc));
-                   (Obj.lazy_tag,
-                    Lapply(force_fun, [varg], loc)) ];
-               sw_failaction = Some varg } ))))
-
-let inline_lazy_force arg loc =
-  if !Clflags.native_code then
-    (* Lswitch generates compact and efficient native code *)
-    inline_lazy_force_switch arg loc
-  else
-    (* generating bytecode: Lswitch would generate too many rather big
-       tables (~ 250 elts); conditionals are better *)
-    inline_lazy_force_cond arg loc
-
-let make_lazy_matching def = function
-    [] -> fatal_error "Matching.make_lazy_matching"
-  | (arg,mut) :: argl ->
-      { cases = [];
-        args =
-          (inline_lazy_force arg Location.none, Strict) :: argl;
-        default = make_default matcher_lazy def }
-
-let divide_lazy p ctx pm =
-  divide_line
-    (filter_ctx p)
-    make_lazy_matching
-    get_arg_lazy
-    p ctx pm
-
-(* Matching against a tuple pattern *)
-
-
-let get_args_tuple arity p rem = match p with
-| {pat_desc = Tpat_any} -> omegas arity @ rem
-| {pat_desc = Tpat_tuple args} ->
-    args @ rem
-| _ ->  assert false
-
-let matcher_tuple arity p rem = match p.pat_desc with
-| Tpat_or (_,_,_)     -> raise OrPat
-| Tpat_var _          -> get_args_tuple arity omega rem
-| _                   ->  get_args_tuple arity p rem
-
-let make_tuple_matching loc arity def = function
-    [] -> fatal_error "Matching.make_tuple_matching"
-  | (arg, mut) :: argl ->
-      let rec make_args pos =
-        if pos >= arity
-        then argl
-        else (Lprim(Pfield (pos, Fld_na (* TODO: tuple*)) , [arg], loc), Alias) :: make_args (pos + 1) in
-      {cases = []; args = make_args 0 ;
-        default=make_default (matcher_tuple arity) def}
-
-
-let divide_tuple arity p ctx pm =
-  divide_line
-    (filter_ctx p)
-    (make_tuple_matching p.pat_loc arity)
-    (get_args_tuple  arity) p ctx pm
-
-(* Matching against a record pattern *)
-
-
-let record_matching_line num_fields lbl_pat_list =
-  let patv = Array.make num_fields omega in
-  List.iter (fun (_, lbl, pat) -> patv.(lbl.lbl_pos) <- pat) lbl_pat_list;
-  Array.to_list patv
-
-let get_args_record num_fields p rem = match p with
-| {pat_desc=Tpat_any} ->
-    record_matching_line num_fields [] @ rem
-| {pat_desc=Tpat_record (lbl_pat_list,_)} ->
-    record_matching_line num_fields lbl_pat_list @ rem
-| _ -> assert false
-
-let matcher_record num_fields p rem = match p.pat_desc with
-| Tpat_or (_,_,_) -> raise OrPat
-| Tpat_var _      -> get_args_record num_fields omega rem
-| _               -> get_args_record num_fields p rem
-
-let make_record_matching loc all_labels def = function
-    [] -> fatal_error "Matching.make_record_matching"
-  | ((arg, mut) :: argl) ->
-      let rec make_args pos =
-        if pos >= Array.length all_labels then argl else begin
-          let lbl = all_labels.(pos) in
-          let access =
-            match lbl.lbl_repres with
-              Record_regular -> Pfield (lbl.lbl_pos, Fld_record lbl.lbl_name)
-            | Record_float -> Pfloatfield (lbl.lbl_pos, Fld_record lbl.lbl_name) in
-          let str =
-            match lbl.lbl_mut with
-              Immutable -> Alias
-            | Mutable -> StrictOpt in
-          (Lprim(access, [arg], loc), str) :: make_args(pos + 1)
-        end in
-      let nfields = Array.length all_labels in
-      let def= make_default (matcher_record nfields) def in
-      {cases = []; args = make_args 0 ; default = def}
-
-
-let divide_record all_labels p ctx pm =
-  let get_args = get_args_record (Array.length all_labels) in
-  divide_line
-    (filter_ctx p)
-    (make_record_matching p.pat_loc all_labels)
-    get_args
-    p ctx pm
-
-(* Matching against an array pattern *)
-
-let get_key_array = function
-  | {pat_desc=Tpat_array patl} -> List.length patl
-  | _ -> assert false
-
-let get_args_array p rem = match p with
-| {pat_desc=Tpat_array patl} -> patl@rem
-| _ -> assert false
-
-let matcher_array len p rem = match p.pat_desc with
-| Tpat_or (_,_,_) -> raise OrPat
-| Tpat_array args when List.length args=len -> args @ rem
-| Tpat_any -> Parmatch.omegas len @ rem
-| _ -> raise NoMatch
-
-let make_array_matching kind p def ctx = function
-  | [] -> fatal_error "Matching.make_array_matching"
-  | ((arg, mut) :: argl) ->
-      let len = get_key_array p in
-      let rec make_args pos =
-        if pos >= len
-        then argl
-        else (Lprim(Parrayrefu kind, [arg; Lconst(Const_base(Const_int pos))],p.pat_loc),
-              StrictOpt) :: make_args (pos + 1) in
-      let def = make_default (matcher_array len) def
-      and ctx = filter_ctx p ctx in
-      {pm={cases = []; args = make_args 0 ; default = def} ;
-        ctx=ctx ;
-        pat = normalize_pat p}
-
-let divide_array kind ctx pm =
-  divide
-    (make_array_matching kind)
-    (=) get_key_array get_args_array ctx pm
-
-
-(*
-   Specific string test sequence
-   Will be called by the bytecode compiler, from bytegen.ml.
-   The strategy is first dichotomic search (we perform 3-way tests
-   with compare_string), then sequence of equality tests
-   when there are less then T=strings_test_threshold static strings to match.
-
-  Increasing T entails (slightly) less code, decreasing T
-  (slightly) favors runtime speed.
-  T=8 looks a decent tradeoff.
-*)
-
-(* Utilities *)
-
-let strings_test_threshold = 8
-
-let prim_string_notequal =
-  Pccall{prim_name = "caml_string_notequal";
-         prim_arity = 2; prim_alloc = false;
-         prim_native_name = ""; prim_native_float = false}
-
-let prim_string_compare =
-  Pccall{prim_name = "caml_string_compare";
-         prim_arity = 2; prim_alloc = false;
-         prim_native_name = ""; prim_native_float = false}
-
-let bind_sw arg k = match arg with
-| Lvar _ -> k arg
-| _ ->
-    let id = Ident.create "switch" in
-    Llet (Strict,id,arg,k (Lvar id))
-
-
-(* Sequential equality tests *)
-
-let make_string_test_sequence loc arg sw d =
-  let d,sw = match d with
-  | None ->
-      begin match sw with
-      | (_,d)::sw -> d,sw
-      | [] -> assert false
-      end
-  | Some d -> d,sw in
-  bind_sw arg
-    (fun arg ->
-      List.fold_right
-        (fun (s,lam) k ->
-          Lifthenelse
-            (Lprim
-               (prim_string_notequal,
-                [arg; Lconst (Const_immstring s)], loc),
-             k,lam))
-        sw d)
-
-let rec split k xs = match xs with
-| [] -> assert false
-| x0::xs ->
-    if k <= 1 then [],x0,xs
-    else
-      let xs,y0,ys = split (k-2) xs in
-      x0::xs,y0,ys
-
-let zero_lam  = Lconst (Const_base (Const_int 0))
-
-let tree_way_test loc arg lt eq gt =
-  Lifthenelse
-    (Lprim (Pintcomp Clt,[arg;zero_lam], loc),lt,
-     Lifthenelse(Lprim (Pintcomp Clt,[zero_lam;arg], loc),gt,eq))
-
-(* Dichotomic tree *)
-
-
-let rec do_make_string_test_tree loc arg sw delta d =
-  let len = List.length sw in
-  if len <= strings_test_threshold+delta then
-    make_string_test_sequence loc arg sw d
-  else
-    let lt,(s,act),gt = split len sw in
-    bind_sw
-      (Lprim
-         (prim_string_compare,
-          [arg; Lconst (Const_immstring s)], loc;))
-      (fun r ->
-        tree_way_test loc r
-          (do_make_string_test_tree  loc arg lt delta d)
-          act
-          (do_make_string_test_tree loc arg gt delta d))
-
-(* Entry point *)
-let expand_stringswitch loc arg sw d = match d with
-| None ->
-    bind_sw arg
-      (fun arg -> do_make_string_test_tree loc  arg sw 0 None)
-| Some e ->
-    bind_sw arg
-      (fun arg ->
-        make_catch e
-          (fun d -> do_make_string_test_tree loc arg sw 1 (Some d)))
-
-(**********************)
-(* Generic test trees *)
-(**********************)
-
-(* Sharing *)
-
-(* Add handler, if shared *)
-let handle_shared () =
-  let hs = ref (fun x -> x) in
-  let handle_shared act = match act with
-  | Switch.Single act -> act
-  | Switch.Shared act ->
-      let i,h = make_catch_delayed act in
-      let ohs = !hs in
-      hs := (fun act -> h (ohs act)) ;
-      make_exit i in
-  hs,handle_shared
-
-
-let share_actions_tree sw d =
-  let store = StoreExp.mk_store () in
-(* Default action is always shared *)
-  let d =
-    match d with
-    | None -> None
-    | Some d -> Some (store.Switch.act_store_shared d) in
-(* Store all other actions *)
-  let sw =
-    List.map  (fun (cst,act) -> cst,store.Switch.act_store act) sw in
-
-(* Retrieve all actions, includint potentiel default *)
-  let acts = store.Switch.act_get_shared () in
-
-(* Array of actual actions *)
-  let hs,handle_shared = handle_shared () in
-  let acts = Array.map handle_shared acts in
-
-(* Recontruct default and switch list *)
-  let d = match d with
-  | None -> None
-  | Some d -> Some (acts.(d)) in
-  let sw = List.map (fun (cst,j) -> cst,acts.(j)) sw in
-  !hs,sw,d
-
-(* Note: dichotomic search requires sorted input with no duplicates *)
-let rec uniq_lambda_list sw = match sw with
-  | []|[_] -> sw
-  | (c1,_ as p1)::((c2,_)::sw2 as sw1) ->
-      if const_compare c1 c2 = 0 then uniq_lambda_list (p1::sw2)
-      else p1::uniq_lambda_list sw1
-
-let sort_lambda_list l =
-  let l =
-    List.stable_sort (fun (x,_) (y,_) -> const_compare x y) l in
-  uniq_lambda_list l
-
-let rec cut n l =
-  if n = 0 then [],l
-  else match l with
-    [] -> raise (Invalid_argument "cut")
-  | a::l -> let l1,l2 = cut (n-1) l in a::l1, l2
-
-let rec do_tests_fail loc fail tst arg = function
-  | [] -> fail
-  | (c, act)::rem ->
-      Lifthenelse
-        (Lprim (tst, [arg ; Lconst (Const_base c)], loc),
-         do_tests_fail loc fail tst arg rem,
-         act)
-
-let rec do_tests_nofail loc tst arg = function
-  | [] -> fatal_error "Matching.do_tests_nofail"
-  | [_,act] -> act
-  | (c,act)::rem ->
-      Lifthenelse
-        (Lprim (tst, [arg ; Lconst (Const_base c)], loc),
-         do_tests_nofail loc tst arg rem,
-         act)
-
-let make_test_sequence loc fail tst lt_tst arg const_lambda_list =
-  let const_lambda_list = sort_lambda_list const_lambda_list in
-  let hs,const_lambda_list,fail =
-    share_actions_tree const_lambda_list fail in
-
-  let rec make_test_sequence const_lambda_list =
-    if List.length const_lambda_list >= 4 && lt_tst <> Pignore then
-      split_sequence const_lambda_list
-    else match fail with
-    | None -> do_tests_nofail loc tst arg const_lambda_list
-    | Some fail -> do_tests_fail loc fail tst arg const_lambda_list
-
-  and split_sequence const_lambda_list =
-    let list1, list2 =
-      cut (List.length const_lambda_list / 2) const_lambda_list in
-    Lifthenelse(Lprim(lt_tst,[arg; Lconst(Const_base (fst(List.hd list2)))], loc),
-                make_test_sequence list1, make_test_sequence list2)
-  in
-  hs (make_test_sequence const_lambda_list)
-
-
-let rec explode_inter offset i j act k =
-  if i <= j then
-    explode_inter offset i (j-1) act ((j-offset,act)::k)
-  else
-    k
-
-let max_vals cases acts =
-  let vals = Array.make (Array.length acts) 0 in
-  for i=Array.length cases-1 downto 0 do
-    let l,h,act = cases.(i) in
-    vals.(act) <- h - l + 1 + vals.(act)
-  done ;
-  let max = ref 0 in
-  for i = Array.length vals-1 downto 0 do
-    if vals.(i) >= vals.(!max) then
-      max := i
-  done ;
-  if vals.(!max) > 1 then
-    !max
-  else
-    -1
-
-let as_int_list cases acts =
-  let default = max_vals cases acts in
-  let min_key,_,_ = cases.(0)
-  and _,max_key,_ = cases.(Array.length cases-1) in
-
-  let rec do_rec i k =
-    if i >= 0 then
-      let low, high, act =  cases.(i) in
-      if act = default then
-        do_rec (i-1) k
-      else
-        do_rec (i-1) (explode_inter min_key low high acts.(act) k)
-    else
-      k in
-  min_key, max_key,do_rec (Array.length cases-1) [],
-  (if default >= 0 then Some acts.(default) else None)
-
-
-module SArg = struct
-  type primitive = Lambda.primitive
-
-  let eqint = Pintcomp Ceq
-  let neint = Pintcomp Cneq
-  let leint = Pintcomp Cle
-  let ltint = Pintcomp Clt
-  let geint = Pintcomp Cge
-  let gtint = Pintcomp Cgt
-
-  type act = Lambda.lambda
-
-  let make_prim p args = Lprim (p,args, Location.none)
-  let make_offset arg n = match n with
-  | 0 -> arg
-  | _ -> Lprim (Poffsetint n,[arg], Location.none)
-
-  let bind arg body =
-    let newvar,newarg = match arg with
-    | Lvar v -> v,arg
-    | _      ->
-        let newvar = Ident.create "switcher" in
-        newvar,Lvar newvar in
-    bind Alias newvar arg (body newarg)
-  let make_const i = Lconst (Const_base (Const_int i))
-  let make_isout h arg = Lprim (Pisout, [h ; arg], Location.none)
-  let make_isin h arg = Lprim (Pnot,[make_isout h arg], Location.none)
-  let make_if cond ifso ifnot = Lifthenelse (cond, ifso, ifnot)
-  let make_switch arg cases acts =
-    let l = ref [] in
-    for i = Array.length cases-1 downto 0 do
-      l := (i,acts.(cases.(i))) ::  !l
-    done ;
-    Lswitch(arg,
-            {sw_numconsts = Array.length cases ; sw_consts = !l ;
-             sw_numblocks = 0 ; sw_blocks =  []  ;
-             sw_failaction = None})
-  let make_catch  = make_catch_delayed
-  let make_exit = make_exit
-
-end
-
-(* Action sharing for Lswitch argument *)
-let share_actions_sw sw =
-(* Attempt sharing on all actions *)
-  let store = StoreExp.mk_store () in
-  let fail = match sw.sw_failaction with
-  | None -> None
-  | Some fail ->
-      (* Fail is translated to exit, whatever happens *)
-      Some (store.Switch.act_store_shared fail) in
-  let consts =
-    List.map
-      (fun (i,e) -> i,store.Switch.act_store e)
-      sw.sw_consts
-  and blocks =
-    List.map
-      (fun (i,e) -> i,store.Switch.act_store e)
-      sw.sw_blocks in
-  let acts = store.Switch.act_get_shared () in
-  let hs,handle_shared = handle_shared () in
-  let acts = Array.map handle_shared acts in
-  let fail = match fail with
-  | None -> None
-  | Some fail -> Some (acts.(fail)) in
-  !hs,
-  { sw with
-    sw_consts = List.map (fun (i,j) -> i,acts.(j)) consts ;
-    sw_blocks = List.map (fun (i,j) -> i,acts.(j)) blocks ;
-    sw_failaction = fail; }
-
-(* Reintroduce fail action in switch argument,
-   for the sake of avoiding carrying over huge switches *)
-
-let reintroduce_fail sw = match sw.sw_failaction with
-| None ->
-    let t = Hashtbl.create 17 in
-    let seen (_,l) = match as_simple_exit l with
-    | Some i ->
-        let old = try Hashtbl.find t i with Not_found -> 0 in
-        Hashtbl.replace t i (old+1)
-    | None -> () in
-    List.iter seen sw.sw_consts ;
-    List.iter seen sw.sw_blocks ;
-    let i_max = ref (-1)
-    and max = ref (-1) in
-    Hashtbl.iter
-      (fun i c ->
-        if c > !max then begin
-          i_max := i ;
-          max := c
-        end) t ;
-    if !max >= 3 then
-      let default = !i_max in
-      let remove =
-        List.filter
-          (fun (_,lam) -> match as_simple_exit lam with
-          | Some j -> j <> default
-          | None -> true) in
-      {sw with
-       sw_consts = remove sw.sw_consts ;
-       sw_blocks = remove sw.sw_blocks ;
-       sw_failaction = Some (make_exit default)}
-    else sw
-| Some _ -> sw
-
-
-module Switcher = Switch.Make(SArg)
-open Switch
-
-let lambda_of_int i =  Lconst (Const_base (Const_int i))
-
-let rec last def = function
-  | [] -> def
-  | [x,_] -> x
-  | _::rem -> last def rem
-
-let get_edges low high l = match l with
-| [] -> low, high
-| (x,_)::_ -> x, last high l
-
-
-let as_interval_canfail fail low high l =
-  let store = StoreExp.mk_store () in
-
-  let do_store tag act =
-    let i =  store.act_store act in
-(*
-    Printlambda.lambda Format.str_formatter act ;
-    eprintf "STORE [%s] %i %s\n" tag i (Format.flush_str_formatter ()) ;
-*)
-    i in
-
-  let rec nofail_rec cur_low cur_high cur_act = function
-    | [] ->
-        if cur_high = high then
-          [cur_low,cur_high,cur_act]
-        else
-          [(cur_low,cur_high,cur_act) ; (cur_high+1,high, 0)]
-    | ((i,act_i)::rem) as all ->
-        let act_index = do_store "NO" act_i in
-        if cur_high+1= i then
-          if act_index=cur_act then
-            nofail_rec cur_low i cur_act rem
-          else if act_index=0 then
-            (cur_low,i-1, cur_act)::fail_rec i i rem
-          else
-            (cur_low, i-1, cur_act)::nofail_rec i i act_index rem
-        else if act_index = 0 then
-          (cur_low, cur_high, cur_act)::
-          fail_rec (cur_high+1) (cur_high+1) all
-        else
-          (cur_low, cur_high, cur_act)::
-          (cur_high+1,i-1,0)::
-          nofail_rec i i act_index rem
-
-  and fail_rec cur_low cur_high = function
-    | [] -> [(cur_low, cur_high, 0)]
-    | (i,act_i)::rem ->
-        let index = do_store "YES" act_i in
-        if index=0 then fail_rec cur_low i rem
-        else
-          (cur_low,i-1,0)::
-          nofail_rec i i index rem in
-
-  let init_rec = function
-    | [] -> []
-    | (i,act_i)::rem ->
-        let index = do_store "INIT" act_i in
-        if index=0 then
-          fail_rec low i rem
-        else
-          if low < i then
-            (low,i-1,0)::nofail_rec i i index rem
-          else
-            nofail_rec i i index rem in
-
-  assert (do_store "FAIL" fail = 0) ; (* fail has action index 0 *)
-  let r = init_rec l in
-  Array.of_list r,  store
-
-let as_interval_nofail l =
-  let store = StoreExp.mk_store () in
-
-  let rec i_rec cur_low cur_high cur_act = function
-    | [] ->
-        [cur_low, cur_high, cur_act]
-    | (i,act)::rem ->
-        let act_index = store.act_store act in
-        if act_index = cur_act then
-          i_rec cur_low i cur_act rem
-        else
-          (cur_low, cur_high, cur_act)::
-          i_rec i i act_index rem in
-  let inters = match l with
-  | (i,act)::rem ->
-      let act_index = store.act_store act in
-      i_rec i i act_index rem
-  | _ -> assert false in
-
-  Array.of_list inters, store
-
-
-let sort_int_lambda_list l =
-  List.sort
-    (fun (i1,_) (i2,_) ->
-      if i1 < i2 then -1
-      else if i2 < i1 then 1
-      else 0)
-    l
-
-let as_interval fail low high l =
-  let l = sort_int_lambda_list l in
-  get_edges low high l,
-  (match fail with
-  | None -> as_interval_nofail l
-  | Some act -> as_interval_canfail act low high l)
-
-let call_switcher fail arg low high int_lambda_list =
-  let edges, (cases, actions) =
-    as_interval fail low high int_lambda_list in
-  Switcher.zyva edges arg cases actions
-
-
-let exists_ctx ok ctx =
-  List.exists
-    (function
-      | {right=p::_} -> ok p
-      | _ -> assert false)
-    ctx
-
-let rec list_as_pat = function
-  | [] -> fatal_error "Matching.list_as_pat"
-  | [pat] -> pat
-  | pat::rem ->
-      {pat with pat_desc = Tpat_or (pat,list_as_pat rem,None)}
-
-
-let rec pat_as_list k = function
-  | {pat_desc=Tpat_or (p1,p2,_)} ->
-      pat_as_list (pat_as_list k p2) p1
-  | p -> p::k
-
-(* Extracting interesting patterns *)
-exception All
-
-let rec extract_pat seen k p = match p.pat_desc with
-| Tpat_or (p1,p2,_) ->
-    let k1,seen1 = extract_pat seen k p1 in
-    extract_pat seen1 k1 p2
-| Tpat_alias (p,_,_) ->
-    extract_pat  seen k p
-| Tpat_var _|Tpat_any ->
-    raise All
-| _ ->
-    let q = normalize_pat p in
-    if  List.exists (compat q) seen then
-      k, seen
-    else
-      q::k, q::seen
-
-let extract_mat seen pss =
-  let r,_ =
-    List.fold_left
-      (fun (k,seen) ps -> match ps with
-      | p::_ -> extract_pat seen k p
-      | _ -> assert false)
-      ([],seen)
-      pss in
-  r
-
-
-
-let complete_pats_constrs = function
-  | p::_ as pats ->
-      List.map
-        (pat_of_constr p)
-        (complete_constrs p (List.map get_key_constr pats))
-  | _ -> assert false
-
-
-let mk_res get_key env last_choice idef cant_fail ctx =
-
-  let env,fail,jumps_fail = match last_choice with
-  | [] ->
-      env, None, jumps_empty
-  | [p] when group_var p ->
-      env,
-      Some (Lstaticraise (idef,[])),
-      jumps_singleton idef ctx
-  | _ ->
-      (idef,cant_fail,last_choice)::env,
-      None, jumps_empty in
-  let klist,jumps =
-    List.fold_right
-      (fun (i,cant_fail,pats) (klist,jumps) ->
-        let act = Lstaticraise (i,[])
-        and pat = list_as_pat pats in
-        let klist =
-          List.fold_right
-            (fun pat klist -> (get_key pat,act)::klist)
-            pats klist
-        and ctx = if cant_fail then ctx else ctx_lub pat ctx in
-        klist,jumps_add i ctx jumps)
-      env ([],jumps_fail) in
-  fail, klist, jumps
-
-
-(*
-     Following two ``failaction'' function compute n, the trap handler
-    to jump to in case of failure of elementary tests
-*)
-
-let mk_failaction_neg partial ctx def = match partial with
-| Partial ->
-    begin match def with
-    | (_,idef)::_ ->
-        Some (Lstaticraise (idef,[])),[],jumps_singleton idef ctx
-    | _ ->
-       (* Act as Total, this means
-          If no appropriate default matrix exists,
-          then this switch cannot fail *)
-        None, [], jumps_empty
-    end
-| Total ->
-    None, [], jumps_empty
-
-
-
-(* Conforme a l'article et plus simple qu'avant *)
-and mk_failaction_pos partial seen ctx defs  =
-  if dbg then begin
-    prerr_endline "**POS**" ;
-    pretty_def defs ;
-    ()
-  end ;
-  let rec scan_def env to_test defs = match to_test,defs with
-  | ([],_)|(_,[]) ->
-      List.fold_left
-        (fun  (klist,jumps) (pats,i)->
-          let action = Lstaticraise (i,[]) in
-          let klist =
-            List.fold_right
-              (fun pat r -> (get_key_constr pat,action)::r)
-              pats klist
-          and jumps =
-            jumps_add i (ctx_lub (list_as_pat pats) ctx) jumps in
-          klist,jumps)
-        ([],jumps_empty) env
-  | _,(pss,idef)::rem ->
-      let now, later =
-        List.partition
-          (fun (p,p_ctx) -> ctx_match p_ctx pss) to_test in
-      match now with
-      | [] -> scan_def env to_test rem
-      | _  -> scan_def ((List.map fst now,idef)::env) later rem in
-
-  scan_def
-    []
-    (List.map
-       (fun pat -> pat, ctx_lub pat ctx)
-       (complete_pats_constrs seen))
-    defs
-
-
-let combine_constant loc arg cst partial ctx def
-    (const_lambda_list, total, pats) =
-  let fail, to_add, local_jumps =
-    mk_failaction_neg partial ctx def in
-  let const_lambda_list = to_add@const_lambda_list in
-  let lambda1 =
-    match cst with
-    | Const_int _ ->
-        let int_lambda_list =
-          List.map (function Const_int n, l -> n,l | _ -> assert false)
-            const_lambda_list in
-        call_switcher fail arg min_int max_int int_lambda_list
-    | Const_char _ ->
-        let int_lambda_list =
-          List.map (function Const_char c, l -> (Char.code c, l)
-            | _ -> assert false)
-            const_lambda_list in
-        call_switcher fail arg 0 255 int_lambda_list
-    | Const_string _ ->
-(* Note as the bytecode compiler may resort to dichotmic search,
-   the clauses of strinswitch  are sorted with duplicate removed.
-   This partly applies to the native code compiler, which requires
-   no duplicates *)
-        let const_lambda_list = sort_lambda_list const_lambda_list in
-        let sw =
-          List.map
-            (fun (c,act) -> match c with
-            | Const_string (s,_) -> s,act
-            | _ -> assert false)
-            const_lambda_list in
-        let hs,sw,fail = share_actions_tree sw fail in
-        hs (Lstringswitch (arg,sw,fail,loc))
-    | Const_float _ ->
-        make_test_sequence loc 
-          fail
-          (Pfloatcomp Cneq) (Pfloatcomp Clt)
-          arg const_lambda_list
-    | Const_int32 _ ->
-        make_test_sequence loc
-          fail
-          (Pbintcomp(Pint32, Cneq)) (Pbintcomp(Pint32, Clt))
-          arg const_lambda_list
-    | Const_int64 _ ->
-        make_test_sequence loc
-          fail
-          (Pbintcomp(Pint64, Cneq)) (Pbintcomp(Pint64, Clt))
-          arg const_lambda_list
-    | Const_nativeint _ ->
-        make_test_sequence loc
-          fail
-          (Pbintcomp(Pnativeint, Cneq)) (Pbintcomp(Pnativeint, Clt))
-          arg const_lambda_list
-  in lambda1,jumps_union local_jumps total
-
-
-
-let split_cases tag_lambda_list =
-  let rec split_rec = function
-      [] -> ([], [])
-    | (cstr, act) :: rem ->
-        let (consts, nonconsts) = split_rec rem in
-        match cstr with
-          Cstr_constant n -> ((n, act) :: consts, nonconsts)
-        | Cstr_block n    -> (consts, (n, act) :: nonconsts)
-        | _ -> assert false in
-  let const, nonconst = split_rec tag_lambda_list in
-  sort_int_lambda_list const,
-  sort_int_lambda_list nonconst
-
-let split_extension_cases tag_lambda_list =
-  let rec split_rec = function
-      [] -> ([], [])
-    | (cstr, act) :: rem ->
-        let (consts, nonconsts) = split_rec rem in
-        match cstr with
-          Cstr_extension(path, true) -> ((path, act) :: consts, nonconsts)
-        | Cstr_extension(path, false) -> (consts, (path, act) :: nonconsts)
-        | _ -> assert false in
-  split_rec tag_lambda_list
-
-
-let combine_constructor loc arg ex_pat cstr partial ctx def
-    (tag_lambda_list, total1, pats) =
-  if cstr.cstr_consts < 0 then begin
-    (* Special cases for extensions *)
-    let fail, to_add, local_jumps =
-      mk_failaction_neg partial ctx def in
-    let tag_lambda_list = to_add@tag_lambda_list in
-    let lambda1 =
-      let consts, nonconsts = split_extension_cases tag_lambda_list in
-      let default, consts, nonconsts =
-        match fail with
-        | None ->
-            begin match consts, nonconsts with
-            | _, (_, act)::rem -> act, consts, rem
-            | (_, act)::rem, _ -> act, rem, nonconsts
-            | _ -> assert false
-            end
-        | Some fail -> fail, consts, nonconsts in
-      let nonconst_lambda =
-        match nonconsts with
-          [] -> default
-        | _ ->
-            let tag = Ident.create "tag" in
-            let tests =
-              List.fold_right
-                (fun (path, act) rem ->
-                   Lifthenelse(Lprim(Pintcomp Ceq,
-                                     [Lvar tag;
-                                      transl_path ex_pat.pat_env path], loc),
-                               act, rem))
-                nonconsts
-                default
-            in
-              Llet(Alias, tag, Lprim(Pfield (0, Fld_na), [arg], loc), tests)
-      in
-        List.fold_right
-          (fun (path, act) rem ->
-             Lifthenelse(Lprim(Pintcomp Ceq,
-                               [arg; transl_path ex_pat.pat_env path], loc),
-                         act, rem))
-          consts
-          nonconst_lambda
-    in
-    lambda1, jumps_union local_jumps total1
-  end else begin
-    (* Regular concrete type *)
-    let ncases = List.length tag_lambda_list
-    and nconstrs =  cstr.cstr_consts + cstr.cstr_nonconsts in
-    let sig_complete = ncases = nconstrs in
-    let fails,local_jumps =
-      if sig_complete then [],jumps_empty
-      else
-        mk_failaction_pos partial pats ctx def in
-
-    let tag_lambda_list = fails @ tag_lambda_list in
-    let (consts, nonconsts) = split_cases tag_lambda_list in
-    let lambda1 =
-      match same_actions tag_lambda_list with
-      | Some act -> act
-      | _ ->
-          match
-            (cstr.cstr_consts, cstr.cstr_nonconsts, consts, nonconsts)
-          with
-          | (1, 1, [0, act1], [0, act2]) ->
-              Lifthenelse(arg, act2, act1)
-          | (n,_,_,[])  ->
-              call_switcher None arg 0 (n-1) consts
-          | (n, _, _, _) ->
-              match same_actions nonconsts with
-              | None ->
-(* Emit a switch, as bytecode implements this sophisticated instruction *)
-                  let sw =
-                    {sw_numconsts = cstr.cstr_consts; sw_consts = consts;
-                     sw_numblocks = cstr.cstr_nonconsts; sw_blocks = nonconsts;
-                     sw_failaction = None} in
-                  let hs,sw = share_actions_sw sw in
-                  let sw = reintroduce_fail sw in
-                  hs (Lswitch (arg,sw))
-              | Some act ->
-                  Lifthenelse
-                    (Lprim (Pisint, [arg], loc),
-                     call_switcher
-                       None arg
-                       0 (n-1) consts,
-                     act) in
-    lambda1, jumps_union local_jumps total1
-  end
-
-let make_test_sequence_variant_constant fail arg int_lambda_list =
-  let _, (cases, actions) =
-    as_interval fail min_int max_int int_lambda_list in
-  Switcher.test_sequence arg cases actions
-
-let call_switcher_variant_constant fail arg int_lambda_list =
-  call_switcher fail arg min_int max_int int_lambda_list
-
-
-let call_switcher_variant_constr loc fail arg int_lambda_list =
-  let v = Ident.create "variant" in
-  Llet(Alias, v, Lprim(Pfield (0, Fld_na), [arg], loc),
-       call_switcher
-         fail (Lvar v) min_int max_int int_lambda_list)
-
-let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) =
-  let row = Btype.row_repr row in
-  let num_constr = ref 0 in
-  if row.row_closed then
-    List.iter
-      (fun (_, f) ->
-        match Btype.row_field_repr f with
-          Rabsent | Reither(true, _::_, _, _) -> ()
-        | _ -> incr num_constr)
-      row.row_fields
-  else
-    num_constr := max_int;
-  let test_int_or_block arg if_int if_block =
-    Lifthenelse(Lprim (Pisint, [arg], loc), if_int, if_block) in
-  let sig_complete =  List.length tag_lambda_list = !num_constr
-  and one_action = same_actions tag_lambda_list in
-  let fail, to_add, local_jumps =
-    if
-      sig_complete  || (match partial with Total -> true | _ -> false)
-    then
-      None, [], jumps_empty
-    else
-      mk_failaction_neg partial ctx def in
-  let tag_lambda_list = to_add@tag_lambda_list in
-  let (consts, nonconsts) = split_cases tag_lambda_list in
-  let lambda1 = match fail, one_action with
-  | None, Some act -> act
-  | _,_ ->
-      match (consts, nonconsts) with
-      | ([n, act1], [m, act2]) when fail=None ->
-          test_int_or_block arg act1 act2
-      | (_, []) -> (* One can compare integers and pointers *)
-          make_test_sequence_variant_constant fail arg consts
-      | ([], _) ->
-          let lam = call_switcher_variant_constr loc
-              fail arg nonconsts in
-          (* One must not dereference integers *)
-          begin match fail with
-          | None -> lam
-          | Some fail -> test_int_or_block arg fail lam
-          end
-      | (_, _) ->
-          let lam_const =
-            call_switcher_variant_constant
-              fail arg consts
-          and lam_nonconst =
-            call_switcher_variant_constr loc
-              fail arg nonconsts in
-          test_int_or_block arg lam_const lam_nonconst
-  in
-  lambda1, jumps_union local_jumps total1
-
-
-let combine_array loc arg kind partial ctx def
-    (len_lambda_list, total1, pats)  =
-  let fail, to_add, local_jumps = mk_failaction_neg partial  ctx def in
-  let len_lambda_list = to_add @ len_lambda_list in
-  let lambda1 =
-    let newvar = Ident.create "len" in
-    let switch =
-      call_switcher
-        fail (Lvar newvar)
-        0 max_int len_lambda_list in
-    bind
-      Alias newvar (Lprim(Parraylength kind, [arg], loc)) switch in
-  lambda1, jumps_union local_jumps total1
-
-(* Insertion of debugging events *)
-
-let rec event_branch repr lam =
-  begin match lam, repr with
-    (_, None) ->
-      lam
-  | (Levent(lam', ev), Some r) ->
-      incr r;
-      Levent(lam', {lev_loc = ev.lev_loc;
-                    lev_kind = ev.lev_kind;
-                    lev_repr = repr;
-                    lev_env = ev.lev_env})
-  | (Llet(str, id, lam, body), _) ->
-      Llet(str, id, lam, event_branch repr body)
-  | Lstaticraise _,_ -> lam
-  | (_, Some r) ->
-      Printlambda.lambda Format.str_formatter lam ;
-      fatal_error
-        ("Matching.event_branch: "^Format.flush_str_formatter ())
-  end
-
-
-(*
-   This exception is raised when the compiler cannot produce code
-   because control cannot reach the compiled clause,
-
-   Unused is raised initialy in compile_test.
-
-   compile_list (for compiling switch results) catch Unused
-
-   comp_match_handlers (for compililing splitted matches)
-   may reraise Unused
-
-
-*)
-
-exception Unused
-
-let compile_list compile_fun division =
-
-  let rec c_rec totals = function
-  | [] -> [], jumps_unions totals, []
-  | (key, cell) :: rem ->
-      begin match cell.ctx with
-      | [] -> c_rec totals rem
-      | _  ->
-          try
-            let (lambda1, total1) = compile_fun cell.ctx cell.pm in
-            let c_rem, total, new_pats =
-              c_rec
-                (jumps_map ctx_combine total1::totals) rem in
-            ((key,lambda1)::c_rem), total, (cell.pat::new_pats)
-          with
-          | Unused -> c_rec totals rem
-      end in
-  c_rec [] division
-
-
-let compile_orhandlers compile_fun lambda1 total1 ctx to_catch =
-  let rec do_rec r total_r = function
-    | [] -> r,total_r
-    | (mat,i,vars,pm)::rem ->
-        begin try
-          let ctx = select_columns mat ctx in
-          let handler_i, total_i = compile_fun ctx pm in
-          match raw_action r with
-          | Lstaticraise (j,args) ->
-              if i=j then
-                List.fold_right2 (bind Alias) vars args handler_i,
-                jumps_map (ctx_rshift_num (ncols mat)) total_i
-              else
-                do_rec r total_r rem
-          | _ ->
-              do_rec
-                (Lstaticcatch (r,(i,vars), handler_i))
-                (jumps_union
-                   (jumps_remove i total_r)
-                   (jumps_map (ctx_rshift_num (ncols mat)) total_i))
-              rem
-        with
-        | Unused ->
-            do_rec (Lstaticcatch (r, (i,vars), lambda_unit)) total_r rem
-        end in
-  do_rec lambda1 total1 to_catch
-
-
-let compile_test compile_fun partial divide combine ctx to_match =
-  let division = divide ctx to_match in
-  let c_div = compile_list compile_fun division in
-  match c_div with
-  | [],_,_ ->
-     begin match mk_failaction_neg partial ctx to_match.default with
-     | None,_,_ -> raise Unused
-     | Some l,_,total -> l,total
-     end
-  | _ ->
-      combine ctx to_match.default c_div
-
-(* Attempt to avoid some useless bindings by lowering them *)
-
-(* Approximation of v present in lam *)
-let rec approx_present v = function
-  | Lconst _ -> false
-  | Lstaticraise (_,args) ->
-      List.exists (fun lam -> approx_present v lam) args
-  | Lprim (_,args,_) ->
-      List.exists (fun lam -> approx_present v lam) args
-  | Llet (Alias, _, l1, l2) ->
-      approx_present v l1 || approx_present v l2
-  | Lvar vv -> Ident.same v vv
-  | _ -> true
-
-let rec lower_bind v arg lam = match lam with
-| Lifthenelse (cond, ifso, ifnot) ->
-    let pcond = approx_present v cond
-    and pso = approx_present v ifso
-    and pnot = approx_present v ifnot in
-    begin match pcond, pso, pnot with
-    | false, false, false -> lam
-    | false, true, false ->
-        Lifthenelse (cond, lower_bind v arg ifso, ifnot)
-    | false, false, true ->
-        Lifthenelse (cond, ifso, lower_bind v arg ifnot)
-    | _,_,_ -> bind Alias v arg lam
-    end
-| Lswitch (ls,({sw_consts=[i,act] ; sw_blocks = []} as sw))
-    when not (approx_present v ls) ->
-      Lswitch (ls, {sw with sw_consts = [i,lower_bind v arg act]})
-| Lswitch (ls,({sw_consts=[] ; sw_blocks = [i,act]} as sw))
-    when not (approx_present v ls) ->
-      Lswitch (ls, {sw with sw_blocks = [i,lower_bind v arg act]})
-| Llet (Alias, vv, lv, l) ->
-    if approx_present v lv then
-      bind Alias v arg lam
-    else
-      Llet (Alias, vv, lv, lower_bind v arg l)
-| _ ->
-    bind Alias v arg lam
-
-let bind_check str v arg lam = match str,arg with
-| _, Lvar _ ->bind str v arg lam
-| Alias,_ -> lower_bind v arg lam
-| _,_     -> bind str v arg lam
-
-let comp_exit ctx m = match m.default with
-| (_,i)::_ -> Lstaticraise (i,[]), jumps_singleton i ctx
-| _        -> fatal_error "Matching.comp_exit"
-
-
-
-let rec comp_match_handlers comp_fun partial ctx arg first_match next_matchs =
-  match next_matchs with
-  | [] -> comp_fun partial ctx arg first_match
-  | rem ->
-      let rec c_rec body total_body = function
-        | [] -> body, total_body
-        (* Hum, -1 meant never taken
-        | (-1,pm)::rem -> c_rec body total_body rem *)
-        | (i,pm)::rem ->
-            let ctx_i,total_rem = jumps_extract i total_body in
-            begin match ctx_i with
-            | [] -> c_rec body total_body rem
-            | _ ->
-                try
-                  let li,total_i =
-                    comp_fun
-                      (match rem with [] -> partial | _ -> Partial)
-                      ctx_i arg pm in
-                  c_rec
-                    (Lstaticcatch (body,(i,[]),li))
-                    (jumps_union total_i total_rem)
-                    rem
-                with
-                | Unused ->
-                    c_rec (Lstaticcatch (body,(i,[]),lambda_unit))
-                      total_rem  rem
-            end in
-   try
-      let first_lam,total = comp_fun Partial ctx arg first_match in
-      c_rec first_lam total rem
-   with Unused -> match next_matchs with
-   | [] -> raise Unused
-   | (_,x)::xs ->  comp_match_handlers comp_fun partial ctx arg x xs
-
-(* To find reasonable names for variables *)
-
-let rec name_pattern default = function
-    (pat :: patl, action) :: rem ->
-      begin match pat.pat_desc with
-        Tpat_var (id, _) -> id
-      | Tpat_alias(p, id, _) -> id
-      | _ -> name_pattern default rem
-      end
-  | _ -> Ident.create default
-
-let arg_to_var arg cls = match arg with
-| Lvar v -> v,arg
-| _ ->
-    let v = name_pattern "match" cls in
-    v,Lvar v
-
-
-(*
-  The main compilation function.
-   Input:
-      repr=used for inserting debug events
-      partial=exhaustiveness information from Parmatch
-      ctx=a context
-      m=a pattern matching
-
-   Output: a lambda term, a jump summary {..., exit number -> context, .. }
-*)
-
-let rec compile_match repr partial ctx m = match m with
-| { cases = [] } -> comp_exit ctx m
-| { cases = ([], action) :: rem } ->
-    if is_guarded action then begin
-      let (lambda, total) =
-        compile_match None partial ctx { m with cases = rem } in
-      event_branch repr (patch_guarded lambda action), total
-    end else
-      (event_branch repr action, jumps_empty)
-| { args = (arg, str)::argl } ->
-    let v,newarg = arg_to_var arg m.cases in
-    let first_match,rem =
-      split_precompile (Some v)
-        { m with args = (newarg, Alias) :: argl } in
-    let (lam, total) =
-      comp_match_handlers
-        ((if dbg then do_compile_matching_pr else do_compile_matching) repr)
-        partial ctx newarg first_match rem in
-    bind_check str v arg lam, total
-| _ -> assert false
-
-
-(* verbose version of do_compile_matching, for debug *)
-
-and do_compile_matching_pr repr partial ctx arg x =
-  prerr_string "COMPILE: " ;
-  prerr_endline (match partial with Partial -> "Partial" | Total -> "Total") ;
-  prerr_endline "MATCH" ;
-  pretty_precompiled x ;
-  prerr_endline "CTX" ;
-  pretty_ctx ctx ;
-  let (_, jumps) as r =  do_compile_matching repr partial ctx arg x in
-  prerr_endline "JUMPS" ;
-  pretty_jumps jumps ;
-  r
-
-and do_compile_matching repr partial ctx arg pmh = match pmh with
-| Pm pm ->
-  let pat = what_is_cases pm.cases in
-  begin match pat.pat_desc with
-  | Tpat_any ->
-      compile_no_test
-        divide_var ctx_rshift repr partial ctx pm
-  | Tpat_tuple patl ->
-      compile_no_test
-        (divide_tuple (List.length patl) (normalize_pat pat)) ctx_combine
-        repr partial ctx pm
-  | Tpat_record ((_, lbl,_)::_,_) ->
-      compile_no_test
-        (divide_record lbl.lbl_all (normalize_pat pat))
-        ctx_combine repr partial ctx pm
-  | Tpat_constant cst ->
-      compile_test
-        (compile_match repr partial) partial
-        divide_constant
-        (combine_constant pat.pat_loc arg cst partial)
-        ctx pm
-  | Tpat_construct (_, cstr, _) ->
-      compile_test
-        (compile_match repr partial) partial
-        divide_constructor (combine_constructor pat.pat_loc arg pat cstr partial)
-        ctx pm
-  | Tpat_array _ ->
-      let kind = Typeopt.array_pattern_kind pat in
-      compile_test (compile_match repr partial) partial
-        (divide_array kind) (combine_array pat.pat_loc arg kind partial)
-        ctx pm
-  | Tpat_lazy _ ->
-      compile_no_test
-        (divide_lazy (normalize_pat pat))
-        ctx_combine repr partial ctx pm
-  | Tpat_variant(lab, _, row) ->
-      compile_test (compile_match repr partial) partial
-        (divide_variant !row)
-        (combine_variant pat.pat_loc !row arg partial)
-        ctx pm
-  | _ -> assert false
-  end
-| PmVar {inside=pmh ; var_arg=arg} ->
-    let lam, total =
-      do_compile_matching repr partial (ctx_lshift ctx) arg pmh in
-    lam, jumps_map ctx_rshift total
-| PmOr {body=body ; handlers=handlers} ->
-    let lam, total = compile_match repr partial ctx body in
-    compile_orhandlers (compile_match repr partial) lam total ctx handlers
-
-and compile_no_test divide up_ctx repr partial ctx to_match =
-  let {pm=this_match ; ctx=this_ctx } = divide ctx to_match in
-  let lambda,total = compile_match repr partial this_ctx this_match in
-  lambda, jumps_map up_ctx total
-
-
-
-
-(* The entry points *)
-
-(*
-   If there is a guard in a matching or a lazy pattern,
-   then set exhaustiveness info to Partial.
-   (because of side effects, assume the worst).
-
-   Notice that exhaustiveness information is trusted by the compiler,
-   that is, a match flagged as Total should not fail at runtime.
-   More specifically, for instance if match y with x::_ -> x uis flagged
-   total (as it happens during JoCaml compilation) then y cannot be []
-   at runtime. As a consequence, the static Total exhaustiveness information
-   have to to be downgraded to Partial, in the dubious cases where guards
-   or lazy pattern execute arbitrary code that may perform side effects
-   and change the subject values.
-LM:
-   Lazy pattern was PR #5992, initial patch by lwp25.
-   I have  generalized teh patch, so as to also find mutable fields.
-*)
-
-let find_in_pat pred =
-  let rec find_rec p =
-    pred p.pat_desc ||
-    begin match p.pat_desc with
-    | Tpat_alias (p,_,_) | Tpat_variant (_,Some p,_) | Tpat_lazy p ->
-        find_rec p
-    | Tpat_tuple ps|Tpat_construct (_,_,ps) | Tpat_array ps ->
-        List.exists find_rec ps
-    | Tpat_record (lpats,_) ->
-        List.exists
-          (fun (_, _, p) -> find_rec p)
-          lpats
-    | Tpat_or (p,q,_) ->
-        find_rec p || find_rec q
-    | Tpat_constant _ | Tpat_var _
-    | Tpat_any | Tpat_variant (_,None,_) -> false
-  end in
-  find_rec
-
-let is_lazy_pat = function
-  | Tpat_lazy _ -> true
-  | Tpat_alias _ | Tpat_variant _ | Tpat_record _
-  | Tpat_tuple _|Tpat_construct _ | Tpat_array _
-  | Tpat_or _ | Tpat_constant _ | Tpat_var _ | Tpat_any
-      -> false
-
-let is_lazy p = find_in_pat is_lazy_pat p
-
-let have_mutable_field p = match p with
-| Tpat_record (lps,_) ->
-    List.exists
-      (fun (_,lbl,_) ->
-        match lbl.Types.lbl_mut with
-        | Mutable -> true
-        | Immutable -> false)
-      lps
-| Tpat_alias _ | Tpat_variant _ | Tpat_lazy _
-| Tpat_tuple _|Tpat_construct _ | Tpat_array _
-| Tpat_or _
-| Tpat_constant _ | Tpat_var _ | Tpat_any
-  -> false
-
-let is_mutable p = find_in_pat have_mutable_field p
-
-(* Downgrade Total when
-   1. Matching accesses some mutable fields;
-   2. And there are  guards or lazy patterns.
-*)
-
-let check_partial is_mutable is_lazy pat_act_list = function
-  | Partial -> Partial
-  | Total ->
-      if
-        List.exists
-          (fun (pats, lam) ->
-            is_mutable pats && (is_guarded lam || is_lazy pats))
-          pat_act_list
-      then Partial
-      else Total
-
-let check_partial_list =
-  check_partial (List.exists is_mutable) (List.exists is_lazy)
-let check_partial = check_partial is_mutable is_lazy
-
-(* have toplevel handler when appropriate *)
-
-let start_ctx n = [{left=[] ; right = omegas n}]
-
-let check_total total lambda i handler_fun =
-  if jumps_is_empty total then
-    lambda
-  else begin
-    Lstaticcatch(lambda, (i,[]), handler_fun())
-  end
-
-let compile_matching loc repr handler_fun arg pat_act_list partial =
-  let partial = check_partial pat_act_list partial in
-  match partial with
-  | Partial ->
-      let raise_num = next_raise_count () in
-      let pm =
-        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
-          args = [arg, Strict] ;
-          default = [[[omega]],raise_num]} in
-      begin try
-        let (lambda, total) = compile_match repr partial (start_ctx 1) pm in
-        check_total total lambda raise_num handler_fun
-      with
-      | Unused -> assert false (* ; handler_fun() *)
-      end
-  | Total ->
-      let pm =
-        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
-          args = [arg, Strict] ;
-          default = []} in
-      let (lambda, total) = compile_match repr partial (start_ctx 1) pm in
-      assert (jumps_is_empty total) ;
-      lambda
-
-
-let partial_function loc () =
-  (* [Location.get_pos_info] is too expensive *)
-  let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
-  Lprim(Praise Raise_regular, [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-          [transl_normal_path Predef.path_match_failure;
-           Lconst(Const_block(0, Lambda.default_tag_info,
-              [Const_base(Const_string (fname, None));
-               Const_base(Const_int line);
-               Const_base(Const_int char)]))], loc)], loc)
-
-let for_function loc repr param pat_act_list partial =
-  compile_matching loc repr (partial_function loc) param pat_act_list partial
-
-(* In the following two cases, exhaustiveness info is not available! *)
-let for_trywith param pat_act_list =
-  compile_matching Location.none None
-    (fun () -> Lprim(Praise Raise_reraise, [param], Location.none))
-    param pat_act_list Partial
-
-let for_let loc param pat body =
-  compile_matching loc None (partial_function loc) param [pat, body] Partial
-
-(* Handling of tupled functions and matchings *)
-
-(* Easy case since variables are available *)
-let for_tupled_function loc paraml pats_act_list partial =
-  let partial = check_partial_list pats_act_list partial in
-  let raise_num = next_raise_count () in
-  let omegas = [List.map (fun _ -> omega) paraml] in
-  let pm =
-    { cases = pats_act_list;
-      args = List.map (fun id -> (Lvar id, Strict)) paraml ;
-      default = [omegas,raise_num]
-    } in
-  try
-    let (lambda, total) = compile_match None partial
-        (start_ctx (List.length paraml)) pm in
-    check_total total lambda raise_num (partial_function loc)
-  with
-  | Unused -> partial_function loc ()
-
-
-
-let flatten_pattern size p = match p.pat_desc with
-| Tpat_tuple args -> args
-| Tpat_any -> omegas size
-| _ -> raise Cannot_flatten
-
-let rec flatten_pat_line size p k = match p.pat_desc with
-| Tpat_any ->  omegas size::k
-| Tpat_tuple args -> args::k
-| Tpat_or (p1,p2,_) ->  flatten_pat_line size p1 (flatten_pat_line size p2 k)
-| Tpat_alias (p,_,_) -> (* Note: if this 'as' pat is here, then this is a
-                           useless binding, solves PR #3780 *)
-    flatten_pat_line size p k
-| _ -> fatal_error "Matching.flatten_pat_line"
-
-let flatten_cases size cases =
-  List.map
-    (fun (ps,action) -> match ps with
-    | [p] -> flatten_pattern size p,action
-    | _ -> fatal_error "Matching.flatten_case")
-    cases
-
-let flatten_matrix size pss =
-  List.fold_right
-    (fun ps r -> match ps with
-    | [p] -> flatten_pat_line size p r
-    | _   -> fatal_error "Matching.flatten_matrix")
-    pss []
-
-let flatten_def size def =
-  List.map
-    (fun (pss,i) -> flatten_matrix size pss,i)
-    def
-
-let flatten_pm size args pm =
-    {args = args ; cases = flatten_cases size pm.cases ;
-     default = flatten_def size pm.default}
-
-
-let flatten_precompiled size args  pmh = match pmh with
-| Pm pm -> Pm (flatten_pm size args pm)
-| PmOr {body=b ; handlers=hs ; or_matrix=m} ->
-    PmOr
-      {body=flatten_pm size args b ;
-       handlers=
-         List.map
-          (fun (mat,i,vars,pm) -> flatten_matrix size mat,i,vars,pm)
-          hs ;
-       or_matrix=flatten_matrix size m ;}
-| PmVar _ -> assert false
-
-(*
-   compiled_flattened is a ``comp_fun'' argument to comp_match_handlers.
-   Hence it needs a fourth argument, which it ignores
-*)
-
-let compile_flattened repr partial ctx _ pmh = match pmh with
-| Pm pm -> compile_match repr partial ctx pm
-| PmOr {body=b ; handlers=hs} ->
-    let lam, total = compile_match repr partial ctx b in
-    compile_orhandlers (compile_match repr partial) lam total ctx hs
-| PmVar _ -> assert false
-
-let do_for_multiple_match loc paraml pat_act_list partial =
-  let repr = None in
-  let partial = check_partial pat_act_list partial in
-  let raise_num,pm1 =
-    match partial with
-    | Partial ->
-        let raise_num = next_raise_count () in
-        raise_num,
-        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
-          args = [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), paraml, loc), Strict] ;
-          default = [[[omega]],raise_num] }
-    | _ ->
-        -1,
-        { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
-          args = [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), paraml, loc), Strict] ;
-          default = [] } in
-
-  try
-    try
-(* Once for checking that compilation is possible *)
-      let next, nexts = split_precompile None pm1 in
-
-      let size = List.length paraml
-      and idl = List.map (fun _ -> Ident.create "match") paraml in
-      let args =  List.map (fun id -> Lvar id, Alias) idl in
-
-      let flat_next = flatten_precompiled size args next
-      and flat_nexts =
-        List.map
-          (fun (e,pm) ->  e,flatten_precompiled size args pm)
-          nexts in
-
-      let lam, total =
-        comp_match_handlers
-          (compile_flattened repr)
-          partial (start_ctx size) () flat_next flat_nexts in
-      List.fold_right2 (bind Strict) idl paraml
-        (match partial with
-        | Partial ->
-            check_total total lam raise_num (partial_function loc)
-        | Total ->
-            assert (jumps_is_empty total) ;
-            lam)
-    with Cannot_flatten ->
-      let (lambda, total) = compile_match None partial (start_ctx 1) pm1 in
-      begin match partial with
-      | Partial ->
-          check_total total lambda raise_num (partial_function loc)
-      | Total ->
-          assert (jumps_is_empty total) ;
-          lambda
-      end
-  with Unused ->
-    assert false (* ; partial_function loc () *)
-
-(* #PR4828: Believe it or not, the 'paraml' argument below
-   may not be side effect free. *)
-
-let arg_to_var arg cls = match arg with
-| Lvar v -> v,arg
-| _ ->
-    let v = name_pattern "match" cls in
-    v,Lvar v
-
-
-let param_to_var param = match param with
-| Lvar v -> v,None
-| _ -> Ident.create "match",Some param
-
-let bind_opt (v,eo) k = match eo with
-| None -> k
-| Some e ->  Lambda.bind Strict v e k
-
-let for_multiple_match loc paraml pat_act_list partial =
-  let v_paraml = List.map param_to_var paraml in
-  let paraml = List.map (fun (v,_) -> Lvar v) v_paraml in
-  List.fold_right bind_opt v_paraml
-    (do_for_multiple_match loc paraml pat_act_list partial)
-
-end
-module Translobj : sig 
-#1 "translobj.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Lambda
-
-val oo_prim: string -> lambda
-
-val share: structured_constant -> lambda
-val meth: lambda -> string -> lambda * lambda list
-
-val reset_labels: unit -> unit
-val transl_label_init: lambda -> lambda
-val transl_store_label_init:
-    Ident.t -> int -> ('a -> lambda) -> 'a -> int * lambda
-
-val method_ids: IdentSet.t ref (* reset when starting a new wrapper *)
-
-val oo_wrap: Env.t -> bool -> ('a -> lambda) -> 'a -> lambda
-val oo_add_class: Ident.t -> Env.t * bool
-
-val reset: unit -> unit
-
-end = struct
-#1 "translobj.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Misc
-open Primitive
-open Asttypes
-open Longident
-open Lambda
-
-(* Get oo primitives identifiers *)
-
-let oo_prim name =
-  try
-    transl_normal_path
-      (fst (Env.lookup_value (Ldot (Lident "CamlinternalOO", name)) Env.empty))
-  with Not_found ->
-    fatal_error ("Primitive " ^ name ^ " not found.")
-
-(* Share blocks *)
-
-let consts : (structured_constant, Ident.t) Hashtbl.t = Hashtbl.create 17
-
-let share c =
-  match c with
-    Const_block (n, _,  l) when l <> [] ->
-      begin try
-        Lvar (Hashtbl.find consts c)
-      with Not_found ->
-        let id = Ident.create "shared" in
-        Hashtbl.add consts c id;
-        Lvar id
-      end
-  | _ -> Lconst c
-
-(* Collect labels *)
-
-let cache_required = ref false
-let method_cache = ref lambda_unit
-let method_count = ref 0
-let method_table = ref []
-
-let meth_tag s = Lconst(Const_base(Const_int(Btype.hash_variant s)))
-
-let next_cache tag =
-  let n = !method_count in
-  incr method_count;
-  (tag, [!method_cache; Lconst(Const_base(Const_int n))])
-
-let rec is_path = function
-    Lvar _ | Lprim (Pgetglobal _, [], _) | Lconst _ -> true
-  | Lprim (Pfield _, [lam], _) -> is_path lam
-  | Lprim ((Parrayrefu _ | Parrayrefs _), [lam1; lam2], _) ->
-      is_path lam1 && is_path lam2
-  | _ -> false
-
-let meth obj lab =
-  let tag = meth_tag lab in
-  if not (!cache_required && !Clflags.native_code) then (tag, []) else
-  if not (is_path obj) then next_cache tag else
-  try
-    let r = List.assoc obj !method_table in
-    try
-      (tag, List.assoc tag !r)
-    with Not_found ->
-      let p = next_cache tag in
-      r := p :: !r;
-      p
-  with Not_found ->
-    let p = next_cache tag in
-    method_table := (obj, ref [p]) :: !method_table;
-    p
-
-let reset_labels () =
-  Hashtbl.clear consts;
-  method_count := 0;
-  method_table := []
-
-(* Insert labels *)
-
-let string s = Lconst (Const_base (Const_string (s, None)))
-let int n = Lconst (Const_base (Const_int n))
-
-let prim_makearray =
-  { prim_name = "caml_make_vect"; prim_arity = 2; prim_alloc = true;
-    prim_native_name = ""; prim_native_float = false}
-
-(* Also use it for required globals *)
-let transl_label_init expr =
-  let expr =
-    Hashtbl.fold
-      (fun c id expr -> Llet(Alias, id, Lconst c, expr))
-      consts expr
-  in
-  let expr =
-    List.fold_right
-      (fun id expr -> Lsequence(Lprim(Pgetglobal id, [], Location.none), expr))
-      (Env.get_required_globals ()) expr
-  in
-  Env.reset_required_globals ();
-  reset_labels ();
-  expr
-
-let transl_store_label_init glob size f arg =
-  method_cache := Lprim(Pfield (size, Fld_na), [Lprim(Pgetglobal glob, [], Location.none)], Location.none);
-  let expr = f arg in
-  let (size, expr) =
-    if !method_count = 0 then (size, expr) else
-    (size+1,
-     Lsequence(
-     Lprim(Psetfield(size, false, Fld_set_na),
-           [Lprim(Pgetglobal glob, [], Location.none);
-            Lprim (Pccall prim_makearray, [int !method_count; int 0], Location.none)], Location.none),
-     expr))
-  in
-  (size, transl_label_init expr)
-
-(* Share classes *)
-
-let wrapping = ref false
-let top_env = ref Env.empty
-let classes = ref []
-let method_ids = ref IdentSet.empty
-
-let oo_add_class id =
-  classes := id :: !classes;
-  (!top_env, !cache_required)
-
-let oo_wrap env req f x =
-  if !wrapping then
-    if !cache_required then f x else
-    try cache_required := true; let lam = f x in cache_required := false; lam
-    with exn -> cache_required := false; raise exn
-  else try
-    wrapping := true;
-    cache_required := req;
-    top_env := env;
-    classes := [];
-    method_ids := IdentSet.empty;
-    let lambda = f x in
-    let lambda =
-      List.fold_left
-        (fun lambda id ->
-          Llet(StrictOpt, id,
-               Lprim(Pmakeblock(0, Lambda.default_tag_info, Mutable),
-                     [lambda_unit; lambda_unit; lambda_unit], Location.none),
-               lambda))
-        lambda !classes
-    in
-    wrapping := false;
-    top_env := Env.empty;
-    lambda
-  with exn ->
-    wrapping := false;
-    top_env := Env.empty;
-    raise exn
-
-let reset () =
-  Hashtbl.clear consts;
-  cache_required := false;
-  method_cache := lambda_unit;
-  method_count := 0;
-  method_table := [];
-  wrapping := false;
-  top_env := Env.empty;
-  classes := [];
-  method_ids := IdentSet.empty
-
-end
-module Translcore : sig 
-#1 "translcore.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Translation from typed abstract syntax to lambda terms,
-   for the core language *)
-
-open Asttypes
-open Typedtree
-open Lambda
-
-val transl_exp: expression -> lambda
-val transl_apply: lambda -> (label * expression option * optional) list
-                  -> Location.t -> lambda
-val transl_let: rec_flag -> value_binding list -> lambda -> lambda
-val transl_primitive: Location.t -> Primitive.description -> lambda
-
-val check_recursive_lambda: Ident.t list -> lambda -> bool
-
-type error =
-    Illegal_letrec_pat
-  | Illegal_letrec_expr
-  | Free_super_var
-  | Unknown_builtin_primitive of string
-
-exception Error of Location.t * error
-
-open Format
-
-val report_error: formatter -> error -> unit
-
-(* Forward declaration -- to be filled in by Translmod.transl_module *)
-val transl_module :
-      (module_coercion -> Path.t option -> module_expr -> lambda) ref
-val transl_object :
-      (Ident.t -> string list -> class_expr -> lambda) ref
-
-end = struct
-#1 "translcore.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Translation from typed abstract syntax to lambda terms,
-   for the core language *)
-
-open Misc
-open Asttypes
-open Primitive
-open Types
-open Typedtree
-open Typeopt
-open Lambda
-
-type error =
-    Illegal_letrec_pat
-  | Illegal_letrec_expr
-  | Free_super_var
-  | Unknown_builtin_primitive of string
-
-exception Error of Location.t * error
-
-(* Forward declaration -- to be filled in by Translmod.transl_module *)
-let transl_module =
-  ref((fun cc rootpath modl -> assert false) :
-      module_coercion -> Path.t option -> module_expr -> lambda)
-
-let transl_object =
-  ref (fun id s cl -> assert false :
-       Ident.t -> string list -> class_expr -> lambda)
-
-(* Translation of primitives *)
-
-let comparisons_table = create_hashtable 11 [
-  "%equal",
-      (Pccall{prim_name = "caml_equal"; prim_arity = 2; prim_alloc = true;
-              prim_native_name = ""; prim_native_float = false},
-       Pintcomp Ceq,
-       Pfloatcomp Ceq,
-       Pccall{prim_name = "caml_string_equal"; prim_arity = 2;
-              prim_alloc = false;
-              prim_native_name = ""; prim_native_float = false},
-       Pbintcomp(Pnativeint, Ceq),
-       Pbintcomp(Pint32, Ceq),
-       Pbintcomp(Pint64, Ceq),
-       true);
-  "%notequal",
-      (Pccall{prim_name = "caml_notequal"; prim_arity = 2; prim_alloc = true;
-              prim_native_name = ""; prim_native_float = false},
-       Pintcomp Cneq,
-       Pfloatcomp Cneq,
-       Pccall{prim_name = "caml_string_notequal"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pbintcomp(Pnativeint, Cneq),
-       Pbintcomp(Pint32, Cneq),
-       Pbintcomp(Pint64, Cneq),
-       true);
-  "%lessthan",
-      (Pccall{prim_name = "caml_lessthan"; prim_arity = 2; prim_alloc = true;
-              prim_native_name = ""; prim_native_float = false},
-       Pintcomp Clt,
-       Pfloatcomp Clt,
-       Pccall{prim_name = "caml_string_lessthan"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pbintcomp(Pnativeint, Clt),
-       Pbintcomp(Pint32, Clt),
-       Pbintcomp(Pint64, Clt),
-       false);
-  "%greaterthan",
-      (Pccall{prim_name = "caml_greaterthan"; prim_arity = 2; prim_alloc = true;
-              prim_native_name = ""; prim_native_float = false},
-       Pintcomp Cgt,
-       Pfloatcomp Cgt,
-       Pccall{prim_name = "caml_string_greaterthan"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pbintcomp(Pnativeint, Cgt),
-       Pbintcomp(Pint32, Cgt),
-       Pbintcomp(Pint64, Cgt),
-       false);
-  "%lessequal",
-      (Pccall{prim_name = "caml_lessequal"; prim_arity = 2; prim_alloc = true;
-              prim_native_name = ""; prim_native_float = false},
-       Pintcomp Cle,
-       Pfloatcomp Cle,
-       Pccall{prim_name = "caml_string_lessequal"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pbintcomp(Pnativeint, Cle),
-       Pbintcomp(Pint32, Cle),
-       Pbintcomp(Pint64, Cle),
-       false);
-  "%greaterequal",
-      (Pccall{prim_name = "caml_greaterequal"; prim_arity = 2;
-              prim_alloc = true;
-              prim_native_name = ""; prim_native_float = false},
-       Pintcomp Cge,
-       Pfloatcomp Cge,
-       Pccall{prim_name = "caml_string_greaterequal"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pbintcomp(Pnativeint, Cge),
-       Pbintcomp(Pint32, Cge),
-       Pbintcomp(Pint64, Cge),
-       false);
-  "%compare",
-      (Pccall{prim_name = "caml_compare"; prim_arity = 2; prim_alloc = true;
-              prim_native_name = ""; prim_native_float = false},
-       Pccall{prim_name = "caml_int_compare"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pccall{prim_name = "caml_float_compare"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pccall{prim_name = "caml_string_compare"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pccall{prim_name = "caml_nativeint_compare"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pccall{prim_name = "caml_int32_compare"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       Pccall{prim_name = "caml_int64_compare"; prim_arity = 2;
-              prim_alloc = false; prim_native_name = "";
-              prim_native_float = false},
-       false)
-]
-
-let primitives_table = create_hashtable 57 [
-  "%bytes_to_string", Pbytes_to_string;
-  "%bytes_of_string", Pbytes_of_string;
-  "%identity", Pidentity;
-  "%ignore", Pignore;
-  "%field0", Pfield (0, Fld_na);
-  "%field1", Pfield (1, Fld_na);
-  "%setfield0", Psetfield(0, true, Fld_set_na);
-  "%makeblock", Pmakeblock(0, Lambda.default_tag_info, Immutable);
-  "%makemutable", Pmakeblock(0,Lambda.default_tag_info,  Mutable);
-  "%raise", Praise Raise_regular;
-  "%reraise", Praise Raise_reraise;
-  "%raise_notrace", Praise Raise_notrace;
-  "%sequand", Psequand;
-  "%sequor", Psequor;
-  "%boolnot", Pnot;
-  "%big_endian", Pctconst Big_endian;
-  "%word_size", Pctconst Word_size;
-  "%ostype_unix", Pctconst Ostype_unix;
-  "%ostype_win32", Pctconst Ostype_win32;
-  "%ostype_cygwin", Pctconst Ostype_cygwin;
-  "%negint", Pnegint;
-  "%succint", Poffsetint 1;
-  "%predint", Poffsetint(-1);
-  "%addint", Paddint;
-  "%subint", Psubint;
-  "%mulint", Pmulint;
-  "%divint", Pdivint;
-  "%modint", Pmodint;
-  "%andint", Pandint;
-  "%orint", Porint;
-  "%xorint", Pxorint;
-  "%lslint", Plslint;
-  "%lsrint", Plsrint;
-  "%asrint", Pasrint;
-  "%eq", Pintcomp Ceq;
-  "%noteq", Pintcomp Cneq;
-  "%ltint", Pintcomp Clt;
-  "%leint", Pintcomp Cle;
-  "%gtint", Pintcomp Cgt;
-  "%geint", Pintcomp Cge;
-  "%incr", Poffsetref(1);
-  "%decr", Poffsetref(-1);
-  "%intoffloat", Pintoffloat;
-  "%floatofint", Pfloatofint;
-  "%negfloat", Pnegfloat;
-  "%absfloat", Pabsfloat;
-  "%addfloat", Paddfloat;
-  "%subfloat", Psubfloat;
-  "%mulfloat", Pmulfloat;
-  "%divfloat", Pdivfloat;
-  "%eqfloat", Pfloatcomp Ceq;
-  "%noteqfloat", Pfloatcomp Cneq;
-  "%ltfloat", Pfloatcomp Clt;
-  "%lefloat", Pfloatcomp Cle;
-  "%gtfloat", Pfloatcomp Cgt;
-  "%gefloat", Pfloatcomp Cge;
-  "%string_length", Pstringlength;
-  "%string_safe_get", Pstringrefs;
-  "%string_safe_set", Pstringsets;
-  "%string_unsafe_get", Pstringrefu;
-  "%string_unsafe_set", Pstringsetu;
-
-  "%bytes_length", Pbyteslength;
-  "%bytes_safe_get", Pbytesrefs;
-  "%bytes_safe_set", Pbytessets;
-  "%bytes_unsafe_get", Pbytesrefu;
-  "%bytes_unsafe_set", Pbytessetu;
-
-  "%array_length", Parraylength Pgenarray;
-  "%array_safe_get", Parrayrefs Pgenarray;
-  "%array_safe_set", Parraysets Pgenarray;
-  "%array_unsafe_get", Parrayrefu Pgenarray;
-  "%array_unsafe_set", Parraysetu Pgenarray;
-  "%obj_size", Parraylength Pgenarray;
-  "%obj_field", Parrayrefu Pgenarray;
-  "%obj_set_field", Parraysetu Pgenarray;
-  "%obj_is_int", Pisint;
-  "%lazy_force", Plazyforce;
-  "%nativeint_of_int", Pbintofint Pnativeint;
-  "%nativeint_to_int", Pintofbint Pnativeint;
-  "%nativeint_neg", Pnegbint Pnativeint;
-  "%nativeint_add", Paddbint Pnativeint;
-  "%nativeint_sub", Psubbint Pnativeint;
-  "%nativeint_mul", Pmulbint Pnativeint;
-  "%nativeint_div", Pdivbint Pnativeint;
-  "%nativeint_mod", Pmodbint Pnativeint;
-  "%nativeint_and", Pandbint Pnativeint;
-  "%nativeint_or",  Porbint Pnativeint;
-  "%nativeint_xor", Pxorbint Pnativeint;
-  "%nativeint_lsl", Plslbint Pnativeint;
-  "%nativeint_lsr", Plsrbint Pnativeint;
-  "%nativeint_asr", Pasrbint Pnativeint;
-  "%int32_of_int", Pbintofint Pint32;
-  "%int32_to_int", Pintofbint Pint32;
-  "%int32_neg", Pnegbint Pint32;
-  "%int32_add", Paddbint Pint32;
-  "%int32_sub", Psubbint Pint32;
-  "%int32_mul", Pmulbint Pint32;
-  "%int32_div", Pdivbint Pint32;
-  "%int32_mod", Pmodbint Pint32;
-  "%int32_and", Pandbint Pint32;
-  "%int32_or",  Porbint Pint32;
-  "%int32_xor", Pxorbint Pint32;
-  "%int32_lsl", Plslbint Pint32;
-  "%int32_lsr", Plsrbint Pint32;
-  "%int32_asr", Pasrbint Pint32;
-  "%int64_of_int", Pbintofint Pint64;
-  "%int64_to_int", Pintofbint Pint64;
-  "%int64_neg", Pnegbint Pint64;
-  "%int64_add", Paddbint Pint64;
-  "%int64_sub", Psubbint Pint64;
-  "%int64_mul", Pmulbint Pint64;
-  "%int64_div", Pdivbint Pint64;
-  "%int64_mod", Pmodbint Pint64;
-  "%int64_and", Pandbint Pint64;
-  "%int64_or",  Porbint Pint64;
-  "%int64_xor", Pxorbint Pint64;
-  "%int64_lsl", Plslbint Pint64;
-  "%int64_lsr", Plsrbint Pint64;
-  "%int64_asr", Pasrbint Pint64;
-  "%nativeint_of_int32", Pcvtbint(Pint32, Pnativeint);
-  "%nativeint_to_int32", Pcvtbint(Pnativeint, Pint32);
-  "%int64_of_int32", Pcvtbint(Pint32, Pint64);
-  "%int64_to_int32", Pcvtbint(Pint64, Pint32);
-  "%int64_of_nativeint", Pcvtbint(Pnativeint, Pint64);
-  "%int64_to_nativeint", Pcvtbint(Pint64, Pnativeint);
-  "%caml_ba_ref_1",
-    Pbigarrayref(false, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_ref_2",
-    Pbigarrayref(false, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_ref_3",
-    Pbigarrayref(false, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_set_1",
-    Pbigarrayset(false, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_set_2",
-    Pbigarrayset(false, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_set_3",
-    Pbigarrayset(false, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_unsafe_ref_1",
-    Pbigarrayref(true, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_unsafe_ref_2",
-    Pbigarrayref(true, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_unsafe_ref_3",
-    Pbigarrayref(true, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_unsafe_set_1",
-    Pbigarrayset(true, 1, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_unsafe_set_2",
-    Pbigarrayset(true, 2, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_unsafe_set_3",
-    Pbigarrayset(true, 3, Pbigarray_unknown, Pbigarray_unknown_layout);
-  "%caml_ba_dim_1", Pbigarraydim(1);
-  "%caml_ba_dim_2", Pbigarraydim(2);
-  "%caml_ba_dim_3", Pbigarraydim(3);
-  "%caml_string_get16", Pstring_load_16(false);
-  "%caml_string_get16u", Pstring_load_16(true);
-  "%caml_string_get32", Pstring_load_32(false);
-  "%caml_string_get32u", Pstring_load_32(true);
-  "%caml_string_get64", Pstring_load_64(false);
-  "%caml_string_get64u", Pstring_load_64(true);
-  "%caml_string_set16", Pstring_set_16(false);
-  "%caml_string_set16u", Pstring_set_16(true);
-  "%caml_string_set32", Pstring_set_32(false);
-  "%caml_string_set32u", Pstring_set_32(true);
-  "%caml_string_set64", Pstring_set_64(false);
-  "%caml_string_set64u", Pstring_set_64(true);
-  "%caml_bigstring_get16", Pbigstring_load_16(false);
-  "%caml_bigstring_get16u", Pbigstring_load_16(true);
-  "%caml_bigstring_get32", Pbigstring_load_32(false);
-  "%caml_bigstring_get32u", Pbigstring_load_32(true);
-  "%caml_bigstring_get64", Pbigstring_load_64(false);
-  "%caml_bigstring_get64u", Pbigstring_load_64(true);
-  "%caml_bigstring_set16", Pbigstring_set_16(false);
-  "%caml_bigstring_set16u", Pbigstring_set_16(true);
-  "%caml_bigstring_set32", Pbigstring_set_32(false);
-  "%caml_bigstring_set32u", Pbigstring_set_32(true);
-  "%caml_bigstring_set64", Pbigstring_set_64(false);
-  "%caml_bigstring_set64u", Pbigstring_set_64(true);
-  "%bswap16", Pbswap16;
-  "%bswap_int32", Pbbswap(Pint32);
-  "%bswap_int64", Pbbswap(Pint64);
-  "%bswap_native", Pbbswap(Pnativeint);
-  "%int_as_pointer", Pint_as_pointer;
-]
-
-let prim_makearray =
-  { prim_name = "caml_make_vect"; prim_arity = 2; prim_alloc = true;
-    prim_native_name = ""; prim_native_float = false }
-
-let prim_obj_dup =
-  { prim_name = "caml_obj_dup"; prim_arity = 1; prim_alloc = true;
-    prim_native_name = ""; prim_native_float = false }
-
-let find_primitive loc prim_name =
-  match prim_name with
-      "%revapply" -> Prevapply 
-    | "%apply" -> Pdirapply 
-    | "%loc_LOC" -> Ploc Loc_LOC
-    | "%loc_FILE" -> Ploc Loc_FILE
-    | "%loc_LINE" -> Ploc Loc_LINE
-    | "%loc_POS" -> Ploc Loc_POS
-    | "%loc_MODULE" -> Ploc Loc_MODULE
-    | name -> Hashtbl.find primitives_table name
-
-let transl_prim loc prim args =
-  let prim_name = prim.prim_name in
-  try
-    let (gencomp, intcomp, floatcomp, stringcomp,
-         nativeintcomp, int32comp, int64comp,
-         simplify_constant_constructor) =
-      Hashtbl.find comparisons_table prim_name in
-    begin match args with
-      [arg1; {exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}]
-      when simplify_constant_constructor ->
-        intcomp
-    | [{exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}; arg2]
-      when simplify_constant_constructor ->
-        intcomp
-    | [arg1; {exp_desc = Texp_variant(_, None)}]
-      when simplify_constant_constructor ->
-        intcomp
-    | [{exp_desc = Texp_variant(_, None)}; exp2]
-      when simplify_constant_constructor ->
-        intcomp
-    | [arg1; arg2] when has_base_type arg1 Predef.path_int
-                     || has_base_type arg1 Predef.path_char ->
-        intcomp
-    | [arg1; arg2] when has_base_type arg1 Predef.path_float ->
-        floatcomp
-    | [arg1; arg2] when has_base_type arg1 Predef.path_string ->
-        stringcomp
-    | [arg1; arg2] when has_base_type arg1 Predef.path_nativeint ->
-        nativeintcomp
-    | [arg1; arg2] when has_base_type arg1 Predef.path_int32 ->
-        int32comp
-    | [arg1; arg2] when has_base_type arg1 Predef.path_int64 ->
-        int64comp
-    | _ ->
-        gencomp
-    end
-  with Not_found ->
-  try
-    let p = find_primitive loc prim_name in
-    (* Try strength reduction based on the type of the argument *)
-    begin match (p, args) with
-        (Psetfield(n, _, dbg_info), [arg1; arg2]) -> Psetfield(n, maybe_pointer arg2, dbg_info)
-      | (Parraylength Pgenarray, [arg])   -> Parraylength(array_kind arg)
-      | (Parrayrefu Pgenarray, arg1 :: _) -> Parrayrefu(array_kind arg1)
-      | (Parraysetu Pgenarray, arg1 :: _) -> Parraysetu(array_kind arg1)
-      | (Parrayrefs Pgenarray, arg1 :: _) -> Parrayrefs(array_kind arg1)
-      | (Parraysets Pgenarray, arg1 :: _) -> Parraysets(array_kind arg1)
-      | (Pbigarrayref(unsafe, n, Pbigarray_unknown, Pbigarray_unknown_layout),
-                      arg1 :: _) ->
-            let (k, l) = bigarray_kind_and_layout arg1 in
-            Pbigarrayref(unsafe, n, k, l)
-      | (Pbigarrayset(unsafe, n, Pbigarray_unknown, Pbigarray_unknown_layout),
-                      arg1 :: _) ->
-            let (k, l) = bigarray_kind_and_layout arg1 in
-            Pbigarrayset(unsafe, n, k, l)
-      | _ -> p
-    end
-  with Not_found ->
-    if String.length prim_name > 0 && prim_name.[0] = '%' then
-      raise(Error(loc, Unknown_builtin_primitive prim_name));
-    Pccall prim
-
-
-(* Eta-expand a primitive without knowing the types of its arguments *)
-
-let transl_primitive loc p =
-  let prim =
-    try
-      let (gencomp, _, _, _, _, _, _, _) =
-        Hashtbl.find comparisons_table p.prim_name in
-      gencomp
-    with Not_found ->
-    try
-      find_primitive loc p.prim_name
-    with Not_found ->
-      Pccall p in
-  match prim with
-  | Plazyforce ->
-      let parm = Ident.create "prim" in
-      Lfunction(Curried, [parm],
-                Matching.inline_lazy_force (Lvar parm) Location.none)
-  | Ploc kind ->
-    let lam = lam_of_loc kind loc in
-    begin match p.prim_arity with
-      | 0 -> lam
-      | 1 -> (* TODO: we should issue a warning ? *)
-        let param = Ident.create "prim" in
-        Lfunction(Curried, [param],
-          Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), [lam; Lvar param], loc))
-      | _ -> assert false
-    end
-  | _ ->
-      let rec make_params n =
-        if n <= 0 then [] else Ident.create "prim" :: make_params (n-1) in
-      let params = make_params p.prim_arity in
-      if params = [] then  Lprim(prim,[], loc) (* arity = 0 in Buckle? TODO: unneeded *)
-      else Lfunction(Curried, params,
-                Lprim(prim, List.map (fun id -> Lvar id) params, loc))
-
-(* To check the well-formedness of r.h.s. of "let rec" definitions *)
-
-let check_recursive_lambda idlist lam =
-  let rec check_top idlist = function
-    | Lvar v -> not (List.mem v idlist)
-    | Llet (_, _, _, _) as lam when check_recursive_recordwith idlist lam ->
-        true
-    | Llet(str, id, arg, body) ->
-        check idlist arg && check_top (add_let id arg idlist) body
-    | Lletrec(bindings, body) ->
-        let idlist' = add_letrec bindings idlist in
-        List.for_all (fun (id, arg) -> check idlist' arg) bindings &&
-        check_top idlist' body
-    | Lprim (Pmakearray (Pgenarray), args, _) -> false
-    | Lsequence (lam1, lam2) -> check idlist lam1 && check_top idlist lam2
-    | Levent (lam, _) -> check_top idlist lam
-    | lam -> check idlist lam
-
-  and check idlist = function
-    | Lvar _ -> true
-    | Lfunction(kind, params, body) -> true
-    | Llet (_, _, _, _) as lam when check_recursive_recordwith idlist lam ->
-        true
-    | Llet(str, id, arg, body) ->
-        check idlist arg && check (add_let id arg idlist) body
-    | Lletrec(bindings, body) ->
-        let idlist' = add_letrec bindings idlist in
-        List.for_all (fun (id, arg) -> check idlist' arg) bindings &&
-        check idlist' body
-    | Lprim(Pmakeblock(tag, _,  mut), args, _) ->
-        List.for_all (check idlist) args
-    | Lprim(Pmakearray(_), args, _) ->
-        List.for_all (check idlist) args
-    | Lsequence (lam1, lam2) -> check idlist lam1 && check idlist lam2
-    | Levent (lam, _) -> check idlist lam
-    | lam ->
-        let fv = free_variables lam in
-        not (List.exists (fun id -> IdentSet.mem id fv) idlist)
-
-  and add_let id arg idlist =
-    let fv = free_variables arg in
-    if List.exists (fun id -> IdentSet.mem id fv) idlist
-    then id :: idlist
-    else idlist
-
-  and add_letrec bindings idlist =
-    List.fold_right (fun (id, arg) idl -> add_let id arg idl)
-                    bindings idlist
-
-  (* reverse-engineering the code generated by transl_record case 2 *)
-  (* If you change this, you probably need to change Bytegen.size_of_lambda. *)
-  and check_recursive_recordwith idlist = function
-    | Llet (Strict, id1, Lprim (Pduprecord _, [e1], _), body) ->
-       check_top idlist e1
-       && check_recordwith_updates idlist id1 body
-    | _ -> false
-
-  and check_recordwith_updates idlist id1 = function
-    | Lsequence (Lprim ((Psetfield _ | Psetfloatfield _), [Lvar id2; e1], _), cont)
-        -> id2 = id1 && check idlist e1
-           && check_recordwith_updates idlist id1 cont
-    | Lvar id2 -> id2 = id1
-    | _ -> false
-
-  in check_top idlist lam
-
-(* To propagate structured constants *)
-
-exception Not_constant
-
-let extract_constant = function
-    Lconst sc -> sc
-  | _ -> raise Not_constant
-
-let extract_float = function
-    Const_base(Const_float f) -> f
-  | _ -> fatal_error "Translcore.extract_float"
-
-(* To find reasonable names for let-bound and lambda-bound idents *)
-
-let rec name_pattern default = function
-    [] -> Ident.create default
-  | {c_lhs=p; _} :: rem ->
-      match p.pat_desc with
-        Tpat_var (id, _) -> id
-      | Tpat_alias(p, id, _) -> id
-      | _ -> name_pattern default rem
-
-(* Push the default values under the functional abstractions *)
-
-let rec push_defaults loc bindings cases partial =
-  match cases with
-    [{c_lhs=pat; c_guard=None;
-      c_rhs={exp_desc = Texp_function(l, pl,partial)} as exp}] ->
-      let pl = push_defaults exp.exp_loc bindings pl partial in
-      [{c_lhs=pat; c_guard=None;
-        c_rhs={exp with exp_desc = Texp_function(l, pl, partial)}}]
-  | [{c_lhs=pat; c_guard=None;
-      c_rhs={exp_attributes=[{txt="#default"},_];
-             exp_desc = Texp_let
-               (Nonrecursive, binds, ({exp_desc = Texp_function _} as e2))}}] ->
-      push_defaults loc (binds :: bindings) [{c_lhs=pat;c_guard=None;c_rhs=e2}]
-                    partial
-  | [case] ->
-      let exp =
-        List.fold_left
-          (fun exp binds ->
-            {exp with exp_desc = Texp_let(Nonrecursive, binds, exp)})
-          case.c_rhs bindings
-      in
-      [{case with c_rhs=exp}]
-  | {c_lhs=pat; c_rhs=exp; c_guard=_} :: _ when bindings <> [] ->
-      let param = name_pattern "param" cases in
-      let name = Ident.name param in
-      let exp =
-        { exp with exp_loc = loc; exp_desc =
-          Texp_match
-            ({exp with exp_type = pat.pat_type; exp_desc =
-              Texp_ident (Path.Pident param, mknoloc (Longident.Lident name),
-                          {val_type = pat.pat_type; val_kind = Val_reg;
-                           val_attributes = [];
-                           Types.val_loc = Location.none;
-                          })},
-             cases, [], partial) }
-      in
-      push_defaults loc bindings
-        [{c_lhs={pat with pat_desc = Tpat_var (param, mknoloc name)};
-          c_guard=None; c_rhs=exp}]
-        Total
-  | _ ->
-      cases
-
-(* Insertion of debugging events *)
-
-let event_before exp lam = match lam with
-| Lstaticraise (_,_) -> lam
-| _ ->
-  if !Clflags.debug
-  then Levent(lam, {lev_loc = exp.exp_loc;
-                    lev_kind = Lev_before;
-                    lev_repr = None;
-                    lev_env = Env.summary exp.exp_env})
-  else lam
-
-let event_after exp lam =
-  if !Clflags.debug
-  then Levent(lam, {lev_loc = exp.exp_loc;
-                    lev_kind = Lev_after exp.exp_type;
-                    lev_repr = None;
-                    lev_env = Env.summary exp.exp_env})
-  else lam
-
-let event_function exp lam =
-  if !Clflags.debug then
-    let repr = Some (ref 0) in
-    let (info, body) = lam repr in
-    (info,
-     Levent(body, {lev_loc = exp.exp_loc;
-                   lev_kind = Lev_function;
-                   lev_repr = repr;
-                   lev_env = Env.summary exp.exp_env}))
-  else
-    lam None
-
-let primitive_is_ccall = function
-  (* Determine if a primitive is a Pccall or will be turned later into
-     a C function call that may raise an exception *)
-  | Pccall _ | Pstringrefs | Pstringsets | Parrayrefs _ | Parraysets _ |
-    Pbigarrayref _ | Pbigarrayset _ | Pduprecord _ -> true
-  | _ -> false
-
-(* Assertions *)
-
-let assert_failed exp =
-  let (fname, line, char) =
-    Location.get_pos_info exp.exp_loc.Location.loc_start in
-  Lprim(Praise Raise_regular, [event_after exp
-    (Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-          [transl_normal_path Predef.path_assert_failure;
-           Lconst(Const_block(0, Lambda.default_tag_info,
-              [Const_base(Const_string (fname, None));
-               Const_base(Const_int line);
-               Const_base(Const_int char)]))], exp.exp_loc))], exp.exp_loc)
-;;
-
-let rec cut n l =
-  if n = 0 then ([],l) else
-  match l with [] -> failwith "Translcore.cut"
-  | a::l -> let (l1,l2) = cut (n-1) l in (a::l1,l2)
-
-(* Translation of expressions *)
-
-let try_ids = Hashtbl.create 8
-
-let rec transl_exp e =
-  let eval_once =
-    (* Whether classes for immediate objects must be cached *)
-    match e.exp_desc with
-      Texp_function _ | Texp_for _ | Texp_while _ -> false
-    | _ -> true
-  in
-  if eval_once then transl_exp0 e else
-  Translobj.oo_wrap e.exp_env true transl_exp0 e
-
-and transl_exp0 e =
-  match e.exp_desc with
-    Texp_ident(path, _, {val_kind = Val_prim p}) ->
-      let public_send = p.prim_name = "%send" in
-      if public_send || p.prim_name = "%sendself" then
-        let kind = if public_send then Public None else Self in
-        let obj = Ident.create "obj" and meth = Ident.create "meth" in
-        Lfunction(Curried, [obj; meth], Lsend(kind, Lvar meth, Lvar obj, [],
-                                              e.exp_loc))
-      else if p.prim_name = "%sendcache" then
-        let obj = Ident.create "obj" and meth = Ident.create "meth" in
-        let cache = Ident.create "cache" and pos = Ident.create "pos" in
-        Lfunction(Curried, [obj; meth; cache; pos],
-                  Lsend(Cached, Lvar meth, Lvar obj, [Lvar cache; Lvar pos],
-                        e.exp_loc))
-      else
-        transl_primitive e.exp_loc p
-  | Texp_ident(path, _, {val_kind = Val_anc _}) ->
-      raise(Error(e.exp_loc, Free_super_var))
-  | Texp_ident(path, _, {val_kind = Val_reg | Val_self _}) ->
-      transl_path ~loc:e.exp_loc e.exp_env path
-  | Texp_ident _ -> fatal_error "Translcore.transl_exp: bad Texp_ident"
-  | Texp_constant cst ->
-      Lconst(Const_base cst)
-  | Texp_let(rec_flag, pat_expr_list, body) ->
-      transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
-  | Texp_function (_, pat_expr_list, partial) ->
-      let ((kind, params), body) =
-        event_function e
-          (function repr ->
-            let pl = push_defaults e.exp_loc [] pat_expr_list partial in
-            transl_function e.exp_loc !Clflags.native_code repr partial pl)
-      in
-      Lfunction(kind, params, body)
-  | Texp_apply({exp_desc = Texp_ident(path, _, {val_kind = Val_prim p})},
-               oargs)
-    when List.length oargs >= p.prim_arity
-    && List.for_all (fun (_, arg,_) -> arg <> None) oargs ->
-      let args, args' = cut p.prim_arity oargs in
-      let wrap f =
-        if args' = []
-        then event_after e f
-        else event_after e (transl_apply f args' e.exp_loc)
-      in
-      let wrap0 f =
-        if args' = [] then f else wrap f in
-      let args =
-         List.map (function _, Some x, _ -> x | _ -> assert false) args in
-      let argl = transl_list args in
-      let public_send = p.prim_name = "%send"
-        || not !Clflags.native_code && p.prim_name = "%sendcache"in
-      if public_send || p.prim_name = "%sendself" then
-        let kind = if public_send then Public None else Self in
-        let obj = List.hd argl in
-        wrap (Lsend (kind, List.nth argl 1, obj, [], e.exp_loc))
-      else if p.prim_name = "%sendcache" then
-        match argl with [obj; meth; cache; pos] ->
-          wrap (Lsend(Cached, meth, obj, [cache; pos], e.exp_loc))
-        | _ -> assert false
-      else begin
-        let prim = transl_prim e.exp_loc p args in
-        match (prim, args) with
-          (Praise k, [arg1]) ->
-            let targ = List.hd argl in
-            let k =
-              match k, targ with
-              | Raise_regular, Lvar id
-                when Hashtbl.mem try_ids id ->
-                  Raise_reraise
-              | _ ->
-                  k
-            in
-            wrap0 (Lprim(Praise k, [event_after arg1 targ], e.exp_loc))
-        | (Ploc kind, []) ->
-          lam_of_loc kind e.exp_loc
-        | (Ploc kind, [arg1]) ->
-          let lam = lam_of_loc kind arg1.exp_loc in
-          Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), lam :: argl, e.exp_loc)
-        | (Ploc _, _) -> assert false
-        | (_, _) ->
-            begin match (prim, argl) with
-            | (Plazyforce, [a]) ->
-                wrap (Matching.inline_lazy_force a e.exp_loc)
-            | (Plazyforce, _) -> assert false
-            |_ -> let p = Lprim(prim, argl, e.exp_loc) in
-               if primitive_is_ccall prim then wrap p else wrap0 p
-            end
-      end
-  | Texp_apply(funct, oargs) ->
-      event_after e (transl_apply (transl_exp funct) oargs e.exp_loc)
-  | Texp_match(arg, pat_expr_list, exn_pat_expr_list, partial) ->
-    transl_match e arg pat_expr_list exn_pat_expr_list partial
-  | Texp_try(body, pat_expr_list) ->
-      let id = name_pattern "exn" pat_expr_list in
-      Ltrywith(transl_exp body, id,
-               Matching.for_trywith (Lvar id) (transl_cases_try pat_expr_list))
-  | Texp_tuple el ->
-      let ll = transl_list el in
-      let tag_info = Lambda.Blk_tuple in 
-      begin try
-        Lconst(Const_block(0, tag_info, List.map extract_constant ll))
-      with Not_constant ->
-        Lprim(Pmakeblock(0,  tag_info, Immutable), ll, e.exp_loc)
-      end
-  | Texp_construct(_, cstr, args) ->
-      let ll = transl_list args in
-      begin match cstr.cstr_tag with
-        Cstr_constant n ->
-          Lconst(Const_pointer (n, Lambda.Pt_constructor cstr.cstr_name))
-      | Cstr_block n ->
-          let tag_info = (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
-          begin try
-            Lconst(Const_block(n,tag_info, List.map extract_constant ll))
-          with Not_constant ->
-            Lprim(Pmakeblock(n, tag_info, Immutable), ll, e.exp_loc)
-          end
-      | Cstr_extension(path, is_const) ->
-          if is_const then
-            transl_path e.exp_env path
-          else
-            Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-                  transl_path e.exp_env path :: ll, e.exp_loc)
-      end
-  | Texp_variant(l, arg) ->
-      let tag = Btype.hash_variant l in
-      begin match arg with
-        None -> Lconst(Const_pointer (tag, Lambda.Pt_variant l))
-      | Some arg ->
-          let lam = transl_exp arg in
-          let tag_info = Lambda.Blk_variant l in
-          try
-            Lconst(Const_block(0, tag_info, [Const_base(Const_int tag);
-                                   extract_constant lam]))
-          with Not_constant ->
-            Lprim(Pmakeblock(0, tag_info, Immutable),
-                  [Lconst(Const_base(Const_int tag)); lam], e.exp_loc)
-      end
-  | Texp_record ((_, lbl1, _) :: _ as lbl_expr_list, opt_init_expr) ->
-      transl_record e.exp_loc lbl1.lbl_all lbl1.lbl_repres lbl_expr_list opt_init_expr
-  | Texp_record ([], _) ->
-      fatal_error "Translcore.transl_exp: bad Texp_record"
-  | Texp_field(arg, _, lbl) ->
-      let access =
-        match lbl.lbl_repres with
-          Record_regular -> Pfield (lbl.lbl_pos, Fld_record lbl.lbl_name)
-        | Record_float -> Pfloatfield (lbl.lbl_pos, Fld_record lbl.lbl_name) in
-      Lprim(access, [transl_exp arg], e.exp_loc)
-  | Texp_setfield(arg, _, lbl, newval) ->
-      let access =
-        match lbl.lbl_repres with
-          Record_regular -> Psetfield(lbl.lbl_pos, maybe_pointer newval, Fld_record_set lbl.lbl_name)
-        | Record_float -> Psetfloatfield (lbl.lbl_pos, Fld_record_set lbl.lbl_name) in
-      Lprim(access, [transl_exp arg; transl_exp newval], e.exp_loc)
-  | Texp_array expr_list ->
-      let kind = array_kind e in
-      let ll = transl_list expr_list in
-      begin try
-        (* Deactivate constant optimization if array is small enough *)
-        if List.length ll <= 4 then raise Not_constant;
-        let cl = List.map extract_constant ll in
-        let master =
-          match kind with
-          | Paddrarray | Pintarray ->
-              Lconst(Const_block(0, Lambda.Blk_array, cl)) (* ATTENTION: ? [|1;2;3;4|]*)
-          | Pfloatarray ->
-              Lconst(Const_float_array(List.map extract_float cl))
-          | Pgenarray ->
-              raise Not_constant in             (* can this really happen? *)
-        Lprim(Pccall prim_obj_dup, [master], e.exp_loc)
-      with Not_constant ->
-        Lprim(Pmakearray kind, ll, e.exp_loc)
-      end
-  | Texp_ifthenelse(cond, ifso, Some ifnot) ->
-      Lifthenelse(transl_exp cond,
-                  event_before ifso (transl_exp ifso),
-                  event_before ifnot (transl_exp ifnot))
-  | Texp_ifthenelse(cond, ifso, None) ->
-      Lifthenelse(transl_exp cond,
-                  event_before ifso (transl_exp ifso),
-                  lambda_unit)
-  | Texp_sequence(expr1, expr2) ->
-      Lsequence(transl_exp expr1, event_before expr2 (transl_exp expr2))
-  | Texp_while(cond, body) ->
-      Lwhile(transl_exp cond, event_before body (transl_exp body))
-  | Texp_for(param, _, low, high, dir, body) ->
-      Lfor(param, transl_exp low, transl_exp high, dir,
-           event_before body (transl_exp body))
-  | Texp_send(_, _, Some exp) -> transl_exp exp
-  | Texp_send(expr, met, None) ->
-      let obj = transl_exp expr in
-      let lam =
-        match met with
-          Tmeth_val id -> Lsend (Self, Lvar id, obj, [], e.exp_loc)
-        | Tmeth_name nm ->
-            let (tag, cache) = Translobj.meth obj nm in
-            let kind = if cache = [] then Public (Some nm) else Cached in
-            Lsend (kind, tag, obj, cache, e.exp_loc)
-      in
-      event_after e lam
-  | Texp_new (cl, {Location.loc=loc}, _) ->
-      Lapply(Lprim(Pfield (0, Fld_na), [transl_path ~loc e.exp_env cl], loc),
-             [lambda_unit], Location.none)
-  | Texp_instvar(path_self, path, _) ->
-      Lprim(Parrayrefu Paddrarray,
-            [transl_normal_path path_self; transl_normal_path path], e.exp_loc)
-  | Texp_setinstvar(path_self, path, _, expr) ->
-      transl_setinstvar e.exp_loc (transl_normal_path path_self) path expr
-  | Texp_override(path_self, modifs) ->
-      let cpy = Ident.create "copy" in
-      Llet(Strict, cpy,
-           Lapply(Translobj.oo_prim "copy", [transl_normal_path path_self],
-                  Location.none),
-           List.fold_right
-             (fun (path, _, expr) rem ->
-                Lsequence(transl_setinstvar Location.none (Lvar cpy) path expr, rem))
-             modifs
-             (Lvar cpy))
-  | Texp_letmodule(id, _, modl, body) ->
-      Llet(Strict, id, !transl_module Tcoerce_none None modl, transl_exp body)
-  | Texp_pack modl ->
-      !transl_module Tcoerce_none None modl
-  | Texp_assert {exp_desc=Texp_construct(_, {cstr_name="false"}, _)} ->
-      assert_failed e
-  | Texp_assert (cond) ->
-      if !Clflags.noassert
-      then lambda_unit
-      else Lifthenelse (transl_exp cond, lambda_unit, assert_failed e)
-  | Texp_lazy e ->
-      (* when e needs no computation (constants, identifiers, ...), we
-         optimize the translation just as Lazy.lazy_from_val would
-         do *)
-      begin match e.exp_desc with
-        (* a constant expr of type <> float gets compiled as itself *)
-      | Texp_constant
-          ( Const_int _ | Const_char _ | Const_string _
-          | Const_int32 _ | Const_int64 _ | Const_nativeint _ )
-      | Texp_function(_, _, _)
-      | Texp_construct (_, {cstr_arity = 0}, _)
-        -> transl_exp e
-      | Texp_constant(Const_float _) ->
-          Lprim(Pmakeblock(Obj.forward_tag, Lambda.default_tag_info, Immutable), [transl_exp e], e.exp_loc)
-      | Texp_ident(_, _, _) -> (* according to the type *)
-          begin match e.exp_type.desc with
-          (* the following may represent a float/forward/lazy: need a
-             forward_tag *)
-          | Tvar _ | Tlink _ | Tsubst _ | Tunivar _
-          | Tpoly(_,_) | Tfield(_,_,_,_) ->
-              Lprim(Pmakeblock(Obj.forward_tag, Lambda.default_tag_info, Immutable), [transl_exp e], e.exp_loc)
-          (* the following cannot be represented as float/forward/lazy:
-             optimize *)
-          | Tarrow(_,_,_,_) | Ttuple _ | Tpackage _ | Tobject(_,_) | Tnil
-          | Tvariant _
-              -> transl_exp e
-          (* optimize predefined types (excepted float) *)
-          | Tconstr(_,_,_) ->
-              if has_base_type e Predef.path_int
-                || has_base_type e Predef.path_char
-                || has_base_type e Predef.path_string
-                || has_base_type e Predef.path_bool
-                || has_base_type e Predef.path_unit
-                || has_base_type e Predef.path_exn
-                || has_base_type e Predef.path_array
-                || has_base_type e Predef.path_list
-                || has_base_type e Predef.path_option
-                || has_base_type e Predef.path_nativeint
-                || has_base_type e Predef.path_int32
-                || has_base_type e Predef.path_int64
-              then transl_exp e
-              else
-                Lprim(Pmakeblock(Obj.forward_tag, Lambda.default_tag_info, Immutable), [transl_exp e], e.exp_loc)
-          end
-      (* other cases compile to a lazy block holding a function *)
-      | _ ->
-          let fn = Lfunction (Curried, [Ident.create "param"], transl_exp e) in
-          Lprim(Pmakeblock(Config.lazy_tag, Lambda.default_tag_info, Mutable), [fn], e.exp_loc)
-      end
-  | Texp_object (cs, meths) ->
-      let cty = cs.cstr_type in
-      let cl = Ident.create "class" in
-      !transl_object cl meths
-        { cl_desc = Tcl_structure cs;
-          cl_loc = e.exp_loc;
-          cl_type = Cty_signature cty;
-          cl_env = e.exp_env;
-          cl_attributes = [];
-         }
-
-and transl_list expr_list =
-  List.map transl_exp expr_list
-
-and transl_guard guard rhs =
-  let expr = event_before rhs (transl_exp rhs) in
-  match guard with
-  | None -> expr
-  | Some cond ->
-      event_before cond (Lifthenelse(transl_exp cond, expr, staticfail))
-
-and transl_case {c_lhs; c_guard; c_rhs} =
-  c_lhs, transl_guard c_guard c_rhs
-
-and transl_cases cases =
-  List.map transl_case cases
-
-and transl_case_try {c_lhs; c_guard; c_rhs} =
-  match c_lhs.pat_desc with
-  | Tpat_var (id, _)
-  | Tpat_alias (_, id, _) ->
-      Hashtbl.replace try_ids id ();
-      Misc.try_finally
-        (fun () -> c_lhs, transl_guard c_guard c_rhs)
-        (fun () -> Hashtbl.remove try_ids id)
-  | _ ->
-      c_lhs, transl_guard c_guard c_rhs
-
-and transl_cases_try cases =
-  List.map transl_case_try cases
-
-and transl_tupled_cases patl_expr_list =
-  List.map (fun (patl, guard, expr) -> (patl, transl_guard guard expr))
-    patl_expr_list
-
-and transl_apply lam sargs loc =
-  let lapply funct args =
-    match funct with
-      Lsend(k, lmet, lobj, largs, loc) ->
-        Lsend(k, lmet, lobj, largs @ args, loc)
-    | Levent(Lsend(k, lmet, lobj, largs, loc), _) ->
-        Lsend(k, lmet, lobj, largs @ args, loc)
-    | Lapply(lexp, largs, _) ->
-        Lapply(lexp, largs @ args, loc)
-    | lexp ->
-        Lapply(lexp, args, loc)
-  in
-  let rec build_apply lam args = function
-      (None, optional) :: l ->
-        let defs = ref [] in
-        let protect name lam =
-          match lam with
-            Lvar _ | Lconst _ -> lam
-          | _ ->
-              let id = Ident.create name in
-              defs := (id, lam) :: !defs;
-              Lvar id
-        in
-        let args, args' =
-          if List.for_all (fun (_,opt) -> opt = Optional) args then [], args
-          else args, [] in
-        let lam =
-          if args = [] then lam else lapply lam (List.rev_map fst args) in
-        let handle = protect "func" lam
-        and l = List.map (fun (arg, opt) -> may_map (protect "arg") arg, opt) l
-        and id_arg = Ident.create "param" in
-        let body =
-          match build_apply handle ((Lvar id_arg, optional)::args') l with
-            Lfunction(Curried, ids, lam) ->
-              Lfunction(Curried, id_arg::ids, lam)
-          | Levent(Lfunction(Curried, ids, lam), _) ->
-              Lfunction(Curried, id_arg::ids, lam)
-          | lam ->
-              Lfunction(Curried, [id_arg], lam)
-        in
-        List.fold_left
-          (fun body (id, lam) -> Llet(Strict, id, lam, body))
-          body !defs
-    | (Some arg, optional) :: l ->
-        build_apply lam ((arg, optional) :: args) l
-    | [] ->
-        lapply lam (List.rev_map fst args)
-  in
-  build_apply lam [] (List.map (fun (l, x,o) -> may_map transl_exp x, o) sargs)
-
-and transl_function loc untuplify_fn repr partial cases =
-  match cases with
-    [{c_lhs=pat; c_guard=None;
-      c_rhs={exp_desc = Texp_function(_, pl,partial')} as exp}]
-    when Parmatch.fluid pat ->
-      let param = name_pattern "param" cases in
-      let ((_, params), body) =
-        transl_function exp.exp_loc false repr partial' pl in
-      ((Curried, param :: params),
-       Matching.for_function loc None (Lvar param) [pat, body] partial)
-  | {c_lhs={pat_desc = Tpat_tuple pl}} :: _ when untuplify_fn ->
-      begin try
-        let size = List.length pl in
-        let pats_expr_list =
-          List.map
-            (fun {c_lhs; c_guard; c_rhs} ->
-              (Matching.flatten_pattern size c_lhs, c_guard, c_rhs))
-            cases in
-        let params = List.map (fun p -> Ident.create "param") pl in
-        ((Tupled, params),
-         Matching.for_tupled_function loc params
-           (transl_tupled_cases pats_expr_list) partial)
-      with Matching.Cannot_flatten ->
-        let param = name_pattern "param" cases in
-        ((Curried, [param]),
-         Matching.for_function loc repr (Lvar param)
-           (transl_cases cases) partial)
-      end
-  | _ ->
-      let param = name_pattern "param" cases in
-      ((Curried, [param]),
-       Matching.for_function loc repr (Lvar param)
-         (transl_cases cases) partial)
-
-and transl_let rec_flag pat_expr_list body =
-  match rec_flag with
-    Nonrecursive ->
-      let rec transl = function
-        [] ->
-          body
-      | {vb_pat=pat; vb_expr=expr} :: rem ->
-          Matching.for_let pat.pat_loc (transl_exp expr) pat (transl rem)
-      in transl pat_expr_list
-  | Recursive ->
-      let idlist =
-        List.map
-          (fun {vb_pat=pat} -> match pat.pat_desc with
-              Tpat_var (id,_) -> id
-            | Tpat_alias ({pat_desc=Tpat_any}, id,_) -> id
-            | _ -> raise(Error(pat.pat_loc, Illegal_letrec_pat)))
-        pat_expr_list in
-      let transl_case {vb_pat=pat; vb_expr=expr} id =
-        let lam = transl_exp expr in
-        if not (check_recursive_lambda idlist lam) then
-          raise(Error(expr.exp_loc, Illegal_letrec_expr));
-        (id, lam) in
-      Lletrec(List.map2 transl_case pat_expr_list idlist, body)
-
-and transl_setinstvar loc self var expr =
-  Lprim(Parraysetu (if maybe_pointer expr then Paddrarray else Pintarray),
-                    [self; transl_normal_path var; transl_exp expr], loc)
-
-and transl_record loc all_labels repres lbl_expr_list opt_init_expr =
-  let size = Array.length all_labels in
-  (* Determine if there are "enough" new fields *)
-  if 3 + 2 * List.length lbl_expr_list >= size
-  then begin
-    (* Allocate new record with given fields (and remaining fields
-       taken from init_expr if any *)
-    let lv = Array.make (Array.length all_labels) staticfail in
-    let init_id = Ident.create "init" in
-    begin match opt_init_expr with
-      None -> ()
-    | Some init_expr ->
-        for i = 0 to Array.length all_labels - 1 do
-          let access =
-            let lbl = all_labels.(i) in
-            match lbl.lbl_repres with
-              Record_regular -> Pfield (i, Fld_record lbl.lbl_name)
-            | Record_float -> Pfloatfield (i, Fld_record lbl.lbl_name)  in
-          lv.(i) <- Lprim(access, [Lvar init_id], loc)
-        done
-    end;
-    List.iter
-      (fun (_, lbl, expr) -> lv.(lbl.lbl_pos) <- transl_exp expr)
-      lbl_expr_list;
-    let ll = Array.to_list lv in
-    let mut =
-      if List.exists (fun (_, lbl, expr) -> lbl.lbl_mut = Mutable) lbl_expr_list
-      then Mutable
-      else Immutable in
-    let all_labels_info = all_labels |> Array.map (fun x -> x.Types.lbl_name) in
-    let lam =
-      try
-        if mut = Mutable then raise Not_constant;
-        let cl = List.map extract_constant ll in
-        match repres with
-          Record_regular -> Lconst(Const_block(0, Lambda.Blk_record all_labels_info, cl))
-        | Record_float ->
-            Lconst(Const_float_array(List.map extract_float cl))
-      with Not_constant ->
-        match repres with
-          Record_regular -> Lprim(Pmakeblock(0, Lambda.Blk_record all_labels_info, mut), ll,loc)
-        | Record_float -> Lprim(Pmakearray Pfloatarray, ll, loc) in
-    begin match opt_init_expr with
-      None -> lam
-    | Some init_expr -> Llet(Strict, init_id, transl_exp init_expr, lam)
-    end
-  end else begin
-    (* Take a shallow copy of the init record, then mutate the fields
-       of the copy *)
-    (* If you change anything here, you will likely have to change
-       [check_recursive_recordwith] in this file. *)
-    let copy_id = Ident.create "newrecord" in
-    let update_field (_, lbl, expr) cont =
-      let upd =
-        match lbl.lbl_repres with
-          Record_regular -> Psetfield(lbl.lbl_pos, maybe_pointer expr, Fld_record_set lbl.lbl_name)
-        | Record_float -> Psetfloatfield (lbl.lbl_pos, Fld_record_set lbl.lbl_name) in
-      Lsequence(Lprim(upd, [Lvar copy_id; transl_exp expr], loc), cont) in
-    begin match opt_init_expr with
-      None -> assert false
-    | Some init_expr ->
-        Llet(Strict, copy_id,
-             Lprim(Pduprecord (repres, size), [transl_exp init_expr], loc),
-             List.fold_right update_field lbl_expr_list (Lvar copy_id))
-    end
-  end
-
-and transl_match e arg pat_expr_list exn_pat_expr_list partial =
-  let id = name_pattern "exn" exn_pat_expr_list
-  and cases = transl_cases pat_expr_list
-  and exn_cases = transl_cases exn_pat_expr_list in
-  let static_catch body val_ids handler =
-    let static_exception_id = next_negative_raise_count () in
-    Lstaticcatch
-      (Ltrywith (Lstaticraise (static_exception_id, body), id,
-                 Matching.for_trywith (Lvar id) exn_cases),
-       (static_exception_id, val_ids),
-       handler)
-  in
-  match arg, exn_cases with
-  | {exp_desc = Texp_tuple argl}, [] ->
-    Matching.for_multiple_match e.exp_loc (transl_list argl) cases partial
-  | {exp_desc = Texp_tuple argl}, _ :: _ ->
-    let val_ids = List.map (fun _ -> name_pattern "val" []) argl in
-    let lvars = List.map (fun id -> Lvar id) val_ids in
-    static_catch (transl_list argl) val_ids
-      (Matching.for_multiple_match e.exp_loc lvars cases partial)
-  | arg, [] ->
-    Matching.for_function e.exp_loc None (transl_exp arg) cases partial
-  | arg, _ :: _ ->
-    let val_id = name_pattern "val" pat_expr_list in
-    static_catch [transl_exp arg] [val_id]
-      (Matching.for_function e.exp_loc None (Lvar val_id) cases partial)
-
-
-(* Wrapper for class compilation *)
-
-(*
-let transl_exp = transl_exp_wrap
-
-let transl_let rec_flag pat_expr_list body =
-  match pat_expr_list with
-    [] -> body
-  | (_, expr) :: _ ->
-      Translobj.oo_wrap expr.exp_env false
-        (transl_let rec_flag pat_expr_list) body
-*)
-
-(* Error report *)
-
-open Format
-
-let report_error ppf = function
-  | Illegal_letrec_pat ->
-      fprintf ppf
-        "Only variables are allowed as left-hand side of `let rec'"
-  | Illegal_letrec_expr ->
-      fprintf ppf
-        "This kind of expression is not allowed as right-hand side of `let rec'"
-  | Free_super_var ->
-      fprintf ppf
-        "Ancestor names can only be used to select inherited methods"
-  | Unknown_builtin_primitive prim_name ->
-    fprintf ppf  "Unknown builtin primitive \"%s\"" prim_name
-
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error (loc, err) ->
-          Some (Location.error_of_printer loc report_error err)
-      | _ ->
-        None
-    )
-
-end
-module Translclass : sig 
-#1 "translclass.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Typedtree
-open Lambda
-
-val transl_class :
-  Ident.t list -> Ident.t ->
-  string list -> class_expr -> Asttypes.virtual_flag -> lambda;;
-
-type error = Illegal_class_expr | Tags of string * string
-
-exception Error of Location.t * error
-
-open Format
-
-val report_error: formatter -> error -> unit
-
-end = struct
-#1 "translclass.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*         Jerome Vouillon, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-open Asttypes
-open Types
-open Typedtree
-open Lambda
-open Translobj
-open Translcore
-
-(* XXX Rajouter des evenements... *)
-
-type error = Illegal_class_expr | Tags of label * label
-
-exception Error of Location.t * error
-
-let lfunction params body =
-  if params = [] then body else
-  match body with
-    Lfunction (Curried, params', body') ->
-      Lfunction (Curried, params @ params', body')
-  |  _ ->
-      Lfunction (Curried, params, body)
-
-let lapply func args loc =
-  match func with
-    Lapply(func', args', _) ->
-      Lapply(func', args' @ args, loc)
-  | _ ->
-      Lapply(func, args, loc)
-
-let mkappl (func, args) = Lapply (func, args, Location.none);;
-
-let lsequence l1 l2 =
-  if l2 = lambda_unit then l1 else Lsequence(l1, l2)
-
-let lfield v i = Lprim(Pfield (i, Fld_na), [Lvar v], Location.none)
-
-let transl_label l = share (Const_immstring l)
-
-let transl_meth_list lst =
-  if lst = [] then Lconst (Const_pointer (0, Lambda.Pt_na)) else
-  share (Const_block
-            (0, Lambda.Blk_na, List.map (fun lab -> Const_immstring lab) lst))
-
-let set_inst_var obj id expr =
-  let kind = if Typeopt.maybe_pointer expr then Paddrarray else Pintarray in
-  Lprim(Parraysetu kind, [Lvar obj; Lvar id; transl_exp expr],Location.none)
-
-let copy_inst_var obj id expr templ offset =
-  let kind = if Typeopt.maybe_pointer expr then Paddrarray else Pintarray in
-  let id' = Ident.create (Ident.name id) in
-  Llet(Strict, id', Lprim (Pidentity, [Lvar id], Location.none),
-  Lprim(Parraysetu kind,
-        [Lvar obj; Lvar id';
-         Lprim(Parrayrefu kind, [Lvar templ; Lprim(Paddint,
-                                                   [Lvar id';
-                                                    Lvar offset], Location.none)], Location.none)], Location.none))
-
-let transl_val tbl create name =
-  mkappl (oo_prim (if create then "new_variable" else "get_variable"),
-          [Lvar tbl; transl_label name])
-
-let transl_vals tbl create strict vals rem =
-  List.fold_right
-    (fun (name, id) rem ->
-      Llet(strict, id, transl_val tbl create name, rem))
-    vals rem
-
-let meths_super tbl meths inh_meths =
-  List.fold_right
-    (fun (nm, id) rem ->
-       try
-         (nm, id,
-          mkappl(oo_prim "get_method", [Lvar tbl; Lvar (Meths.find nm meths)]))
-         :: rem
-       with Not_found -> rem)
-    inh_meths []
-
-let bind_super tbl (vals, meths) cl_init =
-  transl_vals tbl false StrictOpt vals
-    (List.fold_right (fun (nm, id, def) rem -> Llet(StrictOpt, id, def, rem))
-       meths cl_init)
-
-let create_object cl obj init =
-  let obj' = Ident.create "self" in
-  let (inh_init, obj_init, has_init) = init obj' in
-  if obj_init = lambda_unit then
-    (inh_init,
-     mkappl (oo_prim (if has_init then "create_object_and_run_initializers"
-                      else"create_object_opt"),
-             [obj; Lvar cl]))
-  else begin
-   (inh_init,
-    Llet(Strict, obj',
-            mkappl (oo_prim "create_object_opt", [obj; Lvar cl]),
-         Lsequence(obj_init,
-                   if not has_init then Lvar obj' else
-                   mkappl (oo_prim "run_initializers_opt",
-                           [obj; Lvar obj'; Lvar cl]))))
-  end
-
-let name_pattern default p =
-  match p.pat_desc with
-  | Tpat_var (id, _) -> id
-  | Tpat_alias(p, id, _) -> id
-  | _ -> Ident.create default
-
-let normalize_cl_path cl path =
-  Env.normalize_path (Some cl.cl_loc) cl.cl_env path
-
-let rec build_object_init cl_table obj params inh_init obj_init cl =
-  match cl.cl_desc with
-    Tcl_ident ( path, _, _) ->
-      let obj_init = Ident.create "obj_init" in
-      let envs, inh_init = inh_init in
-      let env =
-        match envs with None -> []
-        | Some envs -> [Lprim(Pfield (List.length inh_init + 1, Fld_na), [Lvar envs], Location.none)]
-      in
-      ((envs, (obj_init, normalize_cl_path cl path)
-        ::inh_init),
-       mkappl(Lvar obj_init, env @ [obj]))
-  | Tcl_structure str ->
-      create_object cl_table obj (fun obj ->
-        let (inh_init, obj_init, has_init) =
-          List.fold_right
-            (fun field (inh_init, obj_init, has_init) ->
-               match field.cf_desc with
-                 Tcf_inherit (_, cl, _, _, _) ->
-                   let (inh_init, obj_init') =
-                     build_object_init cl_table (Lvar obj) [] inh_init
-                       (fun _ -> lambda_unit) cl
-                   in
-                   (inh_init, lsequence obj_init' obj_init, true)
-               | Tcf_val (_, _, id, Tcfk_concrete (_, exp), _) ->
-                   (inh_init, lsequence (set_inst_var obj id exp) obj_init,
-                    has_init)
-               | Tcf_method _ | Tcf_val _ | Tcf_constraint _ | Tcf_attribute _->
-                   (inh_init, obj_init, has_init)
-               | Tcf_initializer _ ->
-                   (inh_init, obj_init, true)
-            )
-            str.cstr_fields
-            (inh_init, obj_init obj, false)
-        in
-        (inh_init,
-         List.fold_right
-           (fun (id, expr) rem ->
-              lsequence (Lifused (id, set_inst_var obj id expr)) rem)
-           params obj_init,
-         has_init))
-  | Tcl_fun (_, pat, vals, cl, partial) ->
-      let vals = List.map (fun (id, _, e) -> id,e) vals in
-      let (inh_init, obj_init) =
-        build_object_init cl_table obj (vals @ params) inh_init obj_init cl
-      in
-      (inh_init,
-       let build params rem =
-         let param = name_pattern "param" pat in
-         Lfunction (Curried, param::params,
-                    Matching.for_function
-                      pat.pat_loc None (Lvar param) [pat, rem] partial)
-       in
-       begin match obj_init with
-         Lfunction (Curried, params, rem) -> build params rem
-       | rem                              -> build [] rem
-       end)
-  | Tcl_apply (cl, oexprs) ->
-      let (inh_init, obj_init) =
-        build_object_init cl_table obj params inh_init obj_init cl
-      in
-      (inh_init, transl_apply obj_init oexprs Location.none)
-  | Tcl_let (rec_flag, defs, vals, cl) ->
-      let vals = List.map (fun (id, _, e) -> id,e) vals in
-      let (inh_init, obj_init) =
-        build_object_init cl_table obj (vals @ params) inh_init obj_init cl
-      in
-      (inh_init, Translcore.transl_let rec_flag defs obj_init)
-  | Tcl_constraint (cl, _, vals, pub_meths, concr_meths) ->
-      build_object_init cl_table obj params inh_init obj_init cl
-
-let rec build_object_init_0 cl_table params cl copy_env subst_env top ids =
-  match cl.cl_desc with
-    Tcl_let (rec_flag, defs, vals, cl) ->
-      let vals = List.map (fun (id, _, e) -> id,e) vals in
-      build_object_init_0 cl_table (vals@params) cl copy_env subst_env top ids
-  | _ ->
-      let self = Ident.create "self" in
-      let env = Ident.create "env" in
-      let obj = if ids = [] then lambda_unit else Lvar self in
-      let envs = if top then None else Some env in
-      let ((_,inh_init), obj_init) =
-        build_object_init cl_table obj params (envs,[]) (copy_env env) cl in
-      let obj_init =
-        if ids = [] then obj_init else lfunction [self] obj_init in
-      (inh_init, lfunction [env] (subst_env env inh_init obj_init))
-
-
-let bind_method tbl lab id cl_init =
-  Llet(Strict, id, mkappl (oo_prim "get_method_label",
-                           [Lvar tbl; transl_label lab]),
-       cl_init)
-
-let bind_methods tbl meths vals cl_init =
-  let methl = Meths.fold (fun lab id tl -> (lab,id) :: tl) meths [] in
-  let len = List.length methl and nvals = List.length vals in
-  if len < 2 && nvals = 0 then Meths.fold (bind_method tbl) meths cl_init else
-  if len = 0 && nvals < 2 then transl_vals tbl true Strict vals cl_init else
-  let ids = Ident.create "ids" in
-  let i = ref (len + nvals) in
-  let getter, names =
-    if nvals = 0 then "get_method_labels", [] else
-    "new_methods_variables", [transl_meth_list (List.map fst vals)]
-  in
-  Llet(Strict, ids,
-       mkappl (oo_prim getter,
-               [Lvar tbl; transl_meth_list (List.map fst methl)] @ names),
-       List.fold_right
-         (fun (lab,id) lam -> decr i; Llet(StrictOpt, id, lfield ids !i, lam))
-         (methl @ vals) cl_init)
-
-let output_methods tbl methods lam =
-  match methods with
-    [] -> lam
-  | [lab; code] ->
-      lsequence (mkappl(oo_prim "set_method", [Lvar tbl; lab; code])) lam
-  | _ ->
-      lsequence (mkappl(oo_prim "set_methods",
-                        [Lvar tbl; Lprim(Pmakeblock(0, Lambda.Blk_array, Immutable), methods, Location.none)]))
-        lam
-
-let rec ignore_cstrs cl =
-  match cl.cl_desc with
-    Tcl_constraint (cl, _, _, _, _) -> ignore_cstrs cl
-  | Tcl_apply (cl, _) -> ignore_cstrs cl
-  | _ -> cl
-
-let rec index a = function
-    [] -> raise Not_found
-  | b :: l ->
-      if b = a then 0 else 1 + index a l
-
-let bind_id_as_val (id, _, _) = ("", id)
-
-let rec build_class_init cla cstr super inh_init cl_init msubst top cl =
-  match cl.cl_desc with
-    Tcl_ident ( path, _, _) ->
-      begin match inh_init with
-        (obj_init, path')::inh_init ->
-          let lpath = transl_path ~loc:cl.cl_loc cl.cl_env path in
-          (inh_init,
-           Llet (Strict, obj_init,
-                 mkappl(Lprim(Pfield (1, Fld_na), [lpath], Location.none), Lvar cla ::
-                        if top then [Lprim(Pfield (3, Fld_na), [lpath], Location.none)] else []),
-                 bind_super cla super cl_init))
-      | _ ->
-          assert false
-      end
-  | Tcl_structure str ->
-      let cl_init = bind_super cla super cl_init in
-      let (inh_init, cl_init, methods, values) =
-        List.fold_right
-          (fun field (inh_init, cl_init, methods, values) ->
-            match field.cf_desc with
-              Tcf_inherit (_, cl, _, vals, meths) ->
-                let cl_init = output_methods cla methods cl_init in
-                let inh_init, cl_init =
-                  build_class_init cla false
-                    (vals, meths_super cla str.cstr_meths meths)
-                    inh_init cl_init msubst top cl in
-                (inh_init, cl_init, [], values)
-            | Tcf_val (name, _, id, _, over) ->
-                let values =
-                  if over then values else (name.txt, id) :: values
-                in
-                (inh_init, cl_init, methods, values)
-            | Tcf_method (_, _, Tcfk_virtual _)
-            | Tcf_constraint _
-              ->
-                (inh_init, cl_init, methods, values)
-            | Tcf_method (name, _, Tcfk_concrete (_, exp)) ->
-                let met_code = msubst true (transl_exp exp) in
-                let met_code =
-                  if !Clflags.native_code && List.length met_code = 1 then
-                    (* Force correct naming of method for profiles *)
-                    let met = Ident.create ("method_" ^ name.txt) in
-                    [Llet(Strict, met, List.hd met_code, Lvar met)]
-                  else met_code
-                in
-                (inh_init, cl_init,
-                 Lvar(Meths.find name.txt str.cstr_meths) :: met_code @ methods,
-                 values)
-            | Tcf_initializer exp ->
-                (inh_init,
-                 Lsequence(mkappl (oo_prim "add_initializer",
-                                   Lvar cla :: msubst false (transl_exp exp)),
-                           cl_init),
-                 methods, values)
-            | Tcf_attribute _ ->
-                (inh_init, cl_init, methods, values))
-          str.cstr_fields
-          (inh_init, cl_init, [], [])
-      in
-      let cl_init = output_methods cla methods cl_init in
-      (inh_init, bind_methods cla str.cstr_meths values cl_init)
-  | Tcl_fun (_, pat, vals, cl, _) ->
-      let (inh_init, cl_init) =
-        build_class_init cla cstr super inh_init cl_init msubst top cl
-      in
-      let vals = List.map bind_id_as_val vals in
-      (inh_init, transl_vals cla true StrictOpt vals cl_init)
-  | Tcl_apply (cl, exprs) ->
-      build_class_init cla cstr super inh_init cl_init msubst top cl
-  | Tcl_let (rec_flag, defs, vals, cl) ->
-      let (inh_init, cl_init) =
-        build_class_init cla cstr super inh_init cl_init msubst top cl
-      in
-      let vals = List.map bind_id_as_val vals in
-      (inh_init, transl_vals cla true StrictOpt vals cl_init)
-  | Tcl_constraint (cl, _, vals, meths, concr_meths) ->
-      let virt_meths =
-        List.filter (fun lab -> not (Concr.mem lab concr_meths)) meths in
-      let concr_meths = Concr.elements concr_meths in
-      let narrow_args =
-        [Lvar cla;
-         transl_meth_list vals;
-         transl_meth_list virt_meths;
-         transl_meth_list concr_meths] in
-      let cl = ignore_cstrs cl in
-      begin match cl.cl_desc, inh_init with
-        Tcl_ident (path, _, _), (obj_init, path')::inh_init ->
-          assert (Path.same (normalize_cl_path cl path) path');
-          let lpath = transl_normal_path path' in
-          let inh = Ident.create "inh"
-          and ofs = List.length vals + 1
-          and valids, methids = super in
-          let cl_init =
-            List.fold_left
-              (fun init (nm, id, _) ->
-                Llet(StrictOpt, id, lfield inh (index nm concr_meths + ofs),
-                     init))
-              cl_init methids in
-          let cl_init =
-            List.fold_left
-              (fun init (nm, id) ->
-                Llet(StrictOpt, id, lfield inh (index nm vals + 1), init))
-              cl_init valids in
-          (inh_init,
-           Llet (Strict, inh,
-                 mkappl(oo_prim "inherits", narrow_args @
-                        [lpath; Lconst(Const_pointer ((if top then 1 else 0), Lambda.Pt_na))]),
-                 Llet(StrictOpt, obj_init, lfield inh 0, cl_init)))
-      | _ ->
-          let core cl_init =
-            build_class_init cla true super inh_init cl_init msubst top cl
-          in
-          if cstr then core cl_init else
-          let (inh_init, cl_init) =
-            core (Lsequence (mkappl (oo_prim "widen", [Lvar cla]), cl_init))
-          in
-          (inh_init,
-           Lsequence(mkappl (oo_prim "narrow", narrow_args),
-                     cl_init))
-      end
-
-let rec build_class_lets cl ids =
-  match cl.cl_desc with
-    Tcl_let (rec_flag, defs, vals, cl') ->
-      let env, wrap = build_class_lets cl' [] in
-      (env, fun x ->
-        let lam = Translcore.transl_let rec_flag defs (wrap x) in
-        (* Check recursion in toplevel let-definitions *)
-        if ids = [] || Translcore.check_recursive_lambda ids lam then lam
-        else raise(Error(cl.cl_loc, Illegal_class_expr)))
-  | _ ->
-      (cl.cl_env, fun x -> x)
-
-let rec get_class_meths cl =
-  match cl.cl_desc with
-    Tcl_structure cl ->
-      Meths.fold (fun _ -> IdentSet.add) cl.cstr_meths IdentSet.empty
-  | Tcl_ident _ -> IdentSet.empty
-  | Tcl_fun (_, _, _, cl, _)
-  | Tcl_let (_, _, _, cl)
-  | Tcl_apply (cl, _)
-  | Tcl_constraint (cl, _, _, _, _) -> get_class_meths cl
-
-(*
-   XXX Il devrait etre peu couteux d'ecrire des classes :
-     class c x y = d e f
-*)
-let rec transl_class_rebind obj_init cl vf =
-  match cl.cl_desc with
-    Tcl_ident (path, _, _) ->
-      if vf = Concrete then begin
-        try if (Env.find_class path cl.cl_env).cty_new = None then raise Exit
-        with Not_found -> raise Exit
-      end;
-      (normalize_cl_path cl path, obj_init)
-  | Tcl_fun (_, pat, _, cl, partial) ->
-      let path, obj_init = transl_class_rebind obj_init cl vf in
-      let build params rem =
-        let param = name_pattern "param" pat in
-        Lfunction (Curried, param::params,
-                   Matching.for_function
-                     pat.pat_loc None (Lvar param) [pat, rem] partial)
-      in
-      (path,
-       match obj_init with
-         Lfunction (Curried, params, rem) -> build params rem
-       | rem                              -> build [] rem)
-  | Tcl_apply (cl, oexprs) ->
-      let path, obj_init = transl_class_rebind obj_init cl vf in
-      (path, transl_apply obj_init oexprs Location.none)
-  | Tcl_let (rec_flag, defs, vals, cl) ->
-      let path, obj_init = transl_class_rebind obj_init cl vf in
-      (path, Translcore.transl_let rec_flag defs obj_init)
-  | Tcl_structure _ -> raise Exit
-  | Tcl_constraint (cl', _, _, _, _) ->
-      let path, obj_init = transl_class_rebind obj_init cl' vf in
-      let rec check_constraint = function
-          Cty_constr(path', _, _) when Path.same path path' -> ()
-        | Cty_arrow (_, _, cty) -> check_constraint cty
-        | _ -> raise Exit
-      in
-      check_constraint cl.cl_type;
-      (path, obj_init)
-
-let rec transl_class_rebind_0 self obj_init cl vf =
-  match cl.cl_desc with
-    Tcl_let (rec_flag, defs, vals, cl) ->
-      let path, obj_init = transl_class_rebind_0 self obj_init cl vf in
-      (path, Translcore.transl_let rec_flag defs obj_init)
-  | _ ->
-      let path, obj_init = transl_class_rebind obj_init cl vf in
-      (path, lfunction [self] obj_init)
-
-let transl_class_rebind ids cl vf =
-  try
-    let obj_init = Ident.create "obj_init"
-    and self = Ident.create "self" in
-    let obj_init0 = lapply (Lvar obj_init) [Lvar self] Location.none in
-    let path, obj_init' = transl_class_rebind_0 self obj_init0 cl vf in
-    if not (Translcore.check_recursive_lambda ids obj_init') then
-      raise(Error(cl.cl_loc, Illegal_class_expr));
-    let id = (obj_init' = lfunction [self] obj_init0) in
-    if id then transl_normal_path path else
-
-    let cla = Ident.create "class"
-    and new_init = Ident.create "new_init"
-    and env_init = Ident.create "env_init"
-    and table = Ident.create "table"
-    and envs = Ident.create "envs" in
-    Llet(
-    Strict, new_init, lfunction [obj_init] obj_init',
-    Llet(
-    Alias, cla, transl_normal_path path,
-    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-          [mkappl(Lvar new_init, [lfield cla 0]);
-           lfunction [table]
-             (Llet(Strict, env_init,
-                   mkappl(lfield cla 1, [Lvar table]),
-                   lfunction [envs]
-                     (mkappl(Lvar new_init,
-                             [mkappl(Lvar env_init, [Lvar envs])]))));
-           lfield cla 2;
-           lfield cla 3], Location.none)))
-  with Exit ->
-    lambda_unit
-
-(* Rewrite a closure using builtins. Improves native code size. *)
-
-let rec module_path = function
-    Lvar id ->
-      let s = Ident.name id in s <> "" && s.[0] >= 'A' && s.[0] <= 'Z'
-  | Lprim(Pfield _, [p], _)    -> module_path p
-  | Lprim(Pgetglobal _, [], _) -> true
-  | _                       -> false
-
-let const_path local = function
-    Lvar id -> not (List.mem id local)
-  | Lconst _ -> true
-  | Lfunction (Curried, _, body) ->
-      let fv = free_variables body in
-      List.for_all (fun x -> not (IdentSet.mem x fv)) local
-  | p -> module_path p
-
-let rec builtin_meths self env env2 body =
-  let const_path = const_path (env::self) in
-  let conv = function
-    (* Lvar s when List.mem s self ->  "_self", [] *)
-    | p when const_path p -> "const", [p]
-    | Lprim(Parrayrefu _, [Lvar s; Lvar n], _) when List.mem s self ->
-        "var", [Lvar n]
-    | Lprim(Pfield (n,_), [Lvar e], _) when Ident.same e env ->
-        "env", [Lvar env2; Lconst(Const_pointer (n, Lambda.Pt_na))]
-    | Lsend(Self, met, Lvar s, [], _) when List.mem s self ->
-        "meth", [met]
-    | _ -> raise Not_found
-  in
-  match body with
-  | Llet(_, s', Lvar s, body) when List.mem s self ->
-      builtin_meths (s'::self) env env2 body
-  | Lapply(f, [arg], _) when const_path f ->
-      let s, args = conv arg in ("app_"^s, f :: args)
-  | Lapply(f, [arg; p], _) when const_path f && const_path p ->
-      let s, args = conv arg in
-      ("app_"^s^"_const", f :: args @ [p])
-  | Lapply(f, [p; arg], _) when const_path f && const_path p ->
-      let s, args = conv arg in
-      ("app_const_"^s, f :: p :: args)
-  | Lsend(Self, Lvar n, Lvar s, [arg], _) when List.mem s self ->
-      let s, args = conv arg in
-      ("meth_app_"^s, Lvar n :: args)
-  | Lsend(Self, met, Lvar s, [], _) when List.mem s self ->
-      ("get_meth", [met])
-  | Lsend(Public _, met, arg, [], _) ->
-      let s, args = conv arg in
-      ("send_"^s, met :: args)
-  | Lsend(Cached, met, arg, [_;_], _) ->
-      let s, args = conv arg in
-      ("send_"^s, met :: args)
-  | Lfunction (Curried, [x], body) ->
-      let rec enter self = function
-        | Lprim(Parraysetu _, [Lvar s; Lvar n; Lvar x'], _)
-          when Ident.same x x' && List.mem s self ->
-            ("set_var", [Lvar n])
-        | Llet(_, s', Lvar s, body) when List.mem s self ->
-            enter (s'::self) body
-        | _ -> raise Not_found
-      in enter self body
-  | Lfunction _ -> raise Not_found
-  | _ ->
-      let s, args = conv body in ("get_"^s, args)
-
-module M = struct
-  open CamlinternalOO
-  let builtin_meths self env env2 body =
-    let builtin, args = builtin_meths self env env2 body in
-    (* if not arr then [mkappl(oo_prim builtin, args)] else *)
-    let tag = match builtin with
-      "get_const" -> GetConst
-    | "get_var"   -> GetVar
-    | "get_env"   -> GetEnv
-    | "get_meth"  -> GetMeth
-    | "set_var"   -> SetVar
-    | "app_const" -> AppConst
-    | "app_var"   -> AppVar
-    | "app_env"   -> AppEnv
-    | "app_meth"  -> AppMeth
-    | "app_const_const" -> AppConstConst
-    | "app_const_var"   -> AppConstVar
-    | "app_const_env"   -> AppConstEnv
-    | "app_const_meth"  -> AppConstMeth
-    | "app_var_const"   -> AppVarConst
-    | "app_env_const"   -> AppEnvConst
-    | "app_meth_const"  -> AppMethConst
-    | "meth_app_const"  -> MethAppConst
-    | "meth_app_var"    -> MethAppVar
-    | "meth_app_env"    -> MethAppEnv
-    | "meth_app_meth"   -> MethAppMeth
-    | "send_const" -> SendConst
-    | "send_var"   -> SendVar
-    | "send_env"   -> SendEnv
-    | "send_meth"  -> SendMeth
-    | _ -> assert false
-    in Lconst(Const_pointer(Obj.magic tag, Lambda.Pt_na)) :: args
-end
-open M
-
-
-(*
-   Traduction d'une classe.
-   Plusieurs cas:
-    * reapplication d'une classe connue -> transl_class_rebind
-    * classe sans dependances locales -> traduction directe
-    * avec dependances locale -> creation d'un arbre de stubs,
-      avec un noeud pour chaque classe locale heritee
-   Une classe est un 4-uplet:
-    (obj_init, class_init, env_init, env)
-    obj_init: fonction de creation d'objet (unit -> obj)
-    class_init: fonction d'heritage (table -> env_init)
-      (une seule par code source)
-    env_init: parametrage par l'environnement local (env -> params -> obj_init)
-      (une par combinaison de class_init herites)
-    env: environnement local
-   Si ids=0 (objet immediat), alors on ne conserve que env_init.
-*)
-
-let prerr_ids msg ids =
-  let names = List.map Ident.unique_toplevel_name ids in
-  prerr_endline (String.concat " " (msg :: names))
-
-let transl_class ids cl_id pub_meths cl vflag =
-  (* First check if it is not only a rebind *)
-  let rebind = transl_class_rebind ids cl vflag in
-  if rebind <> lambda_unit then rebind else
-
-  (* Prepare for heavy environment handling *)
-  let tables = Ident.create (Ident.name cl_id ^ "_tables") in
-  let (top_env, req) = oo_add_class tables in
-  let top = not req in
-  let cl_env, llets = build_class_lets cl ids in
-  let new_ids = if top then [] else Env.diff top_env cl_env in
-  let env2 = Ident.create "env" in
-  let meth_ids = get_class_meths cl in
-  let subst env lam i0 new_ids' =
-    let fv = free_variables lam in
-    (* prerr_ids "cl_id =" [cl_id]; prerr_ids "fv =" (IdentSet.elements fv); *)
-    let fv = List.fold_right IdentSet.remove !new_ids' fv in
-    (* We need to handle method ids specially, as they do not appear
-       in the typing environment (PR#3576, PR#4560) *)
-    (* very hacky: we add and remove free method ids on the fly,
-       depending on the visit order... *)
-    method_ids :=
-      IdentSet.diff (IdentSet.union (free_methods lam) !method_ids) meth_ids;
-    (* prerr_ids "meth_ids =" (IdentSet.elements meth_ids);
-       prerr_ids "method_ids =" (IdentSet.elements !method_ids); *)
-    let new_ids = List.fold_right IdentSet.add new_ids !method_ids in
-    let fv = IdentSet.inter fv new_ids in
-    new_ids' := !new_ids' @ IdentSet.elements fv;
-    (* prerr_ids "new_ids' =" !new_ids'; *)
-    let i = ref (i0-1) in
-    List.fold_left
-      (fun subst id ->
-        incr i; Ident.add id (lfield env !i)  subst)
-      Ident.empty !new_ids'
-  in
-  let new_ids_meths = ref [] in
-  let msubst arr = function
-      Lfunction (Curried, self :: args, body) ->
-        let env = Ident.create "env" in
-        let body' =
-          if new_ids = [] then body else
-          subst_lambda (subst env body 0 new_ids_meths) body in
-        begin try
-          (* Doesn't seem to improve size for bytecode *)
-          (* if not !Clflags.native_code then raise Not_found; *)
-          if not arr || !Clflags.debug then raise Not_found;
-          builtin_meths [self] env env2 (lfunction args body')
-        with Not_found ->
-          [lfunction (self :: args)
-             (if not (IdentSet.mem env (free_variables body')) then body' else
-              Llet(Alias, env,
-                   Lprim(Parrayrefu Paddrarray,
-                         [Lvar self; Lvar env2], Location.none), body'))]
-        end
-      | _ -> assert false
-  in
-  let new_ids_init = ref [] in
-  let env1 = Ident.create "env" and env1' = Ident.create "env'" in
-  let copy_env envs self =
-    if top then lambda_unit else
-    Lifused(env2, Lprim(Parraysetu Paddrarray,
-                        [Lvar self; Lvar env2; Lvar env1'], Location.none))
-  and subst_env envs l lam =
-    if top then lam else
-    (* must be called only once! *)
-    let lam = subst_lambda (subst env1 lam 1 new_ids_init) lam in
-    Llet(Alias, env1, (if l = [] then Lvar envs else lfield envs 0),
-    Llet(Alias, env1',
-         (if !new_ids_init = [] then Lvar env1 else lfield env1 0),
-         lam))
-  in
-
-  (* Now we start compiling the class *)
-  let cla = Ident.create "class" in
-  let (inh_init, obj_init) =
-    build_object_init_0 cla [] cl copy_env subst_env top ids in
-  let inh_init' = List.rev inh_init in
-  let (inh_init', cl_init) =
-    build_class_init cla true ([],[]) inh_init' obj_init msubst top cl
-  in
-  assert (inh_init' = []);
-  let table = Ident.create "table"
-  and class_init = Ident.create (Ident.name cl_id ^ "_init")
-  and env_init = Ident.create "env_init"
-  and obj_init = Ident.create "obj_init" in
-  let pub_meths =
-    List.sort
-      (fun s s' -> compare (Btype.hash_variant s) (Btype.hash_variant s'))
-      pub_meths in
-  let tags = List.map Btype.hash_variant pub_meths in
-  let rev_map = List.combine tags pub_meths in
-  List.iter2
-    (fun tag name ->
-      let name' = List.assoc tag rev_map in
-      if name' <> name then raise(Error(cl.cl_loc, Tags(name, name'))))
-    tags pub_meths;
-  let ltable table lam =
-    Llet(Strict, table,
-         mkappl (oo_prim "create_table", [transl_meth_list pub_meths]), lam)
-  and ldirect obj_init =
-    Llet(Strict, obj_init, cl_init,
-         Lsequence(mkappl (oo_prim "init_class", [Lvar cla]),
-                   mkappl (Lvar obj_init, [lambda_unit])))
-  in
-  (* Simplest case: an object defined at toplevel (ids=[]) *)
-  if top && ids = [] then llets (ltable cla (ldirect obj_init)) else
-
-  let concrete = (vflag = Concrete)
-  and lclass lam =
-    let cl_init = llets (Lfunction(Curried, [cla], cl_init)) in
-    Llet(Strict, class_init, cl_init, lam (free_variables cl_init))
-  and lbody fv =
-    if List.for_all (fun id -> not (IdentSet.mem id fv)) ids then
-      mkappl (oo_prim "make_class",[transl_meth_list pub_meths;
-                                    Lvar class_init])
-    else
-      ltable table (
-      Llet(
-      Strict, env_init, mkappl (Lvar class_init, [Lvar table]),
-      Lsequence(
-      mkappl (oo_prim "init_class", [Lvar table]),
-      Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-            [mkappl (Lvar env_init, [lambda_unit]);
-             Lvar class_init; Lvar env_init; lambda_unit], Location.none))))
-  and lbody_virt lenvs =
-    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-          [lambda_unit; Lfunction(Curried,[cla], cl_init); lambda_unit; lenvs], Location.none)
-  in
-  (* Still easy: a class defined at toplevel *)
-  if top && concrete then lclass lbody else
-  if top then llets (lbody_virt lambda_unit) else
-
-  (* Now for the hard stuff: prepare for table cacheing *)
-  let envs = Ident.create "envs"
-  and cached = Ident.create "cached" in
-  let lenvs =
-    if !new_ids_meths = [] && !new_ids_init = [] && inh_init = []
-    then lambda_unit
-    else Lvar envs in
-  let lenv =
-    let menv =
-      if !new_ids_meths = [] then lambda_unit else
-      Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-            List.map (fun id -> Lvar id) !new_ids_meths, Location.none) in
-    if !new_ids_init = [] then menv else
-    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-          menv :: List.map (fun id -> Lvar id) !new_ids_init, Location.none)
-  and linh_envs =
-    List.map (fun (_, p) -> Lprim(Pfield (3, Fld_na), [transl_normal_path p], Location.none))
-      (List.rev inh_init)
-  in
-  let make_envs lam =
-    Llet(StrictOpt, envs,
-         (if linh_envs = [] then lenv else
-         Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), lenv :: linh_envs, Location.none)),
-         lam)
-  and def_ids cla lam =
-    Llet(StrictOpt, env2,
-         mkappl (oo_prim "new_variable", [Lvar cla; transl_label ""]),
-         lam)
-  in
-  let inh_paths =
-    List.filter
-      (fun (_,path) -> List.mem (Path.head path) new_ids) inh_init in
-  let inh_keys =
-    List.map (fun (_,p) -> Lprim(Pfield (1, Fld_na), [transl_normal_path p], Location.none)) inh_paths in
-  let lclass lam =
-    Llet(Strict, class_init,
-         Lfunction(Curried, [cla], def_ids cla cl_init), lam)
-  and lcache lam =
-    if inh_keys = [] then Llet(Alias, cached, Lvar tables, lam) else
-    Llet(Strict, cached,
-         mkappl (oo_prim "lookup_tables",
-                [Lvar tables; Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), inh_keys, Location.none)]),
-         lam)
-  and lset cached i lam =
-    Lprim(Psetfield(i, true, Fld_set_na), [Lvar cached; lam], Location.none)
-  in
-  let ldirect () =
-    ltable cla
-      (Llet(Strict, env_init, def_ids cla cl_init,
-            Lsequence(mkappl (oo_prim "init_class", [Lvar cla]),
-                      lset cached 0 (Lvar env_init))))
-  and lclass_virt () =
-    lset cached 0 (Lfunction(Curried, [cla], def_ids cla cl_init))
-  in
-  llets (
-  lcache (
-  Lsequence(
-  Lifthenelse(lfield cached 0, lambda_unit,
-              if ids = [] then ldirect () else
-              if not concrete then lclass_virt () else
-              lclass (
-              mkappl (oo_prim "make_class_store",
-                      [transl_meth_list pub_meths;
-                       Lvar class_init; Lvar cached]))),
-  make_envs (
-  if ids = [] then mkappl (lfield cached 0, [lenvs]) else
-  Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-        (if concrete then
-          [mkappl (lfield cached 0, [lenvs]);
-           lfield cached 1;
-           lfield cached 0;
-           lenvs]
-        else [lambda_unit; lfield cached 0; lambda_unit; lenvs])
-       , Location.none)))))
-
-(* Wrapper for class compilation *)
-(*
-    let cl_id = ci.ci_id_class in
-(* TODO: cl_id is used somewhere else as typesharp ? *)
-  let _arity = List.length ci.ci_params in
-  let pub_meths = m in
-  let cl = ci.ci_expr in
-  let vflag = vf in
-*)
-
-let transl_class ids id pub_meths cl vf =
-  oo_wrap cl.cl_env false (transl_class ids id pub_meths cl) vf
-
-let () =
-  transl_object := (fun id meths cl -> transl_class [] id meths cl Concrete)
-
-(* Error report *)
-
-open Format
-
-let report_error ppf = function
-  | Illegal_class_expr ->
-      fprintf ppf "This kind of recursive class expression is not allowed"
-  | Tags (lab1, lab2) ->
-      fprintf ppf "Method labels `%s' and `%s' are incompatible.@ %s"
-        lab1 lab2 "Change one of them."
-
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error (loc, err) ->
-        Some (Location.error_of_printer loc report_error err)
-      | _ ->
-        None
-    )
-
-end
-module Translmod : sig 
-#1 "translmod.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Translation from typed abstract syntax to lambda terms,
-   for the module language *)
-
-open Typedtree
-open Lambda
-
-val transl_implementation: string -> structure * module_coercion -> lambda
-val transl_store_phrases: string -> structure -> int * lambda
-val transl_store_implementation:
-      string -> structure * module_coercion -> int * lambda
-val transl_toplevel_definition: structure -> lambda
-val transl_package:
-      Ident.t option list -> Ident.t -> module_coercion -> lambda
-val transl_store_package:
-      Ident.t option list -> Ident.t -> module_coercion -> int * lambda
-
-val toplevel_name: Ident.t -> string
-val nat_toplevel_name: Ident.t -> Ident.t * int
-
-val primitive_declarations: Primitive.description list ref
-
-type error =
-  Circular_dependency of Ident.t
-
-exception Error of Location.t * error
-
-val report_error: Format.formatter -> error -> unit
-
-val reset: unit -> unit
-
-
-(** make it an array for better performance*)
-val get_export_identifiers : unit -> Ident.t list 
-
-end = struct
-#1 "translmod.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Translation from typed abstract syntax to lambda terms,
-   for the module language *)
-
-open Misc
-open Asttypes
-open Longident
-open Path
-open Types
-open Typedtree
-open Lambda
-open Translobj
-open Translcore
-open Translclass
-
-type error =
-  Circular_dependency of Ident.t
-
-
-exception Error of Location.t * error
-
-(* Keep track of the root path (from the root of the namespace to the
-   currently compiled module expression).  Useful for naming extensions. *)
-
-let global_path glob = Some(Pident glob)
-let is_top rootpath = 
-  match rootpath with 
-  | Some (Pident _ ) -> true
-  | _ -> false 
-
-let functor_path path param =
-  match path with
-    None -> None
-  | Some p -> Some(Papply(p, Pident param))
-let field_path path field =
-  match path with
-    None -> None
-  | Some p -> Some(Pdot(p, Ident.name field, Path.nopos))
-
-(* Compile type extensions *)
-
-let prim_set_oo_id =
-  Pccall {Primitive.prim_name = "caml_set_oo_id"; prim_arity = 1;
-          prim_alloc = false; prim_native_name = "";
-          prim_native_float = false}
-
-let transl_extension_constructor env path ext =
-  let name =
-    match path with
-      None -> Ident.name ext.ext_id
-    | Some p -> Path.name p
-  in
-  let loc = ext.ext_loc in
-  match ext.ext_kind with
-    Text_decl(args, ret) ->
-      Lprim(prim_set_oo_id,
-            [Lprim(Pmakeblock(Obj.object_tag, Lambda.default_tag_info, Mutable),
-                   [Lconst(Const_base(Const_string (name,None)));
-                    Lconst(Const_base(Const_int 0))], loc)], loc)
-  | Text_rebind(path, lid) ->
-      transl_path ~loc env path
-
-let transl_type_extension env rootpath tyext body =
-  List.fold_right
-    (fun ext body ->
-      let lam =
-        transl_extension_constructor env (field_path rootpath ext.ext_id) ext
-      in
-      Llet(Strict, ext.ext_id, lam, body))
-    tyext.tyext_constructors
-    body
-
-(* Compile a coercion *)
-
-let rec apply_coercion loc strict restr arg =
-  match restr with
-    Tcoerce_none ->
-      arg
-  | Tcoerce_structure(pos_cc_list, id_pos_list) ->
-      name_lambda strict arg (fun id ->
-        let get_field pos = Lprim(Pfield (pos, Fld_na (*TODO*)),[Lvar id], loc) in
-        let lam =
-          Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-                List.map (apply_coercion_field loc get_field) pos_cc_list, loc)
-        in
-        wrap_id_pos_list loc id_pos_list get_field lam)
-  | Tcoerce_functor(cc_arg, cc_res) ->
-      let param = Ident.create "funarg" in
-      name_lambda strict arg (fun id ->
-        Lfunction(Curried, [param],
-          apply_coercion loc Strict cc_res
-            (Lapply(Lvar id, [apply_coercion loc Alias cc_arg (Lvar param)],
-                   Location.none))))
-  | Tcoerce_primitive (_,p) ->
-      transl_primitive Location.none p
-  | Tcoerce_alias (path, cc) ->
-      name_lambda strict arg
-        (fun id -> apply_coercion loc Alias cc (transl_normal_path path))
-
-and apply_coercion_field loc get_field (pos, cc) =
-  apply_coercion loc Alias cc (get_field pos)
-
-and wrap_id_pos_list loc id_pos_list get_field lam =
-  let fv = free_variables lam in
-  (*Format.eprintf "%a@." Printlambda.lambda lam;
-  IdentSet.iter (fun id -> Format.eprintf "%a " Ident.print id) fv;
-  Format.eprintf "@.";*)
-  let (lam,s) =
-    List.fold_left (fun (lam,s) (id',pos,c) ->
-      if IdentSet.mem id' fv then
-        let id'' = Ident.create (Ident.name id') in
-        (Llet(Alias,id'',
-              apply_coercion loc Alias c (get_field pos),lam),
-         Ident.add id' (Lvar id'') s)
-      else (lam,s))
-      (lam, Ident.empty) id_pos_list
-  in
-  if s == Ident.empty then lam else subst_lambda s lam
-
-
-(* Compose two coercions
-   apply_coercion c1 (apply_coercion c2 e) behaves like
-   apply_coercion (compose_coercions c1 c2) e. *)
-
-let rec compose_coercions c1 c2 =
-  match (c1, c2) with
-    (Tcoerce_none, c2) -> c2
-  | (c1, Tcoerce_none) -> c1
-  | (Tcoerce_structure (pc1, ids1), Tcoerce_structure (pc2, ids2)) ->
-      let v2 = Array.of_list pc2 in
-      let ids1 =
-        List.map (fun (id,pos1,c1) ->
-          let (pos2,c2) = v2.(pos1) in (id, pos2, compose_coercions c1 c2))
-          ids1
-      in
-      Tcoerce_structure
-        (List.map
-          (function (p1, Tcoerce_primitive _) as x ->
-                      x (* (p1, Tcoerce_primitive p) *)
-                  | (p1, c1) ->
-                      let (p2, c2) = v2.(p1) in (p2, compose_coercions c1 c2))
-             pc1,
-         ids1 @ ids2)
-  | (Tcoerce_functor(arg1, res1), Tcoerce_functor(arg2, res2)) ->
-      Tcoerce_functor(compose_coercions arg2 arg1,
-                      compose_coercions res1 res2)
-  | (c1, Tcoerce_alias (path, c2)) ->
-      Tcoerce_alias (path, compose_coercions c1 c2)
-  | (_, _) ->
-      fatal_error "Translmod.compose_coercions"
-
-(*
-let apply_coercion a b c =
-  Format.eprintf "@[<2>apply_coercion@ %a@]@." Includemod.print_coercion b;
-  apply_coercion a b c
-
-let compose_coercions c1 c2 =
-  let c3 = compose_coercions c1 c2 in
-  let open Includemod in
-  Format.eprintf "@[<2>compose_coercions@ (%a)@ (%a) =@ %a@]@."
-    print_coercion c1 print_coercion c2 print_coercion c3;
-  c3
-*)
-
-(* Record the primitive declarations occuring in the module compiled *)
-
-let primitive_declarations = ref ([] :  Primitive.description list)
-let record_primitive = function
-  | {val_kind=Val_prim p} ->
-      primitive_declarations := p :: !primitive_declarations
-  | _ -> ()
-
-(* Utilities for compiling "module rec" definitions *)
-
-let mod_prim name =
-  try
-    transl_normal_path
-      (fst (Env.lookup_value (Ldot (Lident "CamlinternalMod", name))
-                             Env.empty))
-  with Not_found ->
-    fatal_error ("Primitive " ^ name ^ " not found.")
-
-let undefined_location loc =
-  let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
-  Lconst(Const_block(0, Lambda.default_tag_info,
-                     [Const_base(Const_string (fname, None));
-                      Const_base(Const_int line);
-                      Const_base(Const_int char)]))
-
-let init_shape modl =
-  let rec init_shape_mod env mty =
-    match Mtype.scrape env mty with
-      Mty_ident _ ->
-        raise Not_found
-    | Mty_alias _ ->
-        Const_block (1, Lambda.default_tag_info, [Const_pointer (0, Lambda.Pt_module_alias)])
-    | Mty_signature sg ->
-        Const_block(0,  Lambda.default_tag_info, [Const_block(0, Lambda.default_tag_info, init_shape_struct env sg)])
-    | Mty_functor(id, arg, res) ->
-        raise Not_found (* can we do better? *)
-  and init_shape_struct env sg =
-    match sg with
-      [] -> []
-    | Sig_value(id, vdesc) :: rem ->
-        let init_v =
-          match Ctype.expand_head env vdesc.val_type with
-            {desc = Tarrow(_,_,_,_)} ->
-              Const_pointer (0,Lambda.default_pointer_info) (* camlinternalMod.Function *)
-          | {desc = Tconstr(p, _, _)} when Path.same p Predef.path_lazy_t ->
-              Const_pointer (1, Lambda.default_pointer_info) (* camlinternalMod.Lazy *)
-          | _ -> raise Not_found in
-        init_v :: init_shape_struct env rem
-    | Sig_type(id, tdecl, _) :: rem ->
-        init_shape_struct (Env.add_type ~check:false id tdecl env) rem
-    | Sig_typext(id, ext, _) :: rem ->
-        raise Not_found
-    | Sig_module(id, md, _) :: rem ->
-        init_shape_mod env md.md_type ::
-        init_shape_struct (Env.add_module_declaration id md env) rem
-    | Sig_modtype(id, minfo) :: rem ->
-        init_shape_struct (Env.add_modtype id minfo env) rem
-    | Sig_class(id, cdecl, _) :: rem ->
-        Const_pointer (2, Lambda.default_pointer_info) (* camlinternalMod.Class *)
-        :: init_shape_struct env rem
-    | Sig_class_type(id, ctyp, _) :: rem ->
-        init_shape_struct env rem
-  in
-  try
-    Some(undefined_location modl.mod_loc,
-         Lconst(init_shape_mod modl.mod_env modl.mod_type))
-  with Not_found ->
-    None
-
-(* Reorder bindings to honor dependencies.  *)
-
-type binding_status = Undefined | Inprogress | Defined
-
-let reorder_rec_bindings bindings =
-  let id = Array.of_list (List.map (fun (id,_,_,_) -> id) bindings)
-  and loc = Array.of_list (List.map (fun (_,loc,_,_) -> loc) bindings)
-  and init = Array.of_list (List.map (fun (_,_,init,_) -> init) bindings)
-  and rhs = Array.of_list (List.map (fun (_,_,_,rhs) -> rhs) bindings) in
-  let fv = Array.map Lambda.free_variables rhs in
-  let num_bindings = Array.length id in
-  let status = Array.make num_bindings Undefined in
-  let res = ref [] in
-  let rec emit_binding i =
-    match status.(i) with
-      Defined -> ()
-    | Inprogress -> raise(Error(loc.(i), Circular_dependency id.(i)))
-    | Undefined ->
-        if init.(i) = None then begin
-          status.(i) <- Inprogress;
-          for j = 0 to num_bindings - 1 do
-            if IdentSet.mem id.(j) fv.(i) then emit_binding j
-          done
-        end;
-        res := (id.(i), init.(i), rhs.(i)) :: !res;
-        status.(i) <- Defined in
-  for i = 0 to num_bindings - 1 do
-    match status.(i) with
-      Undefined -> emit_binding i
-    | Inprogress -> assert false
-    | Defined -> ()
-  done;
-  List.rev !res
-
-(* Generate lambda-code for a reordered list of bindings *)
-
-let eval_rec_bindings bindings cont =
-  let rec bind_inits = function
-    [] ->
-      bind_strict bindings
-  | (id, None, rhs) :: rem ->
-      bind_inits rem
-  | (id, Some(loc, shape), rhs) :: rem ->
-      Llet(Strict, id, Lapply(mod_prim "init_mod", [loc; shape], Location.none),
-           bind_inits rem)
-  and bind_strict = function
-    [] ->
-      patch_forwards bindings
-  | (id, None, rhs) :: rem ->
-      Llet(Strict, id, rhs, bind_strict rem)
-  | (id, Some(loc, shape), rhs) :: rem ->
-      bind_strict rem
-  and patch_forwards = function
-    [] ->
-      cont
-  | (id, None, rhs) :: rem ->
-      patch_forwards rem
-  | (id, Some(loc, shape), rhs) :: rem ->
-      Lsequence(Lapply(mod_prim "update_mod", [shape; Lvar id; rhs],
-                       Location.none),
-                patch_forwards rem)
-  in
-    bind_inits bindings
-
-let compile_recmodule compile_rhs bindings cont =
-  eval_rec_bindings
-    (reorder_rec_bindings
-       (List.map
-          (fun {mb_id=id; mb_expr=modl; _} ->
-            (id, modl.mod_loc, init_shape modl, compile_rhs id modl))
-          bindings))
-    cont
-
-(* Extract the list of "value" identifiers bound by a signature.
-   "Value" identifiers are identifiers for signature components that
-   correspond to a run-time value: values, extensions, modules, classes.
-   Note: manifest primitives do not correspond to a run-time value! *)
-
-let rec bound_value_identifiers = function
-    [] -> []
-  | Sig_value(id, {val_kind = Val_reg}) :: rem ->
-      id :: bound_value_identifiers rem
-  | Sig_typext(id, ext, _) :: rem -> id :: bound_value_identifiers rem
-  | Sig_module(id, mty, _) :: rem -> id :: bound_value_identifiers rem
-  | Sig_class(id, decl, _) :: rem -> id :: bound_value_identifiers rem
-  | _ :: rem -> bound_value_identifiers rem
-
-(* Compile a module expression *)
- 
-let export_identifiers  : Ident.t list ref = ref []
-let get_export_identifiers () = 
-  !export_identifiers
-
-let rec transl_module cc rootpath mexp =
-  let loc = mexp.mod_loc in
-  match mexp.mod_type with
-    Mty_alias _ -> apply_coercion loc Alias cc lambda_unit
-  | _ ->
-  match mexp.mod_desc with
-    Tmod_ident (path,_) ->
-      apply_coercion loc Strict cc
-        (transl_path ~loc mexp.mod_env path)
-  | Tmod_structure str ->
-      transl_struct loc [] cc rootpath str
-  | Tmod_functor( param, _, mty, body) ->
-      let bodypath = functor_path rootpath param in
-      oo_wrap mexp.mod_env true
-        (function
-        | Tcoerce_none ->
-            Lfunction(Curried, [param],
-                      transl_module Tcoerce_none bodypath body)
-        | Tcoerce_functor(ccarg, ccres) ->
-            let param' = Ident.create "funarg" in
-            Lfunction(Curried, [param'],
-                      Llet(Alias, param,
-                           apply_coercion loc Alias ccarg (Lvar param'),
-                           transl_module ccres bodypath body))
-        | _ ->
-            fatal_error "Translmod.transl_module")
-        cc
-  | Tmod_apply(funct, arg, ccarg) ->
-      oo_wrap mexp.mod_env true
-        (apply_coercion loc Strict cc)
-        (Lapply(transl_module Tcoerce_none None funct,
-                [transl_module ccarg None arg], loc))
-  | Tmod_constraint(arg, mty, _, ccarg) ->
-      transl_module (compose_coercions cc ccarg) rootpath arg
-  | Tmod_unpack(arg, _) ->
-      apply_coercion loc  Strict cc (Translcore.transl_exp arg)
-
-and transl_struct loc fields cc rootpath str =
-  transl_structure loc fields cc rootpath str.str_items
-
-and transl_structure loc fields cc rootpath = function
-    [] ->
-      begin match cc with
-        Tcoerce_none ->
-          let fields =  List.rev fields in
-          let field_names = List.map (fun id -> id.Ident.name) fields in
-          Lprim(Pmakeblock(0, Lambda.Blk_module (Some field_names) , Immutable),
-                List.fold_right (fun id acc -> begin
-                      (if is_top rootpath then 
-                         export_identifiers :=  id :: !export_identifiers);
-                      (Lvar id :: acc) end) fields [] , loc
-                 )
-      | Tcoerce_structure(pos_cc_list, id_pos_list) ->
-              (* Do not ignore id_pos_list ! *)
-          (*Format.eprintf "%a@.@[" Includemod.print_coercion cc;
-          List.iter (fun l -> Format.eprintf "%a@ " Ident.print l)
-            fields;
-          Format.eprintf "@]@.";*)
-          let v = Array.of_list (List.rev fields) in
-          let get_field pos = Lvar v.(pos)
-          and ids = List.fold_right IdentSet.add fields IdentSet.empty in
-          let (result, names) = List.fold_right
-              (fun  (pos, cc) (code, name) ->
-                 begin match cc with
-                 | Tcoerce_primitive (id,p) -> 
-                     (if is_top rootpath then 
-                        export_identifiers := id:: !export_identifiers);
-                     (transl_primitive Location.none p :: code, p.Primitive.prim_name ::name)
-                 | _ -> 
-                     (if is_top rootpath then 
-                        export_identifiers :=  v.(pos) :: !export_identifiers);
-                     (apply_coercion loc Strict cc (get_field pos) :: code, v.(pos).Ident.name :: name)
-                 end)
-              pos_cc_list ([], [])in 
-          let lam =
-            (Lprim(Pmakeblock(0, Blk_module (Some names), Immutable),
-                   result, loc))
-          and id_pos_list =
-            List.filter (fun (id,_,_) -> not (IdentSet.mem id ids)) id_pos_list
-          in
-          wrap_id_pos_list loc id_pos_list get_field lam
-      | _ ->
-          fatal_error "Translmod.transl_structure"
-      end
-  | item :: rem ->
-      match item.str_desc with
-      | Tstr_eval (expr, _) ->
-      Lsequence(transl_exp expr, transl_structure loc fields cc rootpath rem)
-  | Tstr_value(rec_flag, pat_expr_list) ->
-      let ext_fields = rev_let_bound_idents pat_expr_list @ fields in
-      transl_let rec_flag pat_expr_list
-                 (transl_structure loc ext_fields cc rootpath rem)
-  | Tstr_primitive descr ->
-      record_primitive descr.val_val;
-      transl_structure loc fields cc rootpath rem
-  | Tstr_type decls ->
-      transl_structure loc  fields cc rootpath rem
-  | Tstr_typext(tyext) ->
-      let ids = List.map (fun ext -> ext.ext_id) tyext.tyext_constructors in
-      transl_type_extension item.str_env rootpath tyext
-        (transl_structure loc (List.rev_append ids fields) cc rootpath rem)
-  | Tstr_exception ext ->
-      let id = ext.ext_id in
-      let path = field_path rootpath id in
-      Llet(Strict, id, transl_extension_constructor item.str_env path ext,
-           transl_structure loc (id :: fields) cc rootpath rem)
-  | Tstr_module mb ->
-      let id = mb.mb_id in
-      Llet(pure_module mb.mb_expr, id,
-           transl_module Tcoerce_none (field_path rootpath id) mb.mb_expr,
-           transl_structure loc (id :: fields) cc rootpath rem)
-  | Tstr_recmodule bindings ->
-      let ext_fields =
-        List.rev_append (List.map (fun mb -> mb.mb_id) bindings) fields
-      in
-      compile_recmodule
-        (fun id modl ->
-          transl_module Tcoerce_none (field_path rootpath id) modl)
-        bindings
-        (transl_structure loc ext_fields cc rootpath rem)
-  | Tstr_class cl_list ->
-      let ids = List.map (fun (ci,_,_) -> ci.ci_id_class) cl_list in
-      Lletrec(List.map
-              (fun (ci, meths, vf) ->
-                let id = ci.ci_id_class in
-                let cl = ci.ci_expr in
-                  (id, transl_class ids id meths cl vf ))
-                cl_list,
-              transl_structure loc (List.rev_append ids fields) cc rootpath rem)
-  | Tstr_include incl ->
-      let ids = bound_value_identifiers incl.incl_type in
-      let modl = incl.incl_mod in
-      let mid = Ident.create "include" in
-      let rec rebind_idents pos newfields = function
-        [] ->
-          transl_structure loc newfields cc rootpath rem
-      | id :: ids ->
-          Llet(Alias, id, Lprim(Pfield (pos, Fld_na), [Lvar mid], incl.incl_loc),
-               rebind_idents (pos + 1) (id :: newfields) ids) in
-      Llet(pure_module modl, mid, transl_module Tcoerce_none None modl,
-           rebind_idents 0 fields ids)
-
-  | Tstr_modtype _
-  | Tstr_open _
-  | Tstr_class_type _
-  | Tstr_attribute _ ->
-      transl_structure loc fields cc rootpath rem
-
-and pure_module m =
-  match m.mod_desc with
-    Tmod_ident _ -> Alias
-  | Tmod_constraint (m,_,_,_) -> pure_module m
-  | _ -> Strict
-
-(* Update forward declaration in Translcore *)
-let _ =
-  Translcore.transl_module := transl_module
-
-(* Compile an implementation *)
-
-let transl_implementation module_name (str, cc) =
-  reset_labels ();
-  primitive_declarations := [];
-  let module_id = Ident.create_persistent module_name in
-  Lprim(Psetglobal module_id,
-        [transl_label_init
-            (transl_struct Location.none [] cc (global_path module_id) str)], Location.none)
-
-
-(* Build the list of value identifiers defined by a toplevel structure
-   (excluding primitive declarations). *)
-
-let rec defined_idents = function
-    [] -> []
-  | item :: rem ->
-    match item.str_desc with
-    | Tstr_eval (expr, _) -> defined_idents rem
-    | Tstr_value(rec_flag, pat_expr_list) ->
-      let_bound_idents pat_expr_list @ defined_idents rem
-    | Tstr_primitive desc -> defined_idents rem
-    | Tstr_type decls -> defined_idents rem
-    | Tstr_typext tyext ->
-      List.map (fun ext -> ext.ext_id) tyext.tyext_constructors
-      @ defined_idents rem
-    | Tstr_exception ext -> ext.ext_id :: defined_idents rem
-    | Tstr_module mb -> mb.mb_id :: defined_idents rem
-    | Tstr_recmodule decls ->
-      List.map (fun mb -> mb.mb_id) decls @ defined_idents rem
-    | Tstr_modtype _ -> defined_idents rem
-    | Tstr_open _ -> defined_idents rem
-    | Tstr_class cl_list ->
-      List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list @ defined_idents rem
-    | Tstr_class_type cl_list -> defined_idents rem
-    | Tstr_include incl ->
-      bound_value_identifiers incl.incl_type @ defined_idents rem
-    | Tstr_attribute _ -> defined_idents rem
-
-(* second level idents (module M = struct ... let id = ... end),
-   and all sub-levels idents *)
-let rec more_idents = function
-    [] -> []
-  | item :: rem ->
-    match item.str_desc with
-    | Tstr_eval (expr, _attrs) -> more_idents rem
-    | Tstr_value(rec_flag, pat_expr_list) -> more_idents rem
-    | Tstr_primitive _ -> more_idents rem
-    | Tstr_type decls -> more_idents rem
-    | Tstr_typext tyext -> more_idents rem
-    | Tstr_exception _ -> more_idents rem
-    | Tstr_recmodule decls -> more_idents rem
-    | Tstr_modtype _ -> more_idents rem
-    | Tstr_open _ -> more_idents rem
-    | Tstr_class cl_list -> more_idents rem
-    | Tstr_class_type cl_list -> more_idents rem
-    | Tstr_include _ -> more_idents rem
-    | Tstr_module {mb_expr={mod_desc = Tmod_structure str}} ->
-        all_idents str.str_items @ more_idents rem
-    | Tstr_module _ -> more_idents rem
-    | Tstr_attribute _ -> more_idents rem
-
-and all_idents = function
-    [] -> []
-  | item :: rem ->
-    match item.str_desc with
-    | Tstr_eval (expr, _attrs) -> all_idents rem
-    | Tstr_value(rec_flag, pat_expr_list) ->
-      let_bound_idents pat_expr_list @ all_idents rem
-    | Tstr_primitive _ -> all_idents rem
-    | Tstr_type decls -> all_idents rem
-    | Tstr_typext tyext ->
-      List.map (fun ext -> ext.ext_id) tyext.tyext_constructors
-      @ all_idents rem
-    | Tstr_exception ext -> ext.ext_id :: all_idents rem
-    | Tstr_recmodule decls ->
-      List.map (fun mb -> mb.mb_id) decls @ all_idents rem
-    | Tstr_modtype _ -> all_idents rem
-    | Tstr_open _ -> all_idents rem
-    | Tstr_class cl_list ->
-      List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list @ all_idents rem
-    | Tstr_class_type cl_list -> all_idents rem
-    | Tstr_include incl ->
-      bound_value_identifiers incl.incl_type @ all_idents rem
-    | Tstr_module {mb_id;mb_expr={mod_desc = Tmod_structure str}} ->
-        mb_id :: all_idents str.str_items @ all_idents rem
-    | Tstr_module mb -> mb.mb_id :: all_idents rem
-    | Tstr_attribute _ -> all_idents rem
-
-
-(* A variant of transl_structure used to compile toplevel structure definitions
-   for the native-code compiler. Store the defined values in the fields
-   of the global as soon as they are defined, in order to reduce register
-   pressure.  Also rewrites the defining expressions so that they
-   refer to earlier fields of the structure through the fields of
-   the global, not by their names.
-   "map" is a table from defined idents to (pos in global block, coercion).
-   "prim" is a list of (pos in global block, primitive declaration). *)
-
-let transl_store_subst = ref Ident.empty
-  (** In the native toplevel, this reference is threaded through successive
-      calls of transl_store_structure *)
-
-let nat_toplevel_name id =
-  try match Ident.find_same id !transl_store_subst with
-    | Lprim(Pfield (pos, _), [Lprim(Pgetglobal glob, [], _)] ,_) -> (glob,pos)
-    | _ -> raise Not_found
-  with Not_found ->
-    fatal_error("Translmod.nat_toplevel_name: " ^ Ident.unique_name id)
-
-let transl_store_structure glob map prims str =
-  let rec transl_store rootpath subst = function
-    [] ->
-      transl_store_subst := subst;
-        lambda_unit
-    | item :: rem ->
-        match item.str_desc with
-  | Tstr_eval (expr, _attrs) ->
-      Lsequence(subst_lambda subst (transl_exp expr),
-                transl_store rootpath subst rem)
-  | Tstr_value(rec_flag, pat_expr_list) ->
-      let ids = let_bound_idents pat_expr_list in
-      let lam = transl_let rec_flag pat_expr_list (store_idents Location.none ids) in
-      Lsequence(subst_lambda subst lam,
-                transl_store rootpath (add_idents false ids subst) rem)
-  | Tstr_primitive descr ->
-      record_primitive descr.val_val;
-      transl_store rootpath subst rem
-  | Tstr_type decls ->
-      transl_store rootpath subst rem
-  | Tstr_typext(tyext) ->
-      let ids = List.map (fun ext -> ext.ext_id) tyext.tyext_constructors in
-      let lam =
-        transl_type_extension item.str_env rootpath tyext (store_idents Location.none ids)
-      in
-        Lsequence(subst_lambda subst lam,
-                  transl_store rootpath (add_idents false ids subst) rem)
-  | Tstr_exception ext ->
-      let id = ext.ext_id in
-      let path = field_path rootpath id in
-      let lam = transl_extension_constructor item.str_env path ext in
-      Lsequence(Llet(Strict, id, subst_lambda subst lam, store_ident ext.ext_loc id),
-                transl_store rootpath (add_ident false id subst) rem)
-  | Tstr_module{mb_id=id; mb_expr={mod_desc = Tmod_structure str}; mb_loc = loc} ->
-    let lam = transl_store (field_path rootpath id) subst str.str_items in
-      (* Careful: see next case *)
-    let subst = !transl_store_subst in
-    Lsequence(lam,
-              Llet(Strict, id,
-                   subst_lambda subst
-                   (Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
-                          List.map (fun id -> Lvar id)
-                                   (defined_idents str.str_items),loc)),
-                   Lsequence(store_ident loc id,
-                             transl_store rootpath (add_ident true id subst)
-                                          rem)))
-  | Tstr_module{mb_id=id; mb_expr=modl; mb_loc = loc} ->
-      let lam = transl_module Tcoerce_none (field_path rootpath id) modl in
-      (* Careful: the module value stored in the global may be different
-         from the local module value, in case a coercion is applied.
-         If so, keep using the local module value (id) in the remainder of
-         the compilation unit (add_ident true returns subst unchanged).
-         If not, we can use the value from the global
-         (add_ident true adds id -> Pgetglobal... to subst). *)
-      Llet(Strict, id, subst_lambda subst lam,
-        Lsequence(store_ident loc id,
-                  transl_store rootpath (add_ident true id subst) rem))
-  | Tstr_recmodule bindings ->
-      let ids = List.map (fun mb -> mb.mb_id) bindings in
-      compile_recmodule
-        (fun id modl ->
-          subst_lambda subst
-            (transl_module Tcoerce_none
-                           (field_path rootpath id) modl))
-        bindings
-        (Lsequence(store_idents Location.none ids,
-                   transl_store rootpath (add_idents true ids subst) rem))
-  | Tstr_class cl_list ->
-      let ids = List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list in
-      let lam =
-        Lletrec(List.map
-              (fun (ci, meths, vf) ->
-                let id = ci.ci_id_class in
-                let cl = ci.ci_expr in
-                     (id, transl_class ids id meths cl vf))
-                  cl_list,
-                store_idents Location.none ids) in
-      Lsequence(subst_lambda subst lam,
-                transl_store rootpath (add_idents false ids subst) rem)
-  | Tstr_include incl ->
-      let ids = bound_value_identifiers incl.incl_type in
-      let modl = incl.incl_mod in
-      let mid = Ident.create "include" in
-      let loc = incl.incl_loc in
-      let rec store_idents pos = function
-        [] -> transl_store rootpath (add_idents true ids subst) rem
-      | id :: idl ->
-          Llet(Alias, id, Lprim(Pfield (pos, Fld_na), [Lvar mid],loc),
-               Lsequence(store_ident loc id, store_idents (pos + 1) idl)) in
-      Llet(Strict, mid,
-           subst_lambda subst (transl_module Tcoerce_none None modl),
-           store_idents 0 ids)
-  | Tstr_modtype _
-  | Tstr_open _
-  | Tstr_class_type _
-  | Tstr_attribute _ ->
-      transl_store rootpath subst rem
-
-  and store_ident loc id =
-    try
-      let (pos, cc) = Ident.find_same id map in
-      let init_val = apply_coercion loc Alias cc (Lvar id) in
-      Lprim(Psetfield(pos, false, Fld_set_na), [Lprim(Pgetglobal glob, [], loc); init_val], loc)
-    with Not_found ->
-      fatal_error("Translmod.store_ident: " ^ Ident.unique_name id)
-
-  and store_idents loc idlist =
-    make_sequence (store_ident loc) idlist
-
-  and add_ident may_coerce id subst =
-    try
-      let (pos, cc) = Ident.find_same id map in
-      match cc with
-        Tcoerce_none ->
-          Ident.add id (Lprim(Pfield (pos, Fld_na), [Lprim(Pgetglobal glob, [], Location.none)], Location.none)) subst
-      | _ ->
-          if may_coerce then subst else assert false
-    with Not_found ->
-      assert false
-
-  and add_idents may_coerce idlist subst =
-    List.fold_right (add_ident may_coerce) idlist subst
-
-  and store_primitive (pos, prim) cont =
-    Lsequence(Lprim(Psetfield(pos, false, Fld_set_na),
-                    [Lprim(Pgetglobal glob, [], Location.none);
-                     transl_primitive Location.none prim], Location.none),
-              cont)
-
-  in List.fold_right store_primitive prims
-                     (transl_store (global_path glob) !transl_store_subst str)
-
-(* Transform a coercion and the list of value identifiers defined by
-   a toplevel structure into a table [id -> (pos, coercion)],
-   with [pos] being the position in the global block where the value of
-   [id] must be stored, and [coercion] the coercion to be applied to it.
-   A given identifier may appear several times
-   in the coercion (if it occurs several times in the signature); remember
-   to assign it the position of its last occurrence.
-   Identifiers that are not exported are assigned positions at the
-   end of the block (beyond the positions of all exported idents).
-   Also compute the total size of the global block,
-   and the list of all primitives exported as values. *)
-
-let build_ident_map restr idlist more_ids =
-  let rec natural_map pos map prims = function
-    [] ->
-      (map, prims, pos)
-  | id :: rem ->
-      natural_map (pos+1) (Ident.add id (pos, Tcoerce_none) map) prims rem in
-  let (map, prims, pos) =
-    match restr with
-        Tcoerce_none ->
-          natural_map 0 Ident.empty [] idlist
-      | Tcoerce_structure (pos_cc_list, _id_pos_list) ->
-              (* ignore _id_pos_list as the ids are already bound *)
-        let idarray = Array.of_list idlist in
-        let rec export_map pos map prims undef = function
-        [] ->
-          natural_map pos map prims undef
-          | (source_pos, Tcoerce_primitive (_,p)) :: rem ->
-            export_map (pos + 1) map ((pos, p) :: prims) undef rem
-          | (source_pos, cc) :: rem ->
-            let id = idarray.(source_pos) in
-            export_map (pos + 1) (Ident.add id (pos, cc) map)
-              prims (list_remove id undef) rem
-        in export_map 0 Ident.empty [] idlist pos_cc_list
-      | _ ->
-        fatal_error "Translmod.build_ident_map"
-  in
-  natural_map pos map prims more_ids
-
-(* Compile an implementation using transl_store_structure
-   (for the native-code compiler). *)
-
-let transl_store_gen module_name ({ str_items = str }, restr) topl =
-  reset_labels ();
-  primitive_declarations := [];
-  let module_id = Ident.create_persistent module_name in
-  let (map, prims, size) =
-    build_ident_map restr (defined_idents str) (more_idents str) in
-  let f = function
-    | [ { str_desc = Tstr_eval (expr, _attrs) } ] when topl ->
-        assert (size = 0);
-        subst_lambda !transl_store_subst (transl_exp expr)
-    | str -> transl_store_structure module_id map prims str in
-  transl_store_label_init module_id size f str
-  (*size, transl_label_init (transl_store_structure module_id map prims str)*)
-
-let transl_store_phrases module_name str =
-  transl_store_gen module_name (str,Tcoerce_none) true
-
-let transl_store_implementation module_name (str, restr) =
-  let s = !transl_store_subst in
-  transl_store_subst := Ident.empty;
-  let r = transl_store_gen module_name (str, restr) false in
-  transl_store_subst := s;
-  r
-
-(* Compile a toplevel phrase *)
-
-let toploop_ident = Ident.create_persistent "Toploop"
-let toploop_getvalue_pos = 0 (* position of getvalue in module Toploop *)
-let toploop_setvalue_pos = 1 (* position of setvalue in module Toploop *)
-
-let aliased_idents = ref Ident.empty
-
-let set_toplevel_unique_name id =
-  aliased_idents :=
-    Ident.add id (Ident.unique_toplevel_name id) !aliased_idents
-
-let toplevel_name id =
-  try Ident.find_same id !aliased_idents
-  with Not_found -> Ident.name id
-
-let toploop_getvalue id =
-  Lapply(Lprim(Pfield (toploop_getvalue_pos, Fld_na),
-                 [Lprim(Pgetglobal toploop_ident, [], Location.none)], Location.none),
-         [Lconst(Const_base(Const_string (toplevel_name id, None)))],
-         Location.none)
-
-let toploop_setvalue id lam =
-  Lapply(Lprim(Pfield (toploop_setvalue_pos, Fld_na),
-                 [Lprim(Pgetglobal toploop_ident, [], Location.none)], Location.none),
-         [Lconst(Const_base(Const_string (toplevel_name id, None))); lam],
-         Location.none)
-
-let toploop_setvalue_id id = toploop_setvalue id (Lvar id)
-
-let close_toplevel_term lam =
-  IdentSet.fold (fun id l -> Llet(Strict, id, toploop_getvalue id, l))
-                (free_variables lam) lam
-
-let transl_toplevel_item item =
-  match item.str_desc with
-    Tstr_eval (expr, _attrs) ->
-      transl_exp expr
-  | Tstr_value(rec_flag, pat_expr_list) ->
-      let idents = let_bound_idents pat_expr_list in
-      transl_let rec_flag pat_expr_list
-                 (make_sequence toploop_setvalue_id idents)
-  | Tstr_typext(tyext) ->
-      let idents =
-        List.map (fun ext -> ext.ext_id) tyext.tyext_constructors
-      in
-        transl_type_extension item.str_env None tyext
-          (make_sequence toploop_setvalue_id idents)
-  | Tstr_exception ext ->
-      toploop_setvalue ext.ext_id
-        (transl_extension_constructor item.str_env None ext)
-  | Tstr_module {mb_id=id; mb_expr=modl} ->
-      (* we need to use the unique name for the module because of issues
-         with "open" (PR#1672) *)
-      set_toplevel_unique_name id;
-      let lam = transl_module Tcoerce_none (Some(Pident id)) modl in
-      toploop_setvalue id lam
-  | Tstr_recmodule bindings ->
-      let idents = List.map (fun mb -> mb.mb_id) bindings in
-      compile_recmodule
-        (fun id modl -> transl_module Tcoerce_none (Some(Pident id)) modl)
-        bindings
-        (make_sequence toploop_setvalue_id idents)
-  | Tstr_class cl_list ->
-      (* we need to use unique names for the classes because there might
-         be a value named identically *)
-      let ids = List.map (fun (ci, _, _) -> ci.ci_id_class) cl_list in
-      List.iter set_toplevel_unique_name ids;
-      Lletrec(List.map
-          (fun (ci, meths, vf) ->
-            let id = ci.ci_id_class in
-            let cl = ci.ci_expr in
-                   (id, transl_class ids id meths cl vf))
-                cl_list,
-              make_sequence
-                (fun (ci, _, _) -> toploop_setvalue_id ci.ci_id_class)
-                cl_list)
-  | Tstr_include incl ->
-      let ids = bound_value_identifiers incl.incl_type in
-      let modl = incl.incl_mod in
-      let mid = Ident.create "include" in
-      let rec set_idents pos = function
-        [] ->
-          lambda_unit
-      | id :: ids ->
-          Lsequence(toploop_setvalue id (Lprim(Pfield (pos, Fld_na), [Lvar mid], Location.none)),
-                    set_idents (pos + 1) ids) in
-      Llet(Strict, mid, transl_module Tcoerce_none None modl, set_idents 0 ids)
-  | Tstr_modtype _
-  | Tstr_open _
-  | Tstr_primitive _
-  | Tstr_type _
-  | Tstr_class_type _
-  | Tstr_attribute _ ->
-      lambda_unit
-
-let transl_toplevel_item_and_close itm =
-  close_toplevel_term (transl_label_init (transl_toplevel_item itm))
-
-let transl_toplevel_definition str =
-  reset_labels ();
-  make_sequence transl_toplevel_item_and_close str.str_items
-
-(* Compile the initialization code for a packed library *)
-
-let get_component = function
-    None -> Lconst const_unit
-  | Some id -> Lprim(Pgetglobal id, [], Location.none)
-
-let transl_package component_names target_name coercion =
-  let components =
-    Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), List.map get_component component_names, Location.none) in
-  Lprim(Psetglobal target_name, [apply_coercion Location.none Strict coercion components], Location.none)
-  (*
-  let components =
-    match coercion with
-      Tcoerce_none ->
-        List.map get_component component_names
-    | Tcoerce_structure (pos_cc_list, id_pos_list) ->
-              (* ignore id_pos_list as the ids are already bound *)
-        let g = Array.of_list component_names in
-        List.map
-          (fun (pos, cc) -> apply_coercion Strict cc (get_component g.(pos)))
-          pos_cc_list
-    | _ ->
-        assert false in
-  Lprim(Psetglobal target_name, [Lprim(Pmakeblock(0, Immutable), components)])
-   *)
-
-let transl_store_package component_names target_name coercion =
-  let rec make_sequence fn pos arg =
-    match arg with
-      [] -> lambda_unit
-    | hd :: tl -> Lsequence(fn pos hd, make_sequence fn (pos + 1) tl) in
-  match coercion with
-    Tcoerce_none ->
-      (List.length component_names,
-       make_sequence
-         (fun pos id ->
-           Lprim(Psetfield(pos, false, Fld_set_na),
-                 [Lprim(Pgetglobal target_name, [], Location.none);
-                  get_component id], Location.none))
-         0 component_names)
-  | Tcoerce_structure (pos_cc_list, id_pos_list) ->
-      let components =
-        Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), List.map get_component component_names, Location.none)
-      in
-      let blk = Ident.create "block" in
-      (List.length pos_cc_list,
-       Llet (Strict, blk, apply_coercion Location.none Strict coercion components,
-             make_sequence
-               (fun pos id ->
-                 Lprim(Psetfield(pos, false, Fld_set_na),
-                       [Lprim(Pgetglobal target_name, [], Location.none);
-                        Lprim(Pfield (pos, Fld_na), [Lvar blk], Location.none)], Location.none))
-               0 pos_cc_list))
-  (*
-              (* ignore id_pos_list as the ids are already bound *)
-      let id = Array.of_list component_names in
-      (List.length pos_cc_list,
-       make_sequence
-         (fun dst (src, cc) ->
-           Lprim(Psetfield(dst, false),
-                 [Lprim(Pgetglobal target_name, []);
-                  apply_coercion Strict cc (get_component id.(src))]))
-         0 pos_cc_list)
-  *)
-  | _ -> assert false
-
-(* Error report *)
-
-open Format
-
-let report_error ppf = function
-    Circular_dependency id ->
-      fprintf ppf
-        "@[Cannot safely evaluate the definition@ \
-         of the recursively-defined module %a@]"
-        Printtyp.ident id
-
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error (loc, err) ->
-        Some (Location.error_of_printer loc report_error err)
-      | _ ->
-        None
-    )
-
-let reset () =
-  export_identifiers := [];
-  primitive_declarations := [];
-  transl_store_subst := Ident.empty;
-  toploop_ident.Ident.flags <- 0;
-  aliased_idents := Ident.empty
-
-end
 module Lam_compile_group : sig 
 #1 "lam_compile_group.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -96026,7 +96027,6 @@ module Lam_compile_group : sig
 val compile :  
   filename : string -> 
   string -> 
-  bool -> 
   Env.t -> 
   Types.signature -> 
   Lambda.lambda -> 
@@ -96214,24 +96214,81 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 
 ;;
 
+
+
+
+(* Invariant: The last one is always [exports]
+           Compile definitions
+           Compile exports
+           Assume Pmakeblock(_,_),
+           lambda_exports are pure
+           compile each binding with a return value
+           This might be wrong in toplevel
+           TODO: add this check as early as possible in the beginning
+*)
+let handle_exports 
+    (original_exports : Ident.t list)
+    (lambda_exports : Lam.t list)  (rest : Lam_group.t list) : 
+  Lam.ident list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list=
+  let coercion_groups, new_exports, new_export_set,  export_map = 
+    List.fold_right2 
+        (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
+           match (lam : Lam.t) with 
+           | Lvar id 
+             when Ident.name id = Ident.name eid -> 
+             (* {[ Ident.same id eid]} is more  correct, 
+                however, it will introduce a coercion, which is not necessary, 
+                as long as its name is the same, we want to avoid 
+                another coercion                        
+             *)
+             (coercions, 
+              id :: new_exports, 
+              Ident_set.add id new_export_set,
+              export_map)
+           | _ -> (** TODO : bug 
+                      check [map.ml] here coercion, we introduced 
+                      rebound which is not corrrect 
+                      {[
+                        let Make/identifier = function (funarg){
+                            var $$let = Make/identifier(funarg);
+                                    return [0, ..... ]
+                          }
+                      ]}
+                      Possible fix ? 
+                      change export identifier, we should do this in the very 
+                      beginning since lots of optimizations depend on this
+                      however
+                  *)
+             (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
+              eid :: new_exports,
+              Ident_set.add eid new_export_set, 
+              Ident_map.add eid lam export_map))
+        original_exports lambda_exports 
+        ([],[], Ident_set.empty, Ident_map.empty)
+  in
+  let (export_map, rest) = 
+    List.fold_left 
+      (fun (export_map, acc) x ->
+         (match (x : Lam_group.t)  with 
+          | Single (_,id,lam) when Ident_set.mem id new_export_set 
+            -> Ident_map.add id lam export_map
+          | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
+  let rest = Lam_dce.remove new_exports rest in
+  new_exports, new_export_set, export_map , rest 
+
+
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
-    [no_export] is only used in playground
 *)
-let compile  ~filename output_prefix no_export env _sigs 
+let compile  ~filename output_prefix env _sigs 
     (lam : Lambda.lambda)   = 
-  let export_idents = 
-    if no_export then
-      []    
-    else  Translmod.get_export_identifiers()  
-  in
+  let export_idents = Translmod.get_export_identifiers() in
   let () = 
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
   in
   (* To make toplevel happy - reentrant for js-demo *)
   let ()   = 
-    Translmod.reset () ; 
     Lam_compile_env.reset () ;
   in 
   let lam = Lam.convert  lam in 
@@ -96291,74 +96348,16 @@ let compile  ~filename output_prefix no_export env _sigs
 
   (* Dump for debugger *)
 
-
-  (* Invariant: The last one is always [exports]
-           Compile definitions
-           Compile exports
-           Assume Pmakeblock(_,_),
-           lambda_exports are pure
-           compile each binding with a return value
-           This might be wrong in toplevel
-           TODO: add this check as early as possible in the beginning
-  *)
   begin 
     match Lam_group.flatten [] lam with 
     | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
       rest ->
-      let coercion_groups, new_exports, new_export_set,  export_map = 
-        if no_export then 
-          [], [], Ident_set.empty, Ident_map.empty
-        else
-          List.fold_right2 
-            (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
-               match (lam : Lam.t) with 
-               | Lvar id 
-                 when Ident.name id = Ident.name eid -> 
-                 (* {[ Ident.same id eid]} is more  correct, 
-                    however, it will introduce a coercion, which is not necessary, 
-                    as long as its name is the same, we want to avoid 
-                    another coercion                        
-                 *)
-                 (coercions, 
-                  id :: new_exports, 
-                  Ident_set.add id new_export_set,
-                  export_map)
-               | _ -> (** TODO : bug 
-                          check [map.ml] here coercion, we introduced 
-                          rebound which is not corrrect 
-                          {[
-                            let Make/identifier = function (funarg){
-                                var $$let = Make/identifier(funarg);
-                                        return [0, ..... ]
-                              }
-                          ]}
-                          Possible fix ? 
-                          change export identifier, we should do this in the very 
-                          beginning since lots of optimizations depend on this
-                          however
-                      *)
-                 (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
-                  eid :: new_exports,
-                  Ident_set.add eid new_export_set, 
-                  Ident_map.add eid lam export_map))
-            meta.exports lambda_exports 
-            ([],[], Ident_set.empty, Ident_map.empty)
-      in
-
-      let (export_map, rest) = 
-        List.fold_left 
-          (fun (export_map, acc) x ->
-             (match (x : Lam_group.t)  with 
-              | Single (_,id,lam) when Ident_set.mem id new_export_set 
-                -> Ident_map.add id lam export_map
-              | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
-      let rest = Lam_dce.remove new_exports rest in
+      let new_exports, new_export_set, export_map, rest = 
+        handle_exports  meta.exports lambda_exports rest in 
       let meta = { meta with 
                    export_idents = new_export_set;
                    exports = new_exports
                  } in 
-
-
       (* TODO: turn in on debug mode later*)
       let () =
         let len = List.length new_exports in 
@@ -96452,8 +96451,7 @@ let compile  ~filename output_prefix no_export env _sigs
           in
 
           let v = 
-            Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
-              (if no_export then Ident_map.empty else export_map) 
+            Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids export_map
           in
           (if not @@ !Clflags.dont_write_files then
              Js_cmj_format.to_file 
@@ -96475,7 +96473,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "camlinternalFormat.ml";
-    let lambda_output = compile ~filename output_prefix false env sigs lam in
+    let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
@@ -96502,8 +96500,6 @@ let lambda_as_module
                 only generate little-case js file
              *)
           ) output_chan
-
-
     | NonBrowser (_package_name, module_systems) ->
       module_systems |> List.iter begin fun (module_system, _path) -> 
         let output_chan chan  = 
