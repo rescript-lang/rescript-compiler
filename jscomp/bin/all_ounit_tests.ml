@@ -4158,22 +4158,32 @@ let suites =
       (*    bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]} *)
     end ;
     __LOC__ >:: begin fun _ -> 
-      let module Hash_set = Id_hash_set in 
-      let v = Hash_set.create 30 in 
+      let v = Id_hash_set.create 30 in 
       for i = 0 to 2_000 do 
-        Hash_set.add v {name = "x" ; stamp = i}
+        Id_hash_set.add v {name = "x" ; stamp = i}
       done ;
       for i = 0 to 2_000 do 
-        Hash_set.add v {name = "x" ; stamp = i}
+        Id_hash_set.add v {name = "x" ; stamp = i}
       done  ; 
       for i = 0 to 2_000 do 
-        assert (Hash_set.mem v {name = "x"; stamp = i})
+        assert (Id_hash_set.mem v {name = "x"; stamp = i})
       done;  
-      OUnit.assert_equal (Hash_set.length v)  2_001;
+      OUnit.assert_equal (Id_hash_set.length v)  2_001;
       for i =  1990 to 3_000 do 
-        Hash_set.remove v {name = "x"; stamp = i}
+        Id_hash_set.remove v {name = "x"; stamp = i}
       done ;
-      OUnit.assert_equal (Hash_set.length v) 1990;
+      OUnit.assert_equal (Id_hash_set.length v) 1990;
+      for i = 1000 to 3990 do 
+        Id_hash_set.remove v { name = "x"; stamp = i }
+      done;
+      OUnit.assert_equal (Id_hash_set.length v) 1000;
+      for i = 1000 to 1100 do 
+        Id_hash_set.add v { name = "x"; stamp = i};
+      done;
+      OUnit.assert_equal (Id_hash_set.length v ) 1101;
+      for i = 0 to 1100 do 
+        OUnit.assert_bool "exist" (Id_hash_set.mem v {name = "x"; stamp = i})
+      done  
       (* OUnit.assert_equal (Hash_set.stats v) *)
       (*   {num_bindings = 1990; num_buckets = 1024; max_bucket_length = 8; *)
       (*    bucket_histogram = [|148; 275; 285; 182; 95; 21; 14; 2; 2|]} *)
