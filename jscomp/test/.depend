@@ -84,6 +84,7 @@ class5_test.cmj : mt.cmj ../stdlib/list.cmj
 class6_test.cmj : mt.cmj
 class7_test.cmj : ../stdlib/oo.cmj mt.cmj
 class8_test.cmj : mt.cmj
+class_fib_open_recursion_test.cmj : mt.cmj ../stdlib/hashtbl.cmj
 class_repr.cmj : ../stdlib/oo.cmj
 class_setter_getter.cmj : ../runtime/js.cmj class_setter_getter.cmi
 class_test.cmj : mt.cmj
