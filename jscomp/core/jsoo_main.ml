@@ -50,6 +50,7 @@ let implementation impl ppf  str  =
   (* Compmisc.init_path false; *)
   (* let modulename = module_of_filename ppf sourcefile outputprefix in *)
   (* Env.set_unit_name modulename; *)
+  Lam_compile_env.reset () ;
   let env = Compmisc.initial_env() in (* Question ?? *)
   let finalenv = ref Env.empty in
   let types_signature = ref [] in
