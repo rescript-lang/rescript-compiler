@@ -44,12 +44,13 @@ let () =
   Clflags.dont_write_files := true;
   Clflags.unsafe_string := false
 
-let implementation impl no_export ppf  str  =
+let implementation impl ppf  str  =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
   (* let modulename = module_of_filename ppf sourcefile outputprefix in *)
   (* Env.set_unit_name modulename; *)
+  Lam_compile_env.reset () ;
   let env = Compmisc.initial_env() in (* Question ?? *)
   let finalenv = ref Env.empty in
   let types_signature = ref [] in
@@ -68,7 +69,7 @@ let implementation impl no_export ppf  str  =
       let () = Js_dump.(pp_deps_program
                           ~output_prefix:"" (* does not matter here *)
                           `NodeJS
-                          (Lam_compile_group.compile ~filename:"" "" no_export
+                          (Lam_compile_group.compile ~filename:"" "" 
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in
       let v = Buffer.contents buffer in 
@@ -105,8 +106,9 @@ let string_of_fmt (f : Format.formatter -> 'a -> unit) v =
     Format.pp_print_flush fmt () in
   Buffer.contents buf 
 
-let compile  impl : string -> string = string_of_fmt (implementation  impl false)
-let shake_compile impl : string -> string = string_of_fmt (implementation impl true)
+let compile  impl : string -> string = string_of_fmt (implementation  impl )
+(** TODO: add `[@@bs.config{no_export}]\n# 1 "repl.ml"`*)
+let shake_compile impl : string -> string = string_of_fmt (implementation impl )
 
 
 (** *)

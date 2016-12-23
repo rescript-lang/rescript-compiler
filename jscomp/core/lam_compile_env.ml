@@ -79,6 +79,7 @@ let cached_tbl  = Lam_module_ident.Hash.create 31
 
 (* For each compilation we need reset to make it re-entrant *)
 let reset () = 
+  Translmod.reset ();
   Lam_module_ident.Hash.clear cached_tbl 
 
 (* FIXME: JS external instead *)

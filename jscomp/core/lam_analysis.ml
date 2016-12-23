@@ -171,7 +171,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Plazyforce 
       | Psetfield _ 
       | Psetfloatfield _
-      | Psetglobal _ -> false 
+      (* | Psetglobal _  *)
+        -> false 
     )
   | Llet (_,_, arg,body) -> no_side_effects arg && no_side_effects body 
   | Lswitch (_,_) -> false 

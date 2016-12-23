@@ -45,7 +45,7 @@ type primitive =
   | Pbytes_of_string
   (* Globals *)
   | Pgetglobal of ident
-  | Psetglobal of ident
+  (* | Psetglobal of ident *)
   | Pglobal_exception of ident       
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag
@@ -996,7 +996,13 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
       prim ~primitive:(Pglobal_exception id) ~args loc       
     else       
       prim ~primitive:(Pgetglobal id) ~args loc
-  | Psetglobal id -> prim ~primitive:(Psetglobal id) ~args loc
+  | Psetglobal id -> 
+    (* we discard [Psetglobal] in the beginning*)
+    begin match args with 
+    | [biglambda] -> biglambda
+    | _ -> assert false 
+    end
+    (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag) 
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
   | Pfield (id,info) 

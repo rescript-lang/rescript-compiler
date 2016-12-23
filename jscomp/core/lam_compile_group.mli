@@ -40,7 +40,6 @@
 val compile :  
   filename : string -> 
   string -> 
-  bool -> 
   Env.t -> 
   Types.signature -> 
   Lambda.lambda -> 
