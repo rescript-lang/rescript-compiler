@@ -470,6 +470,7 @@ tfloat_record_test.cmj : mt_global.cmj mt.cmj ../stdlib/format.cmj \
 ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
 to_string_test.cmj : mt.cmj
+topsort_test.cmj : ../stdlib/string.cmj ../stdlib/set.cmj ../stdlib/list.cmj
 tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj ../stdlib/nativeint.cmj mt_global.cmj mt.cmj \
     ../stdlib/list.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
