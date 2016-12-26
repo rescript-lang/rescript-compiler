@@ -73,7 +73,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	set_gen bal_tree string_set string_set_test \
 	math_test bal_set_mini gpr_974_test test_cpp\
 	global_module_alias_test class_fib_open_recursion_test\
-	topsort_test
+	topsort_test flexible_array_test\
+	gray_code_test
 
 
 
