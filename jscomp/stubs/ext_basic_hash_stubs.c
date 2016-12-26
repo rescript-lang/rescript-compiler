@@ -55,7 +55,13 @@ CAMLprim value caml_bs_hash_small_int(value d){
   FINAL_MIX(h);
   return Val_int(h & 0x3FFFFFFFU);
 }
+
+
 /*
+ * http://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
+ * https://en.wikipedia.org/wiki/MurmurHash
+ * http://zimbry.blogspot.it/2011/09/better-bit-mixing-improving-on.html
+ * http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx
  * We gave up the idea to  hash Ident.t (take only one argument)
  * customized hash function for Ident.t, first 
  * argument is stamp, second argument is string 
