@@ -1,11 +1,10 @@
 'use strict';
 
-var Bytes       = require("../../lib/js/bytes");
-var Mt          = require("./mt");
-var Block       = require("../../lib/js/block");
-var Caml_bytes  = require("../../lib/js/caml_bytes");
-var Buffer      = require("../../lib/js/buffer");
-var Caml_string = require("../../lib/js/caml_string");
+var Bytes      = require("../../lib/js/bytes");
+var Mt         = require("./mt");
+var Block      = require("../../lib/js/block");
+var Caml_bytes = require("../../lib/js/caml_bytes");
+var Buffer     = require("../../lib/js/buffer");
 
 var v = "gso";
 
@@ -34,7 +33,7 @@ var suites_001 = /* :: */[
       return /* Eq */Block.__(0, [
                 /* tuple */[
                   u[0],
-                  Caml_string.get(v, 0)
+                  /* "g" */103
                 ],
                 /* tuple */[
                   /* "b" */98,
