@@ -272,5 +272,24 @@ val for_ :
 
 
 
+(** In this pass we also synchronized aliases so that 
+    {[
+      let a1 = a0 in 
+      let a2 = a1 in 
+      let a3 = a2 in 
+      let a4 = a3 in 
+    ]}
+    converted to 
+    {[
+      let a1 = a0 in 
+      let a2 = a0 in 
+      let a3 = a0 in 
+      let a4 = a0 in 
+    ]}
+    we dont eliminate unused let bindings to leave it for {!Lam_pass_lets_dce}
+    we should remove all those let aliases, otherwise, it will be
+    pushed into alias table again
+ *)
+val convert :  Ident_set.t -> Lambda.lambda -> t 
 
-val convert : Lambda.lambda -> t 
+

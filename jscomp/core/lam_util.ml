@@ -323,10 +323,7 @@ let dump env ext  lam =
   lam
 #end
 
-let ident_set_of_list ls = 
-  List.fold_left
-    (fun acc k -> Ident_set.add k acc ) 
-    Ident_set.empty ls 
+
 
 let print_ident_set fmt s = 
   Format.fprintf fmt   "@[<v>{%a}@]@."

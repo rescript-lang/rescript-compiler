@@ -5,7 +5,6 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
 var Mt                      = require("./mt");
 var Caml_bytes              = require("../../lib/js/caml_bytes");
-var Caml_string             = require("../../lib/js/caml_string");
 
 var v = "gso";
 
@@ -42,19 +41,7 @@ function is_equal() {
           ]
         ];
   }
-  if (Caml_string.get(v, 0) === /* "g" */103) {
-    return 0;
-  }
-  else {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "equal_exception_test.ml",
-            14,
-            4
-          ]
-        ];
-  }
+  return 0;
 }
 
 function is_exception() {

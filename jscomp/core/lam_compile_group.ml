@@ -198,7 +198,21 @@ let handle_exports
              (* {[ Ident.same id eid]} is more  correct, 
                 however, it will introduce a coercion, which is not necessary, 
                 as long as its name is the same, we want to avoid 
-                another coercion                        
+                another coercion                
+                In most common cases, it will be 
+                {[
+                  let export/100 =a fun ..
+                  export/100    
+                ]}
+                This comes from we have lambda as below 
+                {[
+                  (* let export/100 =a export/99  *)
+                  (* above is probably the cause but does not have to be  *)
+                  (export/99)                
+                ]}
+                [export/100] was not eliminated due to that it is export id, 
+                if we rename export/99 to be export id, then we don't need 
+                the  coercion any more, and export/100 will be dced later
              *)
              (coercions, 
               id :: new_exports, 
@@ -242,6 +256,7 @@ let handle_exports
 let compile  ~filename output_prefix env _sigs 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
+  let export_ident_sets = Ident_set.of_list export_idents in 
   let () = 
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
@@ -250,14 +265,14 @@ let compile  ~filename output_prefix env _sigs
   let ()   = 
     Lam_compile_env.reset () ;
   in 
-  let lam = Lam.convert  lam in 
+  let lam = Lam.convert export_ident_sets lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
   let lam  = Lam_group.deep_flatten lam in
   let lam = _d  "flatten" lam in
   let meta = 
-    Lam_pass_collect.count_alias_globals env filename  export_idents lam in
+    Lam_pass_collect.count_alias_globals env filename  export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam

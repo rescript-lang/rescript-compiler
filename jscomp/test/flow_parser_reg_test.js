@@ -12,11 +12,12 @@ var Mt                      = require("./mt");
 var Queue                   = require("../../lib/js/queue");
 var Block                   = require("../../lib/js/block");
 var Lexing                  = require("../../lib/js/lexing");
-var Char                    = require("../../lib/js/char");
 var Path                    = require("path");
+var Char                    = require("../../lib/js/char");
 var Sys                     = require("../../lib/js/sys");
 var Curry                   = require("../../lib/js/curry");
 var Printf                  = require("../../lib/js/printf");
+var Fs                      = require("fs");
 var Caml_array              = require("../../lib/js/caml_array");
 var Caml_bytes              = require("../../lib/js/caml_bytes");
 var $$Array                 = require("../../lib/js/array");
@@ -26,7 +27,6 @@ var Caml_module             = require("../../lib/js/caml_module");
 var $$String                = require("../../lib/js/string");
 var Caml_string             = require("../../lib/js/caml_string");
 var List                    = require("../../lib/js/list");
-var Fs                      = require("fs");
 
 var none = /* record */[
   /* source : None */0,

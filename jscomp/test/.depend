@@ -1,5 +1,6 @@
 a_recursive_type.cmi :
 abstract_type.cmi : mt.cmi
+alias_test.cmi :
 ari_regress_test.cmi :
 array_test.cmi :
 basic_module_test.cmi :
@@ -44,6 +45,7 @@ a_recursive_type.cmj : a_recursive_type.cmi
 a_scope_bug.cmj :
 a_string_test.cmj : mt.cmj ../stdlib/list.cmj ext_string.cmj
 abstract_type.cmj : abstract_type.cmi
+alias_test.cmj : ../stdlib/string.cmj alias_test.cmi
 and_or_tailcall_test.cmj : mt.cmj
 app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi

@@ -5,7 +5,7 @@ var Caml_string = require("../../lib/js/caml_string");
 
 var v = "ghos";
 
-var u_a = Caml_string.get(v, 0);
+var u_a = /* "g" */103;
 
 function u_b() {
   return Caml_string.get(v, -1);

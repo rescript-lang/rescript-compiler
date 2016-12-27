@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 81 *) List.hd state.tests_planned
+  (* 82 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 162 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 164 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 162 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 164 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 162 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 164 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 162 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 164 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 243 *) was_successful t
+        (* 246 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 324 *) string_of_int n
+        (* 328 *) string_of_int n
     | Label s -> 
-        (* 486 *) s
+        (* 492 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 81 *) 1 
-    | TestLabel (_, t) -> (* 96 *) test_case_count t
+    | TestCase _ -> (* 82 *) 1 
+    | TestLabel (_, t) -> (* 97 *) test_case_count t
     | TestList l -> 
         (* 15 *) List.fold_left 
-          (fun c t -> (* 95 *) c + test_case_count t) 
+          (fun c t -> (* 96 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 162 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 164 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 15 *) let rec rfold_lefti cnt accup l = 
-    (* 110 *) match l with
+    (* 111 *) match l with
       | [] -> 
           (* 15 *) accup
 
       | h::t -> 
-          (* 95 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 96 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 488 *) match event_type with
+  (* 494 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,18 +276,18 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 486 *) begin
+        (* 492 *) begin
           let string_of_result = 
             if verbose then
               function
-                | RSuccess _      -> (* 81 *) "ok\n"
+                | RSuccess _      -> (* 82 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
               function
-                | RSuccess _      -> (* 81 *) "."
+                | RSuccess _      -> (* 82 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
@@ -296,11 +296,11 @@ let format_event verbose event_type =
             if verbose then
               match e with 
                 | EStart p -> 
-                    (* 81 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 82 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 81 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 82 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 81 *) string_of_result result
+                    (* 82 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -313,20 +313,20 @@ let format_event verbose event_type =
                     (* 0 *) str
             else 
               match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 162 *) ""
-                | EResult result -> (* 81 *) string_of_result result
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 164 *) ""
+                | EResult result -> (* 82 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 244 *) output_string chn (format_event true ev);
+       (* 247 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 244 *) print_string (format_event verbose ev);
+     (* 247 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 244 *) std_log ev; file_log ev; log ev),
+       (* 247 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -709,7 +709,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001402 *) let get_error_string () =
+  (* 2001404 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -925,7 +925,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 81 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 82 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 15 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1061,7 +1061,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 81 *) try 
+    (* 82 *) try 
       f ();
       RSuccess path
     with
@@ -1080,22 +1080,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 81 *) (path, f) :: acc
+          (* 82 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 15 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 95 *) flatten_test 
+               (* 96 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 96 *) flatten_test ((Label label)::path) acc t
+          (* 97 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 81 *) let result = 
+    (* 82 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1104,18 +1104,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 82 *) match state.tests_planned with 
+    (* 83 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 81 *) let (path, f) = !global_chooser state in            
+          (* 82 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 3321 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 3403 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1145,7 +1145,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 243 *) log (OUnitLogger.TestEvent ev))
+         (* 246 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1906,7 +1906,7 @@ let starts_with_and_number s ~offset beg =
     else 
       -1 
 
-let equal (x : string) y  = (* 8826023 *) x = y
+let equal (x : string) y  = (* 8829387 *) x = y
 
 let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
@@ -3223,7 +3223,7 @@ end = struct
    ]}
 *)
 let rec power_2_above x n =
-  (* 56 *) if x >= n then x
+  (* 63 *) if x >= n then x
   else if x * 2 > Sys.max_array_length then x
   else power_2_above (x * 2) n
 
@@ -3735,8 +3735,16 @@ sig
   val choose_exn: t -> key 
   val of_array: key array -> t 
   val to_sorted_array: t -> key array
+  val replace: t -> key -> key -> unit 
+  exception Replace_failure of bool 
 end
 
+exception Replace_failure of bool 
+
+
+(** when it is true, it means the old key does not exist ,
+    when it is false, it means the new key already exist
+  *)
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
@@ -3757,7 +3765,7 @@ type 'a t =
 
 
 let create  initial_size =
-  (* 12 *) let initial_size = Ext_util.power_2_above 16 initial_size in
+  (* 13 *) let initial_size = Ext_util.power_2_above 16 initial_size in
   { initial_size ; 
     size = 0; 
     data = Array.make initial_size Empty;
@@ -3780,7 +3788,7 @@ let reset h =
 
 let copy h = (* 0 *) { h with data = Array.copy h.data }
 
-let length h = (* 4 *) h.size
+let length h = (* 5 *) h.size
 
 
 let rec insert_bucket nmask ndata hash = function
@@ -3824,13 +3832,13 @@ let iter f h =
 
 (* find one element *)
 let choose_exn h = 
-  (* 9 *) let rec aux arr offset last_index = 
-    (* 48 *) if offset > last_index then 
+  (* 10 *) let rec aux arr offset last_index = 
+    (* 49 *) if offset > last_index then 
       raise Not_found (* This happens when size is 0, otherwise it is never called *)
     else 
       match Array.unsafe_get arr offset with 
       | Empty -> (* 39 *) aux arr (offset + 1) last_index 
-      | Cons (k,_,rest) -> (* 8 *) k 
+      | Cons (k,_,rest) -> (* 9 *) k 
   in
   let h_data = h.data in 
   aux h_data 0 h.data_mask
@@ -3851,13 +3859,13 @@ let fold f h init =
 
 
 let rec set_bucket arr = function 
-  | Empty -> (* 4224 *) ()
+  | Empty -> (* 5248 *) ()
   | Cons(k,i,rest) ->
-    (* 4610 *) Array.unsafe_set arr i k;
+    (* 5610 *) Array.unsafe_set arr i k;
     set_bucket arr rest 
 
 let to_sorted_array h = 
-  (* 10 *) if h.size = 0 then [||]
+  (* 11 *) if h.size = 0 then [||]
   else 
     let v = choose_exn h in 
     let arr = Array.make h.size v in
@@ -3909,7 +3917,7 @@ end = struct
 
 # 19
 open Ordered_hash_set_gen
-
+exception Replace_failure = Replace_failure
 let create = create
 let clear = clear
 let reset = reset
@@ -3924,18 +3932,18 @@ let to_sorted_array = to_sorted_array
 
 
 let rec small_bucket_mem key lst =
-  (* 4343911 *) match lst with 
-  | Empty -> (* 1026681 *) false 
+  (* 4345998 *) match lst with 
+  | Empty -> (* 1027775 *) false 
   | Cons(key1,_, rest) -> 
-    (* 3317230 *) equal_key key key1 ||
+    (* 3318223 *) equal_key key key1 ||
     match rest with 
-    | Empty -> (* 644223 *) false 
+    | Empty -> (* 644881 *) false 
     | Cons(key2 , _, rest) -> 
-      (* 1496312 *) equal_key key  key2 ||
+      (* 1496647 *) equal_key key  key2 ||
       match rest with 
-      | Empty -> (* 333706 *) false 
+      | Empty -> (* 333954 *) false 
       | Cons(key3,_,  rest) -> 
-        (* 578288 *) equal_key key  key3 ||
+        (* 578375 *) equal_key key  key3 ||
         small_bucket_mem key rest 
 
 let rec small_bucket_rank key lst =
@@ -3952,8 +3960,9 @@ let rec small_bucket_rank key lst =
           | Cons(key3,i3, rest) -> 
             (* 361976 *) if equal_key key  key3 then i3 else
               small_bucket_rank key rest 
+
 let add h key =
-  (* 2005120 *) let h_data_mask = h.data_mask in 
+  (* 2006120 *) let h_data_mask = h.data_mask in 
   let i = hash key land h_data_mask in 
   if not (small_bucket_mem key  h.data.(i)) then 
     begin 
@@ -3962,8 +3971,44 @@ let add h key =
       if h.size > Array.length h.data lsl 1 then resize hash h
     end
 
+let old_key_not_exist = Replace_failure false 
+let new_key_already_exist = Replace_failure true 
+
+let rec small_bucket_rank_and_delete key lst =
+  (* 1068 *) match lst with 
+  | Empty -> (* 0 *) raise old_key_not_exist
+  | Cons(key1,i,rest) -> 
+    (* 1068 *) if equal_key key key1 then i, rest  
+    else match rest with 
+      | Empty -> (* 0 *) raise old_key_not_exist
+      | Cons(key2,i2,  rest) -> 
+        (* 639 *) if equal_key key  key2 then i2, (Cons (key1,i,rest)) else
+          match rest with 
+          | Empty -> (* 0 *) raise old_key_not_exist
+          | Cons(key3,i3, rest) -> 
+            (* 242 *) if equal_key key  key3 then i3, (Cons (key1,i,Cons(key2,i2,rest))) else
+              let (rank, rest ) = small_bucket_rank_and_delete key rest in 
+              rank, Cons (key1,i, 
+                    Cons (key2,i2, 
+                          Cons(key3,i3,rest))) 
+
+let replace h old_key new_key =
+  (* 1000 *) let h_data_mask = h.data_mask in 
+  let i = hash old_key land h_data_mask in
+  let h_data = h.data in 
+  let bucket = Array.unsafe_get h_data  i in 
+  let (rank,new_bucket) = small_bucket_rank_and_delete old_key bucket in 
+  Array.unsafe_set h_data  i new_bucket ; 
+
+  let j = hash new_key land h_data_mask in 
+  let insert_bucket = Array.unsafe_get h_data j in 
+  let mem = small_bucket_mem new_key insert_bucket in 
+  if mem then raise new_key_already_exist
+  else 
+    Array.unsafe_set h_data j (Cons (new_key,rank, insert_bucket))
+
 let of_array arr =
-  (* 7 *) let len = Array.length arr in 
+  (* 8 *) let len = Array.length arr in 
   let h = create len in 
   for i = 0 to len - 1 do 
     add h (Array.unsafe_get arr i)
@@ -3973,6 +4018,7 @@ let of_array arr =
 
 let mem h key =
   (* 2000000 *) small_bucket_mem key (Array.unsafe_get h.data (hash  key land h.data_mask)) 
+
 let rank h key = 
   (* 2000000 *) small_bucket_rank key (Array.unsafe_get h.data (hash  key land h.data_mask))  
 
@@ -7176,6 +7222,19 @@ let suites =
       (* 1 *) OUnit.assert_raises Not_found (fun _ -> (* 1 *) Ordered_hash_set_string.choose_exn (Ordered_hash_set_string.of_array [||]))
     end;
 
+
+    __LOC__ >:: begin fun _ ->
+      (* 1 *) let count = 1000 in 
+      let v = Ordered_hash_set_string.of_array (Array.init count (fun i -> (* 1000 *) string_of_int i) ) in
+      for i = 0 to count - 1 do 
+        Ordered_hash_set_string.replace v (string_of_int i) (string_of_int i ^ ":")
+      done ;
+      OUnit.assert_equal (Ordered_hash_set_string.length v) count;
+      OUnit.assert_equal 
+        (Ordered_hash_set_string.to_sorted_array v )
+        (Array.init count (fun i -> (* 1000 *) string_of_int i ^ ":"))
+      
+    end
   ]
 
 end

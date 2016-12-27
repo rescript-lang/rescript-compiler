@@ -75,6 +75,9 @@ ext/ordered_hash_set_make.ml : ext/ordered_hash_set.cppo.ml
 ext/ordered_hash_set_string.ml:ext/ordered_hash_set.cppo.ml
 	cppo -D TYPE_STRING $< -o $@
 
+ext/ordered_hash_set_ident.ml:ext/ordered_hash_set.cppo.ml
+	cppo -D TYPE_IDENT $< -o $@
+
 ext/string_hashtbl.ml: ext/hashtbl.cppo.ml
 	cppo -D TYPE_STRING $< -o $@	
 ext/int_hashtbl.ml: ext/hashtbl.cppo.ml
@@ -153,12 +156,13 @@ EXT_SRCS = ext_util\
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set string_hash_set int_hash_set \
+	ext_ident\
 	ordered_hash_set_gen\
 	ordered_hash_set_string\
+	ordered_hash_set_ident\
 	ordered_hash_set_make\
 	ordered_hash_map_gen\
 	union_find \
-	ext_ident\
 	ident_map\
 	ident_set\
 	hashtbl_make\
@@ -199,7 +203,9 @@ CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initi
 	lam_stats_export lam_pass_alpha_conversion lam_pass_collect js_program_loader js_dump js_pass_debug\
 	js_of_lam_option js_output lam_compile_global lam_dispatch_primitive lam_beta_reduce\
 	lam_compile_external_call lam_compile_primitive lam_compile lam_pass_exits\
-	lam_pass_lets_dce lam_pass_remove_alias lam_compile_group\
+	lam_pass_count\
+	lam_pass_lets_dce \
+	lam_pass_remove_alias lam_compile_group\
 	js_implementation ocaml_batch_compile
 CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 
