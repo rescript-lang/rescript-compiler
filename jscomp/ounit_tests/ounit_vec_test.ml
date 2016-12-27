@@ -33,7 +33,16 @@ let suites =
       v =~~ [|1;2;3;4;5|]
     end
     ;
-
+    "sub" >:: begin fun _ -> 
+      let v = Int_vec.make 5 in 
+      OUnit.assert_bool __LOC__
+      (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
+      Int_vec.push 1 v;
+      OUnit.assert_bool __LOC__
+      (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
+      Int_vec.push 2 v ;  
+      ( Int_vec.sub v 0 2 =~~ [|1;2|])
+    end;
     "capacity" >:: begin fun _ -> 
       let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;

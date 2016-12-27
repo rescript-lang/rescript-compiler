@@ -8211,7 +8211,9 @@ sig
   val last : t -> elt
   val capacity : t -> int
   val exists : (elt -> bool) -> t -> bool
+  val sub : t -> int -> int  -> t 
 end
+external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
 type 'a t = {
   mutable arr : 'a array ;
@@ -8224,7 +8226,7 @@ let compact d =
   let d_arr = d.arr in 
   if d.len <> Array.length d_arr then 
     begin
-      let newarr = Array.sub d_arr 0 d.len in 
+      let newarr = unsafe_sub d_arr 0 d.len in 
       d.arr <- newarr
     end
 let singleton v = 
@@ -8263,7 +8265,7 @@ let of_list lst =
 
 
 let to_array d = 
-  Array.sub d.arr 0 d.len
+  unsafe_sub d.arr 0 d.len
 
 let of_array src =
   {
@@ -8282,15 +8284,24 @@ let copy src =
   let len = src.len in
   {
     len ;
-    arr = Array.sub src.arr 0 len ;
+    arr = unsafe_sub src.arr 0 len ;
   }
 (* FIXME *)
 let reverse_in_place src = 
   Ext_array.reverse_range src.arr 0 src.len 
 
-let sub src start len =
+
+
+
+(* {!Array.sub} is not enough for error checking, it 
+   may contain some garbage
+ *)
+let sub (src : _ t) start len =
+  let src_len = src.len in 
+  if len < 0 || start > src_len - len then invalid_arg "Vec_gen.sub"
+  else 
   { len ; 
-    arr = Array.sub src.arr start len }
+    arr = unsafe_sub src.arr start len }
 
 let iter f d = 
   let arr = d.arr in 
@@ -10713,7 +10724,16 @@ let suites =
       v =~~ [|1;2;3;4;5|]
     end
     ;
-
+    "sub" >:: begin fun _ -> 
+      let v = Int_vec.make 5 in 
+      OUnit.assert_bool __LOC__
+      (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
+      Int_vec.push 1 v;
+      OUnit.assert_bool __LOC__
+      (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
+      Int_vec.push 2 v ;  
+      ( Int_vec.sub v 0 2 =~~ [|1;2|])
+    end;
     "capacity" >:: begin fun _ -> 
       let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;
