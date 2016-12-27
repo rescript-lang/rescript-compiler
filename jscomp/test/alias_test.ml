@@ -45,6 +45,13 @@ let a20 = a19 ^ "not"
 let v = if a20.[0] = 'h' then 1 else 2 
 let a21 = a20 ^ a20 
 
+let a22 = "test " ^ a21 ^ "hello"
+
+let ff () = 
+  "cool " ^ a22 
+
+let a23 = ff ()  
+
 let b0 = 111
 
 let b1 = b0 
