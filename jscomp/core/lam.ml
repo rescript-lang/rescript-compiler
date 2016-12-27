@@ -1187,7 +1187,7 @@ let scc  (groups :  bindings)
           )  clusters body 
   end
 
-let convert lam = 
+let convert exports lam = 
   let alias = Ident_hashtbl.create 64 in 
   let rec
     aux (lam : Lambda.lambda) : t = 
@@ -1248,9 +1248,7 @@ let convert lam =
       ->
       begin match kind, e with 
         | Alias , Lvar u ->
-          Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
-          Llet(kind, id, Lvar u, aux body)
-        (* we should not remove it immediately, since we have to be careful 
+          (* we should not remove it immediately, since we have to be careful 
            where it is used, it can be [exported], [Lvar] or [Lassign] etc 
            The other common mistake is that 
            {[
@@ -1265,7 +1263,12 @@ let convert lam =
              let u = x (* u/y *)
            ]}
            This looks more correct, but lets be conservative here
-        *)  
+        *)          
+          Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
+          if Ident_set.mem id exports then 
+            Llet(kind, id, Lvar u, aux body)
+          else aux body 
+      
       | _, _ -> Llet(kind,id,aux e, aux body)
       end
     | Lletrec (bindings,body)

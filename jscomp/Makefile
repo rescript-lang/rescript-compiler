@@ -203,7 +203,9 @@ CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initi
 	lam_stats_export lam_pass_alpha_conversion lam_pass_collect js_program_loader js_dump js_pass_debug\
 	js_of_lam_option js_output lam_compile_global lam_dispatch_primitive lam_beta_reduce\
 	lam_compile_external_call lam_compile_primitive lam_compile lam_pass_exits\
-	lam_pass_lets_dce lam_pass_remove_alias lam_compile_group\
+	lam_pass_count\
+	lam_pass_lets_dce \
+	lam_pass_remove_alias lam_compile_group\
 	js_implementation ocaml_batch_compile
 CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 

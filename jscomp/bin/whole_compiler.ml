@@ -61403,7 +61403,7 @@ val for_ :
     we should remove all those let aliases, otherwise, it will be
     pushed into alias table again
  *)
-val convert :  Lambda.lambda -> t 
+val convert :  Ident_set.t -> Lambda.lambda -> t 
 
 
 
@@ -62598,7 +62598,7 @@ let scc  (groups :  bindings)
           )  clusters body 
   end
 
-let convert lam = 
+let convert exports lam = 
   let alias = Ident_hashtbl.create 64 in 
   let rec
     aux (lam : Lambda.lambda) : t = 
@@ -62659,9 +62659,7 @@ let convert lam =
       ->
       begin match kind, e with 
         | Alias , Lvar u ->
-          Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
-          Llet(kind, id, Lvar u, aux body)
-        (* we should not remove it immediately, since we have to be careful 
+          (* we should not remove it immediately, since we have to be careful 
            where it is used, it can be [exported], [Lvar] or [Lassign] etc 
            The other common mistake is that 
            {[
@@ -62676,7 +62674,12 @@ let convert lam =
              let u = x (* u/y *)
            ]}
            This looks more correct, but lets be conservative here
-        *)  
+        *)          
+          Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
+          if Ident_set.mem id exports then 
+            Llet(kind, id, Lvar u, aux body)
+          else aux body 
+      
       | _, _ -> Llet(kind,id,aux e, aux body)
       end
     | Lletrec (bindings,body)
@@ -68952,7 +68955,6 @@ val generate_label : ?name:string -> unit -> J.label
 (** [dump] when {!Js_config.is_same_file}*)
 val dump : Env.t   -> string -> Lam.t -> Lam.t
 
-val ident_set_of_list : Ident.t list -> Ident_set.t
 
 val print_ident_set : Format.formatter -> Ident_set.t -> unit
 
@@ -69298,10 +69300,7 @@ let dump env ext  lam =
   lam
 
 
-let ident_set_of_list ls = 
-  List.fold_left
-    (fun acc k -> Ident_set.add k acc ) 
-    Ident_set.empty ls 
+
 
 let print_ident_set fmt s = 
   Format.fprintf fmt   "@[<v>{%a}@]@."
@@ -94071,7 +94070,7 @@ val collect_helper : Lam_stats.meta -> Lam.t -> unit
 
 (** return a new [meta] *)
 val count_alias_globals : 
-    Env.t -> string -> Ident.t list -> Lam.t -> Lam_stats.meta
+    Env.t -> string -> Ident.t list -> Ident_set.t -> Lam.t -> Lam_stats.meta
 
 
 
@@ -94267,6 +94266,7 @@ let count_alias_globals
     env 
     filename
     export_idents
+    export_sets 
     (lam : Lam.t) : Lam_stats.meta =
   let meta : Lam_stats.meta = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
@@ -94276,7 +94276,7 @@ let count_alias_globals
      required_modules = [] ;
      filename;
      env;
-     export_idents = Lam_util.ident_set_of_list export_idents; 
+     export_idents = export_sets;
    } in 
   collect_helper  meta lam ; 
   meta
@@ -94783,6 +94783,230 @@ let simplify_exits (lam : Lam.t) =
 *)
 
 end
+module Lam_pass_count : sig 
+#1 "lam_pass_count.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+(* Adapted for Javascript backend : Hongbo Zhang,  *)
+
+type used_info = { 
+  mutable times : int ; 
+  mutable captured : bool;
+    (* captured in functon or loop, 
+       inline in such cases should be careful
+       1. can not inline mutable values
+       2. avoid re-computation 
+    *)
+}
+
+type occ_tbl  = used_info Ident_hashtbl.t
+
+val dummy_info : unit -> used_info
+val collect_occurs : Lam.t -> occ_tbl 
+end = struct
+#1 "lam_pass_count.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+(* Adapted for Javascript backend : Hongbo Zhang,  *)
+
+(*A naive dead code elimination *)
+type used_info = { 
+  mutable times : int ; 
+  mutable captured : bool;
+  (* captured in functon or loop, 
+     inline in such cases should be careful
+     1. can not inline mutable values
+     2. avoid re-computation 
+  *)
+}
+
+type occ_tbl  = used_info Ident_hashtbl.t
+(* First pass: count the occurrences of all let-bound identifiers *)
+
+type local_tbl = used_info  Ident_map.t
+
+let dummy_info () = {times =  0 ; captured = false }
+(* y is untouched *)
+
+let absorb_info (x : used_info) (y : used_info) = 
+  match x, y with
+  | {times = x0} , {times = y0; captured } -> 
+    x.times <- x0 + y0;
+    if captured then x.captured <- true
+
+
+(* The global table [occ] associates to each let-bound identifier
+   the number of its uses (as a reference):
+   - 0 if never used
+   - 1 if used exactly once in and not under a lambda or within a loop
+       - when under a lambda, 
+       - it's probably a closure
+       - within a loop
+       - update reference,
+       niether is good for inlining
+   - > 1 if used several times or under a lambda or within a loop.
+   The local table [bv] associates to each locally-let-bound variable
+   its reference count, as above.  [bv] is enriched at let bindings
+   but emptied when crossing lambdas and loops. *)
+let collect_occurs  lam : occ_tbl =
+  let occ : occ_tbl = Ident_hashtbl.create 83 in
+
+  (* Current use count of a variable. *)
+  let used v = 
+    match Ident_hashtbl.find_opt occ v with 
+    | None -> false 
+    | Some {times ; _} -> times > 0  in
+
+  (* Entering a [let].  Returns updated [bv]. *)
+  let bind_var bv ident =
+    let r = dummy_info () in
+    Ident_hashtbl.add occ ident r;
+    Ident_map.add ident r bv in
+
+  (* Record a use of a variable *)
+  let add_one_use bv ident  =
+    match Ident_map.find_opt ident bv with 
+    | Some r  -> r.times <- r.times + 1 
+    | None ->
+      (* ident is not locally bound, therefore this is a use under a lambda
+         or within a loop.  Increase use count by 2 -- enough so
+         that single-use optimizations will not apply. *)
+      match Ident_hashtbl.find_opt occ ident with 
+      | Some r -> absorb_info r {times = 1; captured =  true}
+      | None ->
+        (* Not a let-bound variable, ignore *)
+        () in
+
+  let inherit_use bv ident bid =
+    let n =
+      match Ident_hashtbl.find_opt occ bid with
+      | None -> dummy_info ()
+      | Some v -> v in
+    match Ident_map.find_opt ident bv with 
+    | Some r  -> absorb_info r n
+    | None ->
+      (* ident is not locally bound, therefore this is a use under a lambda
+         or within a loop.  Increase use count by 2 -- enough so
+         that single-use optimizations will not apply. *)
+      match Ident_hashtbl.find_opt occ ident with 
+      | Some r -> absorb_info r {n with captured = true} 
+      | None ->
+        (* Not a let-bound variable, ignore *)
+        () in
+
+  let rec count (bv : local_tbl) (lam : Lam.t) = 
+    match lam with 
+    | Lfunction{body = l} ->
+      count Ident_map.empty l
+    (** when entering a function local [bv] 
+        is cleaned up, so that all closure variables will not be
+        carried over, since the parameters are never rebound, 
+        so it is fine to kep it empty
+    *)
+    | Lfor(_, l1, l2, dir, l3) -> 
+      count bv l1;
+      count bv l2; 
+      count Ident_map.empty l3
+    | Lwhile(l1, l2) -> count Ident_map.empty l1; count Ident_map.empty l2
+    | Lvar v ->
+      add_one_use bv v 
+    | Llet(_, v, Lvar w, l2)  ->
+      (* v will be replaced by w in l2, so each occurrence of v in l2
+         increases w's refcount *)
+      count (bind_var bv v) l2;
+      inherit_use bv w v 
+    | Llet(kind, v, l1, l2) ->
+      count (bind_var bv v) l2;
+      (* count [l2] first,
+         If v is unused, l1 will be removed, so don't count its variables *)
+      if kind = Strict || used v then count bv l1
+    | Lassign(_, l) ->
+      (* Lalias-bound variables are never assigned, so don't increase
+         this ident's refcount *)
+      count bv l
+
+    | Lprim {args; _} -> List.iter (count bv ) args
+    | Lletrec(bindings, body) ->
+      List.iter (fun (v, l) -> count bv l) bindings;
+      count bv body
+    | Lapply{fn = Lfunction{kind= Curried; params; body};  args; _}
+      when  Ext_list.same_length params args ->
+      count bv (Lam_beta_reduce.beta_reduce  params body args)
+    | Lapply{fn = Lfunction{kind = Tupled; params; body};
+             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
+      when  Ext_list.same_length params  args ->
+      count bv (Lam_beta_reduce.beta_reduce   params body args)
+    | Lapply{fn = l1; args= ll; _} ->
+      count bv l1; List.iter (count bv) ll 
+    | Lconst cst -> ()
+    | Lswitch(l, sw) ->
+      count_default bv sw ;
+      count bv l;
+      List.iter (fun (_, l) -> count bv l) sw.sw_consts;
+      List.iter (fun (_, l) -> count bv l) sw.sw_blocks
+    | Lstringswitch(l, sw, d) ->
+      count bv l ;
+      List.iter (fun (_, l) -> count bv l) sw ;
+      begin match d with
+        | Some d -> count bv d 
+        | None -> ()
+      end        
+    (* x2 for native backend *)
+    (* begin match sw with *)
+    (* | []|[_] -> count bv d *)
+    (* | _ -> count bv d ; count bv d *)
+    (* end *)      
+    | Lstaticraise (i,ls) -> List.iter (count bv) ls
+    | Lstaticcatch(l1, (i,_), l2) -> count bv l1; count bv l2
+    | Ltrywith(l1, v, l2) -> count bv l1; count bv l2
+    | Lifthenelse(l1, l2, l3) -> count bv l1; count bv l2; count bv l3
+    | Lsequence(l1, l2) -> count bv l1; count bv l2 
+    | Lsend(_, m, o, ll, _) -> 
+      count bv m ;
+      count bv o;
+      List.iter (count bv) ll
+    | Lifused(v, l) ->
+      if used v then count bv l
+  and count_default bv sw = 
+    match sw.sw_failaction with
+    | None -> ()
+    | Some al ->
+      let nconsts = List.length sw.sw_consts
+      and nblocks = List.length sw.sw_blocks in
+      if nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
+      then 
+        begin (* default action will occur twice in native code *)
+          count bv al ; count bv al
+        end 
+      else 
+        begin (* default action will occur once *)
+          assert (nconsts < sw.sw_numconsts || nblocks < sw.sw_numblocks) ;
+          count bv al
+        end
+  in
+  count Ident_map.empty  lam;
+  occ
+
+
+end
 module Lam_pass_lets_dce : sig 
 #1 "lam_pass_lets_dce.mli"
 (***********************************************************************)
@@ -94844,12 +95068,12 @@ exception Real_reference
 let rec eliminate_ref id (lam : Lam.t) = 
   match lam with  (** we can do better escape analysis in Javascript backend *)
   | Lvar v ->
-    if Ident.same v id then raise Real_reference else lam
+    if Ident.same v id then raise_notrace Real_reference else lam
   | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->
     Lam.var id
   | Lfunction{ kind; params; body} as lam ->
     if Ident_set.mem id (Lam.free_variables  lam)
-    then raise Real_reference
+    then raise_notrace Real_reference
     else lam
   (* In Javascript backend, its okay, we can reify it later
      a failed case 
@@ -94936,32 +95160,9 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lifused(v, e) ->
     Lam.ifused v (eliminate_ref id e)
 
-(*A naive dead code elimination *)
-type used_info = { 
-  mutable times : int ; 
-  mutable captured : bool;
-    (* captured in functon or loop, 
-       inline in such cases should be careful
-       1. can not inline mutable values
-       2. avoid re-computation 
-    *)
-}
 
-type occ_tbl  = used_info Ident_hashtbl.t
-(* First pass: count the occurrences of all let-bound identifiers *)
 
-type local_tbl = used_info  Ident_map.t
-
-let dummy_info () = {times =  0 ; captured = false }
-(* y is untouched *)
-
-let absorb_info (x : used_info) (y : used_info) = 
-  match x, y with
-  | {times = x0} , {times = y0; captured } -> 
-    x.times <- x0 + y0;
-    if captured then x.captured <- true
-
-let lets_helper (count_var : Ident.t -> used_info) lam = 
+let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam = 
   let subst : Lam.t Ident_hashtbl.t = Ident_hashtbl.create 31 in
   let used v = (count_var v ).times > 0 in
   let rec simplif (lam : Lam.t) = 
@@ -95105,171 +95306,12 @@ let apply_lets  occ lambda =
     match
       Ident_hashtbl.find_opt occ v 
     with
-    | None -> dummy_info ()
+    | None -> Lam_pass_count.dummy_info ()
     | Some  v -> v in
   lets_helper count_var lambda      
 
-let collect_occurs  lam : occ_tbl =
-  let occ : occ_tbl = Ident_hashtbl.create 83 in
-  (* The global table [occ] associates to each let-bound identifier
-     the number of its uses (as a reference):
-     - 0 if never used
-     - 1 if used exactly once in and not under a lambda or within a loop
-         - when under a lambda, 
-         - it's probably a closure
-         - within a loop
-         - update reference,
-         niether is good for inlining
-     - > 1 if used several times or under a lambda or within a loop.
-     The local table [bv] associates to each locally-let-bound variable
-     its reference count, as above.  [bv] is enriched at let bindings
-     but emptied when crossing lambdas and loops. *)
-
-  (* Current use count of a variable. *)
-  let used v = 
-    match Ident_hashtbl.find_opt occ v with 
-    | None -> false 
-    | Some {times ; _} -> times > 0  in
-
-  (* Entering a [let].  Returns updated [bv]. *)
-  let bind_var bv ident =
-    let r = dummy_info () in
-    Ident_hashtbl.add occ ident r;
-    Ident_map.add ident r bv in
-
-  (* Record a use of a variable *)
-  let add_one_use bv ident  =
-    match Ident_map.find_opt ident bv with 
-    | Some r  -> r.times <- r.times + 1 
-    | None ->
-      (* ident is not locally bound, therefore this is a use under a lambda
-         or within a loop.  Increase use count by 2 -- enough so
-         that single-use optimizations will not apply. *)
-      match Ident_hashtbl.find_opt occ ident with 
-      | Some r -> absorb_info r {times = 1; captured =  true}
-      | None ->
-        (* Not a let-bound variable, ignore *)
-        () in
-
-  let inherit_use bv ident bid =
-    let n =
-      match Ident_hashtbl.find_opt occ bid with
-      | None -> dummy_info ()
-      | Some v -> v in
-    match Ident_map.find_opt ident bv with 
-    | Some r  -> absorb_info r n
-    | None ->
-      (* ident is not locally bound, therefore this is a use under a lambda
-         or within a loop.  Increase use count by 2 -- enough so
-         that single-use optimizations will not apply. *)
-      match Ident_hashtbl.find_opt occ ident with 
-      | Some r -> absorb_info r {n with captured = true} 
-      | None ->
-        (* Not a let-bound variable, ignore *)
-        () in
-
-  let rec count (bv : local_tbl) (lam : Lam.t) = 
-    match lam with 
-    | Lfunction{body = l} ->
-      count Ident_map.empty l
-    (** when entering a function local [bv] 
-        is cleaned up, so that all closure variables will not be
-        carried over, since the parameters are never rebound, 
-        so it is fine to kep it empty
-    *)
-    | Lvar v ->
-      add_one_use bv v 
-    | Llet(_, v, Lvar w, l2)  ->
-      (* v will be replaced by w in l2, so each occurrence of v in l2
-         increases w's refcount *)
-      count (bind_var bv v) l2;
-      inherit_use bv w v 
-    (* | Lprim(Pmakeblock _, ll)  *)
-    (*     ->  *)
-    (*       List.iter (fun x -> count bv x ; count bv x) ll *)
-    (* | Llet(kind, v, (Lprim(Pmakeblock _, _) as l1),l2) -> *)
-    (*     count (bind_var bv v) l2; *)
-    (*     (\* If v is unused, l1 will be removed, so don't count its variables *\) *)
-    (*     if kind = Strict || count_var v > 0 then *)
-    (*       count bv l1; count bv l1 *)
-
-    | Llet(kind, v, l1, l2) ->
-      count (bind_var bv v) l2;
-      (* If v is unused, l1 will be removed, so don't count its variables *)
-      if kind = Strict || used v then count bv l1
-
-    | Lprim {args; _} -> List.iter (count bv ) args
-
-    | Lletrec(bindings, body) ->
-      List.iter (fun (v, l) -> count bv l) bindings;
-      count bv body
-    | Lapply{fn = Lfunction{kind= Curried; params; body};  args; _}
-      when  Ext_list.same_length params args ->
-      count bv (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply{fn = Lfunction{kind = Tupled; params; body};
-             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
-      when  Ext_list.same_length params  args ->
-      count bv (Lam_beta_reduce.beta_reduce   params body args)
-    | Lapply{fn = l1; args= ll; _} ->
-      count bv l1; List.iter (count bv) ll
-    | Lassign(_, l) ->
-      (* Lalias-bound variables are never assigned, so don't increase
-         this ident's refcount *)
-      count bv l
-    | Lconst cst -> ()
-    | Lswitch(l, sw) ->
-      count_default bv sw ;
-      count bv l;
-      List.iter (fun (_, l) -> count bv l) sw.sw_consts;
-      List.iter (fun (_, l) -> count bv l) sw.sw_blocks
-    | Lstringswitch(l, sw, d) ->
-      count bv l ;
-      List.iter (fun (_, l) -> count bv l) sw ;
-      begin 
-        match d with
-        | Some d -> count bv d 
-        (* begin match sw with *)
-        (* | []|[_] -> count bv d *)
-        (* | _ -> count bv d ; count bv d *)
-        (* end *)
-        | None -> ()
-      end
-    | Lstaticraise (i,ls) -> List.iter (count bv) ls
-    | Lstaticcatch(l1, (i,_), l2) -> count bv l1; count bv l2
-    | Ltrywith(l1, v, l2) -> count bv l1; count bv l2
-    | Lifthenelse(l1, l2, l3) -> count bv l1; count bv l2; count bv l3
-    | Lsequence(l1, l2) -> count bv l1; count bv l2
-    | Lwhile(l1, l2) -> count Ident_map.empty l1; count Ident_map.empty l2
-    | Lfor(_, l1, l2, dir, l3) -> 
-      count bv l1;
-      count bv l2; 
-      count Ident_map.empty l3
-    | Lsend(_, m, o, ll, _) -> List.iter (count bv) (m::o::ll)
-    | Lifused(v, l) ->
-      if used v then count bv l
-
-  and count_default bv sw = 
-    match sw.sw_failaction with
-    | None -> ()
-    | Some al ->
-      let nconsts = List.length sw.sw_consts
-      and nblocks = List.length sw.sw_blocks in
-      if nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
-      then 
-        begin (* default action will occur twice in native code *)
-          count bv al ; count bv al
-        end 
-      else 
-        begin (* default action will occur once *)
-          assert (nconsts < sw.sw_numconsts || nblocks < sw.sw_numblocks) ;
-          count bv al
-        end
-  in
-  count Ident_map.empty  lam;
-  occ
-
 let simplify_lets  (lam : Lam.t) = 
-  let occ =  collect_occurs  lam in 
+  let occ =  Lam_pass_count.collect_occurs  lam in 
   apply_lets  occ   lam
 
 end
@@ -96294,6 +96336,7 @@ let handle_exports
 let compile  ~filename output_prefix env _sigs 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
+  let export_ident_sets = Ident_set.of_list export_idents in 
   let () = 
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
@@ -96302,14 +96345,14 @@ let compile  ~filename output_prefix env _sigs
   let ()   = 
     Lam_compile_env.reset () ;
   in 
-  let lam = Lam.convert lam in 
+  let lam = Lam.convert export_ident_sets lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
   let lam  = Lam_group.deep_flatten lam in
   let lam = _d  "flatten" lam in
   let meta = 
-    Lam_pass_collect.count_alias_globals env filename  export_idents lam in
+    Lam_pass_collect.count_alias_globals env filename  export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam

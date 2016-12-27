@@ -256,6 +256,7 @@ let handle_exports
 let compile  ~filename output_prefix env _sigs 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
+  let export_ident_sets = Ident_set.of_list export_idents in 
   let () = 
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
@@ -264,14 +265,14 @@ let compile  ~filename output_prefix env _sigs
   let ()   = 
     Lam_compile_env.reset () ;
   in 
-  let lam = Lam.convert lam in 
+  let lam = Lam.convert export_ident_sets lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
   let lam  = Lam_group.deep_flatten lam in
   let lam = _d  "flatten" lam in
   let meta = 
-    Lam_pass_collect.count_alias_globals env filename  export_idents lam in
+    Lam_pass_collect.count_alias_globals env filename  export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam

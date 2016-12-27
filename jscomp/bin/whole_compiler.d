@@ -338,6 +338,8 @@ bin/whole_compiler.ml : ext/int_hashtbl.ml
 bin/whole_compiler.ml : ext/int_hashtbl.mli
 bin/whole_compiler.ml : core/lam_pass_exits.ml
 bin/whole_compiler.ml : core/lam_pass_exits.mli
+bin/whole_compiler.ml : core/lam_pass_count.ml
+bin/whole_compiler.ml : core/lam_pass_count.mli
 bin/whole_compiler.ml : core/lam_pass_lets_dce.ml
 bin/whole_compiler.ml : core/lam_pass_lets_dce.mli
 bin/whole_compiler.ml : core/lam_inline_util.ml

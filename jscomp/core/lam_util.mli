@@ -62,7 +62,6 @@ val generate_label : ?name:string -> unit -> J.label
 (** [dump] when {!Js_config.is_same_file}*)
 val dump : Env.t   -> string -> Lam.t -> Lam.t
 
-val ident_set_of_list : Ident.t list -> Ident_set.t
 
 val print_ident_set : Format.formatter -> Ident_set.t -> unit
 
