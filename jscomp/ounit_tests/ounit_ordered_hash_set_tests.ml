@@ -107,4 +107,17 @@ let suites =
       OUnit.assert_raises Not_found (fun _ -> Ordered_hash_set_string.choose_exn (Ordered_hash_set_string.of_array [||]))
     end;
 
+
+    __LOC__ >:: begin fun _ ->
+      let count = 1000 in 
+      let v = Ordered_hash_set_string.of_array (Array.init count (fun i -> string_of_int i) ) in
+      for i = 0 to count - 1 do 
+        Ordered_hash_set_string.replace v (string_of_int i) (string_of_int i ^ ":")
+      done ;
+      OUnit.assert_equal (Ordered_hash_set_string.length v) count;
+      OUnit.assert_equal 
+        (Ordered_hash_set_string.to_sorted_array v )
+        (Array.init count (fun i -> string_of_int i ^ ":"))
+      
+    end
   ]

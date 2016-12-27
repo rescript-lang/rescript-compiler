@@ -154,6 +154,8 @@ bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_ident.mli
 bin/whole_compiler.ml : ext/ident_hash_set.ml
 bin/whole_compiler.ml : ext/ident_hash_set.mli
+bin/whole_compiler.ml : ext/ident_hashtbl.ml
+bin/whole_compiler.ml : ext/ident_hashtbl.mli
 bin/whole_compiler.ml : ext/set_gen.ml
 bin/whole_compiler.ml : ext/ident_set.ml
 bin/whole_compiler.ml : ext/ident_set.mli
@@ -188,8 +190,6 @@ bin/whole_compiler.ml : core/lam_compile_util.ml
 bin/whole_compiler.ml : core/lam_compile_util.mli
 bin/whole_compiler.ml : core/js_exp_make.ml
 bin/whole_compiler.ml : core/js_exp_make.mli
-bin/whole_compiler.ml : ext/ident_hashtbl.ml
-bin/whole_compiler.ml : ext/ident_hashtbl.mli
 bin/whole_compiler.ml : ext/ident_map.ml
 bin/whole_compiler.ml : ext/ident_map.mli
 bin/whole_compiler.ml : core/lam_analysis.ml

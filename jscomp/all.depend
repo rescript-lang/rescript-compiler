@@ -33,15 +33,19 @@ ext/string_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_string.cmx \
     stubs/bs_hash_stubs.cmx ext/string_hash_set.cmi
 ext/int_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_int.cmx \
     stubs/bs_hash_stubs.cmx ext/int_hash_set.cmi
-ext/ordered_hash_set_gen.cmx : ext/ext_util.cmx
-ext/ordered_hash_set_string.cmx : ext/ordered_hash_set_gen.cmx \
-    ext/ext_string.cmx stubs/bs_hash_stubs.cmx \
-    ext/ordered_hash_set_string.cmi
-ext/ordered_hash_set_make.cmx : ext/ordered_hash_set_gen.cmx
-ext/ordered_hash_map_gen.cmx : ext/ext_util.cmx
-ext/union_find.cmx : ext/union_find.cmi
 ext/ext_ident.cmx : ext/string_hashtbl.cmx ext/string_hash_set.cmx \
     ext/ext_string.cmx ext/ext_ident.cmi
+ext/ordered_hash_set_gen.cmx : ext/ext_util.cmx
+ext/ordered_hash_set_string.cmx : ext/ordered_hash_set_gen.cmx \
+    ext/ext_util.cmx ext/ext_string.cmx stubs/bs_hash_stubs.cmx \
+    ext/ordered_hash_set_string.cmi
+ext/ordered_hash_set_ident.cmx : ext/ordered_hash_set_gen.cmx \
+    ext/ext_util.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
+    ext/ordered_hash_set_ident.cmi
+ext/ordered_hash_set_make.cmx : ext/ordered_hash_set_gen.cmx \
+    ext/ext_util.cmx
+ext/ordered_hash_map_gen.cmx : ext/ext_util.cmx
+ext/union_find.cmx : ext/union_find.cmi
 ext/ident_map.cmx : ext/map_gen.cmx ext/ext_ident.cmx ext/ident_map.cmi
 ext/ident_set.cmx : ext/set_gen.cmx ext/ident_set.cmi
 ext/hashtbl_make.cmx : ext/hashtbl_gen.cmx ext/hashtbl_make.cmi
@@ -92,9 +96,10 @@ ext/ext_sys.cmi :
 ext/hash_set.cmi : ext/hash_set_gen.cmx
 ext/string_hash_set.cmi : ext/hash_set_gen.cmx
 ext/int_hash_set.cmi : ext/hash_set_gen.cmx
-ext/ordered_hash_set_string.cmi : ext/ordered_hash_set_gen.cmx
-ext/union_find.cmi :
 ext/ext_ident.cmi :
+ext/ordered_hash_set_string.cmi : ext/ordered_hash_set_gen.cmx
+ext/ordered_hash_set_ident.cmi : ext/ordered_hash_set_gen.cmx
+ext/union_find.cmi :
 ext/ident_map.cmi : ext/map_gen.cmx
 ext/ident_set.cmi : ext/set_gen.cmx
 ext/hashtbl_make.cmi : ext/hashtbl_gen.cmx
@@ -302,7 +307,8 @@ core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
 core/lam.cmx : ext/ordered_hash_map_local_ident.cmx \
     core/ocaml_stdlib_slots.cmx ext/literals.cmx common/js_config.cmx \
     ext/int_vec_vec.cmx ext/int_vec.cmx ext/ident_set.cmx \
-    ext/ident_hash_set.cmx ext/ext_string.cmx ext/ext_scc.cmx core/lam.cmi
+    ext/ident_hashtbl.cmx ext/ident_hash_set.cmx ext/ext_string.cmx \
+    ext/ext_scc.cmx core/lam.cmi
 core/lam_print.cmx : core/lam.cmx core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_beta_reduce_util.cmi

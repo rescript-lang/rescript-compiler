@@ -3735,8 +3735,17 @@ sig
   val choose_exn: t -> key 
   val of_array: key array -> t 
   val to_sorted_array: t -> key array
+  val replace: t -> key -> key -> unit 
+  val reset_to_list : t -> key list -> unit
+  exception Replace_failure of bool 
 end
 
+exception Replace_failure of bool 
+
+
+(** when it is true, it means the old key does not exist ,
+    when it is false, it means the new key already exist
+  *)
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
@@ -3771,11 +3780,15 @@ let clear h =
     Array.unsafe_set h_data i  Empty
   done
 
-let reset h =
-  let h_initial_size = h.initial_size in 
+(** Note this function is only used internally, make sure [h_initial_size] 
+    is a power of 16 *)
+let reset_with_size h h_initial_size  =
   h.size <- 0;
   h.data <- Array.make h_initial_size Empty;
   h.data_mask <- h_initial_size - 1
+
+let reset h  =
+  reset_with_size h h.initial_size
 
 
 let copy h = { h with data = Array.copy h.data }
@@ -3907,9 +3920,9 @@ end = struct
   let hash = Bs_hash_stubs.hash_string
   let equal_key = Ext_string.equal
 
-# 19
+# 24
 open Ordered_hash_set_gen
-
+exception Replace_failure = Replace_failure
 let create = create
 let clear = clear
 let reset = reset
@@ -3952,6 +3965,7 @@ let rec small_bucket_rank key lst =
           | Cons(key3,i3, rest) -> 
             if equal_key key  key3 then i3 else
               small_bucket_rank key rest 
+
 let add h key =
   let h_data_mask = h.data_mask in 
   let i = hash key land h_data_mask in 
@@ -3962,6 +3976,42 @@ let add h key =
       if h.size > Array.length h.data lsl 1 then resize hash h
     end
 
+let old_key_not_exist = Replace_failure false 
+let new_key_already_exist = Replace_failure true 
+
+let rec small_bucket_rank_and_delete key lst =
+  match lst with 
+  | Empty -> raise old_key_not_exist
+  | Cons(key1,i,rest) -> 
+    if equal_key key key1 then i, rest  
+    else match rest with 
+      | Empty -> raise old_key_not_exist
+      | Cons(key2,i2,  rest) -> 
+        if equal_key key  key2 then i2, (Cons (key1,i,rest)) else
+          match rest with 
+          | Empty -> raise old_key_not_exist
+          | Cons(key3,i3, rest) -> 
+            if equal_key key  key3 then i3, (Cons (key1,i,Cons(key2,i2,rest))) else
+              let (rank, rest ) = small_bucket_rank_and_delete key rest in 
+              rank, Cons (key1,i, 
+                    Cons (key2,i2, 
+                          Cons(key3,i3,rest))) 
+
+let replace h old_key new_key =
+  let h_data_mask = h.data_mask in 
+  let i = hash old_key land h_data_mask in
+  let h_data = h.data in 
+  let bucket = Array.unsafe_get h_data  i in 
+  let (rank,new_bucket) = small_bucket_rank_and_delete old_key bucket in 
+  Array.unsafe_set h_data  i new_bucket ; 
+
+  let j = hash new_key land h_data_mask in 
+  let insert_bucket = Array.unsafe_get h_data j in 
+  let mem = small_bucket_mem new_key insert_bucket in 
+  if mem then raise new_key_already_exist
+  else 
+    Array.unsafe_set h_data j (Cons (new_key,rank, insert_bucket))
+
 let of_array arr =
   let len = Array.length arr in 
   let h = create len in 
@@ -3970,9 +4020,15 @@ let of_array arr =
   done;
   h
 
+(* clear the Hashset and re-initialize it to [lst] *)
+let reset_to_list h lst =
+  let len = List.length lst in
+  let () = Ordered_hash_set_gen.reset_with_size h (Ext_util.power_2_above 16 len) in
+  List.iter (fun x -> add h x ) lst 
 
 let mem h key =
   small_bucket_mem key (Array.unsafe_get h.data (hash  key land h.data_mask)) 
+
 let rank h key = 
   small_bucket_rank key (Array.unsafe_get h.data (hash  key land h.data_mask))  
 
@@ -7176,6 +7232,19 @@ let suites =
       OUnit.assert_raises Not_found (fun _ -> Ordered_hash_set_string.choose_exn (Ordered_hash_set_string.of_array [||]))
     end;
 
+
+    __LOC__ >:: begin fun _ ->
+      let count = 1000 in 
+      let v = Ordered_hash_set_string.of_array (Array.init count (fun i -> string_of_int i) ) in
+      for i = 0 to count - 1 do 
+        Ordered_hash_set_string.replace v (string_of_int i) (string_of_int i ^ ":")
+      done ;
+      OUnit.assert_equal (Ordered_hash_set_string.length v) count;
+      OUnit.assert_equal 
+        (Ordered_hash_set_string.to_sorted_array v )
+        (Array.init count (fun i -> string_of_int i ^ ":"))
+      
+    end
   ]
 
 end

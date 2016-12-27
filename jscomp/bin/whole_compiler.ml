@@ -59022,6 +59022,150 @@ let mem (h :  _ Hash_set_gen.t) key =
   
 
 end
+module Ident_hashtbl : sig 
+#1 "ident_hashtbl.mli"
+
+
+include Hashtbl_gen.S with type key = Ident.t 
+
+
+
+end = struct
+#1 "ident_hashtbl.ml"
+# 2 "ext/hashtbl.cppo.ml"
+type key = Ident.t 
+type 'a t = (key, 'a)  Hashtbl_gen.t 
+let key_index (h : _ t ) (key : key) =
+  (Bs_hash_stubs.hash_stamp_and_name  key.stamp key.name ) land (Array.length h.data - 1)
+(* (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1) *)
+let eq_key = Ext_ident.equal 
+
+# 33
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
+
+
+
+let add (h : _ t) key info =
+  let i = key_index h key in
+  let h_data = h.data in   
+  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
+  h.size <- h.size + 1;
+  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
+
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
+let modify_or_init (h : _ t) key modf default =
+  let rec find_bucket (bucketlist : _ bucketlist)  =
+    match bucketlist with
+    | Cons(k,i,next) ->
+      if eq_key k key then begin modf i; false end
+      else find_bucket next 
+    | Empty -> true in
+  let i = key_index h key in 
+  let h_data = h.data in 
+  if find_bucket (Array.unsafe_get h_data i) then
+    begin 
+      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
+    end
+
+
+let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
+  match bucketlist with  
+  | Empty ->
+    Empty
+  | Cons(k, i, next) ->
+    if eq_key k key 
+    then begin h.size <- h.size - 1; next end
+    else Cons(k, i, remove_bucket key h next) 
+
+let remove (h : _ t ) key =
+  let i = key_index h key in
+  let h_data = h.data in 
+  let old_h_szie = h.size in 
+  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
+  if old_h_szie <> h.size then 
+    Array.unsafe_set h_data i  new_bucket
+
+let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+  | Empty ->
+    raise Not_found
+  | Cons(k, d, rest) ->
+    if eq_key key k then d else find_rec key rest
+
+let find_exn (h : _ t) key =
+  match Array.unsafe_get h.data (key_index h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+    if eq_key key k1 then d1 else
+      match rest1 with
+      | Empty -> raise Not_found
+      | Cons(k2, d2, rest2) ->
+        if eq_key key k2 then d2 else
+          match rest2 with
+          | Empty -> raise Not_found
+          | Cons(k3, d3, rest3) ->
+            if eq_key key k3  then d3 else find_rec key rest3
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+    | Empty ->
+      []
+    | Cons(k, d, rest) ->
+      if eq_key k key 
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket (Array.unsafe_get h.data (key_index h key))
+
+let replace h key info =
+  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
+    | Empty ->
+      raise_notrace Not_found
+    | Cons(k, i, next) ->
+      if eq_key k key
+      then Cons(key, info, next)
+      else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let h_data = h.data in 
+  let l = Array.unsafe_get h_data i in
+  try
+    Array.unsafe_set h_data i  (replace_bucket l)
+  with Not_found ->
+    begin 
+      Array.unsafe_set h_data i (Cons(key, info, l));
+      h.size <- h.size + 1;
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
+    end 
+
+let mem (h : _ t) key =
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+    | Empty ->
+      false
+    | Cons(k, d, rest) ->
+      eq_key k key  || mem_in_bucket rest in
+  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
+
+
+let of_list2 ks vs = 
+  let len = List.length ks in 
+  let map = create len in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
+
+
+end
 module Set_gen
 = struct
 #1 "set_gen.ml"
@@ -61241,8 +61385,27 @@ val for_ :
 
 
 
+(** In this pass we also synchronized aliases so that 
+    {[
+      let a1 = a0 in 
+      let a2 = a1 in 
+      let a3 = a2 in 
+      let a4 = a3 in 
+    ]}
+    converted to 
+    {[
+      let a1 = a0 in 
+      let a2 = a0 in 
+      let a3 = a0 in 
+      let a4 = a0 in 
+    ]}
+    we dont eliminate unused let bindings to leave it for {!Lam_pass_lets_dce}
+    we should remove all those let aliases, otherwise, it will be
+    pushed into alias table again
+ *)
+val convert :  Lambda.lambda -> t 
 
-val convert : Lambda.lambda -> t 
+
 
 end = struct
 #1 "lam.ml"
@@ -62434,128 +62597,157 @@ let scc  (groups :  bindings)
               letrec bindings  acc 
           )  clusters body 
   end
-let rec convert (lam : Lambda.lambda) : t = 
-  match lam with 
-  | Lvar x -> Lvar x 
-  | Lconst x -> 
-    Lconst x 
-  | Lapply (fn,args,loc) 
-    ->  
-    begin match fn with 
-      | Lprim (
-          Pfield (id, _),
-          [
-            Lprim (
-              Pgetglobal { name = "CamlinternalMod" },
-              _,_
-            )
-          ],loc
-        ) -> (* replace all {!CamlinternalMod} function *)
-        let args = List.map convert args in
-        begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
-          | "init_mod" ,  [_loc ; shape]  -> 
-            begin match shape with 
-              | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
-                -> unit  (* see {!Translmod.init_shape}*)
-              | _ ->  prim ~primitive:Pinit_mod ~args loc 
-            end
-          | "update_mod", [shape ;  _obj1; _obj2] -> 
-            (* here array access will have side effect .. *)
-            begin match shape with 
-              | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
-                -> unit (* see {!Translmod.init_shape}*)
-              | _ -> prim ~primitive:Pupdate_mod ~args loc
-            end
-          | _ -> assert false
-        end
 
-      | Lprim ( Pfield (id, _),
-                [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
+let convert lam = 
+  let alias = Ident_hashtbl.create 64 in 
+  let rec
+    aux (lam : Lambda.lambda) : t = 
+    match lam with 
+    | Lvar x -> Lvar (Ident_hashtbl.find_default alias x x)
+    | Lconst x -> 
+      Lconst x 
+    | Lapply (fn,args,loc) 
+      ->  
+      begin match fn with 
+        | Lprim (
+            Pfield (id, _),
+            [
+              Lprim (
+                Pgetglobal { name = "CamlinternalMod" },
+                _,_
               )
-        ->
-        let args = List.map convert args in
-        begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
-          | "^", [ l; r ] 
-            ->
-            prim ~primitive:Pstringadd ~args:[l;r] loc 
-          | _ ->  apply (convert fn) args loc  App_na
-        end
-      | _ -> 
-        apply (convert fn) (List.map convert args) 
-          loc App_na
-    end
-  | Lfunction (kind,  params,body)
-    ->  function_ 
-          ~arity:(List.length params) ~kind ~params 
-          ~body:(convert body)
-  | Llet (kind,id,e,body) 
-    -> Llet(kind,id,convert e, convert body)
-  | Lletrec (bindings,body)
-    -> 
-    let bindings = List.map (fun (id, e) -> id, convert e) bindings in
-    let body = convert body in 
-    let lam = Lletrec (bindings, body) in 
-    scc bindings lam body  
-  (* inlining will affect how mututal recursive behave *)
-  | Lprim (primitive,args, loc) 
-    -> convert_primitive loc primitive args 
-  (* Lprim {primitive ; args = List.map convert args } *)
-  | Lswitch (e,s) -> 
-    Lswitch (convert e, convert_switch s)
-  | Lstringswitch (e, cases, default,_) -> 
-    Lstringswitch (convert e, List.map (fun (x, b) -> x, convert b ) cases, 
-                   match default with 
-                   | None -> None
-                   | Some x -> Some (convert x)
-                  )    
+            ],loc
+          ) -> (* replace all {!CamlinternalMod} function *)
+          let args = List.map aux args in
+          begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
+            | "init_mod" ,  [_loc ; shape]  -> 
+              begin match shape with 
+                | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
+                  -> unit  (* see {!Translmod.init_shape}*)
+                | _ ->  prim ~primitive:Pinit_mod ~args loc 
+              end
+            | "update_mod", [shape ;  _obj1; _obj2] -> 
+              (* here array access will have side effect .. *)
+              begin match shape with 
+                | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
+                  -> unit (* see {!Translmod.init_shape}*)
+                | _ -> prim ~primitive:Pupdate_mod ~args loc
+              end
+            | _ -> assert false
+          end
 
-  | Lstaticraise (id, args) -> 
-    Lstaticraise (id, List.map convert args)
-  | Lstaticcatch (b, (i, ids), handler) -> 
-    Lstaticcatch (convert b, (i,ids), convert handler)
-  | Ltrywith (b, id, handler) -> 
-    Ltrywith (convert b, id, convert handler)
-  | Lifthenelse (b,then_,else_) -> 
-    Lifthenelse (convert b, convert then_, convert else_)
-  | Lsequence (a,b) 
-    -> Lsequence (convert a, convert b)
-  | Lwhile (b,body) -> 
-    Lwhile (convert b, convert body)
-  | Lfor (id, from_, to_, dir, loop) -> 
-    Lfor (id, convert from_, convert to_, dir, convert loop)
-  | Lassign (id, body) -> 
-    Lassign (id, convert body)    
-  | Lsend (kind, a,b,ls, loc) -> 
-    (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
-    begin match convert b with 
-      | Lprim {primitive =  Pccall {prim_name };  args; loc}
-        when prim_name = Literals.js_unsafe_downgrade
-        -> 
-        begin match kind, ls with 
-          | Public (Some name), [] -> 
-            prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
-              ~args loc 
-          | _ -> assert false 
-        end
-      | b ->     
-        (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
-        Lsend(kind, convert a,  b, List.map convert ls, loc )
-    end
-  | Levent (e, event) -> convert e 
-  | Lifused (id, e) -> 
-    Lifused(id, convert e) (* TODO: remove it ASAP *)
-and convert_primitive loc (primitive : Lambda.primitive) args = 
-  lam_prim ~primitive ~args:(List.map convert args) loc
-and convert_switch (s : Lambda.lambda_switch) : switch = 
-  { sw_numconsts = s.sw_numconsts ; 
-    sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;
-    sw_numblocks = s.sw_numblocks;
-    sw_blocks = List.map (fun (i,lam) -> i, convert lam ) s.sw_blocks;
-    sw_failaction = 
-      match s.sw_failaction with 
-      | None -> None 
-      | Some a -> Some (convert a)
-  }  
+        | Lprim ( Pfield (id, _),
+                  [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
+                )
+          ->
+          let args = List.map aux args in
+          begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
+            | "^", [ l; r ] 
+              ->
+              prim ~primitive:Pstringadd ~args:[l;r] loc 
+            | _ ->  apply (aux fn) args loc  App_na
+          end
+        | _ -> 
+          apply (aux fn) (List.map aux args) 
+            loc App_na
+      end
+    | Lfunction (kind,  params,body)
+      ->  function_ 
+            ~arity:(List.length params) ~kind ~params 
+            ~body:(aux body)
+    | Llet (kind,id,e,body) 
+      ->
+      begin match kind, e with 
+        | Alias , Lvar u ->
+          Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
+          Llet(kind, id, Lvar u, aux body)
+        (* we should not remove it immediately, since we have to be careful 
+           where it is used, it can be [exported], [Lvar] or [Lassign] etc 
+           The other common mistake is that 
+           {[
+             let x = y (* elimiated x/y*)
+             let u = x  (* eliminated u/x *)
+           ]}
+
+           however, [x] is already eliminated 
+           To improve the algorithm
+           {[
+             let x = y (* x/y *)
+             let u = x (* u/y *)
+           ]}
+           This looks more correct, but lets be conservative here
+        *)  
+      | _, _ -> Llet(kind,id,aux e, aux body)
+      end
+    | Lletrec (bindings,body)
+      -> 
+      let bindings = List.map (fun (id, e) -> id, aux e) bindings in
+      let body = aux body in 
+      let lam = Lletrec (bindings, body) in 
+      scc bindings lam body  
+    (* inlining will affect how mututal recursive behave *)
+    | Lprim (primitive,args, loc) 
+      -> aux_primitive loc primitive args 
+    (* Lprim {primitive ; args = List.map aux args } *)
+    | Lswitch (e,s) -> 
+      Lswitch (aux e, aux_switch s)
+    | Lstringswitch (e, cases, default,_) -> 
+      Lstringswitch (aux e, List.map (fun (x, b) -> x, aux b ) cases, 
+                     match default with 
+                     | None -> None
+                     | Some x -> Some (aux x)
+                    )    
+
+    | Lstaticraise (id, args) -> 
+      Lstaticraise (id, List.map aux args)
+    | Lstaticcatch (b, (i, ids), handler) -> 
+      Lstaticcatch (aux b, (i,ids), aux handler)
+    | Ltrywith (b, id, handler) -> 
+      Ltrywith (aux b, id, aux handler)
+    | Lifthenelse (b,then_,else_) -> 
+      Lifthenelse (aux b, aux then_, aux else_)
+    | Lsequence (a,b) 
+      -> Lsequence (aux a, aux b)
+    | Lwhile (b,body) -> 
+      Lwhile (aux b, aux body)
+    | Lfor (id, from_, to_, dir, loop) -> 
+      Lfor (id, aux from_, aux to_, dir, aux loop)
+    | Lassign (id, body) -> 
+      Lassign (id, aux body)    
+    | Lsend (kind, a,b,ls, loc) -> 
+      (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
+      begin match aux b with 
+        | Lprim {primitive =  Pccall {prim_name };  args; loc}
+          when prim_name = Literals.js_unsafe_downgrade
+          -> 
+          begin match kind, ls with 
+            | Public (Some name), [] -> 
+              prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
+                ~args loc 
+            | _ -> assert false 
+          end
+        | b ->     
+          (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
+          Lsend(kind, aux a,  b, List.map aux ls, loc )
+      end
+    | Levent (e, event) -> aux e 
+    | Lifused (id, e) -> 
+      Lifused(id, aux e) (* TODO: remove it ASAP *)
+  and aux_primitive loc (primitive : Lambda.primitive) args = 
+    lam_prim ~primitive ~args:(List.map aux args) loc
+  and aux_switch (s : Lambda.lambda_switch) : switch = 
+    { sw_numconsts = s.sw_numconsts ; 
+      sw_consts = List.map (fun (i, lam) -> i, aux lam) s.sw_consts;
+      sw_numblocks = s.sw_numblocks;
+      sw_blocks = List.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
+      sw_failaction = 
+        match s.sw_failaction with 
+        | None -> None 
+        | Some a -> Some (aux a)
+    }  in 
+  aux lam 
+        
+
 
 end
 module Js_cmj_format : sig 
@@ -66768,150 +66960,6 @@ let not_implemented ?comment (s : string) =
               comment}]) ,
              Js_fun_env.empty 0)
     } []
-
-end
-module Ident_hashtbl : sig 
-#1 "ident_hashtbl.mli"
-
-
-include Hashtbl_gen.S with type key = Ident.t 
-
-
-
-end = struct
-#1 "ident_hashtbl.ml"
-# 2 "ext/hashtbl.cppo.ml"
-type key = Ident.t 
-type 'a t = (key, 'a)  Hashtbl_gen.t 
-let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_stamp_and_name  key.stamp key.name ) land (Array.length h.data - 1)
-(* (Bs_hash_stubs.hash_string_int  key.name key.stamp ) land (Array.length h.data - 1) *)
-let eq_key = Ext_ident.equal 
-
-# 33
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
-let create = Hashtbl_gen.create
-let clear = Hashtbl_gen.clear
-let reset = Hashtbl_gen.reset
-let copy = Hashtbl_gen.copy
-let iter = Hashtbl_gen.iter
-let fold = Hashtbl_gen.fold
-let length = Hashtbl_gen.length
-let stats = Hashtbl_gen.stats
-
-
-
-let add (h : _ t) key info =
-  let i = key_index h key in
-  let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
-  h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
-
-(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let modify_or_init (h : _ t) key modf default =
-  let rec find_bucket (bucketlist : _ bucketlist)  =
-    match bucketlist with
-    | Cons(k,i,next) ->
-      if eq_key k key then begin modf i; false end
-      else find_bucket next 
-    | Empty -> true in
-  let i = key_index h key in 
-  let h_data = h.data in 
-  if find_bucket (Array.unsafe_get h_data i) then
-    begin 
-      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
-    end
-
-
-let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
-  match bucketlist with  
-  | Empty ->
-    Empty
-  | Cons(k, i, next) ->
-    if eq_key k key 
-    then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket key h next) 
-
-let remove (h : _ t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  let old_h_szie = h.size in 
-  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
-  if old_h_szie <> h.size then 
-    Array.unsafe_set h_data i  new_bucket
-
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
-  | Empty ->
-    raise Not_found
-  | Cons(k, d, rest) ->
-    if eq_key key k then d else find_rec key rest
-
-let find_exn (h : _ t) key =
-  match Array.unsafe_get h.data (key_index h key) with
-  | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
-    if eq_key key k1 then d1 else
-      match rest1 with
-      | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
-        if eq_key key k2 then d2 else
-          match rest2 with
-          | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
-            if eq_key key k3  then d3 else find_rec key rest3
-
-let find_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-let find_default (h : _ t) key default = 
-  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
-let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      []
-    | Cons(k, d, rest) ->
-      if eq_key k key 
-      then d :: find_in_bucket rest
-      else find_in_bucket rest in
-  find_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-let replace h key info =
-  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
-    | Empty ->
-      raise_notrace Not_found
-    | Cons(k, i, next) ->
-      if eq_key k key
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
-  let i = key_index h key in
-  let h_data = h.data in 
-  let l = Array.unsafe_get h_data i in
-  try
-    Array.unsafe_set h_data i  (replace_bucket l)
-  with Not_found ->
-    begin 
-      Array.unsafe_set h_data i (Cons(key, info, l));
-      h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
-    end 
-
-let mem (h : _ t) key =
-  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      false
-    | Cons(k, d, rest) ->
-      eq_key k key  || mem_in_bucket rest in
-  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-
-let of_list2 ks vs = 
-  let len = List.length ks in 
-  let map = create len in 
-  List.iter2 (fun k v -> add map k v) ks vs ; 
-  map
-
 
 end
 module Ident_map : sig 
@@ -96188,7 +96236,21 @@ let handle_exports
              (* {[ Ident.same id eid]} is more  correct, 
                 however, it will introduce a coercion, which is not necessary, 
                 as long as its name is the same, we want to avoid 
-                another coercion                        
+                another coercion                
+                In most common cases, it will be 
+                {[
+                  let export/100 =a fun ..
+                  export/100    
+                ]}
+                This comes from we have lambda as below 
+                {[
+                  (* let export/100 =a export/99  *)
+                  (* above is probably the cause but does not have to be  *)
+                  (export/99)                
+                ]}
+                [export/100] was not eliminated due to that it is export id, 
+                if we rename export/99 to be export id, then we don't need 
+                the  coercion any more, and export/100 will be dced later
              *)
              (coercions, 
               id :: new_exports, 
@@ -96240,7 +96302,7 @@ let compile  ~filename output_prefix env _sigs
   let ()   = 
     Lam_compile_env.reset () ;
   in 
-  let lam = Lam.convert  lam in 
+  let lam = Lam.convert lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in

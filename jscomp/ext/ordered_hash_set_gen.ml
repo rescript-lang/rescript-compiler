@@ -40,8 +40,17 @@ sig
   val choose_exn: t -> key 
   val of_array: key array -> t 
   val to_sorted_array: t -> key array
+  val replace: t -> key -> key -> unit 
+  val reset_to_list : t -> key list -> unit
+  exception Replace_failure of bool 
 end
 
+exception Replace_failure of bool 
+
+
+(** when it is true, it means the old key does not exist ,
+    when it is false, it means the new key already exist
+  *)
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
@@ -76,11 +85,15 @@ let clear h =
     Array.unsafe_set h_data i  Empty
   done
 
-let reset h =
-  let h_initial_size = h.initial_size in 
+(** Note this function is only used internally, make sure [h_initial_size] 
+    is a power of 16 *)
+let reset_with_size h h_initial_size  =
   h.size <- 0;
   h.data <- Array.make h_initial_size Empty;
   h.data_mask <- h_initial_size - 1
+
+let reset h  =
+  reset_with_size h h.initial_size
 
 
 let copy h = { h with data = Array.copy h.data }

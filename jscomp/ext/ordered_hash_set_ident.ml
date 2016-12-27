@@ -1,9 +1,9 @@
   
-# 11 "ext/ordered_hash_set.cppo.ml"
-  type key = string 
-  type t = key Ordered_hash_set_gen.t
-  let hash = Bs_hash_stubs.hash_string
-  let equal_key = Ext_string.equal
+# 16 "ext/ordered_hash_set.cppo.ml"
+  type key = Ident.t 
+  type t = key Ordered_hash_set_gen.t  
+  let hash (key : key) = Bs_hash_stubs.hash_string_int key.name key.stamp 
+  let equal_key = Ext_ident.equal 
 
 # 24
 open Ordered_hash_set_gen
