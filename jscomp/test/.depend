@@ -152,6 +152,7 @@ ffi_js_test.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_obj.cmj \
 ffi_splice_test.cmj : mt.cmj
 ffi_test.cmj : ../runtime/js.cmj
 fib.cmj :
+flattern_order_test.cmj : ../stdlib/list.cmj
 flexible_array_test.cmj : ../stdlib/format.cmj ../stdlib/array.cmj
 float_array.cmj :
 float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \

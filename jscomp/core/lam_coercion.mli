@@ -23,19 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
-  | Recursive of (Ident.t * Lam.t) list
-  | Nop of Lam.t 
-
-
-
-
-
-(** Tricky to be complete *)
-
-val pp_group : Env.t -> Format.formatter -> t -> unit
+val coerce_and_group_big_lambda : 
+    Ident.t list -> 
+    Lam.t -> 
+    Ident.t list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list 
