@@ -292,6 +292,7 @@ core/lam_compile.cmi : core/lam_compile_defs.cmi core/lam.cmi \
     core/js_output.cmi core/j.cmx
 core/lam_pass_exits.cmi : core/lam.cmi ext/int_hashtbl.cmi
 core/lam_pass_count.cmi : core/lam.cmi ext/ident_hashtbl.cmi
+core/lam_pass_eliminate_ref.cmi : core/lam.cmi
 core/lam_pass_lets_dce.cmi : core/lam.cmi
 core/lam_pass_remove_alias.cmi : core/lam_stats.cmi core/lam.cmi
 core/lam_compile_group.cmi : core/j.cmx
@@ -493,10 +494,12 @@ core/lam_pass_exits.cmx : core/lam_util.cmx core/lam_beta_reduce.cmx \
 core/lam_pass_count.cmx : core/lam_beta_reduce.cmx core/lam.cmx \
     ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
     core/lam_pass_count.cmi
-core/lam_pass_lets_dce.cmx : core/lam_util.cmx core/lam_pass_count.cmx \
+core/lam_pass_eliminate_ref.cmx : core/lam.cmx ext/ident_set.cmx \
+    core/lam_pass_eliminate_ref.cmi
+core/lam_pass_lets_dce.cmx : core/lam_util.cmx \
+    core/lam_pass_eliminate_ref.cmx core/lam_pass_count.cmx \
     core/lam_beta_reduce.cmx core/lam_analysis.cmx core/lam.cmx \
-    ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
-    core/lam_pass_lets_dce.cmi
+    ext/ident_hashtbl.cmx ext/ext_list.cmx core/lam_pass_lets_dce.cmi
 core/lam_pass_remove_alias.cmx : core/lam_util.cmx core/lam_stats.cmx \
     core/lam_module_ident.cmx core/lam_inline_util.cmx \
     core/lam_compile_env.cmx core/lam_closure.cmx core/lam_beta_reduce.cmx \

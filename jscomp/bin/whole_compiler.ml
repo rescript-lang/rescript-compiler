@@ -94741,7 +94741,10 @@ let subst_helper (subst : subst_tbl) query lam =
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
-      and new_fail = Misc.may_map simplif sw.sw_failaction in
+      and new_fail = 
+      begin match sw.sw_failaction with 
+      | None   -> None
+      | Some x -> Some (simplif x) end in
       Lam.switch
         new_l
          { 
@@ -94752,7 +94755,7 @@ let subst_helper (subst : subst_tbl) query lam =
     | Lstringswitch(l,sw,d) ->
       Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
-         (Misc.may_map simplif d)
+         (begin match d with None -> None | Some d -> Some (simplif d) end)
     | Ltrywith (l1, v, l2) -> 
       Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse (l1, l2, l3) -> 
@@ -95007,46 +95010,49 @@ let collect_occurs  lam : occ_tbl =
 
 
 end
-module Lam_pass_lets_dce : sig 
-#1 "lam_pass_lets_dce.mli"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the Q Public License version 1.0.               *)
-(*                                                                     *)
-(***********************************************************************)
-(* Adapted for Javascript backend: Hongbo Zhang                        *)
+module Lam_pass_eliminate_ref : sig 
+#1 "lam_pass_eliminate_ref.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(**
-   This pass would do beta reduction, and dead code elimination (adapted from compiler's built-in [Simplif] module )
 
-   1. beta reduction -> Llet (Strict )
-  
-   2. The global table [occ] associates to each let-bound identifier
-   the number of its uses (as a reference):
-     - 0 if never used
-     - 1 if used exactly once in and *not under a lambda or within a loop
-     - > 1 if used several times or under a lambda or within a loop.
+exception Real_reference 
 
-   The local table [bv] associates to each locally-let-bound variable
-   its reference count, as above.  [bv] is enriched at let bindings
-   but emptied when crossing lambdas and loops. 
+val eliminate_ref : 
+    Ident.t -> 
+    Lam.t -> 
+    Lam.t
 
-   For this pass, when it' used under a lambda or within a loop, we don't do anything,
-   in theory, we can still do something if it's pure but we are conservative here.
 
-   [bv] is used to help caculate [occ] it is not useful outside
 
- *)
-val simplify_lets :  Lam.t -> Lam.t
+
+
+
+
 
 end = struct
-#1 "lam_pass_lets_dce.ml"
+#1 "lam_pass_eliminate_ref.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -95061,7 +95067,7 @@ end = struct
 (* Adapted for Javascript backend : Hongbo Zhang,  *)
 
 
-open Asttypes
+
 
 exception Real_reference
 
@@ -95127,12 +95133,17 @@ let rec eliminate_ref id (lam : Lam.t) =
        sw_blocks =
          List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_blocks;
        sw_failaction =
-         Misc.may_map (eliminate_ref id) sw.sw_failaction; }
+         match sw.sw_failaction with 
+         | None -> None 
+         | Some x -> Some (eliminate_ref id x)
+          }
   | Lstringswitch(e, sw, default) ->
     Lam.stringswitch
       (eliminate_ref id e)
       (List.map (fun (s, e) -> (s, eliminate_ref id e)) sw)
-      (Misc.may_map (eliminate_ref id) default)
+      (match default with 
+      | None -> None 
+      | Some x ->  Some (eliminate_ref id x))
   | Lstaticraise (i,args) ->
     Lam.staticraise i (List.map (eliminate_ref id) args)
   | Lstaticcatch(e1, i, e2) ->
@@ -95162,6 +95173,61 @@ let rec eliminate_ref id (lam : Lam.t) =
 
 
 
+end
+module Lam_pass_lets_dce : sig 
+#1 "lam_pass_lets_dce.mli"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+(* Adapted for Javascript backend: Hongbo Zhang                        *)
+
+(**
+   This pass would do beta reduction, and dead code elimination (adapted from compiler's built-in [Simplif] module )
+
+   1. beta reduction -> Llet (Strict )
+  
+   2. The global table [occ] associates to each let-bound identifier
+   the number of its uses (as a reference):
+     - 0 if never used
+     - 1 if used exactly once in and *not under a lambda or within a loop
+     - > 1 if used several times or under a lambda or within a loop.
+
+   The local table [bv] associates to each locally-let-bound variable
+   its reference count, as above.  [bv] is enriched at let bindings
+   but emptied when crossing lambdas and loops. 
+
+   For this pass, when it' used under a lambda or within a loop, we don't do anything,
+   in theory, we can still do something if it's pure but we are conservative here.
+
+   [bv] is used to help caculate [occ] it is not useful outside
+
+ *)
+val simplify_lets :  Lam.t -> Lam.t
+
+end = struct
+#1 "lam_pass_lets_dce.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+(* Adapted for Javascript backend : Hongbo Zhang,  *)
+
+
 let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam = 
   let subst : Lam.t Ident_hashtbl.t = Ident_hashtbl.create 32 in
   let string_table : string Ident_hashtbl.t = Ident_hashtbl.create 32 in  
@@ -95183,8 +95249,9 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       begin 
         try (** TODO: record all references variables *)
           Lam_util.refine_let
-            ~kind:Variable v slinit (eliminate_ref v slbody)
-        with Real_reference ->
+            ~kind:Variable v slinit
+             (Lam_pass_eliminate_ref.eliminate_ref v slbody)
+        with Lam_pass_eliminate_ref.Real_reference ->
           Lam_util.refine_let 
             ~kind v (Lam.prim ~primitive ~args:[slinit] loc)
             slbody
@@ -95344,7 +95411,11 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
-      and new_fail = Misc.may_map simplif sw.sw_failaction in
+      and new_fail = 
+        match sw.sw_failaction with 
+        | None -> None 
+        | Some x -> Some (simplif x)
+      in
       Lam.switch
         new_l
         {sw with sw_consts = new_consts ; sw_blocks = new_blocks;
@@ -95352,7 +95423,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     | Lstringswitch (l,sw,d) ->
       Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
-        (Misc.may_map simplif d)
+        (match d with None -> None | Some d -> Some (simplif d))
     | Lstaticraise (i,ls) ->
       Lam.staticraise i (List.map simplif ls)
     | Lstaticcatch(l1, (i,args), l2) ->

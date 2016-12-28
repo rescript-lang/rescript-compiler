@@ -258,7 +258,10 @@ let subst_helper (subst : subst_tbl) query lam =
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
-      and new_fail = Misc.may_map simplif sw.sw_failaction in
+      and new_fail = 
+      begin match sw.sw_failaction with 
+      | None   -> None
+      | Some x -> Some (simplif x) end in
       Lam.switch
         new_l
          { 
@@ -269,7 +272,7 @@ let subst_helper (subst : subst_tbl) query lam =
     | Lstringswitch(l,sw,d) ->
       Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
-         (Misc.may_map simplif d)
+         (begin match d with None -> None | Some d -> Some (simplif d) end)
     | Ltrywith (l1, v, l2) -> 
       Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse (l1, l2, l3) -> 

@@ -23,6 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+exception Real_reference 
+
+val eliminate_ref : 
+    Ident.t -> 
+    Lam.t -> 
+    Lam.t
+
 
 
 
