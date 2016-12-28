@@ -84148,6 +84148,692 @@ let shake_program (program : J.program) =
   {program with block = shake_block program.block program.export_set}
 
 end
+module Lam_group : sig 
+#1 "lam_group.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+type t = 
+  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Recursive of (Ident.t * Lam.t) list
+  | Nop of Lam.t 
+
+
+
+
+
+(** Tricky to be complete *)
+
+val pp_group : Env.t -> Format.formatter -> t -> unit
+
+end = struct
+#1 "lam_group.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(** This is not a recursive type definition *)
+type t = 
+  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Recursive of (Ident.t * Lam.t) list
+  | Nop of Lam.t 
+
+
+let pp = Format.fprintf 
+
+let str_of_kind (kind : Lambda.let_kind) = 
+  match kind with 
+  | Alias -> "a"
+  | Strict -> ""
+  | StrictOpt -> "o"
+  | Variable -> "v" 
+
+let pp_group env fmt ( x : t) =
+  match x with
+  | Single (kind, id, lam) ->
+    Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind) 
+      (Lam_print.env_lambda env) lam
+  | Recursive lst -> 
+    List.iter (fun (id,lam) -> 
+        Format.fprintf fmt
+          "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
+      ) lst
+  | Nop lam -> Lam_print.env_lambda env fmt lam
+
+
+(* [groups] are in reverse order *)
+
+let lambda_of_groups result groups = 
+  List.fold_left (fun acc x -> 
+      match x with 
+      | Nop l -> Lam.seq l acc
+      | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
+      | Recursive bindings -> Lam.letrec bindings acc) 
+    result groups
+
+
+(* TODO: 
+    refine effectful [ket_kind] to be pure or not
+    Be careful of how [Lifused(v,l)] work 
+    since its semantics depend on whether v is used or not
+    return value are in reverse order, but handled by [lambda_of_groups]
+*)
+let deep_flatten
+    (lam : Lam.t) :  Lam.t  = 
+  let rec
+    flatten 
+      (acc :  t list ) 
+      (lam : Lam.t) :  Lam.t *  t list = 
+    match lam with 
+    | Llet (str, id, 
+            (Lprim {primitive = Pccall 
+                      {prim_name = 
+                         ("js_from_nullable" 
+                         | "js_from_def"
+                         |"js_from_nullable_def"); _ }
+                   ; args  =  [Lvar _]} as arg), body)
+      -> 
+      flatten (Single(str, id, (aux arg) ) :: acc) body
+    | Llet (str, id, 
+            Lprim {primitive = Pccall 
+                     ({prim_name = 
+                         ("js_from_nullable"
+                         | "js_from_def"
+                         | "js_from_nullable_def"); _ } as p );
+                   args = [arg]}, body)
+      -> 
+      let id' = Ident.rename id in 
+      flatten acc 
+        (Lam.let_ str id' arg 
+               (Lam.let_ Alias id 
+                  (Lam.prim 
+                     ~primitive:(Pccall p)
+                     ~args: [Lam.var id'] Location.none (* FIXME*))
+                  body)
+              )
+    | Llet (str,id,arg,body) -> 
+      let (res,l) = flatten acc arg  in
+      flatten (Single(str, id, res ) :: l) body
+    | Lletrec (bind_args, body) -> 
+      (** TODO: more flattening, 
+          - also for function compilation, flattening should be done first
+          - [compile_group] and [compile] become mutually recursive function
+      *)
+      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
+      flatten
+        (
+          (* let rec iter bind_args acc =  *)
+          (*   match bind_args with *)
+          (*   | [] ->  acc  *)
+          (*   | (id,arg) :: rest ->  *)
+          (*       flatten acc  *)
+          Recursive
+            (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
+          :: acc
+        )
+        body
+    | Lsequence (l,r) -> 
+      let (res, l)  = flatten acc l in
+      flatten (Nop res :: l)  r
+    | x ->  
+      aux x, acc      
+
+  and aux  (lam : Lam.t) : Lam.t= 
+    match lam with 
+    | Llet _ -> 
+      let res, groups = flatten [] lam  
+      in lambda_of_groups res groups
+    | Lletrec (bind_args, body) ->  
+      (** be careful to flatten letrec 
+          like below : 
+          {[
+            let rec even = 
+              let odd n =  if n ==1 then true else even (n - 1) in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+          odd and even are recursive values, since all definitions inside 
+          e.g, [odd] can see [even] now, however, it should be fine
+          in our case? since ocaml's recursive value does not allow immediate 
+          access its value direclty?, seems no
+          {[
+            let rec even2 = 
+              let odd = even2 in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+      *)
+      (* let module Ident_set = Lambda.IdentSet in *)
+      let rec iter bind_args acc =
+        match bind_args with
+        | [] ->   acc
+        | (id,arg) :: rest ->
+          let groups, set = acc in
+          let res, groups = flatten groups (aux arg)
+          in
+          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
+      in
+      let groups, collections = iter bind_args ([], Ident_set.empty) in
+      (* FIXME:
+          here we try to move inner definitions of [recurisve value] upwards
+          for example:
+         {[
+           let rec x = 
+             let y = 32 in
+             y :: x
+           and z = ..
+             ---
+             le ty = 32 in
+           let rec x = y::x
+           and z = ..
+         ]}
+          however, the inner definitions can see [z] and [x], so we
+          can not blindly move it in the beginning, however, for 
+          recursive value, ocaml does not allow immediate access to 
+          recursive value, so what's the best strategy?
+          ---
+          the motivation is to capture real tail call
+      *)
+      let (result, _, wrap) = 
+        List.fold_left (fun  (acc, set, wrap)  g -> 
+            match g with 
+            | Recursive [ id, (Lconst _)]
+            | Single (Alias, id, ( Lconst _   ))
+            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
+              (** FIXME: 
+                   It should be alias and alias will be optimized away
+                   in later optmizations, however, 
+                   this means if we don't optimize 
+                  {[ let u/a = v in ..]}
+                   the output would be wrong, we should *optimize 
+                   this away right now* instead of delaying it to the 
+                   later passes
+              *)
+              (acc, set, g :: wrap)
+
+            | Single (_, id, ( Lvar bid)) -> 
+              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
+            | Single (_, id, lam) ->
+              let variables = Lam.free_variables  lam in
+              if Ident_set.(is_empty (inter variables collections)) 
+              then 
+                (acc, set, g :: wrap )
+              else 
+                ((id, lam ) :: acc , Ident_set.add id set, wrap)
+            | Recursive us -> 
+              (* could also be from nested [let rec] 
+                 like 
+                 {[
+                   let rec x = 
+                     let rec y = 1 :: y in
+                     2:: List.hd y:: x 
+                 ]}
+                 TODO: seems like we should update depenency graph, 
+
+              *)
+              (us @ acc , 
+               List.fold_left (fun acc (id,_) -> Ident_set.add id acc) set us , 
+               wrap)
+            | Nop _ -> assert false 
+          ) ([], collections, []) groups in
+      lambda_of_groups 
+        (Lam.letrec 
+            result 
+            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
+            (aux body)) (List.rev wrap)
+    | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
+    | Lconst _ -> lam
+    | Lvar _ -> lam 
+    (* | Lapply(Lfunction(Curried, params, body), args, _) *)
+    (*   when  List.length params = List.length args -> *)
+    (*     aux (beta_reduce  params body args) *)
+    (* | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _) *)
+    (*     (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*           can we switch to the tupled backend? *\) *)
+    (*   when  List.length params = List.length args -> *)
+    (*       aux (beta_reduce params body args) *)
+
+    | Lapply{fn = l1; args  = ll; loc; status} -> 
+      Lam.apply (aux l1) (List.map aux ll) loc status
+
+    (* This kind of simple optimizations should be done each time
+       and as early as possible *) 
+
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
+            args = [ Lconst (Const_base (Const_int64 i))]; _} 
+      ->  
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
+             args = [ Lconst (Const_base (Const_int64 i))]; _} 
+      -> 
+      (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+    | Lprim {primitive ; args; loc }
+      -> 
+      let args = List.map aux args in
+      Lam.prim ~primitive ~args loc
+
+    | Lfunction{arity; kind; params;  body = l} -> 
+      Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
+    | Lswitch(l, {sw_failaction; 
+                  sw_consts; 
+                  sw_blocks;
+                  sw_numblocks;
+                  sw_numconsts;
+                 }) ->
+      Lam.switch (aux  l)
+              {sw_consts = 
+                 List.map (fun (v, l) -> v, aux  l) sw_consts;
+               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
+               sw_numconsts = sw_numconsts;
+               sw_numblocks = sw_numblocks;
+               sw_failaction = 
+                 begin 
+                   match sw_failaction with 
+                   | None -> None
+                   | Some x -> Some (aux x)
+                 end}
+    | Lstringswitch(l, sw, d) ->
+      Lam.stringswitch (aux  l) 
+                    (List.map (fun (i, l) -> i,aux  l) sw)
+                    (match d with
+                     | Some d -> Some (aux d )
+                     | None -> None)
+
+    | Lstaticraise (i,ls) 
+      -> Lam.staticraise i (List.map aux  ls)
+    | Lstaticcatch(l1, ids, l2) 
+      -> 
+      Lam.staticcatch (aux  l1) ids (aux  l2)
+    | Ltrywith(l1, v, l2) ->
+      Lam.try_ (aux  l1) v (aux  l2)
+    | Lifthenelse(l1, l2, l3) 
+      -> 
+      Lam.if_ (aux  l1) (aux l2) (aux l3)
+    | Lwhile(l1, l2) 
+      -> 
+      Lam.while_ (aux  l1) (aux l2)
+    | Lfor(flag, l1, l2, dir, l3) 
+      -> 
+      Lam.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
+    | Lassign(v, l) ->
+      (* Lalias-bound variables are never assigned, so don't increase
+         v's refaux *)
+      Lam.assign v (aux  l)
+    | Lsend(u, m, o, ll, v) -> 
+      Lam.send u (aux m) (aux o) (List.map aux ll) v
+
+    | Lifused(v, l) -> Lam.ifused v (aux  l)
+  in aux lam
+
+end
+module Lam_dce : sig 
+#1 "lam_dce.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+(** Dead code eliminatiion on the lambda layer 
+*)
+
+val remove : Ident.t list -> Lam_group.t list -> Lam_group.t list
+
+end = struct
+#1 "lam_dce.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+
+
+let transitive_closure 
+    (initial_idents : Ident.t list) 
+    (ident_freevars : Ident_set.t Ident_hashtbl.t) 
+  =
+  let visited  = Ident_hash_set.create 31 in 
+  let rec dfs (id : Ident.t) =
+    if Ident_hash_set.mem visited id || Ext_ident.is_js_or_global id  
+    then ()
+    else 
+      begin 
+        Ident_hash_set.add visited id;
+        match Ident_hashtbl.find_opt ident_freevars id with 
+        | None -> 
+          Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
+        | Some e -> Ident_set.iter (fun id -> dfs id) e
+      end  in 
+  List.iter dfs initial_idents;
+  visited
+
+let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
+  let ident_free_vars :  _ Ident_hashtbl.t = Ident_hashtbl.create 17 in
+  (* calculate initial required idents, 
+     at the same time, populate dependency set [ident_free_vars]
+  *)
+  let initial_idents =
+    List.fold_left (fun acc (x : Lam_group.t) -> 
+        match x with
+        | Single(kind, id,lam) ->                   
+          begin
+            Ident_hashtbl.add ident_free_vars id 
+              (Lam.free_variables  lam);
+            match kind with
+            | Alias | StrictOpt -> acc
+            | Strict | Variable -> id :: acc 
+          end
+        | Recursive bindings -> 
+          List.fold_left (fun acc (id,lam) -> 
+              Ident_hashtbl.add ident_free_vars id (Lam.free_variables lam);
+              match (lam : Lam.t) with
+              | Lfunction _ -> acc 
+              | _ -> id :: acc
+            ) acc bindings 
+        | Nop lam ->
+          if Lam_analysis.no_side_effects lam then acc
+          else 
+            (** its free varaibles here will be defined above *)
+            Ident_set.fold (fun x acc -> x :: acc )  ( Lam.free_variables lam) acc                
+      )  export_idents rest in 
+  let visited = transitive_closure initial_idents ident_free_vars in 
+  List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
+      match x with 
+      | Single(_,id,_) -> 
+        if Ident_hash_set.mem visited id  then 
+          x :: acc 
+        else acc 
+      | Nop _ -> x :: acc  
+      | Recursive bindings ->
+        let b = 
+          List.fold_right (fun ((id,_) as v) acc ->
+              if Ident_hash_set.mem visited id then 
+                v :: acc 
+              else
+                acc  
+            ) bindings [] in            
+        match b with 
+        | [] -> acc  
+        | _ -> (Recursive b) :: acc
+    ) [] rest |> List.rev   
+
+  
+
+end
+module Lam_coercion : sig 
+#1 "lam_coercion.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val coerce_and_group_big_lambda : 
+    Ident.t list -> 
+    Lam.t -> 
+    Ident.t list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list 
+end = struct
+#1 "lam_coercion.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let rec flatten 
+    (acc :  Lam_group.t list ) 
+    (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
+  match lam with 
+  | Llet (str,id,arg,body) -> 
+    let (res,l) = flatten acc arg  in
+    flatten (Single(str, id, res ) :: l) body
+  | Lletrec (bind_args, body) -> 
+    (** TODO: more flattening, 
+        - also for function compilation, flattening should be done first
+        - [compile_group] and [compile] become mutually recursive function
+    *)
+    (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
+    flatten
+      (
+        Recursive
+          (List.map (fun (id, arg ) -> (id, arg)) bind_args)
+        :: acc
+      )
+      body
+  | Lsequence (l,r) -> 
+    let (res, l)  = flatten acc l in
+    flatten (Nop res :: l)  r
+
+  | x ->  
+    x, acc
+
+
+(* Invariant: The last one is always [exports]
+           Compile definitions
+           Compile exports
+           Assume Pmakeblock(_,_),
+           lambda_exports are pure
+           compile each binding with a return value
+           This might be wrong in toplevel
+           TODO: add this check as early as possible in the beginning
+*)
+let handle_exports 
+    (original_exports : Ident.t list)
+    (lambda_exports : Lam.t list)  (rest : Lam_group.t list) : 
+  Lam.ident list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list=
+  let coercion_groups, new_exports, new_export_set,  export_map = 
+    List.fold_right2 
+        (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
+           match (lam : Lam.t) with 
+           | Lvar id 
+             when Ident.name id = Ident.name eid -> 
+             (* {[ Ident.same id eid]} is more  correct, 
+                however, it will introduce a coercion, which is not necessary, 
+                as long as its name is the same, we want to avoid 
+                another coercion                
+                In most common cases, it will be 
+                {[
+                  let export/100 =a fun ..
+                  export/100    
+                ]}
+                This comes from we have lambda as below 
+                {[
+                  (* let export/100 =a export/99  *)
+                  (* above is probably the cause but does not have to be  *)
+                  (export/99)                
+                ]}
+                [export/100] was not eliminated due to that it is export id, 
+                if we rename export/99 to be export id, then we don't need 
+                the  coercion any more, and export/100 will be dced later
+             *)
+             (coercions, 
+              id :: new_exports, 
+              Ident_set.add id new_export_set,
+              export_map)
+           | _ -> (** TODO : bug 
+                      check [map.ml] here coercion, we introduced 
+                      rebound which is not corrrect 
+                      {[
+                        let Make/identifier = function (funarg){
+                            var $$let = Make/identifier(funarg);
+                                    return [0, ..... ]
+                          }
+                      ]}
+                      Possible fix ? 
+                      change export identifier, we should do this in the very 
+                      beginning since lots of optimizations depend on this
+                      however
+                  *)
+             (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
+              eid :: new_exports,
+              Ident_set.add eid new_export_set, 
+              Ident_map.add eid lam export_map))
+        original_exports lambda_exports 
+        ([],[], Ident_set.empty, Ident_map.empty)
+  in
+  let (export_map, rest) = 
+    List.fold_left 
+      (fun (export_map, acc) x ->
+         (match (x : Lam_group.t)  with 
+          | Single (_,id,lam) when Ident_set.mem id new_export_set 
+            -> Ident_map.add id lam export_map
+          | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
+  let rest = Lam_dce.remove new_exports rest in
+  new_exports, new_export_set, export_map , rest 
+
+
+let coerce_and_group_big_lambda old_exports lam = 
+    match flatten [] lam with 
+    | Lam.Lprim {primitive = Pmakeblock _;  args = lambda_exports }, rest 
+      -> 
+      handle_exports old_exports lambda_exports rest 
+    | _ -> assert false
+
+
+end
 module Js_arr : sig 
 #1 "js_arr.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -92975,562 +93661,6 @@ and
   end
 
 end
-module Lam_group : sig 
-#1 "lam_group.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
-  | Recursive of (Ident.t * Lam.t) list
-  | Nop of Lam.t 
-
-
-val flatten : t list -> Lam.t -> Lam.t * t list
-
-val lambda_of_groups : Lam.t -> t list -> Lam.t
-
-val deep_flatten : Lam.t -> Lam.t
-(** Tricky to be complete *)
-
-val pp_group : Env.t -> Format.formatter -> t -> unit
-
-end = struct
-#1 "lam_group.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(** This is not a recursive type definition *)
-type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
-  | Recursive of (Ident.t * Lam.t) list
-  | Nop of Lam.t 
-
-
-let pp = Format.fprintf 
-
-let str_of_kind (kind : Lambda.let_kind) = 
-  match kind with 
-  | Alias -> "a"
-  | Strict -> ""
-  | StrictOpt -> "o"
-  | Variable -> "v" 
-
-let pp_group env fmt ( x : t) =
-  match x with
-  | Single (kind, id, lam) ->
-    Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind) 
-      (Lam_print.env_lambda env) lam
-  | Recursive lst -> 
-    List.iter (fun (id,lam) -> 
-        Format.fprintf fmt
-          "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
-      ) lst
-  | Nop lam -> Lam_print.env_lambda env fmt lam
-
-
-let rec flatten 
-    (acc :  t list ) 
-    (lam : Lam.t) :  Lam.t *  t list = 
-  match lam with 
-  | Llet (str,id,arg,body) -> 
-    let (res,l) = flatten acc arg  in
-    flatten (Single(str, id, res ) :: l) body
-  (* begin *)
-  (*   match res with *)
-  (*   | Llet _ -> assert false *)
-  (*   | Lletrec _-> assert false *)
-  (*   | _ ->  *)
-  (*       Format.fprintf  Format.err_formatter "%a@." Printlambda.lambda res ; *)
-  (*       Format.pp_print_flush Format.err_formatter (); *)
-  (*       flatten (Single(str, id, res ) :: l) body *)
-  (* end *)
-  | Lletrec (bind_args, body) -> 
-    (** TODO: more flattening, 
-        - also for function compilation, flattening should be done first
-        - [compile_group] and [compile] become mutually recursive function
-    *)
-    (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
-    flatten
-      (
-        Recursive
-          (List.map (fun (id, arg ) -> (id, arg)) bind_args)
-        :: acc
-      )
-      body
-  | Lsequence (l,r) -> 
-    let (res, l)  = flatten acc l in
-    flatten (Nop res :: l)  r
-
-  | x ->  
-    (*   x = Llet _ -> assert false (* sane check *)*)
-    x, acc
-
-
-(* [groups] are in reverse order *)
-
-let lambda_of_groups result groups = 
-  List.fold_left (fun acc x -> 
-      match x with 
-      | Nop l -> Lam.seq l acc
-      | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
-      | Recursive bindings -> Lam.letrec bindings acc) 
-    result groups
-
-
-(* TODO: 
-    refine effectful [ket_kind] to be pure or not
-    Be careful of how [Lifused(v,l)] work 
-    since its semantics depend on whether v is used or not
-    return value are in reverse order, but handled by [lambda_of_groups]
-*)
-let deep_flatten
-    (lam : Lam.t) :  Lam.t  = 
-  let rec
-    flatten 
-      (acc :  t list ) 
-      (lam : Lam.t) :  Lam.t *  t list = 
-    match lam with 
-    | Llet (str, id, 
-            (Lprim {primitive = Pccall 
-                      {prim_name = 
-                         ("js_from_nullable" 
-                         | "js_from_def"
-                         |"js_from_nullable_def"); _ }
-                   ; args  =  [Lvar _]} as arg), body)
-      -> 
-      flatten (Single(str, id, (aux arg) ) :: acc) body
-    | Llet (str, id, 
-            Lprim {primitive = Pccall 
-                     ({prim_name = 
-                         ("js_from_nullable"
-                         | "js_from_def"
-                         | "js_from_nullable_def"); _ } as p );
-                   args = [arg]}, body)
-      -> 
-      let id' = Ident.rename id in 
-      flatten acc 
-        (Lam.let_ str id' arg 
-               (Lam.let_ Alias id 
-                  (Lam.prim 
-                     ~primitive:(Pccall p)
-                     ~args: [Lam.var id'] Location.none (* FIXME*))
-                  body)
-              )
-    | Llet (str,id,arg,body) -> 
-      let (res,l) = flatten acc arg  in
-      flatten (Single(str, id, res ) :: l) body
-    | Lletrec (bind_args, body) -> 
-      (** TODO: more flattening, 
-          - also for function compilation, flattening should be done first
-          - [compile_group] and [compile] become mutually recursive function
-      *)
-      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
-      flatten
-        (
-          (* let rec iter bind_args acc =  *)
-          (*   match bind_args with *)
-          (*   | [] ->  acc  *)
-          (*   | (id,arg) :: rest ->  *)
-          (*       flatten acc  *)
-          Recursive
-            (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
-          :: acc
-        )
-        body
-    | Lsequence (l,r) -> 
-      let (res, l)  = flatten acc l in
-      flatten (Nop res :: l)  r
-    | x ->  
-      aux x, acc      
-
-  and aux  (lam : Lam.t) : Lam.t= 
-    match lam with 
-    | Llet _ -> 
-      let res, groups = flatten [] lam  
-      in lambda_of_groups res groups
-    | Lletrec (bind_args, body) ->  
-      (** be careful to flatten letrec 
-          like below : 
-          {[
-            let rec even = 
-              let odd n =  if n ==1 then true else even (n - 1) in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-          odd and even are recursive values, since all definitions inside 
-          e.g, [odd] can see [even] now, however, it should be fine
-          in our case? since ocaml's recursive value does not allow immediate 
-          access its value direclty?, seems no
-          {[
-            let rec even2 = 
-              let odd = even2 in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-      *)
-      (* let module Ident_set = Lambda.IdentSet in *)
-      let rec iter bind_args acc =
-        match bind_args with
-        | [] ->   acc
-        | (id,arg) :: rest ->
-          let groups, set = acc in
-          let res, groups = flatten groups (aux arg)
-          in
-          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
-      in
-      let groups, collections = iter bind_args ([], Ident_set.empty) in
-      (* FIXME:
-          here we try to move inner definitions of [recurisve value] upwards
-          for example:
-         {[
-           let rec x = 
-             let y = 32 in
-             y :: x
-           and z = ..
-             ---
-             le ty = 32 in
-           let rec x = y::x
-           and z = ..
-         ]}
-          however, the inner definitions can see [z] and [x], so we
-          can not blindly move it in the beginning, however, for 
-          recursive value, ocaml does not allow immediate access to 
-          recursive value, so what's the best strategy?
-          ---
-          the motivation is to capture real tail call
-      *)
-      let (result, _, wrap) = 
-        List.fold_left (fun  (acc, set, wrap)  g -> 
-            match g with 
-            | Recursive [ id, (Lconst _)]
-            | Single (Alias, id, ( Lconst _   ))
-            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
-              (** FIXME: 
-                   It should be alias and alias will be optimized away
-                   in later optmizations, however, 
-                   this means if we don't optimize 
-                  {[ let u/a = v in ..]}
-                   the output would be wrong, we should *optimize 
-                   this away right now* instead of delaying it to the 
-                   later passes
-              *)
-              (acc, set, g :: wrap)
-
-            | Single (_, id, ( Lvar bid)) -> 
-              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
-            | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
-              if Ident_set.(is_empty (inter variables collections)) 
-              then 
-                (acc, set, g :: wrap )
-              else 
-                ((id, lam ) :: acc , Ident_set.add id set, wrap)
-            | Recursive us -> 
-              (* could also be from nested [let rec] 
-                 like 
-                 {[
-                   let rec x = 
-                     let rec y = 1 :: y in
-                     2:: List.hd y:: x 
-                 ]}
-                 TODO: seems like we should update depenency graph, 
-
-              *)
-              (us @ acc , 
-               List.fold_left (fun acc (id,_) -> Ident_set.add id acc) set us , 
-               wrap)
-            | Nop _ -> assert false 
-          ) ([], collections, []) groups in
-      lambda_of_groups 
-        (Lam.letrec 
-            result 
-            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
-            (aux body)) (List.rev wrap)
-    | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
-    | Lconst _ -> lam
-    | Lvar _ -> lam 
-    (* | Lapply(Lfunction(Curried, params, body), args, _) *)
-    (*   when  List.length params = List.length args -> *)
-    (*     aux (beta_reduce  params body args) *)
-    (* | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _) *)
-    (*     (\** TODO: keep track of this parameter in ocaml trunk, *)
-    (*           can we switch to the tupled backend? *\) *)
-    (*   when  List.length params = List.length args -> *)
-    (*       aux (beta_reduce params body args) *)
-
-    | Lapply{fn = l1; args  = ll; loc; status} -> 
-      Lam.apply (aux l1) (List.map aux ll) loc status
-
-    (* This kind of simple optimizations should be done each time
-       and as early as possible *) 
-
-    | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
-            args = [ Lconst (Const_base (Const_int64 i))]; _} 
-      ->  
-      Lam.const 
-        (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
-    | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
-             args = [ Lconst (Const_base (Const_int64 i))]; _} 
-      -> 
-      (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
-      Lam.const 
-        (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim {primitive ; args; loc }
-      -> 
-      let args = List.map aux args in
-      Lam.prim ~primitive ~args loc
-
-    | Lfunction{arity; kind; params;  body = l} -> 
-      Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
-    | Lswitch(l, {sw_failaction; 
-                  sw_consts; 
-                  sw_blocks;
-                  sw_numblocks;
-                  sw_numconsts;
-                 }) ->
-      Lam.switch (aux  l)
-              {sw_consts = 
-                 List.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
-               sw_numconsts = sw_numconsts;
-               sw_numblocks = sw_numblocks;
-               sw_failaction = 
-                 begin 
-                   match sw_failaction with 
-                   | None -> None
-                   | Some x -> Some (aux x)
-                 end}
-    | Lstringswitch(l, sw, d) ->
-      Lam.stringswitch (aux  l) 
-                    (List.map (fun (i, l) -> i,aux  l) sw)
-                    (match d with
-                     | Some d -> Some (aux d )
-                     | None -> None)
-
-    | Lstaticraise (i,ls) 
-      -> Lam.staticraise i (List.map aux  ls)
-    | Lstaticcatch(l1, ids, l2) 
-      -> 
-      Lam.staticcatch (aux  l1) ids (aux  l2)
-    | Ltrywith(l1, v, l2) ->
-      Lam.try_ (aux  l1) v (aux  l2)
-    | Lifthenelse(l1, l2, l3) 
-      -> 
-      Lam.if_ (aux  l1) (aux l2) (aux l3)
-    | Lwhile(l1, l2) 
-      -> 
-      Lam.while_ (aux  l1) (aux l2)
-    | Lfor(flag, l1, l2, dir, l3) 
-      -> 
-      Lam.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
-    | Lassign(v, l) ->
-      (* Lalias-bound variables are never assigned, so don't increase
-         v's refaux *)
-      Lam.assign v (aux  l)
-    | Lsend(u, m, o, ll, v) -> 
-      Lam.send u (aux m) (aux o) (List.map aux ll) v
-
-    | Lifused(v, l) -> Lam.ifused v (aux  l)
-  in aux lam
-
-end
-module Lam_dce : sig 
-#1 "lam_dce.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-(** Dead code eliminatiion on the lambda layer 
-*)
-
-val remove : Ident.t list -> Lam_group.t list -> Lam_group.t list
-
-end = struct
-#1 "lam_dce.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-
-let transitive_closure 
-    (initial_idents : Ident.t list) 
-    (ident_freevars : Ident_set.t Ident_hashtbl.t) 
-  =
-  let visited  = Ident_hash_set.create 31 in 
-  let rec dfs (id : Ident.t) =
-    if Ident_hash_set.mem visited id || Ext_ident.is_js_or_global id  
-    then ()
-    else 
-      begin 
-        Ident_hash_set.add visited id;
-        match Ident_hashtbl.find_opt ident_freevars id with 
-        | None -> 
-          Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
-        | Some e -> Ident_set.iter (fun id -> dfs id) e
-      end  in 
-  List.iter dfs initial_idents;
-  visited
-
-let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
-  let ident_free_vars :  _ Ident_hashtbl.t = Ident_hashtbl.create 17 in
-  (* calculate initial required idents, 
-     at the same time, populate dependency set [ident_free_vars]
-  *)
-  let initial_idents =
-    List.fold_left (fun acc (x : Lam_group.t) -> 
-        match x with
-        | Single(kind, id,lam) ->                   
-          begin
-            Ident_hashtbl.add ident_free_vars id 
-              (Lam.free_variables  lam);
-            match kind with
-            | Alias | StrictOpt -> acc
-            | Strict | Variable -> id :: acc 
-          end
-        | Recursive bindings -> 
-          List.fold_left (fun acc (id,lam) -> 
-              Ident_hashtbl.add ident_free_vars id (Lam.free_variables lam);
-              match (lam : Lam.t) with
-              | Lfunction _ -> acc 
-              | _ -> id :: acc
-            ) acc bindings 
-        | Nop lam ->
-          if Lam_analysis.no_side_effects lam then acc
-          else 
-            (** its free varaibles here will be defined above *)
-            Ident_set.fold (fun x acc -> x :: acc )  ( Lam.free_variables lam) acc                
-      )  export_idents rest in 
-  let visited = transitive_closure initial_idents ident_free_vars in 
-  List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
-      match x with 
-      | Single(_,id,_) -> 
-        if Ident_hash_set.mem visited id  then 
-          x :: acc 
-        else acc 
-      | Nop _ -> x :: acc  
-      | Recursive bindings ->
-        let b = 
-          List.fold_right (fun ((id,_) as v) acc ->
-              if Ident_hash_set.mem visited id then 
-                v :: acc 
-              else
-                acc  
-            ) bindings [] in            
-        match b with 
-        | [] -> acc  
-        | _ -> (Recursive b) :: acc
-    ) [] rest |> List.rev   
-
-  
-
-end
 module Lam_stats_util : sig 
 #1 "lam_stats_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -94280,6 +94410,326 @@ let count_alias_globals
    } in 
   collect_helper  meta lam ; 
   meta
+
+end
+module Lam_pass_deep_flatten : sig 
+#1 "lam_pass_deep_flatten.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val deep_flatten : Lam.t -> Lam.t
+
+end = struct
+#1 "lam_pass_deep_flatten.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+(* [groups] are in reverse order *)
+
+let lambda_of_groups result groups = 
+  List.fold_left (fun acc x -> 
+      match (x : Lam_group.t) with 
+      | Nop l -> Lam.seq l acc
+      | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
+      | Recursive bindings -> Lam.letrec bindings acc) 
+    result groups
+
+
+(* TODO: 
+    refine effectful [ket_kind] to be pure or not
+    Be careful of how [Lifused(v,l)] work 
+    since its semantics depend on whether v is used or not
+    return value are in reverse order, but handled by [lambda_of_groups]
+*)
+let deep_flatten
+    (lam : Lam.t) :  Lam.t  = 
+  let rec
+    flatten 
+      (acc :  Lam_group.t list ) 
+      (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
+    match lam with 
+    | Llet (str, id, 
+            (Lprim {primitive = Pccall 
+                      {prim_name = 
+                         ("js_from_nullable" 
+                         | "js_from_def"
+                         |"js_from_nullable_def"); _ }
+                   ; args  =  [Lvar _]} as arg), body)
+      -> 
+      flatten (Single(str, id, (aux arg) ) :: acc) body
+    | Llet (str, id, 
+            Lprim {primitive = Pccall 
+                     ({prim_name = 
+                         ("js_from_nullable"
+                         | "js_from_def"
+                         | "js_from_nullable_def"); _ } as p );
+                   args = [arg]}, body)
+      -> 
+      let id' = Ident.rename id in 
+      flatten acc 
+        (Lam.let_ str id' arg 
+               (Lam.let_ Alias id 
+                  (Lam.prim 
+                     ~primitive:(Pccall p)
+                     ~args: [Lam.var id'] Location.none (* FIXME*))
+                  body)
+              )
+    | Llet (str,id,arg,body) -> 
+      let (res,l) = flatten acc arg  in
+      flatten (Single(str, id, res ) :: l) body
+    | Lletrec (bind_args, body) -> 
+      (** TODO: more flattening, 
+          - also for function compilation, flattening should be done first
+          - [compile_group] and [compile] become mutually recursive function
+      *)
+      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
+      flatten
+        (
+          (* let rec iter bind_args acc =  *)
+          (*   match bind_args with *)
+          (*   | [] ->  acc  *)
+          (*   | (id,arg) :: rest ->  *)
+          (*       flatten acc  *)
+          Recursive
+            (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
+          :: acc
+        )
+        body
+    | Lsequence (l,r) -> 
+      let (res, l)  = flatten acc l in
+      flatten (Nop res :: l)  r
+    | x ->  
+      aux x, acc      
+
+  and aux  (lam : Lam.t) : Lam.t= 
+    match lam with 
+    | Llet _ -> 
+      let res, groups = flatten [] lam  
+      in lambda_of_groups res groups
+    | Lletrec (bind_args, body) ->  
+      (** be careful to flatten letrec 
+          like below : 
+          {[
+            let rec even = 
+              let odd n =  if n ==1 then true else even (n - 1) in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+          odd and even are recursive values, since all definitions inside 
+          e.g, [odd] can see [even] now, however, it should be fine
+          in our case? since ocaml's recursive value does not allow immediate 
+          access its value direclty?, seems no
+          {[
+            let rec even2 = 
+              let odd = even2 in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+      *)
+      (* let module Ident_set = Lambda.IdentSet in *)
+      let rec iter bind_args acc =
+        match bind_args with
+        | [] ->   acc
+        | (id,arg) :: rest ->
+          let groups, set = acc in
+          let res, groups = flatten groups (aux arg)
+          in
+          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
+      in
+      let groups, collections = iter bind_args ([], Ident_set.empty) in
+      (* FIXME:
+          here we try to move inner definitions of [recurisve value] upwards
+          for example:
+         {[
+           let rec x = 
+             let y = 32 in
+             y :: x
+           and z = ..
+             ---
+             le ty = 32 in
+           let rec x = y::x
+           and z = ..
+         ]}
+          however, the inner definitions can see [z] and [x], so we
+          can not blindly move it in the beginning, however, for 
+          recursive value, ocaml does not allow immediate access to 
+          recursive value, so what's the best strategy?
+          ---
+          the motivation is to capture real tail call
+      *)
+      let (result, _, wrap) = 
+        List.fold_left (fun  (acc, set, wrap)  g -> 
+            match (g : Lam_group.t) with 
+            | Recursive [ id, (Lconst _)]
+            | Single (Alias, id, ( Lconst _   ))
+            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
+              (** FIXME: 
+                   It should be alias and alias will be optimized away
+                   in later optmizations, however, 
+                   this means if we don't optimize 
+                  {[ let u/a = v in ..]}
+                   the output would be wrong, we should *optimize 
+                   this away right now* instead of delaying it to the 
+                   later passes
+              *)
+              (acc, set, g :: wrap)
+
+            | Single (_, id, ( Lvar bid)) -> 
+              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
+            | Single (_, id, lam) ->
+              let variables = Lam.free_variables  lam in
+              if Ident_set.(is_empty (inter variables collections)) 
+              then 
+                (acc, set, g :: wrap )
+              else 
+                ((id, lam ) :: acc , Ident_set.add id set, wrap)
+            | Recursive us -> 
+              (* could also be from nested [let rec] 
+                 like 
+                 {[
+                   let rec x = 
+                     let rec y = 1 :: y in
+                     2:: List.hd y:: x 
+                 ]}
+                 TODO: seems like we should update depenency graph, 
+
+              *)
+              (us @ acc , 
+               List.fold_left (fun acc (id,_) -> Ident_set.add id acc) set us , 
+               wrap)
+            | Nop _ -> assert false 
+          ) ([], collections, []) groups in
+      lambda_of_groups 
+        (Lam.letrec 
+            result 
+            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
+            (aux body)) (List.rev wrap)
+    | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
+    | Lconst _ -> lam
+    | Lvar _ -> lam 
+    (* | Lapply(Lfunction(Curried, params, body), args, _) *)
+    (*   when  List.length params = List.length args -> *)
+    (*     aux (beta_reduce  params body args) *)
+    (* | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _) *)
+    (*     (\** TODO: keep track of this parameter in ocaml trunk, *)
+    (*           can we switch to the tupled backend? *\) *)
+    (*   when  List.length params = List.length args -> *)
+    (*       aux (beta_reduce params body args) *)
+
+    | Lapply{fn = l1; args  = ll; loc; status} -> 
+      Lam.apply (aux l1) (List.map aux ll) loc status
+
+    (* This kind of simple optimizations should be done each time
+       and as early as possible *) 
+
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
+            args = [ Lconst (Const_base (Const_int64 i))]; _} 
+      ->  
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
+             args = [ Lconst (Const_base (Const_int64 i))]; _} 
+      -> 
+      (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+    | Lprim {primitive ; args; loc }
+      -> 
+      let args = List.map aux args in
+      Lam.prim ~primitive ~args loc
+
+    | Lfunction{arity; kind; params;  body = l} -> 
+      Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
+    | Lswitch(l, {sw_failaction; 
+                  sw_consts; 
+                  sw_blocks;
+                  sw_numblocks;
+                  sw_numconsts;
+                 }) ->
+      Lam.switch (aux  l)
+              {sw_consts = 
+                 List.map (fun (v, l) -> v, aux  l) sw_consts;
+               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
+               sw_numconsts = sw_numconsts;
+               sw_numblocks = sw_numblocks;
+               sw_failaction = 
+                 begin 
+                   match sw_failaction with 
+                   | None -> None
+                   | Some x -> Some (aux x)
+                 end}
+    | Lstringswitch(l, sw, d) ->
+      Lam.stringswitch (aux  l) 
+                    (List.map (fun (i, l) -> i,aux  l) sw)
+                    (match d with
+                     | Some d -> Some (aux d )
+                     | None -> None)
+
+    | Lstaticraise (i,ls) 
+      -> Lam.staticraise i (List.map aux  ls)
+    | Lstaticcatch(l1, ids, l2) 
+      -> 
+      Lam.staticcatch (aux  l1) ids (aux  l2)
+    | Ltrywith(l1, v, l2) ->
+      Lam.try_ (aux  l1) v (aux  l2)
+    | Lifthenelse(l1, l2, l3) 
+      -> 
+      Lam.if_ (aux  l1) (aux l2) (aux l3)
+    | Lwhile(l1, l2) 
+      -> 
+      Lam.while_ (aux  l1) (aux l2)
+    | Lfor(flag, l1, l2, dir, l3) 
+      -> 
+      Lam.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
+    | Lassign(v, l) ->
+      (* Lalias-bound variables are never assigned, so don't increase
+         v's refaux *)
+      Lam.assign v (aux  l)
+    | Lsend(u, m, o, ll, v) -> 
+      Lam.send u (aux m) (aux o) (List.map aux ll) v
+
+    | Lifused(v, l) -> Lam.ifused v (aux  l)
+  in aux lam
 
 end
 module Int_hashtbl : sig 
@@ -96399,79 +96849,6 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 
 
 
-(* Invariant: The last one is always [exports]
-           Compile definitions
-           Compile exports
-           Assume Pmakeblock(_,_),
-           lambda_exports are pure
-           compile each binding with a return value
-           This might be wrong in toplevel
-           TODO: add this check as early as possible in the beginning
-*)
-let handle_exports 
-    (original_exports : Ident.t list)
-    (lambda_exports : Lam.t list)  (rest : Lam_group.t list) : 
-  Lam.ident list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list=
-  let coercion_groups, new_exports, new_export_set,  export_map = 
-    List.fold_right2 
-        (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
-           match (lam : Lam.t) with 
-           | Lvar id 
-             when Ident.name id = Ident.name eid -> 
-             (* {[ Ident.same id eid]} is more  correct, 
-                however, it will introduce a coercion, which is not necessary, 
-                as long as its name is the same, we want to avoid 
-                another coercion                
-                In most common cases, it will be 
-                {[
-                  let export/100 =a fun ..
-                  export/100    
-                ]}
-                This comes from we have lambda as below 
-                {[
-                  (* let export/100 =a export/99  *)
-                  (* above is probably the cause but does not have to be  *)
-                  (export/99)                
-                ]}
-                [export/100] was not eliminated due to that it is export id, 
-                if we rename export/99 to be export id, then we don't need 
-                the  coercion any more, and export/100 will be dced later
-             *)
-             (coercions, 
-              id :: new_exports, 
-              Ident_set.add id new_export_set,
-              export_map)
-           | _ -> (** TODO : bug 
-                      check [map.ml] here coercion, we introduced 
-                      rebound which is not corrrect 
-                      {[
-                        let Make/identifier = function (funarg){
-                            var $$let = Make/identifier(funarg);
-                                    return [0, ..... ]
-                          }
-                      ]}
-                      Possible fix ? 
-                      change export identifier, we should do this in the very 
-                      beginning since lots of optimizations depend on this
-                      however
-                  *)
-             (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
-              eid :: new_exports,
-              Ident_set.add eid new_export_set, 
-              Ident_map.add eid lam export_map))
-        original_exports lambda_exports 
-        ([],[], Ident_set.empty, Ident_map.empty)
-  in
-  let (export_map, rest) = 
-    List.fold_left 
-      (fun (export_map, acc) x ->
-         (match (x : Lam_group.t)  with 
-          | Single (_,id,lam) when Ident_set.mem id new_export_set 
-            -> Ident_map.add id lam export_map
-          | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
-  let rest = Lam_dce.remove new_exports rest in
-  new_exports, new_export_set, export_map , rest 
-
 
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
@@ -96492,10 +96869,11 @@ let compile  ~filename output_prefix env _sigs
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
-  let lam  = Lam_group.deep_flatten lam in
+  let lam  = Lam_pass_deep_flatten.deep_flatten lam in
   let lam = _d  "flatten" lam in
   let meta = 
-    Lam_pass_collect.count_alias_globals env filename  export_idents export_ident_sets lam in
+    Lam_pass_collect.count_alias_globals env filename
+      export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam
@@ -96504,13 +96882,13 @@ let compile  ~filename output_prefix env _sigs
       |> _d "simplyf_exits"
       |>  Lam_pass_remove_alias.simplify_alias  meta 
       |> _d "simplify_alias"
-      |> Lam_group.deep_flatten
+      |> Lam_pass_deep_flatten.deep_flatten
       |> _d "flatten"
     in  (* Inling happens*)
   
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
-    let lam = Lam_group.deep_flatten lam in
+    let lam = Lam_pass_deep_flatten.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = 
       lam
@@ -96545,118 +96923,113 @@ let compile  ~filename output_prefix env _sigs
 
   (* Dump for debugger *)
 
-  begin 
-    match Lam_group.flatten [] lam with 
-    | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
-      rest ->
-      let new_exports, new_export_set, export_map, rest = 
-        handle_exports  meta.exports lambda_exports rest in 
-      let meta = { meta with 
-                   export_idents = new_export_set;
-                   exports = new_exports
-                 } in 
-      (* TODO: turn in on debug mode later*)
-      let () =
-        let len = List.length new_exports in 
-        let tbl = String_hash_set.create len in 
-        new_exports |> List.iter 
-          (fun (id : Ident.t) -> 
-             if not @@ String_hash_set.check_add tbl id.name then 
-               Bs_exception.error (Bs_duplicate_exports id.name);
-             Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp
-          );
-        if Js_config.is_same_file () then
-          let f =
-            Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
-          Ext_pervasives.with_file_as_pp f begin fun fmt ->
-            Format.pp_print_list ~pp_sep:Format.pp_print_newline
-              (Lam_group.pp_group env) fmt rest 
-          end;
-      in
+  let new_exports, new_export_set, export_map, rest = 
+    Lam_coercion.coerce_and_group_big_lambda 
+      meta.exports lam 
+  in 
 
-      let module  E = struct exception  Not_pure of string end in
-      (** Also need analyze its depenency is pure or not *)
-      let no_side_effects rest = 
-        Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
-            match x with 
-            | Single(kind,id,body) -> 
-              begin 
-                match kind with 
-                | Strict | Variable -> 
-                  if not @@ Lam_analysis.no_side_effects body 
-                  then Some  (Printf.sprintf "%s" id.name)
-                  else None
-                | _ -> None
-              end
-            | Recursive bindings -> 
-              Ext_list.for_all_opt (fun (id,lam) -> 
-                  if not @@ Lam_analysis.no_side_effects lam 
-                  then Some (Printf.sprintf "%s" id.Ident.name )
-                  else None
-                ) bindings
-            | Nop lam -> 
+  let meta = { meta with 
+               export_idents = new_export_set;
+               exports = new_exports
+             } in 
+  (* TODO: turn in on debug mode later*)
+  let () =
+    let len = List.length new_exports in 
+    let tbl = String_hash_set.create len in 
+    new_exports |> List.iter 
+      (fun (id : Ident.t) -> 
+         if not @@ String_hash_set.check_add tbl id.name then 
+           Bs_exception.error (Bs_duplicate_exports id.name);
+         Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp
+      );
+    if Js_config.is_same_file () then
+      let f =
+        Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
+      Ext_pervasives.with_file_as_pp f begin fun fmt ->
+        Format.pp_print_list ~pp_sep:Format.pp_print_newline
+          (Lam_group.pp_group env) fmt rest 
+      end;
+  in
+  (** Also need analyze its depenency is pure or not *)
+  let no_side_effects rest = 
+    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+        match x with 
+        | Single(kind,id,body) -> 
+          begin 
+            match kind with 
+            | Strict | Variable -> 
+              if not @@ Lam_analysis.no_side_effects body 
+              then Some  (Printf.sprintf "%s" id.name)
+              else None
+            | _ -> None
+          end
+        | Recursive bindings -> 
+          Ext_list.for_all_opt (fun (id,lam) -> 
               if not @@ Lam_analysis.no_side_effects lam 
-              then 
-                (*  (Lam_util.string_of_lambda lam) *)
-                Some ""
-              else None (* TODO :*))
-          rest
-      in
-      let maybe_pure = no_side_effects rest
-      in
-      let body  = 
-        rest
-        |> List.map (fun group -> compile_group meta group)
-        |> Js_output.concat
-        |> Js_output.to_block
-      in
-      (* The file is not big at all compared with [cmo] *)
-      (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
-      let js = 
-        Js_program_loader.make_program filename meta.exports
-          body 
-      in
-      js 
-      |> _j "initial"
-      |> Js_pass_flatten.program
-      |> _j "flattern"
-      |> Js_pass_tailcall_inline.tailcall_inline
-      |> _j "inline_and_shake"
-      |> Js_pass_flatten_and_mark_dead.program
-      |> _j "flatten_and_mark_dead"
-      (* |> Js_inline_and_eliminate.inline_and_shake *)
-      (* |> _j "inline_and_shake" *)
-      |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
-      |> Js_shake.shake_program
-      |> _j "shake"
-      |> ( fun (js:  J.program) -> 
-          let external_module_ids = 
-            Lam_compile_env.get_requried_modules  
-              meta.env
-              meta.required_modules  
-              (Js_fold_basic.calculate_hard_dependencies js.block)
-            |>
-            (fun x ->
-               if !Js_config.sort_imports then
-                 Ext_list.sort_via_array
-                   (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
-                      String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
-                   ) x
-               else
-                 x
-            )
-          in
-
-          let v = 
-            Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids export_map
-          in
-          (if not @@ !Clflags.dont_write_files then
-             Js_cmj_format.to_file 
-               (output_prefix ^ Js_config.cmj_ext) v);
-          Js_program_loader.decorate_deps external_module_ids v.effect js
+              then Some (Printf.sprintf "%s" id.Ident.name )
+              else None
+            ) bindings
+        | Nop lam -> 
+          if not @@ Lam_analysis.no_side_effects lam 
+          then 
+            (*  (Lam_util.string_of_lambda lam) *)
+            Some ""
+          else None (* TODO :*))
+      rest
+  in
+  let maybe_pure = no_side_effects rest
+  in
+  let body  = 
+    rest
+    |> List.map (fun group -> compile_group meta group)
+    |> Js_output.concat
+    |> Js_output.to_block
+  in
+  (* The file is not big at all compared with [cmo] *)
+  (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
+  let js = 
+    Js_program_loader.make_program filename meta.exports
+      body 
+  in
+  js 
+  |> _j "initial"
+  |> Js_pass_flatten.program
+  |> _j "flattern"
+  |> Js_pass_tailcall_inline.tailcall_inline
+  |> _j "inline_and_shake"
+  |> Js_pass_flatten_and_mark_dead.program
+  |> _j "flatten_and_mark_dead"
+  (* |> Js_inline_and_eliminate.inline_and_shake *)
+  (* |> _j "inline_and_shake" *)
+  |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
+  |> Js_shake.shake_program
+  |> _j "shake"
+  |> ( fun (js:  J.program) -> 
+      let external_module_ids = 
+        Lam_compile_env.get_requried_modules  
+          meta.env
+          meta.required_modules  
+          (Js_fold_basic.calculate_hard_dependencies js.block)
+        |>
+        (fun x ->
+           if !Js_config.sort_imports then
+             Ext_list.sort_via_array
+               (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
+                  String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+               ) x
+           else
+             x
         )
-    | _ -> raise Not_a_module
-  end
+      in
+
+      let v = 
+        Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids export_map
+      in
+      (if not @@ !Clflags.dont_write_files then
+         Js_cmj_format.to_file 
+           (output_prefix ^ Js_config.cmj_ext) v);
+      Js_program_loader.decorate_deps external_module_ids v.effect js
+    )
 ;;
 
 
