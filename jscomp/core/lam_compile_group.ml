@@ -76,7 +76,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
       ~exp:(let a = Ext_ident.create "a" in 
             let b = Ext_ident.create "b" in
             E.ocaml_fun [a;b] [S.return (E.string_append (E.var a) (E.var b))]
-            )
+           )
 
   (* QUICK hack to make hello world example nicer,
      Note the arity of [print_endline] is already analyzed before, 
@@ -86,16 +86,16 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
             E.ocaml_fun [param] [S.return 
-                              (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
-                                        (E.js_global "console.log") [E.var param]) 
+                                   (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
+                                             (E.js_global "console.log") [E.var param]) 
                                       E.zero_int_literal )] )
   | Single(_, ({name="prerr_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
             E.ocaml_fun [param] [S.return 
-                              (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
-                                        (E.js_global "console.error") [E.var param]) 
-                                 E.zero_int_literal )] )
+                                   (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
+                                             (E.js_global "console.error") [E.var param]) 
+                                      E.zero_int_literal )] )
 
 
   | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
@@ -127,9 +127,9 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     (* See [js_knowledge] Array size section, can not be expressed by OCaml int,
        note that casual handling of {!Sys.max_string_length} could result into 
        negative value which could cause wrong behavior of {!Buffer.create}
-     *)
+    *)
     Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "2147483647")  (*2 ^ 31 - 1*)
-                           
+
   | Single(_, ({name="max_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
     (* See [js_knowledge] Max int section, (2. ** 53. -. 1.;;)
        can not be expressed by OCaml int 
@@ -176,79 +176,6 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 
 
 
-(* Invariant: The last one is always [exports]
-           Compile definitions
-           Compile exports
-           Assume Pmakeblock(_,_),
-           lambda_exports are pure
-           compile each binding with a return value
-           This might be wrong in toplevel
-           TODO: add this check as early as possible in the beginning
-*)
-let handle_exports 
-    (original_exports : Ident.t list)
-    (lambda_exports : Lam.t list)  (rest : Lam_group.t list) : 
-  Lam.ident list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list=
-  let coercion_groups, new_exports, new_export_set,  export_map = 
-    List.fold_right2 
-        (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
-           match (lam : Lam.t) with 
-           | Lvar id 
-             when Ident.name id = Ident.name eid -> 
-             (* {[ Ident.same id eid]} is more  correct, 
-                however, it will introduce a coercion, which is not necessary, 
-                as long as its name is the same, we want to avoid 
-                another coercion                
-                In most common cases, it will be 
-                {[
-                  let export/100 =a fun ..
-                  export/100    
-                ]}
-                This comes from we have lambda as below 
-                {[
-                  (* let export/100 =a export/99  *)
-                  (* above is probably the cause but does not have to be  *)
-                  (export/99)                
-                ]}
-                [export/100] was not eliminated due to that it is export id, 
-                if we rename export/99 to be export id, then we don't need 
-                the  coercion any more, and export/100 will be dced later
-             *)
-             (coercions, 
-              id :: new_exports, 
-              Ident_set.add id new_export_set,
-              export_map)
-           | _ -> (** TODO : bug 
-                      check [map.ml] here coercion, we introduced 
-                      rebound which is not corrrect 
-                      {[
-                        let Make/identifier = function (funarg){
-                            var $$let = Make/identifier(funarg);
-                                    return [0, ..... ]
-                          }
-                      ]}
-                      Possible fix ? 
-                      change export identifier, we should do this in the very 
-                      beginning since lots of optimizations depend on this
-                      however
-                  *)
-             (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
-              eid :: new_exports,
-              Ident_set.add eid new_export_set, 
-              Ident_map.add eid lam export_map))
-        original_exports lambda_exports 
-        ([],[], Ident_set.empty, Ident_map.empty)
-  in
-  let (export_map, rest) = 
-    List.fold_left 
-      (fun (export_map, acc) x ->
-         (match (x : Lam_group.t)  with 
-          | Single (_,id,lam) when Ident_set.mem id new_export_set 
-            -> Ident_map.add id lam export_map
-          | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
-  let rest = Lam_dce.remove new_exports rest in
-  new_exports, new_export_set, export_map , rest 
-
 
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
@@ -257,22 +184,21 @@ let compile  ~filename output_prefix env _sigs
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
+  (* To make toplevel happy - reentrant for js-demo *)
   let () = 
     export_idents |> List.iter 
-      (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
-  in
-  (* To make toplevel happy - reentrant for js-demo *)
-  let ()   = 
+      (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) ;
     Lam_compile_env.reset () ;
   in 
   let lam = Lam.convert export_ident_sets lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
-  let lam  = Lam_group.deep_flatten lam in
+  let lam  = Lam_pass_deep_flatten.deep_flatten lam in
   let lam = _d  "flatten" lam in
   let meta = 
-    Lam_pass_collect.count_alias_globals env filename  export_idents export_ident_sets lam in
+    Lam_pass_collect.count_alias_globals env filename
+      export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam
@@ -281,13 +207,13 @@ let compile  ~filename output_prefix env _sigs
       |> _d "simplyf_exits"
       |>  Lam_pass_remove_alias.simplify_alias  meta 
       |> _d "simplify_alias"
-      |> Lam_group.deep_flatten
+      |> Lam_pass_deep_flatten.deep_flatten
       |> _d "flatten"
     in  (* Inling happens*)
-  
+
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
-    let lam = Lam_group.deep_flatten lam in
+    let lam = Lam_pass_deep_flatten.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = 
       lam
@@ -305,12 +231,12 @@ let compile  ~filename output_prefix env _sigs
     |> _d "simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
-     
+
     |> _d "simplify_lets"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     (* |> Lam_group_pass.scc_pass
-    |> _d "scc" *)
+       |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
     (* |> Lam.check (Js_config.get_current_file () ) *)
@@ -322,118 +248,110 @@ let compile  ~filename output_prefix env _sigs
 
   (* Dump for debugger *)
 
-  begin 
-    match Lam_group.flatten [] lam with 
-    | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
-      rest ->
-      let new_exports, new_export_set, export_map, rest = 
-        handle_exports  meta.exports lambda_exports rest in 
-      let meta = { meta with 
-                   export_idents = new_export_set;
-                   exports = new_exports
-                 } in 
-      (* TODO: turn in on debug mode later*)
-      let () =
-        let len = List.length new_exports in 
-        let tbl = String_hash_set.create len in 
-        new_exports |> List.iter 
-          (fun (id : Ident.t) -> 
-             if not @@ String_hash_set.check_add tbl id.name then 
-               Bs_exception.error (Bs_duplicate_exports id.name);
-             Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp
-          );
-        if Js_config.is_same_file () then
-          let f =
-            Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
-          Ext_pervasives.with_file_as_pp f begin fun fmt ->
-            Format.pp_print_list ~pp_sep:Format.pp_print_newline
-              (Lam_group.pp_group env) fmt rest 
-          end;
-      in
+  let ({Lam_coercion.groups = rest } as coerced_input ) = 
+    Lam_coercion.coerce_and_group_big_lambda  
+      meta.exports
+      meta.Lam_stats.export_idents lam 
+  in 
+  let meta = { meta with 
+               export_idents = coerced_input.export_set ;
+               exports = coerced_input.export_list 
+             } in 
+  (* TODO: turn in on debug mode later*)
+  let () =
 
-      let module  E = struct exception  Not_pure of string end in
-      (** Also need analyze its depenency is pure or not *)
-      let no_side_effects rest = 
-        Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
-            match x with 
-            | Single(kind,id,body) -> 
-              begin 
-                match kind with 
-                | Strict | Variable -> 
-                  if not @@ Lam_analysis.no_side_effects body 
-                  then Some  (Printf.sprintf "%s" id.name)
-                  else None
-                | _ -> None
-              end
-            | Recursive bindings -> 
-              Ext_list.for_all_opt (fun (id,lam) -> 
-                  if not @@ Lam_analysis.no_side_effects lam 
-                  then Some (Printf.sprintf "%s" id.Ident.name )
-                  else None
-                ) bindings
-            | Nop lam -> 
+    if Js_config.is_same_file () then
+      let f =
+        Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
+      Ext_pervasives.with_file_as_pp f begin fun fmt ->
+        Format.pp_print_list ~pp_sep:Format.pp_print_newline
+          (Lam_group.pp_group env) fmt (coerced_input.groups) 
+      end;
+  in
+  (** Also need analyze its depenency is pure or not *)
+  let no_side_effects rest = 
+    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+        match x with 
+        | Single(kind,id,body) -> 
+          begin 
+            match kind with 
+            | Strict | Variable -> 
+              if not @@ Lam_analysis.no_side_effects body 
+              then Some  (Printf.sprintf "%s" id.name)
+              else None
+            | _ -> None
+          end
+        | Recursive bindings -> 
+          Ext_list.for_all_opt (fun (id,lam) -> 
               if not @@ Lam_analysis.no_side_effects lam 
-              then 
-                (*  (Lam_util.string_of_lambda lam) *)
-                Some ""
-              else None (* TODO :*))
-          rest
-      in
-      let maybe_pure = no_side_effects rest
-      in
-      let body  = 
-        rest
-        |> List.map (fun group -> compile_group meta group)
-        |> Js_output.concat
-        |> Js_output.to_block
-      in
-      (* The file is not big at all compared with [cmo] *)
-      (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
-      let js = 
-        Js_program_loader.make_program filename meta.exports
-          body 
-      in
-      js 
-      |> _j "initial"
-      |> Js_pass_flatten.program
-      |> _j "flattern"
-      |> Js_pass_tailcall_inline.tailcall_inline
-      |> _j "inline_and_shake"
-      |> Js_pass_flatten_and_mark_dead.program
-      |> _j "flatten_and_mark_dead"
-      (* |> Js_inline_and_eliminate.inline_and_shake *)
-      (* |> _j "inline_and_shake" *)
-      |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
-      |> Js_shake.shake_program
-      |> _j "shake"
-      |> ( fun (js:  J.program) -> 
-          let external_module_ids = 
-            Lam_compile_env.get_requried_modules  
-              meta.env
-              meta.required_modules  
-              (Js_fold_basic.calculate_hard_dependencies js.block)
-            |>
-            (fun x ->
-               if !Js_config.sort_imports then
-                 Ext_list.sort_via_array
-                   (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
-                      String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
-                   ) x
-               else
-                 x
-            )
-          in
-
-          let v = 
-            Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids export_map
-          in
-          (if not @@ !Clflags.dont_write_files then
-             Js_cmj_format.to_file 
-               (output_prefix ^ Js_config.cmj_ext) v);
-          Js_program_loader.decorate_deps external_module_ids v.effect js
+              then Some (Printf.sprintf "%s" id.Ident.name )
+              else None
+            ) bindings
+        | Nop lam -> 
+          if not @@ Lam_analysis.no_side_effects lam 
+          then 
+            (*  (Lam_util.string_of_lambda lam) *)
+            Some ""
+          else None (* TODO :*))
+      rest
+  in
+  let maybe_pure = no_side_effects rest
+  in
+  let body  = 
+    rest
+    |> List.map (fun group -> compile_group meta group)
+    |> Js_output.concat
+    |> Js_output.to_block
+  in
+  (* The file is not big at all compared with [cmo] *)
+  (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
+  let js = 
+    Js_program_loader.make_program filename meta.exports
+      body 
+  in
+  js 
+  |> _j "initial"
+  |> Js_pass_flatten.program
+  |> _j "flattern"
+  |> Js_pass_tailcall_inline.tailcall_inline
+  |> _j "inline_and_shake"
+  |> Js_pass_flatten_and_mark_dead.program
+  |> _j "flatten_and_mark_dead"
+  (* |> Js_inline_and_eliminate.inline_and_shake *)
+  (* |> _j "inline_and_shake" *)
+  |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
+  |> Js_shake.shake_program
+  |> _j "shake"
+  |> ( fun (js:  J.program) -> 
+      let external_module_ids = 
+        Lam_compile_env.get_requried_modules  
+          meta.env
+          meta.required_modules  
+          (Js_fold_basic.calculate_hard_dependencies js.block)
+        |>
+        (fun x ->
+           if !Js_config.sort_imports then
+             Ext_list.sort_via_array
+               (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
+                  String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+               ) x
+           else
+             x
         )
-    | _ -> raise Not_a_module
-  end
+      in
+
+      let v = 
+        Lam_stats_export.export_to_cmj 
+          meta  
+          maybe_pure 
+          external_module_ids
+          coerced_input.export_map
+      in
+      (if not @@ !Clflags.dont_write_files then
+         Js_cmj_format.to_file 
+           (output_prefix ^ Js_config.cmj_ext) v);
+      Js_program_loader.decorate_deps external_module_ids v.effect js
+    )
 ;;
 
 
@@ -451,10 +369,10 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-        (Filename.basename
-           output_prefix (* -o *)
-        (* filename *) (* see #757  *)
-        ) ^  Js_config.get_ext() in
+      (Filename.basename
+         output_prefix (* -o *)
+         (* filename *) (* see #757  *)
+      ) ^  Js_config.get_ext() in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Empty 
@@ -466,13 +384,13 @@ let lambda_as_module
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
           ((if Filename.is_relative filename then 
-               Lazy.force Ext_filename.cwd // 
-               Filename.dirname filename 
-             else 
-               Filename.dirname filename) // String.uncapitalize basename
-             (* #913
-                only generate little-case js file
-             *)
+              Lazy.force Ext_filename.cwd // 
+              Filename.dirname filename 
+            else 
+              Filename.dirname filename) // String.uncapitalize basename
+          (* #913
+             only generate little-case js file
+          *)
           ) output_chan
     | NonBrowser (_package_name, module_systems) ->
       module_systems |> List.iter begin fun (module_system, _path) -> 
@@ -482,15 +400,15 @@ let lambda_as_module
             lambda_output
             chan in
         (if !Js_config.dump_js then 
-          output_chan  stdout);
+           output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
             (Lazy.force Ext_filename.package_dir //
              _path //
              String.uncapitalize basename
-               (* #913 only generate little-case js file *)
+             (* #913 only generate little-case js file *)
             ) output_chan
-            
+
       end
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 

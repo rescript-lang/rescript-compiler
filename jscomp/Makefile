@@ -10,7 +10,7 @@ BYTE=ocamlc.opt$(EXE)
 OCAMLLEX=ocamllex.opt$(EXE)
 CAMLP4OF=camlp4of
 CAMLDEP=ocamldep.opt$(EXE)
-COMPFLAGS= -g -w +6-40-30 -warn-error +a-40-30-23
+COMPFLAGS= -g -w +6-40-30-23 -warn-error +a-40-30-23
 
 
 .SUFFIXES: .mli .ml .cmi .cmx .mll .c .o
@@ -198,14 +198,20 @@ CORE_SRCS= type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initi
 	lam_exit_code j lam_module_ident lam_compile_util lam_stats config_util lam_compile_defs js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\
 	js_of_lam_tuple js_of_lam_record js_of_lam_float_record js_arr lam_compile_const \
-	lam_inner lam_util lam_group js_stmt_make js_pass_flatten\
+	lam_inner lam_util \
+	lam_group \
+	lam_pass_deep_flatten\
+	js_stmt_make js_pass_flatten\
 	js_pass_tailcall_inline js_of_lam_variant js_pass_flatten_and_mark_dead js_ast_util lam_dce lam_group_pass lam_compile_env lam_stats_util\
 	lam_stats_export lam_pass_alpha_conversion lam_pass_collect js_program_loader js_dump js_pass_debug\
 	js_of_lam_option js_output lam_compile_global lam_dispatch_primitive lam_beta_reduce\
 	lam_compile_external_call lam_compile_primitive lam_compile lam_pass_exits\
 	lam_pass_count\
+	lam_pass_eliminate_ref\
 	lam_pass_lets_dce \
-	lam_pass_remove_alias lam_compile_group\
+	lam_pass_remove_alias \
+	lam_coercion \
+	lam_compile_group\
 	js_implementation ocaml_batch_compile
 CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 

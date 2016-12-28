@@ -24,4 +24,4 @@ S depends
 B depends
 PKG compiler-libs.common
 B +compiler-libs
-FLG -w -40-30
+FLG -w -40-30+6-23

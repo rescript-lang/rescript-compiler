@@ -21,45 +21,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(** This is not a recursive type definition *)
-type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lam.t
-  | Recursive of (Ident.t * Lam.t) list
-  | Nop of Lam.t 
-
-
-let pp = Format.fprintf 
-
-let str_of_kind (kind : Lambda.let_kind) = 
-  match kind with 
-  | Alias -> "a"
-  | Strict -> ""
-  | StrictOpt -> "o"
-  | Variable -> "v" 
-
-let pp_group env fmt ( x : t) =
-  match x with
-  | Single (kind, id, lam) ->
-    Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind) 
-      (Lam_print.env_lambda env) lam
-  | Recursive lst -> 
-    List.iter (fun (id,lam) -> 
-        Format.fprintf fmt
-          "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
-      ) lst
-  | Nop lam -> Lam_print.env_lambda env fmt lam
-
-
 (* [groups] are in reverse order *)
 
 let lambda_of_groups result groups = 
   List.fold_left (fun acc x -> 
-      match x with 
+      match (x : Lam_group.t) with 
       | Nop l -> Lam.seq l acc
       | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
       | Recursive bindings -> Lam.letrec bindings acc) 
@@ -76,8 +42,8 @@ let deep_flatten
     (lam : Lam.t) :  Lam.t  = 
   let rec
     flatten 
-      (acc :  t list ) 
-      (lam : Lam.t) :  Lam.t *  t list = 
+      (acc :  Lam_group.t list ) 
+      (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
     match lam with 
     | Llet (str, id, 
             (Lprim {primitive = Pccall 
@@ -188,7 +154,7 @@ let deep_flatten
       *)
       let (result, _, wrap) = 
         List.fold_left (fun  (acc, set, wrap)  g -> 
-            match g with 
+            match (g : Lam_group.t) with 
             | Recursive [ id, (Lconst _)]
             | Single (Alias, id, ( Lconst _   ))
             | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
