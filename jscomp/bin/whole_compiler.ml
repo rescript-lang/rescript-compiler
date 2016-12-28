@@ -94498,9 +94498,9 @@ end = struct
    TODO: 
    we should have a pass called, always inlinable
    as long as its length is smaller than [exit=exit_id], for example
-   
+
    {[
-      switch(box_name)
+     switch(box_name)
        {case "":exit=178;break;
         case "b":exit=178;break;
         case "h":box_type=/* Pp_hbox */0;break;
@@ -94508,8 +94508,8 @@ end = struct
         case "hv":box_type=/* Pp_hvbox */2;break;
         case "v":box_type=/* Pp_vbox */1;break;
         default:box_type=invalid_box(/* () */0);}
-      
-      switch(exit){case 178:box_type=/* Pp_box */4;break}
+
+       switch(exit){case 178:box_type=/* Pp_box */4;break}
    ]}
 *)
 
@@ -94591,14 +94591,15 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
       if
         nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
       then 
-        begin (* default action will occur twice in native code *)
-          count al ; count al
-          (** 
+        (*
               Reason: for pattern match, 
               we will  test whether it is 
               an integer or block, both have default cases
               predicate: [sw_numconsts] vs nconsts
           *)
+
+        begin 
+          count al ; count al
         end 
       else 
         begin (* default action will occur once *)
@@ -94632,7 +94633,7 @@ type subst_tbl = (Ident.t list * Lam.t) Int_hashtbl.t
 *)
 
 
-let subst_helper (subst : subst_tbl) query lam = 
+let subst_helper (subst : subst_tbl) (query : int -> int) lam = 
   let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,[])  ->
@@ -94653,7 +94654,7 @@ let subst_helper (subst : subst_tbl) query lam =
           List.fold_right2
             (fun y l r -> Lam.let_ Alias y l r)
             ys ls 
-               (Lam_util.subst_lambda  env  handler)
+            (Lam_util.subst_lambda  env  handler)
         | None -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
@@ -94707,12 +94708,12 @@ let subst_helper (subst : subst_tbl) query lam =
           *)
           let lam_size = Lam_analysis.size l2 in
           let ok_to_inline = 
-             i >=0 && 
-             ( (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
-               || lam_size < 5)
-             (*TODO: when we do the case merging on the js side, 
-               the j is not very indicative                
-             *)             
+            i >=0 && 
+            ( (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
+              || lam_size < 5)
+            (*TODO: when we do the case merging on the js side, 
+              the j is not very indicative                
+            *)             
           in 
           if ok_to_inline (* && false *) 
           then 
@@ -94742,20 +94743,20 @@ let subst_helper (subst : subst_tbl) query lam =
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = 
-      begin match sw.sw_failaction with 
-      | None   -> None
-      | Some x -> Some (simplif x) end in
+        begin match sw.sw_failaction with 
+          | None   -> None
+          | Some x -> Some (simplif x) end in
       Lam.switch
         new_l
-         { 
-           sw with 
-           sw_consts = new_consts ;
-           sw_blocks = new_blocks; 
-           sw_failaction = new_fail}
+        { 
+          sw with 
+          sw_consts = new_consts ;
+          sw_blocks = new_blocks; 
+          sw_failaction = new_fail}
     | Lstringswitch(l,sw,d) ->
       Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
-         (begin match d with None -> None | Some d -> Some (simplif d) end)
+        (begin match d with None -> None | Some d -> Some (simplif d) end)
     | Ltrywith (l1, v, l2) -> 
       Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse (l1, l2, l3) -> 
@@ -94772,7 +94773,7 @@ let subst_helper (subst : subst_tbl) query lam =
       Lam.ifused v (simplif l)
   in 
   simplif lam 
- 
+
 let simplify_exits (lam : Lam.t) =
   let exits = count_helper lam in
   subst_helper (Int_hashtbl.create 17 ) (count_exit exits) lam
