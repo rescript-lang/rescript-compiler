@@ -23,7 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type t = {
+  export_list : Ident.t list ;
+  export_set : Ident_set.t;
+  export_map : Lam.t Ident_map.t ; 
+  groups : Lam_group.t list ; 
+}   
+
 val coerce_and_group_big_lambda : 
     Ident.t list -> 
+    Ident_set.t -> 
     Lam.t -> 
-    Ident.t list * Ident_set.t * Lam.t Ident_map.t * Lam_group.t list 
+    t 

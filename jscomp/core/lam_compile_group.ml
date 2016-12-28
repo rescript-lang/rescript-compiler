@@ -76,7 +76,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
       ~exp:(let a = Ext_ident.create "a" in 
             let b = Ext_ident.create "b" in
             E.ocaml_fun [a;b] [S.return (E.string_append (E.var a) (E.var b))]
-            )
+           )
 
   (* QUICK hack to make hello world example nicer,
      Note the arity of [print_endline] is already analyzed before, 
@@ -86,16 +86,16 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
             E.ocaml_fun [param] [S.return 
-                              (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
-                                        (E.js_global "console.log") [E.var param]) 
+                                   (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
+                                             (E.js_global "console.log") [E.var param]) 
                                       E.zero_int_literal )] )
   | Single(_, ({name="prerr_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
             E.ocaml_fun [param] [S.return 
-                              (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
-                                        (E.js_global "console.error") [E.var param]) 
-                                 E.zero_int_literal )] )
+                                   (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
+                                             (E.js_global "console.error") [E.var param]) 
+                                      E.zero_int_literal )] )
 
 
   | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
@@ -127,9 +127,9 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     (* See [js_knowledge] Array size section, can not be expressed by OCaml int,
        note that casual handling of {!Sys.max_string_length} could result into 
        negative value which could cause wrong behavior of {!Buffer.create}
-     *)
+    *)
     Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "2147483647")  (*2 ^ 31 - 1*)
-                           
+
   | Single(_, ({name="max_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
     (* See [js_knowledge] Max int section, (2. ** 53. -. 1.;;)
        can not be expressed by OCaml int 
@@ -184,12 +184,10 @@ let compile  ~filename output_prefix env _sigs
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
+  (* To make toplevel happy - reentrant for js-demo *)
   let () = 
     export_idents |> List.iter 
-      (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
-  in
-  (* To make toplevel happy - reentrant for js-demo *)
-  let ()   = 
+      (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) ;
     Lam_compile_env.reset () ;
   in 
   let lam = Lam.convert export_ident_sets lam in 
@@ -212,7 +210,7 @@ let compile  ~filename output_prefix env _sigs
       |> Lam_pass_deep_flatten.deep_flatten
       |> _d "flatten"
     in  (* Inling happens*)
-  
+
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
     let lam = Lam_pass_deep_flatten.deep_flatten lam in
@@ -233,12 +231,12 @@ let compile  ~filename output_prefix env _sigs
     |> _d "simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
-     
+
     |> _d "simplify_lets"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     (* |> Lam_group_pass.scc_pass
-    |> _d "scc" *)
+       |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
     (* |> Lam.check (Js_config.get_current_file () ) *)
@@ -250,31 +248,24 @@ let compile  ~filename output_prefix env _sigs
 
   (* Dump for debugger *)
 
-  let new_exports, new_export_set, export_map, rest = 
-    Lam_coercion.coerce_and_group_big_lambda 
-      meta.exports lam 
+  let ({Lam_coercion.groups = rest } as coerced_input ) = 
+    Lam_coercion.coerce_and_group_big_lambda  
+      meta.exports
+      meta.Lam_stats.export_idents lam 
   in 
-
   let meta = { meta with 
-               export_idents = new_export_set;
-               exports = new_exports
+               export_idents = coerced_input.export_set ;
+               exports = coerced_input.export_list 
              } in 
   (* TODO: turn in on debug mode later*)
   let () =
-    let len = List.length new_exports in 
-    let tbl = String_hash_set.create len in 
-    new_exports |> List.iter 
-      (fun (id : Ident.t) -> 
-         if not @@ String_hash_set.check_add tbl id.name then 
-           Bs_exception.error (Bs_duplicate_exports id.name);
-         Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp
-      );
+
     if Js_config.is_same_file () then
       let f =
         Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
       Ext_pervasives.with_file_as_pp f begin fun fmt ->
         Format.pp_print_list ~pp_sep:Format.pp_print_newline
-          (Lam_group.pp_group env) fmt rest 
+          (Lam_group.pp_group env) fmt (coerced_input.groups) 
       end;
   in
   (** Also need analyze its depenency is pure or not *)
@@ -350,7 +341,11 @@ let compile  ~filename output_prefix env _sigs
       in
 
       let v = 
-        Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids export_map
+        Lam_stats_export.export_to_cmj 
+          meta  
+          maybe_pure 
+          external_module_ids
+          coerced_input.export_map
       in
       (if not @@ !Clflags.dont_write_files then
          Js_cmj_format.to_file 
@@ -374,10 +369,10 @@ let lambda_as_module
     let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
-        (Filename.basename
-           output_prefix (* -o *)
-        (* filename *) (* see #757  *)
-        ) ^  Js_config.get_ext() in
+      (Filename.basename
+         output_prefix (* -o *)
+         (* filename *) (* see #757  *)
+      ) ^  Js_config.get_ext() in
     (* Not re-entrant *)
     match Js_config.get_packages_info () with 
     | Empty 
@@ -389,13 +384,13 @@ let lambda_as_module
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
           ((if Filename.is_relative filename then 
-               Lazy.force Ext_filename.cwd // 
-               Filename.dirname filename 
-             else 
-               Filename.dirname filename) // String.uncapitalize basename
-             (* #913
-                only generate little-case js file
-             *)
+              Lazy.force Ext_filename.cwd // 
+              Filename.dirname filename 
+            else 
+              Filename.dirname filename) // String.uncapitalize basename
+          (* #913
+             only generate little-case js file
+          *)
           ) output_chan
     | NonBrowser (_package_name, module_systems) ->
       module_systems |> List.iter begin fun (module_system, _path) -> 
@@ -405,15 +400,15 @@ let lambda_as_module
             lambda_output
             chan in
         (if !Js_config.dump_js then 
-          output_chan  stdout);
+           output_chan  stdout);
         if not @@ !Clflags.dont_write_files then 
           Ext_pervasives.with_file_as_chan
             (Lazy.force Ext_filename.package_dir //
              _path //
              String.uncapitalize basename
-               (* #913 only generate little-case js file *)
+             (* #913 only generate little-case js file *)
             ) output_chan
-            
+
       end
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
