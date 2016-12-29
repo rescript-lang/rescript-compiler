@@ -1,5 +1,5 @@
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 open Bsb_json
 
@@ -30,16 +30,33 @@ let suites =
       v |> Int_vec.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);
       v =~~ [|1;2;3;4;5;6|];
       Int_vec.pop v ; 
-      v =~~ [|1;2;3;4;5|]
+      v =~~ [|1;2;3;4;5|];
+      let count = ref 0 in 
+      let len = Int_vec.length v  in 
+      while not (Int_vec.is_empty v ) do 
+        Int_vec.pop v ;
+        incr count
+      done;
+      OUnit.assert_equal len !count
     end
     ;
+    __LOC__ >:: begin fun _ -> 
+      let count = 100 in 
+      let v = Int_vec.of_array (Array.init count (fun i -> i)) in 
+      OUnit.assert_bool __LOC__ 
+        (try Int_vec.delete v count; false with _ -> true );
+      for i = count - 1 downto 10 do 
+        Int_vec.delete v i ;
+      done ;
+      v =~~ [|0;1;2;3;4;5;6;7;8;9|] 
+    end; 
     "sub" >:: begin fun _ -> 
       let v = Int_vec.make 5 in 
       OUnit.assert_bool __LOC__
-      (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
+        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
       Int_vec.push 1 v;
       OUnit.assert_bool __LOC__
-      (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
+        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
       Int_vec.push 2 v ;  
       ( Int_vec.sub v 0 2 =~~ [|1;2|])
     end;

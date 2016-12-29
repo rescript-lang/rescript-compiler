@@ -370,7 +370,7 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 
 
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	ocamloptp -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -P a -g -I bin -w -a unix.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
 	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump

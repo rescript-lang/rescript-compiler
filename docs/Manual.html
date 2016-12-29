@@ -502,7 +502,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_installation">Installation</a>
 <ul class="sectlevel2">
 <li><a href="#_windows_installation">Windows Installation</a></li>
-<li><a href="#_minimal_installation_from_npm">Minimal installation from NPM</a></li>
+<li><a href="#__nix_installation">*nix installation</a></li>
 <li><a href="#__strong_recommended_strong_installation_with_opam"><strong>Recommended</strong> installation with OPAM</a></li>
 <li><a href="#_install_from_source">Install from source</a>
 <ul class="sectlevel3">
@@ -846,34 +846,14 @@ runtime libraries are only needed when user actually call it.</p>
 </div>
 <div class="sect2">
 <h3 id="_windows_installation"><a class="anchor" href="#_windows_installation"></a>Windows Installation</h3>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="title">WINDOWS prerequisite</div>
-<div class="paragraph">
-<p>BuckleScript works natively on Windows, currently users have to install
-<a href="http://protz.github.io/ocaml-installer/">OCaml Cygwin</a> first,
-make sure that <code>ocamlopt</code> is in <code>PATH</code>.</p>
-</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">npm install bs-platform</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>After installation, BuckleScript does not rely on Cygwin anymore.</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
 </div>
 <div class="sect2">
-<h3 id="_minimal_installation_from_npm"><a class="anchor" href="#_minimal_installation_from_npm"></a>Minimal installation from NPM</h3>
+<h3 id="__nix_installation"><a class="anchor" href="#__nix_installation"></a>*nix installation</h3>
 <div class="ulist">
 <div class="title">Prerequisites</div>
 <ul>
@@ -882,6 +862,9 @@ make sure that <code>ocamlopt</code> is in <code>PATH</code>.</p>
 </li>
 <li>
 <p><code>npm</code> (should be installed with Node)</p>
+</li>
+<li>
+<p><a href="https://github.com/ninja-build/ninja/releases">ninja</a> (version &gt;= 1.7)</p>
 </li>
 </ul>
 </div>
@@ -902,7 +885,7 @@ is installed, run the following command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="shh">npm install -g bs-platform</code></pre>
+<pre class="pygments highlight"><code data-lang="sh">npm install -g bs-platform</code></pre>
 </div>
 </div>
 </div>
