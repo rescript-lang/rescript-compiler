@@ -4,26 +4,17 @@ Below is a list of different ways to install BuckleScript:
 
 ### Windows Installation
 
-[NOTE]
-.WINDOWS prerequisite
-============
-BuckleScript works natively on Windows, currently users have to install
-http://protz.github.io/ocaml-installer/[OCaml Cygwin] first,
-make sure that `ocamlopt` is in `PATH`.
 [source,sh]
 ------------------------
 npm install bs-platform
 ------------------------
-After installation, BuckleScript does not rely on Cygwin anymore.
-============
 
-
-### Minimal installation from NPM
+### *nix installation
 
 .Prerequisites
 * Standard C toolchain
 * `npm` (should be installed with Node)
-
+* https://github.com/ninja-build/ninja/releases[ninja] (version >= 1.7)
 
 The standard `npm` package management tool can be used to install
 BuckleScript. If you don't already have `npm` installed, follow the
@@ -38,7 +29,7 @@ npm install --save bs-platform
 
 or install it globally
 
-[source,shh]
+[source,sh]
 ------------
 npm install -g bs-platform
 ------------
