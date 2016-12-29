@@ -13,18 +13,34 @@ let suites =
   __FILE__ 
   >:::
   [
-    "inplace_filter" >:: begin fun _ -> 
+    (** idea 
+      [%loc "inplace filter" ] --> __LOC__ ^ "inplace filter" 
+      or "inplace filter" [@bs.loc]
+    *)
+    "inplace_filter " ^ __LOC__ >:: begin fun _ -> 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
+      
       ignore @@ Int_vec.push  32 v;
+      let capacity = Int_vec.capacity v  in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
       Int_vec.inplace_filter (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 2; 4; 6; 8; 32|];
       Int_vec.inplace_filter (fun x -> x mod 3 = 0) v ;
       v =~~ [|0;6|];
       Int_vec.inplace_filter (fun x -> x mod 3 <> 0) v ;
-      v =~~ [||]
+      v =~~ [||];
+      OUnit.assert_equal (Int_vec.capacity v ) capacity ;
+      Int_vec.compact v ; 
+      OUnit.assert_equal (Int_vec.capacity v ) 0 
     end
     ;
+    "map " ^ __LOC__ >:: begin fun _ -> 
+      let v = Int_vec.of_array (Array.init 1000 (fun i -> i )) in 
+      Int_vec.map succ v =~~ (Array.init 1000 succ) ;
+      OUnit.assert_bool __LOC__ (Int_vec.exists (fun x -> x >= 999) v );
+      OUnit.assert_bool __LOC__ (not (Int_vec.exists (fun x -> x > 1000) v ));
+      OUnit.assert_equal (Int_vec.last v ) 999
+    end ;  
     __LOC__ >:: begin fun _ -> 
       let count = 1000 in 
       let init_array = (Array.init count (fun i -> i)) in 
@@ -35,7 +51,7 @@ let suites =
       (Set_int.elements v) odd ;
       u =~~ Array.of_list even 
     end ;
-    "filter" >:: begin fun _ -> 
+    "filter" ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.of_array [|1;2;3;4;5;6|] in 
       v |> Int_vec.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);
       v =~~ [|1;2;3;4;5;6|];
@@ -60,7 +76,7 @@ let suites =
       done ;
       v =~~ [|0;1;2;3;4;5;6;7;8;9|] 
     end; 
-    "sub" >:: begin fun _ -> 
+    "sub" ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.make 5 in 
       OUnit.assert_bool __LOC__
         (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
@@ -70,7 +86,16 @@ let suites =
       Int_vec.push 2 v ;  
       ( Int_vec.sub v 0 2 =~~ [|1;2|])
     end;
-    "capacity" >:: begin fun _ -> 
+    "reserve" ^ __LOC__ >:: begin fun _ -> 
+      let v = Int_vec.empty () in 
+      Int_vec.reserve v  1000 ;
+      for i = 0 to 900 do
+        Int_vec.push i v 
+      done ;
+      OUnit.assert_equal (Int_vec.length v) 901 ;
+      OUnit.assert_equal (Int_vec.capacity v) 1000
+    end ; 
+    "capacity"  ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;
       v =~~ [|3 |];
