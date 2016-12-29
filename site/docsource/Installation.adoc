@@ -9,10 +9,7 @@ Below is a list of different ways to install BuckleScript:
 npm install bs-platform
 ------------------------
 
-============
-
-
-### Linux/Mac installation
+### *nix installation
 
 .Prerequisites
 * Standard C toolchain
