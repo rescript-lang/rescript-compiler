@@ -25,6 +25,16 @@ let suites =
       v =~~ [||]
     end
     ;
+    __LOC__ >:: begin fun _ -> 
+      let count = 1000 in 
+      let init_array = (Array.init count (fun i -> i)) in 
+      let u = Int_vec.of_array  init_array in 
+      let v = Int_vec.inplace_filter_with (fun x -> x mod 2 = 0) ~cb_no:Set_int.add Set_int.empty u  in
+      let (even,odd) = init_array |> Array.to_list |> List.partition (fun x -> x mod 2 = 0) in 
+      OUnit.assert_equal 
+      (Set_int.elements v) odd ;
+      u =~~ Array.of_list even 
+    end ;
     "filter" >:: begin fun _ -> 
       let v = Int_vec.of_array [|1;2;3;4;5;6|] in 
       v |> Int_vec.filter (fun x -> x mod 3 = 0) |> (fun x -> x =~~ [|3;6|]);

@@ -44,7 +44,7 @@ ext/int_vec.ml: ext/vec.cppo.ml
 ext/resize_array.ml: ext/vec.cppo.ml
 	cppo -D TYPE_FUNCTOR $< -o $@
 ext/string_set.ml : ext/set.cppo.ml
-	cppo -D TYPE_STRING $< -o $@
+	cppo -D TYPE_STRING $< -o $@	
 ext/set_int.ml : ext/set.cppo.ml
 	cppo -D TYPE_INT $< -o $@
 ext/ident_set.ml : ext/set.cppo.ml

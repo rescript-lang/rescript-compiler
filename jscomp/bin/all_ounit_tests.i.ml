@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 83 *) List.hd state.tests_planned
+  (* 84 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 166 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 168 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 166 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 168 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 166 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 168 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 166 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 168 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 249 *) was_successful t
+        (* 252 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 332 *) string_of_int n
+        (* 336 *) string_of_int n
     | Label s -> 
-        (* 498 *) s
+        (* 504 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 83 *) 1 
-    | TestLabel (_, t) -> (* 98 *) test_case_count t
+    | TestCase _ -> (* 84 *) 1 
+    | TestLabel (_, t) -> (* 99 *) test_case_count t
     | TestList l -> 
         (* 15 *) List.fold_left 
-          (fun c t -> (* 97 *) c + test_case_count t) 
+          (fun c t -> (* 98 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 166 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 168 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 15 *) let rec rfold_lefti cnt accup l = 
-    (* 112 *) match l with
+    (* 113 *) match l with
       | [] -> 
           (* 15 *) accup
 
       | h::t -> 
-          (* 97 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 98 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 500 *) match event_type with
+  (* 506 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 498 *) begin
+        (* 504 *) begin
           let string_of_result = 
             if verbose then
-              (* 249 *) function
-                | RSuccess _      -> (* 83 *) "ok\n"
+              (* 252 *) function
+                | RSuccess _      -> (* 84 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 249 *) function
-                | RSuccess _      -> (* 83 *) "."
+              (* 252 *) function
+                | RSuccess _      -> (* 84 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 249 *) match e with 
+              (* 252 *) match e with 
                 | EStart p -> 
-                    (* 83 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 84 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 83 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 84 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 83 *) string_of_result result
+                    (* 84 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 249 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 166 *) ""
-                | EResult result -> (* 83 *) string_of_result result
+              (* 252 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 168 *) ""
+                | EResult result -> (* 84 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 250 *) output_string chn (format_event true ev);
+       (* 253 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 250 *) print_string (format_event verbose ev);
+     (* 253 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 250 *) std_log ev; file_log ev; log ev),
+       (* 253 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -709,7 +709,7 @@ let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001406 *) let get_error_string () =
+  (* 2001408 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -925,7 +925,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 83 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 84 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 15 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1061,7 +1061,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 83 *) try 
+    (* 84 *) try 
       f ();
       RSuccess path
     with
@@ -1080,22 +1080,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 83 *) (path, f) :: acc
+          (* 84 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 15 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 97 *) flatten_test 
+               (* 98 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 98 *) flatten_test ((Label label)::path) acc t
+          (* 99 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 83 *) let result = 
+    (* 84 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1104,18 +1104,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 84 *) match state.tests_planned with 
+    (* 85 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 83 *) let (path, f) = !global_chooser state in            
+          (* 84 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 3486 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 3570 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1145,7 +1145,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 249 *) log (OUnitLogger.TestEvent ev))
+         (* 252 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -2049,8 +2049,8 @@ let rec cons_enum s e =
   | Node(l,v,r,_) -> (* 0 *) cons_enum l (More(v,r,e))
 
 let rec height = function
-  | Empty -> (* 11688 *) 0 
-  | Node(_,_,_,h) -> (* 35332 *) h   
+  | Empty -> (* 11937 *) 0 
+  | Node(_,_,_,h) -> (* 36063 *) h   
 
 (* Smallest and greatest element of a set *)
 
@@ -2079,11 +2079,11 @@ let rec cardinal_aux acc  = function
 let cardinal s = (* 202 *) cardinal_aux 0 s 
 
 let rec elements_aux accu = function
-  | Empty -> (* 0 *) accu
-  | Node(l, v, r, _) -> (* 0 *) elements_aux (v :: elements_aux accu r) l
+  | Empty -> (* 501 *) accu
+  | Node(l, v, r, _) -> (* 500 *) elements_aux (v :: elements_aux accu r) l
 
 let elements s =
-  (* 0 *) elements_aux [] s
+  (* 1 *) elements_aux [] s
 
 let choose = min_elt
 
@@ -2141,9 +2141,9 @@ let check tree =
     3. [height l] - [height r] <= 2
 *)
 let create l v r = 
-  (* 181814 *) let hl = match l with Empty -> (* 17867 *) 0 | Node (_,_,_,h) -> (* 163947 *) h in
-  let hr = match r with Empty -> (* 17946 *) 0 | Node (_,_,_,h) -> (* 163868 *) h in
-  Node(l,v,r, if hl >= hr then (* 140178 *) hl + 1 else (* 41636 *) hr + 1)         
+  (* 182794 *) let hl = match l with Empty -> (* 18116 *) 0 | Node (_,_,_,h) -> (* 164678 *) h in
+  let hr = match r with Empty -> (* 18195 *) 0 | Node (_,_,_,h) -> (* 164599 *) h in
+  Node(l,v,r, if hl >= hr then (* 140668 *) hl + 1 else (* 42126 *) hr + 1)         
 
 (* Same as create, but performs one step of rebalancing if necessary.
     Invariants:
@@ -2240,8 +2240,8 @@ let internal_bal l v r =
     end
 *)
 let internal_bal l v r =
-  (* 1671354 *) let hl = match l with Empty -> (* 89872 *) 0 | Node(_,_,_,h) -> (* 1581482 *) h in
-  let hr = match r with Empty -> (* 98494 *) 0 | Node(_,_,_,h) -> (* 1572860 *) h in
+  (* 1675833 *) let hl = match l with Empty -> (* 91118 *) 0 | Node(_,_,_,h) -> (* 1584715 *) h in
+  let hr = match r with Empty -> (* 98494 *) 0 | Node(_,_,_,h) -> (* 1577339 *) h in
   if hl > hr + 2 then (* 11835 *) begin
     match l with
       Empty -> (* 0 *) assert false
@@ -2262,12 +2262,12 @@ let internal_bal l v r =
           *)
           (* 5502 *) create (create ll lv lrl) lrv (create lrr v r)
       end
-  end else (* 1659519 *) if hr > hl + 2 then (* 11675 *) begin
+  end else (* 1663998 *) if hr > hl + 2 then (* 12165 *) begin
     match r with
       Empty -> (* 0 *) assert false
     | Node(rl, rv, rr, _) ->
-      (* 11675 *) if height rr >= height rl then
-        (* 6139 *) create (create l v rl) rv rr
+      (* 12165 *) if height rr >= height rl then
+        (* 6629 *) create (create l v rl) rv rr
       else (* 5536 *) begin
         match rl with
           Empty -> (* 0 *) assert false
@@ -2275,7 +2275,7 @@ let internal_bal l v r =
           (* 5536 *) create (create l v rll) rlv (create rlr rv rr)
       end
   end else
-    (* 1647844 *) Node(l, v, r, (if hl >= hr then (* 1131780 *) hl + 1 else (* 516064 *) hr + 1))    
+    (* 1651833 *) Node(l, v, r, (if hl >= hr then (* 1131780 *) hl + 1 else (* 520053 *) hr + 1))    
 
 let rec remove_min_elt = function
     Empty -> (* 0 *) invalid_arg "Set.remove_min_elt"
@@ -2562,7 +2562,7 @@ end = struct
 
 type t = int
 
-let compare (x : t) (y : t) = (* 1662552 *) Pervasives.compare x y 
+let compare (x : t) (y : t) = (* 1667031 *) Pervasives.compare x y 
 
 let equal (x : t) (y : t) = (* 0 *) x = y
 
@@ -2632,12 +2632,12 @@ let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  (* 0 
       (* 0 *) let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
     else
       (* 0 *) let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
-let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  (* 1670912 *) match tree with 
-  | Empty -> (* 99996 *) Node(Empty, x, Empty, 1)
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  (* 1675891 *) match tree with 
+  | Empty -> (* 100496 *) Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
-    (* 1570916 *) let c = compare_elt x v in
+    (* 1575395 *) let c = compare_elt x v in
     if c = 0 then (* 4 *) t else
-    (* 1570912 *) if c < 0 then (* 784852 *) Set_gen.internal_bal (add x l) v r else (* 786060 *) Set_gen.internal_bal l v (add x r)
+    (* 1575391 *) if c < 0 then (* 784852 *) Set_gen.internal_bal (add x l) v r else (* 790539 *) Set_gen.internal_bal l v (add x r)
 
 let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
   (* 0 *) match (s1, s2) with
@@ -8274,6 +8274,7 @@ sig
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
+  val inplace_filter_with : (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a 
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
   val unsafe_get : t -> int -> elt
@@ -8337,7 +8338,7 @@ let to_array d =
   (* 0 *) unsafe_sub d.arr 0 d.len
 
 let of_array src =
-  (* 19 *) {
+  (* 21 *) {
     len = Array.length src;
     arr = Array.copy src;
     (* okay to call {!Array.copy}*)
@@ -8471,12 +8472,12 @@ let filter f d =
   new_d 
 
 let equal eq x y : bool = 
-  (* 16 *) if x.len <> y.len then (* 0 *) false 
+  (* 17 *) if x.len <> y.len then (* 0 *) false 
   else 
-    (* 16 *) let rec aux x_arr y_arr i =
-      (* 99 *) if i < 0 then (* 16 *) true else  
-      (* 83 *) if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
-        (* 83 *) aux x_arr y_arr (i - 1)
+    (* 17 *) let rec aux x_arr y_arr i =
+      (* 600 *) if i < 0 then (* 17 *) true else  
+      (* 583 *) if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
+        (* 583 *) aux x_arr y_arr (i - 1)
       else (* 0 *) false in 
     aux x.arr y.arr (x.len - 1)
 
@@ -8746,7 +8747,8 @@ let null = 0 (* can be optimized *)
   let inplace_filter f (d : _ Vec_gen.t) : unit = 
     (* 3 *) let d_arr = d.arr in     
     let p = ref 0 in
-    for i = 0 to d.len - 1 do 
+    let d_len = d.len in
+    for i = 0 to d_len - 1 do 
       (* 19 *) let x = Array.unsafe_get d_arr i in 
       if f x then 
         (* 8 *) begin 
@@ -8758,9 +8760,39 @@ let null = 0 (* can be optimized *)
     done ;
     let last = !p  in 
     
-# 218
+# 219
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
+
+  
+# 225
+  let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
+    (* 1 *) let d_arr = d.arr in     
+    let p = ref 0 in
+    let d_len = d.len in
+    let acc = ref acc in 
+    for i = 0 to d_len - 1 do 
+      (* 1000 *) let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        (* 500 *) begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             (* 499 *) Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+      else 
+        (* 500 *) acc := cb_no  x  !acc
+    done ;
+    let last = !p  in 
+    
+# 244
+    d.len <-  last 
+    (* INT , there is not need to reset it, since it will cause GC behavior *)
+    
+# 249
+    ; !acc 
+
+
 
 
 end
@@ -9000,7 +9032,8 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
   let inplace_filter f (d : _ Vec_gen.t) : unit = 
     (* 0 *) let d_arr = d.arr in     
     let p = ref 0 in
-    for i = 0 to d.len - 1 do 
+    let d_len = d.len in
+    for i = 0 to d_len - 1 do 
       (* 0 *) let x = Array.unsafe_get d_arr i in 
       if f x then 
         (* 0 *) begin 
@@ -9012,10 +9045,39 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
     done ;
     let last = !p  in 
     
-# 221
-    delete_range d last  (d.len - last)
+# 222
+    delete_range d last  (d_len - last)
 
+  
 # 225
+  let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
+    (* 0 *) let d_arr = d.arr in     
+    let p = ref 0 in
+    let d_len = d.len in
+    let acc = ref acc in 
+    for i = 0 to d_len - 1 do 
+      (* 0 *) let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        (* 0 *) begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             (* 0 *) Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+      else 
+        (* 0 *) acc := cb_no  x  !acc
+    done ;
+    let last = !p  in 
+    
+# 247
+    delete_range d last  (d_len - last)
+    
+# 249
+    ; !acc 
+
+
+
+# 254
 end
 
 end
@@ -10814,7 +10876,7 @@ let v = Int_vec.init 10 (fun i -> (* 10 *) i);;
 let (=~) x y = (* 0 *) OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> (* 0 *) x=y)) x y
 let (=~~) x y 
   = 
-  (* 16 *) OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> (* 83 *) x=y)) x (Int_vec.of_array y) 
+  (* 17 *) OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> (* 583 *) x=y)) x (Int_vec.of_array y) 
 
 let suites = 
   __FILE__ 
@@ -10832,6 +10894,16 @@ let suites =
       v =~~ [||]
     end
     ;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let count = 1000 in 
+      let init_array = (Array.init count (fun i -> (* 1000 *) i)) in 
+      let u = Int_vec.of_array  init_array in 
+      let v = Int_vec.inplace_filter_with (fun x -> (* 1000 *) x mod 2 = 0) ~cb_no:Set_int.add Set_int.empty u  in
+      let (even,odd) = init_array |> Array.to_list |> List.partition (fun x -> (* 1000 *) x mod 2 = 0) in 
+      OUnit.assert_equal 
+      (Set_int.elements v) odd ;
+      u =~~ Array.of_list even 
+    end ;
     "filter" >:: begin fun _ -> 
       (* 1 *) let v = Int_vec.of_array [|1;2;3;4;5;6|] in 
       v |> Int_vec.filter (fun x -> (* 6 *) x mod 3 = 0) |> (fun x -> (* 1 *) x =~~ [|3;6|]);
