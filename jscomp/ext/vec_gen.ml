@@ -77,6 +77,8 @@ sig
   val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
+  val inplace_filter_with : (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a 
+  val inplace_filter_from : int -> (elt -> bool) -> t -> unit 
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
   val unsafe_get : t -> int -> elt

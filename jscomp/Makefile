@@ -13,7 +13,7 @@ CAMLDEP=ocamldep.opt$(EXE)
 COMPFLAGS= -g -w +6-40-30-23 -warn-error +a-40-30-23
 
 
-.SUFFIXES: .mli .ml .cmi .cmx .mll .c .o
+.SUFFIXES: .mli .ml .cmi .cmx .mll .c .o .cmo
 
 print-%  : ; @echo $* = $($*)
 
@@ -21,6 +21,8 @@ INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I co
 
 .mli.cmi:
 	$(NATIVE) $(INCLUDES) $(COMPFLAGS) -c $<
+.ml.cmo:
+	ocamlc.opt $(INCLUDES) $(COMPFLAGS) -c $<
 
 .ml.cmx:
 	$(NATIVE) $(INCLUDES) $(COMPFLAGS) -c $<
@@ -44,7 +46,7 @@ ext/int_vec.ml: ext/vec.cppo.ml
 ext/resize_array.ml: ext/vec.cppo.ml
 	cppo -D TYPE_FUNCTOR $< -o $@
 ext/string_set.ml : ext/set.cppo.ml
-	cppo -D TYPE_STRING $< -o $@
+	cppo -D TYPE_STRING $< -o $@	
 ext/set_int.ml : ext/set.cppo.ml
 	cppo -D TYPE_INT $< -o $@
 ext/ident_set.ml : ext/set.cppo.ml
@@ -134,6 +136,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_ordered_hash_set_tests \
 	ounit_vec_test \
 	ounit_string_tests\
+	ounit_topsort_tests\
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
@@ -173,7 +176,9 @@ EXT_SRCS = ext_util\
 	string_set\
 	set_int\
 	set_poly\
-	ext_scc ext_pp_scope\
+	ext_scc \
+	ext_topsort\
+	ext_pp_scope\
 	ext_io\
 	ident_hash_set\
 	hash_set_poly\
@@ -182,6 +187,7 @@ EXT_SRCS = ext_util\
 	ext_filename
 
 EXT_CMXS=$(addprefix ext/, $(addsuffix .cmx, $(EXT_SRCS)))
+EXT_CMOS=$(addprefix ext/, $(addsuffix .cmo, $(EXT_SRCS)))
 COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methname  binary_cache
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift \
@@ -226,7 +232,8 @@ MAINS_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
 ounit.cmxa: $(OUNIT_CMXS)
 	ocamlopt.opt -a $^ -o $@
-
+ext.cma: $(EXT_CMOS)
+	ocamlc.opt -a $^ -o $@
 ext.cmxa: $(EXT_CMXS)
 	ocamlopt.opt -a $^ -o $@
 common.cmxa:$(COMMON_CMXS)
@@ -370,7 +377,7 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 
 
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	ocamloptp -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -P a -g -I bin -w -a unix.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
 	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump

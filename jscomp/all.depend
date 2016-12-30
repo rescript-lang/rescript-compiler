@@ -56,9 +56,11 @@ ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
 ext/literals.cmx : ext/literals.cmi
 ext/string_map.cmx : ext/map_gen.cmx ext/string_map.cmi
 ext/string_set.cmx : ext/set_gen.cmx ext/string_set.cmi
-ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx
+ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
 ext/set_poly.cmx : ext/set_gen.cmx ext/set_poly.cmi
 ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
+ext/ext_topsort.cmx : ext/set_int.cmx ext/resize_array.cmx ext/int_vec.cmx \
+    ext/ext_topsort.cmi
 ext/ext_pp_scope.cmx : ext/string_map.cmx ext/int_map.cmx ext/ident_set.cmx \
     ext/ext_pp_scope.cmi
 ext/ext_io.cmx : ext/ext_pervasives.cmx ext/ext_io.cmi
@@ -108,8 +110,10 @@ ext/int_map.cmi : ext/map_gen.cmx
 ext/literals.cmi :
 ext/string_map.cmi : ext/map_gen.cmx
 ext/string_set.cmi :
+ext/set_int.cmi : ext/set_gen.cmx
 ext/set_poly.cmi :
 ext/ext_scc.cmi : ext/int_vec_vec.cmi ext/int_vec.cmi
+ext/ext_topsort.cmi : ext/vec_gen.cmx ext/set_int.cmi ext/int_vec.cmi
 ext/ext_pp_scope.cmi : ext/ident_set.cmi
 ext/ext_io.cmi :
 ext/ident_hash_set.cmi : ext/hash_set_gen.cmx
@@ -590,13 +594,15 @@ ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \
 ounit_tests/ounit_map_tests.cmx : ounit/oUnit.cmx ext/int_map.cmx
 ounit_tests/ounit_ordered_hash_set_tests.cmx : \
     ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/ext_util.cmx
-ounit_tests/ounit_vec_test.cmx : ounit/oUnit.cmx ext/int_vec.cmx \
-    bsb/bsb_json.cmx
+ounit_tests/ounit_vec_test.cmx : ext/set_int.cmx ounit/oUnit.cmx \
+    ext/int_vec.cmx bsb/bsb_json.cmx
 ounit_tests/ounit_string_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx
+ounit_tests/ounit_topsort_tests.cmx : ext/set_int.cmx ounit/oUnit.cmx \
+    ext/int_vec.cmx ext/ext_topsort.cmx
 ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_union_find_tests.cmx \
-    ounit_tests/ounit_string_tests.cmx ounit_tests/ounit_scc_tests.cmx \
-    ounit_tests/ounit_path_tests.cmx \
+    ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_string_tests.cmx \
+    ounit_tests/ounit_scc_tests.cmx ounit_tests/ounit_path_tests.cmx \
     ounit_tests/ounit_ordered_hash_set_tests.cmx \
     ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_list_test.cmx \
     ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_hashtbl_tests.cmx \

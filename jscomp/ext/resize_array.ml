@@ -112,62 +112,98 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
         Array.unsafe_set d.arr d_len v
       end
 
+(** delete element at offset [idx], will raise exception when have invalid input *)
   let delete (d : _ Vec_gen.t) idx =
-    if idx < 0 || idx >= d.len then invalid_arg "Resize_array.delete" ;
+    let d_len = d.len in 
+    if idx < 0 || idx >= d_len then invalid_arg "Resize_array.delete" ;
     let arr = d.arr in 
-    Vec_gen.unsafe_blit arr (idx + 1) arr idx  (d.len - idx - 1);
-    Array.unsafe_set arr (d.len - 1) null;
-    d.len <- d.len - 1
-
+    Vec_gen.unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
+    let idx = d_len - 1 in 
+    d.len <- idx
+    
+# 129
+    ;
+    Array.unsafe_set arr idx  null
+    
+# 133
+(** pop the last element, a specialized version of [delete] *)
   let pop (d : _ Vec_gen.t) = 
     let idx  = d.len - 1  in
     if idx < 0 then invalid_arg "Resize_array.pop";
-    Array.unsafe_set d.arr idx null;
     d.len <- idx
+    
+# 140
+    ;    
+    Array.unsafe_set d.arr idx null
+  
+# 144
+(** pop and return the last element *)  
   let get_last_and_pop (d : _ Vec_gen.t) = 
     let idx  = d.len - 1  in
     if idx < 0 then invalid_arg "Resize_array.get_last_and_pop";
     let last = Array.unsafe_get d.arr idx in 
-    Array.unsafe_set d.arr idx null;
-    d.len <- idx; 
+    d.len <- idx 
+    
+# 152
+    ;
+    Array.unsafe_set d.arr idx null
+    
+# 155
+    ;
     last 
 
+(** delete elements start from [idx] with length [len] *)
   let delete_range (d : _ Vec_gen.t) idx len =
-    if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.delete_range"  ;
+    let d_len = d.len in 
+    if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Resize_array.delete_range"  ;
     let arr = d.arr in 
-    Vec_gen.unsafe_blit arr (idx + len) arr idx (d.len  - idx - len);
-    for i = d.len - len to d.len - 1 do
-      Array.unsafe_set d.arr i null
-    done;
-    d.len <- d.len - len
+    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
+    d.len <- d_len - len
+    
+# 167
+    ;
+    for i = d_len - len to d_len - 1 do
+      Array.unsafe_set arr i null
+    done
 
-
+# 173
+(** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
   let get_and_delete_range (d : _ Vec_gen.t) idx len : _ Vec_gen.t = 
-    if len < 0 || idx < 0 || idx + len > d.len then invalid_arg  "Resize_array.get_and_delete_range"  ;
+    let d_len = d.len in 
+    if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Resize_array.get_and_delete_range"  ;
     let arr = d.arr in 
-    let value = Array.sub arr idx len in
-    Vec_gen.unsafe_blit arr (idx + len) arr idx (d.len  - idx - len);
-    for i = d.len - len to d.len - 1 do
-      Array.unsafe_set d.arr i null
+    let value = Vec_gen.unsafe_sub arr idx len in
+    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
+    d.len <- d_len - len; 
+    
+# 183
+    for i = d_len - len to d_len - 1 do
+      Array.unsafe_set arr i null
     done;
-    d.len <- d.len - len; 
+    
+# 187
     {len = len ; arr = value}
 
 
   (** Below are simple wrapper around normal Array operations *)  
 
   let clear (d : _ Vec_gen.t ) =
+    
+# 195
     for i = 0 to d.len - 1 do 
       Array.unsafe_set d.arr i null
     done;
+    
+# 199
     d.len <- 0
 
 
 
-  let inplace_filter f (d : _ Vec_gen.t) = 
-    let d_arr = d.arr in 
+  let inplace_filter f (d : _ Vec_gen.t) : unit = 
+    let d_arr = d.arr in     
+    let d_len = d.len in
     let p = ref 0 in
-    for i = 0 to d.len - 1 do 
+    for i = 0 to d_len - 1 do 
       let x = Array.unsafe_get d_arr i in 
       if f x then 
         begin 
@@ -178,7 +214,61 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
         end
     done ;
     let last = !p  in 
-    delete_range d last  (d.len - last)
+    
+# 222
+    delete_range d last  (d_len - last)
 
-# 188
+  
+# 225
+  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+    if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
+    let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref start in    
+    for i = start to d_len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 244
+    delete_range d last  (d_len - last)
+
+
+# 248
+(** inplace filter the elements and accumulate the non-filtered elements *)
+  let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
+    let d_arr = d.arr in     
+    let p = ref 0 in
+    let d_len = d.len in
+    let acc = ref acc in 
+    for i = 0 to d_len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+      else 
+        acc := cb_no  x  !acc
+    done ;
+    let last = !p  in 
+    
+# 271
+    delete_range d last  (d_len - last)
+    
+# 273
+    ; !acc 
+
+
+
+# 278
 end

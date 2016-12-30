@@ -477,4 +477,5 @@ module type S = sig
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
+  val invariant : t -> bool 
 end 
