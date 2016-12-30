@@ -7913,22 +7913,31 @@ let regenerate_ninja cwd bsc_dir forced =
 
     end
 
+let ninja_error_message = "ninja (required for bsb build system) is not installed, \n\
+please visit https://github.com/ninja-build/ninja to have it installed\n"
+let () = 
+  Printexc.register_printer (function 
+  | Unix.Unix_error(Unix.ENOENT, "execvp", "ninja") -> 
+    Some ninja_error_message
+  | _ -> None
+  )
 
+  
+(* Note that [keepdepfile] only makes sense when combined with [deps] for optimizatoin *)
 let ninja_command ninja ninja_args = 
   let ninja_args_len = Array.length ninja_args in
-  if ninja_args_len = 0 then 
-    Unix.execvp ninja [|"ninja"; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]
+  if ninja_args_len = 0 then     
+    Unix.execvp ninja [|"ninja"; "-C"; Bsb_config.lib_bs |]    
   else 
-    let fixed_args_length = 5 in 
-    Unix.execvp ninja 
+    let fixed_args_length = 3 in 
+    begin Unix.execvp ninja 
     (Array.init (fixed_args_length + ninja_args_len)
      (fun i -> match i with 
      | 0 -> "ninja"
      | 1 -> "-C"
      | 2 -> Bsb_config.lib_bs
-     | 3 -> "-d"
-     | 4 -> "keepdepfile"
-    | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) ))
+     | _ -> Array.unsafe_get ninja_args (i - fixed_args_length) ))
+     end 
     
 (**
    Cache files generated:
@@ -7958,7 +7967,6 @@ let () =
       begin
         regenerate_ninja cwd bsc_dir false;
         ninja_command ninja [||]
-        (* Unix.execvp ninja [|ninja; "-C"; Bsb_config.lib_bs ; "-d"; "keepdepfile" |]*)
       end
     else
       begin
@@ -7978,12 +7986,6 @@ let () =
             (* String_vec.iter (fun s -> print_endline s) targets; *)
             regenerate_ninja cwd bsc_dir !force_regenerate;
             ninja_command ninja ninja_args
-            (*Unix.execvp ninja
-              (Array.append
-                 [|ninja ; "-C"; Bsb_config.lib_bs;  "-d"; "keepdepfile"|]
-                 ninja_args
-              )*)
-
           end
       end
   with x ->
