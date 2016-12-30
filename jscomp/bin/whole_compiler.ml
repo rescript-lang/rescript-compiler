@@ -57360,6 +57360,7 @@ sig
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
   val inplace_filter_with : (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a 
+  val inplace_filter_from : int -> (elt -> bool) -> t -> unit 
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
   val unsafe_get : t -> int -> elt
@@ -57831,8 +57832,8 @@ let null = 0 (* can be optimized *)
 
   let inplace_filter f (d : _ Vec_gen.t) : unit = 
     let d_arr = d.arr in     
-    let p = ref 0 in
     let d_len = d.len in
+    let p = ref 0 in
     for i = 0 to d_len - 1 do 
       let x = Array.unsafe_get d_arr i in 
       if f x then 
@@ -57849,8 +57850,30 @@ let null = 0 (* can be optimized *)
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
 
+  
+# 225
+  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+    if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
+    let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref start in    
+    for i = start to d_len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 242
+    d.len <-  last 
 
-# 226
+
+# 248
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
     let d_arr = d.arr in     
@@ -57871,11 +57894,11 @@ let null = 0 (* can be optimized *)
     done ;
     let last = !p  in 
     
-# 246
+# 268
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
     
-# 251
+# 273
     ; !acc 
 
 
@@ -58117,8 +58140,8 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
 
   let inplace_filter f (d : _ Vec_gen.t) : unit = 
     let d_arr = d.arr in     
-    let p = ref 0 in
     let d_len = d.len in
+    let p = ref 0 in
     for i = 0 to d_len - 1 do 
       let x = Array.unsafe_get d_arr i in 
       if f x then 
@@ -58134,8 +58157,30 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
 # 222
     delete_range d last  (d_len - last)
 
+  
+# 225
+  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+    if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
+    let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref start in    
+    for i = start to d_len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 244
+    delete_range d last  (d_len - last)
 
-# 226
+
+# 248
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
     let d_arr = d.arr in     
@@ -58156,15 +58201,15 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
     done ;
     let last = !p  in 
     
-# 249
+# 271
     delete_range d last  (d_len - last)
     
-# 251
+# 273
     ; !acc 
 
 
 
-# 256
+# 278
 end
 
 end
@@ -59759,6 +59804,7 @@ module type S = sig
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
+  val invariant : t -> bool 
 end 
 
 end

@@ -16,6 +16,7 @@ bin/all_ounit_tests.ml : ext/set_gen.ml
 bin/all_ounit_tests.ml : ext/ext_int.ml
 bin/all_ounit_tests.ml : ext/ext_int.mli
 bin/all_ounit_tests.ml : ext/set_int.ml
+bin/all_ounit_tests.ml : ext/set_int.mli
 bin/all_ounit_tests.ml : ext/set_poly.ml
 bin/all_ounit_tests.ml : ext/set_poly.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_bal_tree_tests.ml
@@ -71,6 +72,9 @@ bin/all_ounit_tests.ml : ext/ext_scc.ml
 bin/all_ounit_tests.ml : ext/ext_scc.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_scc_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_string_tests.ml
+bin/all_ounit_tests.ml : ext/ext_topsort.ml
+bin/all_ounit_tests.ml : ext/ext_topsort.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_topsort_tests.ml
 bin/all_ounit_tests.ml : ext/union_find.ml
 bin/all_ounit_tests.ml : ext/union_find.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_union_find_tests.ml

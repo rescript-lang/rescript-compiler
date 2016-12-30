@@ -7,7 +7,8 @@ let v = Int_vec.init 10 (fun i -> i);;
 let (=~) x y = OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x y
 let (=~~) x y 
   = 
-  OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x (Int_vec.of_array y) 
+  OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) 
+  x (Int_vec.of_array y) 
 
 let suites = 
   __FILE__ 
@@ -32,6 +33,20 @@ let suites =
       OUnit.assert_equal (Int_vec.capacity v ) capacity ;
       Int_vec.compact v ; 
       OUnit.assert_equal (Int_vec.capacity v ) 0 
+    end
+    ;
+    "inplace_filter_from " ^ __LOC__ >:: begin fun _ -> 
+      let v = Int_vec.of_array (Array.init 10 (fun i -> i)) in 
+      v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|]; 
+      Int_vec.push 96 v  ;      
+      Int_vec.inplace_filter_from 2 (fun x -> x mod 2 = 0) v ;
+      v =~~ [|0; 1; 2; 4; 6; 8; 96|];
+      Int_vec.inplace_filter_from 2 (fun x -> x mod 3 = 0) v ;
+      v =~~ [|0; 1; 6; 96|];
+      Int_vec.inplace_filter (fun x -> x mod 3 <> 0) v ;
+      v =~~ [|1|];      
+      Int_vec.compact v ; 
+      OUnit.assert_equal (Int_vec.capacity v ) 1
     end
     ;
     "map " ^ __LOC__ >:: begin fun _ -> 

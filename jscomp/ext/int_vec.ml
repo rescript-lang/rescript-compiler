@@ -172,8 +172,8 @@ let null = 0 (* can be optimized *)
 
   let inplace_filter f (d : _ Vec_gen.t) : unit = 
     let d_arr = d.arr in     
-    let p = ref 0 in
     let d_len = d.len in
+    let p = ref 0 in
     for i = 0 to d_len - 1 do 
       let x = Array.unsafe_get d_arr i in 
       if f x then 
@@ -190,8 +190,30 @@ let null = 0 (* can be optimized *)
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
 
+  
+# 225
+  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+    if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
+    let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref start in    
+    for i = start to d_len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 242
+    d.len <-  last 
 
-# 226
+
+# 248
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
     let d_arr = d.arr in     
@@ -212,11 +234,11 @@ let null = 0 (* can be optimized *)
     done ;
     let last = !p  in 
     
-# 246
+# 268
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
     
-# 251
+# 273
     ; !acc 
 
 

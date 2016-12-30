@@ -2499,6 +2499,7 @@ module type S = sig
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
+  val invariant : t -> bool 
 end 
 
 end
@@ -2567,8 +2568,12 @@ let compare (x : t) (y : t) = Pervasives.compare x y
 let equal (x : t) (y : t) = x = y
 
 end
-module Set_int
-= struct
+module Set_int : sig 
+#1 "set_int.mli"
+
+
+include Set_gen.S with type elt = int 
+end = struct
 #1 "set_int.ml"
 # 1 "ext/set.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8275,6 +8280,7 @@ sig
   val filter : (elt -> bool) -> t -> t
   val inplace_filter : (elt -> bool) -> t -> unit
   val inplace_filter_with : (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a 
+  val inplace_filter_from : int -> (elt -> bool) -> t -> unit 
   val equal : (elt -> elt -> bool) -> t -> t -> bool 
   val get : t -> int -> elt
   val unsafe_get : t -> int -> elt
@@ -8746,8 +8752,8 @@ let null = 0 (* can be optimized *)
 
   let inplace_filter f (d : _ Vec_gen.t) : unit = 
     let d_arr = d.arr in     
-    let p = ref 0 in
     let d_len = d.len in
+    let p = ref 0 in
     for i = 0 to d_len - 1 do 
       let x = Array.unsafe_get d_arr i in 
       if f x then 
@@ -8764,8 +8770,30 @@ let null = 0 (* can be optimized *)
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
 
+  
+# 225
+  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+    if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
+    let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref start in    
+    for i = start to d_len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 242
+    d.len <-  last 
 
-# 226
+
+# 248
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
     let d_arr = d.arr in     
@@ -8786,11 +8814,11 @@ let null = 0 (* can be optimized *)
     done ;
     let last = !p  in 
     
-# 246
+# 268
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
     
-# 251
+# 273
     ; !acc 
 
 
@@ -9032,8 +9060,8 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
 
   let inplace_filter f (d : _ Vec_gen.t) : unit = 
     let d_arr = d.arr in     
-    let p = ref 0 in
     let d_len = d.len in
+    let p = ref 0 in
     for i = 0 to d_len - 1 do 
       let x = Array.unsafe_get d_arr i in 
       if f x then 
@@ -9049,8 +9077,30 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
 # 222
     delete_range d last  (d_len - last)
 
+  
+# 225
+  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+    if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
+    let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref start in    
+    for i = start to d_len - 1 do 
+      let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 244
+    delete_range d last  (d_len - last)
 
-# 226
+
+# 248
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
     let d_arr = d.arr in     
@@ -9071,15 +9121,15 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
     done ;
     let last = !p  in 
     
-# 249
+# 271
     delete_range d last  (d_len - last)
     
-# 251
+# 273
     ; !acc 
 
 
 
-# 256
+# 278
 end
 
 end
@@ -9751,6 +9801,181 @@ let suites =
                 ]
         end
     ]
+end
+module Ext_topsort : sig 
+#1 "ext_topsort.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type edges = { id : int ; deps : Int_vec.t }
+
+module Edge_vec : Vec_gen.S with type elt = edges 
+
+type t = Edge_vec.t 
+
+(** the input will be modified ,
+*)
+val layered_dfs : t -> Set_int.t Queue.t
+end = struct
+#1 "ext_topsort.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type edges = { id : int ; deps : Int_vec.t }
+
+module Edge_vec = Resize_array.Make( struct 
+    type t = edges
+    let null = { id = 0 ; deps = Int_vec.empty ()}
+    end
+    )
+
+type t = Edge_vec.t 
+
+
+(** 
+    This graph is different the graph used in [scc] graph, since 
+    we need dynamic shrink the graph, so for each vector the first node is it self ,
+    it will also change the input.
+    
+    TODO: error handling (cycle handling) and defensive bad input (missing edges etc)
+*)
+
+let layered_dfs (g : t) =
+   let queue = Queue.create () in 
+   let rec aux g = 
+        let new_entries = 
+        Edge_vec.inplace_filter_with 
+        (fun (x : edges) -> not (Int_vec.is_empty x.deps) ) 
+        ~cb_no:(fun x acc -> Set_int.add x.id acc) Set_int.empty  g in 
+        if not (Set_int.is_empty new_entries) 
+        then 
+        begin 
+            Queue.push new_entries queue ; 
+            Edge_vec.iter 
+            (fun edges -> Int_vec.inplace_filter  
+                (fun x -> not (Set_int.mem x new_entries)) edges.deps ) g ;
+            aux g 
+        end
+  in aux  g ; queue      
+
+  
+end
+module Ounit_topsort_tests
+= struct
+#1 "ounit_topsort_tests.ml"
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let handle graph = 
+  let len = List.length graph in 
+  let result = Ext_topsort.Edge_vec.make len in 
+  List.iter (fun (id,deps) -> 
+      Ext_topsort.Edge_vec.push {id ; deps = Int_vec.of_list deps } result 
+    ) graph; 
+  result 
+
+
+let graph1 = 
+  [ 
+    0, [1;2];
+    1, [2;3];
+    2, [4];
+    3, [];
+    4, []
+  ], [[0]; [1]; [2] ; [3;4]]
+
+
+let graph2 = 
+  [ 
+    0, [1;2];
+    1, [2;3];
+    2, [4];
+    3, [5];
+    4, [5];
+    5, []
+  ],  
+  [[0]; [1]; [2] ; [3;4]; [5]]
+
+let graph3 = 
+    [ 0,[1;2;3;4;5];
+      1, [6;7;8] ;
+      2, [6;7;8];
+      3, [6;7;8];
+      4, [6;7;8];
+      5, [6;7;8];
+      6, [];
+      7, [] ;
+      8, []
+     ],
+     [[0]; [1;2;3;4;5]; [6; 7; 8]]
+
+
+let expect loc (graph1, v) = 
+  let graph = handle graph1  in 
+  let queue = Ext_topsort.layered_dfs graph  in 
+  OUnit.assert_bool loc
+    (Queue.fold (fun acc x -> Set_int.elements x::acc) [] queue =
+     v)
+
+
+
+
+
+let (=~) = OUnit.assert_equal
+let suites = 
+  __FILE__
+  >:::
+  [
+    __LOC__ >:: begin fun _ -> 
+      expect __LOC__ graph1;
+      expect __LOC__ graph2 ;
+      expect __LOC__ graph3
+    end
+
+  ]
 end
 module Union_find : sig 
 #1 "union_find.mli"
@@ -10878,7 +11103,8 @@ let v = Int_vec.init 10 (fun i -> i);;
 let (=~) x y = OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x y
 let (=~~) x y 
   = 
-  OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x (Int_vec.of_array y) 
+  OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) 
+  x (Int_vec.of_array y) 
 
 let suites = 
   __FILE__ 
@@ -10903,6 +11129,20 @@ let suites =
       OUnit.assert_equal (Int_vec.capacity v ) capacity ;
       Int_vec.compact v ; 
       OUnit.assert_equal (Int_vec.capacity v ) 0 
+    end
+    ;
+    "inplace_filter_from " ^ __LOC__ >:: begin fun _ -> 
+      let v = Int_vec.of_array (Array.init 10 (fun i -> i)) in 
+      v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|]; 
+      Int_vec.push 96 v  ;      
+      Int_vec.inplace_filter_from 2 (fun x -> x mod 2 = 0) v ;
+      v =~~ [|0; 1; 2; 4; 6; 8; 96|];
+      Int_vec.inplace_filter_from 2 (fun x -> x mod 3 = 0) v ;
+      v =~~ [|0; 1; 6; 96|];
+      Int_vec.inplace_filter (fun x -> x mod 3 <> 0) v ;
+      v =~~ [|1|];      
+      Int_vec.compact v ; 
+      OUnit.assert_equal (Int_vec.capacity v ) 1
     end
     ;
     "map " ^ __LOC__ >:: begin fun _ -> 
@@ -11047,6 +11287,7 @@ let suites =
     Ounit_ordered_hash_set_tests.suites;
     Ounit_hashtbl_tests.suites;
     Ounit_string_tests.suites;
+    Ounit_topsort_tests.suites
   ]
 let _ = 
   OUnit.run_test_tt_main suites
