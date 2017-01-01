@@ -101,7 +101,7 @@ function getConfigOutput(){
 
     }
     catch(e){
-        console.log("configuire failure")
+        console.error("configuration failure")
         return false
     }
 }
