@@ -640,9 +640,6 @@ bsb/bsb_main.cmx : ext/string_vec.cmx ext/literals.cmx ext/ext_string.cmx \
 bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx ext/literals.cmx \
     ext/ext_filename.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
     bsb/bsb_build_ui.cmx common/binary_cache.cmx bsb/bsb_ninja.cmi
-bsb/sexp_eval.cmx : ext/string_hashtbl.cmx bsb/sexp_lexer.cmx \
-    ext/ext_list.cmx
-bsb/sexp_lexer.cmx : bsb/sexp_lexer.cmi
 bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/string_map.cmi \
     ext/ext_file_pp.cmi bsb/bsb_json.cmi common/binary_cache.cmi
 bsb/bsb_build_util.cmi : bsb/bsb_json.cmi
@@ -655,7 +652,6 @@ bsb/bsb_helper_main.cmi :
 bsb/bsb_json.cmi : ext/string_map.cmi
 bsb/bsb_main.cmi :
 bsb/bsb_ninja.cmi : bsb/bsb_default.cmi bsb/bsb_build_ui.cmi
-bsb/sexp_lexer.cmi :
 jscmj_main.cmx : common/js_config.cmx core/js_cmj_format.cmx \
     ext/ext_string.cmx ext/ext_pp.cmx ext/ext_pervasives.cmx \
     ext/ext_array.cmx jscmj_main.cmi

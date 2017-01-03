@@ -71,6 +71,7 @@ bin/all_ounit_tests.ml : ext/int_vec_vec.mli
 bin/all_ounit_tests.ml : ext/ext_scc.ml
 bin/all_ounit_tests.ml : ext/ext_scc.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_scc_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_sexp_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_string_tests.ml
 bin/all_ounit_tests.ml : ext/ext_topsort.ml
 bin/all_ounit_tests.ml : ext/ext_topsort.mli

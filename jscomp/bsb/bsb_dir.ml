@@ -38,8 +38,8 @@ type dir =
     dir_contents : string array ;
   }
 
-type t = (string,dir) Hashtbl.t 
-(* let cache = Hashtbl.create 103 *)
+type t = String_hashtbl.t 
+(* let cache = String_hashtbl.create 103 *)
 
 let dir_cache_magic_number = "BSDIR20161020"
 
@@ -68,7 +68,7 @@ let read_dir_cache (fname : string) : t =
 let cache_name = ".bs_dir_cache"
 
 let cache = 
-  lazy (try read_dir_cache cache_name with _ -> Hashtbl.create 103)
+  lazy (try read_dir_cache cache_name with _ -> String_hashtbl.create 103)
 
 let cache_dirty = ref false 
 
@@ -81,27 +81,27 @@ let () = Pervasives.at_exit flush_cache
 let readdir dir =
   let stat = Unix.stat dir in 
   let st_mtime = stat.st_mtime in 
-  match Hashtbl.find !cache dir with
+  match String_hashtbl.find !cache dir with
   | {dir_mtime} as e when st_mtime <= dir_mtime ->  
     e.dir_contents
   | _ -> 
     let res =  Sys.readdir dir in
     cache_dirty := true; 
-    Hashtbl.replace !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
+    String_hashtbl.replace !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
     res
   | exception Not_found ->
     let res =  Sys.readdir dir in
     cache_dirty := true ;
-    Hashtbl.add !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
+    String_hashtbl.add !cache dir {dir_mtime = st_mtime ; dir_contents = res}; 
     res
 
 let  reset_readdir_cache () =
   cache_dirty := true ; 
-  Hashtbl.clear !cache
+  String_hashtbl.clear !cache
 
 let reset_readdir_cache_for dir =
   cache_dirty := true; 
-  Hashtbl.remove !cache dir 
+  String_hashtbl.remove !cache dir 
 *)
 
 (* TODO: see if it is worth turn caching on

@@ -9576,53 +9576,53 @@ let read_file file =
 let test  (input : (string * string list) list) = 
   (* string -> int mapping 
   *)
-  let tbl = Hashtbl.create 32 in
+  let tbl = String_hashtbl.create 32 in
   let idx = ref 0 in 
   let add x =
-    if not (Hashtbl.mem tbl x ) then 
+    if not (String_hashtbl.mem tbl x ) then 
       begin 
-        Hashtbl.add  tbl x !idx ;
+        String_hashtbl.add  tbl x !idx ;
         incr idx 
       end in
   input |> List.iter 
     (fun (x,others) -> List.iter add (x::others));
-  let nodes_num = Hashtbl.length tbl in
+  let nodes_num = String_hashtbl.length tbl in
   let node_array = 
       Array.init nodes_num
         (fun i -> Int_vec.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
-      let idx = Hashtbl.find tbl  x  in 
+      let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (Hashtbl.find tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
     ) ; 
   Ext_scc.graph_check node_array 
 
 let test2  (input : (string * string list) list) = 
   (* string -> int mapping 
   *)
-  let tbl = Hashtbl.create 32 in
+  let tbl = String_hashtbl.create 32 in
   let idx = ref 0 in 
   let add x =
-    if not (Hashtbl.mem tbl x ) then 
+    if not (String_hashtbl.mem tbl x ) then 
       begin 
-        Hashtbl.add  tbl x !idx ;
+        String_hashtbl.add  tbl x !idx ;
         incr idx 
       end in
   input |> List.iter 
     (fun (x,others) -> List.iter add (x::others));
-  let nodes_num = Hashtbl.length tbl in
+  let nodes_num = String_hashtbl.length tbl in
   let other_mapping = Array.make nodes_num "" in 
-  Hashtbl.iter (fun k v  -> other_mapping.(v) <- k ) tbl ;
+  String_hashtbl.iter (fun k v  -> other_mapping.(v) <- k ) tbl ;
   
   let node_array = 
       Array.init nodes_num
         (fun i -> Int_vec.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
-      let idx = Hashtbl.find tbl  x  in 
+      let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (Hashtbl.find tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
     )  ;
   let output = Ext_scc.graph node_array in 
   output |> Int_vec_vec.map_into_array (fun int_vec -> Int_vec.map_into_array (fun i -> other_mapping.(i)) int_vec )
@@ -9738,6 +9738,20 @@ let suites =
 
     ]
 
+end
+module Ounit_sexp_tests
+= struct
+#1 "ounit_sexp_tests.ml"
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+let suites = 
+    __FILE__
+    >::: [
+        
+    ]
 end
 module Ounit_string_tests
 = struct
@@ -11287,7 +11301,8 @@ let suites =
     Ounit_ordered_hash_set_tests.suites;
     Ounit_hashtbl_tests.suites;
     Ounit_string_tests.suites;
-    Ounit_topsort_tests.suites
+    Ounit_topsort_tests.suites;
+    Ounit_sexp_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites
