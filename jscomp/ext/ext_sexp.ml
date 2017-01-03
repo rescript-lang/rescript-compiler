@@ -509,10 +509,12 @@ let
         paren_depth = 0; 
         top = [];
         has_prime = false } lexbuf
+    let from_string str = 
+      token (Lexing.from_string str)    
     let from_file file = 
       let in_channel =  open_in file in 
       match  token (Lexing.from_channel in_channel) with 
       | exception  e -> close_in in_channel; raise e 
       | sexps -> close_in in_channel ; sexps
 
-# 519 "ext/ext_sexp.ml"
+# 521 "ext/ext_sexp.ml"
