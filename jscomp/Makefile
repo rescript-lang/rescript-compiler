@@ -137,6 +137,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_vec_test \
 	ounit_string_tests\
 	ounit_topsort_tests\
+	ounit_sexp_tests\
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
@@ -180,6 +181,7 @@ EXT_SRCS = ext_util\
 	ext_topsort\
 	ext_pp_scope\
 	ext_io\
+	ext_sexp\
 	ident_hash_set\
 	hash_set_poly\
 	ident_hashtbl\
@@ -224,7 +226,7 @@ CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
-BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util bsb_dep_infos bsb_dir bsb_json sexp_lexer sexp_eval  bsb_ninja bsb_build_ui bsb_default bsb_gen
+BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util bsb_dep_infos bsb_dir bsb_json bsb_ninja bsb_build_ui bsb_default bsb_gen
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
@@ -476,7 +478,7 @@ include all.depend
 -include $(SNAPSHOT_DEPS)
 
 clean:
-	rm -f bsb/bs_json.ml bsb/sexp_lexer.ml core/js_fold.ml core/js_map.ml
+	rm -f bsb/bs_json.ml ext/sexp_lexer.ml core/js_fold.ml core/js_map.ml
 	rm -f common/bs_version.ml
 	rm -rf bin/config_whole_compiler.ml
 	git clean -dfx stubs ext common syntax depends core bsb

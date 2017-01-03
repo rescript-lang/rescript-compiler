@@ -31,7 +31,8 @@ let suites =
     Ounit_ordered_hash_set_tests.suites;
     Ounit_hashtbl_tests.suites;
     Ounit_string_tests.suites;
-    Ounit_topsort_tests.suites
+    Ounit_topsort_tests.suites;
+    Ounit_sexp_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites
