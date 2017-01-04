@@ -291,6 +291,30 @@ let assert_raises ?msg exn (f: unit -> 'a) =
       | Some e -> 
           assert_equal ?msg ~printer:pexn exn e
 
+
+let assert_raise_any ?msg (f: unit -> 'a) = 
+  let pexn = 
+    Printexc.to_string 
+  in
+  let get_error_string () =
+    let str = 
+      Format.sprintf 
+        "expected exception , but no exception was raised." 
+        
+    in
+      match msg with
+        | None -> 
+            assert_failure str
+              
+        | Some s -> 
+            assert_failure (s^"\n"^str)
+  in    
+    match raises f with
+      | None -> 
+          assert_failure (get_error_string ())
+
+      | Some exn -> 
+          assert_bool (pexn exn) true
 (* Compare floats up to a given relative error *)
 let cmp_float ?(epsilon = 0.00001) a b =
   abs_float (a -. b) <= epsilon *. (abs_float a) ||

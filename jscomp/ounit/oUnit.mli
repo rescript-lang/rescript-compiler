@@ -87,6 +87,8 @@ val assert_equal :
     @raise Failure description *)
 val assert_raises : ?msg:string -> exn -> (unit -> 'a) -> unit
 
+val assert_raise_any : ?msg:string ->  (unit -> 'a) -> unit
+
 (** {2 Skipping tests } 
   
    In certain condition test can be written but there is no point running it, because they

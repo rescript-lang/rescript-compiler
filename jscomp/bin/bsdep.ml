@@ -23267,6 +23267,8 @@ val rindex_neg : string -> char -> int
 val rindex_opt : string -> char -> int option
 
 val is_valid_source_name : string -> bool
+
+val no_char : string -> char -> int -> int -> bool 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23299,15 +23301,15 @@ end = struct
 
 
 
-
+(*
+   {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+*)
 let split_by ?(keep_empty=false) is_delim str =
   let len = String.length str in
   let rec loop acc last_pos pos =
     if pos = -1 then
       if last_pos = 0 && not keep_empty then
-        (*
-           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
-        *)
+
         acc
       else 
         String.sub str 0 last_pos :: acc
@@ -23326,11 +23328,16 @@ let split_by ?(keep_empty=false) is_delim str =
 let trim s = 
   let i = ref 0  in
   let j = String.length s in 
-  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+  while !i < j &&  
+        let u = String.unsafe_get s !i in 
+        u = '\t' || u = '\n' || u = ' ' 
+  do 
     incr i;
   done;
   let k = ref (j - 1)  in 
-  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+  while !k >= !i && 
+        let u = String.unsafe_get s !k in 
+        u = '\t' || u = '\n' || u = ' ' do 
     decr k ;
   done;
   String.sub s !i (!k - !i + 1)
@@ -23356,26 +23363,45 @@ let starts_with s beg =
   )
 
 
-
-let ends_with_index s beg = 
+(** return an index which is minus when [s] does not 
+    end with [beg]
+*)
+let ends_with_index s end_ = 
   let s_finish = String.length s - 1 in
-  let s_beg = String.length beg - 1 in
+  let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
   else
     let rec aux j k = 
       if k < 0 then (j + 1)
-      else if String.unsafe_get s j = String.unsafe_get beg k then 
+      else if String.unsafe_get s j = String.unsafe_get end_ k then 
         aux (j - 1) (k - 1)
       else  -1 in 
     aux s_finish s_beg
 
-let ends_with s beg = ends_with_index s beg >= 0 
-
+let ends_with s end_ = ends_with_index s end_ >= 0 
 
 let ends_with_then_chop s beg = 
   let i =  ends_with_index s beg in 
   if i >= 0 then Some (String.sub s 0 i) 
   else None
+
+let check_suffix_case = ends_with 
+let check_suffix_case_then_chop = ends_with_then_chop
+
+let check_any_suffix_case s suffixes = 
+  List.exists (fun x -> check_suffix_case s x) suffixes
+
+let check_any_suffix_case_then_chop s suffixes = 
+  let rec aux suffixes = 
+    match suffixes with 
+    | [] -> None 
+    | x::xs -> 
+      let id = ends_with_index s x in 
+      if id >= 0 then Some (String.sub s 0 id)
+      else aux xs in 
+  aux suffixes    
+
+
 
 (**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
      this version try to make it not locale senstive, this bug is fixed
@@ -23396,16 +23422,20 @@ let escaped s =
 
 (* it is unsafe to expose such API as unsafe since 
    user can provide bad input range 
+
 *)
-let rec for_all_range s ~start:i ~finish:len p =     
-  if i >= len then true 
-  else  p (String.get s i) && 
-        for_all_range s ~start:(i + 1) ~finish:len p
+let rec unsafe_for_all_range s ~start ~finish p =     
+  start > finish ||
+  p (String.unsafe_get s start) && 
+  unsafe_for_all_range s ~start:(start + 1) ~finish p
 
+let for_all_range s ~start ~finish p = 
+  let len = String.length s in 
+  if start < 0 || finish >= len then invalid_arg "Ext_string.for_all_range"
+  else unsafe_for_all_range s ~start ~finish p 
 
-let for_all (p : char -> bool) s = 
-  let len = String.length s in
-  for_all_range s ~start:0  ~finish:len p 
+let for_all (p : char -> bool) s =   
+  unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
 
 let is_empty s = String.length s = 0
 
@@ -23422,7 +23452,7 @@ let equal (x : string) y  = x = y
 
 
 
-let _is_sub ~sub i s j ~len =
+let unsafe_is_sub ~sub i s j ~len =
   let rec check k =
     if k = len
     then true
@@ -23433,18 +23463,18 @@ let _is_sub ~sub i s j ~len =
   j+len <= String.length s && check 0
 
 
-
+exception Local_exit 
 let find ?(start=0) ~sub s =
   let n = String.length sub in
-  let i = ref start in
-  let module M = struct exception Exit end  in
+  let i = ref start in  
   try
     while !i + n <= String.length s do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      if unsafe_is_sub ~sub 0 s !i ~len:n then
+        raise_notrace Local_exit;
       incr i
     done;
     -1
-  with M.Exit ->
+  with Local_exit ->
     !i
 
 
@@ -23454,11 +23484,12 @@ let rfind ~sub s =
   let module M = struct exception Exit end in 
   try
     while !i >= 0 do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      if unsafe_is_sub ~sub 0 s !i ~len:n then 
+        raise_notrace Local_exit;
       decr i
     done;
     -1
-  with M.Exit ->
+  with Local_exit ->
     !i
 
 let tail_from s x = 
@@ -23544,11 +23575,13 @@ let rindex_neg s c =
 let rindex_opt s c = 
   rindex_rec_opt s (String.length s - 1) c;;
 
-let is_valid_module_file ~finish (s : string) = 
-  match s.[0] with 
+let is_valid_module_file (s : string) = 
+  let len = String.length s in 
+  len > 0 &&
+  match String.unsafe_get s 0 with 
   | 'A' .. 'Z'
   | 'a' .. 'z' -> 
-    for_all_range s ~start:1 ~finish
+    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
       (fun x -> 
          match x with 
          | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
@@ -23556,21 +23589,28 @@ let is_valid_module_file ~finish (s : string) =
   | _ -> false 
 
 (** 
-  TODO: move to another module 
-  Make {!Ext_filename} not stateful
+   TODO: move to another module 
+   Make {!Ext_filename} not stateful
 *)
 let is_valid_source_name name =
-  ((Filename.check_suffix name ".ml"  
-    || Filename.check_suffix name ".re"
-   ) &&
-   (is_valid_module_file ~finish:(String.length name - 3) name)
-  )
-  || 
-  ((Filename.check_suffix name ".mli"
-    || Filename.check_suffix name ".mll"                  
-    || Filename.check_suffix name ".rei")
-   && (is_valid_module_file ~finish:(String.length name - 4 ) name )
-  )
+  match check_any_suffix_case_then_chop name [
+      ".ml"; 
+      ".re";
+      ".mli"; ".mll"; ".rei"
+    ] with 
+  | None -> false 
+  | Some x -> is_valid_module_file  x 
+
+
+let rec unsafe_no_char x ch i  len = 
+  i >= len  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+
+let no_char x ch i len =
+  let str_len = String.length x in 
+  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
+  else unsafe_no_char x ch i len 
+
 end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
@@ -26288,10 +26328,7 @@ val get_extension : string -> string
 
 val replace_backward_slash : string -> string
 
-(*
-[no_slash s i len]
-*)
-val no_char : string -> char  -> int -> int  -> bool
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -26508,13 +26545,9 @@ let find_package_json_dir cwd  =
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let rec no_char x ch i  len = 
-  i >= len  || 
-  (String.unsafe_get x i <> ch && no_char x ch (i + 1)  len)
-
 let replace_backward_slash (x : string)=
   let len = String.length x in
-  if no_char x '\\' 0  len then x 
+  if Ext_string.no_char x '\\' 0  len then x 
   else  
     String.map (function 
         |'\\'-> '/'
@@ -26523,7 +26556,7 @@ let replace_backward_slash (x : string)=
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
-  if no_char x '/' 0  len then x 
+  if Ext_string.no_char x '/' 0  len then x 
   else 
     String.map (function 
         | '/' -> '\\'
