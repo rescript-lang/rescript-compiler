@@ -2,9 +2,9 @@
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
-open Bsb_json
+open Ext_json
 let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb 
+    m  |> Ext_json.test key cb 
 
 exception Parse_error 
 let suites = 

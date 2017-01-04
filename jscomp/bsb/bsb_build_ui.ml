@@ -38,7 +38,7 @@ type  file_group =
 let (//) = Ext_filename.combine
 
 let (|?)  m (key, cb) =
-  m  |> Bsb_json.test key cb 
+  m  |> Ext_json.test key cb 
 
 let get_list_string  =  Bsb_build_util.get_list_string
 
@@ -69,7 +69,7 @@ let print_arrays file_array oc offset  =
 
 
 
-let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
+let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
   if Array.length s  = 0 then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
@@ -89,7 +89,7 @@ let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_p
 
   else 
     [],
-    Array.fold_left (fun acc (s : Bsb_json.t) ->
+    Array.fold_left (fun acc (s : Ext_json.t) ->
         match s with 
         | `Str {str = s} -> 
           Binary_cache.map_update ~dir acc s
@@ -123,7 +123,7 @@ let empty = { files = []; intervals  = []; globbed_dirs = [];  }
 
 
 
-let rec parsing_source cwd (x : Bsb_json.t String_map.t )
+let rec parsing_source cwd (x : Ext_json.t String_map.t )
   : t =
   let dir = ref cwd in
   let sources = ref String_map.empty in
@@ -229,7 +229,7 @@ let rec parsing_source cwd (x : Bsb_json.t String_map.t )
   } 
 
 
-let  parsing_sources cwd (file_groups : Bsb_json.t array)  = 
+let  parsing_sources cwd (file_groups : Ext_json.t array)  = 
   Array.fold_left (fun  origin x ->
       match x with 
       | `Obj map ->  

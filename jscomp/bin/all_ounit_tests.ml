@@ -5475,8 +5475,8 @@ let of_array xs =
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
-module Bsb_json : sig 
-#1 "bsb_json.mli"
+module Ext_json : sig 
+#1 "ext_json.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -5551,7 +5551,7 @@ val test:
 val query : path -> t ->  status
 
 end = struct
-#1 "bsb_json.ml"
+#1 "ext_json.ml"
 # 1 "bsb/bsb_json.mll"
  
 type error =
@@ -6293,9 +6293,9 @@ module Ounit_json_tests
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
-open Bsb_json
+open Ext_json
 let (|?)  m (key, cb) =
-    m  |> Bsb_json.test key cb 
+    m  |> Ext_json.test key cb 
 
 exception Parse_error 
 let suites = 
@@ -11692,7 +11692,7 @@ module Ounit_vec_test
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
-open Bsb_json
+open Ext_json
 
 let v = Int_vec.init 10 (fun i -> i);;
 let (=~) x y = OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x y

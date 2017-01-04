@@ -20,8 +20,8 @@ bin/bsb.ml : bsb/bsb_config.ml
 bin/bsb.ml : bsb/bsb_config.mli
 bin/bsb.ml : ext/ext_array.ml
 bin/bsb.ml : ext/ext_array.mli
-bin/bsb.ml : bsb/bsb_json.ml
-bin/bsb.ml : bsb/bsb_json.mli
+bin/bsb.ml : ext/ext_json.ml
+bin/bsb.ml : ext/ext_json.mli
 bin/bsb.ml : ext/ext_list.ml
 bin/bsb.ml : ext/ext_list.mli
 bin/bsb.ml : bsb/bsb_build_util.ml

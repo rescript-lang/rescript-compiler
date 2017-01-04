@@ -182,6 +182,7 @@ EXT_SRCS = ext_util\
 	ext_pp_scope\
 	ext_io\
 	ext_sexp\
+	ext_json\
 	ident_hash_set\
 	hash_set_poly\
 	ident_hashtbl\
@@ -226,7 +227,7 @@ CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
-BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util bsb_dep_infos bsb_dir bsb_json bsb_ninja bsb_build_ui bsb_default bsb_gen
+BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util bsb_dep_infos bsb_dir bsb_ninja bsb_build_ui bsb_default bsb_gen
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main

@@ -2891,8 +2891,8 @@ let exists p a =
   loop 0
 
 end
-module Bsb_json : sig 
-#1 "bsb_json.mli"
+module Ext_json : sig 
+#1 "ext_json.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2967,7 +2967,7 @@ val test:
 val query : path -> t ->  status
 
 end = struct
-#1 "bsb_json.ml"
+#1 "ext_json.ml"
 # 1 "bsb/bsb_json.mll"
  
 type error =
@@ -4264,7 +4264,7 @@ val mkp : string -> unit
 *)
 val get_bsc_bsdep : string -> string * string
 val get_bsc_dir : string -> string                               
-val get_list_string : Bsb_json.t array -> string list
+val get_list_string : Ext_json.t array -> string list
 
 end = struct
 #1 "bsb_build_util.ml"
@@ -4375,7 +4375,7 @@ let rec mkp dir =
 
 
 let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
+  Ext_array.to_list_map (fun (x : Ext_json.t) ->
       match x with 
       | `Str x -> Some x.str
       | _ -> None
@@ -6091,14 +6091,14 @@ type t =
 
 
 val parsing_source : 
-  string -> Bsb_json.t String_map.t -> t
+  string -> Ext_json.t String_map.t -> t
 
 (** entry is to the 
     [sources] in the schema
 *)
 val parsing_sources : 
   string -> 
-  Bsb_json.t array ->
+  Ext_json.t array ->
   t 
   
 
@@ -6144,7 +6144,7 @@ type  file_group =
 let (//) = Ext_filename.combine
 
 let (|?)  m (key, cb) =
-  m  |> Bsb_json.test key cb 
+  m  |> Ext_json.test key cb 
 
 let get_list_string  =  Bsb_build_util.get_list_string
 
@@ -6175,7 +6175,7 @@ let print_arrays file_array oc offset  =
 
 
 
-let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
+let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
   if Array.length s  = 0 then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
@@ -6195,7 +6195,7 @@ let  handle_list_files dir (s : Bsb_json.t array) loc_start loc_end : Ext_file_p
 
   else 
     [],
-    Array.fold_left (fun acc (s : Bsb_json.t) ->
+    Array.fold_left (fun acc (s : Ext_json.t) ->
         match s with 
         | `Str {str = s} -> 
           Binary_cache.map_update ~dir acc s
@@ -6229,7 +6229,7 @@ let empty = { files = []; intervals  = []; globbed_dirs = [];  }
 
 
 
-let rec parsing_source cwd (x : Bsb_json.t String_map.t )
+let rec parsing_source cwd (x : Ext_json.t String_map.t )
   : t =
   let dir = ref cwd in
   let sources = ref String_map.empty in
@@ -6335,7 +6335,7 @@ let rec parsing_source cwd (x : Bsb_json.t String_map.t )
   } 
 
 
-let  parsing_sources cwd (file_groups : Bsb_json.t array)  = 
+let  parsing_sources cwd (file_groups : Ext_json.t array)  = 
   Array.fold_left (fun  origin x ->
       match x with 
       | `Obj map ->  
@@ -6511,16 +6511,16 @@ val get_ocamllex : unit -> string
 val set_ocamllex : cwd:string -> string -> unit
 
 
-val set_bs_external_includes : Bsb_json.t array -> unit
+val set_bs_external_includes : Ext_json.t array -> unit
 val get_bs_external_includes : unit -> string list
 
 
 
 
-val set_bsc_flags : Bsb_json.t array -> unit
+val set_bsc_flags : Ext_json.t array -> unit
 val get_bsc_flags : unit -> string list
 
-val set_ppx_flags : cwd:string -> Bsb_json.t array -> unit
+val set_ppx_flags : cwd:string -> Ext_json.t array -> unit
 val get_ppx_flags : unit -> string list
 
 val set_package_name : string -> unit
@@ -6531,7 +6531,7 @@ val get_refmt : unit -> string
 
 
 val get_bs_dependencies : unit  -> string list
-val set_bs_dependencies : Bsb_json.t array  -> unit
+val set_bs_dependencies : Ext_json.t array  -> unit
 
 
 val get_js_post_build_cmd : unit -> string option
@@ -6542,7 +6542,7 @@ val set_ninja : cwd:string -> string -> unit
 
 type package_specs = String_set.t
 val get_package_specs : unit -> package_specs
-val set_package_specs_from_array : Bsb_json.t array -> unit  
+val set_package_specs_from_array : Ext_json.t array -> unit  
 
 val get_generate_merlin : unit -> bool 
 val set_generate_merlin : bool -> unit 
@@ -7656,7 +7656,7 @@ let bsdeps = ".bsdeps"
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
-  m  |> Bsb_json.test key cb
+  m  |> Ext_json.test key cb
 
 let (//) = Ext_filename.combine
 
@@ -7775,7 +7775,7 @@ let write_ninja_file bsc_dir cwd =
       revise_merlin buffer ;
   in
   let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
+  let global_data = Ext_json.parse_json_from_chan config_json_chan  in
 
   let () =
     match global_data with

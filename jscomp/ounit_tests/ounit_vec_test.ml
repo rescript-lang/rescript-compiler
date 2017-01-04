@@ -1,7 +1,7 @@
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
-open Bsb_json
+open Ext_json
 
 let v = Int_vec.init 10 (fun i -> i);;
 let (=~) x y = OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> x=y)) x y

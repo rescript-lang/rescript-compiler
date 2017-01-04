@@ -31,7 +31,7 @@ let bsdeps = ".bsdeps"
 
 (* Key is the path *)
 let (|?)  m (key, cb) =
-  m  |> Bsb_json.test key cb
+  m  |> Ext_json.test key cb
 
 let (//) = Ext_filename.combine
 
@@ -150,7 +150,7 @@ let write_ninja_file bsc_dir cwd =
       revise_merlin buffer ;
   in
   let config_json_chan = open_in_bin Literals.bsconfig_json in
-  let global_data = Bsb_json.parse_json_from_chan config_json_chan  in
+  let global_data = Ext_json.parse_json_from_chan config_json_chan  in
 
   let () =
     match global_data with
