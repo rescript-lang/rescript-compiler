@@ -44,13 +44,13 @@ type t =
 
 
 val parsing_source : 
-  string -> Bsb_json.t String_map.t -> t
+  string -> Ext_json.t String_map.t -> t
 
 (** entry is to the 
     [sources] in the schema
 *)
 val parsing_sources : 
   string -> 
-  Bsb_json.t array ->
+  Ext_json.t array ->
   t 
   

@@ -105,7 +105,7 @@ let rec mkp dir =
 
 
 let get_list_string s = 
-  Ext_array.to_list_map (fun (x : Bsb_json.t) ->
+  Ext_array.to_list_map (fun (x : Ext_json.t) ->
       match x with 
       | `Str x -> Some x.str
       | _ -> None
