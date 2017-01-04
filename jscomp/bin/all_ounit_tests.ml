@@ -445,6 +445,8 @@ val assert_equal :
     @raise Failure description *)
 val assert_raises : ?msg:string -> exn -> (unit -> 'a) -> unit
 
+val assert_raise_any : ?msg:string ->  (unit -> 'a) -> unit
+
 (** {2 Skipping tests } 
   
    In certain condition test can be written but there is no point running it, because they
@@ -915,6 +917,30 @@ let assert_raises ?msg exn (f: unit -> 'a) =
       | Some e -> 
           assert_equal ?msg ~printer:pexn exn e
 
+
+let assert_raise_any ?msg (f: unit -> 'a) = 
+  let pexn = 
+    Printexc.to_string 
+  in
+  let get_error_string () =
+    let str = 
+      Format.sprintf 
+        "expected exception , but no exception was raised." 
+        
+    in
+      match msg with
+        | None -> 
+            assert_failure str
+              
+        | Some s -> 
+            assert_failure (s^"\n"^str)
+  in    
+    match raises f with
+      | None -> 
+          assert_failure (get_error_string ())
+
+      | Some exn -> 
+          assert_bool (pexn exn) true
 (* Compare floats up to a given relative error *)
 let cmp_float ?(epsilon = 0.00001) a b =
   abs_float (a -. b) <= epsilon *. (abs_float a) ||
@@ -1665,6 +1691,8 @@ val rindex_neg : string -> char -> int
 val rindex_opt : string -> char -> int option
 
 val is_valid_source_name : string -> bool
+
+val no_char : string -> char -> int -> int -> bool 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1697,15 +1725,15 @@ end = struct
 
 
 
-
+(*
+   {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+*)
 let split_by ?(keep_empty=false) is_delim str =
   let len = String.length str in
   let rec loop acc last_pos pos =
     if pos = -1 then
       if last_pos = 0 && not keep_empty then
-        (*
-           {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
-        *)
+
         acc
       else 
         String.sub str 0 last_pos :: acc
@@ -1724,11 +1752,16 @@ let split_by ?(keep_empty=false) is_delim str =
 let trim s = 
   let i = ref 0  in
   let j = String.length s in 
-  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+  while !i < j &&  
+        let u = String.unsafe_get s !i in 
+        u = '\t' || u = '\n' || u = ' ' 
+  do 
     incr i;
   done;
   let k = ref (j - 1)  in 
-  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+  while !k >= !i && 
+        let u = String.unsafe_get s !k in 
+        u = '\t' || u = '\n' || u = ' ' do 
     decr k ;
   done;
   String.sub s !i (!k - !i + 1)
@@ -1754,26 +1787,45 @@ let starts_with s beg =
   )
 
 
-
-let ends_with_index s beg = 
+(** return an index which is minus when [s] does not 
+    end with [beg]
+*)
+let ends_with_index s end_ = 
   let s_finish = String.length s - 1 in
-  let s_beg = String.length beg - 1 in
+  let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
   else
     let rec aux j k = 
       if k < 0 then (j + 1)
-      else if String.unsafe_get s j = String.unsafe_get beg k then 
+      else if String.unsafe_get s j = String.unsafe_get end_ k then 
         aux (j - 1) (k - 1)
       else  -1 in 
     aux s_finish s_beg
 
-let ends_with s beg = ends_with_index s beg >= 0 
-
+let ends_with s end_ = ends_with_index s end_ >= 0 
 
 let ends_with_then_chop s beg = 
   let i =  ends_with_index s beg in 
   if i >= 0 then Some (String.sub s 0 i) 
   else None
+
+let check_suffix_case = ends_with 
+let check_suffix_case_then_chop = ends_with_then_chop
+
+let check_any_suffix_case s suffixes = 
+  List.exists (fun x -> check_suffix_case s x) suffixes
+
+let check_any_suffix_case_then_chop s suffixes = 
+  let rec aux suffixes = 
+    match suffixes with 
+    | [] -> None 
+    | x::xs -> 
+      let id = ends_with_index s x in 
+      if id >= 0 then Some (String.sub s 0 id)
+      else aux xs in 
+  aux suffixes    
+
+
 
 (**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
      this version try to make it not locale senstive, this bug is fixed
@@ -1794,16 +1846,20 @@ let escaped s =
 
 (* it is unsafe to expose such API as unsafe since 
    user can provide bad input range 
+
 *)
-let rec for_all_range s ~start:i ~finish:len p =     
-  if i >= len then true 
-  else  p (String.get s i) && 
-        for_all_range s ~start:(i + 1) ~finish:len p
+let rec unsafe_for_all_range s ~start ~finish p =     
+  start > finish ||
+  p (String.unsafe_get s start) && 
+  unsafe_for_all_range s ~start:(start + 1) ~finish p
 
+let for_all_range s ~start ~finish p = 
+  let len = String.length s in 
+  if start < 0 || finish >= len then invalid_arg "Ext_string.for_all_range"
+  else unsafe_for_all_range s ~start ~finish p 
 
-let for_all (p : char -> bool) s = 
-  let len = String.length s in
-  for_all_range s ~start:0  ~finish:len p 
+let for_all (p : char -> bool) s =   
+  unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
 
 let is_empty s = String.length s = 0
 
@@ -1820,7 +1876,7 @@ let equal (x : string) y  = x = y
 
 
 
-let _is_sub ~sub i s j ~len =
+let unsafe_is_sub ~sub i s j ~len =
   let rec check k =
     if k = len
     then true
@@ -1831,18 +1887,18 @@ let _is_sub ~sub i s j ~len =
   j+len <= String.length s && check 0
 
 
-
+exception Local_exit 
 let find ?(start=0) ~sub s =
   let n = String.length sub in
-  let i = ref start in
-  let module M = struct exception Exit end  in
+  let i = ref start in  
   try
     while !i + n <= String.length s do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      if unsafe_is_sub ~sub 0 s !i ~len:n then
+        raise_notrace Local_exit;
       incr i
     done;
     -1
-  with M.Exit ->
+  with Local_exit ->
     !i
 
 
@@ -1852,11 +1908,12 @@ let rfind ~sub s =
   let module M = struct exception Exit end in 
   try
     while !i >= 0 do
-      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      if unsafe_is_sub ~sub 0 s !i ~len:n then 
+        raise_notrace Local_exit;
       decr i
     done;
     -1
-  with M.Exit ->
+  with Local_exit ->
     !i
 
 let tail_from s x = 
@@ -1942,11 +1999,13 @@ let rindex_neg s c =
 let rindex_opt s c = 
   rindex_rec_opt s (String.length s - 1) c;;
 
-let is_valid_module_file ~finish (s : string) = 
-  match s.[0] with 
+let is_valid_module_file (s : string) = 
+  let len = String.length s in 
+  len > 0 &&
+  match String.unsafe_get s 0 with 
   | 'A' .. 'Z'
   | 'a' .. 'z' -> 
-    for_all_range s ~start:1 ~finish
+    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
       (fun x -> 
          match x with 
          | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
@@ -1954,21 +2013,28 @@ let is_valid_module_file ~finish (s : string) =
   | _ -> false 
 
 (** 
-  TODO: move to another module 
-  Make {!Ext_filename} not stateful
+   TODO: move to another module 
+   Make {!Ext_filename} not stateful
 *)
 let is_valid_source_name name =
-  ((Filename.check_suffix name ".ml"  
-    || Filename.check_suffix name ".re"
-   ) &&
-   (is_valid_module_file ~finish:(String.length name - 3) name)
-  )
-  || 
-  ((Filename.check_suffix name ".mli"
-    || Filename.check_suffix name ".mll"                  
-    || Filename.check_suffix name ".rei")
-   && (is_valid_module_file ~finish:(String.length name - 4 ) name )
-  )
+  match check_any_suffix_case_then_chop name [
+      ".ml"; 
+      ".re";
+      ".mli"; ".mll"; ".rei"
+    ] with 
+  | None -> false 
+  | Some x -> is_valid_module_file  x 
+
+
+let rec unsafe_no_char x ch i  len = 
+  i >= len  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
+
+let no_char x ch i len =
+  let str_len = String.length x in 
+  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
+  else unsafe_no_char x ch i len 
+
 end
 module Ounit_array_tests
 = struct
@@ -5552,7 +5618,7 @@ val query : path -> t ->  status
 
 end = struct
 #1 "ext_json.ml"
-# 1 "bsb/bsb_json.mll"
+# 1 "ext/ext_json.mll"
  
 type error =
   | Illegal_character of char
@@ -5669,7 +5735,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 119 "bsb/bsb_json.ml"
+# 119 "ext/ext_json.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -5857,80 +5923,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 137 "bsb/bsb_json.mll"
+# 137 "ext/ext_json.mll"
           ( lex_json buf lexbuf)
-# 309 "bsb/bsb_json.ml"
+# 309 "ext/ext_json.ml"
 
   | 1 ->
-# 138 "bsb/bsb_json.mll"
+# 138 "ext/ext_json.mll"
                    ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 317 "bsb/bsb_json.ml"
+# 317 "ext/ext_json.ml"
 
   | 2 ->
-# 142 "bsb/bsb_json.mll"
+# 142 "ext/ext_json.mll"
                 ( comment buf lexbuf)
-# 322 "bsb/bsb_json.ml"
+# 322 "ext/ext_json.ml"
 
   | 3 ->
-# 143 "bsb/bsb_json.mll"
+# 143 "ext/ext_json.mll"
          ( True)
-# 327 "bsb/bsb_json.ml"
+# 327 "ext/ext_json.ml"
 
   | 4 ->
-# 144 "bsb/bsb_json.mll"
+# 144 "ext/ext_json.mll"
           (False)
-# 332 "bsb/bsb_json.ml"
+# 332 "ext/ext_json.ml"
 
   | 5 ->
-# 145 "bsb/bsb_json.mll"
+# 145 "ext/ext_json.mll"
          (Null)
-# 337 "bsb/bsb_json.ml"
+# 337 "ext/ext_json.ml"
 
   | 6 ->
-# 146 "bsb/bsb_json.mll"
+# 146 "ext/ext_json.mll"
        (Lbracket)
-# 342 "bsb/bsb_json.ml"
+# 342 "ext/ext_json.ml"
 
   | 7 ->
-# 147 "bsb/bsb_json.mll"
+# 147 "ext/ext_json.mll"
        (Rbracket)
-# 347 "bsb/bsb_json.ml"
+# 347 "ext/ext_json.ml"
 
   | 8 ->
-# 148 "bsb/bsb_json.mll"
+# 148 "ext/ext_json.mll"
        (Lbrace)
-# 352 "bsb/bsb_json.ml"
+# 352 "ext/ext_json.ml"
 
   | 9 ->
-# 149 "bsb/bsb_json.mll"
+# 149 "ext/ext_json.mll"
        (Rbrace)
-# 357 "bsb/bsb_json.ml"
+# 357 "ext/ext_json.ml"
 
   | 10 ->
-# 150 "bsb/bsb_json.mll"
+# 150 "ext/ext_json.mll"
        (Comma)
-# 362 "bsb/bsb_json.ml"
+# 362 "ext/ext_json.ml"
 
   | 11 ->
-# 151 "bsb/bsb_json.mll"
+# 151 "ext/ext_json.mll"
         (Colon)
-# 367 "bsb/bsb_json.ml"
+# 367 "ext/ext_json.ml"
 
   | 12 ->
-# 152 "bsb/bsb_json.mll"
+# 152 "ext/ext_json.mll"
                       (lex_json buf lexbuf)
-# 372 "bsb/bsb_json.ml"
+# 372 "ext/ext_json.ml"
 
   | 13 ->
-# 154 "bsb/bsb_json.mll"
+# 154 "ext/ext_json.mll"
          ( Number (Lexing.lexeme lexbuf))
-# 377 "bsb/bsb_json.ml"
+# 377 "ext/ext_json.ml"
 
   | 14 ->
-# 156 "bsb/bsb_json.mll"
+# 156 "ext/ext_json.mll"
       (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -5938,22 +6004,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 388 "bsb/bsb_json.ml"
+# 388 "ext/ext_json.ml"
 
   | 15 ->
-# 163 "bsb/bsb_json.mll"
+# 163 "ext/ext_json.mll"
        (Eof )
-# 393 "bsb/bsb_json.ml"
+# 393 "ext/ext_json.ml"
 
   | 16 ->
 let
-# 164 "bsb/bsb_json.mll"
+# 164 "ext/ext_json.mll"
        c
-# 399 "bsb/bsb_json.ml"
+# 399 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 164 "bsb/bsb_json.mll"
+# 164 "ext/ext_json.mll"
           ( error lexbuf (Illegal_character c ))
-# 403 "bsb/bsb_json.ml"
+# 403 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -5963,19 +6029,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 166 "bsb/bsb_json.mll"
+# 166 "ext/ext_json.mll"
               (lex_json buf lexbuf)
-# 415 "bsb/bsb_json.ml"
+# 415 "ext/ext_json.ml"
 
   | 1 ->
-# 167 "bsb/bsb_json.mll"
+# 167 "ext/ext_json.mll"
      (comment buf lexbuf)
-# 420 "bsb/bsb_json.ml"
+# 420 "ext/ext_json.ml"
 
   | 2 ->
-# 168 "bsb/bsb_json.mll"
+# 168 "ext/ext_json.mll"
        (error lexbuf Unterminated_comment)
-# 425 "bsb/bsb_json.ml"
+# 425 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -5985,64 +6051,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 172 "bsb/bsb_json.mll"
+# 172 "ext/ext_json.mll"
       ( () )
-# 437 "bsb/bsb_json.ml"
+# 437 "ext/ext_json.ml"
 
   | 1 ->
-# 174 "bsb/bsb_json.mll"
+# 174 "ext/ext_json.mll"
   (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 447 "bsb/bsb_json.ml"
+# 447 "ext/ext_json.ml"
 
   | 2 ->
-# 181 "bsb/bsb_json.mll"
+# 181 "ext/ext_json.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 456 "bsb/bsb_json.ml"
+# 456 "ext/ext_json.ml"
 
   | 3 ->
 let
-# 186 "bsb/bsb_json.mll"
+# 186 "ext/ext_json.mll"
                                                c
-# 462 "bsb/bsb_json.ml"
+# 462 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 187 "bsb/bsb_json.mll"
+# 187 "ext/ext_json.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 469 "bsb/bsb_json.ml"
+# 469 "ext/ext_json.ml"
 
   | 4 ->
 let
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                  c1
-# 475 "bsb/bsb_json.ml"
+# 475 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                                c2
-# 480 "bsb/bsb_json.ml"
+# 480 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                                              c3
-# 485 "bsb/bsb_json.ml"
+# 485 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                                                     s
-# 490 "bsb/bsb_json.ml"
+# 490 "ext/ext_json.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 192 "bsb/bsb_json.mll"
+# 192 "ext/ext_json.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -6051,55 +6117,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 501 "bsb/bsb_json.ml"
+# 501 "ext/ext_json.ml"
 
   | 5 ->
 let
-# 200 "bsb/bsb_json.mll"
+# 200 "ext/ext_json.mll"
                         c1
-# 507 "bsb/bsb_json.ml"
+# 507 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 200 "bsb/bsb_json.mll"
+# 200 "ext/ext_json.mll"
                                          c2
-# 512 "bsb/bsb_json.ml"
+# 512 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 201 "bsb/bsb_json.mll"
+# 201 "ext/ext_json.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 521 "bsb/bsb_json.ml"
+# 521 "ext/ext_json.ml"
 
   | 6 ->
 let
-# 207 "bsb/bsb_json.mll"
+# 207 "ext/ext_json.mll"
              c
-# 527 "bsb/bsb_json.ml"
+# 527 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 208 "bsb/bsb_json.mll"
+# 208 "ext/ext_json.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 536 "bsb/bsb_json.ml"
+# 536 "ext/ext_json.ml"
 
   | 7 ->
-# 215 "bsb/bsb_json.mll"
+# 215 "ext/ext_json.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 546 "bsb/bsb_json.ml"
+# 546 "ext/ext_json.ml"
 
   | 8 ->
-# 222 "bsb/bsb_json.mll"
+# 222 "ext/ext_json.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -6107,21 +6173,21 @@ let
 
         scan_string buf start lexbuf
       )
-# 557 "bsb/bsb_json.ml"
+# 557 "ext/ext_json.ml"
 
   | 9 ->
-# 230 "bsb/bsb_json.mll"
+# 230 "ext/ext_json.mll"
       (
         error lexbuf Unterminated_string
       )
-# 564 "bsb/bsb_json.ml"
+# 564 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 234 "bsb/bsb_json.mll"
+# 234 "ext/ext_json.mll"
  
 
 type js_array =
@@ -6283,7 +6349,7 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 733 "bsb/bsb_json.ml"
+# 733 "ext/ext_json.ml"
 
 end
 module Ounit_json_tests
@@ -7787,10 +7853,7 @@ val get_extension : string -> string
 
 val replace_backward_slash : string -> string
 
-(*
-[no_slash s i len]
-*)
-val no_char : string -> char  -> int -> int  -> bool
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -8007,13 +8070,9 @@ let find_package_json_dir cwd  =
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let rec no_char x ch i  len = 
-  i >= len  || 
-  (String.unsafe_get x i <> ch && no_char x ch (i + 1)  len)
-
 let replace_backward_slash (x : string)=
   let len = String.length x in
-  if no_char x '\\' 0  len then x 
+  if Ext_string.no_char x '\\' 0  len then x 
   else  
     String.map (function 
         |'\\'-> '/'
@@ -8022,7 +8081,7 @@ let replace_backward_slash (x : string)=
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
-  if no_char x '/' 0  len then x 
+  if Ext_string.no_char x '/' 0  len then x 
   else 
     String.map (function 
         | '/' -> '\\'
@@ -10338,7 +10397,7 @@ module Ounit_string_tests
 = struct
 #1 "ounit_string_tests.ml"
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) = OUnit.assert_equal    
 
@@ -10346,56 +10405,106 @@ let (=~) = OUnit.assert_equal
 
 
 let suites = 
-    __FILE__ >::: 
-    [
-        __LOC__ >:: begin fun _ ->
-            OUnit.assert_bool "not found " (Ext_string.rindex_neg "hello" 'x' < 0 )
-        end;
+  __FILE__ >::: 
+  [
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool "not found " (Ext_string.rindex_neg "hello" 'x' < 0 )
+    end;
 
-        __LOC__ >:: begin fun _ -> 
-            Ext_string.rindex_neg "hello" 'h' =~ 0 ;
-            Ext_string.rindex_neg "hello" 'e' =~ 1 ;
-            Ext_string.rindex_neg "hello" 'l' =~ 3 ;
-            Ext_string.rindex_neg "hello" 'l' =~ 3 ;
-            Ext_string.rindex_neg "hello" 'o' =~ 4 ;
-        end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.rindex_neg "hello" 'h' =~ 0 ;
+      Ext_string.rindex_neg "hello" 'e' =~ 1 ;
+      Ext_string.rindex_neg "hello" 'l' =~ 3 ;
+      Ext_string.rindex_neg "hello" 'l' =~ 3 ;
+      Ext_string.rindex_neg "hello" 'o' =~ 4 ;
+    end;
 
-        __LOC__ >:: begin fun _ -> 
-            OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
-        end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
+    end;
 
-        __LOC__ >:: begin fun _ -> 
-            OUnit.assert_bool __LOC__
-            (Ext_string.for_all_range "xABc"~start:1
-            ~finish:3 (function 'A' .. 'Z' -> true | _ -> false));
-            OUnit.assert_bool __LOC__
-            (not (Ext_string.for_all_range "xABc"~start:1
-            ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));
-            OUnit.assert_bool __LOC__
-            ( (Ext_string.for_all_range "xABc"~start:1
-            ~finish:2 (function 'A' .. 'Z' -> true | _ -> false)));
-            OUnit.assert_bool __LOC__
-            ( (Ext_string.for_all_range "xABc"~start:1
-            ~finish:1 (function 'A' .. 'Z' -> true | _ -> false)));
-            OUnit.assert_bool __LOC__
-            ( (Ext_string.for_all_range "xABc"~start:1
-            ~finish:0 (function 'A' .. 'Z' -> true | _ -> false)));
-        end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__
+        (Ext_string.for_all_range "xABc"~start:1
+           ~finish:2 (function 'A' .. 'Z' -> true | _ -> false));
+      OUnit.assert_bool __LOC__
+        (not (Ext_string.for_all_range "xABc"~start:1
+                ~finish:3(function 'A' .. 'Z' -> true | _ -> false)));
+      OUnit.assert_bool __LOC__
+        ( (Ext_string.for_all_range "xABc"~start:1
+             ~finish:2 (function 'A' .. 'Z' -> true | _ -> false)));
+      OUnit.assert_bool __LOC__
+        ( (Ext_string.for_all_range "xABc"~start:1
+             ~finish:1 (function 'A' .. 'Z' -> true | _ -> false)));
+      OUnit.assert_bool __LOC__
+        ( (Ext_string.for_all_range "xABc"~start:1
+             ~finish:0 (function 'A' .. 'Z' -> true | _ -> false)));    
+      OUnit.assert_raise_any       
+        (fun _ ->  (Ext_string.for_all_range "xABc"~start:1
+             ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));    
+    
+    end;
 
-        __LOC__ >:: begin fun _ -> 
-            OUnit.assert_bool __LOC__ @@
-             List.for_all Ext_string.is_valid_source_name
-            ["x.ml"; "x.mli"; "x.re"; "x.rei"; "x.mll"; 
-            "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
-            "ax.ml"];
-            OUnit.assert_bool __LOC__ @@ not @@
-                List.exists Ext_string.is_valid_source_name
-                [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
-                "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
-                ".#hello.ml"; ".#hello.rei"
-                ]
-        end
-    ]
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ @@
+      List.for_all Ext_string.is_valid_source_name
+        ["x.ml"; "x.mli"; "x.re"; "x.rei"; "x.mll"; 
+         "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
+         "ax.ml"];
+      OUnit.assert_bool __LOC__ @@ not @@
+      List.exists Ext_string.is_valid_source_name
+        [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
+         "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
+         ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
+         ; "-.ml"
+        ]
+    end;
+    __LOC__ >:: begin fun _ -> 
+        Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
+        Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
+        Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
+        Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.trim " \t\n" =~ "";
+      Ext_string.trim " \t\nb" =~ "b";
+      Ext_string.trim "b \t\n" =~ "b";
+      Ext_string.trim "\t\n b \t\n" =~ "b";            
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.starts_with "ab" "a" =~ true;
+      Ext_string.starts_with "ab" "" =~ true;
+      Ext_string.starts_with "abb" "abb" =~ true;
+      Ext_string.starts_with "abb" "abbc" =~ false;
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.ends_with_then_chop "xx.ml"  ".ml" =~ Some "xx";
+      Ext_string.ends_with_then_chop "xx.ml" ".mll" =~ None
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.starts_with_and_number "js_fn_mk_01" ~offset:0 "js_fn_mk_" =~ 1 ;
+      Ext_string.starts_with_and_number "js_fn_run_02" ~offset:0 "js_fn_mk_" =~ -1 ;
+      Ext_string.starts_with_and_number "js_fn_mk_03" ~offset:6 "mk_" =~ 3 ;
+      Ext_string.starts_with_and_number "js_fn_mk_04" ~offset:6 "run_" =~ -1;
+      Ext_string.starts_with_and_number "js_fn_run_04" ~offset:6 "run_" =~ 4;
+      Ext_string.(starts_with_and_number "js_fn_run_04" ~offset:6 "run_" = 3) =~ false 
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.for_all (function '_' -> true | _ -> false)
+        "____" =~ true;
+      Ext_string.for_all (function '_' -> true | _ -> false)
+        "___-" =~ false;
+      Ext_string.for_all (function '_' -> true | _ -> false)        
+        "" =~ true
+    end;
+    __LOC__ >:: begin fun _ -> 
+        Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
+        Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
+    end;
+    __LOC__ >:: begin fun _ -> 
+        Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+    end
+  ]
 end
 module Ext_topsort : sig 
 #1 "ext_topsort.mli"

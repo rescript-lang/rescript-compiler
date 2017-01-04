@@ -209,13 +209,9 @@ let find_package_json_dir cwd  =
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let rec no_char x ch i  len = 
-  i >= len  || 
-  (String.unsafe_get x i <> ch && no_char x ch (i + 1)  len)
-
 let replace_backward_slash (x : string)=
   let len = String.length x in
-  if no_char x '\\' 0  len then x 
+  if Ext_string.no_char x '\\' 0  len then x 
   else  
     String.map (function 
         |'\\'-> '/'
@@ -224,7 +220,7 @@ let replace_backward_slash (x : string)=
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
-  if no_char x '/' 0  len then x 
+  if Ext_string.no_char x '/' 0  len then x 
   else 
     String.map (function 
         | '/' -> '\\'

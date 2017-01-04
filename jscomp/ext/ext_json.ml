@@ -1,4 +1,4 @@
-# 1 "bsb/bsb_json.mll"
+# 1 "ext/ext_json.mll"
  
 type error =
   | Illegal_character of char
@@ -115,7 +115,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 119 "bsb/bsb_json.ml"
+# 119 "ext/ext_json.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -303,80 +303,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 137 "bsb/bsb_json.mll"
+# 137 "ext/ext_json.mll"
           ( lex_json buf lexbuf)
-# 309 "bsb/bsb_json.ml"
+# 309 "ext/ext_json.ml"
 
   | 1 ->
-# 138 "bsb/bsb_json.mll"
+# 138 "ext/ext_json.mll"
                    ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 317 "bsb/bsb_json.ml"
+# 317 "ext/ext_json.ml"
 
   | 2 ->
-# 142 "bsb/bsb_json.mll"
+# 142 "ext/ext_json.mll"
                 ( comment buf lexbuf)
-# 322 "bsb/bsb_json.ml"
+# 322 "ext/ext_json.ml"
 
   | 3 ->
-# 143 "bsb/bsb_json.mll"
+# 143 "ext/ext_json.mll"
          ( True)
-# 327 "bsb/bsb_json.ml"
+# 327 "ext/ext_json.ml"
 
   | 4 ->
-# 144 "bsb/bsb_json.mll"
+# 144 "ext/ext_json.mll"
           (False)
-# 332 "bsb/bsb_json.ml"
+# 332 "ext/ext_json.ml"
 
   | 5 ->
-# 145 "bsb/bsb_json.mll"
+# 145 "ext/ext_json.mll"
          (Null)
-# 337 "bsb/bsb_json.ml"
+# 337 "ext/ext_json.ml"
 
   | 6 ->
-# 146 "bsb/bsb_json.mll"
+# 146 "ext/ext_json.mll"
        (Lbracket)
-# 342 "bsb/bsb_json.ml"
+# 342 "ext/ext_json.ml"
 
   | 7 ->
-# 147 "bsb/bsb_json.mll"
+# 147 "ext/ext_json.mll"
        (Rbracket)
-# 347 "bsb/bsb_json.ml"
+# 347 "ext/ext_json.ml"
 
   | 8 ->
-# 148 "bsb/bsb_json.mll"
+# 148 "ext/ext_json.mll"
        (Lbrace)
-# 352 "bsb/bsb_json.ml"
+# 352 "ext/ext_json.ml"
 
   | 9 ->
-# 149 "bsb/bsb_json.mll"
+# 149 "ext/ext_json.mll"
        (Rbrace)
-# 357 "bsb/bsb_json.ml"
+# 357 "ext/ext_json.ml"
 
   | 10 ->
-# 150 "bsb/bsb_json.mll"
+# 150 "ext/ext_json.mll"
        (Comma)
-# 362 "bsb/bsb_json.ml"
+# 362 "ext/ext_json.ml"
 
   | 11 ->
-# 151 "bsb/bsb_json.mll"
+# 151 "ext/ext_json.mll"
         (Colon)
-# 367 "bsb/bsb_json.ml"
+# 367 "ext/ext_json.ml"
 
   | 12 ->
-# 152 "bsb/bsb_json.mll"
+# 152 "ext/ext_json.mll"
                       (lex_json buf lexbuf)
-# 372 "bsb/bsb_json.ml"
+# 372 "ext/ext_json.ml"
 
   | 13 ->
-# 154 "bsb/bsb_json.mll"
+# 154 "ext/ext_json.mll"
          ( Number (Lexing.lexeme lexbuf))
-# 377 "bsb/bsb_json.ml"
+# 377 "ext/ext_json.ml"
 
   | 14 ->
-# 156 "bsb/bsb_json.mll"
+# 156 "ext/ext_json.mll"
       (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -384,22 +384,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 388 "bsb/bsb_json.ml"
+# 388 "ext/ext_json.ml"
 
   | 15 ->
-# 163 "bsb/bsb_json.mll"
+# 163 "ext/ext_json.mll"
        (Eof )
-# 393 "bsb/bsb_json.ml"
+# 393 "ext/ext_json.ml"
 
   | 16 ->
 let
-# 164 "bsb/bsb_json.mll"
+# 164 "ext/ext_json.mll"
        c
-# 399 "bsb/bsb_json.ml"
+# 399 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 164 "bsb/bsb_json.mll"
+# 164 "ext/ext_json.mll"
           ( error lexbuf (Illegal_character c ))
-# 403 "bsb/bsb_json.ml"
+# 403 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -409,19 +409,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 166 "bsb/bsb_json.mll"
+# 166 "ext/ext_json.mll"
               (lex_json buf lexbuf)
-# 415 "bsb/bsb_json.ml"
+# 415 "ext/ext_json.ml"
 
   | 1 ->
-# 167 "bsb/bsb_json.mll"
+# 167 "ext/ext_json.mll"
      (comment buf lexbuf)
-# 420 "bsb/bsb_json.ml"
+# 420 "ext/ext_json.ml"
 
   | 2 ->
-# 168 "bsb/bsb_json.mll"
+# 168 "ext/ext_json.mll"
        (error lexbuf Unterminated_comment)
-# 425 "bsb/bsb_json.ml"
+# 425 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -431,64 +431,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 172 "bsb/bsb_json.mll"
+# 172 "ext/ext_json.mll"
       ( () )
-# 437 "bsb/bsb_json.ml"
+# 437 "ext/ext_json.ml"
 
   | 1 ->
-# 174 "bsb/bsb_json.mll"
+# 174 "ext/ext_json.mll"
   (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 447 "bsb/bsb_json.ml"
+# 447 "ext/ext_json.ml"
 
   | 2 ->
-# 181 "bsb/bsb_json.mll"
+# 181 "ext/ext_json.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 456 "bsb/bsb_json.ml"
+# 456 "ext/ext_json.ml"
 
   | 3 ->
 let
-# 186 "bsb/bsb_json.mll"
+# 186 "ext/ext_json.mll"
                                                c
-# 462 "bsb/bsb_json.ml"
+# 462 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 187 "bsb/bsb_json.mll"
+# 187 "ext/ext_json.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 469 "bsb/bsb_json.ml"
+# 469 "ext/ext_json.ml"
 
   | 4 ->
 let
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                  c1
-# 475 "bsb/bsb_json.ml"
+# 475 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                                c2
-# 480 "bsb/bsb_json.ml"
+# 480 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                                              c3
-# 485 "bsb/bsb_json.ml"
+# 485 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 191 "bsb/bsb_json.mll"
+# 191 "ext/ext_json.mll"
                                                     s
-# 490 "bsb/bsb_json.ml"
+# 490 "ext/ext_json.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 192 "bsb/bsb_json.mll"
+# 192 "ext/ext_json.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -497,55 +497,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 501 "bsb/bsb_json.ml"
+# 501 "ext/ext_json.ml"
 
   | 5 ->
 let
-# 200 "bsb/bsb_json.mll"
+# 200 "ext/ext_json.mll"
                         c1
-# 507 "bsb/bsb_json.ml"
+# 507 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 200 "bsb/bsb_json.mll"
+# 200 "ext/ext_json.mll"
                                          c2
-# 512 "bsb/bsb_json.ml"
+# 512 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 201 "bsb/bsb_json.mll"
+# 201 "ext/ext_json.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 521 "bsb/bsb_json.ml"
+# 521 "ext/ext_json.ml"
 
   | 6 ->
 let
-# 207 "bsb/bsb_json.mll"
+# 207 "ext/ext_json.mll"
              c
-# 527 "bsb/bsb_json.ml"
+# 527 "ext/ext_json.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 208 "bsb/bsb_json.mll"
+# 208 "ext/ext_json.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 536 "bsb/bsb_json.ml"
+# 536 "ext/ext_json.ml"
 
   | 7 ->
-# 215 "bsb/bsb_json.mll"
+# 215 "ext/ext_json.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 546 "bsb/bsb_json.ml"
+# 546 "ext/ext_json.ml"
 
   | 8 ->
-# 222 "bsb/bsb_json.mll"
+# 222 "ext/ext_json.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -553,21 +553,21 @@ let
 
         scan_string buf start lexbuf
       )
-# 557 "bsb/bsb_json.ml"
+# 557 "ext/ext_json.ml"
 
   | 9 ->
-# 230 "bsb/bsb_json.mll"
+# 230 "ext/ext_json.mll"
       (
         error lexbuf Unterminated_string
       )
-# 564 "bsb/bsb_json.ml"
+# 564 "ext/ext_json.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 234 "bsb/bsb_json.mll"
+# 234 "ext/ext_json.mll"
  
 
 type js_array =
@@ -729,4 +729,4 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 733 "bsb/bsb_json.ml"
+# 733 "ext/ext_json.ml"
