@@ -43,8 +43,8 @@ let suites =
              ~finish:0 (function 'A' .. 'Z' -> true | _ -> false)));    
       OUnit.assert_raise_any       
         (fun _ ->  (Ext_string.for_all_range "xABc"~start:1
-             ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));    
-    
+                      ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));    
+
     end;
 
     __LOC__ >:: begin fun _ -> 
@@ -58,14 +58,14 @@ let suites =
         [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
          "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
-         ; "-.ml"
+        ; "-.ml"
         ]
     end;
     __LOC__ >:: begin fun _ -> 
-        Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
-        Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
-        Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
-        Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
+      Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
+      Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
+      Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
+      Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
     __LOC__ >:: begin fun _ -> 
       Ext_string.trim " \t\n" =~ "";
@@ -100,10 +100,47 @@ let suites =
         "" =~ true
     end;
     __LOC__ >:: begin fun _ -> 
-        Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
-        Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
+      Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
+      Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
     end;
     __LOC__ >:: begin fun _ -> 
-        Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+      Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.replace_backward_slash "a:\\b\\d" = 
+         "a:/b/d"
+        ) ;
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.replace_backward_slash "a:\\b\\d\\" = 
+         "a:/b/d/"
+        ) ;
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.replace_slash_backward "a:/b/d/"= 
+         "a:\\b\\d\\" 
+        ) ;  
+      OUnit.assert_bool __LOC__ 
+        (let old = "a:bd" in 
+         Ext_string.replace_backward_slash old == 
+         old
+        ) ;
+      OUnit.assert_bool __LOC__ 
+        (let old = "a:bd" in 
+         Ext_string.replace_backward_slash old == 
+         old
+        ) ;
+
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash "ahgoh" );
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash "" );            
+      OUnit.assert_bool __LOC__ 
+        (not (Ext_string.no_slash "ahgoh/" ));
+      OUnit.assert_bool __LOC__ 
+        (not (Ext_string.no_slash "/ahgoh" ));
+      OUnit.assert_bool __LOC__ 
+        (not (Ext_string.no_slash "/ahgoh/" ));            
     end
   ]

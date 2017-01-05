@@ -37,7 +37,7 @@ let rel_dir = Filename.parent_dir_name
 let convert_path = 
   if Sys.unix then fun x -> x 
   else if Sys.win32 || Sys.cygwin then 
-    Ext_filename.replace_slash_backward 
+    Ext_string.replace_slash_backward 
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
 let convert_and_resolve_path = 
@@ -45,7 +45,7 @@ let convert_and_resolve_path =
   else 
   if Sys.win32 || Sys.cygwin then 
     fun (p:string) -> 
-      let p = Ext_filename.replace_slash_backward p in
+      let p = Ext_string.replace_slash_backward p in
       Bsb_config.proj_rel p 
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the begining*)

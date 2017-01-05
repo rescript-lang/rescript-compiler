@@ -275,40 +275,6 @@ var package_dir = Block.__(246, [function () {
       return find_root_filename(cwd$1, Literals.bsconfig_json);
     }]);
 
-function replace_backward_slash(x) {
-  var len = x.length;
-  if (Ext_string.no_char(x, /* "\\" */92, 0, len)) {
-    return x;
-  }
-  else {
-    return $$String.map(function (x) {
-                if (x !== 92) {
-                  return x;
-                }
-                else {
-                  return /* "/" */47;
-                }
-              }, x);
-  }
-}
-
-function replace_slash_backward(x) {
-  var len = x.length;
-  if (Ext_string.no_char(x, /* "/" */47, 0, len)) {
-    return x;
-  }
-  else {
-    return $$String.map(function (x) {
-                if (x !== 47) {
-                  return x;
-                }
-                else {
-                  return /* "\\" */92;
-                }
-              }, x);
-  }
-}
-
 function module_name_of_file(file) {
   var s = Filename.chop_extension(Curry._1(Filename.basename, file));
   return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
@@ -494,8 +460,6 @@ exports.node_relative_path           = node_relative_path;
 exports.find_root_filename           = find_root_filename;
 exports.find_package_json_dir        = find_package_json_dir;
 exports.package_dir                  = package_dir;
-exports.replace_backward_slash       = replace_backward_slash;
-exports.replace_slash_backward       = replace_slash_backward;
 exports.module_name_of_file          = module_name_of_file;
 exports.module_name_of_file_if_any   = module_name_of_file_if_any;
 exports.combine                      = combine;

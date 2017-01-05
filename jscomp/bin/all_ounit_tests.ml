@@ -1693,6 +1693,14 @@ val rindex_opt : string -> char -> int option
 val is_valid_source_name : string -> bool
 
 val no_char : string -> char -> int -> int -> bool 
+
+val no_slash : string -> bool 
+
+(** if no conversion happens, reference equality holds *)
+val replace_slash_backward : string -> string 
+
+(** if no conversion happens, reference equality holds *)
+val replace_backward_slash : string -> string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2025,15 +2033,34 @@ let is_valid_source_name name =
   | None -> false 
   | Some x -> is_valid_module_file  x 
 
-
+(** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  len = 
-  i >= len  || 
+  i > len  || 
   (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
 
 let no_char x ch i len =
   let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
+
+let no_slash x = 
+  unsafe_no_char x '/' 0 (String.length x - 1)
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if unsafe_no_char x '/' 0  (len - 1) then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
+
+let replace_backward_slash (x : string)=
+  let len = String.length x in
+  if unsafe_no_char x '\\' 0  (len -1) then x 
+  else  
+    String.map (function 
+        |'\\'-> '/'
+        | x -> x) x
 
 end
 module Ounit_array_tests
@@ -7809,7 +7836,7 @@ val cwd : string Lazy.t
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
-val replace_backward_slash : string -> string
+
 
 val module_name_of_file : string -> string
 
@@ -7850,12 +7877,6 @@ get_extension "a" = ""
 ]}
 *)
 val get_extension : string -> string
-
-val replace_backward_slash : string -> string
-
-
-(** if no conversion happens, reference equality holds *)
-val replace_slash_backward : string -> string 
 
 end = struct
 #1 "ext_filename.ml"
@@ -8070,22 +8091,7 @@ let find_package_json_dir cwd  =
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let replace_backward_slash (x : string)=
-  let len = String.length x in
-  if Ext_string.no_char x '\\' 0  len then x 
-  else  
-    String.map (function 
-        |'\\'-> '/'
-        | x -> x) x
 
-
-let replace_slash_backward (x : string ) = 
-  let len = String.length x in 
-  if Ext_string.no_char x '/' 0  len then x 
-  else 
-    String.map (function 
-        | '/' -> '\\'
-        | x -> x ) x 
 
 let module_name_of_file file =
   String.capitalize 
@@ -10441,8 +10447,8 @@ let suites =
              ~finish:0 (function 'A' .. 'Z' -> true | _ -> false)));    
       OUnit.assert_raise_any       
         (fun _ ->  (Ext_string.for_all_range "xABc"~start:1
-             ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));    
-    
+                      ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));    
+
     end;
 
     __LOC__ >:: begin fun _ -> 
@@ -10456,14 +10462,14 @@ let suites =
         [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
          "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
-         ; "-.ml"
+        ; "-.ml"
         ]
     end;
     __LOC__ >:: begin fun _ -> 
-        Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
-        Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
-        Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
-        Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
+      Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
+      Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
+      Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
+      Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
     __LOC__ >:: begin fun _ -> 
       Ext_string.trim " \t\n" =~ "";
@@ -10498,11 +10504,48 @@ let suites =
         "" =~ true
     end;
     __LOC__ >:: begin fun _ -> 
-        Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
-        Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
+      Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
+      Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
     end;
     __LOC__ >:: begin fun _ -> 
-        Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+      Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.replace_backward_slash "a:\\b\\d" = 
+         "a:/b/d"
+        ) ;
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.replace_backward_slash "a:\\b\\d\\" = 
+         "a:/b/d/"
+        ) ;
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.replace_slash_backward "a:/b/d/"= 
+         "a:\\b\\d\\" 
+        ) ;  
+      OUnit.assert_bool __LOC__ 
+        (let old = "a:bd" in 
+         Ext_string.replace_backward_slash old == 
+         old
+        ) ;
+      OUnit.assert_bool __LOC__ 
+        (let old = "a:bd" in 
+         Ext_string.replace_backward_slash old == 
+         old
+        ) ;
+
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash "ahgoh" );
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash "" );            
+      OUnit.assert_bool __LOC__ 
+        (not (Ext_string.no_slash "ahgoh/" ));
+      OUnit.assert_bool __LOC__ 
+        (not (Ext_string.no_slash "/ahgoh" ));
+      OUnit.assert_bool __LOC__ 
+        (not (Ext_string.no_slash "/ahgoh/" ));            
     end
   ]
 end
