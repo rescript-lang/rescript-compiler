@@ -8,6 +8,7 @@ var Caml_sys                = require("../../lib/js/caml_sys");
 var Pervasives              = require("../../lib/js/pervasives");
 var Block                   = require("../../lib/js/block");
 var Ext_string              = require("./ext_string");
+var Sys                     = require("../../lib/js/sys");
 var Curry                   = require("../../lib/js/curry");
 var Ext_pervasives          = require("./ext_pervasives");
 var $$String                = require("../../lib/js/string");
@@ -443,28 +444,47 @@ function get_extension(x) {
   }
 }
 
+var simple_convert_node_path_to_os_path;
+
+if (Sys.unix) {
+  simple_convert_node_path_to_os_path = function (x) {
+    return x;
+  };
+}
+else if (Sys.win32 || Sys.cygwin) {
+  simple_convert_node_path_to_os_path = Ext_string.replace_slash_backward;
+}
+else {
+  var s = "Unknown OS : Unix";
+  throw [
+        Caml_builtin_exceptions.failure,
+        s
+      ];
+}
+
 var $slash$slash = Filename.concat;
 
-exports.node_sep                     = node_sep;
-exports.node_parent                  = node_parent;
-exports.node_current                 = node_current;
-exports.cwd                          = cwd;
-exports.$slash$slash                 = $slash$slash;
-exports.path_as_directory            = path_as_directory;
-exports.absolute_path                = absolute_path;
-exports.chop_extension               = chop_extension;
-exports.chop_extension_if_any        = chop_extension_if_any;
-exports.os_path_separator_char       = os_path_separator_char;
-exports.relative_path                = relative_path;
-exports.node_relative_path           = node_relative_path;
-exports.find_root_filename           = find_root_filename;
-exports.find_package_json_dir        = find_package_json_dir;
-exports.package_dir                  = package_dir;
-exports.module_name_of_file          = module_name_of_file;
-exports.module_name_of_file_if_any   = module_name_of_file_if_any;
-exports.combine                      = combine;
-exports.split_aux                    = split_aux;
-exports.rel_normalized_absolute_path = rel_normalized_absolute_path;
-exports.normalize_absolute_path      = normalize_absolute_path;
-exports.get_extension                = get_extension;
-/* Filename Not a pure module */
+exports.node_sep                            = node_sep;
+exports.node_parent                         = node_parent;
+exports.node_current                        = node_current;
+exports.cwd                                 = cwd;
+exports.$slash$slash                        = $slash$slash;
+exports.path_as_directory                   = path_as_directory;
+exports.absolute_path                       = absolute_path;
+exports.chop_extension                      = chop_extension;
+exports.chop_extension_if_any               = chop_extension_if_any;
+exports.os_path_separator_char              = os_path_separator_char;
+exports.relative_path                       = relative_path;
+exports.node_relative_path                  = node_relative_path;
+exports.find_root_filename                  = find_root_filename;
+exports.find_package_json_dir               = find_package_json_dir;
+exports.package_dir                         = package_dir;
+exports.module_name_of_file                 = module_name_of_file;
+exports.module_name_of_file_if_any          = module_name_of_file_if_any;
+exports.combine                             = combine;
+exports.split_aux                           = split_aux;
+exports.rel_normalized_absolute_path        = rel_normalized_absolute_path;
+exports.normalize_absolute_path             = normalize_absolute_path;
+exports.get_extension                       = get_extension;
+exports.simple_convert_node_path_to_os_path = simple_convert_node_path_to_os_path;
+/* simple_convert_node_path_to_os_path Not a pure module */

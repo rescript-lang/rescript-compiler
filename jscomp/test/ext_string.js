@@ -627,6 +627,8 @@ var check_suffix_case = ends_with;
 
 var check_suffix_case_then_chop = ends_with_then_chop;
 
+var empty = "";
+
 exports.split_by                        = split_by;
 exports.trim                            = trim;
 exports.split                           = split;
@@ -665,4 +667,5 @@ exports.no_char                         = no_char;
 exports.no_slash                        = no_slash;
 exports.replace_slash_backward          = replace_slash_backward;
 exports.replace_backward_slash          = replace_backward_slash;
+exports.empty                           = empty;
 /* No side effect */

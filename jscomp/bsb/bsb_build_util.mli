@@ -31,14 +31,11 @@ flag_concat "-ppx" [ppxs]
 val flag_concat : string -> string list -> string
 
 
-val convert_path : string -> string
-  
 (**
-it does several conversion:
-First, it will convert unix path to windows backward on windows platform.
-Then if it is absolute path, it will do thing
-Else if it is relative path, it will be rebased on project's root directory 
-
+    It does several conversion:
+    First, it will convert unix path to windows backward on windows platform.
+    Then if it is absolute path, it will do thing
+    Else if it is relative path, it will be rebased on project's root directory 
 *)
 val convert_and_resolve_path : string -> string
 

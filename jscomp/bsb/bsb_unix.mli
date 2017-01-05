@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,52 +17,24 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
-
-val get_ocamllex : unit -> string
-val set_ocamllex : cwd:string -> string -> unit
-
-
-val set_bs_external_includes : Ext_json.t array -> unit
-val get_bs_external_includes : unit -> string list
+type command = 
+  { 
+    cmd : string ;
+    cwd : string ; 
+    args : string array 
+  }  
 
 
+(** run commands  in parallel, 
+    TODO: error handling
+*)
+val run_commands : command list -> unit 
 
+val run_command_execv : command -> unit 
 
-val set_bsc_flags : Ext_json.t array -> unit
-val get_bsc_flags : unit -> string list
-
-val set_ppx_flags : cwd:string -> Ext_json.t array -> unit
-val get_ppx_flags : unit -> string list
-
-val set_package_name : string -> unit
-val get_package_name : unit -> string option
-
-val set_refmt : cwd:string -> string -> unit
-val get_refmt : unit -> string
-
-
-val get_bs_dependencies : unit  -> string list
-val set_bs_dependencies : Ext_json.t array  -> unit
-
-
-val get_js_post_build_cmd : unit -> string option
-val set_js_post_build_cmd : cwd:string -> string -> unit
-
-val get_ninja : unit -> string 
-val set_ninja : cwd:string -> string -> unit
-
-type package_specs = String_set.t
-val get_package_specs : unit -> package_specs
-val set_package_specs_from_array : Ext_json.t array -> unit  
-
-val get_generate_merlin : unit -> bool 
-val set_generate_merlin : bool -> unit 
-
-val walk_all_deps : string -> (string -> unit) -> unit 
+val run_command_execvp : command -> unit 

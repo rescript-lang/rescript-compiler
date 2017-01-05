@@ -210,7 +210,6 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
 
-
 let module_name_of_file file =
   String.capitalize 
     (Filename.chop_extension @@ Filename.basename file)  
@@ -318,10 +317,10 @@ let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
   if pos < 0 then ""
   else Ext_string.tail_from x pos 
-(*  
-  try
-    let pos = String.rindex x '.' in
-    Ext_string.tail_from x pos
-  with Not_found -> ""
-*)
 
+
+let simple_convert_node_path_to_os_path =
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_string.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)

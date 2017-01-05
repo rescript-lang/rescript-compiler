@@ -42,7 +42,7 @@ let (|?)  m (key, cb) =
 
 let get_list_string  =  Bsb_build_util.get_list_string
 
-module String_vect = Resize_array.Make(struct type t = string let null = "" end)
+
 
 let print_arrays file_array oc offset  =
   let indent = String.make offset ' ' in 
@@ -51,18 +51,18 @@ let print_arrays file_array oc offset  =
     output_string oc s ;
     output_string oc "\n"
   in
-  let len = String_vect.length file_array in 
+  let len = String_vec.length file_array in 
   match len with 
   | 0
     -> output_string oc "[ ]\n"
   | 1 
-    -> output_string oc ("[ \"" ^ String_vect.get file_array 0  ^ "\" ]\n")
+    -> output_string oc ("[ \"" ^ String_vec.get file_array 0  ^ "\" ]\n")
   | _ (* first::(_::_ as rest) *)
     -> 
     output_string oc "[ \n";
-    String_vect.iter_range ~from:0 ~to_:(len - 2 ) 
+    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
       (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
-    p_str @@ "\"" ^ (String_vect.last file_array) ^ "\"";
+    p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
 
     p_str "]" 
 
@@ -73,12 +73,12 @@ let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_p
   if Array.length s  = 0 then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
-      let dyn_file_array = String_vect.make (Array.length files_array) in 
+      let dyn_file_array = String_vec.make (Array.length files_array) in 
       let files  =
         Array.fold_left (fun acc name -> 
             let new_acc = Binary_cache.map_update ~dir acc name in 
             if new_acc != acc then (* reference in-equality *)
-              String_vect.push name  dyn_file_array ;
+              String_vec.push name  dyn_file_array ;
             new_acc
 
           ) String_map.empty files_array in 
@@ -139,7 +139,7 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   let children_globbed_dirs = ref [] in 
   let () = 
     x 
-    |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Bsb_build_util.convert_path s))
+    |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Ext_filename.simple_convert_node_path_to_os_path s))
     |?  (Bsb_build_schemas.files ,
          `Arr_loc (fun s loc_start loc_end ->
              let dir = !dir in 

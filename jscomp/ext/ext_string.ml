@@ -338,6 +338,7 @@ let no_char x ch i len =
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
 
+
 let no_slash x = 
   unsafe_no_char x '/' 0 (String.length x - 1)
 
@@ -356,3 +357,6 @@ let replace_backward_slash (x : string)=
     String.map (function 
         |'\\'-> '/'
         | x -> x) x
+
+let empty = ""
+

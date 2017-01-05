@@ -50,6 +50,40 @@ let resolve_bsb_magic_file ~cwd ~desc p =
   else
     Bsb_build_util.convert_and_resolve_path p
 
+(* Key is the path *)
+let (|?)  m (key, cb) =
+  m  |> Ext_json.test key cb
+
+
+
+(** 
+  TODO: check duplicate package name 
+   ?use path as identity?
+*)
+let rec walk_all_deps dir cb =   
+  let bsconfig_json =  (dir // Literals.bsconfig_json) in 
+  match Ext_json.parse_json_from_file bsconfig_json with 
+  | `Obj map ->
+    map
+    |? 
+    (Bsb_build_schemas.bs_dependencies, 
+      `Arr (fun (new_packages : Ext_json.t array) -> 
+         new_packages
+         |> Array.iter (fun (js : Ext_json.t) -> 
+          begin match js with 
+          | `Str {Ext_json.str = new_package} -> 
+            begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with 
+            | None -> failwith (new_package ^ " not found as dependency of " ^ bsconfig_json )
+            | Some package_dir  -> 
+              walk_all_deps package_dir cb  ;              
+            end;            
+          | _ -> () (* TODO: add a log framework, warning here *)
+          end 
+      )))
+    |> ignore ;
+    cb dir 
+  | _ -> ()
+  | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
 
 let package_name = ref None
 let set_package_name s = package_name := Some s
