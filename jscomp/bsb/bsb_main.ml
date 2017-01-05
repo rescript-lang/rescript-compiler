@@ -249,9 +249,24 @@ let watch () =
        bsb_watcher
     |]
 
+let build_bs_deps ()   = 
+    let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
+    let bsb_exe = bsc_dir // "bsb.exe" in 
+    Bsb_default.walk_all_deps cwd 
+    (fun cwd -> Bsb_unix.run_command_execv 
+      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe  |]})
 
+let clean_bs_deps () = 
+  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
+    let bsb_exe = bsc_dir // "bsb.exe" in 
+    Bsb_default.walk_all_deps cwd 
+    (fun cwd -> Bsb_unix.run_command_execv 
+      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; "--" ; "-t" ; "clean"|]})
 let annoymous filename =
   String_vec.push  filename targets
+
+
+
 let bsb_main_flags =
   [
     "-w", Arg.Unit watch,
@@ -259,9 +274,14 @@ let bsb_main_flags =
     (*    "-init", Arg.Unit create_bs_config ,
           " Create an simple bsconfig.json"
           ;
-    *)    "-regen", Arg.Set force_regenerate,
+    *)   
+     "-regen", Arg.Set force_regenerate,
           " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
+    "-clean-world", Arg.Unit clean_bs_deps,
+    " clean all bs dependencies";
+    "-make-world", Arg.Unit build_bs_deps,
+    " build all dependencies and itself "
     (*"-exec", Arg.Set exec,
       " Also run the JS files passsed" ;*)
   ]

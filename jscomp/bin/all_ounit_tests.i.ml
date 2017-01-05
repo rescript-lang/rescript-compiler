@@ -1694,6 +1694,7 @@ val is_valid_source_name : string -> bool
 
 val no_char : string -> char -> int -> int -> bool 
 
+
 val no_slash : string -> bool 
 
 (** if no conversion happens, reference equality holds *)
@@ -1701,6 +1702,10 @@ val replace_slash_backward : string -> string
 
 (** if no conversion happens, reference equality holds *)
 val replace_backward_slash : string -> string 
+
+val empty : string 
+
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2043,6 +2048,7 @@ let no_char x ch i len =
   if i < 0 || i >= str_len || len >= str_len then (* 0 *) invalid_arg "Ext_string.no_char"   
   else (* 0 *) unsafe_no_char x ch i len 
 
+
 let no_slash x = 
   (* 5 *) unsafe_no_char x '/' 0 (String.length x - 1)
 
@@ -2061,6 +2067,9 @@ let replace_backward_slash (x : string)=
     (* 2 *) String.map (function 
         |'\\'-> (* 5 *) '/'
         | x -> (* 8 *) x) x
+
+let empty = ""
+
 
 end
 module Ounit_array_tests
@@ -7878,6 +7887,7 @@ get_extension "a" = ""
 *)
 val get_extension : string -> string
 
+val simple_convert_node_path_to_os_path : string -> string
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8092,7 +8102,6 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
 
-
 let module_name_of_file file =
   (* 0 *) String.capitalize 
     (Filename.chop_extension @@ Filename.basename file)  
@@ -8200,14 +8209,13 @@ let get_extension x =
   (* 0 *) let pos = Ext_string.rindex_neg x '.' in 
   if pos < 0 then (* 0 *) ""
   else (* 0 *) Ext_string.tail_from x pos 
-(*  
-  try
-    let pos = String.rindex x '.' in
-    Ext_string.tail_from x pos
-  with Not_found -> ""
-*)
 
 
+let simple_convert_node_path_to_os_path =
+  if Sys.unix then (* 1 *) fun x -> (* 0 *) x 
+  else (* 0 *) if Sys.win32 || Sys.cygwin then 
+    (* 0 *) Ext_string.replace_slash_backward 
+  else (* 0 *) failwith ("Unknown OS : " ^ Sys.os_type)
 end
 module Ounit_path_tests
 = struct

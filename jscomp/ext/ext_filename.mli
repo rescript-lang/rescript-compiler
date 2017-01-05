@@ -105,3 +105,5 @@ get_extension "a" = ""
 ]}
 *)
 val get_extension : string -> string
+
+val simple_convert_node_path_to_os_path : string -> string

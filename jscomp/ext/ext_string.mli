@@ -101,6 +101,7 @@ val is_valid_source_name : string -> bool
 
 val no_char : string -> char -> int -> int -> bool 
 
+
 val no_slash : string -> bool 
 
 (** if no conversion happens, reference equality holds *)
@@ -108,3 +109,6 @@ val replace_slash_backward : string -> string
 
 (** if no conversion happens, reference equality holds *)
 val replace_backward_slash : string -> string 
+
+val empty : string 
+

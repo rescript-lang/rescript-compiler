@@ -30,15 +30,8 @@ let (//) = Ext_filename.combine
 
 (* we use lazy $src_root_dir *)
 
-(* assume build dir is fixed to be _build *)
-let rel_dir = Filename.parent_dir_name 
 
 
-let convert_path = 
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
-  else failwith ("Unknown OS : " ^ Sys.os_type)
 
 let convert_and_resolve_path = 
   if Sys.unix then Bsb_config.proj_rel  
@@ -50,22 +43,10 @@ let convert_and_resolve_path =
   else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the begining*)
 
+
+
 (** converting a file from Linux path format to Windows *)
-(*
-let convert_and_resolve_file = 
-  if Sys.unix then fun (p : string) -> 
-    if Ext_filename.no_slash p 0 (String.length p) then p 
-    else Bsb_config.proj_rel  p 
-  else 
-  if Sys.win32 || Sys.cygwin then 
-    fun (p:string) -> 
-      let p1 = Ext_filename.replace_slash_backward p in
-      if p1 == p then 
-        p 
-      else 
-       Bsb_config.proj_rel p1 
-  else failwith ("Unknown OS :" ^ Sys.os_type)
-*)
+
 (**
    if [Sys.executable_name] gives an absolute path, 
    nothing needs to be done
