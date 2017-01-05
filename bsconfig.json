@@ -1,6 +1,6 @@
 {
     "name": "bs-platform",
-    "version": "1.2.2",
+    "version": "1.4.1",
 
     "package-specs": [
         "commonjs"
