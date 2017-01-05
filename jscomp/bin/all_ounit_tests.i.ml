@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 104 *) List.hd state.tests_planned
+  (* 106 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 208 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 212 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 208 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 212 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 208 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 212 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 208 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 212 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 312 *) was_successful t
+        (* 318 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 416 *) string_of_int n
+        (* 424 *) string_of_int n
     | Label s -> 
-        (* 624 *) s
+        (* 636 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 104 *) 1 
-    | TestLabel (_, t) -> (* 121 *) test_case_count t
+    | TestCase _ -> (* 106 *) 1 
+    | TestLabel (_, t) -> (* 124 *) test_case_count t
     | TestList l -> 
-        (* 17 *) List.fold_left 
-          (fun c t -> (* 120 *) c + test_case_count t) 
+        (* 18 *) List.fold_left 
+          (fun c t -> (* 123 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 208 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 212 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -193,13 +193,13 @@ let mapi f l =
     rmapi 0 l
 
 let fold_lefti f accu l =
-  (* 17 *) let rec rfold_lefti cnt accup l = 
-    (* 137 *) match l with
+  (* 18 *) let rec rfold_lefti cnt accup l = 
+    (* 141 *) match l with
       | [] -> 
-          (* 17 *) accup
+          (* 18 *) accup
 
       | h::t -> 
-          (* 120 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 123 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 626 *) match event_type with
+  (* 638 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 624 *) begin
+        (* 636 *) begin
           let string_of_result = 
             if verbose then
-              (* 312 *) function
-                | RSuccess _      -> (* 104 *) "ok\n"
+              (* 318 *) function
+                | RSuccess _      -> (* 106 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 312 *) function
-                | RSuccess _      -> (* 104 *) "."
+              (* 318 *) function
+                | RSuccess _      -> (* 106 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 312 *) match e with 
+              (* 318 *) match e with 
                 | EStart p -> 
-                    (* 104 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 106 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 104 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 106 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 104 *) string_of_result result
+                    (* 106 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 312 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 208 *) ""
-                | EResult result -> (* 104 *) string_of_result result
+              (* 318 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 212 *) ""
+                | EResult result -> (* 106 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 313 *) output_string chn (format_event true ev);
+       (* 319 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 313 *) print_string (format_event verbose ev);
+     (* 319 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 313 *) std_log ev; file_log ev; log ev),
+       (* 319 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,7 +705,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2001337 *) if not b then (* 0 *) assert_failure msg
+  (* 2001343 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
@@ -951,8 +951,8 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 104 *) TestLabel(s, TestCase(f))  (* infix *)
-let (>:::) s l = (* 17 *) TestLabel(s, TestList(l)) (* infix *)
+let (>::) s f = (* 106 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>:::) s l = (* 18 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
 let rec test_decorate g =
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 104 *) try 
+    (* 106 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 104 *) (path, f) :: acc
+          (* 106 *) (path, f) :: acc
 
       | TestList (tests) ->
-          (* 17 *) fold_lefti 
+          (* 18 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 120 *) flatten_test 
+               (* 123 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 121 *) flatten_test ((Label label)::path) acc t
+          (* 124 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 104 *) let result = 
+    (* 106 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 105 *) match state.tests_planned with 
+    (* 107 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 104 *) let (path, f) = !global_chooser state in            
+          (* 106 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 5460 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 5671 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 312 *) log (OUnitLogger.TestEvent ev))
+         (* 318 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -5003,6 +5003,741 @@ let suites =
   ]
 
 end
+module Vec_gen
+= struct
+#1 "vec_gen.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+external unsafe_blit :
+  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
+
+
+module type ResizeType = 
+sig 
+  type t 
+  val null : t (* used to populate new allocated array checkout {!Obj.new_block} for more performance *)
+end
+
+module type S = 
+sig 
+  type elt 
+  type t
+  val length : t -> int 
+  val compact : t -> unit
+  val singleton : elt -> t 
+  val empty : unit -> t 
+  val make : int -> t 
+  val init : int -> (int -> elt) -> t
+  val is_empty : t -> bool
+  val of_array : elt array -> t
+  val of_sub_array : elt array -> int -> int -> t
+
+  (** Exposed for some APIs which only take array as input, 
+      when exposed   
+  *)
+  val unsafe_internal_array : t -> elt array
+  val reserve : t -> int -> unit
+  val push :  elt -> t -> unit
+  val delete : t -> int -> unit 
+  val pop : t -> unit
+  val get_last_and_pop : t -> elt
+  val delete_range : t -> int -> int -> unit 
+  val get_and_delete_range : t -> int -> int -> t
+  val clear : t -> unit 
+  val reset : t -> unit 
+  val to_list : t -> elt list 
+  val of_list : elt list -> t
+  val to_array : t -> elt array 
+  val of_array : elt array -> t
+  val copy : t -> t 
+  val reverse_in_place : t -> unit
+  val iter : (elt -> unit) -> t -> unit 
+  val iteri : (int -> elt -> unit ) -> t -> unit 
+  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
+  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
+  val map : (elt -> elt) -> t ->  t
+  val mapi : (int -> elt -> elt) -> t -> t
+  val map_into_array : (elt -> 'f) -> t -> 'f array
+  val map_into_list : (elt -> 'f) -> t -> 'f list 
+  val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
+  val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
+  val filter : (elt -> bool) -> t -> t
+  val inplace_filter : (elt -> bool) -> t -> unit
+  val inplace_filter_with : (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a 
+  val inplace_filter_from : int -> (elt -> bool) -> t -> unit 
+  val equal : (elt -> elt -> bool) -> t -> t -> bool 
+  val get : t -> int -> elt
+  val unsafe_get : t -> int -> elt
+  val last : t -> elt
+  val capacity : t -> int
+  val exists : (elt -> bool) -> t -> bool
+  val sub : t -> int -> int  -> t 
+end
+external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
+
+type 'a t = {
+  mutable arr : 'a array ;
+  mutable len : int ;  
+}
+
+let length d = (* 99 *) d.len
+
+let compact d =
+  (* 2 *) let d_arr = d.arr in 
+  if d.len <> Array.length d_arr then 
+    (* 2 *) begin
+      let newarr = unsafe_sub d_arr 0 d.len in 
+      d.arr <- newarr
+    end
+let singleton v = 
+  (* 0 *) {
+    len = 1 ; 
+    arr = [|v|]
+  }
+
+let empty () =
+  (* 132 *) {
+    len = 0;
+    arr = [||];
+  }
+
+let is_empty d =
+  (* 50 *) d.len = 0
+
+let reset d = 
+  (* 0 *) d.len <- 0; 
+  d.arr <- [||]
+
+
+(* For [to_*] operations, we should be careful to call {!Array.*} function 
+   in case we operate on the whole array
+*)
+let to_list d =
+  (* 0 *) let rec loop d_arr idx accum =
+    (* 0 *) if idx < 0 then (* 0 *) accum else (* 0 *) loop d_arr (idx - 1) (Array.unsafe_get d_arr idx :: accum)
+  in
+  loop d.arr (d.len - 1) []
+
+
+let of_list lst =
+  (* 23 *) let arr = Array.of_list lst in 
+  { arr ; len = Array.length arr}
+
+
+let to_array d = 
+  (* 0 *) unsafe_sub d.arr 0 d.len
+
+let of_array src =
+  (* 28 *) {
+    len = Array.length src;
+    arr = Array.copy src;
+    (* okay to call {!Array.copy}*)
+  }
+let of_sub_array arr off len = 
+  (* 0 *) { 
+    len = len ; 
+    arr = Array.sub arr off len  
+  }  
+let unsafe_internal_array v = (* 6 *) v.arr  
+(* we can not call {!Array.copy} *)
+let copy src =
+  (* 1 *) let len = src.len in
+  {
+    len ;
+    arr = unsafe_sub src.arr 0 len ;
+  }
+(* FIXME *)
+let reverse_in_place src = 
+  (* 1 *) Ext_array.reverse_range src.arr 0 src.len 
+
+
+
+
+(* {!Array.sub} is not enough for error checking, it 
+   may contain some garbage
+ *)
+let sub (src : _ t) start len =
+  (* 3 *) let src_len = src.len in 
+  if len < 0 || start > src_len - len then (* 2 *) invalid_arg "Vec_gen.sub"
+  else 
+  (* 1 *) { len ; 
+    arr = unsafe_sub src.arr start len }
+
+let iter f d = 
+  (* 118 *) let arr = d.arr in 
+  for i = 0 to d.len - 1 do
+    (* 239 *) f (Array.unsafe_get arr i)
+  done
+
+let iteri f d =
+  (* 0 *) let arr = d.arr in
+  for i = 0 to d.len - 1 do
+    (* 0 *) f i (Array.unsafe_get arr i)
+  done
+
+let iter_range ~from ~to_ f d =
+  (* 0 *) if from < 0 || to_ >= d.len then (* 0 *) invalid_arg "Resize_array.iter_range"
+  else 
+    (* 0 *) let d_arr = d.arr in 
+    for i = from to to_ do 
+      (* 0 *) f  (Array.unsafe_get d_arr i)
+    done
+
+let iteri_range ~from ~to_ f d =
+  (* 0 *) if from < 0 || to_ >= d.len then (* 0 *) invalid_arg "Resize_array.iteri_range"
+  else 
+    (* 0 *) let d_arr = d.arr in 
+    for i = from to to_ do 
+      (* 0 *) f i (Array.unsafe_get d_arr i)
+    done
+
+let map_into_array f src =
+  (* 10 *) let src_len = src.len in 
+  let src_arr = src.arr in 
+  if src_len = 0 then (* 0 *) [||]
+  else 
+    (* 10 *) let first_one = f (Array.unsafe_get src_arr 0) in 
+    let arr = Array.make  src_len  first_one in
+    for i = 1 to src_len - 1 do
+      (* 7 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+    done;
+    arr 
+let map_into_list f src = 
+  (* 1 *) let src_len = src.len in 
+  let src_arr = src.arr in 
+  if src_len = 0 then (* 0 *) []
+  else 
+    (* 1 *) let acc = ref [] in         
+    for i =  src_len - 1 downto 0 do
+      (* 4 *) acc := f (Array.unsafe_get src_arr i) :: !acc
+    done;
+    !acc
+
+let mapi f src =
+  (* 0 *) let len = src.len in 
+  if len = 0 then (* 0 *) { len ; arr = [| |] }
+  else 
+    (* 0 *) let src_arr = src.arr in 
+    let arr = Array.make len (Array.unsafe_get src_arr 0) in
+    for i = 1 to len - 1 do
+      (* 0 *) Array.unsafe_set arr i (f i (Array.unsafe_get src_arr i))
+    done;
+    {
+      len ;
+      arr ;
+    }
+
+let fold_left f x a =
+  (* 9 *) let rec loop a_len a_arr idx x =
+    (* 46 *) if idx >= a_len then (* 9 *) x else 
+      (* 37 *) loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
+  in
+  loop a.len a.arr 0 x
+
+let fold_right f a x =
+  (* 0 *) let rec loop a_arr idx x =
+    (* 0 *) if idx < 0 then (* 0 *) x
+    else (* 0 *) loop a_arr (idx - 1) (f (Array.unsafe_get a_arr idx) x)
+  in
+  loop a.arr (a.len - 1) x
+
+(**  
+   [filter] and [inplace_filter]
+*)
+let filter f d =
+  (* 1 *) let new_d = copy d in 
+  let new_d_arr = new_d.arr in 
+  let d_arr = d.arr in
+  let p = ref 0 in
+  for i = 0 to d.len  - 1 do
+    (* 6 *) let x = Array.unsafe_get d_arr i in
+    (* TODO: can be optimized for segments blit *)
+    if f x  then
+      (* 2 *) begin
+        Array.unsafe_set new_d_arr !p x;
+        incr p;
+      end;
+  done;
+  new_d.len <- !p;
+  new_d 
+
+let equal eq x y : bool = 
+  (* 22 *) if x.len <> y.len then (* 0 *) false 
+  else 
+    (* 22 *) let rec aux x_arr y_arr i =
+      (* 1627 *) if i < 0 then (* 22 *) true else  
+      (* 1605 *) if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
+        (* 1605 *) aux x_arr y_arr (i - 1)
+      else (* 0 *) false in 
+    aux x.arr y.arr (x.len - 1)
+
+let get d i = 
+  (* 0 *) if i < 0 || i >= d.len then (* 0 *) invalid_arg "Resize_array.get"
+  else (* 0 *) Array.unsafe_get d.arr i
+let unsafe_get d i = (* 106 *) Array.unsafe_get d.arr i 
+let last d = 
+  (* 1 *) if d.len <= 0 then (* 0 *) invalid_arg   "Resize_array.last"
+  else (* 1 *) Array.unsafe_get d.arr (d.len - 1)
+
+let capacity d = (* 7 *) Array.length d.arr
+
+(* Attention can not use {!Array.exists} since the bound is not the same *)  
+let exists p d = 
+  (* 2 *) let a = d.arr in 
+  let n = d.len in   
+  let rec loop i =
+    (* 2001 *) if i = n then (* 1 *) false
+    else (* 2000 *) if p (Array.unsafe_get a i) then (* 1 *) true
+    else (* 1999 *) loop (succ i) in
+  loop 0
+
+let map f src =
+  (* 1 *) let src_len = src.len in 
+  if src_len = 0 then (* 0 *) { len = 0 ; arr = [||]}
+  (* TODO: we may share the empty array 
+     but sharing mutable state is very challenging, 
+     the tricky part is to avoid mutating the immutable array,
+     here it looks fine -- 
+     invariant: whenever [.arr] mutated, make sure  it is not an empty array
+     Actually no: since starting from an empty array 
+     {[
+       push v (* the address of v should not be changed *)
+     ]}
+  *)
+  else 
+    (* 1 *) let src_arr = src.arr in 
+    let first = f (Array.unsafe_get src_arr 0 ) in 
+    let arr = Array.make  src_len first in
+    for i = 1 to src_len - 1 do
+      (* 999 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+    done;
+    {
+      len = src_len;
+      arr = arr;
+    }
+
+let init len f =
+  (* 2 *) if len < 0 then (* 0 *) invalid_arg  "Resize_array.init"
+  else (* 2 *) if len = 0 then (* 0 *) { len = 0 ; arr = [||] }
+  else 
+    (* 2 *) let first = f 0 in 
+    let arr = Array.make len first in
+    for i = 1 to len - 1 do
+      (* 18 *) Array.unsafe_set arr i (f i)
+    done;
+    {
+
+      len ;
+      arr 
+    }
+
+end
+module Int_vec : sig 
+#1 "int_vec.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Vec_gen.S with type elt = int
+
+end = struct
+#1 "int_vec.ml"
+# 1 "ext/vec.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+# 33
+type elt = int 
+type t = int Vec_gen.t 
+let null = 0 (* can be optimized *)
+  
+# 39
+  let length = Vec_gen.length 
+  let compact = Vec_gen.compact 
+  let singleton = Vec_gen.singleton
+  let empty = Vec_gen.empty 
+  let is_empty = Vec_gen.is_empty 
+  let reset = Vec_gen.reset 
+  let to_list = Vec_gen.to_list 
+  let of_list = Vec_gen.of_list 
+  let to_array = Vec_gen.to_array
+  let of_array = Vec_gen.of_array 
+  let of_sub_array = Vec_gen.of_sub_array 
+  let unsafe_internal_array = Vec_gen.unsafe_internal_array 
+  let copy = Vec_gen.copy 
+  let reverse_in_place = Vec_gen.reverse_in_place 
+  let sub = Vec_gen.sub 
+  let iter = Vec_gen.iter 
+  let iteri = Vec_gen.iteri 
+  let iter_range = Vec_gen.iter_range 
+  let iteri_range = Vec_gen.iteri_range  
+  let filter = Vec_gen.filter 
+  let fold_right = Vec_gen.fold_right 
+  let fold_left = Vec_gen.fold_left 
+  let map_into_list = Vec_gen.map_into_list 
+  let map_into_array = Vec_gen.map_into_array 
+  let mapi = Vec_gen.mapi 
+  let equal = Vec_gen.equal 
+  let get = Vec_gen.get 
+  let exists = Vec_gen.exists 
+  let capacity = Vec_gen.capacity 
+  let last = Vec_gen.last 
+  let unsafe_get = Vec_gen.unsafe_get 
+  let map = Vec_gen.map 
+  let init = Vec_gen.init 
+
+  let make initsize : _ Vec_gen.t =
+    (* 4 *) if initsize < 0 then (* 0 *) invalid_arg  "Resize_array.make" ;
+    {
+
+      len = 0;
+      arr = Array.make  initsize null ;
+    }
+
+
+
+  let reserve (d : _ Vec_gen.t ) s = 
+    (* 2 *) let d_len = d.len in 
+    let d_arr = d.arr in 
+    if s < d_len || s < Array.length d_arr then (* 0 *) ()
+    else 
+      (* 2 *) let new_capacity = min Sys.max_array_length s in 
+      let new_d_arr = Array.make new_capacity null in 
+      Vec_gen.unsafe_blit d_arr 0 new_d_arr 0 d_len;
+      d.arr <- new_d_arr 
+
+  let push v (d : _ Vec_gen.t) =
+    (* 1242 *) let d_len = d.len in
+    let d_arr = d.arr in 
+    let d_arr_len = Array.length d_arr in
+    if d_arr_len = 0 then
+      (* 106 *) begin 
+        d.len <- 1 ;
+        d.arr <- [| v |]
+      end
+    else  
+      (* 1136 *) begin 
+        if d_len = d_arr_len then 
+          (* 136 *) begin
+            if d_len >= Sys.max_array_length then 
+              (* 0 *) failwith "exceeds max_array_length";
+            let new_capacity = min Sys.max_array_length d_len * 2 
+            (* [d_len] can not be zero, so [*2] will enlarge   *)
+            in
+            let new_d_arr = Array.make new_capacity null in 
+            d.arr <- new_d_arr;
+            Vec_gen.unsafe_blit d_arr 0 new_d_arr 0 d_len ;
+          end;
+        d.len <- d_len + 1;
+        Array.unsafe_set d.arr d_len v
+      end
+
+(** delete element at offset [idx], will raise exception when have invalid input *)
+  let delete (d : _ Vec_gen.t) idx =
+    (* 91 *) let d_len = d.len in 
+    if idx < 0 || idx >= d_len then (* 1 *) invalid_arg "Resize_array.delete" ;
+    let arr = d.arr in 
+    Vec_gen.unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
+    let idx = d_len - 1 in 
+    d.len <- idx
+    
+# 133
+(** pop the last element, a specialized version of [delete] *)
+  let pop (d : _ Vec_gen.t) = 
+    (* 6 *) let idx  = d.len - 1  in
+    if idx < 0 then (* 0 *) invalid_arg "Resize_array.pop";
+    d.len <- idx
+  
+# 144
+(** pop and return the last element *)  
+  let get_last_and_pop (d : _ Vec_gen.t) = 
+    (* 0 *) let idx  = d.len - 1  in
+    if idx < 0 then (* 0 *) invalid_arg "Resize_array.get_last_and_pop";
+    let last = Array.unsafe_get d.arr idx in 
+    d.len <- idx 
+    
+# 155
+    ;
+    last 
+
+(** delete elements start from [idx] with length [len] *)
+  let delete_range (d : _ Vec_gen.t) idx len =
+    (* 0 *) let d_len = d.len in 
+    if len < 0 || idx < 0 || idx + len > d_len then (* 0 *) invalid_arg  "Resize_array.delete_range"  ;
+    let arr = d.arr in 
+    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
+    d.len <- d_len - len
+
+# 173
+(** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
+  let get_and_delete_range (d : _ Vec_gen.t) idx len : _ Vec_gen.t = 
+    (* 45 *) let d_len = d.len in 
+    if len < 0 || idx < 0 || idx + len > d_len then (* 0 *) invalid_arg  "Resize_array.get_and_delete_range"  ;
+    let arr = d.arr in 
+    let value = Vec_gen.unsafe_sub arr idx len in
+    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
+    d.len <- d_len - len; 
+    
+# 187
+    {len = len ; arr = value}
+
+
+  (** Below are simple wrapper around normal Array operations *)  
+
+  let clear (d : _ Vec_gen.t ) =
+    
+# 199
+    (* 0 *) d.len <- 0
+
+
+
+  let inplace_filter f (d : _ Vec_gen.t) : unit = 
+    (* 28 *) let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref 0 in
+    for i = 0 to d_len - 1 do 
+      (* 73 *) let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        (* 27 *) begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             (* 7 *) Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 219
+    d.len <-  last 
+    (* INT , there is not need to reset it, since it will cause GC behavior *)
+
+  
+# 225
+  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+    (* 2 *) if start < 0 then (* 0 *) invalid_arg "Vec.inplace_filter_from"; 
+    let d_arr = d.arr in     
+    let d_len = d.len in
+    let p = ref start in    
+    for i = start to d_len - 1 do 
+      (* 14 *) let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        (* 7 *) begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             (* 6 *) Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+    done ;
+    let last = !p  in 
+    
+# 242
+    d.len <-  last 
+
+
+# 248
+(** inplace filter the elements and accumulate the non-filtered elements *)
+  let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
+    (* 1 *) let d_arr = d.arr in     
+    let p = ref 0 in
+    let d_len = d.len in
+    let acc = ref acc in 
+    for i = 0 to d_len - 1 do 
+      (* 1000 *) let x = Array.unsafe_get d_arr i in 
+      if f x then 
+        (* 500 *) begin 
+          let curr_p = !p in 
+          (if curr_p <> i then 
+             (* 499 *) Array.unsafe_set d_arr curr_p x) ;
+          incr p
+        end
+      else 
+        (* 500 *) acc := cb_no  x  !acc
+    done ;
+    let last = !p  in 
+    
+# 268
+    d.len <-  last 
+    (* INT , there is not need to reset it, since it will cause GC behavior *)
+    
+# 273
+    ; !acc 
+
+
+
+
+end
+module Int_vec_util : sig 
+#1 "int_vec_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val mem : int -> Int_vec.t -> bool
+end = struct
+#1 "int_vec_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let rec unsafe_mem_aux arr  i (key : int) bound = 
+    (* 12 *) if i <= bound then 
+        (* 9 *) if Array.unsafe_get arr i = (key : int) then 
+            (* 3 *) true 
+         else (* 6 *) unsafe_mem_aux arr (i + 1) key bound    
+    else (* 3 *) false 
+    
+
+
+let mem key (x : Int_vec.t) =
+    (* 6 *) let internal_array = Int_vec.unsafe_internal_array x in 
+    let len = Int_vec.length x in 
+    unsafe_mem_aux internal_array 0 key (len - 1)
+    
+end
+module Ounit_int_vec_tests
+= struct
+#1 "ounit_int_vec_tests.ml"
+let ((>::),
+    (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+let suites = 
+    __FILE__
+    >:::
+    [
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) OUnit.assert_bool __LOC__
+             (Int_vec_util.mem 3 (Int_vec.of_list [1;2;3]))
+             ;
+            OUnit.assert_bool __LOC__ 
+             (not @@ Int_vec_util.mem 0 (Int_vec.of_list [1;2]) ); 
+            
+            let v = Int_vec.make 100 in 
+            OUnit.assert_bool __LOC__ 
+                (not @@ Int_vec_util.mem 0 v) ;
+            Int_vec.push 0 v ;
+            OUnit.assert_bool __LOC__ 
+                (Int_vec_util.mem 0 v )
+        end;
+
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) let u = Int_vec.make 100 in 
+            Int_vec.push 1 u ;
+            OUnit.assert_bool __LOC__
+            (not @@ Int_vec_util.mem 0 u );
+            Int_vec.push 0 u ; 
+            OUnit.assert_bool __LOC__
+            (Int_vec_util.mem 0 u)
+        end
+    ]
+end
 module Map_gen
 = struct
 #1 "map_gen.ml"
@@ -8270,634 +9005,6 @@ let suites =
   ]
 
 end
-module Vec_gen
-= struct
-#1 "vec_gen.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-external unsafe_blit :
-  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
-
-
-module type ResizeType = 
-sig 
-  type t 
-  val null : t (* used to populate new allocated array checkout {!Obj.new_block} for more performance *)
-end
-
-module type S = 
-sig 
-  type elt 
-  type t
-  val length : t -> int 
-  val compact : t -> unit
-  val singleton : elt -> t 
-  val empty : unit -> t 
-  val make : int -> t 
-  val init : int -> (int -> elt) -> t
-  val is_empty : t -> bool
-  val of_array : elt array -> t
-  val of_sub_array : elt array -> int -> int -> t
-
-  (** Exposed for some APIs which only take array as input, 
-      when exposed   
-  *)
-  val unsafe_internal_array : t -> elt array
-  val reserve : t -> int -> unit
-  val push :  elt -> t -> unit
-  val delete : t -> int -> unit 
-  val pop : t -> unit
-  val get_last_and_pop : t -> elt
-  val delete_range : t -> int -> int -> unit 
-  val get_and_delete_range : t -> int -> int -> t
-  val clear : t -> unit 
-  val reset : t -> unit 
-  val to_list : t -> elt list 
-  val of_list : elt list -> t
-  val to_array : t -> elt array 
-  val of_array : elt array -> t
-  val copy : t -> t 
-  val reverse_in_place : t -> unit
-  val iter : (elt -> unit) -> t -> unit 
-  val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
-  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
-  val map : (elt -> elt) -> t ->  t
-  val mapi : (int -> elt -> elt) -> t -> t
-  val map_into_array : (elt -> 'f) -> t -> 'f array
-  val map_into_list : (elt -> 'f) -> t -> 'f list 
-  val fold_left : ('f -> elt -> 'f) -> 'f -> t -> 'f
-  val fold_right : (elt -> 'g -> 'g) -> t -> 'g -> 'g
-  val filter : (elt -> bool) -> t -> t
-  val inplace_filter : (elt -> bool) -> t -> unit
-  val inplace_filter_with : (elt -> bool) -> cb_no:(elt -> 'a -> 'a) -> 'a -> t -> 'a 
-  val inplace_filter_from : int -> (elt -> bool) -> t -> unit 
-  val equal : (elt -> elt -> bool) -> t -> t -> bool 
-  val get : t -> int -> elt
-  val unsafe_get : t -> int -> elt
-  val last : t -> elt
-  val capacity : t -> int
-  val exists : (elt -> bool) -> t -> bool
-  val sub : t -> int -> int  -> t 
-end
-external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
-
-type 'a t = {
-  mutable arr : 'a array ;
-  mutable len : int ;  
-}
-
-let length d = (* 93 *) d.len
-
-let compact d =
-  (* 2 *) let d_arr = d.arr in 
-  if d.len <> Array.length d_arr then 
-    (* 2 *) begin
-      let newarr = unsafe_sub d_arr 0 d.len in 
-      d.arr <- newarr
-    end
-let singleton v = 
-  (* 0 *) {
-    len = 1 ; 
-    arr = [|v|]
-  }
-
-let empty () =
-  (* 132 *) {
-    len = 0;
-    arr = [||];
-  }
-
-let is_empty d =
-  (* 50 *) d.len = 0
-
-let reset d = 
-  (* 0 *) d.len <- 0; 
-  d.arr <- [||]
-
-
-(* For [to_*] operations, we should be careful to call {!Array.*} function 
-   in case we operate on the whole array
-*)
-let to_list d =
-  (* 0 *) let rec loop d_arr idx accum =
-    (* 0 *) if idx < 0 then (* 0 *) accum else (* 0 *) loop d_arr (idx - 1) (Array.unsafe_get d_arr idx :: accum)
-  in
-  loop d.arr (d.len - 1) []
-
-
-let of_list lst =
-  (* 21 *) let arr = Array.of_list lst in 
-  { arr ; len = Array.length arr}
-
-
-let to_array d = 
-  (* 0 *) unsafe_sub d.arr 0 d.len
-
-let of_array src =
-  (* 28 *) {
-    len = Array.length src;
-    arr = Array.copy src;
-    (* okay to call {!Array.copy}*)
-  }
-let of_sub_array arr off len = 
-  (* 0 *) { 
-    len = len ; 
-    arr = Array.sub arr off len  
-  }  
-let unsafe_internal_array v = (* 0 *) v.arr  
-(* we can not call {!Array.copy} *)
-let copy src =
-  (* 1 *) let len = src.len in
-  {
-    len ;
-    arr = unsafe_sub src.arr 0 len ;
-  }
-(* FIXME *)
-let reverse_in_place src = 
-  (* 1 *) Ext_array.reverse_range src.arr 0 src.len 
-
-
-
-
-(* {!Array.sub} is not enough for error checking, it 
-   may contain some garbage
- *)
-let sub (src : _ t) start len =
-  (* 3 *) let src_len = src.len in 
-  if len < 0 || start > src_len - len then (* 2 *) invalid_arg "Vec_gen.sub"
-  else 
-  (* 1 *) { len ; 
-    arr = unsafe_sub src.arr start len }
-
-let iter f d = 
-  (* 118 *) let arr = d.arr in 
-  for i = 0 to d.len - 1 do
-    (* 239 *) f (Array.unsafe_get arr i)
-  done
-
-let iteri f d =
-  (* 0 *) let arr = d.arr in
-  for i = 0 to d.len - 1 do
-    (* 0 *) f i (Array.unsafe_get arr i)
-  done
-
-let iter_range ~from ~to_ f d =
-  (* 0 *) if from < 0 || to_ >= d.len then (* 0 *) invalid_arg "Resize_array.iter_range"
-  else 
-    (* 0 *) let d_arr = d.arr in 
-    for i = from to to_ do 
-      (* 0 *) f  (Array.unsafe_get d_arr i)
-    done
-
-let iteri_range ~from ~to_ f d =
-  (* 0 *) if from < 0 || to_ >= d.len then (* 0 *) invalid_arg "Resize_array.iteri_range"
-  else 
-    (* 0 *) let d_arr = d.arr in 
-    for i = from to to_ do 
-      (* 0 *) f i (Array.unsafe_get d_arr i)
-    done
-
-let map_into_array f src =
-  (* 10 *) let src_len = src.len in 
-  let src_arr = src.arr in 
-  if src_len = 0 then (* 0 *) [||]
-  else 
-    (* 10 *) let first_one = f (Array.unsafe_get src_arr 0) in 
-    let arr = Array.make  src_len  first_one in
-    for i = 1 to src_len - 1 do
-      (* 7 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
-    done;
-    arr 
-let map_into_list f src = 
-  (* 1 *) let src_len = src.len in 
-  let src_arr = src.arr in 
-  if src_len = 0 then (* 0 *) []
-  else 
-    (* 1 *) let acc = ref [] in         
-    for i =  src_len - 1 downto 0 do
-      (* 4 *) acc := f (Array.unsafe_get src_arr i) :: !acc
-    done;
-    !acc
-
-let mapi f src =
-  (* 0 *) let len = src.len in 
-  if len = 0 then (* 0 *) { len ; arr = [| |] }
-  else 
-    (* 0 *) let src_arr = src.arr in 
-    let arr = Array.make len (Array.unsafe_get src_arr 0) in
-    for i = 1 to len - 1 do
-      (* 0 *) Array.unsafe_set arr i (f i (Array.unsafe_get src_arr i))
-    done;
-    {
-      len ;
-      arr ;
-    }
-
-let fold_left f x a =
-  (* 9 *) let rec loop a_len a_arr idx x =
-    (* 46 *) if idx >= a_len then (* 9 *) x else 
-      (* 37 *) loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
-  in
-  loop a.len a.arr 0 x
-
-let fold_right f a x =
-  (* 0 *) let rec loop a_arr idx x =
-    (* 0 *) if idx < 0 then (* 0 *) x
-    else (* 0 *) loop a_arr (idx - 1) (f (Array.unsafe_get a_arr idx) x)
-  in
-  loop a.arr (a.len - 1) x
-
-(**  
-   [filter] and [inplace_filter]
-*)
-let filter f d =
-  (* 1 *) let new_d = copy d in 
-  let new_d_arr = new_d.arr in 
-  let d_arr = d.arr in
-  let p = ref 0 in
-  for i = 0 to d.len  - 1 do
-    (* 6 *) let x = Array.unsafe_get d_arr i in
-    (* TODO: can be optimized for segments blit *)
-    if f x  then
-      (* 2 *) begin
-        Array.unsafe_set new_d_arr !p x;
-        incr p;
-      end;
-  done;
-  new_d.len <- !p;
-  new_d 
-
-let equal eq x y : bool = 
-  (* 22 *) if x.len <> y.len then (* 0 *) false 
-  else 
-    (* 22 *) let rec aux x_arr y_arr i =
-      (* 1627 *) if i < 0 then (* 22 *) true else  
-      (* 1605 *) if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
-        (* 1605 *) aux x_arr y_arr (i - 1)
-      else (* 0 *) false in 
-    aux x.arr y.arr (x.len - 1)
-
-let get d i = 
-  (* 0 *) if i < 0 || i >= d.len then (* 0 *) invalid_arg "Resize_array.get"
-  else (* 0 *) Array.unsafe_get d.arr i
-let unsafe_get d i = (* 106 *) Array.unsafe_get d.arr i 
-let last d = 
-  (* 1 *) if d.len <= 0 then (* 0 *) invalid_arg   "Resize_array.last"
-  else (* 1 *) Array.unsafe_get d.arr (d.len - 1)
-
-let capacity d = (* 7 *) Array.length d.arr
-
-(* Attention can not use {!Array.exists} since the bound is not the same *)  
-let exists p d = 
-  (* 2 *) let a = d.arr in 
-  let n = d.len in   
-  let rec loop i =
-    (* 2001 *) if i = n then (* 1 *) false
-    else (* 2000 *) if p (Array.unsafe_get a i) then (* 1 *) true
-    else (* 1999 *) loop (succ i) in
-  loop 0
-
-let map f src =
-  (* 1 *) let src_len = src.len in 
-  if src_len = 0 then (* 0 *) { len = 0 ; arr = [||]}
-  (* TODO: we may share the empty array 
-     but sharing mutable state is very challenging, 
-     the tricky part is to avoid mutating the immutable array,
-     here it looks fine -- 
-     invariant: whenever [.arr] mutated, make sure  it is not an empty array
-     Actually no: since starting from an empty array 
-     {[
-       push v (* the address of v should not be changed *)
-     ]}
-  *)
-  else 
-    (* 1 *) let src_arr = src.arr in 
-    let first = f (Array.unsafe_get src_arr 0 ) in 
-    let arr = Array.make  src_len first in
-    for i = 1 to src_len - 1 do
-      (* 999 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
-    done;
-    {
-      len = src_len;
-      arr = arr;
-    }
-
-let init len f =
-  (* 2 *) if len < 0 then (* 0 *) invalid_arg  "Resize_array.init"
-  else (* 2 *) if len = 0 then (* 0 *) { len = 0 ; arr = [||] }
-  else 
-    (* 2 *) let first = f 0 in 
-    let arr = Array.make len first in
-    for i = 1 to len - 1 do
-      (* 18 *) Array.unsafe_set arr i (f i)
-    done;
-    {
-
-      len ;
-      arr 
-    }
-
-end
-module Int_vec : sig 
-#1 "int_vec.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-include Vec_gen.S with type elt = int
-
-end = struct
-#1 "int_vec.ml"
-# 1 "ext/vec.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-# 33
-type elt = int 
-type t = int Vec_gen.t 
-let null = 0 (* can be optimized *)
-  
-# 39
-  let length = Vec_gen.length 
-  let compact = Vec_gen.compact 
-  let singleton = Vec_gen.singleton
-  let empty = Vec_gen.empty 
-  let is_empty = Vec_gen.is_empty 
-  let reset = Vec_gen.reset 
-  let to_list = Vec_gen.to_list 
-  let of_list = Vec_gen.of_list 
-  let to_array = Vec_gen.to_array
-  let of_array = Vec_gen.of_array 
-  let of_sub_array = Vec_gen.of_sub_array 
-  let unsafe_internal_array = Vec_gen.unsafe_internal_array 
-  let copy = Vec_gen.copy 
-  let reverse_in_place = Vec_gen.reverse_in_place 
-  let sub = Vec_gen.sub 
-  let iter = Vec_gen.iter 
-  let iteri = Vec_gen.iteri 
-  let iter_range = Vec_gen.iter_range 
-  let iteri_range = Vec_gen.iteri_range  
-  let filter = Vec_gen.filter 
-  let fold_right = Vec_gen.fold_right 
-  let fold_left = Vec_gen.fold_left 
-  let map_into_list = Vec_gen.map_into_list 
-  let map_into_array = Vec_gen.map_into_array 
-  let mapi = Vec_gen.mapi 
-  let equal = Vec_gen.equal 
-  let get = Vec_gen.get 
-  let exists = Vec_gen.exists 
-  let capacity = Vec_gen.capacity 
-  let last = Vec_gen.last 
-  let unsafe_get = Vec_gen.unsafe_get 
-  let map = Vec_gen.map 
-  let init = Vec_gen.init 
-
-  let make initsize : _ Vec_gen.t =
-    (* 2 *) if initsize < 0 then (* 0 *) invalid_arg  "Resize_array.make" ;
-    {
-
-      len = 0;
-      arr = Array.make  initsize null ;
-    }
-
-
-
-  let reserve (d : _ Vec_gen.t ) s = 
-    (* 2 *) let d_len = d.len in 
-    let d_arr = d.arr in 
-    if s < d_len || s < Array.length d_arr then (* 0 *) ()
-    else 
-      (* 2 *) let new_capacity = min Sys.max_array_length s in 
-      let new_d_arr = Array.make new_capacity null in 
-      Vec_gen.unsafe_blit d_arr 0 new_d_arr 0 d_len;
-      d.arr <- new_d_arr 
-
-  let push v (d : _ Vec_gen.t) =
-    (* 1239 *) let d_len = d.len in
-    let d_arr = d.arr in 
-    let d_arr_len = Array.length d_arr in
-    if d_arr_len = 0 then
-      (* 106 *) begin 
-        d.len <- 1 ;
-        d.arr <- [| v |]
-      end
-    else  
-      (* 1133 *) begin 
-        if d_len = d_arr_len then 
-          (* 136 *) begin
-            if d_len >= Sys.max_array_length then 
-              (* 0 *) failwith "exceeds max_array_length";
-            let new_capacity = min Sys.max_array_length d_len * 2 
-            (* [d_len] can not be zero, so [*2] will enlarge   *)
-            in
-            let new_d_arr = Array.make new_capacity null in 
-            d.arr <- new_d_arr;
-            Vec_gen.unsafe_blit d_arr 0 new_d_arr 0 d_len ;
-          end;
-        d.len <- d_len + 1;
-        Array.unsafe_set d.arr d_len v
-      end
-
-(** delete element at offset [idx], will raise exception when have invalid input *)
-  let delete (d : _ Vec_gen.t) idx =
-    (* 91 *) let d_len = d.len in 
-    if idx < 0 || idx >= d_len then (* 1 *) invalid_arg "Resize_array.delete" ;
-    let arr = d.arr in 
-    Vec_gen.unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
-    let idx = d_len - 1 in 
-    d.len <- idx
-    
-# 133
-(** pop the last element, a specialized version of [delete] *)
-  let pop (d : _ Vec_gen.t) = 
-    (* 6 *) let idx  = d.len - 1  in
-    if idx < 0 then (* 0 *) invalid_arg "Resize_array.pop";
-    d.len <- idx
-  
-# 144
-(** pop and return the last element *)  
-  let get_last_and_pop (d : _ Vec_gen.t) = 
-    (* 0 *) let idx  = d.len - 1  in
-    if idx < 0 then (* 0 *) invalid_arg "Resize_array.get_last_and_pop";
-    let last = Array.unsafe_get d.arr idx in 
-    d.len <- idx 
-    
-# 155
-    ;
-    last 
-
-(** delete elements start from [idx] with length [len] *)
-  let delete_range (d : _ Vec_gen.t) idx len =
-    (* 0 *) let d_len = d.len in 
-    if len < 0 || idx < 0 || idx + len > d_len then (* 0 *) invalid_arg  "Resize_array.delete_range"  ;
-    let arr = d.arr in 
-    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
-    d.len <- d_len - len
-
-# 173
-(** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
-  let get_and_delete_range (d : _ Vec_gen.t) idx len : _ Vec_gen.t = 
-    (* 45 *) let d_len = d.len in 
-    if len < 0 || idx < 0 || idx + len > d_len then (* 0 *) invalid_arg  "Resize_array.get_and_delete_range"  ;
-    let arr = d.arr in 
-    let value = Vec_gen.unsafe_sub arr idx len in
-    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
-    d.len <- d_len - len; 
-    
-# 187
-    {len = len ; arr = value}
-
-
-  (** Below are simple wrapper around normal Array operations *)  
-
-  let clear (d : _ Vec_gen.t ) =
-    
-# 199
-    (* 0 *) d.len <- 0
-
-
-
-  let inplace_filter f (d : _ Vec_gen.t) : unit = 
-    (* 28 *) let d_arr = d.arr in     
-    let d_len = d.len in
-    let p = ref 0 in
-    for i = 0 to d_len - 1 do 
-      (* 73 *) let x = Array.unsafe_get d_arr i in 
-      if f x then 
-        (* 27 *) begin 
-          let curr_p = !p in 
-          (if curr_p <> i then 
-             (* 7 *) Array.unsafe_set d_arr curr_p x) ;
-          incr p
-        end
-    done ;
-    let last = !p  in 
-    
-# 219
-    d.len <-  last 
-    (* INT , there is not need to reset it, since it will cause GC behavior *)
-
-  
-# 225
-  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
-    (* 2 *) if start < 0 then (* 0 *) invalid_arg "Vec.inplace_filter_from"; 
-    let d_arr = d.arr in     
-    let d_len = d.len in
-    let p = ref start in    
-    for i = start to d_len - 1 do 
-      (* 14 *) let x = Array.unsafe_get d_arr i in 
-      if f x then 
-        (* 7 *) begin 
-          let curr_p = !p in 
-          (if curr_p <> i then 
-             (* 6 *) Array.unsafe_set d_arr curr_p x) ;
-          incr p
-        end
-    done ;
-    let last = !p  in 
-    
-# 242
-    d.len <-  last 
-
-
-# 248
-(** inplace filter the elements and accumulate the non-filtered elements *)
-  let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
-    (* 1 *) let d_arr = d.arr in     
-    let p = ref 0 in
-    let d_len = d.len in
-    let acc = ref acc in 
-    for i = 0 to d_len - 1 do 
-      (* 1000 *) let x = Array.unsafe_get d_arr i in 
-      if f x then 
-        (* 500 *) begin 
-          let curr_p = !p in 
-          (if curr_p <> i then 
-             (* 499 *) Array.unsafe_set d_arr curr_p x) ;
-          incr p
-        end
-      else 
-        (* 500 *) acc := cb_no  x  !acc
-    done ;
-    let last = !p  in 
-    
-# 268
-    d.len <-  last 
-    (* INT , there is not need to reset it, since it will cause GC behavior *)
-    
-# 273
-    ; !acc 
-
-
-
-
-end
 module Resize_array : sig 
 #1 "resize_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12044,6 +12151,7 @@ let suites =
     Ounit_string_tests.suites;
     Ounit_topsort_tests.suites;
     Ounit_sexp_tests.suites;
+    Ounit_int_vec_tests.suites
   ]
 let _ = 
   OUnit.run_test_tt_main suites

@@ -138,6 +138,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_string_tests\
 	ounit_topsort_tests\
 	ounit_sexp_tests\
+	ounit_int_vec_tests\
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
@@ -147,7 +148,9 @@ EXT_SRCS = ext_util\
 	vec_gen \
 	resize_array \
 	string_vec\
-	int_vec int_vec_vec \
+	int_vec\
+	int_vec_util\
+	int_vec_vec\
 	set_gen\
 	map_gen\
 	map_make\
@@ -487,4 +490,5 @@ clean:
 	rm -rf bin/config_whole_compiler.ml
 	git clean -dfx stubs ext common syntax depends core bsb
 
-.PHONY: release   releasebuild libs snapshotml force-snapshotml
+toplevel: bs_hash.cma ext.cma
+.PHONY: release   releasebuild libs snapshotml force-snapshotml toplevel

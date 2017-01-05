@@ -163,29 +163,6 @@ function l_parse(token) {
       }
     }
   };
-  var parse_t_aux = function (_a) {
-    while(true) {
-      var a = _a;
-      var t = token$1(/* () */0);
-      if (t.tag) {
-        Queue.push(t, look_ahead);
-        return a;
-      }
-      else {
-        switch (t[0]) {
-          case "+" : 
-              _a = a + parse_f_aux(parse_f(/* () */0)) | 0;
-              continue ;
-              case "-" : 
-              _a = a - parse_f_aux(parse_f(/* () */0)) | 0;
-              continue ;
-              default:
-            Queue.push(t, look_ahead);
-            return a;
-        }
-      }
-    };
-  };
   var parse_f_aux = function (_a) {
     while(true) {
       var a = _a;
@@ -247,6 +224,29 @@ function l_parse(token) {
               "Unexpected token"
             ];
     }
+  };
+  var parse_t_aux = function (_a) {
+    while(true) {
+      var a = _a;
+      var t = token$1(/* () */0);
+      if (t.tag) {
+        Queue.push(t, look_ahead);
+        return a;
+      }
+      else {
+        switch (t[0]) {
+          case "+" : 
+              _a = a + parse_f_aux(parse_f(/* () */0)) | 0;
+              continue ;
+              case "-" : 
+              _a = a - parse_f_aux(parse_f(/* () */0)) | 0;
+              continue ;
+              default:
+            Queue.push(t, look_ahead);
+            return a;
+        }
+      }
+    };
   };
   var r = parse_t_aux(parse_f_aux(parse_f(/* () */0)));
   return /* tuple */[

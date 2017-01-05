@@ -60076,6 +60076,76 @@ let invariant t =
 
 
 end
+module Int_vec_util : sig 
+#1 "int_vec_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val mem : int -> Int_vec.t -> bool
+end = struct
+#1 "int_vec_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let rec unsafe_mem_aux arr  i (key : int) bound = 
+    if i <= bound then 
+        if Array.unsafe_get arr i = (key : int) then 
+            true 
+         else unsafe_mem_aux arr (i + 1) key bound    
+    else false 
+    
+
+
+let mem key (x : Int_vec.t) =
+    let internal_array = Int_vec.unsafe_internal_array x in 
+    let len = Int_vec.length x in 
+    unsafe_mem_aux internal_array 0 key (len - 1)
+    
+end
 module Lambda : sig 
 #1 "lambda.mli"
 (***********************************************************************)
@@ -61538,6 +61608,7 @@ val free_variables : t -> Ident_set.t
 val check : string -> t -> t 
 type bindings = (Ident.t * t) list
 
+val scc_bindings : bindings -> bindings list 
 val scc : bindings -> t -> t  -> t 
 
 val var : ident -> t
@@ -61771,91 +61842,30 @@ type apply_status =
   | App_ml_full
   | App_js_full    
 module Types = struct 
-type switch = 
-  { sw_numconsts: int;
-    sw_consts: (int * t) list;
-    sw_numblocks: int;
-    sw_blocks: (int * t) list;
-    sw_failaction : t option}
-and prim_info = 
-  { primitive : primitive ; 
-    args : t list ;
-    loc : Location.t;
-  }
-and apply_info = 
-  { fn : t ; 
-    args : t list ; 
-    loc : Location.t;
-    status : apply_status
-  }
-and function_info = 
-  { arity : int ; 
-    kind : Lambda.function_kind ; 
-    params : ident list ;
-    body : t 
-  }
-and t = 
-  | Lvar of ident
-  | Lconst of Lambda.structured_constant
-  | Lapply of apply_info
-  | Lfunction of function_info
-  | Llet of Lambda.let_kind * ident * t * t
-  | Lletrec of (ident * t) list * t
-  | Lprim of prim_info
-  | Lswitch of t * switch
-  | Lstringswitch of t * (string * t) list * t option
-  | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * ident list) * t
-  | Ltrywith of t * ident * t
-  | Lifthenelse of t * t * t
-  | Lsequence of t * t
-  | Lwhile of t * t
-  | Lfor of ident * t * t * Asttypes.direction_flag * t
-  | Lassign of ident * t
-  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Lifused of ident * t
-  (* | Levent of t * Lambda.lambda_event 
-     [Levent] in the branch hurt pattern match, 
-     we should use record for trivial debugger info
-  *)
-end 
-
-module X = struct 
-  type switch
-    = Types.switch
-    =
+  type switch = 
     { sw_numconsts: int;
       sw_consts: (int * t) list;
       sw_numblocks: int;
       sw_blocks: (int * t) list;
       sw_failaction : t option}
-  and prim_info
-    =  Types.prim_info
-    =
+  and prim_info = 
     { primitive : primitive ; 
       args : t list ;
       loc : Location.t;
     }
-  and apply_info
-    = Types.apply_info
-    =
+  and apply_info = 
     { fn : t ; 
       args : t list ; 
       loc : Location.t;
       status : apply_status
     }
-
-  and function_info
-    = Types.function_info
-    =
+  and function_info = 
     { arity : int ; 
       kind : Lambda.function_kind ; 
       params : ident list ;
       body : t 
     }
-  and t
-    = Types.t
-    =
+  and t = 
     | Lvar of ident
     | Lconst of Lambda.structured_constant
     | Lapply of apply_info
@@ -61875,6 +61885,67 @@ module X = struct
     | Lassign of ident * t
     | Lsend of Lambda.meth_kind * t * t * t list * Location.t
     | Lifused of ident * t
+      (* | Levent of t * Lambda.lambda_event 
+         [Levent] in the branch hurt pattern match, 
+         we should use record for trivial debugger info
+      *)
+end 
+
+module X = struct 
+  type switch
+    = Types.switch
+    =
+      { sw_numconsts: int;
+        sw_consts: (int * t) list;
+        sw_numblocks: int;
+        sw_blocks: (int * t) list;
+        sw_failaction : t option}
+  and prim_info
+    =  Types.prim_info
+    =
+      { primitive : primitive ; 
+        args : t list ;
+        loc : Location.t;
+      }
+  and apply_info
+    = Types.apply_info
+    =
+      { fn : t ; 
+        args : t list ; 
+        loc : Location.t;
+        status : apply_status
+      }
+
+  and function_info
+    = Types.function_info
+    =
+      { arity : int ; 
+        kind : Lambda.function_kind ; 
+        params : ident list ;
+        body : t 
+      }
+  and t
+    = Types.t
+    =
+      | Lvar of ident
+      | Lconst of Lambda.structured_constant
+      | Lapply of apply_info
+      | Lfunction of function_info
+      | Llet of Lambda.let_kind * ident * t * t
+      | Lletrec of (ident * t) list * t
+      | Lprim of prim_info
+      | Lswitch of t * switch
+      | Lstringswitch of t * (string * t) list * t option
+      | Lstaticraise of int * t list
+      | Lstaticcatch of t * (int * ident list) * t
+      | Ltrywith of t * ident * t
+      | Lifthenelse of t * t * t
+      | Lsequence of t * t
+      | Lwhile of t * t
+      | Lfor of ident * t * t * Asttypes.direction_flag * t
+      | Lassign of ident * t
+      | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+      | Lifused of ident * t
 end
 include Types 
 (** apply [f] to direct successor which has type [Lam.t] *)
@@ -61986,7 +62057,7 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
       | Some a -> f a
     end
   | Lstaticraise (id,args) ->
-     List.iter f args;
+    List.iter f args;
   | Lstaticcatch(e1, vars , e2) ->
     f e1;
     f e2
@@ -61994,7 +62065,7 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
     f e1;
     f e2 
   | Lifthenelse(e1, e2, e3) ->
-     f e1;  f e2 ;  f e3
+    f e1;  f e2 ;  f e3
   | Lsequence(e1, e2) ->
     f e1 ;  f e2
   | Lwhile(e1, e2) ->
@@ -62074,7 +62145,7 @@ let free_variables l =
         let acc = free bounded acc e1 in 
         free bounded acc e2
       | Lfor(v, e1, e2, dir, e3) ->
-  
+
         let acc = free  bounded acc e1 in 
         let acc = free  bounded acc e2 in
         let bounded = Ident_set.add v bounded in 
@@ -62158,7 +62229,7 @@ let free_variables l =
 
 
 (**
-checks  
+   checks  
    1. variables are not bound twice 
    2. all variables are of right scope 
 *)
@@ -62614,10 +62685,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
   | Psetglobal id -> 
     (* we discard [Psetglobal] in the beginning*)
     begin match args with 
-    | [biglambda] -> biglambda
-    | _ -> assert false 
+      | [biglambda] -> biglambda
+      | _ -> assert false 
     end
-    (* prim ~primitive:(Psetglobal id) ~args loc *)
+  (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag) 
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
   | Pfield (id,info) 
@@ -62755,31 +62826,62 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
 
 
 type bindings = (Ident.t * t) list
-let scc  (groups :  bindings)  
-    (lam : t)
-    (body : t)
+
+
+let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   = 
+  let domain : _ Ordered_hash_map_local_ident.t = 
+    Ordered_hash_map_local_ident.create 3 in 
+  List.iter (fun (x,lam) -> Ordered_hash_map_local_ident.add domain x lam) groups ;
+  let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
+  let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
+  domain
+  |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
+      let base_key =  node_vec.(key_index) in 
+      let free_vars = free_variables lam in
+      free_vars 
+      |> Ident_set.iter (fun x ->
+          let key = Ordered_hash_map_local_ident.rank domain x in 
+          if key >= 0 then 
+            Int_vec.push key base_key 
+        ) 
+    ) ;
+  domain, int_mapping , node_vec
+
+(** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
+ let scc_bindings (groups : bindings) : bindings list = 
+   match groups with 
+   | [ _ ] -> [ groups ]
+   | _ -> 
+    let domain, int_mapping, node_vec = preprocess_deps groups in 
+    let clusters = Ext_scc.graph node_vec in 
+    if Int_vec_vec.length clusters <= 1 then [ groups]
+    else 
+        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+            let bindings =
+              Int_vec.map_into_list (fun i -> 
+                  let id = int_mapping.(i) in 
+                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
+                  (id,lam)
+                ) v  in 
+            match bindings with 
+            | [ id,(Lfunction _ as lam) ] ->
+              let base_key = Ordered_hash_map_local_ident.rank domain id in    
+              if Int_vec_util.mem base_key node_vec.(base_key) then       
+                 bindings :: acc 
+              else  [(id, lam)] :: acc    
+            | _ ->  
+              bindings :: acc 
+          )  clusters []
+(* single binding, it does not make sense to do scc,
+   we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
+*)
+let scc  (groups :  bindings)  ( lam : t) ( body : t)
   =     
   begin match groups with 
     | [ _ ] ->
-       lam  
-    (* single binding, it does not make sense to do scc,
-       we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
-     *)
+      lam  
     | _ ->    
-      let domain : _ Ordered_hash_map_local_ident.t = 
-        Ordered_hash_map_local_ident.create 3 in 
-      List.iter (fun (x,lam) -> Ordered_hash_map_local_ident.add domain x lam) groups ;
-      let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
-      let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
-      Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
-          let base_key =  node_vec.(key_index) in 
-          let free_vars = free_variables lam in
-          Ident_set.iter (fun x ->
-              let key = Ordered_hash_map_local_ident.rank domain x in 
-              if key >= 0 then 
-                Int_vec.push key base_key 
-            ) free_vars
-        ) domain;
+      let (domain, int_mapping, node_vec)  = preprocess_deps groups in 
       let clusters = Ext_scc.graph node_vec in 
       if Int_vec_vec.length clusters <= 1 then lam 
       else          
@@ -62792,9 +62894,8 @@ let scc  (groups :  bindings)
                 ) v  in 
             match bindings with 
             | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map_local_ident.rank domain id in          
-
-              if  Int_vec.exists (fun (x : int) -> x = base_key)  node_vec.(base_key) then 
+              let base_key = Ordered_hash_map_local_ident.rank domain id in    
+              if Int_vec_util.mem base_key node_vec.(base_key) then       
                 letrec bindings acc 
               else  let_ StrictOpt id lam acc    
             | _ ->  
@@ -62864,27 +62965,27 @@ let convert exports lam =
       begin match kind, e with 
         | Alias , Lvar u ->
           (* we should not remove it immediately, since we have to be careful 
-           where it is used, it can be [exported], [Lvar] or [Lassign] etc 
-           The other common mistake is that 
-           {[
-             let x = y (* elimiated x/y*)
-             let u = x  (* eliminated u/x *)
-           ]}
+             where it is used, it can be [exported], [Lvar] or [Lassign] etc 
+             The other common mistake is that 
+             {[
+               let x = y (* elimiated x/y*)
+               let u = x  (* eliminated u/x *)
+             ]}
 
-           however, [x] is already eliminated 
-           To improve the algorithm
-           {[
-             let x = y (* x/y *)
-             let u = x (* u/y *)
-           ]}
-           This looks more correct, but lets be conservative here
-        *)          
+             however, [x] is already eliminated 
+             To improve the algorithm
+             {[
+               let x = y (* x/y *)
+               let u = x (* u/y *)
+             ]}
+             This looks more correct, but lets be conservative here
+          *)          
           Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
           if Ident_set.mem id exports then 
             Llet(kind, id, Lvar u, aux body)
           else aux body 
-      
-      | _, _ -> Llet(kind,id,aux e, aux body)
+
+        | _, _ -> Llet(kind,id,aux e, aux body)
       end
     | Lletrec (bindings,body)
       -> 
@@ -62953,7 +63054,7 @@ let convert exports lam =
         | Some a -> Some (aux a)
     }  in 
   aux lam 
-        
+
 
 
 end
@@ -92613,7 +92714,7 @@ and compile_recursive_let
     *)
     compile_lambda {cxt with st = Declare (Alias ,id); should_return = False } arg, []
 
-and compile_recursive_lets cxt id_args : Js_output.t = 
+and compile_recursive_lets_aux cxt id_args : Js_output.t = 
   let output_code, ids  = List.fold_right
       (fun (ident,arg) (acc, ids) -> 
          let code, declare_ids  = compile_recursive_let cxt ident arg in
@@ -92626,7 +92727,18 @@ and compile_recursive_lets cxt id_args : Js_output.t =
     (Js_output.of_block  @@
      List.map (fun id -> S.define ~kind:Variable id (E.dummy_obj ())) ids ) 
     ++  output_code
-
+and compile_recursive_lets cxt id_args : Js_output.t  = 
+  
+  match id_args with 
+  | [ ] -> Js_output.dummy
+  | _ -> 
+    let id_args_group = Lam.scc_bindings id_args in 
+    begin match id_args_group with 
+    | [ ] -> assert false 
+    | first::rest  ->
+      let acc = compile_recursive_lets_aux cxt first in 
+      List.fold_left (fun acc x -> acc ++ compile_recursive_lets_aux cxt x ) acc rest 
+    end  
 and compile_general_cases : 
   'a . 
   ('a -> J.expression) ->

@@ -22,10 +22,6 @@ var __ocaml_lex_tables = /* record */[
   /* lex_code */""
 ];
 
-function translate(lexbuf) {
-  return __ocaml_lex_translate_rec(lexbuf, 0);
-}
-
 function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -49,6 +45,10 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
       }
     }
   };
+}
+
+function translate(lexbuf) {
+  return __ocaml_lex_translate_rec(lexbuf, 0);
 }
 
 var suites_000 = /* tuple */[

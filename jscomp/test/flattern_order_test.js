@@ -12,12 +12,12 @@ function _zs() {
 
 var ys = [];
 
-var xs = [];
-
 Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
       ys
     ]);
+
+var xs = [];
 
 Caml_obj.caml_update_dummy(xs, /* tuple */[
       /* :: */[
