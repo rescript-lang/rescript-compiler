@@ -221,6 +221,7 @@ val free_variables : t -> Ident_set.t
 val check : string -> t -> t 
 type bindings = (Ident.t * t) list
 
+val scc_bindings : bindings -> bindings list 
 val scc : bindings -> t -> t  -> t 
 
 val var : ident -> t

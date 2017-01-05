@@ -20,10 +20,6 @@ var __ocaml_lex_tables = /* record */[
   /* lex_code */""
 ];
 
-function lexeme(lexbuf) {
-  return __ocaml_lex_lexeme_rec(lexbuf, 0);
-}
-
 function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -61,6 +57,10 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
       }
     }
   };
+}
+
+function lexeme(lexbuf) {
+  return __ocaml_lex_lexeme_rec(lexbuf, 0);
 }
 
 function str(e) {

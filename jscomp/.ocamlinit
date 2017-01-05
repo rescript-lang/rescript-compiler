@@ -1,3 +1,4 @@
+#use "topfind";;
 #require "compiler-libs.common";;
 #load "bs_hash.cma";;
 #load "ext.cma";;

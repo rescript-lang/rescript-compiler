@@ -151,3 +151,8 @@ let () =
  ```
 
  however, the bsc is almost sitting in `lib/bs`
+
+ ## document when regenerating `build.ninja`
+ 
+ - when `bsb.exe` path is changed
+ - when `bsb.exe` version is changed 

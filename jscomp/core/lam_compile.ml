@@ -361,7 +361,7 @@ and compile_recursive_let
     *)
     compile_lambda {cxt with st = Declare (Alias ,id); should_return = False } arg, []
 
-and compile_recursive_lets cxt id_args : Js_output.t = 
+and compile_recursive_lets_aux cxt id_args : Js_output.t = 
   let output_code, ids  = List.fold_right
       (fun (ident,arg) (acc, ids) -> 
          let code, declare_ids  = compile_recursive_let cxt ident arg in
@@ -374,7 +374,18 @@ and compile_recursive_lets cxt id_args : Js_output.t =
     (Js_output.of_block  @@
      List.map (fun id -> S.define ~kind:Variable id (E.dummy_obj ())) ids ) 
     ++  output_code
-
+and compile_recursive_lets cxt id_args : Js_output.t  = 
+  
+  match id_args with 
+  | [ ] -> Js_output.dummy
+  | _ -> 
+    let id_args_group = Lam.scc_bindings id_args in 
+    begin match id_args_group with 
+    | [ ] -> assert false 
+    | first::rest  ->
+      let acc = compile_recursive_lets_aux cxt first in 
+      List.fold_left (fun acc x -> acc ++ compile_recursive_lets_aux cxt x ) acc rest 
+    end  
 and compile_general_cases : 
   'a . 
   ('a -> J.expression) ->

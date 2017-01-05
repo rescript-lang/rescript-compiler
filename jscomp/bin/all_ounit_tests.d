@@ -41,6 +41,12 @@ bin/all_ounit_tests.ml : ext/hashtbl_gen.ml
 bin/all_ounit_tests.ml : ext/string_hashtbl.ml
 bin/all_ounit_tests.ml : ext/string_hashtbl.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_hashtbl_tests.ml
+bin/all_ounit_tests.ml : ext/vec_gen.ml
+bin/all_ounit_tests.ml : ext/int_vec.ml
+bin/all_ounit_tests.ml : ext/int_vec.mli
+bin/all_ounit_tests.ml : ext/int_vec_util.ml
+bin/all_ounit_tests.ml : ext/int_vec_util.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_int_vec_tests.ml
 bin/all_ounit_tests.ml : ext/map_gen.ml
 bin/all_ounit_tests.ml : ext/string_map.ml
 bin/all_ounit_tests.ml : ext/string_map.mli
@@ -61,9 +67,6 @@ bin/all_ounit_tests.ml : ext/literals.mli
 bin/all_ounit_tests.ml : ext/ext_filename.ml
 bin/all_ounit_tests.ml : ext/ext_filename.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_path_tests.ml
-bin/all_ounit_tests.ml : ext/vec_gen.ml
-bin/all_ounit_tests.ml : ext/int_vec.ml
-bin/all_ounit_tests.ml : ext/int_vec.mli
 bin/all_ounit_tests.ml : ext/resize_array.ml
 bin/all_ounit_tests.ml : ext/resize_array.mli
 bin/all_ounit_tests.ml : ext/int_vec_vec.ml

@@ -8,6 +8,7 @@ ext/vec_gen.cmx : ext/ext_array.cmx
 ext/resize_array.cmx : ext/vec_gen.cmx ext/resize_array.cmi
 ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
 ext/int_vec.cmx : ext/vec_gen.cmx ext/int_vec.cmi
+ext/int_vec_util.cmx : ext/int_vec.cmx ext/int_vec_util.cmi
 ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
     ext/int_vec_vec.cmi
 ext/set_gen.cmx :
@@ -83,6 +84,7 @@ ext/ext_char.cmi :
 ext/resize_array.cmi : ext/vec_gen.cmx
 ext/string_vec.cmi : ext/vec_gen.cmx
 ext/int_vec.cmi : ext/vec_gen.cmx
+ext/int_vec_util.cmi : ext/int_vec.cmi
 ext/int_vec_vec.cmi : ext/vec_gen.cmx ext/int_vec.cmi
 ext/map_make.cmi : ext/map_gen.cmx
 ext/ext_file_pp.cmi :
@@ -320,9 +322,9 @@ core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
     core/ocaml_parse.cmi
 core/lam.cmx : ext/ordered_hash_map_local_ident.cmx \
     core/ocaml_stdlib_slots.cmx ext/literals.cmx common/js_config.cmx \
-    ext/int_vec_vec.cmx ext/int_vec.cmx ext/ident_set.cmx \
-    ext/ident_hashtbl.cmx ext/ident_hash_set.cmx ext/ext_string.cmx \
-    ext/ext_scc.cmx core/lam.cmi
+    ext/int_vec_vec.cmx ext/int_vec_util.cmx ext/int_vec.cmx \
+    ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ident_hash_set.cmx \
+    ext/ext_string.cmx ext/ext_scc.cmx core/lam.cmi
 core/lam_print.cmx : core/lam.cmx core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_beta_reduce_util.cmi
@@ -604,6 +606,8 @@ ounit_tests/ounit_string_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx
 ounit_tests/ounit_topsort_tests.cmx : ext/set_int.cmx ounit/oUnit.cmx \
     ext/int_vec.cmx ext/ext_topsort.cmx
 ounit_tests/ounit_sexp_tests.cmx : ounit/oUnit.cmx ext/ext_sexp.cmx
+ounit_tests/ounit_int_vec_tests.cmx : ounit/oUnit.cmx ext/int_vec_util.cmx \
+    ext/int_vec.cmx
 ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_union_find_tests.cmx \
     ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_string_tests.cmx \
@@ -611,8 +615,8 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_path_tests.cmx \
     ounit_tests/ounit_ordered_hash_set_tests.cmx \
     ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_list_test.cmx \
-    ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_hashtbl_tests.cmx \
-    ounit_tests/ounit_hash_stubs_test.cmx \
+    ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_int_vec_tests.cmx \
+    ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_hash_stubs_test.cmx \
     ounit_tests/ounit_hash_set_tests.cmx ounit_tests/ounit_bal_tree_tests.cmx \
     ounit_tests/ounit_array_tests.cmx ounit/oUnit.cmx \
     ounit_tests/ounit_tests_main.cmi

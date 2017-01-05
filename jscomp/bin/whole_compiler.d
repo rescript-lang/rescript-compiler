@@ -159,6 +159,8 @@ bin/whole_compiler.ml : ext/ident_hashtbl.mli
 bin/whole_compiler.ml : ext/set_gen.ml
 bin/whole_compiler.ml : ext/ident_set.ml
 bin/whole_compiler.ml : ext/ident_set.mli
+bin/whole_compiler.ml : ext/int_vec_util.ml
+bin/whole_compiler.ml : ext/int_vec_util.mli
 bin/whole_compiler.ml : ../ocaml/bytecomp/lambda.ml
 bin/whole_compiler.ml : ../ocaml/bytecomp/lambda.mli
 bin/whole_compiler.ml : core/ocaml_stdlib_slots.ml
