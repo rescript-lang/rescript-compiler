@@ -445,6 +445,14 @@ val rindex_opt : string -> char -> int option
 val is_valid_source_name : string -> bool
 
 val no_char : string -> char -> int -> int -> bool 
+
+val no_slash : string -> bool 
+
+(** if no conversion happens, reference equality holds *)
+val replace_slash_backward : string -> string 
+
+(** if no conversion happens, reference equality holds *)
+val replace_backward_slash : string -> string 
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -777,15 +785,34 @@ let is_valid_source_name name =
   | None -> false 
   | Some x -> is_valid_module_file  x 
 
-
+(** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  len = 
-  i >= len  || 
+  i > len  || 
   (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  len)
 
 let no_char x ch i len =
   let str_len = String.length x in 
   if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
   else unsafe_no_char x ch i len 
+
+let no_slash x = 
+  unsafe_no_char x '/' 0 (String.length x - 1)
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if unsafe_no_char x '/' 0  (len - 1) then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
+
+let replace_backward_slash (x : string)=
+  let len = String.length x in
+  if unsafe_no_char x '\\' 0  (len -1) then x 
+  else  
+    String.map (function 
+        |'\\'-> '/'
+        | x -> x) x
 
 end
 module Literals : sig 
@@ -1048,7 +1075,7 @@ val cwd : string Lazy.t
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
-val replace_backward_slash : string -> string
+
 
 val module_name_of_file : string -> string
 
@@ -1089,12 +1116,6 @@ get_extension "a" = ""
 ]}
 *)
 val get_extension : string -> string
-
-val replace_backward_slash : string -> string
-
-
-(** if no conversion happens, reference equality holds *)
-val replace_slash_backward : string -> string 
 
 end = struct
 #1 "ext_filename.ml"
@@ -1309,22 +1330,7 @@ let find_package_json_dir cwd  =
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
-let replace_backward_slash (x : string)=
-  let len = String.length x in
-  if Ext_string.no_char x '\\' 0  len then x 
-  else  
-    String.map (function 
-        |'\\'-> '/'
-        | x -> x) x
 
-
-let replace_slash_backward (x : string ) = 
-  let len = String.length x in 
-  if Ext_string.no_char x '/' 0  len then x 
-  else 
-    String.map (function 
-        | '/' -> '\\'
-        | x -> x ) x 
 
 let module_name_of_file file =
   String.capitalize 

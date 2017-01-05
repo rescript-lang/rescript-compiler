@@ -147,7 +147,7 @@ let string_of_module_id ~output_prefix
             end
         end
       | External name -> name in 
-    if Js_config.is_windows then Ext_filename.replace_backward_slash result 
+    if Js_config.is_windows then Ext_string.replace_backward_slash result 
     else result 
 #end
 

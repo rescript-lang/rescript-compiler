@@ -64,7 +64,7 @@ val cwd : string Lazy.t
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
 
-val replace_backward_slash : string -> string
+
 
 val module_name_of_file : string -> string
 
@@ -105,9 +105,3 @@ get_extension "a" = ""
 ]}
 *)
 val get_extension : string -> string
-
-val replace_backward_slash : string -> string
-
-
-(** if no conversion happens, reference equality holds *)
-val replace_slash_backward : string -> string 

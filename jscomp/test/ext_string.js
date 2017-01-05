@@ -558,7 +558,7 @@ function is_valid_source_name(name) {
 function unsafe_no_char(x, ch, _i, len) {
   while(true) {
     var i = _i;
-    if (i >= len) {
+    if (i > len) {
       return /* true */1;
     }
     else if (x.charCodeAt(i) !== ch) {
@@ -582,6 +582,44 @@ function no_char(x, ch, i, len) {
   }
   else {
     return unsafe_no_char(x, ch, i, len);
+  }
+}
+
+function no_slash(x) {
+  return unsafe_no_char(x, /* "/" */47, 0, x.length - 1 | 0);
+}
+
+function replace_slash_backward(x) {
+  var len = x.length;
+  if (unsafe_no_char(x, /* "/" */47, 0, len - 1 | 0)) {
+    return x;
+  }
+  else {
+    return $$String.map(function (x) {
+                if (x !== 47) {
+                  return x;
+                }
+                else {
+                  return /* "\\" */92;
+                }
+              }, x);
+  }
+}
+
+function replace_backward_slash(x) {
+  var len = x.length;
+  if (unsafe_no_char(x, /* "\\" */92, 0, len - 1 | 0)) {
+    return x;
+  }
+  else {
+    return $$String.map(function (x) {
+                if (x !== 92) {
+                  return x;
+                }
+                else {
+                  return /* "/" */47;
+                }
+              }, x);
   }
 }
 
@@ -624,4 +662,7 @@ exports.is_valid_module_file            = is_valid_module_file;
 exports.is_valid_source_name            = is_valid_source_name;
 exports.unsafe_no_char                  = unsafe_no_char;
 exports.no_char                         = no_char;
+exports.no_slash                        = no_slash;
+exports.replace_slash_backward          = replace_slash_backward;
+exports.replace_backward_slash          = replace_backward_slash;
 /* No side effect */
