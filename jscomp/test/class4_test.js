@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_obj       = require("../../lib/js/caml_obj");
 var Mt             = require("./mt");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
@@ -93,35 +92,33 @@ function restricted_point2$prime_init($$class) {
 
 var restricted_point2$prime = CamlinternalOO.make_class(shared$2, restricted_point2$prime_init);
 
-var restricted_point$prime$1 = restricted_point;
+var Point = /* module */[/* restricted_point' */restricted_point];
 
-var Point = /* module */[/* restricted_point' */restricted_point$prime$1];
+function abstract_point_001($$class) {
+  var x_init = CamlinternalOO.new_variable($$class, "");
+  var ids = CamlinternalOO.get_method_labels($$class, [
+        "move",
+        "get_x",
+        "get_offset"
+      ]);
+  var get_x = ids[1];
+  var get_offset = ids[2];
+  CamlinternalOO.set_method($$class, get_offset, function (self$neg5) {
+        return Curry._1(self$neg5[0][get_x], self$neg5) - self$neg5[x_init] | 0;
+      });
+  return function (_, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    return self$1;
+  };
+}
 
-var abstract_point = [];
-
-Caml_obj.caml_update_dummy(abstract_point, [
-      0,
-      function ($$class) {
-        var x_init = CamlinternalOO.new_variable($$class, "");
-        var ids = CamlinternalOO.get_method_labels($$class, [
-              "move",
-              "get_x",
-              "get_offset"
-            ]);
-        var get_x = ids[1];
-        var get_offset = ids[2];
-        CamlinternalOO.set_method($$class, get_offset, function (self$neg5) {
-              return Curry._1(self$neg5[0][get_x], self$neg5) - self$neg5[x_init] | 0;
-            });
-        return function (_, self, x_init$1) {
-          var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-          self$1[x_init] = x_init$1;
-          return self$1;
-        };
-      },
-      0,
-      0
-    ]);
+var abstract_point = [
+  0,
+  abstract_point_001,
+  0,
+  0
+];
 
 function point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);

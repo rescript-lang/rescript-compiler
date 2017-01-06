@@ -35,19 +35,19 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var comparable = [];
+function comparable_001($$class) {
+  CamlinternalOO.get_method_label($$class, "leq");
+  return function (_, self) {
+    return CamlinternalOO.create_object_opt(self, $$class);
+  };
+}
 
-Caml_obj.caml_update_dummy(comparable, [
-      0,
-      function ($$class) {
-        CamlinternalOO.get_method_label($$class, "leq");
-        return function (_, self) {
-          return CamlinternalOO.create_object_opt(self, $$class);
-        };
-      },
-      0,
-      0
-    ]);
+var comparable = [
+  0,
+  comparable_001,
+  0,
+  0
+];
 
 function money_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [

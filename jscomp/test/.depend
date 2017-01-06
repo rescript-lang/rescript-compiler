@@ -253,6 +253,7 @@ map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
 math_test.cmj : mt.cmj ../runtime/js.cmj
 method_chain.cmj :
 method_name_test.cmj : mt.cmj
+minimal_test.cmj :
 mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj
 module_alias.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj
 module_as_class_ffi.cmj :

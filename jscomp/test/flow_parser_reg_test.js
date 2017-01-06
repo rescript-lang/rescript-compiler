@@ -14507,20 +14507,6 @@ function expression$1(env) {
   }
 }
 
-var assignment$1 = assignment;
-
-var object_initializer = _initializer;
-
-var object_key = key;
-
-var class_expression$1 = class_expression;
-
-var array_initializer$1 = array_initializer;
-
-var is_assignable_lhs$1 = is_assignable_lhs;
-
-var identifier_or_reserved_keyword$1 = identifier_or_reserved_keyword;
-
 function identifier_with_type(env, restricted_error) {
   var match = identifier$2(/* Some */[restricted_error], env);
   var id = match[1];
@@ -14601,12 +14587,6 @@ function function_block_body(env) {
         ];
 }
 
-var jsx_element = element;
-
-var pattern$2 = pattern$1;
-
-var pattern_from_expr = from_expr;
-
 function predicate(env) {
   var checks_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
   if (Curry._2(Parser_env_048[/* token */0], /* None */0, env) === /* T_IDENTIFIER */0 && Curry._2(Parser_env_048[/* value */1], /* None */0, env) === "checks") {
@@ -14665,21 +14645,21 @@ Caml_module.update_mod([[
       /* statement_list_with_directives */statement_list_with_directives,
       /* module_body */module_body,
       /* expression */expression$1,
-      /* assignment */assignment$1,
-      /* object_initializer */object_initializer,
-      /* array_initializer */array_initializer$1,
+      /* assignment */assignment,
+      /* object_initializer */_initializer,
+      /* array_initializer */array_initializer,
       /* identifier */identifier$2,
-      /* identifier_or_reserved_keyword */identifier_or_reserved_keyword$1,
+      /* identifier_or_reserved_keyword */identifier_or_reserved_keyword,
       /* identifier_with_type */identifier_with_type,
       /* block_body */block_body,
       /* function_block_body */function_block_body,
-      /* jsx_element */jsx_element,
-      /* pattern */pattern$2,
-      /* pattern_from_expr */pattern_from_expr,
-      /* object_key */object_key,
+      /* jsx_element */element,
+      /* pattern */pattern$1,
+      /* pattern_from_expr */from_expr,
+      /* object_key */key,
       /* class_declaration */class_declaration$1,
-      /* class_expression */class_expression$1,
-      /* is_assignable_lhs */is_assignable_lhs$1,
+      /* class_expression */class_expression,
+      /* is_assignable_lhs */is_assignable_lhs,
       /* predicate */predicate
     ]);
 

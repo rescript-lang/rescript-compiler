@@ -62950,8 +62950,11 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
 let scc  (groups :  bindings)  ( lam : t) ( body : t)
   =     
   begin match groups with 
-    | [ _ ] ->
-      lam  
+    | [ (id,bind) ] ->
+      if hit_any_variables (Ident_set.singleton id) bind 
+      then 
+        lam  
+      else let_ Strict id bind body  
     | _ ->    
       let (domain, int_mapping, node_vec)  = preprocess_deps groups in 
       let clusters = Ext_scc.graph node_vec in 
@@ -62965,11 +62968,11 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
                   (id,lam)
                 ) v  in 
             match bindings with 
-            | [ id,(Lfunction _ as lam) ] ->
+            | [ id,lam ] ->
               let base_key = Ordered_hash_map_local_ident.rank domain id in    
               if Int_vec_util.mem base_key node_vec.(base_key) then       
                 letrec bindings acc 
-              else  let_ StrictOpt id lam acc    
+              else  let_ Strict id lam acc    
             | _ ->  
               letrec bindings  acc 
           )  clusters body 

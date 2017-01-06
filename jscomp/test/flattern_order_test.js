@@ -61,17 +61,19 @@ function even2(n) {
 
 var v = [0];
 
-var obj = [];
+function obj_000() {
+  return v[0];
+}
 
-Caml_obj.caml_update_dummy(obj, /* record */[
-      /* get */function () {
-        return v[0];
-      },
-      /* set */function (i) {
-        v[0] = i;
-        return /* () */0;
-      }
-    ]);
+function obj_001(i) {
+  v[0] = i;
+  return /* () */0;
+}
+
+var obj = /* record */[
+  obj_000,
+  obj_001
+];
 
 exports.xs    = xs;
 exports.even  = even;
