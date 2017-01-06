@@ -75,7 +75,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	global_module_alias_test class_fib_open_recursion_test\
 	topsort_test flexible_array_test\
 	gray_code_test alias_test\
-	flattern_order_test
+	flattern_order_test\
+	minimal_test
 
 
 

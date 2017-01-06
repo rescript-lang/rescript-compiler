@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_obj       = require("../../lib/js/caml_obj");
 var Pervasives     = require("../../lib/js/pervasives");
 var Mt             = require("./mt");
 var Caml_int32     = require("../../lib/js/caml_int32");
@@ -305,27 +304,27 @@ eq('File "class3_test.ml", line 81, characters 12-19', v, /* int array */[
       3
     ]);
 
-var abstract_point = [];
+function abstract_point_001($$class) {
+  var x_init = CamlinternalOO.new_variable($$class, "");
+  var ids = CamlinternalOO.get_method_labels($$class, shared$7);
+  var get_x = ids[1];
+  var get_offset = ids[2];
+  CamlinternalOO.set_method($$class, get_offset, function (self$neg7) {
+        return Curry._1(self$neg7[0][get_x], self$neg7) - self$neg7[x_init] | 0;
+      });
+  return function (_, self, x_init$1) {
+    var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+    self$1[x_init] = x_init$1;
+    return self$1;
+  };
+}
 
-Caml_obj.caml_update_dummy(abstract_point, [
-      0,
-      function ($$class) {
-        var x_init = CamlinternalOO.new_variable($$class, "");
-        var ids = CamlinternalOO.get_method_labels($$class, shared$7);
-        var get_x = ids[1];
-        var get_offset = ids[2];
-        CamlinternalOO.set_method($$class, get_offset, function (self$neg7) {
-              return Curry._1(self$neg7[0][get_x], self$neg7) - self$neg7[x_init] | 0;
-            });
-        return function (_, self, x_init$1) {
-          var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-          self$1[x_init] = x_init$1;
-          return self$1;
-        };
-      },
-      0,
-      0
-    ]);
+var abstract_point = [
+  0,
+  abstract_point_001,
+  0,
+  0
+];
 
 function vpoint_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$1, shared$5);
@@ -363,25 +362,25 @@ var v$1 = Curry.js1(-792262820, 9, h);
 
 eq('File "class3_test.ml", line 107, characters 12-19', v$1, 32);
 
-var abstract_point2 = [];
+function abstract_point2_001($$class) {
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared$5);
+  var move = ids[0];
+  var x = ids[1];
+  CamlinternalOO.set_method($$class, move, function (self$neg9, d) {
+        self$neg9[x] = self$neg9[x] + d | 0;
+        return /* () */0;
+      });
+  return function (_, self) {
+    return CamlinternalOO.create_object_opt(self, $$class);
+  };
+}
 
-Caml_obj.caml_update_dummy(abstract_point2, [
-      0,
-      function ($$class) {
-        var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared$5);
-        var move = ids[0];
-        var x = ids[1];
-        CamlinternalOO.set_method($$class, move, function (self$neg9, d) {
-              self$neg9[x] = self$neg9[x] + d | 0;
-              return /* () */0;
-            });
-        return function (_, self) {
-          return CamlinternalOO.create_object_opt(self, $$class);
-        };
-      },
-      0,
-      0
-    ]);
+var abstract_point2 = [
+  0,
+  abstract_point2_001,
+  0,
+  0
+];
 
 function point2_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");

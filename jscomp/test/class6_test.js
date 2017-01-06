@@ -174,19 +174,19 @@ var d = [
   0
 ];
 
-var c2$prime = [];
+function c2$prime_001($$class) {
+  CamlinternalOO.get_method_label($$class, "m");
+  return function (_, self) {
+    return CamlinternalOO.create_object_opt(self, $$class);
+  };
+}
 
-Caml_obj.caml_update_dummy(c2$prime, [
-      0,
-      function ($$class) {
-        CamlinternalOO.get_method_label($$class, "m");
-        return function (_, self) {
-          return CamlinternalOO.create_object_opt(self, $$class);
-        };
-      },
-      0,
-      0
-    ]);
+var c2$prime = [
+  0,
+  c2$prime_001,
+  0,
+  0
+];
 
 function functional_point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);

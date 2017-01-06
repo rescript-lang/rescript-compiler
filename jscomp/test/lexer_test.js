@@ -37,7 +37,7 @@ function f(param) {
 
 function from_tokens(lst) {
   var l = [lst];
-  var aux = function () {
+  return function () {
     var match = l[0];
     if (match) {
       l[0] = match[1];
@@ -47,7 +47,6 @@ function from_tokens(lst) {
       throw Caml_builtin_exceptions.end_of_file;
     }
   };
-  return aux;
 }
 
 var lexer_suites_000 = /* tuple */[
