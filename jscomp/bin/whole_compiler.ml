@@ -61605,6 +61605,7 @@ type unop = t ->  t
 val inner_map : (t -> t) -> t -> t
 val inner_iter : (t -> unit) -> t -> unit 
 val free_variables : t -> Ident_set.t
+val hit_any_variables : Ident_set.t -> t -> bool
 val check : string -> t -> t 
 type bindings = (Ident.t * t) list
 
@@ -62163,15 +62164,79 @@ let free_variables l =
   in free Ident_set.empty Ident_set.empty l
 *)  
 
+let hit_any_variables (fv : Ident_set.t) l : bool  =
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id -> Ident_set.mem id fv 
+      | Lassign(id, e) ->
+        Ident_set.mem id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        List.exists (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false 
+      | Lapply{fn; args; _} ->
+        hit fn || List.exists hit args
+      | Lprim {args; _} ->
+        List.exists hit args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
+        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
+        begin match sw.sw_failaction with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        List.exists (fun (_,act) -> hit act) cases ||
+        begin match default with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.exists hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || List.exists hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
+  
+
+
 let free_variables l =
   let fv = ref Ident_set.empty in
   let rec free (l : t) =
     begin
       match (l : t) with 
-        Lvar id -> fv := Ident_set.add id !fv
-      | Lconst _ -> ()
-      | Lapply{fn; args; _} ->
-        free fn; List.iter free args
+      | Lvar id -> fv := Ident_set.add id !fv
+      | Lassign(id, e) ->
+        free e;
+        fv := Ident_set.add id !fv        
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        free e1; free e2;
+        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      | Ltrywith(e1, exn, e2) ->
+        free e1; free e2;
+        fv := Ident_set.remove exn !fv
+        
       | Lfunction{body;params} ->
         free body;
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
@@ -62182,6 +62247,12 @@ let free_variables l =
         free body;
         List.iter (fun (id, exp) -> free exp) decl;
         List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        free e1; free e2; free e3;
+        fv := Ident_set.remove v !fv
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        free fn; List.iter free args
       | Lprim {args; _} ->
         List.iter free args
       | Lswitch(arg, sw) ->
@@ -62201,24 +62272,12 @@ let free_variables l =
         end
       | Lstaticraise (_,args) ->
         List.iter free args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        free e1; free e2;
-        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
-      | Ltrywith(e1, exn, e2) ->
-        free e1; free e2;
-        fv := Ident_set.remove exn !fv
       | Lifthenelse(e1, e2, e3) ->
         free e1; free e2; free e3
       | Lsequence(e1, e2) ->
         free e1; free e2
       | Lwhile(e1, e2) ->
         free e1; free e2
-      | Lfor(v, e1, e2, dir, e3) ->
-        free e1; free e2; free e3;
-        fv := Ident_set.remove v !fv
-      | Lassign(id, e) ->
-        free e;
-        fv := Ident_set.add id !fv
       | Lsend (k, met, obj, args, _) ->
         free met; free obj; List.iter free args 
       | Lifused (v, e) ->
@@ -62235,12 +62294,20 @@ let free_variables l =
 *)
 let check file lam = 
   let defined_variables = Ident_hash_set.create 1000 in 
+  let success = ref true in 
   let use (id : Ident.t)  = 
     if not @@ Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file in 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
+        success := false
+      end        
+      in 
   let def (id : Ident.t) =
     if Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
+        success := false 
+      end
     else Ident_hash_set.add defined_variables id 
   in 
   let rec iter (l : t) =
@@ -62307,7 +62374,12 @@ let check file lam =
       | Lifused (v, e) ->
         iter e
     end;
-  in iter lam; lam
+  in 
+  begin 
+      iter lam; 
+      assert (!success) ; 
+      lam 
+  end      
 
 module Prim = struct 
   type t = primitive
@@ -84556,270 +84628,7 @@ let pp_group env fmt ( x : t) =
   | Nop lam -> Lam_print.env_lambda env fmt lam
 
 
-(* [groups] are in reverse order *)
 
-let lambda_of_groups result groups = 
-  List.fold_left (fun acc x -> 
-      match x with 
-      | Nop l -> Lam.seq l acc
-      | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
-      | Recursive bindings -> Lam.letrec bindings acc) 
-    result groups
-
-
-(* TODO: 
-    refine effectful [ket_kind] to be pure or not
-    Be careful of how [Lifused(v,l)] work 
-    since its semantics depend on whether v is used or not
-    return value are in reverse order, but handled by [lambda_of_groups]
-*)
-let deep_flatten
-    (lam : Lam.t) :  Lam.t  = 
-  let rec
-    flatten 
-      (acc :  t list ) 
-      (lam : Lam.t) :  Lam.t *  t list = 
-    match lam with 
-    | Llet (str, id, 
-            (Lprim {primitive = Pccall 
-                      {prim_name = 
-                         ("js_from_nullable" 
-                         | "js_from_def"
-                         |"js_from_nullable_def"); _ }
-                   ; args  =  [Lvar _]} as arg), body)
-      -> 
-      flatten (Single(str, id, (aux arg) ) :: acc) body
-    | Llet (str, id, 
-            Lprim {primitive = Pccall 
-                     ({prim_name = 
-                         ("js_from_nullable"
-                         | "js_from_def"
-                         | "js_from_nullable_def"); _ } as p );
-                   args = [arg]}, body)
-      -> 
-      let id' = Ident.rename id in 
-      flatten acc 
-        (Lam.let_ str id' arg 
-               (Lam.let_ Alias id 
-                  (Lam.prim 
-                     ~primitive:(Pccall p)
-                     ~args: [Lam.var id'] Location.none (* FIXME*))
-                  body)
-              )
-    | Llet (str,id,arg,body) -> 
-      let (res,l) = flatten acc arg  in
-      flatten (Single(str, id, res ) :: l) body
-    | Lletrec (bind_args, body) -> 
-      (** TODO: more flattening, 
-          - also for function compilation, flattening should be done first
-          - [compile_group] and [compile] become mutually recursive function
-      *)
-      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
-      flatten
-        (
-          (* let rec iter bind_args acc =  *)
-          (*   match bind_args with *)
-          (*   | [] ->  acc  *)
-          (*   | (id,arg) :: rest ->  *)
-          (*       flatten acc  *)
-          Recursive
-            (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
-          :: acc
-        )
-        body
-    | Lsequence (l,r) -> 
-      let (res, l)  = flatten acc l in
-      flatten (Nop res :: l)  r
-    | x ->  
-      aux x, acc      
-
-  and aux  (lam : Lam.t) : Lam.t= 
-    match lam with 
-    | Llet _ -> 
-      let res, groups = flatten [] lam  
-      in lambda_of_groups res groups
-    | Lletrec (bind_args, body) ->  
-      (** be careful to flatten letrec 
-          like below : 
-          {[
-            let rec even = 
-              let odd n =  if n ==1 then true else even (n - 1) in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-          odd and even are recursive values, since all definitions inside 
-          e.g, [odd] can see [even] now, however, it should be fine
-          in our case? since ocaml's recursive value does not allow immediate 
-          access its value direclty?, seems no
-          {[
-            let rec even2 = 
-              let odd = even2 in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-      *)
-      (* let module Ident_set = Lambda.IdentSet in *)
-      let rec iter bind_args acc =
-        match bind_args with
-        | [] ->   acc
-        | (id,arg) :: rest ->
-          let groups, set = acc in
-          let res, groups = flatten groups (aux arg)
-          in
-          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
-      in
-      let groups, collections = iter bind_args ([], Ident_set.empty) in
-      (* FIXME:
-          here we try to move inner definitions of [recurisve value] upwards
-          for example:
-         {[
-           let rec x = 
-             let y = 32 in
-             y :: x
-           and z = ..
-             ---
-             le ty = 32 in
-           let rec x = y::x
-           and z = ..
-         ]}
-          however, the inner definitions can see [z] and [x], so we
-          can not blindly move it in the beginning, however, for 
-          recursive value, ocaml does not allow immediate access to 
-          recursive value, so what's the best strategy?
-          ---
-          the motivation is to capture real tail call
-      *)
-      let (result, _, wrap) = 
-        List.fold_left (fun  (acc, set, wrap)  g -> 
-            match g with 
-            | Recursive [ id, (Lconst _)]
-            | Single (Alias, id, ( Lconst _   ))
-            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
-              (** FIXME: 
-                   It should be alias and alias will be optimized away
-                   in later optmizations, however, 
-                   this means if we don't optimize 
-                  {[ let u/a = v in ..]}
-                   the output would be wrong, we should *optimize 
-                   this away right now* instead of delaying it to the 
-                   later passes
-              *)
-              (acc, set, g :: wrap)
-
-            | Single (_, id, ( Lvar bid)) -> 
-              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
-            | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
-              if Ident_set.(is_empty (inter variables collections)) 
-              then 
-                (acc, set, g :: wrap )
-              else 
-                ((id, lam ) :: acc , Ident_set.add id set, wrap)
-            | Recursive us -> 
-              (* could also be from nested [let rec] 
-                 like 
-                 {[
-                   let rec x = 
-                     let rec y = 1 :: y in
-                     2:: List.hd y:: x 
-                 ]}
-                 TODO: seems like we should update depenency graph, 
-
-              *)
-              (us @ acc , 
-               List.fold_left (fun acc (id,_) -> Ident_set.add id acc) set us , 
-               wrap)
-            | Nop _ -> assert false 
-          ) ([], collections, []) groups in
-      lambda_of_groups 
-        (Lam.letrec 
-            result 
-            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
-            (aux body)) (List.rev wrap)
-    | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
-    | Lconst _ -> lam
-    | Lvar _ -> lam 
-    (* | Lapply(Lfunction(Curried, params, body), args, _) *)
-    (*   when  List.length params = List.length args -> *)
-    (*     aux (beta_reduce  params body args) *)
-    (* | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _) *)
-    (*     (\** TODO: keep track of this parameter in ocaml trunk, *)
-    (*           can we switch to the tupled backend? *\) *)
-    (*   when  List.length params = List.length args -> *)
-    (*       aux (beta_reduce params body args) *)
-
-    | Lapply{fn = l1; args  = ll; loc; status} -> 
-      Lam.apply (aux l1) (List.map aux ll) loc status
-
-    (* This kind of simple optimizations should be done each time
-       and as early as possible *) 
-
-    | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
-            args = [ Lconst (Const_base (Const_int64 i))]; _} 
-      ->  
-      Lam.const 
-        (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
-    | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
-             args = [ Lconst (Const_base (Const_int64 i))]; _} 
-      -> 
-      (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
-      Lam.const 
-        (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim {primitive ; args; loc }
-      -> 
-      let args = List.map aux args in
-      Lam.prim ~primitive ~args loc
-
-    | Lfunction{arity; kind; params;  body = l} -> 
-      Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
-    | Lswitch(l, {sw_failaction; 
-                  sw_consts; 
-                  sw_blocks;
-                  sw_numblocks;
-                  sw_numconsts;
-                 }) ->
-      Lam.switch (aux  l)
-              {sw_consts = 
-                 List.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
-               sw_numconsts = sw_numconsts;
-               sw_numblocks = sw_numblocks;
-               sw_failaction = 
-                 begin 
-                   match sw_failaction with 
-                   | None -> None
-                   | Some x -> Some (aux x)
-                 end}
-    | Lstringswitch(l, sw, d) ->
-      Lam.stringswitch (aux  l) 
-                    (List.map (fun (i, l) -> i,aux  l) sw)
-                    (match d with
-                     | Some d -> Some (aux d )
-                     | None -> None)
-
-    | Lstaticraise (i,ls) 
-      -> Lam.staticraise i (List.map aux  ls)
-    | Lstaticcatch(l1, ids, l2) 
-      -> 
-      Lam.staticcatch (aux  l1) ids (aux  l2)
-    | Ltrywith(l1, v, l2) ->
-      Lam.try_ (aux  l1) v (aux  l2)
-    | Lifthenelse(l1, l2, l3) 
-      -> 
-      Lam.if_ (aux  l1) (aux l2) (aux l3)
-    | Lwhile(l1, l2) 
-      -> 
-      Lam.while_ (aux  l1) (aux l2)
-    | Lfor(flag, l1, l2, dir, l3) 
-      -> 
-      Lam.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
-    | Lassign(v, l) ->
-      (* Lalias-bound variables are never assigned, so don't increase
-         v's refaux *)
-      Lam.assign v (aux  l)
-    | Lsend(u, m, o, ll, v) -> 
-      Lam.send u (aux m) (aux o) (List.map aux ll) v
-
-    | Lifused(v, l) -> Lam.ifused v (aux  l)
-  in aux lam
 
 end
 module Lam_dce : sig 
@@ -92592,7 +92401,7 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.
        here we share env 
 
 *)
-and compile_recursive_let 
+and compile_recursive_let
     (cxt : Lam_compile_defs.cxt)
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
@@ -94813,15 +94622,80 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 (* [groups] are in reverse order *)
 
-let lambda_of_groups result groups = 
+      (** be careful to flatten letrec 
+          like below : 
+          {[
+            let rec even = 
+              let odd n =  if n ==1 then true else even (n - 1) in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+          odd and even are recursive values, since all definitions inside 
+          e.g, [odd] can see [even] now, however, it should be fine
+          in our case? since ocaml's recursive value does not allow immediate 
+          access its value direclty?, seems no
+          {[
+            let rec even2 = 
+              let odd = even2 in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+      *)
+      (* FIXME:
+          here we try to move inner definitions of [recurisve value] upwards
+          for example:
+         {[
+           let rec x = 
+             let y = 32 in
+             y :: x
+           and z = ..
+             ---
+             le ty = 32 in
+           let rec x = y::x
+           and z = ..
+         ]}
+          however, the inner definitions can see [z] and [x], so we
+          can not blindly move it in the beginning, however, for 
+          recursive value, ocaml does not allow immediate access to 
+          recursive value, so what's the best strategy?
+          ---
+          the motivation is to capture real tail call
+      *)
+      (*            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
+              (** FIXME: 
+                   It should be alias and alias will be optimized away
+                   in later optmizations, however, 
+                   this means if we don't optimize 
+                  {[ let u/a = v in ..]}
+                   the output would be wrong, we should *optimize 
+                   this away right now* instead of delaying it to the 
+                   later passes
+              *)
+              (acc, set, g :: wrap, stop)
+      *)
+       (* could also be from nested [let rec] 
+                 like 
+                 {[
+                   let rec x = 
+                     let rec y = 1 :: y in
+                     2:: List.hd y:: x 
+                 ]}
+                 TODO: seems like we should update depenency graph, 
+
+              *)
+      (** TODO: more flattening, 
+          - also for function compilation, flattening should be done first
+          - [compile_group] and [compile] become mutually recursive function
+      *)
+      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)              
+let lambda_of_groups ~rev_bindings result  = 
   List.fold_left (fun acc x -> 
       match (x : Lam_group.t) with 
       | Nop l -> Lam.seq l acc
       | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
       | Recursive bindings -> Lam.letrec bindings acc) 
-    result groups
+    result rev_bindings
 
 
 (* TODO: 
@@ -94867,18 +94741,9 @@ let deep_flatten
       let (res,l) = flatten acc arg  in
       flatten (Single(str, id, res ) :: l) body
     | Lletrec (bind_args, body) -> 
-      (** TODO: more flattening, 
-          - also for function compilation, flattening should be done first
-          - [compile_group] and [compile] become mutually recursive function
-      *)
-      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
+
       flatten
         (
-          (* let rec iter bind_args acc =  *)
-          (*   match bind_args with *)
-          (*   | [] ->  acc  *)
-          (*   | (id,arg) :: rest ->  *)
-          (*       flatten acc  *)
           Recursive
             (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
           :: acc
@@ -94894,103 +94759,35 @@ let deep_flatten
     match lam with 
     | Llet _ -> 
       let res, groups = flatten [] lam  
-      in lambda_of_groups res groups
+      in lambda_of_groups res ~rev_bindings:groups
     | Lletrec (bind_args, body) ->  
-      (** be careful to flatten letrec 
-          like below : 
-          {[
-            let rec even = 
-              let odd n =  if n ==1 then true else even (n - 1) in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-          odd and even are recursive values, since all definitions inside 
-          e.g, [odd] can see [even] now, however, it should be fine
-          in our case? since ocaml's recursive value does not allow immediate 
-          access its value direclty?, seems no
-          {[
-            let rec even2 = 
-              let odd = even2 in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-      *)
-      (* let module Ident_set = Lambda.IdentSet in *)
-      let rec iter bind_args acc =
+      (* Attention: don't mess up with internal {let rec} *)
+      let rec iter bind_args groups set  =
         match bind_args with
-        | [] ->   acc
+        | [] ->   (List.rev groups, set)
         | (id,arg) :: rest ->
-          let groups, set = acc in
-          let res, groups = flatten groups (aux arg)
-          in
-          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
+          iter rest ((id, aux arg) :: groups) (Ident_set.add id set)
       in
-      let groups, collections = iter bind_args ([], Ident_set.empty) in
-      (* FIXME:
-          here we try to move inner definitions of [recurisve value] upwards
-          for example:
-         {[
+      let groups, collections = iter bind_args [] Ident_set.empty in
+      (* Try to extract some value definitions from recursive values as [wrap],
+         it will stop whenever it find it could not move forward
+        {[
            let rec x = 
-             let y = 32 in
-             y :: x
-           and z = ..
-             ---
-             le ty = 32 in
-           let rec x = y::x
-           and z = ..
-         ]}
-          however, the inner definitions can see [z] and [x], so we
-          can not blindly move it in the beginning, however, for 
-          recursive value, ocaml does not allow immediate access to 
-          recursive value, so what's the best strategy?
-          ---
-          the motivation is to capture real tail call
+              let y = 1 in
+              let z = 2 in 
+              ...  
+        ]}
       *)
-      let (result, _, wrap) = 
-        List.fold_left (fun  (acc, set, wrap)  g -> 
-            match (g : Lam_group.t) with 
-            | Recursive [ id, (Lconst _)]
-            | Single (Alias, id, ( Lconst _   ))
-            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
-              (** FIXME: 
-                   It should be alias and alias will be optimized away
-                   in later optmizations, however, 
-                   this means if we don't optimize 
-                  {[ let u/a = v in ..]}
-                   the output would be wrong, we should *optimize 
-                   this away right now* instead of delaying it to the 
-                   later passes
-              *)
-              (acc, set, g :: wrap)
-
-            | Single (_, id, ( Lvar bid)) -> 
-              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
-            | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
-              if Ident_set.(is_empty (inter variables collections)) 
-              then 
-                (acc, set, g :: wrap )
-              else 
-                ((id, lam ) :: acc , Ident_set.add id set, wrap)
-            | Recursive us -> 
-              (* could also be from nested [let rec] 
-                 like 
-                 {[
-                   let rec x = 
-                     let rec y = 1 :: y in
-                     2:: List.hd y:: x 
-                 ]}
-                 TODO: seems like we should update depenency graph, 
-
-              *)
-              (us @ acc , 
-               List.fold_left (fun acc (id,_) -> Ident_set.add id acc) set us , 
-               wrap)
-            | Nop _ -> assert false 
-          ) ([], collections, []) groups in
+      let (rev_bindings, rev_wrap, _) = 
+        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  ((id,lam) )  ->           
+          if stop || Lam.hit_any_variables collections lam  then 
+              (id, lam) :: inner_recursive_bindings, wrap, true
+          else 
+              (inner_recursive_bindings,  (Lam_group.Single (Strict, id, lam)) :: wrap, false)
+          ) ([],  [], false ) groups in
       lambda_of_groups 
-        (Lam.letrec 
-            result 
-            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
-            (aux body)) (List.rev wrap)
+      ~rev_bindings:rev_wrap (* These bindings are extracted from [letrec] *)
+        (Lam.letrec  (List.rev rev_bindings)  (aux body)) 
     | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
     | Lconst _ -> lam
     | Lvar _ -> lam 
@@ -97259,7 +97056,9 @@ let compile  ~filename output_prefix env _sigs
        |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-    (* |> Lam.check (Js_config.get_current_file () ) *)
+    
+    |> Lam.check (Js_config.get_current_file () ) 
+    
   in
   (* Debug identifier table *)
   (* Lam_stats_util.pp_alias_tbl Format.err_formatter meta.alias_tbl; *)
@@ -97384,7 +97183,9 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-    Js_config.iset_debug_file "camlinternalFormat.ml";
+    
+    Js_config.set_debug_file "rec_value_test.ml";
+    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
     let basename =  

@@ -3,13 +3,6 @@
 var Caml_obj = require("../../lib/js/caml_obj");
 var List     = require("../../lib/js/list");
 
-function _zs() {
-  return /* tuple */[
-          List.hd(ys),
-          List.hd(xs[0])
-        ];
-}
-
 var ys = [];
 
 Caml_obj.caml_update_dummy(ys, /* :: */[
@@ -17,18 +10,25 @@ Caml_obj.caml_update_dummy(ys, /* :: */[
       ys
     ]);
 
-var xs = [];
-
-Caml_obj.caml_update_dummy(xs, /* tuple */[
-      /* :: */[
-        2,
-        /* :: */[
+function _zs() {
+  return /* tuple */[
           List.hd(ys),
-          /* [] */0
-        ]
-      ],
-      _zs
-    ]);
+          List.hd(xs[0])
+        ];
+}
+
+var xs_000 = /* :: */[
+  2,
+  /* :: */[
+    List.hd(ys),
+    /* [] */0
+  ]
+];
+
+var xs = /* tuple */[
+  xs_000,
+  _zs
+];
 
 function even(_n) {
   while(true) {

@@ -21,15 +21,80 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 (* [groups] are in reverse order *)
 
-let lambda_of_groups result groups = 
+      (** be careful to flatten letrec 
+          like below : 
+          {[
+            let rec even = 
+              let odd n =  if n ==1 then true else even (n - 1) in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+          odd and even are recursive values, since all definitions inside 
+          e.g, [odd] can see [even] now, however, it should be fine
+          in our case? since ocaml's recursive value does not allow immediate 
+          access its value direclty?, seems no
+          {[
+            let rec even2 = 
+              let odd = even2 in
+              fun n -> if n ==0  then true else odd (n - 1)
+          ]}
+      *)
+      (* FIXME:
+          here we try to move inner definitions of [recurisve value] upwards
+          for example:
+         {[
+           let rec x = 
+             let y = 32 in
+             y :: x
+           and z = ..
+             ---
+             le ty = 32 in
+           let rec x = y::x
+           and z = ..
+         ]}
+          however, the inner definitions can see [z] and [x], so we
+          can not blindly move it in the beginning, however, for 
+          recursive value, ocaml does not allow immediate access to 
+          recursive value, so what's the best strategy?
+          ---
+          the motivation is to capture real tail call
+      *)
+      (*            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
+              (** FIXME: 
+                   It should be alias and alias will be optimized away
+                   in later optmizations, however, 
+                   this means if we don't optimize 
+                  {[ let u/a = v in ..]}
+                   the output would be wrong, we should *optimize 
+                   this away right now* instead of delaying it to the 
+                   later passes
+              *)
+              (acc, set, g :: wrap, stop)
+      *)
+       (* could also be from nested [let rec] 
+                 like 
+                 {[
+                   let rec x = 
+                     let rec y = 1 :: y in
+                     2:: List.hd y:: x 
+                 ]}
+                 TODO: seems like we should update depenency graph, 
+
+              *)
+      (** TODO: more flattening, 
+          - also for function compilation, flattening should be done first
+          - [compile_group] and [compile] become mutually recursive function
+      *)
+      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)              
+let lambda_of_groups ~rev_bindings result  = 
   List.fold_left (fun acc x -> 
       match (x : Lam_group.t) with 
       | Nop l -> Lam.seq l acc
       | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
       | Recursive bindings -> Lam.letrec bindings acc) 
-    result groups
+    result rev_bindings
 
 
 (* TODO: 
@@ -75,18 +140,9 @@ let deep_flatten
       let (res,l) = flatten acc arg  in
       flatten (Single(str, id, res ) :: l) body
     | Lletrec (bind_args, body) -> 
-      (** TODO: more flattening, 
-          - also for function compilation, flattening should be done first
-          - [compile_group] and [compile] become mutually recursive function
-      *)
-      (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
+
       flatten
         (
-          (* let rec iter bind_args acc =  *)
-          (*   match bind_args with *)
-          (*   | [] ->  acc  *)
-          (*   | (id,arg) :: rest ->  *)
-          (*       flatten acc  *)
           Recursive
             (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
           :: acc
@@ -102,103 +158,35 @@ let deep_flatten
     match lam with 
     | Llet _ -> 
       let res, groups = flatten [] lam  
-      in lambda_of_groups res groups
+      in lambda_of_groups res ~rev_bindings:groups
     | Lletrec (bind_args, body) ->  
-      (** be careful to flatten letrec 
-          like below : 
-          {[
-            let rec even = 
-              let odd n =  if n ==1 then true else even (n - 1) in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-          odd and even are recursive values, since all definitions inside 
-          e.g, [odd] can see [even] now, however, it should be fine
-          in our case? since ocaml's recursive value does not allow immediate 
-          access its value direclty?, seems no
-          {[
-            let rec even2 = 
-              let odd = even2 in
-              fun n -> if n ==0  then true else odd (n - 1)
-          ]}
-      *)
-      (* let module Ident_set = Lambda.IdentSet in *)
-      let rec iter bind_args acc =
+      (* Attention: don't mess up with internal {let rec} *)
+      let rec iter bind_args groups set  =
         match bind_args with
-        | [] ->   acc
+        | [] ->   (List.rev groups, set)
         | (id,arg) :: rest ->
-          let groups, set = acc in
-          let res, groups = flatten groups (aux arg)
-          in
-          iter rest (Recursive [(id,res)] :: groups, Ident_set.add id set) 
+          iter rest ((id, aux arg) :: groups) (Ident_set.add id set)
       in
-      let groups, collections = iter bind_args ([], Ident_set.empty) in
-      (* FIXME:
-          here we try to move inner definitions of [recurisve value] upwards
-          for example:
-         {[
+      let groups, collections = iter bind_args [] Ident_set.empty in
+      (* Try to extract some value definitions from recursive values as [wrap],
+         it will stop whenever it find it could not move forward
+        {[
            let rec x = 
-             let y = 32 in
-             y :: x
-           and z = ..
-             ---
-             le ty = 32 in
-           let rec x = y::x
-           and z = ..
-         ]}
-          however, the inner definitions can see [z] and [x], so we
-          can not blindly move it in the beginning, however, for 
-          recursive value, ocaml does not allow immediate access to 
-          recursive value, so what's the best strategy?
-          ---
-          the motivation is to capture real tail call
+              let y = 1 in
+              let z = 2 in 
+              ...  
+        ]}
       *)
-      let (result, _, wrap) = 
-        List.fold_left (fun  (acc, set, wrap)  g -> 
-            match (g : Lam_group.t) with 
-            | Recursive [ id, (Lconst _)]
-            | Single (Alias, id, ( Lconst _   ))
-            | Single ((Alias | Strict | StrictOpt), id, ( Lfunction _ )) -> 
-              (** FIXME: 
-                   It should be alias and alias will be optimized away
-                   in later optmizations, however, 
-                   this means if we don't optimize 
-                  {[ let u/a = v in ..]}
-                   the output would be wrong, we should *optimize 
-                   this away right now* instead of delaying it to the 
-                   later passes
-              *)
-              (acc, set, g :: wrap)
-
-            | Single (_, id, ( Lvar bid)) -> 
-              (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
-            | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
-              if Ident_set.(is_empty (inter variables collections)) 
-              then 
-                (acc, set, g :: wrap )
-              else 
-                ((id, lam ) :: acc , Ident_set.add id set, wrap)
-            | Recursive us -> 
-              (* could also be from nested [let rec] 
-                 like 
-                 {[
-                   let rec x = 
-                     let rec y = 1 :: y in
-                     2:: List.hd y:: x 
-                 ]}
-                 TODO: seems like we should update depenency graph, 
-
-              *)
-              (us @ acc , 
-               List.fold_left (fun acc (id,_) -> Ident_set.add id acc) set us , 
-               wrap)
-            | Nop _ -> assert false 
-          ) ([], collections, []) groups in
+      let (rev_bindings, rev_wrap, _) = 
+        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  ((id,lam) )  ->           
+          if stop || Lam.hit_any_variables collections lam  then 
+              (id, lam) :: inner_recursive_bindings, wrap, true
+          else 
+              (inner_recursive_bindings,  (Lam_group.Single (Strict, id, lam)) :: wrap, false)
+          ) ([],  [], false ) groups in
       lambda_of_groups 
-        (Lam.letrec 
-            result 
-            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
-            (aux body)) (List.rev wrap)
+      ~rev_bindings:rev_wrap (* These bindings are extracted from [letrec] *)
+        (Lam.letrec  (List.rev rev_bindings)  (aux body)) 
     | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
     | Lconst _ -> lam
     | Lvar _ -> lam 

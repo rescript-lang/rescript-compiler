@@ -477,15 +477,79 @@ let free_variables l =
   in free Ident_set.empty Ident_set.empty l
 *)  
 
+let hit_any_variables (fv : Ident_set.t) l : bool  =
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id -> Ident_set.mem id fv 
+      | Lassign(id, e) ->
+        Ident_set.mem id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        List.exists (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false 
+      | Lapply{fn; args; _} ->
+        hit fn || List.exists hit args
+      | Lprim {args; _} ->
+        List.exists hit args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
+        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
+        begin match sw.sw_failaction with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        List.exists (fun (_,act) -> hit act) cases ||
+        begin match default with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.exists hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || List.exists hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
+  
+
+
 let free_variables l =
   let fv = ref Ident_set.empty in
   let rec free (l : t) =
     begin
       match (l : t) with 
-        Lvar id -> fv := Ident_set.add id !fv
-      | Lconst _ -> ()
-      | Lapply{fn; args; _} ->
-        free fn; List.iter free args
+      | Lvar id -> fv := Ident_set.add id !fv
+      | Lassign(id, e) ->
+        free e;
+        fv := Ident_set.add id !fv        
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        free e1; free e2;
+        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      | Ltrywith(e1, exn, e2) ->
+        free e1; free e2;
+        fv := Ident_set.remove exn !fv
+        
       | Lfunction{body;params} ->
         free body;
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
@@ -496,6 +560,12 @@ let free_variables l =
         free body;
         List.iter (fun (id, exp) -> free exp) decl;
         List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        free e1; free e2; free e3;
+        fv := Ident_set.remove v !fv
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        free fn; List.iter free args
       | Lprim {args; _} ->
         List.iter free args
       | Lswitch(arg, sw) ->
@@ -515,24 +585,12 @@ let free_variables l =
         end
       | Lstaticraise (_,args) ->
         List.iter free args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        free e1; free e2;
-        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
-      | Ltrywith(e1, exn, e2) ->
-        free e1; free e2;
-        fv := Ident_set.remove exn !fv
       | Lifthenelse(e1, e2, e3) ->
         free e1; free e2; free e3
       | Lsequence(e1, e2) ->
         free e1; free e2
       | Lwhile(e1, e2) ->
         free e1; free e2
-      | Lfor(v, e1, e2, dir, e3) ->
-        free e1; free e2; free e3;
-        fv := Ident_set.remove v !fv
-      | Lassign(id, e) ->
-        free e;
-        fv := Ident_set.add id !fv
       | Lsend (k, met, obj, args, _) ->
         free met; free obj; List.iter free args 
       | Lifused (v, e) ->
@@ -549,12 +607,20 @@ let free_variables l =
 *)
 let check file lam = 
   let defined_variables = Ident_hash_set.create 1000 in 
+  let success = ref true in 
   let use (id : Ident.t)  = 
     if not @@ Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file in 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
+        success := false
+      end        
+      in 
   let def (id : Ident.t) =
     if Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
+        success := false 
+      end
     else Ident_hash_set.add defined_variables id 
   in 
   let rec iter (l : t) =
@@ -621,7 +687,12 @@ let check file lam =
       | Lifused (v, e) ->
         iter e
     end;
-  in iter lam; lam
+  in 
+  begin 
+      iter lam; 
+      assert (!success) ; 
+      lam 
+  end      
 
 module Prim = struct 
   type t = primitive
