@@ -218,6 +218,7 @@ type unop = t ->  t
 val inner_map : (t -> t) -> t -> t
 val inner_iter : (t -> unit) -> t -> unit 
 val free_variables : t -> Ident_set.t
+val hit_any_variables : Ident_set.t -> t -> bool
 val check : string -> t -> t 
 type bindings = (Ident.t * t) list
 

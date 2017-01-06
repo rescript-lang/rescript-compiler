@@ -160,20 +160,28 @@ let deep_flatten
       let res, groups = flatten [] lam  
       in lambda_of_groups res ~rev_bindings:groups
     | Lletrec (bind_args, body) ->  
-      let rec iter bind_args acc =
+      let rec iter bind_args groups set  =
         match bind_args with
-        | [] ->   acc
+        | [] ->   (List.rev groups, set)
         | (id,arg) :: rest ->
-          let groups, set = acc in
-          let res, groups = flatten groups (aux arg)
-          in
-          iter rest 
-          (Recursive [(id,res)] :: groups, Ident_set.add id set) 
+          let res, groups = flatten groups (aux arg) in
+          iter
+           rest 
+            (Recursive [(id,res)] :: groups) 
+            (Ident_set.add id set) 
       in
-      let rev_groups, collections = iter bind_args ([], Ident_set.empty) in
-      let (bindings, wrap, _) = 
-        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  (g : Lam_group.t) -> 
-          
+      let groups, collections = iter bind_args [] Ident_set.empty in
+      (* Try to extract some value definitions from recursive values as [wrap],
+         it will stop whenever it find it could not move forward
+        {[
+           let rec x = 
+              let y = 1 in
+              let z = 2 in 
+              ...  
+        ]}
+      *)
+      let (rev_bindings, rev_wrap, _) = 
+        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  (g : Lam_group.t) ->           
           if stop  then 
             match g with 
             | Single (_, id, lam) -> 
@@ -188,21 +196,18 @@ let deep_flatten
             | Single (_, id, ( Lvar _)) -> 
               (inner_recursive_bindings,  g:: wrap, stop)
             | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
-              if Ident_set.is_empty (Ident_set.inter variables collections) 
+             if not @@ Lam.hit_any_variables collections lam 
               then 
                 (inner_recursive_bindings,  g :: wrap, stop )
               else 
                 ((id, lam ) :: inner_recursive_bindings , wrap,  true)
             | Recursive us -> 
-              (us @ inner_recursive_bindings , 
-               
-               wrap, true)
+              (us @ inner_recursive_bindings , wrap, true)
             | Nop _ -> assert false 
-          ) ([],  [], false ) (List.rev rev_groups) in
+          ) ([],  [], false ) groups in
       lambda_of_groups 
-      ~rev_bindings:wrap (* These bindings are extracted from [letrec] *)
-        (Lam.letrec  (List.rev bindings)  (aux body)) 
+      ~rev_bindings:rev_wrap (* These bindings are extracted from [letrec] *)
+        (Lam.letrec  (List.rev rev_bindings)  (aux body)) 
     | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
     | Lconst _ -> lam
     | Lvar _ -> lam 
