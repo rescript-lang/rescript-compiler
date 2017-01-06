@@ -160,15 +160,12 @@ let deep_flatten
       let res, groups = flatten [] lam  
       in lambda_of_groups res ~rev_bindings:groups
     | Lletrec (bind_args, body) ->  
+      (* Attention: don't mess up with internal {let rec} *)
       let rec iter bind_args groups set  =
         match bind_args with
         | [] ->   (List.rev groups, set)
         | (id,arg) :: rest ->
-          let res, groups = flatten groups (aux arg) in
-          iter
-           rest 
-            (Recursive [(id,res)] :: groups) 
-            (Ident_set.add id set) 
+          iter rest ((id, aux arg) :: groups) (Ident_set.add id set)
       in
       let groups, collections = iter bind_args [] Ident_set.empty in
       (* Try to extract some value definitions from recursive values as [wrap],
@@ -181,29 +178,11 @@ let deep_flatten
         ]}
       *)
       let (rev_bindings, rev_wrap, _) = 
-        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  (g : Lam_group.t) ->           
-          if stop  then 
-            match g with 
-            | Single (_, id, lam) -> 
-              (id, lam) :: inner_recursive_bindings, wrap, stop
-            | Recursive us ->
-              us @ inner_recursive_bindings , wrap , stop 
-            | Nop _ -> assert false 
+        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  ((id,lam) )  ->           
+          if stop || Lam.hit_any_variables collections lam  then 
+              (id, lam) :: inner_recursive_bindings, wrap, true
           else 
-            match g with 
-            | Recursive [ id, (Lconst _)]
-            | Single (Alias, id, ( Lconst _   )) 
-            | Single (_, id, ( Lvar _)) -> 
-              (inner_recursive_bindings,  g:: wrap, stop)
-            | Single (_, id, lam) ->
-             if not @@ Lam.hit_any_variables collections lam 
-              then 
-                (inner_recursive_bindings,  g :: wrap, stop )
-              else 
-                ((id, lam ) :: inner_recursive_bindings , wrap,  true)
-            | Recursive us -> 
-              (us @ inner_recursive_bindings , wrap, true)
-            | Nop _ -> assert false 
+              (inner_recursive_bindings,  (Lam_group.Single (Strict, id, lam)) :: wrap, false)
           ) ([],  [], false ) groups in
       lambda_of_groups 
       ~rev_bindings:rev_wrap (* These bindings are extracted from [letrec] *)

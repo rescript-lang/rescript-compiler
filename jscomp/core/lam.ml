@@ -607,12 +607,20 @@ let free_variables l =
 *)
 let check file lam = 
   let defined_variables = Ident_hash_set.create 1000 in 
+  let success = ref true in 
   let use (id : Ident.t)  = 
     if not @@ Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file in 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
+        success := false
+      end        
+      in 
   let def (id : Ident.t) =
     if Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
+        success := false 
+      end
     else Ident_hash_set.add defined_variables id 
   in 
   let rec iter (l : t) =
@@ -679,7 +687,12 @@ let check file lam =
       | Lifused (v, e) ->
         iter e
     end;
-  in iter lam; lam
+  in 
+  begin 
+      iter lam; 
+      assert (!success) ; 
+      lam 
+  end      
 
 module Prim = struct 
   type t = primitive

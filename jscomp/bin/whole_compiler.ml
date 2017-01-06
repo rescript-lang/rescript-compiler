@@ -62294,12 +62294,20 @@ let free_variables l =
 *)
 let check file lam = 
   let defined_variables = Ident_hash_set.create 1000 in 
+  let success = ref true in 
   let use (id : Ident.t)  = 
     if not @@ Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file in 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
+        success := false
+      end        
+      in 
   let def (id : Ident.t) =
     if Ident_hash_set.mem defined_variables id  then 
-      Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
+        success := false 
+      end
     else Ident_hash_set.add defined_variables id 
   in 
   let rec iter (l : t) =
@@ -62366,7 +62374,12 @@ let check file lam =
       | Lifused (v, e) ->
         iter e
     end;
-  in iter lam; lam
+  in 
+  begin 
+      iter lam; 
+      assert (!success) ; 
+      lam 
+  end      
 
 module Prim = struct 
   type t = primitive
@@ -92388,7 +92401,7 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.
        here we share env 
 
 *)
-and compile_recursive_let 
+and compile_recursive_let
     (cxt : Lam_compile_defs.cxt)
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
@@ -94748,15 +94761,12 @@ let deep_flatten
       let res, groups = flatten [] lam  
       in lambda_of_groups res ~rev_bindings:groups
     | Lletrec (bind_args, body) ->  
+      (* Attention: don't mess up with internal {let rec} *)
       let rec iter bind_args groups set  =
         match bind_args with
         | [] ->   (List.rev groups, set)
         | (id,arg) :: rest ->
-          let res, groups = flatten groups (aux arg) in
-          iter
-           rest 
-            (Recursive [(id,res)] :: groups) 
-            (Ident_set.add id set) 
+          iter rest ((id, aux arg) :: groups) (Ident_set.add id set)
       in
       let groups, collections = iter bind_args [] Ident_set.empty in
       (* Try to extract some value definitions from recursive values as [wrap],
@@ -94769,29 +94779,11 @@ let deep_flatten
         ]}
       *)
       let (rev_bindings, rev_wrap, _) = 
-        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  (g : Lam_group.t) ->           
-          if stop  then 
-            match g with 
-            | Single (_, id, lam) -> 
-              (id, lam) :: inner_recursive_bindings, wrap, stop
-            | Recursive us ->
-              us @ inner_recursive_bindings , wrap , stop 
-            | Nop _ -> assert false 
+        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  ((id,lam) )  ->           
+          if stop || Lam.hit_any_variables collections lam  then 
+              (id, lam) :: inner_recursive_bindings, wrap, true
           else 
-            match g with 
-            | Recursive [ id, (Lconst _)]
-            | Single (Alias, id, ( Lconst _   )) 
-            | Single (_, id, ( Lvar _)) -> 
-              (inner_recursive_bindings,  g:: wrap, stop)
-            | Single (_, id, lam) ->
-             if not @@ Lam.hit_any_variables collections lam 
-              then 
-                (inner_recursive_bindings,  g :: wrap, stop )
-              else 
-                ((id, lam ) :: inner_recursive_bindings , wrap,  true)
-            | Recursive us -> 
-              (us @ inner_recursive_bindings , wrap, true)
-            | Nop _ -> assert false 
+              (inner_recursive_bindings,  (Lam_group.Single (Strict, id, lam)) :: wrap, false)
           ) ([],  [], false ) groups in
       lambda_of_groups 
       ~rev_bindings:rev_wrap (* These bindings are extracted from [letrec] *)
@@ -97192,7 +97184,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
     
-    Js_config.set_debug_file "class_repr.ml";
+    Js_config.set_debug_file "rec_value_test.ml";
     
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

@@ -56,22 +56,18 @@ var four = [2];
 
 var three = [3];
 
-var h = [];
+var h = Block.__(250, [fib]);
 
-var v = [];
-
-Caml_obj.caml_update_dummy(h, Block.__(250, [fib]));
-
-Caml_obj.caml_update_dummy(v, [function () {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "rec_value_test.ml",
-                23,
-                24
-              ]
-            ];
-      }]);
+var v = [function () {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "rec_value_test.ml",
+            23,
+            24
+          ]
+        ];
+  }];
 
 function fib(n) {
   if (n > 3 || n < 0) {
@@ -98,47 +94,32 @@ function fib(n) {
 
 var ys = [];
 
-var xs = [];
-
 Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
       ys
     ]);
 
-function _zs() {
-  return /* tuple */[
-          List.hd(ys),
-          List.hd(xs[0])
-        ];
-}
-
-Caml_obj.caml_update_dummy(xs, /* tuple */[
-      /* :: */[
-        2,
-        /* :: */[
-          List.hd(ys),
-          /* [] */0
-        ]
-      ],
-      _zs
-    ]);
+var xs_000 = /* :: */[
+  2,
+  /* :: */[
+    List.hd(ys),
+    /* [] */0
+  ]
+];
 
 function zs() {
-  return List.hd(/* :: */[
-              2,
-              /* [] */0
-            ]);
+  return List.hd(xs[0]);
 }
 
-var xs$1 = [];
+var xs_000$1 = /* :: */[
+  2,
+  /* [] */0
+];
 
-Caml_obj.caml_update_dummy(xs$1, /* tuple */[
-      /* :: */[
-        2,
-        /* [] */0
-      ],
-      zs
-    ]);
+var xs = /* tuple */[
+  xs_000$1,
+  zs
+];
 
 function fib2(n) {
   if (n === 0 || n === 1) {
@@ -229,12 +210,10 @@ var fake_y = /* :: */[
   ]
 ];
 
-var fake_z = [];
-
-Caml_obj.caml_update_dummy(fake_z, /* :: */[
-      1,
-      fake_y
-    ]);
+var fake_z = /* :: */[
+  1,
+  fake_y
+];
 
 var fake_y2 = /* :: */[
   2,
@@ -244,17 +223,15 @@ var fake_y2 = /* :: */[
   ]
 ];
 
-var fake_z2 = [];
+var fake_z2_001 = /* :: */[
+  sum(0, 10),
+  fake_y2
+];
 
-Caml_obj.caml_update_dummy(fake_z2, /* :: */[
-      1,
-      /* :: */[
-        sum(0, 10),
-        fake_y2
-      ]
-    ]);
-
-var v$1 = 3;
+var fake_z2 = /* :: */[
+  1,
+  fake_z2_001
+];
 
 var rec_variant_b = [];
 
@@ -426,7 +403,7 @@ var suites_001 = /* :: */[
                   function () {
                     return /* Eq */Block.__(0, [
                               3,
-                              v$1
+                              3
                             ]);
                   }
                 ],
@@ -508,6 +485,8 @@ function fake_inline(n) {
 
 Mt.from_pair_suites("rec_value_test.ml", suites);
 
+var v$1 = 3;
+
 var fake_inline_inlie2 = 4;
 
 exports.x                  = x;
@@ -517,7 +496,7 @@ exports.c                  = c;
 exports.xx                 = xx;
 exports.naive              = naive;
 exports.fib                = fib;
-exports.xs                 = xs$1;
+exports.xs                 = xs;
 exports.fib2               = fib2;
 exports.two                = two;
 exports.fib3               = fib3;

@@ -5,8 +5,6 @@ var List     = require("../../lib/js/list");
 
 var ys = [];
 
-var xs = [];
-
 Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
       ys
@@ -19,16 +17,18 @@ function _zs() {
         ];
 }
 
-Caml_obj.caml_update_dummy(xs, /* tuple */[
-      /* :: */[
-        2,
-        /* :: */[
-          List.hd(ys),
-          /* [] */0
-        ]
-      ],
-      _zs
-    ]);
+var xs_000 = /* :: */[
+  2,
+  /* :: */[
+    List.hd(ys),
+    /* [] */0
+  ]
+];
+
+var xs = /* tuple */[
+  xs_000,
+  _zs
+];
 
 function even(_n) {
   while(true) {
