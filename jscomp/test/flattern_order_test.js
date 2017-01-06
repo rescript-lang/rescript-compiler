@@ -3,21 +3,21 @@
 var Caml_obj = require("../../lib/js/caml_obj");
 var List     = require("../../lib/js/list");
 
-function _zs() {
-  return /* tuple */[
-          List.hd(ys),
-          List.hd(xs[0])
-        ];
-}
-
 var ys = [];
+
+var xs = [];
 
 Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
       ys
     ]);
 
-var xs = [];
+function _zs() {
+  return /* tuple */[
+          List.hd(ys),
+          List.hd(xs[0])
+        ];
+}
 
 Caml_obj.caml_update_dummy(xs, /* tuple */[
       /* :: */[

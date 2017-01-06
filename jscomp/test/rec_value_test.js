@@ -56,20 +56,22 @@ var four = [2];
 
 var three = [3];
 
-var v = [function () {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          [
-            "rec_value_test.ml",
-            23,
-            24
-          ]
-        ];
-  }];
-
 var h = [];
 
+var v = [];
+
 Caml_obj.caml_update_dummy(h, Block.__(250, [fib]));
+
+Caml_obj.caml_update_dummy(v, [function () {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              [
+                "rec_value_test.ml",
+                23,
+                24
+              ]
+            ];
+      }]);
 
 function fib(n) {
   if (n > 3 || n < 0) {
@@ -94,21 +96,21 @@ function fib(n) {
   }
 }
 
-function _zs() {
-  return /* tuple */[
-          List.hd(ys),
-          List.hd(xs[0])
-        ];
-}
-
 var ys = [];
+
+var xs = [];
 
 Caml_obj.caml_update_dummy(ys, /* :: */[
       1,
       ys
     ]);
 
-var xs = [];
+function _zs() {
+  return /* tuple */[
+          List.hd(ys),
+          List.hd(xs[0])
+        ];
+}
 
 Caml_obj.caml_update_dummy(xs, /* tuple */[
       /* :: */[
@@ -138,8 +140,6 @@ Caml_obj.caml_update_dummy(xs$1, /* tuple */[
       zs
     ]);
 
-var two = 2;
-
 function fib2(n) {
   if (n === 0 || n === 1) {
     return 1;
@@ -148,6 +148,8 @@ function fib2(n) {
     return fib2(n - 1 | 0) + fib2(n - 2 | 0) | 0;
   }
 }
+
+var two = 2;
 
 function fib3(n) {
   if (n === 0 || n === 1) {

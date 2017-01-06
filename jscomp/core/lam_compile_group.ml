@@ -239,7 +239,9 @@ let compile  ~filename output_prefix env _sigs
        |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-    (* |> Lam.check (Js_config.get_current_file () ) *)
+#if BS_DEBUG then    
+    |> Lam.check (Js_config.get_current_file () ) 
+#end    
   in
   (* Debug identifier table *)
   (* Lam_stats_util.pp_alias_tbl Format.err_formatter meta.alias_tbl; *)
@@ -364,7 +366,9 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-    Js_config.iset_debug_file "camlinternalFormat.ml";
+#if BS_DEBUG then    
+    Js_config.set_debug_file "class_repr.ml";
+#end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
     let basename =  
