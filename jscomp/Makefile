@@ -39,7 +39,10 @@ ext/ident_hash_set.ml: ext/hash_set.cppo.ml
 ext/hash_set.ml: ext/hash_set.cppo.ml
 	cppo -D TYPE_FUNCTOR $< -o $@
 ext/hash_set_poly.ml: ext/hash_set.cppo.ml
-	cppo $< -o $@
+	cppo -D TYPE_POLY $< -o $@
+
+# ext/hash_set_ident_mask.ml: ext/hash_set.cppo.ml
+# cppo -D TYPE_IDENT_MASK $< -o $@
 
 ext/int_vec.ml: ext/vec.cppo.ml
 	cppo -D TYPE_INT $< -o $@
@@ -139,6 +142,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_topsort_tests\
 	ounit_sexp_tests\
 	ounit_int_vec_tests\
+	ounit_ident_mask_tests\
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 
@@ -162,8 +166,11 @@ EXT_SRCS = ext_util\
 	ext_map \
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
-	hash_set_gen hash_set string_hash_set int_hash_set \
+	hash_set_gen hash_set \
+	string_hash_set \
 	ext_ident\
+	int_hash_set \
+	hash_set_ident_mask\
 	ordered_hash_set_gen\
 	ordered_hash_set_string\
 	ordered_hash_set_ident\
@@ -386,7 +393,7 @@ bin/all_ounit_tests.ml:./bin/bspack.exe
 
 
 bin/all_ounit_tests.exe: stubs/ext_basic_hash_stubs.c bin/all_ounit_tests.mli bin/all_ounit_tests.ml
-	ocamloptp -P a -g -I bin -w -a unix.cmxa $^ -o $@
+	ocamloptp -I +compiler-libs ocamlcommon.cmxa -P a -g -I bin -w -a unix.cmxa $^ -o $@
 
 test:bin/all_ounit_tests.exe
 	$^ && ocamlprof bin/all_ounit_tests.ml > bin/all_ounit_tests.i.ml &&	rm ocamlprof.dump

@@ -58700,7 +58700,7 @@ let eq_key = Ext_string.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -59108,6 +59108,197 @@ let equal ( x : Ident.t) ( y : Ident.t) =
   else y.stamp = 0 && x.name = y.name
    
 end
+module Hash_set_ident_mask : sig 
+#1 "hash_set_ident_mask.mli"
+
+
+(** Based on [hash_set] specialized for mask operations  *)
+type ident = Ident.t  
+
+
+type t
+val create: int ->  t
+
+
+(* add one ident *)
+val add_unmask :  t -> ident -> unit
+
+
+(** [check_mask h key] if [key] exists mask it otherwise nothing
+    return true if all keys are masked otherwise false
+*)
+val mask_check_all_hit : ident ->  t -> bool
+
+(** [iter_and_unmask f h] iterating the collection and mask all idents,
+    dont consul the collection in function [f]
+    TODO: what happens if an exception raised in the callback,
+    would the hashtbl still be in consistent state?
+*)
+val iter_and_unmask: (ident -> bool ->  unit) ->  t -> unit
+
+
+
+  
+
+end = struct
+#1 "hash_set_ident_mask.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type ident = Ident.t
+
+type key = {ident : ident ; mutable mask : bool }
+
+type t = {
+  mutable size : int ; 
+  mutable data : key list array;
+  initial_size : int ; 
+  mutable mask_size : int (* mark how many idents are marked *)
+}
+
+
+
+let key_index_by_ident (h : t) (key : Ident.t) =    
+  (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
+
+let key_index (h :  t ) ({ident = key} : key) =
+  key_index_by_ident h key 
+
+
+let create  initial_size =
+  let s = Ext_util.power_2_above 8 initial_size in
+  { initial_size = s; size = 0; data = Array.make s [] ; mask_size = 0}
+
+let iter_and_unmask f h =
+  let rec do_bucket buckets = 
+    match buckets with 
+    | [ ] ->
+      ()
+    | k ::  rest ->    
+      f k.ident k.mask ;
+      if k.mask then 
+        begin 
+          k.mask <- false ;
+          (* we can set [h.mask_size] to zero,
+             however, it would result inconsistent state
+             once [f] throw
+          *)
+          h.mask_size <- h.mask_size - 1
+        end; 
+      do_bucket rest 
+  in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+  
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | [] -> false 
+  | {ident = key1 }::rest -> 
+    Ext_ident.equal key   key1 ||
+    match rest with 
+    | [] -> false 
+    | {ident = key2} :: rest -> 
+      Ext_ident.equal key   key2 ||
+      match rest with 
+      | [] -> false 
+      | {ident = key3; _} :: rest -> 
+        Ext_ident.equal key   key3 ||
+        small_bucket_mem key rest 
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize [ ] in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        [ ] -> ()
+      | key :: rest ->
+        let nidx = indexfun h key in
+        ndata.(nidx) <- key :: ndata.(nidx);
+        insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let add_unmask (h : t) (key : Ident.t) =
+  let i = key_index_by_ident h key  in 
+  let h_data = h.data in 
+  let old_bucket = Array.unsafe_get h_data i in
+  if not (small_bucket_mem key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i ({ident = key; mask = false} :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then resize key_index h
+    end
+
+
+
+
+let rec small_bucket_mask  key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    if Ext_ident.equal key   key1.ident  then 
+      if key1.mask then false else (key1.mask <- true ; true) 
+    else 
+      match rest with 
+      | [] -> false
+      | key2 :: rest -> 
+        if Ext_ident.equal key key2.ident  then 
+          if key2.mask then false else (key2.mask <- true ; true)
+        else 
+          match rest with 
+          | [] -> false
+          | key3 :: rest -> 
+            if Ext_ident.equal key key3.ident then 
+              if key3.mask then false else (key3.mask <- true ; true)
+            else 
+              small_bucket_mask  key rest 
+
+let mask_check_all_hit (key : Ident.t) (h : t)  =     
+  if 
+    small_bucket_mask key 
+      (Array.unsafe_get h.data (key_index_by_ident h key )) then 
+    begin 
+      h.mask_size <- h.mask_size + 1 
+    end;
+  h.size = h.mask_size 
+
+
+
+
+end
 module Ident_hash_set : sig 
 #1 "ident_hash_set.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -59171,7 +59362,7 @@ let eq_key = Ext_ident.equal
 type t = key Hash_set_gen.t
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -62219,7 +62410,60 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
     end;
   in hit l
   
-
+let hit_mask (fv : Hash_set_ident_mask.t) l =
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id fv 
+      | Lassign(id, e) ->
+        Hash_set_ident_mask.mask_check_all_hit id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        List.exists (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false 
+      | Lapply{fn; args; _} ->
+        hit fn || List.exists hit args
+      | Lprim {args; _} ->
+        List.exists hit args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
+        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
+        begin match sw.sw_failaction with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        List.exists (fun (_,act) -> hit act) cases ||
+        begin match default with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.exists hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || List.exists hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
 
 let free_variables l =
   let fv = ref Ident_set.empty in
@@ -62901,21 +63145,28 @@ type bindings = (Ident.t * t) list
 
 
 let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   = 
+  let len = List.length groups in 
   let domain : _ Ordered_hash_map_local_ident.t = 
-    Ordered_hash_map_local_ident.create 3 in 
-  List.iter (fun (x,lam) -> Ordered_hash_map_local_ident.add domain x lam) groups ;
+    Ordered_hash_map_local_ident.create len in 
+  let mask = Hash_set_ident_mask.create len in   
+  List.iter (fun (x,lam) -> 
+    Ordered_hash_map_local_ident.add domain x lam;
+    Hash_set_ident_mask.add_unmask mask x;
+    ) groups ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
   let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
   domain
   |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
       let base_key =  node_vec.(key_index) in 
-      let free_vars = free_variables lam in
-      free_vars 
-      |> Ident_set.iter (fun x ->
-          let key = Ordered_hash_map_local_ident.rank domain x in 
-          if key >= 0 then 
-            Int_vec.push key base_key 
-        ) 
+      ignore (hit_mask mask lam) ;
+      mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  -> 
+      if hit then 
+      begin 
+        let key = Ordered_hash_map_local_ident.rank domain ident in 
+        Int_vec.push key base_key;
+      end
+      );
+
     ) ;
   domain, int_mapping , node_vec
 
@@ -63506,7 +63757,7 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 50
+# 51
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
@@ -63515,7 +63766,7 @@ let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -68967,7 +69218,7 @@ let eq_key = Ext_int.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
