@@ -1674,6 +1674,8 @@ val equal : string -> string -> bool
 
 val find : ?start:int -> sub:string -> string -> int
 
+val contain_substring : string -> string -> bool 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string
@@ -1913,6 +1915,9 @@ let find ?(start=0) ~sub s =
     -1
   with Local_exit ->
     !i
+
+let contain_substring s sub = 
+  find s ~sub >= 0 
 
 
 let rfind ~sub s =
@@ -3263,6 +3268,352 @@ let bench () =
     done 
 
   end ; 
+
+end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+val suffix_cmj : string
+val suffix_cmi : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mliast : string
+val suffix_mll : string
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+val suffix_js : string
+
+
+val commonjs : string 
+val amdjs : string 
+val goog : string 
+
+val unused_attribute : string 
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+let suffix_cmj = ".cmj"
+let suffix_cmi = ".cmi"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mlast = ".mlast"
+let suffix_mliast = ".mliast"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
+let suffix_js = ".js"
+
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let goog = "goog"
+
+let unused_attribute = "Unused attribute " 
+end
+module Ounit_cmd_tests
+= struct
+#1 "ounit_cmd_tests.ml"
+let (//) = Filename.concat
+
+(** may nonterminate when [cwd] is '.' *)
+let rec unsafe_root_dir_aux cwd  = 
+    if Sys.file_exists (cwd//Literals.bsconfig_json) then cwd 
+    else unsafe_root_dir_aux (Filename.dirname cwd)     
+
+let project_root = unsafe_root_dir_aux (Sys.getcwd ())
+let jscomp = project_root // "jscomp"
+let bsc_bin = jscomp // "bin" 
+
+let bsc_exe = bsc_bin // "bsc.exe"
+let runtime_dir = jscomp // "runtime"
+let others_dir = jscomp // "others"
+let stdlib_dir = jscomp // "stdlib"
+
+
+let ((>::),
+    (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+
+let rec safe_dup fd =
+  let new_fd = Unix.dup fd in
+  if (Obj.magic new_fd : int) >= 3 then
+    new_fd (* [dup] can not be 0, 1, 2*)
+  else begin
+    let res = safe_dup fd in
+    Unix.close new_fd;
+    res
+  end
+
+let safe_close fd =
+  try Unix.close fd with Unix.Unix_error(_,_,_) -> ()
+
+
+type output = {
+    stderr : string ; 
+    stdout : string ;
+    exit_code : int 
+}
+
+let perform command args = 
+    let new_fd_in, new_fd_out = Unix.pipe () in 
+    let err_fd_in, err_fd_out = Unix.pipe () in 
+    match Unix.fork () with 
+    | 0 -> 
+        begin try 
+            safe_close new_fd_in;  
+            safe_close err_fd_in;
+            Unix.dup2 err_fd_out Unix.stderr ; 
+            Unix.dup2 new_fd_out Unix.stdout; 
+            Unix.execv command args 
+        with _ -> 
+            exit 127
+        end
+    | pid ->
+        (* when all the descriptors on a pipe's input are closed and the pipe is 
+            empty, a call to [read] on its output returns zero: end of file.
+           when all the descriptiors on a pipe's output are closed, a call to 
+           [write] on its input kills the writing process (EPIPE).
+        *)
+        safe_close new_fd_out ; 
+        safe_close err_fd_out ; 
+        let in_chan = Unix.in_channel_of_descr new_fd_in in 
+        let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
+        let buf = Buffer.create 1024 in 
+        let err_buf = Buffer.create 1024 in 
+        (try 
+            while true do 
+                Buffer.add_string buf (input_line in_chan );             
+                Buffer.add_char buf '\n'
+            done;
+        with
+        End_of_file -> ()) ; 
+        (try 
+            while true do 
+                Buffer.add_string err_buf (input_line err_in_chan );
+                Buffer.add_char err_buf '\n'
+            done;
+        with
+        End_of_file -> ()) ; 
+        let exit_code = match snd @@ Unix.waitpid [] pid with 
+        | Unix.WEXITED exit_code -> exit_code 
+        | Unix.WSIGNALED _signal_number 
+        | Unix.WSTOPPED _signal_number  -> 127 in 
+            {
+                stdout = Buffer.contents buf ; 
+                stderr = Buffer.contents err_buf;
+                exit_code 
+            }
+
+
+let perform_bsc args = 
+    perform bsc_exe 
+        (Array.append 
+        [|bsc_exe ; 
+            "-bs-package-name" ; "bs-platform"; 
+            "-bs-no-version-header"; 
+            "-bs-cross-module-opt";
+            "-w";
+            "-40";
+            "-I" ;
+            runtime_dir ; 
+            "-I"; 
+            others_dir ; 
+            "-I" ; 
+            stdlib_dir
+        |] args)
+(* let output_of_exec_command command args =
+    let readme, writeme = Unix.pipe () in 
+    let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in 
+    let in_chan = Unix.in_channel_of_descr readme *)
+
+let debug_output o = 
+    Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
+        o.exit_code o.stdout o.stderr
+
+let suites = 
+    __FILE__
+    >::: [
+        __LOC__ >:: begin fun _ -> 
+            let v_output = perform_bsc  [| "-v" |] in 
+            OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
+            OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
+            (* Printf.printf "\n*>%s" v_output.stdout; *)
+            (* Printf.printf "\n*>%s" v_output.stderr ; *)
+        end; 
+        __LOC__ >:: begin fun _ -> 
+            let simple_quote = 
+                    perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
+            OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
+        end;
+        __LOC__ >:: begin fun _ -> 
+            let should_be_warning = 
+                perform_bsc [|"-bs-eval"; {|let bla4 foo x y= foo##(method1 x y [@bs]) |}|] in 
+            (* debug_output should_be_warning; *)
+            OUnit.assert_bool __LOC__ (Ext_string.contain_substring
+             should_be_warning.stderr Literals.unused_attribute)
+
+        end
+    ]
+
 
 end
 module Ext_util : sig 
@@ -8923,198 +9274,6 @@ let hash_variant s =
 
 
 end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string
-val bsconfig_json : string
-val build_ninja : string
-val suffix_cmj : string
-val suffix_cmi : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mliast : string
-val suffix_mll : string
-val suffix_d : string
-val suffix_mlastd : string
-val suffix_mliastd : string
-val suffix_js : string
-
-
-val commonjs : string 
-val amdjs : string 
-val goog : string 
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
-
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-let bsconfig_json = "bsconfig.json"
-let build_ninja = "build.ninja"
-
-let suffix_cmj = ".cmj"
-let suffix_cmi = ".cmi"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mlast = ".mlast"
-let suffix_mliast = ".mliast"
-let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
-
-let commonjs = "commonjs" 
-let amdjs = "amdjs"
-let goog = "goog"
-end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11190,6 +11349,14 @@ let suites =
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
     __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "a");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "b");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "c");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "");
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.contain_substring "abc" "abcc");
+    end;
+    __LOC__ >:: begin fun _ -> 
       Ext_string.trim " \t\n" =~ "";
       Ext_string.trim " \t\nb" =~ "b";
       Ext_string.trim "b \t\n" =~ "b";
@@ -12756,6 +12923,7 @@ let suites =
     Ounit_sexp_tests.suites;
     Ounit_int_vec_tests.suites;
     Ounit_ident_mask_tests.suites;
+    Ounit_cmd_tests.suites
   ]
 let _ = 
   OUnit.run_test_tt_main suites

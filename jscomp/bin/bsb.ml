@@ -460,6 +460,8 @@ val equal : string -> string -> bool
 
 val find : ?start:int -> sub:string -> string -> int
 
+val contain_substring : string -> string -> bool 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string
@@ -699,6 +701,9 @@ let find ?(start=0) ~sub s =
     -1
   with Local_exit ->
     !i
+
+let contain_substring s sub = 
+  find s ~sub >= 0 
 
 
 let rfind ~sub s =
@@ -954,6 +959,8 @@ val suffix_js : string
 val commonjs : string 
 val amdjs : string 
 val goog : string 
+
+val unused_attribute : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1049,6 +1056,8 @@ let suffix_js = ".js"
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
 let goog = "goog"
+
+let unused_attribute = "Unused attribute " 
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"

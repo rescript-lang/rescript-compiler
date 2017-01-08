@@ -81,6 +81,8 @@ val equal : string -> string -> bool
 
 val find : ?start:int -> sub:string -> string -> int
 
+val contain_substring : string -> string -> bool 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string

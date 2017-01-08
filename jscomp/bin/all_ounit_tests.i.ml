@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 108 *) List.hd state.tests_planned
+  (* 112 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 216 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 224 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 216 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 224 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 216 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 224 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 216 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 224 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 324 *) was_successful t
+        (* 336 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 432 *) string_of_int n
+        (* 448 *) string_of_int n
     | Label s -> 
-        (* 648 *) s
+        (* 672 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 108 *) 1 
-    | TestLabel (_, t) -> (* 127 *) test_case_count t
+    | TestCase _ -> (* 112 *) 1 
+    | TestLabel (_, t) -> (* 132 *) test_case_count t
     | TestList l -> 
-        (* 19 *) List.fold_left 
-          (fun c t -> (* 126 *) c + test_case_count t) 
+        (* 20 *) List.fold_left 
+          (fun c t -> (* 131 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 216 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 224 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -193,13 +193,13 @@ let mapi f l =
     rmapi 0 l
 
 let fold_lefti f accu l =
-  (* 19 *) let rec rfold_lefti cnt accup l = 
-    (* 145 *) match l with
+  (* 20 *) let rec rfold_lefti cnt accup l = 
+    (* 151 *) match l with
       | [] -> 
-          (* 19 *) accup
+          (* 20 *) accup
 
       | h::t -> 
-          (* 126 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 131 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 650 *) match event_type with
+  (* 674 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 648 *) begin
+        (* 672 *) begin
           let string_of_result = 
             if verbose then
-              (* 324 *) function
-                | RSuccess _      -> (* 108 *) "ok\n"
+              (* 336 *) function
+                | RSuccess _      -> (* 112 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 324 *) function
-                | RSuccess _      -> (* 108 *) "."
+              (* 336 *) function
+                | RSuccess _      -> (* 112 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 324 *) match e with 
+              (* 336 *) match e with 
                 | EStart p -> 
-                    (* 108 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 112 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 108 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 112 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 108 *) string_of_result result
+                    (* 112 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 324 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 216 *) ""
-                | EResult result -> (* 108 *) string_of_result result
+              (* 336 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 224 *) ""
+                | EResult result -> (* 112 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 325 *) output_string chn (format_event true ev);
+       (* 337 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 325 *) print_string (format_event verbose ev);
+     (* 337 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 325 *) std_log ev; file_log ev; log ev),
+       (* 337 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,7 +705,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2005347 *) if not b then (* 0 *) assert_failure msg
+  (* 2005357 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
@@ -951,8 +951,8 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 108 *) TestLabel(s, TestCase(f))  (* infix *)
-let (>:::) s l = (* 19 *) TestLabel(s, TestList(l)) (* infix *)
+let (>::) s f = (* 112 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>:::) s l = (* 20 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
 let rec test_decorate g =
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 108 *) try 
+    (* 112 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 108 *) (path, f) :: acc
+          (* 112 *) (path, f) :: acc
 
       | TestList (tests) ->
-          (* 19 *) fold_lefti 
+          (* 20 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 126 *) flatten_test 
+               (* 131 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 127 *) flatten_test ((Label label)::path) acc t
+          (* 132 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 108 *) let result = 
+    (* 112 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 109 *) match state.tests_planned with 
+    (* 113 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 108 *) let (path, f) = !global_chooser state in            
+          (* 112 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 5886 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 6328 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 324 *) log (OUnitLogger.TestEvent ev))
+         (* 336 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1674,6 +1674,8 @@ val equal : string -> string -> bool
 
 val find : ?start:int -> sub:string -> string -> int
 
+val contain_substring : string -> string -> bool 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string
@@ -1890,11 +1892,11 @@ let equal (x : string) y  = (* 0 *) x = y
 
 
 let unsafe_is_sub ~sub i s j ~len =
-  (* 16 *) let rec check k =
-    (* 36 *) if k = len
-    then (* 4 *) true
+  (* 52 *) let rec check k =
+    (* 95 *) if k = len
+    then (* 10 *) true
     else 
-      (* 32 *) String.unsafe_get sub (i+k) = 
+      (* 85 *) String.unsafe_get sub (i+k) = 
       String.unsafe_get s (j+k) && check (k+1)
   in
   j+len <= String.length s && check 0
@@ -1902,17 +1904,20 @@ let unsafe_is_sub ~sub i s j ~len =
 
 exception Local_exit 
 let find ?(start=0) ~sub s =
-  (* 2 *) let n = String.length sub in
+  (* 9 *) let n = String.length sub in
   let i = ref start in  
   try
     while !i + n <= String.length s do
-      (* 8 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
-        (* 2 *) raise_notrace Local_exit;
+      (* 44 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
+        (* 8 *) raise_notrace Local_exit;
       incr i
     done;
     -1
   with Local_exit ->
-    (* 2 *) !i
+    (* 8 *) !i
+
+let contain_substring s sub = 
+  (* 7 *) find s ~sub >= 0 
 
 
 let rfind ~sub s =
@@ -3263,6 +3268,352 @@ let bench () =
     done 
 
   end ; 
+
+end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val js_debugger : string
+val js_pure_expr : string
+val js_pure_stmt : string
+val js_unsafe_downgrade : string
+val js_fn_run : string
+val js_method_run : string
+val js_fn_method : string
+val js_fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+val js_fn_runmethod : string 
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+val suffix_cmj : string
+val suffix_cmi : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mliast : string
+val suffix_mll : string
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+val suffix_js : string
+
+
+val commonjs : string 
+val amdjs : string 
+val goog : string 
+
+val unused_attribute : string 
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let js_debugger = "js_debugger"
+let js_pure_expr = "js_pure_expr"
+let js_pure_stmt = "js_pure_stmt"
+let js_unsafe_downgrade = "js_unsafe_downgrade"
+let js_fn_run = "js_fn_run"
+let js_method_run = "js_method_run"
+
+let js_fn_method = "js_fn_method"
+let js_fn_mk = "js_fn_mk"
+let js_fn_runmethod = "js_fn_runmethod"
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+let suffix_cmj = ".cmj"
+let suffix_cmi = ".cmi"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mlast = ".mlast"
+let suffix_mliast = ".mliast"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
+let suffix_js = ".js"
+
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let goog = "goog"
+
+let unused_attribute = "Unused attribute " 
+end
+module Ounit_cmd_tests
+= struct
+#1 "ounit_cmd_tests.ml"
+let (//) = Filename.concat
+
+(** may nonterminate when [cwd] is '.' *)
+let rec unsafe_root_dir_aux cwd  = 
+    (* 2 *) if Sys.file_exists (cwd//Literals.bsconfig_json) then (* 1 *) cwd 
+    else (* 1 *) unsafe_root_dir_aux (Filename.dirname cwd)     
+
+let project_root = unsafe_root_dir_aux (Sys.getcwd ())
+let jscomp = project_root // "jscomp"
+let bsc_bin = jscomp // "bin" 
+
+let bsc_exe = bsc_bin // "bsc.exe"
+let runtime_dir = jscomp // "runtime"
+let others_dir = jscomp // "others"
+let stdlib_dir = jscomp // "stdlib"
+
+
+let ((>::),
+    (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+
+let rec safe_dup fd =
+  (* 0 *) let new_fd = Unix.dup fd in
+  if (Obj.magic new_fd : int) >= 3 then
+    (* 0 *) new_fd (* [dup] can not be 0, 1, 2*)
+  else (* 0 *) begin
+    let res = safe_dup fd in
+    Unix.close new_fd;
+    res
+  end
+
+let safe_close fd =
+  (* 8 *) try Unix.close fd with Unix.Unix_error(_,_,_) -> (* 0 *) ()
+
+
+type output = {
+    stderr : string ; 
+    stdout : string ;
+    exit_code : int 
+}
+
+let perform command args = 
+    (* 4 *) let new_fd_in, new_fd_out = Unix.pipe () in 
+    let err_fd_in, err_fd_out = Unix.pipe () in 
+    match Unix.fork () with 
+    | 0 -> 
+        (* 0 *) begin try 
+            safe_close new_fd_in;  
+            safe_close err_fd_in;
+            Unix.dup2 err_fd_out Unix.stderr ; 
+            Unix.dup2 new_fd_out Unix.stdout; 
+            Unix.execv command args 
+        with _ -> 
+            (* 0 *) exit 127
+        end
+    | pid ->
+        (* when all the descriptors on a pipe's input are closed and the pipe is 
+            empty, a call to [read] on its output returns zero: end of file.
+           when all the descriptiors on a pipe's output are closed, a call to 
+           [write] on its input kills the writing process (EPIPE).
+        *)
+        (* 4 *) safe_close new_fd_out ; 
+        safe_close err_fd_out ; 
+        let in_chan = Unix.in_channel_of_descr new_fd_in in 
+        let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
+        let buf = Buffer.create 1024 in 
+        let err_buf = Buffer.create 1024 in 
+        (try 
+            while true do 
+                (* 22 *) Buffer.add_string buf (input_line in_chan );             
+                Buffer.add_char buf '\n'
+            done;
+        with
+        End_of_file -> (* 4 *) ()) ; 
+        (try 
+            while true do 
+                (* 97 *) Buffer.add_string err_buf (input_line err_in_chan );
+                Buffer.add_char err_buf '\n'
+            done;
+        with
+        End_of_file -> (* 4 *) ()) ; 
+        let exit_code = match snd @@ Unix.waitpid [] pid with 
+        | Unix.WEXITED exit_code -> (* 4 *) exit_code 
+        | Unix.WSIGNALED _signal_number 
+        | Unix.WSTOPPED _signal_number  -> (* 0 *) 127 in 
+            {
+                stdout = Buffer.contents buf ; 
+                stderr = Buffer.contents err_buf;
+                exit_code 
+            }
+
+
+let perform_bsc args = 
+    (* 4 *) perform bsc_exe 
+        (Array.append 
+        [|bsc_exe ; 
+            "-bs-package-name" ; "bs-platform"; 
+            "-bs-no-version-header"; 
+            "-bs-cross-module-opt";
+            "-w";
+            "-40";
+            "-I" ;
+            runtime_dir ; 
+            "-I"; 
+            others_dir ; 
+            "-I" ; 
+            stdlib_dir
+        |] args)
+(* let output_of_exec_command command args =
+    let readme, writeme = Unix.pipe () in 
+    let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in 
+    let in_chan = Unix.in_channel_of_descr readme *)
+
+let debug_output o = 
+    (* 0 *) Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
+        o.exit_code o.stdout o.stderr
+
+let suites = 
+    __FILE__
+    >::: [
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) let v_output = perform_bsc  [| "-v" |] in 
+            OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
+            OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
+            Printf.printf "\n*>%s" v_output.stdout;
+            Printf.printf "\n*>%s" v_output.stderr ; 
+        end; 
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) let simple_quote = 
+                    perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
+            OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
+        end;
+        __LOC__ >:: begin fun _ -> 
+            (* 1 *) let should_be_warning = 
+                perform_bsc [|"-bs-eval"; {|let bla4 foo x y= foo##(method1 x y [@bs]) |}|] in 
+            (* debug_output should_be_warning; *)
+            OUnit.assert_bool __LOC__ (Ext_string.contain_substring
+             should_be_warning.stderr Literals.unused_attribute)
+
+        end
+    ]
+
 
 end
 module Ext_util : sig 
@@ -8923,198 +9274,6 @@ let hash_variant s =
 
 
 end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val js_debugger : string
-val js_pure_expr : string
-val js_pure_stmt : string
-val js_unsafe_downgrade : string
-val js_fn_run : string
-val js_method_run : string
-val js_fn_method : string
-val js_fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-val js_fn_runmethod : string 
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string
-val bsconfig_json : string
-val build_ninja : string
-val suffix_cmj : string
-val suffix_cmi : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mliast : string
-val suffix_mll : string
-val suffix_d : string
-val suffix_mlastd : string
-val suffix_mliastd : string
-val suffix_js : string
-
-
-val commonjs : string 
-val amdjs : string 
-val goog : string 
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let js_debugger = "js_debugger"
-let js_pure_expr = "js_pure_expr"
-let js_pure_stmt = "js_pure_stmt"
-let js_unsafe_downgrade = "js_unsafe_downgrade"
-let js_fn_run = "js_fn_run"
-let js_method_run = "js_method_run"
-
-let js_fn_method = "js_fn_method"
-let js_fn_mk = "js_fn_mk"
-let js_fn_runmethod = "js_fn_runmethod"
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-let bsconfig_json = "bsconfig.json"
-let build_ninja = "build.ninja"
-
-let suffix_cmj = ".cmj"
-let suffix_cmi = ".cmi"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mlast = ".mlast"
-let suffix_mliast = ".mliast"
-let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
-
-let commonjs = "commonjs" 
-let amdjs = "amdjs"
-let goog = "goog"
-end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11190,6 +11349,14 @@ let suites =
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
     __LOC__ >:: begin fun _ -> 
+      (* 1 *) OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "a");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "b");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "c");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "");
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.contain_substring "abc" "abcc");
+    end;
+    __LOC__ >:: begin fun _ -> 
       (* 1 *) Ext_string.trim " \t\n" =~ "";
       Ext_string.trim " \t\nb" =~ "b";
       Ext_string.trim "b \t\n" =~ "b";
@@ -12756,6 +12923,7 @@ let suites =
     Ounit_sexp_tests.suites;
     Ounit_int_vec_tests.suites;
     Ounit_ident_mask_tests.suites;
+    Ounit_cmd_tests.suites
   ]
 let _ = 
   OUnit.run_test_tt_main suites

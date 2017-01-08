@@ -68,6 +68,14 @@ let suites =
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
     __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "a");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "b");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "c");
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "");
+      OUnit.assert_bool __LOC__ (not @@ Ext_string.contain_substring "abc" "abcc");
+    end;
+    __LOC__ >:: begin fun _ -> 
       Ext_string.trim " \t\n" =~ "";
       Ext_string.trim " \t\nb" =~ "b";
       Ext_string.trim "b \t\n" =~ "b";

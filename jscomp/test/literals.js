@@ -97,6 +97,8 @@ var amdjs = "amdjs";
 
 var goog = "goog";
 
+var unused_attribute = "Unused attribute ";
+
 exports.js_array_ctor       = js_array_ctor;
 exports.js_type_number      = js_type_number;
 exports.js_type_string      = js_type_string;
@@ -145,4 +147,5 @@ exports.suffix_js           = suffix_js;
 exports.commonjs            = commonjs;
 exports.amdjs               = amdjs;
 exports.goog                = goog;
+exports.unused_attribute    = unused_attribute;
 /* No side effect */
