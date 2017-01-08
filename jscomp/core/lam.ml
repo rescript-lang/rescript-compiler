@@ -532,7 +532,60 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
     end;
   in hit l
   
-
+let hit_mask (fv : Hash_set_ident_mask.t) l =
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id fv 
+      | Lassign(id, e) ->
+        Hash_set_ident_mask.mask_check_all_hit id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        List.exists (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false 
+      | Lapply{fn; args; _} ->
+        hit fn || List.exists hit args
+      | Lprim {args; _} ->
+        List.exists hit args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
+        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
+        begin match sw.sw_failaction with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        List.exists (fun (_,act) -> hit act) cases ||
+        begin match default with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.exists hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || List.exists hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
 
 let free_variables l =
   let fv = ref Ident_set.empty in
@@ -1214,21 +1267,28 @@ type bindings = (Ident.t * t) list
 
 
 let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   = 
+  let len = List.length groups in 
   let domain : _ Ordered_hash_map_local_ident.t = 
-    Ordered_hash_map_local_ident.create 3 in 
-  List.iter (fun (x,lam) -> Ordered_hash_map_local_ident.add domain x lam) groups ;
+    Ordered_hash_map_local_ident.create len in 
+  let mask = Hash_set_ident_mask.create len in   
+  List.iter (fun (x,lam) -> 
+    Ordered_hash_map_local_ident.add domain x lam;
+    Hash_set_ident_mask.add_unmask mask x;
+    ) groups ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
   let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
   domain
   |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
       let base_key =  node_vec.(key_index) in 
-      let free_vars = free_variables lam in
-      free_vars 
-      |> Ident_set.iter (fun x ->
-          let key = Ordered_hash_map_local_ident.rank domain x in 
-          if key >= 0 then 
-            Int_vec.push key base_key 
-        ) 
+      ignore (hit_mask mask lam) ;
+      mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  -> 
+      if hit then 
+      begin 
+        let key = Ordered_hash_map_local_ident.rank domain ident in 
+        Int_vec.push key base_key;
+      end
+      );
+
     ) ;
   domain, int_mapping , node_vec
 

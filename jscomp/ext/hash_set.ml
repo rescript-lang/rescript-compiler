@@ -31,7 +31,8 @@ let key_index (h :  _ Hash_set_gen.t ) key =
 type t = key Hash_set_gen.t
 
 
-# 59
+
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -82,6 +83,6 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 110
+# 113
 end
   

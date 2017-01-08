@@ -41,6 +41,11 @@ bin/all_ounit_tests.ml : ext/hashtbl_gen.ml
 bin/all_ounit_tests.ml : ext/string_hashtbl.ml
 bin/all_ounit_tests.ml : ext/string_hashtbl.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_hashtbl_tests.ml
+bin/all_ounit_tests.ml : ext/ext_ident.ml
+bin/all_ounit_tests.ml : ext/ext_ident.mli
+bin/all_ounit_tests.ml : ext/hash_set_ident_mask.ml
+bin/all_ounit_tests.ml : ext/hash_set_ident_mask.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_ident_mask_tests.ml
 bin/all_ounit_tests.ml : ext/vec_gen.ml
 bin/all_ounit_tests.ml : ext/int_vec.ml
 bin/all_ounit_tests.ml : ext/int_vec.mli

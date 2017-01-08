@@ -30,7 +30,7 @@ let eq_key = Ext_ident.equal
 type t = key Hash_set_gen.t
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset

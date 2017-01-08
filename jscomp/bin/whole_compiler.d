@@ -152,6 +152,8 @@ bin/whole_compiler.ml : ext/string_hash_set.ml
 bin/whole_compiler.ml : ext/string_hash_set.mli
 bin/whole_compiler.ml : ext/ext_ident.ml
 bin/whole_compiler.ml : ext/ext_ident.mli
+bin/whole_compiler.ml : ext/hash_set_ident_mask.ml
+bin/whole_compiler.ml : ext/hash_set_ident_mask.mli
 bin/whole_compiler.ml : ext/ident_hash_set.ml
 bin/whole_compiler.ml : ext/ident_hash_set.mli
 bin/whole_compiler.ml : ext/ident_hashtbl.ml

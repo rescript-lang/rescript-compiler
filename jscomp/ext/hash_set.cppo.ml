@@ -46,13 +46,16 @@ let eq_key = H.equal
 let key_index (h :  _ Hash_set_gen.t ) key =
   (H.hash  key) land (Array.length h.data - 1)
 type t = key Hash_set_gen.t
-#else 
+
+#elif defined TYPE_POLY
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
   seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
 let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
+#else 
+[%error "unknown type"]
 #endif 
 
 

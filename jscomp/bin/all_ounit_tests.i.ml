@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 106 *) List.hd state.tests_planned
+  (* 108 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 212 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 216 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 212 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 216 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 212 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 216 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 212 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 216 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 318 *) was_successful t
+        (* 324 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 424 *) string_of_int n
+        (* 432 *) string_of_int n
     | Label s -> 
-        (* 636 *) s
+        (* 648 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 106 *) 1 
-    | TestLabel (_, t) -> (* 124 *) test_case_count t
+    | TestCase _ -> (* 108 *) 1 
+    | TestLabel (_, t) -> (* 127 *) test_case_count t
     | TestList l -> 
-        (* 18 *) List.fold_left 
-          (fun c t -> (* 123 *) c + test_case_count t) 
+        (* 19 *) List.fold_left 
+          (fun c t -> (* 126 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 212 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 216 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -193,13 +193,13 @@ let mapi f l =
     rmapi 0 l
 
 let fold_lefti f accu l =
-  (* 18 *) let rec rfold_lefti cnt accup l = 
-    (* 141 *) match l with
+  (* 19 *) let rec rfold_lefti cnt accup l = 
+    (* 145 *) match l with
       | [] -> 
-          (* 18 *) accup
+          (* 19 *) accup
 
       | h::t -> 
-          (* 123 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 126 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 638 *) match event_type with
+  (* 650 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 636 *) begin
+        (* 648 *) begin
           let string_of_result = 
             if verbose then
-              (* 318 *) function
-                | RSuccess _      -> (* 106 *) "ok\n"
+              (* 324 *) function
+                | RSuccess _      -> (* 108 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 318 *) function
-                | RSuccess _      -> (* 106 *) "."
+              (* 324 *) function
+                | RSuccess _      -> (* 108 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 318 *) match e with 
+              (* 324 *) match e with 
                 | EStart p -> 
-                    (* 106 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 108 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 106 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 108 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 106 *) string_of_result result
+                    (* 108 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 318 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 212 *) ""
-                | EResult result -> (* 106 *) string_of_result result
+              (* 324 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 216 *) ""
+                | EResult result -> (* 108 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 319 *) output_string chn (format_event true ev);
+       (* 325 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 319 *) print_string (format_event verbose ev);
+     (* 325 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 319 *) std_log ev; file_log ev; log ev),
+       (* 325 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,7 +705,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2001343 *) if not b then (* 0 *) assert_failure msg
+  (* 2005347 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
@@ -951,8 +951,8 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 106 *) TestLabel(s, TestCase(f))  (* infix *)
-let (>:::) s l = (* 18 *) TestLabel(s, TestList(l)) (* infix *)
+let (>::) s f = (* 108 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>:::) s l = (* 19 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
 let rec test_decorate g =
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 106 *) try 
+    (* 108 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 106 *) (path, f) :: acc
+          (* 108 *) (path, f) :: acc
 
       | TestList (tests) ->
-          (* 18 *) fold_lefti 
+          (* 19 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 123 *) flatten_test 
+               (* 126 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 124 *) flatten_test ((Label label)::path) acc t
+          (* 127 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 106 *) let result = 
+    (* 108 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 107 *) match state.tests_planned with 
+    (* 109 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 106 *) let (path, f) = !global_chooser state in            
+          (* 108 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 5671 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 5886 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 318 *) log (OUnitLogger.TestEvent ev))
+         (* 324 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1976,7 +1976,7 @@ let starts_with_and_number s ~offset beg =
     else 
       (* 2 *) -1 
 
-let equal (x : string) y  = (* 8829526 *) x = y
+let equal (x : string) y  = (* 8829528 *) x = y
 
 let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
@@ -3330,9 +3330,9 @@ end = struct
    ]}
 *)
 let rec power_2_above x n =
-  (* 81 *) if x >= n then (* 31 *) x
-  else (* 50 *) if x * 2 > Sys.max_array_length then (* 0 *) x
-  else (* 50 *) power_2_above (x * 2) n
+  (* 92 *) if x >= n then (* 35 *) x
+  else (* 57 *) if x * 2 > Sys.max_array_length then (* 0 *) x
+  else (* 57 *) power_2_above (x * 2) n
 
 
 let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
@@ -3384,7 +3384,7 @@ type 'a t =
 
 
 let create  initial_size =
-  (* 7 *) let s = Ext_util.power_2_above 16 initial_size in
+  (* 8 *) let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; data = Array.make s [] }
 
 let clear h =
@@ -3468,12 +3468,12 @@ let stats h =
    bucket_histogram = histo }
 
 let rec small_bucket_mem eq_key key lst =
-  (* 26088 *) match lst with 
-  | [] -> (* 1921 *) false 
+  (* 26191 *) match lst with 
+  | [] -> (* 2022 *) false 
   | key1::rest -> 
-    (* 24167 *) eq_key key   key1 ||
+    (* 24169 *) eq_key key   key1 ||
     match rest with 
-    | [] -> (* 1963 *) false 
+    | [] -> (* 1964 *) false 
     | key2 :: rest -> 
       (* 7398 *) eq_key key   key2 ||
       match rest with 
@@ -3586,7 +3586,8 @@ let key_index (h :  _ Hash_set_gen.t ) key =
 type t = key Hash_set_gen.t
 
 
-# 59
+
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -3637,7 +3638,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   (* 3102 *) Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 110
+# 113
 end
   
 
@@ -3718,7 +3719,7 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 50
+# 51
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
@@ -3727,7 +3728,7 @@ let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4210,12 +4211,12 @@ end = struct
 # 31
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (* 111 *) (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
+  (* 214 *) (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 type  t = key  Hash_set_gen.t 
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4239,11 +4240,11 @@ let remove (h : _ Hash_set_gen.t) key =
 
 
 let add (h : _ Hash_set_gen.t) key =
-  (* 101 *) let i = key_index h key  in 
+  (* 204 *) let i = key_index h key  in 
   let h_data = h.data in 
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    (* 101 *) begin 
+    (* 203 *) begin 
       Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then (* 0 *) Hash_set_gen.resize key_index h
@@ -4469,7 +4470,7 @@ let eq_key = Ext_int.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 59
+# 62
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4656,7 +4657,7 @@ and ('a, 'b) bucketlist =
 
 
 let create  initial_size =
-  (* 11 *) let s = Ext_util.power_2_above 16 initial_size in
+  (* 12 *) let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
 
 let clear h =
@@ -5002,6 +5003,608 @@ let suites =
     
   ]
 
+end
+module Ext_ident : sig 
+#1 "ext_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A wrapper around [Ident] module in compiler-libs*)
+
+val is_js : Ident.t -> bool
+
+val is_js_object : Ident.t -> bool
+
+(** create identifiers for predefined [js] global variables *)
+val create_js : string -> Ident.t
+
+val create : string -> Ident.t
+
+val create_js_module : string -> Ident.t 
+
+val make_js_object : Ident.t -> unit
+
+val reset : unit -> unit
+
+val gen_js :  ?name:string -> unit -> Ident.t
+
+val make_unused : unit -> Ident.t
+
+val is_unused_ident : Ident.t -> bool 
+
+(**
+   if name is not converted, the reference should be equal
+*)
+val convert : bool -> string -> string
+val property_no_need_convert : string -> bool 
+
+val undefined : Ident.t 
+val is_js_or_global : Ident.t -> bool
+val nil : Ident.t
+
+
+val compare : Ident.t -> Ident.t -> int
+val equal : Ident.t -> Ident.t -> bool 
+
+end = struct
+#1 "ext_ident.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let js_flag = 0b1000 (* check with ocaml compiler *)
+
+let js_module_flag = 0b1_0000 (* javascript external modules *)
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let js_object_flag = 0b10_0000 (* javascript object flags *)
+
+let is_js (i : Ident.t) = 
+  (* 0 *) i.flags land js_flag <> 0 
+
+let is_js_or_global (i : Ident.t) = 
+  (* 0 *) i.flags land (8 lor 1) <> 0 
+
+let is_js_module (i : Ident.t) =
+  (* 0 *) i.flags land js_module_flag <> 0 
+
+let is_js_object (i : Ident.t) = 
+  (* 0 *) i.flags land js_object_flag <> 0 
+
+let make_js_object (i : Ident.t) = 
+  (* 0 *) i.flags <- i.flags lor js_object_flag 
+      
+(* It's a js function hard coded by js api, so when printing,
+   it should preserve the name 
+ *)
+let create_js (name : string) : Ident.t  = 
+  (* 2 *) { name = name; flags = js_flag ; stamp = 0}
+
+let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
+
+(* This is for a js exeternal module, we can change it when printing
+   for example
+   {[
+   var React$1 = require('react');
+   React$1.render(..)
+   ]}
+
+   Given a name, if duplicated, they should  have the same id
+ *)
+let create_js_module (name : string) : Ident.t = 
+  (* 0 *) let name = 
+    String.concat "" @@ List.map (String.capitalize ) @@ 
+    Ext_string.split name '-' in
+  (* TODO: if we do such transformation, we should avoid 
+      collision for example:
+      react-dom 
+      react--dom
+      check collision later
+   *)
+  match String_hashtbl.find_exn js_module_table name  with 
+  | exception Not_found -> 
+      (* 0 *) let v = Ident.create name in
+      let ans = { v with flags = js_module_flag} in 
+      String_hashtbl.add js_module_table name ans;
+      ans
+  | v -> (* 0 *) v 
+
+let create = Ident.create
+
+let gen_js ?(name="$js") () = (* 0 *) create name 
+
+let reserved_words = 
+  [|
+    (* keywork *)
+    "break";
+    "case"; "catch"; "continue";
+    "debugger";"default";"delete";"do";
+    "else";
+    "finally";"for";"function";
+    "if"; "then"; "in";"instanceof";
+    "new";
+    "return";
+    "switch";
+    "this"; "throw"; "try"; "typeof";
+    "var"; "void"; "while"; "with";
+
+    (* reserved in ECMAScript 5 *)
+    "class"; "enum"; "export"; "extends"; "import"; "super";
+
+    "implements";"interface";
+    "let";
+    "package";"private";"protected";"public";
+    "static";
+    "yield";
+
+    (* other *)
+    "null";
+    "true";
+    "false";
+    "NaN";
+
+
+    "undefined";
+    "this";
+
+    (* also reserved in ECMAScript 3 *)
+    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
+    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
+    "synchronized"; 
+    (* "throws";  *)
+    (* seems to be fine, like nodejs [assert.throws] *)
+    "transient"; "volatile";
+
+    (* also reserved in ECMAScript 6 *)
+    "await";
+   
+   "event";
+   "location";
+   "window";
+   "document";
+   "eval";
+   "navigator";
+   (* "self"; *)
+   
+   "Array";
+   "Date";
+   "Math";
+   "JSON";
+   "Object";
+   "RegExp";
+   "String";
+   "Boolean";
+   "Number";
+
+   "Map"; (* es6*)
+   "Set";
+
+   "Infinity";
+   "isFinite";
+   
+   "ActiveXObject";
+   "XMLHttpRequest";
+   "XDomainRequest";
+   
+   "DOMException";
+   "Error";
+   "SyntaxError";
+   "arguments";
+   
+   "decodeURI";
+   "decodeURIComponent";
+   "encodeURI";
+   "encodeURIComponent";
+   "escape";
+   "unescape";
+
+   "isNaN";
+   "parseFloat";
+   "parseInt";
+   
+   (** reserved for commonjs *)   
+   "require";
+   "exports";
+   "module"
+  |]
+
+let reserved_map = 
+  let len = Array.length reserved_words in 
+  let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
+  for i = 0 to len - 1 do 
+    (* 103 *) String_hash_set.add set reserved_words.(i);
+  done ;
+  set 
+
+
+
+
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let convert keyword (name : string) = 
+   (* 0 *) if keyword && String_hash_set.mem reserved_map name  then (* 0 *) "$$" ^ name 
+   else 
+     (* 0 *) let module E = struct exception Not_normal_letter of int end in
+     let len = String.length name  in
+     try
+       for i  = 0 to len - 1 do 
+         (* 0 *) match String.unsafe_get name i with 
+         | 'a' .. 'z' | 'A' .. 'Z'
+         | '0' .. '9' | '_' | '$' -> (* 0 *) ()
+         | _ -> (* 0 *) raise (E.Not_normal_letter i)
+       done;
+       name
+     with E.Not_normal_letter i ->
+       (* 0 *) String.sub name 0 i ^ 
+       (let buffer = Buffer.create len in 
+        for j = i to  len - 1 do 
+          (* 0 *) let c = String.unsafe_get name j in
+          match c with 
+          | '*' -> (* 0 *) Buffer.add_string buffer "$star"
+          | '\'' -> (* 0 *) Buffer.add_string buffer "$prime"
+          | '!' -> (* 0 *) Buffer.add_string buffer "$bang"
+          | '>' -> (* 0 *) Buffer.add_string buffer "$great"
+          | '<' -> (* 0 *) Buffer.add_string buffer "$less"
+          | '=' -> (* 0 *) Buffer.add_string buffer "$eq"
+          | '+' -> (* 0 *) Buffer.add_string buffer "$plus"
+          | '-' -> (* 0 *) Buffer.add_string buffer "$neg"
+          | '@' -> (* 0 *) Buffer.add_string buffer "$at"
+          | '^' -> (* 0 *) Buffer.add_string buffer "$caret"
+          | '/' -> (* 0 *) Buffer.add_string buffer "$slash"
+          | '|' -> (* 0 *) Buffer.add_string buffer "$pipe"
+          | '.' -> (* 0 *) Buffer.add_string buffer "$dot"
+          | '%' -> (* 0 *) Buffer.add_string buffer "$percent"
+          | '~' -> (* 0 *) Buffer.add_string buffer "$tilde"
+          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> (* 0 *) Buffer.add_char buffer  c
+          | _ -> (* 0 *) Buffer.add_string buffer "$unknown"
+        done; Buffer.contents buffer)
+
+let property_no_need_convert s = 
+  (* 0 *) s == convert false s 
+
+(* It is currently made a persistent ident to avoid fresh ids 
+    which would result in different signature files
+    - other solution: use lazy values
+*)
+let make_unused () = (* 0 *) create "_"
+
+let is_unused_ident i = (* 0 *) Ident.name i = "_"
+
+let reset () = 
+  (* 0 *) String_hashtbl.clear js_module_table
+
+
+let undefined = create_js "undefined"
+let nil = create_js "null"
+
+(* Has to be total order, [x < y] 
+   and [x > y] should be consistent
+   flags are not relevant here 
+ *)
+let compare (x : Ident.t ) ( y : Ident.t) = 
+  (* 0 *) let u = x.stamp - y.stamp in
+  if u = 0 then 
+     (* 0 *) String.compare x.name y.name 
+  else (* 0 *) u 
+
+let equal ( x : Ident.t) ( y : Ident.t) = 
+  (* 9498 *) if x.stamp <> 0 then (* 9498 *) x.stamp = y.stamp
+  else (* 0 *) y.stamp = 0 && x.name = y.name
+   
+end
+module Hash_set_ident_mask : sig 
+#1 "hash_set_ident_mask.mli"
+
+
+(** Based on [hash_set] specialized for mask operations  *)
+type ident = Ident.t  
+
+
+type t
+val create: int ->  t
+
+
+(* add one ident *)
+val add_unmask :  t -> ident -> unit
+
+
+(** [check_mask h key] if [key] exists mask it otherwise nothing
+    return true if all keys are masked otherwise false
+*)
+val mask_check_all_hit : ident ->  t -> bool
+
+(** [iter_and_unmask f h] iterating the collection and mask all idents,
+    dont consul the collection in function [f]
+    TODO: what happens if an exception raised in the callback,
+    would the hashtbl still be in consistent state?
+*)
+val iter_and_unmask: (ident -> bool ->  unit) ->  t -> unit
+
+
+
+  
+
+end = struct
+#1 "hash_set_ident_mask.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type ident = Ident.t
+
+type key = {ident : ident ; mutable mask : bool }
+
+type t = {
+  mutable size : int ; 
+  mutable data : key list array;
+  initial_size : int ; 
+  mutable mask_size : int (* mark how many idents are marked *)
+}
+
+
+
+let key_index_by_ident (h : t) (key : Ident.t) =    
+  (* 6019 *) (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
+
+let key_index (h :  t ) ({ident = key} : key) =
+  (* 1014 *) key_index_by_ident h key 
+
+
+let create  initial_size =
+  (* 2 *) let s = Ext_util.power_2_above 8 initial_size in
+  { initial_size = s; size = 0; data = Array.make s [] ; mask_size = 0}
+
+let iter_and_unmask f h =
+  (* 2 *) let rec do_bucket buckets = 
+    (* 1522 *) match buckets with 
+    | [ ] ->
+      (* 520 *) ()
+    | k ::  rest ->    
+      (* 1002 *) f k.ident k.mask ;
+      if k.mask then 
+        (* 1002 *) begin 
+          k.mask <- false ;
+          (* we can set [h.mask_size] to zero,
+             however, it would result inconsistent state
+             once [f] throw
+          *)
+          h.mask_size <- h.mask_size - 1
+        end; 
+      do_bucket rest 
+  in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    (* 520 *) do_bucket (Array.unsafe_get d i)
+  done
+  
+
+let rec small_bucket_mem key lst =
+  (* 1200 *) match lst with 
+  | [] -> (* 339 *) false 
+  | {ident = key1 }::rest -> 
+    (* 861 *) Ext_ident.equal key   key1 ||
+    match rest with 
+    | [] -> (* 402 *) false 
+    | {ident = key2} :: rest -> 
+      (* 458 *) Ext_ident.equal key   key2 ||
+      match rest with 
+      | [] -> (* 261 *) false 
+      | {ident = key3; _} :: rest -> 
+        (* 197 *) Ext_ident.equal key   key3 ||
+        small_bucket_mem key rest 
+
+let resize indexfun h =
+  (* 6 *) let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then (* 6 *) begin
+    let ndata = Array.make nsize [ ] in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        [ ] -> (* 504 *) ()
+      | key :: rest ->
+        (* 1014 *) let nidx = indexfun h key in
+        ndata.(nidx) <- key :: ndata.(nidx);
+        insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      (* 504 *) insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let add_unmask (h : t) (key : Ident.t) =
+  (* 1003 *) let i = key_index_by_ident h key  in 
+  let h_data = h.data in 
+  let old_bucket = Array.unsafe_get h_data i in
+  if not (small_bucket_mem key old_bucket) then 
+    (* 1002 *) begin 
+      Array.unsafe_set h_data i ({ident = key; mask = false} :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then (* 6 *) resize key_index h
+    end
+
+
+
+
+let rec small_bucket_mask  key lst =
+  (* 4462 *) match lst with 
+  | [] -> (* 0 *) false 
+  | key1::rest -> 
+    (* 4462 *) if Ext_ident.equal key   key1.ident  then 
+      (* 2054 *) if key1.mask then (* 1024 *) false else (* 1030 *) (key1.mask <- true ; true) 
+    else 
+      (* 2408 *) match rest with 
+      | [] -> (* 0 *) false
+      | key2 :: rest -> 
+        (* 2408 *) if Ext_ident.equal key key2.ident  then 
+          (* 1296 *) if key2.mask then (* 648 *) false else (* 648 *) (key2.mask <- true ; true)
+        else 
+          (* 1112 *) match rest with 
+          | [] -> (* 0 *) false
+          | key3 :: rest -> 
+            (* 1112 *) if Ext_ident.equal key key3.ident then 
+              (* 652 *) if key3.mask then (* 326 *) false else (* 326 *) (key3.mask <- true ; true)
+            else 
+              (* 460 *) small_bucket_mask  key rest 
+
+let mask_check_all_hit (key : Ident.t) (h : t)  =     
+  (* 4002 *) if 
+    small_bucket_mask key 
+      (Array.unsafe_get h.data (key_index_by_ident h key )) then 
+    (* 2004 *) begin 
+      h.mask_size <- h.mask_size + 1 
+    end;
+  h.size = h.mask_size 
+
+
+
+
+end
+module Ounit_ident_mask_tests
+= struct
+#1 "ounit_ident_mask_tests.ml"
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+let suites = 
+  __FILE__
+  >:::
+  [
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let set = Hash_set_ident_mask.create 0  in
+      let a,b,c,d = 
+        Ident.create "a", 
+        Ident.create "b", 
+        Ident.create "c",
+        Ident.create "d" in 
+      Hash_set_ident_mask.add_unmask set a ;     
+      Hash_set_ident_mask.add_unmask set a ;     
+      Hash_set_ident_mask.add_unmask set b ;     
+      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit a set );
+      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit b set );
+      Hash_set_ident_mask.iter_and_unmask (fun id mask -> 
+          (* 2 *) if id.Ident.name = "a" then
+            (* 1 *) OUnit.assert_bool __LOC__ mask 
+          else (* 1 *) if id.Ident.name = "b" then 
+            (* 1 *) OUnit.assert_bool __LOC__ mask 
+          else (* 0 *) ()        
+        ) set ;
+      OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit a set );
+      OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit b set );
+    end;
+    __LOC__ >:: begin fun _ -> 
+        (* 1 *) let len = 1000 in 
+        let idents = Array.init len (fun i -> (* 1000 *) Ident.create (string_of_int i)) in 
+        let set = Hash_set_ident_mask.create 0 in 
+        Array.iter (fun i -> (* 1000 *) Hash_set_ident_mask.add_unmask set i) idents;
+        for i = 0 to len - 2 do 
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+        done ;
+         for i = 0 to len - 2 do 
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+        done ; 
+         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit idents.(len - 1) set) ;
+         Hash_set_ident_mask.iter_and_unmask (fun id mask -> (* 1000 *) ()) set;
+        for i = 0 to len - 2 do 
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+        done ;
+         for i = 0 to len - 2 do 
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+        done ; 
+         OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit idents.(len - 1) set) ;
+         
+    end
+  ]
 end
 module Vec_gen
 = struct
@@ -12151,7 +12754,8 @@ let suites =
     Ounit_string_tests.suites;
     Ounit_topsort_tests.suites;
     Ounit_sexp_tests.suites;
-    Ounit_int_vec_tests.suites
+    Ounit_int_vec_tests.suites;
+    Ounit_ident_mask_tests.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites
