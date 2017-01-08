@@ -29,11 +29,18 @@ external return : 'a -> 'a t  = "%identity"
 external test : 'a t -> bool = "js_is_nil"
 external empty : 'a t = "null" [@@bs.val]
 (*end::interface_all[]*)
+
 let bind x f =
-  match to_opt x with 
-  | None -> empty 
+  match to_opt x with
+  | None -> empty
   | Some x -> return (f x [@bs])
+
 let iter x f =
   match to_opt x with
-  | None ->  () 
+  | None ->  ()
   | Some x -> f x [@bs]
+
+let from_opt x =
+  match x with
+  | None -> empty
+  | Some x -> return x
