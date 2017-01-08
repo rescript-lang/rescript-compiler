@@ -15,6 +15,7 @@ bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
 node_child_process.cmj :
 js_boolean.cmj : js_boolean.cmi
+js_math.cmj :
 js_re.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
