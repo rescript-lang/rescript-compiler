@@ -55,13 +55,17 @@ function length(x) {
 function map(f, x) {
   if (x) {
     return /* Cons */[
-            Curry._1(f, x[0]),
+            f(x[0]),
             map(f, x[1])
           ];
   }
   else {
     return /* Nil */0;
   }
+}
+
+function map$1(f, x) {
+  return map(Curry.__1(f), x);
 }
 
 function f(x) {
@@ -104,7 +108,7 @@ exports.sum     = sum;
 exports.sumdown = sumdown;
 exports.cons    = cons;
 exports.length  = length;
-exports.map     = map;
+exports.map     = map$1;
 exports.f       = f;
 exports.fib3    = fib3;
 /*  Not a pure module */

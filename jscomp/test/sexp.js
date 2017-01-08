@@ -194,16 +194,18 @@ function map_opt(f, l) {
 function list_any(f, e) {
   if (e[0] >= 848054398) {
     var f$1 = f;
-    var _l = e[1];
+    var l = e[1];
+    var f$2 = Curry.__1(f$1);
+    var _l = l;
     while(true) {
-      var l = _l;
-      if (l) {
-        var res = Curry._1(f$1, l[0]);
+      var l$1 = _l;
+      if (l$1) {
+        var res = f$2(l$1[0]);
         if (res) {
           return res;
         }
         else {
-          _l = l[1];
+          _l = l$1[1];
           continue ;
           
         }
@@ -221,19 +223,22 @@ function list_any(f, e) {
 function list_all(f, e) {
   if (e[0] >= 848054398) {
     var f$1 = f;
-    var _acc = /* [] */0;
-    var _l = e[1];
+    var acc = /* [] */0;
+    var l = e[1];
+    var f$2 = Curry.__1(f$1);
+    var _acc = acc;
+    var _l = l;
     while(true) {
-      var l = _l;
-      var acc = _acc;
-      if (l) {
-        var tl = l[1];
-        var match = Curry._1(f$1, l[0]);
+      var l$1 = _l;
+      var acc$1 = _acc;
+      if (l$1) {
+        var tl = l$1[1];
+        var match = f$2(l$1[0]);
         _l = tl;
         if (match) {
           _acc = /* :: */[
             match[0],
-            acc
+            acc$1
           ];
           continue ;
           
@@ -244,7 +249,7 @@ function list_all(f, e) {
         }
       }
       else {
-        return List.rev(acc);
+        return List.rev(acc$1);
       }
     };
   }

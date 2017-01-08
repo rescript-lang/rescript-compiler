@@ -285,7 +285,7 @@ function Make(Ord) {
       var param = _param;
       if (param) {
         iter(f, param[0]);
-        Curry._2(f, param[1], param[2]);
+        f(param[1], param[2]);
         _param = param[3];
         continue ;
         
@@ -295,10 +295,13 @@ function Make(Ord) {
       }
     };
   };
+  var iter$1 = function (f, param) {
+    return iter(Curry.__2(f), param);
+  };
   var map = function (f, param) {
     if (param) {
       var l$prime = map(f, param[0]);
-      var d$prime = Curry._1(f, param[2]);
+      var d$prime = f(param[2]);
       var r$prime = map(f, param[3]);
       return /* Node */[
               l$prime,
@@ -312,11 +315,14 @@ function Make(Ord) {
       return /* Empty */0;
     }
   };
+  var map$1 = function (f, param) {
+    return map(Curry.__1(f), param);
+  };
   var mapi = function (f, param) {
     if (param) {
       var v = param[1];
       var l$prime = mapi(f, param[0]);
-      var d$prime = Curry._2(f, v, param[2]);
+      var d$prime = f(v, param[2]);
       var r$prime = mapi(f, param[3]);
       return /* Node */[
               l$prime,
@@ -330,12 +336,15 @@ function Make(Ord) {
       return /* Empty */0;
     }
   };
+  var mapi$1 = function (f, param) {
+    return mapi(Curry.__2(f), param);
+  };
   var fold = function (f, _m, _accu) {
     while(true) {
       var accu = _accu;
       var m = _m;
       if (m) {
-        _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
+        _accu = f(m[1], m[2], fold(f, m[0], accu));
         _m = m[3];
         continue ;
         
@@ -345,11 +354,14 @@ function Make(Ord) {
       }
     };
   };
+  var fold$1 = function (f, m, accu) {
+    return fold(Curry.__3(f), m, accu);
+  };
   var for_all = function (p, _param) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Curry._2(p, param[1], param[2])) {
+        if (p(param[1], param[2])) {
           if (for_all(p, param[0])) {
             _param = param[3];
             continue ;
@@ -368,11 +380,14 @@ function Make(Ord) {
       }
     };
   };
+  var for_all$1 = function (p, param) {
+    return for_all(Curry.__2(p), param);
+  };
   var exists = function (p, _param) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Curry._2(p, param[1], param[2])) {
+        if (p(param[1], param[2])) {
           return /* true */1;
         }
         else if (exists(p, param[0])) {
@@ -388,6 +403,9 @@ function Make(Ord) {
         return /* false */0;
       }
     };
+  };
+  var exists$1 = function (p, param) {
+    return exists(Curry.__2(p), param);
   };
   var add_min_binding = function (k, v, param) {
     if (param) {
@@ -497,7 +515,7 @@ function Make(Ord) {
       var v1 = s1[1];
       if (s1[4] >= height(s2)) {
         var match = split(v1, s2);
-        return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
+        return concat_or_join(merge(f, s1[0], match[0]), v1, f(v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
       }
       else {
         exit = 1;
@@ -513,7 +531,7 @@ function Make(Ord) {
       if (s2) {
         var v2 = s2[1];
         var match$1 = split(v2, s1);
-        return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
+        return concat_or_join(merge(f, match$1[0], s2[0]), v2, f(v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
       }
       else {
         throw [
@@ -528,12 +546,15 @@ function Make(Ord) {
     }
     
   };
+  var merge$1 = function (f, s1, s2) {
+    return merge(Curry.__3(f), s1, s2);
+  };
   var filter = function (p, param) {
     if (param) {
       var d = param[2];
       var v = param[1];
       var l$prime = filter(p, param[0]);
-      var pvd = Curry._2(p, v, d);
+      var pvd = p(v, d);
       var r$prime = filter(p, param[3]);
       if (pvd) {
         return join(l$prime, v, d, r$prime);
@@ -546,6 +567,9 @@ function Make(Ord) {
       return /* Empty */0;
     }
   };
+  var filter$1 = function (p, param) {
+    return filter(Curry.__2(p), param);
+  };
   var partition = function (p, param) {
     if (param) {
       var d = param[2];
@@ -553,7 +577,7 @@ function Make(Ord) {
       var match = partition(p, param[0]);
       var lf = match[1];
       var lt = match[0];
-      var pvd = Curry._2(p, v, d);
+      var pvd = p(v, d);
       var match$1 = partition(p, param[3]);
       var rf = match$1[1];
       var rt = match$1[0];
@@ -576,6 +600,9 @@ function Make(Ord) {
               /* Empty */0
             ];
     }
+  };
+  var partition$1 = function (p, param) {
+    return partition(Curry.__2(p), param);
   };
   var cons_enum = function (_m, _e) {
     while(true) {
@@ -713,21 +740,21 @@ function Make(Ord) {
           /* max_binding */max_binding,
           /* remove_min_binding */remove_min_binding,
           /* remove */remove,
-          /* iter */iter,
-          /* map */map,
-          /* mapi */mapi,
-          /* fold */fold,
-          /* for_all */for_all,
-          /* exists */exists,
+          /* iter */iter$1,
+          /* map */map$1,
+          /* mapi */mapi$1,
+          /* fold */fold$1,
+          /* for_all */for_all$1,
+          /* exists */exists$1,
           /* add_min_binding */add_min_binding,
           /* add_max_binding */add_max_binding,
           /* join */join,
           /* concat */concat,
           /* concat_or_join */concat_or_join,
           /* split */split,
-          /* merge */merge,
-          /* filter */filter,
-          /* partition */partition,
+          /* merge */merge$1,
+          /* filter */filter$1,
+          /* partition */partition$1,
           /* cons_enum */cons_enum,
           /* compare */compare,
           /* equal */equal,
@@ -1036,7 +1063,7 @@ function iter(f, _param) {
     var param = _param;
     if (param) {
       iter(f, param[0]);
-      Curry._2(f, param[1], param[2]);
+      f(param[1], param[2]);
       _param = param[3];
       continue ;
       
@@ -1047,10 +1074,14 @@ function iter(f, _param) {
   };
 }
 
+function iter$1(f, param) {
+  return iter(Curry.__2(f), param);
+}
+
 function map(f, param) {
   if (param) {
     var l$prime = map(f, param[0]);
-    var d$prime = Curry._1(f, param[2]);
+    var d$prime = f(param[2]);
     var r$prime = map(f, param[3]);
     return /* Node */[
             l$prime,
@@ -1065,11 +1096,15 @@ function map(f, param) {
   }
 }
 
+function map$1(f, param) {
+  return map(Curry.__1(f), param);
+}
+
 function mapi(f, param) {
   if (param) {
     var v = param[1];
     var l$prime = mapi(f, param[0]);
-    var d$prime = Curry._2(f, v, param[2]);
+    var d$prime = f(v, param[2]);
     var r$prime = mapi(f, param[3]);
     return /* Node */[
             l$prime,
@@ -1084,12 +1119,16 @@ function mapi(f, param) {
   }
 }
 
+function mapi$1(f, param) {
+  return mapi(Curry.__2(f), param);
+}
+
 function fold(f, _m, _accu) {
   while(true) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
+      _accu = f(m[1], m[2], fold(f, m[0], accu));
       _m = m[3];
       continue ;
       
@@ -1100,11 +1139,15 @@ function fold(f, _m, _accu) {
   };
 }
 
+function fold$1(f, m, accu) {
+  return fold(Curry.__3(f), m, accu);
+}
+
 function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
+      if (p(param[1], param[2])) {
         if (for_all(p, param[0])) {
           _param = param[3];
           continue ;
@@ -1124,11 +1167,15 @@ function for_all(p, _param) {
   };
 }
 
+function for_all$1(p, param) {
+  return for_all(Curry.__2(p), param);
+}
+
 function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
+      if (p(param[1], param[2])) {
         return /* true */1;
       }
       else if (exists(p, param[0])) {
@@ -1144,6 +1191,10 @@ function exists(p, _param) {
       return /* false */0;
     }
   };
+}
+
+function exists$1(p, param) {
+  return exists(Curry.__2(p), param);
 }
 
 function add_min_binding(k, v, param) {
@@ -1265,7 +1316,7 @@ function merge(f, s1, s2) {
     var v1 = s1[1];
     if (s1[4] >= height(s2)) {
       var match = split(v1, s2);
-      return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
+      return concat_or_join(merge(f, s1[0], match[0]), v1, f(v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
     }
     else {
       exit = 1;
@@ -1281,7 +1332,7 @@ function merge(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split(v2, s1);
-      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
+      return concat_or_join(merge(f, match$1[0], s2[0]), v2, f(v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
     }
     else {
       throw [
@@ -1297,12 +1348,16 @@ function merge(f, s1, s2) {
   
 }
 
+function merge$1(f, s1, s2) {
+  return merge(Curry.__3(f), s1, s2);
+}
+
 function filter(p, param) {
   if (param) {
     var d = param[2];
     var v = param[1];
     var l$prime = filter(p, param[0]);
-    var pvd = Curry._2(p, v, d);
+    var pvd = p(v, d);
     var r$prime = filter(p, param[3]);
     if (pvd) {
       return join(l$prime, v, d, r$prime);
@@ -1316,6 +1371,10 @@ function filter(p, param) {
   }
 }
 
+function filter$1(p, param) {
+  return filter(Curry.__2(p), param);
+}
+
 function partition(p, param) {
   if (param) {
     var d = param[2];
@@ -1323,7 +1382,7 @@ function partition(p, param) {
     var match = partition(p, param[0]);
     var lf = match[1];
     var lt = match[0];
-    var pvd = Curry._2(p, v, d);
+    var pvd = p(v, d);
     var match$1 = partition(p, param[3]);
     var rf = match$1[1];
     var rt = match$1[0];
@@ -1346,6 +1405,10 @@ function partition(p, param) {
             /* Empty */0
           ];
   }
+}
+
+function partition$1(p, param) {
+  return partition(Curry.__2(p), param);
 }
 
 function cons_enum(_m, _e) {
@@ -1492,21 +1555,21 @@ var IntMap = /* module */[
   /* max_binding */max_binding,
   /* remove_min_binding */remove_min_binding,
   /* remove */remove,
-  /* iter */iter,
-  /* map */map,
-  /* mapi */mapi,
-  /* fold */fold,
-  /* for_all */for_all,
-  /* exists */exists,
+  /* iter */iter$1,
+  /* map */map$1,
+  /* mapi */mapi$1,
+  /* fold */fold$1,
+  /* for_all */for_all$1,
+  /* exists */exists$1,
   /* add_min_binding */add_min_binding,
   /* add_max_binding */add_max_binding,
   /* join */join,
   /* concat */concat,
   /* concat_or_join */concat_or_join,
   /* split */split,
-  /* merge */merge,
-  /* filter */filter,
-  /* partition */partition,
+  /* merge */merge$1,
+  /* filter */filter$1,
+  /* partition */partition$1,
   /* cons_enum */cons_enum,
   /* compare */compare,
   /* equal */equal,
@@ -1837,12 +1900,12 @@ function remove$1(x, param) {
   }
 }
 
-function iter$1(f, _param) {
+function iter$2(f, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      iter$1(f, param[0]);
-      Curry._2(f, param[1], param[2]);
+      iter$2(f, param[0]);
+      f(param[1], param[2]);
       _param = param[3];
       continue ;
       
@@ -1853,11 +1916,15 @@ function iter$1(f, _param) {
   };
 }
 
-function map$1(f, param) {
+function iter$3(f, param) {
+  return iter$2(Curry.__2(f), param);
+}
+
+function map$2(f, param) {
   if (param) {
-    var l$prime = map$1(f, param[0]);
-    var d$prime = Curry._1(f, param[2]);
-    var r$prime = map$1(f, param[3]);
+    var l$prime = map$2(f, param[0]);
+    var d$prime = f(param[2]);
+    var r$prime = map$2(f, param[3]);
     return /* Node */[
             l$prime,
             param[1],
@@ -1871,12 +1938,16 @@ function map$1(f, param) {
   }
 }
 
-function mapi$1(f, param) {
+function map$3(f, param) {
+  return map$2(Curry.__1(f), param);
+}
+
+function mapi$2(f, param) {
   if (param) {
     var v = param[1];
-    var l$prime = mapi$1(f, param[0]);
-    var d$prime = Curry._2(f, v, param[2]);
-    var r$prime = mapi$1(f, param[3]);
+    var l$prime = mapi$2(f, param[0]);
+    var d$prime = f(v, param[2]);
+    var r$prime = mapi$2(f, param[3]);
     return /* Node */[
             l$prime,
             v,
@@ -1890,12 +1961,16 @@ function mapi$1(f, param) {
   }
 }
 
-function fold$1(f, _m, _accu) {
+function mapi$3(f, param) {
+  return mapi$2(Curry.__2(f), param);
+}
+
+function fold$2(f, _m, _accu) {
   while(true) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = Curry._3(f, m[1], m[2], fold$1(f, m[0], accu));
+      _accu = f(m[1], m[2], fold$2(f, m[0], accu));
       _m = m[3];
       continue ;
       
@@ -1906,12 +1981,16 @@ function fold$1(f, _m, _accu) {
   };
 }
 
-function for_all$1(p, _param) {
+function fold$3(f, m, accu) {
+  return fold$2(Curry.__3(f), m, accu);
+}
+
+function for_all$2(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        if (for_all$1(p, param[0])) {
+      if (p(param[1], param[2])) {
+        if (for_all$2(p, param[0])) {
           _param = param[3];
           continue ;
           
@@ -1930,14 +2009,18 @@ function for_all$1(p, _param) {
   };
 }
 
-function exists$1(p, _param) {
+function for_all$3(p, param) {
+  return for_all$2(Curry.__2(p), param);
+}
+
+function exists$2(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
+      if (p(param[1], param[2])) {
         return /* true */1;
       }
-      else if (exists$1(p, param[0])) {
+      else if (exists$2(p, param[0])) {
         return /* true */1;
       }
       else {
@@ -1950,6 +2033,10 @@ function exists$1(p, _param) {
       return /* false */0;
     }
   };
+}
+
+function exists$3(p, param) {
+  return exists$2(Curry.__2(p), param);
 }
 
 function add_min_binding$1(k, v, param) {
@@ -2065,13 +2152,13 @@ function split$1(x, param) {
   }
 }
 
-function merge$1(f, s1, s2) {
+function merge$2(f, s1, s2) {
   var exit = 0;
   if (s1) {
     var v1 = s1[1];
     if (s1[4] >= height$1(s2)) {
       var match = split$1(v1, s2);
-      return concat_or_join$1(merge$1(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge$1(f, s1[3], match[2]));
+      return concat_or_join$1(merge$2(f, s1[0], match[0]), v1, f(v1, /* Some */[s1[2]], match[1]), merge$2(f, s1[3], match[2]));
     }
     else {
       exit = 1;
@@ -2087,7 +2174,7 @@ function merge$1(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split$1(v2, s1);
-      return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge$1(f, match$1[2], s2[3]));
+      return concat_or_join$1(merge$2(f, match$1[0], s2[0]), v2, f(v2, match$1[1], /* Some */[s2[2]]), merge$2(f, match$1[2], s2[3]));
     }
     else {
       throw [
@@ -2103,13 +2190,17 @@ function merge$1(f, s1, s2) {
   
 }
 
-function filter$1(p, param) {
+function merge$3(f, s1, s2) {
+  return merge$2(Curry.__3(f), s1, s2);
+}
+
+function filter$2(p, param) {
   if (param) {
     var d = param[2];
     var v = param[1];
-    var l$prime = filter$1(p, param[0]);
-    var pvd = Curry._2(p, v, d);
-    var r$prime = filter$1(p, param[3]);
+    var l$prime = filter$2(p, param[0]);
+    var pvd = p(v, d);
+    var r$prime = filter$2(p, param[3]);
     if (pvd) {
       return join$1(l$prime, v, d, r$prime);
     }
@@ -2122,15 +2213,19 @@ function filter$1(p, param) {
   }
 }
 
-function partition$1(p, param) {
+function filter$3(p, param) {
+  return filter$2(Curry.__2(p), param);
+}
+
+function partition$2(p, param) {
   if (param) {
     var d = param[2];
     var v = param[1];
-    var match = partition$1(p, param[0]);
+    var match = partition$2(p, param[0]);
     var lf = match[1];
     var lt = match[0];
-    var pvd = Curry._2(p, v, d);
-    var match$1 = partition$1(p, param[3]);
+    var pvd = p(v, d);
+    var match$1 = partition$2(p, param[3]);
     var rf = match$1[1];
     var rt = match$1[0];
     if (pvd) {
@@ -2152,6 +2247,10 @@ function partition$1(p, param) {
             /* Empty */0
           ];
   }
+}
+
+function partition$3(p, param) {
+  return partition$2(Curry.__2(p), param);
 }
 
 function cons_enum$1(_m, _e) {
@@ -2296,21 +2395,21 @@ var SMap = /* module */[
   /* max_binding */max_binding$1,
   /* remove_min_binding */remove_min_binding$1,
   /* remove */remove$1,
-  /* iter */iter$1,
-  /* map */map$1,
-  /* mapi */mapi$1,
-  /* fold */fold$1,
-  /* for_all */for_all$1,
-  /* exists */exists$1,
+  /* iter */iter$3,
+  /* map */map$3,
+  /* mapi */mapi$3,
+  /* fold */fold$3,
+  /* for_all */for_all$3,
+  /* exists */exists$3,
   /* add_min_binding */add_min_binding$1,
   /* add_max_binding */add_max_binding$1,
   /* join */join$1,
   /* concat */concat$1,
   /* concat_or_join */concat_or_join$1,
   /* split */split$1,
-  /* merge */merge$1,
-  /* filter */filter$1,
-  /* partition */partition$1,
+  /* merge */merge$3,
+  /* filter */filter$3,
+  /* partition */partition$3,
   /* cons_enum */cons_enum$1,
   /* compare */compare$1,
   /* equal */equal$1,

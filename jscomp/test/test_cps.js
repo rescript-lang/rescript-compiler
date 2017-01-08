@@ -3,23 +3,25 @@
 var Curry      = require("../../lib/js/curry");
 var Caml_array = require("../../lib/js/caml_array");
 
-function f(_n, _acc) {
+function f(n, acc) {
+  var _n = n;
+  var _acc = Curry.__1(acc);
   while(true) {
-    var acc = _acc;
-    var n = _n;
-    if (n) {
-      _acc = (function(n,acc){
+    var acc$1 = _acc;
+    var n$1 = _n;
+    if (n$1) {
+      _acc = (function(n$1,acc$1){
       return function () {
-        console.log("" + n);
-        return Curry._1(acc, /* () */0);
+        console.log("" + n$1);
+        return acc$1(/* () */0);
       }
-      }(n,acc));
-      _n = n - 1 | 0;
+      }(n$1,acc$1));
+      _n = n$1 - 1 | 0;
       continue ;
       
     }
     else {
-      return Curry._1(acc, /* () */0);
+      return acc$1(/* () */0);
     }
   };
 }

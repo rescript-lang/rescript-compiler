@@ -132,7 +132,7 @@ function iter(f, _param) {
     var param = _param;
     if (param) {
       iter(f, param[0]);
-      Curry._1(f, param[1]);
+      f(param[1]);
       _param = param[2];
       continue ;
       
@@ -143,12 +143,16 @@ function iter(f, _param) {
   };
 }
 
+function iter$1(f, param) {
+  return iter(Curry.__1(f), param);
+}
+
 function fold(f, _s, _accu) {
   while(true) {
     var accu = _accu;
     var s = _s;
     if (s) {
-      _accu = Curry._2(f, s[1], fold(f, s[0], accu));
+      _accu = f(s[1], fold(f, s[0], accu));
       _s = s[2];
       continue ;
       
@@ -159,11 +163,15 @@ function fold(f, _s, _accu) {
   };
 }
 
+function fold$1(f, s, accu) {
+  return fold(Curry.__2(f), s, accu);
+}
+
 function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1])) {
+      if (p(param[1])) {
         if (for_all(p, param[0])) {
           _param = param[2];
           continue ;
@@ -183,11 +191,15 @@ function for_all(p, _param) {
   };
 }
 
+function for_all$1(p, param) {
+  return for_all(Curry.__1(p), param);
+}
+
 function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1])) {
+      if (p(param[1])) {
         return /* true */1;
       }
       else if (exists(p, param[0])) {
@@ -203,6 +215,10 @@ function exists(p, _param) {
       return /* false */0;
     }
   };
+}
+
+function exists$1(p, param) {
+  return exists(Curry.__1(p), param);
 }
 
 function max_int3(a, b, c) {
@@ -454,7 +470,7 @@ function filter(p, param) {
   if (param) {
     var v = param[1];
     var l$prime = filter(p, param[0]);
-    var pv = Curry._1(p, v);
+    var pv = p(v);
     var r$prime = filter(p, param[2]);
     if (pv) {
       return internal_join(l$prime, v, r$prime);
@@ -468,13 +484,17 @@ function filter(p, param) {
   }
 }
 
+function filter$1(p, param) {
+  return filter(Curry.__1(p), param);
+}
+
 function partition(p, param) {
   if (param) {
     var v = param[1];
     var match = partition(p, param[0]);
     var lf = match[1];
     var lt = match[0];
-    var pv = Curry._1(p, v);
+    var pv = p(v);
     var match$1 = partition(p, param[2]);
     var rf = match$1[1];
     var rt = match$1[0];
@@ -497,6 +517,10 @@ function partition(p, param) {
             /* Empty */0
           ];
   }
+}
+
+function partition$1(p, param) {
+  return partition(Curry.__1(p), param);
 }
 
 function of_sorted_list(l) {
@@ -778,19 +802,22 @@ function invariant(cmp, t) {
   return is_ordered(cmp, t);
 }
 
-function compare_aux(cmp, _e1, _e2) {
+function compare_aux(cmp, e1, e2) {
+  var cmp$1 = Curry.__2(cmp);
+  var _e1 = e1;
+  var _e2 = e2;
   while(true) {
-    var e2 = _e2;
-    var e1 = _e1;
-    if (e1) {
-      if (e2) {
-        var c = Curry._2(cmp, e1[0], e2[0]);
+    var e2$1 = _e2;
+    var e1$1 = _e1;
+    if (e1$1) {
+      if (e2$1) {
+        var c = cmp$1(e1$1[0], e2$1[0]);
         if (c !== 0) {
           return c;
         }
         else {
-          _e2 = cons_enum(e2[1], e2[2]);
-          _e1 = cons_enum(e1[1], e1[2]);
+          _e2 = cons_enum(e2$1[1], e2$1[2]);
+          _e1 = cons_enum(e1$1[1], e1$1[2]);
           continue ;
           
         }
@@ -799,7 +826,7 @@ function compare_aux(cmp, _e1, _e2) {
         return 1;
       }
     }
-    else if (e2) {
+    else if (e2$1) {
       return -1;
     }
     else {
@@ -827,10 +854,10 @@ exports.cardinal                = cardinal;
 exports.elements_aux            = elements_aux;
 exports.elements                = elements;
 exports.choose                  = choose;
-exports.iter                    = iter;
-exports.fold                    = fold;
-exports.for_all                 = for_all;
-exports.exists                  = exists;
+exports.iter                    = iter$1;
+exports.fold                    = fold$1;
+exports.for_all                 = for_all$1;
+exports.exists                  = exists$1;
 exports.max_int3                = max_int3;
 exports.max_int_2               = max_int_2;
 exports.Height_invariant_broken = Height_invariant_broken;
@@ -846,8 +873,8 @@ exports.add_min_element         = add_min_element;
 exports.add_max_element         = add_max_element;
 exports.internal_join           = internal_join;
 exports.internal_concat         = internal_concat;
-exports.filter                  = filter;
-exports.partition               = partition;
+exports.filter                  = filter$1;
+exports.partition               = partition$1;
 exports.of_sorted_list          = of_sorted_list;
 exports.of_sorted_array         = of_sorted_array;
 exports.is_ordered              = is_ordered;

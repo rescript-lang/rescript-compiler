@@ -10,7 +10,7 @@ function filter_map(f, _xs) {
     var xs = _xs;
     if (xs) {
       var ys = xs[1];
-      var match = Curry._1(f, xs[0]);
+      var match = f(xs[0]);
       if (match) {
         return /* :: */[
                 match[0],
@@ -27,6 +27,10 @@ function filter_map(f, _xs) {
       return /* [] */0;
     }
   };
+}
+
+function filter_map$1(f, xs) {
+  return filter_map(Curry.__1(f), xs);
 }
 
 function excludes(p, l) {
@@ -217,7 +221,7 @@ function filter_map2(f, _xs, _ys) {
       if (ys) {
         var vs = ys[1];
         var us = xs[1];
-        var match = Curry._2(f, xs[0], ys[0]);
+        var match = f(xs[0], ys[0]);
         if (match) {
           return /* :: */[
                   match[0],
@@ -248,6 +252,10 @@ function filter_map2(f, _xs, _ys) {
       return /* [] */0;
     }
   };
+}
+
+function filter_map2$1(f, xs, ys) {
+  return filter_map2(Curry.__2(f), xs, ys);
 }
 
 function filter_map2i(f, xs, ys) {
@@ -296,21 +304,24 @@ function filter_map2i(f, xs, ys) {
   return aux(0, xs, ys);
 }
 
-function rev_map_append(f, _l1, _l2) {
+function rev_map_append(f, l1, l2) {
+  var f$1 = Curry.__1(f);
+  var _l1 = l1;
+  var _l2 = l2;
   while(true) {
-    var l2 = _l2;
-    var l1 = _l1;
-    if (l1) {
+    var l2$1 = _l2;
+    var l1$1 = _l1;
+    if (l1$1) {
       _l2 = /* :: */[
-        Curry._1(f, l1[0]),
-        l2
+        f$1(l1$1[0]),
+        l2$1
       ];
-      _l1 = l1[1];
+      _l1 = l1$1[1];
       continue ;
       
     }
     else {
-      return l2;
+      return l2$1;
     }
   };
 }
@@ -350,18 +361,22 @@ function flat_map2(f, lx, ly) {
   };
 }
 
-function flat_map_aux(f, _acc, append, _lx) {
+function flat_map_aux(f, acc, append, lx) {
+  var f$1 = Curry.__1(f);
+  var _acc = acc;
+  var append$1 = append;
+  var _lx = lx;
   while(true) {
-    var lx = _lx;
-    var acc = _acc;
-    if (lx) {
-      _lx = lx[1];
-      _acc = List.rev_append(Curry._1(f, lx[0]), acc);
+    var lx$1 = _lx;
+    var acc$1 = _acc;
+    if (lx$1) {
+      _lx = lx$1[1];
+      _acc = List.rev_append(f$1(lx$1[0]), acc$1);
       continue ;
       
     }
     else {
-      return List.rev_append(acc, append);
+      return List.rev_append(acc$1, append$1);
     }
   };
 }
@@ -388,7 +403,7 @@ function map2_last(f, l1, l2) {
       }
       else {
         return /* :: */[
-                Curry._3(f, /* true */1, u, l2[0]),
+                f(/* true */1, u, l2[0]),
                 /* [] */0
               ];
       }
@@ -401,7 +416,7 @@ function map2_last(f, l1, l2) {
     }
     if (exit === 1) {
       if (l2) {
-        var r = Curry._3(f, /* false */0, u, l2[0]);
+        var r = f(/* false */0, u, l2[0]);
         return /* :: */[
                 r,
                 map2_last(f, l1$1, l2[1])
@@ -427,12 +442,16 @@ function map2_last(f, l1, l2) {
   }
 }
 
+function map2_last$1(f, l1, l2) {
+  return map2_last(Curry.__3(f), l1, l2);
+}
+
 function map_last(f, l1) {
   if (l1) {
     var l1$1 = l1[1];
     var u = l1[0];
     if (l1$1) {
-      var r = Curry._2(f, /* false */0, u);
+      var r = f(/* false */0, u);
       return /* :: */[
               r,
               map_last(f, l1$1)
@@ -440,7 +459,7 @@ function map_last(f, l1) {
     }
     else {
       return /* :: */[
-              Curry._2(f, /* true */1, u),
+              f(/* true */1, u),
               /* [] */0
             ];
     }
@@ -448,6 +467,10 @@ function map_last(f, l1) {
   else {
     return /* [] */0;
   }
+}
+
+function map_last$1(f, l1) {
+  return map_last(Curry.__2(f), l1);
 }
 
 function fold_right2_last(f, l1, l2, accu) {
@@ -463,7 +486,7 @@ function fold_right2_last(f, l1, l2, accu) {
         exit = 1;
       }
       else {
-        return Curry._4(f, /* true */1, last1, l2[0], accu);
+        return f(/* true */1, last1, l2[0], accu);
       }
     }
     else {
@@ -474,7 +497,7 @@ function fold_right2_last(f, l1, l2, accu) {
     }
     if (exit === 1) {
       if (l2) {
-        return Curry._4(f, /* false */0, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
+        return f(/* false */0, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
       }
       else {
         throw [
@@ -494,6 +517,10 @@ function fold_right2_last(f, l1, l2, accu) {
   else {
     return accu;
   }
+}
+
+function fold_right2_last$1(f, l1, l2, accu) {
+  return fold_right2_last(Curry.__4(f), l1, l2, accu);
 }
 
 function init(n, f) {
@@ -644,13 +671,15 @@ function drop(_n, _h) {
   };
 }
 
-function for_all_ret(p, _param) {
+function for_all_ret(p, param) {
+  var p$1 = Curry.__1(p);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      var a = param[0];
-      if (Curry._1(p, a)) {
-        _param = param[1];
+    var param$1 = _param;
+    if (param$1) {
+      var a = param$1[0];
+      if (p$1(a)) {
+        _param = param$1[1];
         continue ;
         
       }
@@ -664,16 +693,18 @@ function for_all_ret(p, _param) {
   };
 }
 
-function for_all_opt(p, _param) {
+function for_all_opt(p, param) {
+  var p$1 = Curry.__1(p);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      var v = Curry._1(p, param[0]);
+    var param$1 = _param;
+    if (param$1) {
+      var v = p$1(param$1[0]);
       if (v) {
         return v;
       }
       else {
-        _param = param[1];
+        _param = param$1[1];
         continue ;
         
       }
@@ -714,22 +745,29 @@ function rev_map_acc(acc, f, l) {
 function rev_iter(f, xs) {
   if (xs) {
     rev_iter(f, xs[1]);
-    return Curry._1(f, xs[0]);
+    return f(xs[0]);
   }
   else {
     return /* () */0;
   }
 }
 
-function for_all2_no_exn(p, _l1, _l2) {
+function rev_iter$1(f, xs) {
+  return rev_iter(Curry.__1(f), xs);
+}
+
+function for_all2_no_exn(p, l1, l2) {
+  var p$1 = Curry.__2(p);
+  var _l1 = l1;
+  var _l2 = l2;
   while(true) {
-    var l2 = _l2;
-    var l1 = _l1;
-    if (l1) {
-      if (l2) {
-        if (Curry._2(p, l1[0], l2[0])) {
-          _l2 = l2[1];
-          _l1 = l1[1];
+    var l2$1 = _l2;
+    var l1$1 = _l1;
+    if (l1$1) {
+      if (l2$1) {
+        if (p$1(l1$1[0], l2$1[0])) {
+          _l2 = l2$1[1];
+          _l1 = l1$1[1];
           continue ;
           
         }
@@ -741,7 +779,7 @@ function for_all2_no_exn(p, _l1, _l2) {
         return /* false */0;
       }
     }
-    else if (l2) {
+    else if (l2$1) {
       return /* false */0;
     }
     else {
@@ -750,16 +788,18 @@ function for_all2_no_exn(p, _l1, _l2) {
   };
 }
 
-function find_no_exn(p, _param) {
+function find_no_exn(p, param) {
+  var p$1 = Curry.__1(p);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      var x = param[0];
-      if (Curry._1(p, x)) {
+    var param$1 = _param;
+    if (param$1) {
+      var x = param$1[0];
+      if (p$1(x)) {
         return /* Some */[x];
       }
       else {
-        _param = param[1];
+        _param = param$1[1];
         continue ;
         
       }
@@ -770,16 +810,18 @@ function find_no_exn(p, _param) {
   };
 }
 
-function find_opt(p, _param) {
+function find_opt(p, param) {
+  var p$1 = Curry.__1(p);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      var v = Curry._1(p, param[0]);
+    var param$1 = _param;
+    if (param$1) {
+      var v = p$1(param$1[0]);
       if (v) {
         return v;
       }
       else {
-        _param = param[1];
+        _param = param$1[1];
         continue ;
         
       }
@@ -960,22 +1002,22 @@ function last(_xs) {
   };
 }
 
-exports.filter_map         = filter_map;
+exports.filter_map         = filter_map$1;
 exports.excludes           = excludes;
 exports.exclude_with_fact  = exclude_with_fact;
 exports.exclude_with_fact2 = exclude_with_fact2;
 exports.same_length        = same_length;
 exports.filter_mapi        = filter_mapi;
-exports.filter_map2        = filter_map2;
+exports.filter_map2        = filter_map2$1;
 exports.filter_map2i       = filter_map2i;
 exports.rev_map_append     = rev_map_append;
 exports.flat_map2          = flat_map2;
 exports.flat_map_aux       = flat_map_aux;
 exports.flat_map           = flat_map;
 exports.flat_map_acc       = flat_map_acc;
-exports.map2_last          = map2_last;
-exports.map_last           = map_last;
-exports.fold_right2_last   = fold_right2_last;
+exports.map2_last          = map2_last$1;
+exports.map_last           = map_last$1;
+exports.fold_right2_last   = fold_right2_last$1;
 exports.init               = init;
 exports.take               = take;
 exports.try_take           = try_take;
@@ -988,7 +1030,7 @@ exports.for_all_ret        = for_all_ret;
 exports.for_all_opt        = for_all_opt;
 exports.fold               = fold;
 exports.rev_map_acc        = rev_map_acc;
-exports.rev_iter           = rev_iter;
+exports.rev_iter           = rev_iter$1;
 exports.for_all2_no_exn    = for_all2_no_exn;
 exports.find_no_exn        = find_no_exn;
 exports.find_opt           = find_opt;

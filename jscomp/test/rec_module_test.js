@@ -667,7 +667,7 @@ function iter(f, _param) {
     var param = _param;
     if (param) {
       iter(f, param[0]);
-      Curry._1(f, param[1]);
+      f(param[1]);
       _param = param[2];
       continue ;
       
@@ -678,12 +678,16 @@ function iter(f, _param) {
   };
 }
 
+function iter$1(f, param) {
+  return iter(Curry.__1(f), param);
+}
+
 function fold(f, _s, _accu) {
   while(true) {
     var accu = _accu;
     var s = _s;
     if (s) {
-      _accu = Curry._2(f, s[1], fold(f, s[0], accu));
+      _accu = f(s[1], fold(f, s[0], accu));
       _s = s[2];
       continue ;
       
@@ -694,11 +698,15 @@ function fold(f, _s, _accu) {
   };
 }
 
+function fold$1(f, s, accu) {
+  return fold(Curry.__2(f), s, accu);
+}
+
 function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1])) {
+      if (p(param[1])) {
         if (for_all(p, param[0])) {
           _param = param[2];
           continue ;
@@ -718,11 +726,15 @@ function for_all(p, _param) {
   };
 }
 
+function for_all$1(p, param) {
+  return for_all(Curry.__1(p), param);
+}
+
 function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1])) {
+      if (p(param[1])) {
         return /* true */1;
       }
       else if (exists(p, param[0])) {
@@ -740,11 +752,15 @@ function exists(p, _param) {
   };
 }
 
+function exists$1(p, param) {
+  return exists(Curry.__1(p), param);
+}
+
 function filter(p, param) {
   if (param) {
     var v = param[1];
     var l$prime = filter(p, param[0]);
-    var pv = Curry._1(p, v);
+    var pv = p(v);
     var r$prime = filter(p, param[2]);
     if (pv) {
       return join(l$prime, v, r$prime);
@@ -758,13 +774,17 @@ function filter(p, param) {
   }
 }
 
+function filter$1(p, param) {
+  return filter(Curry.__1(p), param);
+}
+
 function partition(p, param) {
   if (param) {
     var v = param[1];
     var match = partition(p, param[0]);
     var lf = match[1];
     var lt = match[0];
-    var pv = Curry._1(p, v);
+    var pv = p(v);
     var match$1 = partition(p, param[2]);
     var rf = match$1[1];
     var rt = match$1[0];
@@ -787,6 +807,10 @@ function partition(p, param) {
             /* Empty */0
           ];
   }
+}
+
+function partition$1(p, param) {
+  return partition(Curry.__1(p), param);
 }
 
 function cardinal(param) {
@@ -1018,12 +1042,12 @@ var ASet = [
   compare,
   equal,
   subset,
-  iter,
-  fold,
-  for_all,
-  exists,
-  filter,
-  partition,
+  iter$1,
+  fold$1,
+  for_all$1,
+  exists$1,
+  filter$1,
+  partition$1,
   cardinal,
   elements,
   min_elt,

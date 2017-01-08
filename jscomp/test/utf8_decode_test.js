@@ -188,15 +188,18 @@ function decode(bytes, offset) {
   }
 }
 
-function eq_list(cmp, _xs, _ys) {
+function eq_list(cmp, xs, ys) {
+  var cmp$1 = Curry.__2(cmp);
+  var _xs = xs;
+  var _ys = ys;
   while(true) {
-    var ys = _ys;
-    var xs = _xs;
-    if (xs) {
-      if (ys) {
-        if (Curry._2(cmp, xs[0], ys[0])) {
-          _ys = ys[1];
-          _xs = xs[1];
+    var ys$1 = _ys;
+    var xs$1 = _xs;
+    if (xs$1) {
+      if (ys$1) {
+        if (cmp$1(xs$1[0], ys$1[0])) {
+          _ys = ys$1[1];
+          _xs = xs$1[1];
           continue ;
           
         }
@@ -208,7 +211,7 @@ function eq_list(cmp, _xs, _ys) {
         return /* false */0;
       }
     }
-    else if (ys) {
+    else if (ys$1) {
       return /* false */0;
     }
     else {

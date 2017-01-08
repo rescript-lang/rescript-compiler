@@ -228,14 +228,18 @@ function escaped(s) {
   }
 }
 
-function unsafe_for_all_range(s, _start, finish, p) {
+function unsafe_for_all_range(s, start, finish, p) {
+  var s$1 = s;
+  var _start = start;
+  var finish$1 = finish;
+  var p$1 = Curry.__1(p);
   while(true) {
-    var start = _start;
-    if (start > finish) {
+    var start$1 = _start;
+    if (start$1 > finish$1) {
       return /* true */1;
     }
-    else if (Curry._1(p, s.charCodeAt(start))) {
-      _start = start + 1 | 0;
+    else if (p$1(s$1.charCodeAt(start$1))) {
+      _start = start$1 + 1 | 0;
       continue ;
       
     }

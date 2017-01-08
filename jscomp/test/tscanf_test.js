@@ -1982,7 +1982,7 @@ test('File "tscanf_test.ml", line 506, characters 5-12', test22(/* () */0));
 
 function scan_elems$5(ib, scan_elem, accu) {
   try {
-    return Curry._2(scan_elem, ib, function (i, s) {
+    return scan_elem(ib, function (i, s) {
                 var accu$1 = /* :: */[
                   i,
                   accu
@@ -2005,6 +2005,10 @@ function scan_elems$5(ib, scan_elem, accu) {
   }
 }
 
+function scan_elems$6(ib, scan_elem, accu) {
+  return scan_elems$5(ib, Curry.__2(scan_elem), accu);
+}
+
 function scan_list(scan_elem, ib) {
   Curry._1(Scanf.bscanf(ib, /* Format */[
             /* String_literal */Block.__(11, [
@@ -2013,7 +2017,7 @@ function scan_list(scan_elem, ib) {
               ]),
             "[ "
           ]), /* () */0);
-  var accu = scan_elems$5(ib, scan_elem, /* [] */0);
+  var accu = scan_elems$6(ib, scan_elem, /* [] */0);
   Curry._1(Scanf.bscanf(ib, /* Format */[
             /* String_literal */Block.__(11, [
                 " ]",
@@ -2218,8 +2222,8 @@ function test28() {
 
 test('File "tscanf_test.ml", line 609, characters 5-12', test28(/* () */0));
 
-function scan_elems$6(ib, scan_elem, accu) {
-  return Curry._3(scan_elem, ib, function (i, s) {
+function scan_elems$7(ib, scan_elem, accu) {
+  return scan_elem(ib, function (i, s) {
               var accu$1 = /* :: */[
                 i,
                 accu
@@ -2228,11 +2232,15 @@ function scan_elems$6(ib, scan_elem, accu) {
                 return accu$1;
               }
               else {
-                return scan_elems$6(ib, scan_elem, accu$1);
+                return scan_elems$7(ib, scan_elem, accu$1);
               }
             }, function (_, _$1) {
               return accu;
             });
+}
+
+function scan_elems$8(ib, scan_elem, accu) {
+  return scan_elems$7(ib, Curry.__3(scan_elem), accu);
 }
 
 function scan_list$1(scan_elem, ib) {
@@ -2243,7 +2251,7 @@ function scan_list$1(scan_elem, ib) {
               ]),
             "[ "
           ]), /* () */0);
-  var accu = scan_elems$6(ib, scan_elem, /* [] */0);
+  var accu = scan_elems$8(ib, scan_elem, /* [] */0);
   Curry._1(Scanf.bscanf(ib, /* Format */[
             /* String_literal */Block.__(11, [
                 " ]",
@@ -2376,8 +2384,8 @@ function scan_elem(fmt, ib, f, ek) {
   return Curry._1(Scanf.kscanf(ib, ek, fmt), f);
 }
 
-function scan_elems$7(ib, scan_elem, accu) {
-  return Curry._3(scan_elem, ib, function (i) {
+function scan_elems$9(ib, scan_elem, accu) {
+  return scan_elem(ib, function (i) {
               var accu$1 = /* :: */[
                 i,
                 accu
@@ -2399,12 +2407,16 @@ function scan_elems$7(ib, scan_elem, accu) {
                             return accu$1;
                           }
                           else {
-                            return scan_elems$7(ib, scan_elem, accu$1);
+                            return scan_elems$9(ib, scan_elem, accu$1);
                           }
                         });
             }, function (_, _$1) {
               return accu;
             });
+}
+
+function scan_elems$10(ib, scan_elem, accu) {
+  return scan_elems$9(ib, Curry.__3(scan_elem), accu);
 }
 
 function scan_list$2(scan_elem, ib) {
@@ -2415,7 +2427,7 @@ function scan_list$2(scan_elem, ib) {
               ]),
             "[ "
           ]), /* () */0);
-  var accu = scan_elems$7(ib, scan_elem, /* [] */0);
+  var accu = scan_elems$10(ib, scan_elem, /* [] */0);
   Curry._1(Scanf.bscanf(ib, /* Format */[
             /* String_literal */Block.__(11, [
                 " ]",
@@ -2542,7 +2554,7 @@ function test32() {
 
 test('File "tscanf_test.ml", line 728, characters 5-12', test32(/* () */0));
 
-function scan_elems$8(ib, scan_elem_fmt, accu) {
+function scan_elems$11(ib, scan_elem_fmt, accu) {
   return Curry._1(Scanf.kscanf(ib, function (_, _$1) {
                   return accu;
                 }, scan_elem_fmt), function (i) {
@@ -2568,7 +2580,7 @@ function scan_elems$8(ib, scan_elem_fmt, accu) {
                             return accu$1;
                           }
                           else {
-                            return scan_elems$8(ib, scan_elem_fmt, accu$1);
+                            return scan_elems$11(ib, scan_elem_fmt, accu$1);
                           }
                         });
             });
@@ -2582,7 +2594,7 @@ function scan_list$3(scan_elem_fmt, ib) {
               ]),
             "[ "
           ]), /* () */0);
-  var accu = scan_elems$8(ib, scan_elem_fmt, /* [] */0);
+  var accu = scan_elems$11(ib, scan_elem_fmt, /* [] */0);
   Curry._1(Scanf.bscanf(ib, /* Format */[
             /* String_literal */Block.__(11, [
                 " ]",
@@ -2695,14 +2707,14 @@ function test34() {
 
 test('File "tscanf_test.ml", line 787, characters 5-12', test34(/* () */0));
 
-function scan_elems$9(scan_elem, accu, ib) {
+function scan_elems$12(scan_elem, accu, ib) {
   return Curry._2(Scanf.kscanf(ib, function (_, _$1) {
                   return accu;
                 }, /* Format */[
                   /* Reader */Block.__(19, [/* End_of_format */0]),
                   "%r"
                 ]), function (ib) {
-              return Curry._2(scan_elem, ib, function (elem) {
+              return scan_elem(ib, function (elem) {
                           var accu$1 = /* :: */[
                             elem,
                             accu
@@ -2725,13 +2737,17 @@ function scan_elems$9(scan_elem, accu, ib) {
                                         return accu$1;
                                       }
                                       else {
-                                        return scan_elems$9(scan_elem, accu$1, ib);
+                                        return scan_elems$12(scan_elem, accu$1, ib);
                                       }
                                     });
                         });
             }, function (l) {
               return l;
             });
+}
+
+function scan_elems$13(scan_elem, accu, ib) {
+  return scan_elems$12(Curry.__2(scan_elem), accu, ib);
 }
 
 function scan_list$4(scan_elem, ib) {
@@ -2742,7 +2758,7 @@ function scan_list$4(scan_elem, ib) {
               ]),
             "[ "
           ]), /* () */0);
-  var accu = scan_elems$9(scan_elem, /* [] */0, ib);
+  var accu = scan_elems$13(scan_elem, /* [] */0, ib);
   Curry._1(Scanf.bscanf(ib, /* Format */[
             /* String_literal */Block.__(11, [
                 " ]",
@@ -2947,7 +2963,7 @@ function read_elems(read_elem, accu, ib) {
                             ])
                         ])]),
                   "%r %1[;] "
-                ]), Curry._1(read_elem, function (elem) {
+                ]), read_elem(function (elem) {
                   return /* :: */[
                           elem,
                           accu
@@ -2962,6 +2978,10 @@ function read_elems(read_elem, accu, ib) {
             });
 }
 
+function read_elems$1(read_elem, accu, ib) {
+  return read_elems(Curry.__1(read_elem), accu, ib);
+}
+
 function read_list(read_elem, ib) {
   return Curry._2(Scanf.bscanf(ib, /* Format */[
                   /* String_literal */Block.__(11, [
@@ -2973,7 +2993,7 @@ function read_list(read_elem, ib) {
                     ]),
                   "[ %r ]"
                 ]), function (param) {
-              return read_elems(read_elem, /* [] */0, param);
+              return read_elems$1(read_elem, /* [] */0, param);
             }, List.rev);
 }
 
@@ -4740,7 +4760,7 @@ exports.test31                 = test31;
 exports.test32                 = test32;
 exports.test33                 = test33;
 exports.test34                 = test34;
-exports.scan_elems             = scan_elems$9;
+exports.scan_elems             = scan_elems$13;
 exports.scan_list              = scan_list$4;
 exports.scan_float             = scan_float;
 exports.scan_int_list          = scan_int_list$8;
@@ -4753,7 +4773,7 @@ exports.scan_float_item        = scan_float_item;
 exports.scan_float_list        = scan_float_list;
 exports.scan_float_list_list   = scan_float_list_list$1;
 exports.test35                 = test35;
-exports.read_elems             = read_elems;
+exports.read_elems             = read_elems$1;
 exports.read_list              = read_list;
 exports.make_read_elem         = make_read_elem;
 exports.scan_List              = scan_List;

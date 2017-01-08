@@ -22,13 +22,17 @@ function cons(x, y) {
 function map(f, param) {
   if (param) {
     return /* Cons */[
-            Curry._1(f, param[0]),
+            f(param[0]),
             map(f, param[1])
           ];
   }
   else {
     return /* Nil */0;
   }
+}
+
+function map$1(f, param) {
+  return map(Curry.__1(f), param);
 }
 
 function sum(n) {
@@ -78,7 +82,7 @@ var len = List.length;
 exports.fib  = fib;
 exports.nil  = nil;
 exports.cons = cons;
-exports.map  = map;
+exports.map  = map$1;
 exports.sum  = sum;
 exports.len  = len;
 exports.f    = f;

@@ -527,7 +527,7 @@ function Make(Ord) {
       var param = _param;
       if (param) {
         iter(f, param[0]);
-        Curry._1(f, param[1]);
+        f(param[1]);
         _param = param[2];
         continue ;
         
@@ -537,12 +537,15 @@ function Make(Ord) {
       }
     };
   };
+  var iter$1 = function (f, param) {
+    return iter(Curry.__1(f), param);
+  };
   var fold = function (f, _s, _accu) {
     while(true) {
       var accu = _accu;
       var s = _s;
       if (s) {
-        _accu = Curry._2(f, s[1], fold(f, s[0], accu));
+        _accu = f(s[1], fold(f, s[0], accu));
         _s = s[2];
         continue ;
         
@@ -552,11 +555,14 @@ function Make(Ord) {
       }
     };
   };
+  var fold$1 = function (f, s, accu) {
+    return fold(Curry.__2(f), s, accu);
+  };
   var for_all = function (p, _param) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Curry._1(p, param[1])) {
+        if (p(param[1])) {
           if (for_all(p, param[0])) {
             _param = param[2];
             continue ;
@@ -575,11 +581,14 @@ function Make(Ord) {
       }
     };
   };
+  var for_all$1 = function (p, param) {
+    return for_all(Curry.__1(p), param);
+  };
   var exists = function (p, _param) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Curry._1(p, param[1])) {
+        if (p(param[1])) {
           return /* true */1;
         }
         else if (exists(p, param[0])) {
@@ -596,11 +605,14 @@ function Make(Ord) {
       }
     };
   };
+  var exists$1 = function (p, param) {
+    return exists(Curry.__1(p), param);
+  };
   var filter = function (p, param) {
     if (param) {
       var v = param[1];
       var l$prime = filter(p, param[0]);
-      var pv = Curry._1(p, v);
+      var pv = p(v);
       var r$prime = filter(p, param[2]);
       if (pv) {
         return join(l$prime, v, r$prime);
@@ -613,13 +625,16 @@ function Make(Ord) {
       return /* Empty */0;
     }
   };
+  var filter$1 = function (p, param) {
+    return filter(Curry.__1(p), param);
+  };
   var partition = function (p, param) {
     if (param) {
       var v = param[1];
       var match = partition(p, param[0]);
       var lf = match[1];
       var lt = match[0];
-      var pv = Curry._1(p, v);
+      var pv = p(v);
       var match$1 = partition(p, param[2]);
       var rf = match$1[1];
       var rt = match$1[0];
@@ -642,6 +657,9 @@ function Make(Ord) {
               /* Empty */0
             ];
     }
+  };
+  var partition$1 = function (p, param) {
+    return partition(Curry.__1(p), param);
   };
   var cardinal = function (param) {
     if (param) {
@@ -883,12 +901,12 @@ function Make(Ord) {
           /* compare */compare,
           /* equal */equal,
           /* subset */subset,
-          /* iter */iter,
-          /* fold */fold,
-          /* for_all */for_all,
-          /* exists */exists,
-          /* filter */filter,
-          /* partition */partition,
+          /* iter */iter$1,
+          /* fold */fold$1,
+          /* for_all */for_all$1,
+          /* exists */exists$1,
+          /* filter */filter$1,
+          /* partition */partition$1,
           /* cardinal */cardinal,
           /* elements_aux */elements_aux,
           /* elements */elements,

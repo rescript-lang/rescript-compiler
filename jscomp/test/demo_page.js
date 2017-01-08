@@ -1,8 +1,8 @@
 'use strict';
 
 var Curry    = require("../../lib/js/curry");
-var React    = require("react");
 var ReactDom = require("react-dom");
+var React    = require("react");
 
 function fib(n) {
   if (n === 2 || n === 1) {
@@ -24,13 +24,17 @@ function sum(n) {
 function map(f, param) {
   if (param) {
     return /* Cons */[
-            Curry._1(f, param[0]),
+            f(param[0]),
             map(f, param[1])
           ];
   }
   else {
     return /* Nil */0;
   }
+}
+
+function map$1(f, param) {
+  return map(Curry.__1(f), param);
 }
 
 function test_curry(x, y) {
@@ -51,7 +55,7 @@ ReactDom.render(React.createClass({
 
 exports.fib        = fib;
 exports.sum        = sum;
-exports.map        = map;
+exports.map        = map$1;
 exports.test_curry = test_curry;
 exports.f          = f;
 /*  Not a pure module */

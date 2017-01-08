@@ -250,16 +250,18 @@ function pop_last(param) {
   }
 }
 
-function apply_until(f, _param) {
+function apply_until(f, param) {
+  var f$1 = Curry.__1(f);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      var x = Curry._1(f, param[0]);
+    var param$1 = _param;
+    if (param$1) {
+      var x = f$1(param$1[0]);
       if (x) {
         return x;
       }
       else {
-        _param = param[1];
+        _param = param$1[1];
         continue ;
         
       }
@@ -3687,7 +3689,7 @@ function find(x, _param) {
 function map$1(f, param) {
   if (param) {
     var l$prime = map$1(f, param[0]);
-    var d$prime = Curry._1(f, param[2]);
+    var d$prime = f(param[2]);
     var r$prime = map$1(f, param[3]);
     return /* Node */[
             l$prime,
@@ -3707,7 +3709,7 @@ function fold(f, _m, _accu) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
+      _accu = f(m[1], m[2], fold(f, m[0], accu));
       _m = m[3];
       continue ;
       
@@ -3716,6 +3718,10 @@ function fold(f, _m, _accu) {
       return accu;
     }
   };
+}
+
+function fold$1(f, m, accu) {
+  return fold(Curry.__3(f), m, accu);
 }
 
 function min_value(param) {
@@ -3784,14 +3790,16 @@ function string_of_option(f, param) {
 }
 
 function reset(g) {
-  return map$1(function (core) {
-              return /* record */[
-                      /* core */core,
-                      /* index : None */0,
-                      /* lowlink : None */0,
-                      /* on_stack : false */0
-                    ];
-            }, g);
+  var f = function (core) {
+    return /* record */[
+            /* core */core,
+            /* index : None */0,
+            /* lowlink : None */0,
+            /* on_stack : false */0
+          ];
+  };
+  var param = g;
+  return map$1(Curry.__1(f), param);
 }
 
 function strong_connect(g, sccs, stack, index, v) {
@@ -3993,7 +4001,7 @@ function strong_connect(g, sccs, stack, index, v) {
 
 function tarjan(g) {
   var g$1 = reset(g);
-  return fold(function (_, n, param) {
+  return fold$1(function (_, n, param) {
                 var index = param[2];
                 var stack = param[1];
                 var sccs = param[0];

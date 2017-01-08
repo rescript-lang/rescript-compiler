@@ -118,7 +118,7 @@ function flatten(param) {
 
 function map(f, param) {
   if (param) {
-    var r = Curry._1(f, param[0]);
+    var r = f(param[0]);
     return /* :: */[
             r,
             map(f, param[1])
@@ -129,9 +129,13 @@ function map(f, param) {
   }
 }
 
+function map$1(f, param) {
+  return map(Curry.__1(f), param);
+}
+
 function mapi(i, f, param) {
   if (param) {
-    var r = Curry._2(f, i, param[0]);
+    var r = f(i, param[0]);
     return /* :: */[
             r,
             mapi(i + 1 | 0, f, param[1])
@@ -143,7 +147,10 @@ function mapi(i, f, param) {
 }
 
 function mapi$1(f, l) {
-  return mapi(0, f, l);
+  var i = 0;
+  var f$1 = f;
+  var param = l;
+  return mapi(i, Curry.__2(f$1), param);
 }
 
 function rev_map(f, l) {
@@ -167,12 +174,14 @@ function rev_map(f, l) {
   };
 }
 
-function iter(f, _param) {
+function iter(f, param) {
+  var f$1 = Curry.__1(f);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      Curry._1(f, param[0]);
-      _param = param[1];
+    var param$1 = _param;
+    if (param$1) {
+      f$1(param$1[0]);
+      _param = param$1[1];
       continue ;
       
     }
@@ -183,16 +192,19 @@ function iter(f, _param) {
 }
 
 function iteri(f, l) {
-  var _i = 0;
+  var i = 0;
   var f$1 = f;
-  var _param = l;
+  var param = l;
+  var _i = i;
+  var f$2 = Curry.__2(f$1);
+  var _param = param;
   while(true) {
-    var param = _param;
-    var i = _i;
-    if (param) {
-      Curry._2(f$1, i, param[0]);
-      _param = param[1];
-      _i = i + 1 | 0;
+    var param$1 = _param;
+    var i$1 = _i;
+    if (param$1) {
+      f$2(i$1, param$1[0]);
+      _param = param$1[1];
+      _i = i$1 + 1 | 0;
       continue ;
       
     }
@@ -202,35 +214,42 @@ function iteri(f, l) {
   };
 }
 
-function fold_left(f, _accu, _l) {
+function fold_left(f, accu, l) {
+  var f$1 = Curry.__2(f);
+  var _accu = accu;
+  var _l = l;
   while(true) {
-    var l = _l;
-    var accu = _accu;
-    if (l) {
-      _l = l[1];
-      _accu = Curry._2(f, accu, l[0]);
+    var l$1 = _l;
+    var accu$1 = _accu;
+    if (l$1) {
+      _l = l$1[1];
+      _accu = f$1(accu$1, l$1[0]);
       continue ;
       
     }
     else {
-      return accu;
+      return accu$1;
     }
   };
 }
 
 function fold_right(f, l, accu) {
   if (l) {
-    return Curry._2(f, l[0], fold_right(f, l[1], accu));
+    return f(l[0], fold_right(f, l[1], accu));
   }
   else {
     return accu;
   }
 }
 
+function fold_right$1(f, l, accu) {
+  return fold_right(Curry.__2(f), l, accu);
+}
+
 function map2(f, l1, l2) {
   if (l1) {
     if (l2) {
-      var r = Curry._2(f, l1[0], l2[0]);
+      var r = f(l1[0], l2[0]);
       return /* :: */[
               r,
               map2(f, l1[1], l2[1])
@@ -252,6 +271,10 @@ function map2(f, l1, l2) {
   else {
     return /* [] */0;
   }
+}
+
+function map2$1(f, l1, l2) {
+  return map2(Curry.__2(f), l1, l2);
 }
 
 function rev_map2(f, l1, l2) {
@@ -292,15 +315,18 @@ function rev_map2(f, l1, l2) {
   };
 }
 
-function iter2(f, _l1, _l2) {
+function iter2(f, l1, l2) {
+  var f$1 = Curry.__2(f);
+  var _l1 = l1;
+  var _l2 = l2;
   while(true) {
-    var l2 = _l2;
-    var l1 = _l1;
-    if (l1) {
-      if (l2) {
-        Curry._2(f, l1[0], l2[0]);
-        _l2 = l2[1];
-        _l1 = l1[1];
+    var l2$1 = _l2;
+    var l1$1 = _l1;
+    if (l1$1) {
+      if (l2$1) {
+        f$1(l1$1[0], l2$1[0]);
+        _l2 = l2$1[1];
+        _l1 = l1$1[1];
         continue ;
         
       }
@@ -311,7 +337,7 @@ function iter2(f, _l1, _l2) {
             ];
       }
     }
-    else if (l2) {
+    else if (l2$1) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.iter2"
@@ -323,16 +349,20 @@ function iter2(f, _l1, _l2) {
   };
 }
 
-function fold_left2(f, _accu, _l1, _l2) {
+function fold_left2(f, accu, l1, l2) {
+  var f$1 = Curry.__3(f);
+  var _accu = accu;
+  var _l1 = l1;
+  var _l2 = l2;
   while(true) {
-    var l2 = _l2;
-    var l1 = _l1;
-    var accu = _accu;
-    if (l1) {
-      if (l2) {
-        _l2 = l2[1];
-        _l1 = l1[1];
-        _accu = Curry._3(f, accu, l1[0], l2[0]);
+    var l2$1 = _l2;
+    var l1$1 = _l1;
+    var accu$1 = _accu;
+    if (l1$1) {
+      if (l2$1) {
+        _l2 = l2$1[1];
+        _l1 = l1$1[1];
+        _accu = f$1(accu$1, l1$1[0], l2$1[0]);
         continue ;
         
       }
@@ -343,14 +373,14 @@ function fold_left2(f, _accu, _l1, _l2) {
             ];
       }
     }
-    else if (l2) {
+    else if (l2$1) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.fold_left2"
           ];
     }
     else {
-      return accu;
+      return accu$1;
     }
   };
 }
@@ -358,7 +388,7 @@ function fold_left2(f, _accu, _l1, _l2) {
 function fold_right2(f, l1, l2, accu) {
   if (l1) {
     if (l2) {
-      return Curry._3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
+      return f(l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
     }
     else {
       throw [
@@ -378,12 +408,18 @@ function fold_right2(f, l1, l2, accu) {
   }
 }
 
-function for_all(p, _param) {
+function fold_right2$1(f, l1, l2, accu) {
+  return fold_right2(Curry.__3(f), l1, l2, accu);
+}
+
+function for_all(p, param) {
+  var p$1 = Curry.__1(p);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      if (Curry._1(p, param[0])) {
-        _param = param[1];
+    var param$1 = _param;
+    if (param$1) {
+      if (p$1(param$1[0])) {
+        _param = param$1[1];
         continue ;
         
       }
@@ -397,15 +433,17 @@ function for_all(p, _param) {
   };
 }
 
-function exists(p, _param) {
+function exists(p, param) {
+  var p$1 = Curry.__1(p);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      if (Curry._1(p, param[0])) {
+    var param$1 = _param;
+    if (param$1) {
+      if (p$1(param$1[0])) {
         return /* true */1;
       }
       else {
-        _param = param[1];
+        _param = param$1[1];
         continue ;
         
       }
@@ -416,15 +454,18 @@ function exists(p, _param) {
   };
 }
 
-function for_all2(p, _l1, _l2) {
+function for_all2(p, l1, l2) {
+  var p$1 = Curry.__2(p);
+  var _l1 = l1;
+  var _l2 = l2;
   while(true) {
-    var l2 = _l2;
-    var l1 = _l1;
-    if (l1) {
-      if (l2) {
-        if (Curry._2(p, l1[0], l2[0])) {
-          _l2 = l2[1];
-          _l1 = l1[1];
+    var l2$1 = _l2;
+    var l1$1 = _l1;
+    if (l1$1) {
+      if (l2$1) {
+        if (p$1(l1$1[0], l2$1[0])) {
+          _l2 = l2$1[1];
+          _l1 = l1$1[1];
           continue ;
           
         }
@@ -439,7 +480,7 @@ function for_all2(p, _l1, _l2) {
             ];
       }
     }
-    else if (l2) {
+    else if (l2$1) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.for_all2"
@@ -451,18 +492,21 @@ function for_all2(p, _l1, _l2) {
   };
 }
 
-function exists2(p, _l1, _l2) {
+function exists2(p, l1, l2) {
+  var p$1 = Curry.__2(p);
+  var _l1 = l1;
+  var _l2 = l2;
   while(true) {
-    var l2 = _l2;
-    var l1 = _l1;
-    if (l1) {
-      if (l2) {
-        if (Curry._2(p, l1[0], l2[0])) {
+    var l2$1 = _l2;
+    var l1$1 = _l1;
+    if (l1$1) {
+      if (l2$1) {
+        if (p$1(l1$1[0], l2$1[0])) {
           return /* true */1;
         }
         else {
-          _l2 = l2[1];
-          _l1 = l1[1];
+          _l2 = l2$1[1];
+          _l1 = l1$1[1];
           continue ;
           
         }
@@ -474,7 +518,7 @@ function exists2(p, _l1, _l2) {
             ];
       }
     }
-    else if (l2) {
+    else if (l2$1) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "List.exists2"
@@ -640,16 +684,18 @@ function remove_assq(x, param) {
   }
 }
 
-function find(p, _param) {
+function find(p, param) {
+  var p$1 = Curry.__1(p);
+  var _param = param;
   while(true) {
-    var param = _param;
-    if (param) {
-      var x = param[0];
-      if (Curry._1(p, x)) {
+    var param$1 = _param;
+    if (param$1) {
+      var x = param$1[0];
+      if (p$1(x)) {
         return x;
       }
       else {
-        _param = param[1];
+        _param = param$1[1];
         continue ;
         
       }
@@ -788,7 +834,7 @@ function merge(cmp, l1, l2) {
     if (l2) {
       var h2 = l2[0];
       var h1 = l1[0];
-      if (Curry._2(cmp, h1, h2) <= 0) {
+      if (cmp(h1, h2) <= 0) {
         return /* :: */[
                 h1,
                 merge(cmp, l1[1], l2)
@@ -808,6 +854,10 @@ function merge(cmp, l1, l2) {
   else {
     return l2;
   }
+}
+
+function merge$1(cmp, l1, l2) {
+  return merge(Curry.__2(cmp), l1, l2);
 }
 
 function chop(_k, _l) {
@@ -1817,18 +1867,18 @@ exports.rev_append   = rev_append;
 exports.rev          = rev;
 exports.flatten      = flatten;
 exports.concat       = concat;
-exports.map          = map;
+exports.map          = map$1;
 exports.mapi         = mapi$1;
 exports.rev_map      = rev_map;
 exports.iter         = iter;
 exports.iteri        = iteri;
 exports.fold_left    = fold_left;
-exports.fold_right   = fold_right;
-exports.map2         = map2;
+exports.fold_right   = fold_right$1;
+exports.map2         = map2$1;
 exports.rev_map2     = rev_map2;
 exports.iter2        = iter2;
 exports.fold_left2   = fold_left2;
-exports.fold_right2  = fold_right2;
+exports.fold_right2  = fold_right2$1;
 exports.for_all      = for_all;
 exports.exists       = exists;
 exports.for_all2     = for_all2;
@@ -1847,7 +1897,7 @@ exports.filter       = filter;
 exports.partition    = partition;
 exports.split        = split;
 exports.combine      = combine;
-exports.merge        = merge;
+exports.merge        = merge$1;
 exports.chop         = chop;
 exports.stable_sort  = stable_sort;
 exports.sort         = sort;

@@ -142,10 +142,14 @@ function map(f, l) {
                   tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
                 );
               return /* Cons */[
-                      Curry._1(f, match[0]),
+                      f(match[0]),
                       map(f, match[1])
                     ];
             }]);
+}
+
+function map$1(f, l) {
+  return map(Curry.__1(f), l);
 }
 
 function merge(cmp, l1, l2) {
@@ -162,7 +166,7 @@ function merge(cmp, l1, l2) {
               var x2 = match$1[0];
               var ll1 = match[1];
               var x1 = match[0];
-              var c = Curry._2(cmp, x1, x2);
+              var c = cmp(x1, x2);
               if (c) {
                 if (c < 0) {
                   return /* Cons */[
@@ -186,19 +190,26 @@ function merge(cmp, l1, l2) {
             }]);
 }
 
-function iter_interval(f, _l, _param) {
+function merge$1(cmp, l1, l2) {
+  return merge(Curry.__2(cmp), l1, l2);
+}
+
+function iter_interval(f, l, param) {
+  var f$1 = Curry.__1(f);
+  var _l = l;
+  var _param = param;
   while(true) {
-    var param = _param;
-    var l = _l;
-    var stop = param[1];
-    var start = param[0];
+    var param$1 = _param;
+    var l$1 = _l;
+    var stop = param$1[1];
+    var start = param$1[0];
     if (stop) {
-      var tag = l.tag | 0;
-      var match = tag === 250 ? l[0] : (
-          tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
+      var tag = l$1.tag | 0;
+      var match = tag === 250 ? l$1[0] : (
+          tag === 246 ? CamlinternalLazy.force_lazy_block(l$1) : l$1
         );
       if (start <= 0) {
-        Curry._1(f, match[0]);
+        f$1(match[0]);
       }
       _param = /* tuple */[
         start - 1 | 0,
@@ -225,12 +236,12 @@ var ham5 = [];
 Caml_obj.caml_update_dummy(hamming, Block.__(246, [function () {
           return /* Cons */[
                   nn1,
-                  merge(cmp, ham2, merge(cmp, ham3, ham5))
+                  merge$1(cmp, ham2, merge$1(cmp, ham3, ham5))
                 ];
         }]));
 
 Caml_obj.caml_update_dummy(ham2, Block.__(246, [function () {
-          var lzarg = map(x2, hamming);
+          var lzarg = map$1(x2, hamming);
           var tag = lzarg.tag | 0;
           if (tag === 250) {
             return lzarg[0];
@@ -244,7 +255,7 @@ Caml_obj.caml_update_dummy(ham2, Block.__(246, [function () {
         }]));
 
 Caml_obj.caml_update_dummy(ham3, Block.__(246, [function () {
-          var lzarg = map(x3, hamming);
+          var lzarg = map$1(x3, hamming);
           var tag = lzarg.tag | 0;
           if (tag === 250) {
             return lzarg[0];
@@ -258,7 +269,7 @@ Caml_obj.caml_update_dummy(ham3, Block.__(246, [function () {
         }]));
 
 Caml_obj.caml_update_dummy(ham5, Block.__(246, [function () {
-          var lzarg = map(x5, hamming);
+          var lzarg = map$1(x5, hamming);
           var tag = lzarg.tag | 0;
           if (tag === 250) {
             return lzarg[0];
@@ -307,8 +318,8 @@ exports.x5            = x5;
 exports.nn1           = nn1;
 exports.buf           = buf;
 exports.pr            = pr;
-exports.map           = map;
-exports.merge         = merge;
+exports.map           = map$1;
+exports.merge         = merge$1;
 exports.iter_interval = iter_interval;
 exports.hamming       = hamming;
 exports.ham2          = ham2;
