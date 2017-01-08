@@ -30,3 +30,4 @@ external empty : 'a t = "null" [@@bs.val]
 
 val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 val iter : 'a t -> ('a -> unit [@bs]) -> unit
+val from_opt : 'a option -> 'a t
