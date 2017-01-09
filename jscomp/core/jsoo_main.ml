@@ -39,7 +39,7 @@
      *  }
 *)
 let () = 
-  Clflags.assume_no_mli := true;
+  Clflags.assume_no_mli := Clflags.Mli_non_exists;
   Bs_conditional_initial.setup_env ();
   Clflags.dont_write_files := true;
   Clflags.unsafe_string := false

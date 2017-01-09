@@ -44,7 +44,7 @@ module Rules : sig
   val copy_resources : t
   val build_ml_from_mll : t 
   val build_cmj_js : t
-  val build_cmi_cmj_js : t 
+  val build_cmj_cmi_js : t 
   val build_cmi : t
 end
 

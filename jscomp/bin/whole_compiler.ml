@@ -4171,8 +4171,9 @@ val unsafe_string : bool ref
 val opaque : bool ref
 
  
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref
-val assume_no_mli : bool ref 
+val assume_no_mli : mli_status ref 
 
 
 end = struct
@@ -4294,8 +4295,9 @@ let keep_locs = ref false              (* -keep-locs *)
 let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
 
  
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
 let no_implicit_current_dir = ref false
-let assume_no_mli = ref false 
+let assume_no_mli = ref Mli_na
 
 
 end
@@ -56655,7 +56657,8 @@ let type_implementation_more sourcefile outputprefix modulename initial_env ast 
     let sourceintf =
       Misc.chop_extension_if_any sourcefile ^ !Config.interface_suffix in
  
-    if not !Clflags.assume_no_mli && Sys.file_exists sourceintf then begin
+    let mli_status = !Clflags.assume_no_mli in 
+    if (mli_status = Clflags.Mli_na && Sys.file_exists sourceintf) || (mli_status = Clflags.Mli_exists) then begin
 
       let intf_file =
         try
@@ -56754,7 +56757,8 @@ let package_units initial_env objfiles cmifile modulename =
   let prefix = chop_extension_if_any cmifile in
   let mlifile = prefix ^ !Config.interface_suffix in
 
-  if not !Clflags.assume_no_mli && Sys.file_exists mlifile then begin 
+  let mli_status = !Clflags.assume_no_mli in 
+  if (mli_status = Clflags.Mli_na && Sys.file_exists mlifile) || (mli_status = Clflags.Mli_exists) then begin
 
     if not (Sys.file_exists cmifile) then begin
       raise(Error(Location.in_file mlifile, Env.empty,
@@ -105089,9 +105093,12 @@ let define_variable s =
 let buckle_script_flags =
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly")
+  :: 
+  ("-bs-assume-has-mli", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_exists), 
+    " (internal) Assume mli always exist ")
   ::
-  ("-bs-assume-no-mli", Arg.Set Clflags.assume_no_mli,
-  " Don't lookup whether mli exist or not")
+  ("-bs-assume-no-mli", Arg.Unit (fun _ -> Clflags.assume_no_mli := Clflags.Mli_non_exists),
+  " (internal) Don't lookup whether mli exist or not")
   ::
   ("-bs-D", Arg.String define_variable,
      " Define conditional variable e.g, -D DEBUG=true"

@@ -135,24 +135,24 @@ module Rules = struct
   (**************************************)
   let build_cmj_js =
     define
-      ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+      ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
                 ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
       ~depfile:"${in}.d"
       "build_cmj_only"
 
-  let build_cmi_cmj_js =
+  let build_cmj_cmi_js =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
                 ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
       ~depfile:"${in}.d"
-      "build_cmj_cmi"
+      "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
   let build_cmi =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
                 ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c  ${in}"
       ~depfile:"${in}.d"
-      "build_cmi"
+      "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 end
 
 let output_build
@@ -365,9 +365,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~rule:Rules.build_bin_deps ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
-                Rules.build_cmj_js,
-                [  output_cmi]  , []
-              else Rules.build_cmi_cmj_js, [], [output_cmi]
+                Rules.build_cmj_cmi_js, [output_cmi], []
+              else  Rules.build_cmj_js, []  , [output_cmi]
+
             in
             let shadows = 
               match js_post_build_cmd with 
