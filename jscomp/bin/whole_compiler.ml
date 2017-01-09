@@ -57095,6 +57095,645 @@ let iinfo b str f  =
 
 
 end
+module Hash_set_gen
+= struct
+#1 "hash_set_gen.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+
+type 'a t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: 'a list array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+
+
+
+let create  initial_size =
+  let s = Ext_util.power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s [] }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  []
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size [ ]
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let iter f h =
+  let rec do_bucket = function
+    | [ ] ->
+      ()
+    | k ::  rest ->
+      f k ; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      [ ] ->
+      accu
+    | k ::  rest ->
+      do_bucket rest (f k  accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+  done;
+  !accu
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize [ ] in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        [ ] -> ()
+      | key :: rest ->
+        let nidx = indexfun h key in
+        ndata.(nidx) <- key :: ndata.(nidx);
+        insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let elements set = 
+  fold  (fun k  acc ->  k :: acc) set []
+
+
+
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+       let l = List.length b in
+       histo.(l) <- histo.(l) + 1)
+    h.data;
+  {Hashtbl.num_bindings = h.size;
+   num_buckets = Array.length h.data;
+   max_bucket_length = mbl;
+   bucket_histogram = histo }
+
+let rec small_bucket_mem eq_key key lst =
+  match lst with 
+  | [] -> false 
+  | key1::rest -> 
+    eq_key key   key1 ||
+    match rest with 
+    | [] -> false 
+    | key2 :: rest -> 
+      eq_key key   key2 ||
+      match rest with 
+      | [] -> false 
+      | key3 :: rest -> 
+        eq_key key   key3 ||
+        small_bucket_mem eq_key key rest 
+
+let rec remove_bucket eq_key key (h : _ t) buckets = 
+  match buckets with 
+  | [ ] ->
+    [ ]
+  | k :: next ->
+    if  eq_key k   key
+    then begin h.size <- h.size - 1; next end
+    else k :: remove_bucket eq_key key h next    
+
+module type S =
+sig
+  type key
+  type t
+  val create: int ->  t
+  val clear : t -> unit
+  val reset : t -> unit
+  val copy: t -> t
+  val remove:  t -> key -> unit
+  val add :  t -> key -> unit
+  val check_add : t -> key -> bool
+  val mem :  t -> key -> bool
+  val iter: (key -> unit) ->  t -> unit
+  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+  val length:  t -> int
+  val stats:  t -> Hashtbl.statistics
+  val elements : t -> key list 
+end
+
+end
+module String_hash_set : sig 
+#1 "string_hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Hash_set_gen.S with type key = string
+
+end = struct
+#1 "string_hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 31
+type key = string 
+let key_index (h :  _ Hash_set_gen.t ) (key : key) =
+  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
+let eq_key = Ext_string.equal 
+type  t = key  Hash_set_gen.t 
+
+
+# 62
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+
+let remove (h : _ Hash_set_gen.t) key =  
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let check_add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i  (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+  
+
+end
+module Ext_ident : sig 
+#1 "ext_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A wrapper around [Ident] module in compiler-libs*)
+
+val is_js : Ident.t -> bool
+
+val is_js_object : Ident.t -> bool
+
+(** create identifiers for predefined [js] global variables *)
+val create_js : string -> Ident.t
+
+val create : string -> Ident.t
+
+val create_js_module : string -> Ident.t 
+
+val make_js_object : Ident.t -> unit
+
+val reset : unit -> unit
+
+val gen_js :  ?name:string -> unit -> Ident.t
+
+val make_unused : unit -> Ident.t
+
+val is_unused_ident : Ident.t -> bool 
+
+(**
+   if name is not converted, the reference should be equal
+*)
+val convert : bool -> string -> string
+val property_no_need_convert : string -> bool 
+
+val undefined : Ident.t 
+val is_js_or_global : Ident.t -> bool
+val nil : Ident.t
+
+
+val compare : Ident.t -> Ident.t -> int
+val equal : Ident.t -> Ident.t -> bool 
+
+end = struct
+#1 "ext_ident.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let js_flag = 0b1000 (* check with ocaml compiler *)
+
+let js_module_flag = 0b1_0000 (* javascript external modules *)
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let js_object_flag = 0b10_0000 (* javascript object flags *)
+
+let is_js (i : Ident.t) = 
+  i.flags land js_flag <> 0 
+
+let is_js_or_global (i : Ident.t) = 
+  i.flags land (8 lor 1) <> 0 
+
+let is_js_module (i : Ident.t) =
+  i.flags land js_module_flag <> 0 
+
+let is_js_object (i : Ident.t) = 
+  i.flags land js_object_flag <> 0 
+
+let make_js_object (i : Ident.t) = 
+  i.flags <- i.flags lor js_object_flag 
+      
+(* It's a js function hard coded by js api, so when printing,
+   it should preserve the name 
+ *)
+let create_js (name : string) : Ident.t  = 
+  { name = name; flags = js_flag ; stamp = 0}
+
+let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
+
+(* This is for a js exeternal module, we can change it when printing
+   for example
+   {[
+   var React$1 = require('react');
+   React$1.render(..)
+   ]}
+
+   Given a name, if duplicated, they should  have the same id
+ *)
+let create_js_module (name : string) : Ident.t = 
+  let name = 
+    String.concat "" @@ List.map (String.capitalize ) @@ 
+    Ext_string.split name '-' in
+  (* TODO: if we do such transformation, we should avoid 
+      collision for example:
+      react-dom 
+      react--dom
+      check collision later
+   *)
+  match String_hashtbl.find_exn js_module_table name  with 
+  | exception Not_found -> 
+      let v = Ident.create name in
+      let ans = { v with flags = js_module_flag} in 
+      String_hashtbl.add js_module_table name ans;
+      ans
+  | v -> v 
+
+let create = Ident.create
+
+let gen_js ?(name="$js") () = create name 
+
+let reserved_words = 
+  [|
+    (* keywork *)
+    "break";
+    "case"; "catch"; "continue";
+    "debugger";"default";"delete";"do";
+    "else";
+    "finally";"for";"function";
+    "if"; "then"; "in";"instanceof";
+    "new";
+    "return";
+    "switch";
+    "this"; "throw"; "try"; "typeof";
+    "var"; "void"; "while"; "with";
+
+    (* reserved in ECMAScript 5 *)
+    "class"; "enum"; "export"; "extends"; "import"; "super";
+
+    "implements";"interface";
+    "let";
+    "package";"private";"protected";"public";
+    "static";
+    "yield";
+
+    (* other *)
+    "null";
+    "true";
+    "false";
+    "NaN";
+
+
+    "undefined";
+    "this";
+
+    (* also reserved in ECMAScript 3 *)
+    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
+    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
+    "synchronized"; 
+    (* "throws";  *)
+    (* seems to be fine, like nodejs [assert.throws] *)
+    "transient"; "volatile";
+
+    (* also reserved in ECMAScript 6 *)
+    "await";
+   
+   "event";
+   "location";
+   "window";
+   "document";
+   "eval";
+   "navigator";
+   (* "self"; *)
+   
+   "Array";
+   "Date";
+   "Math";
+   "JSON";
+   "Object";
+   "RegExp";
+   "String";
+   "Boolean";
+   "Number";
+
+   "Map"; (* es6*)
+   "Set";
+
+   "Infinity";
+   "isFinite";
+   
+   "ActiveXObject";
+   "XMLHttpRequest";
+   "XDomainRequest";
+   
+   "DOMException";
+   "Error";
+   "SyntaxError";
+   "arguments";
+   
+   "decodeURI";
+   "decodeURIComponent";
+   "encodeURI";
+   "encodeURIComponent";
+   "escape";
+   "unescape";
+
+   "isNaN";
+   "parseFloat";
+   "parseInt";
+   
+   (** reserved for commonjs *)   
+   "require";
+   "exports";
+   "module"
+  |]
+
+let reserved_map = 
+  let len = Array.length reserved_words in 
+  let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
+  for i = 0 to len - 1 do 
+    String_hash_set.add set reserved_words.(i);
+  done ;
+  set 
+
+
+
+
+
+(* TODO:
+    check name conflicts with javascript conventions
+    {[
+    Ext_ident.convert "^";;
+    - : string = "$caret"
+    ]}
+ *)
+let convert keyword (name : string) = 
+   if keyword && String_hash_set.mem reserved_map name  then "$$" ^ name 
+   else 
+     let module E = struct exception Not_normal_letter of int end in
+     let len = String.length name  in
+     try
+       for i  = 0 to len - 1 do 
+         match String.unsafe_get name i with 
+         | 'a' .. 'z' | 'A' .. 'Z'
+         | '0' .. '9' | '_' | '$' -> ()
+         | _ -> raise (E.Not_normal_letter i)
+       done;
+       name
+     with E.Not_normal_letter i ->
+       String.sub name 0 i ^ 
+       (let buffer = Buffer.create len in 
+        for j = i to  len - 1 do 
+          let c = String.unsafe_get name j in
+          match c with 
+          | '*' -> Buffer.add_string buffer "$star"
+          | '\'' -> Buffer.add_string buffer "$prime"
+          | '!' -> Buffer.add_string buffer "$bang"
+          | '>' -> Buffer.add_string buffer "$great"
+          | '<' -> Buffer.add_string buffer "$less"
+          | '=' -> Buffer.add_string buffer "$eq"
+          | '+' -> Buffer.add_string buffer "$plus"
+          | '-' -> Buffer.add_string buffer "$neg"
+          | '@' -> Buffer.add_string buffer "$at"
+          | '^' -> Buffer.add_string buffer "$caret"
+          | '/' -> Buffer.add_string buffer "$slash"
+          | '|' -> Buffer.add_string buffer "$pipe"
+          | '.' -> Buffer.add_string buffer "$dot"
+          | '%' -> Buffer.add_string buffer "$percent"
+          | '~' -> Buffer.add_string buffer "$tilde"
+          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
+          | _ -> Buffer.add_string buffer "$unknown"
+        done; Buffer.contents buffer)
+
+let property_no_need_convert s = 
+  s == convert false s 
+
+(* It is currently made a persistent ident to avoid fresh ids 
+    which would result in different signature files
+    - other solution: use lazy values
+*)
+let make_unused () = create "_"
+
+let is_unused_ident i = Ident.name i = "_"
+
+let reset () = 
+  String_hashtbl.clear js_module_table
+
+
+let undefined = create_js "undefined"
+let nil = create_js "null"
+
+(* Has to be total order, [x < y] 
+   and [x > y] should be consistent
+   flags are not relevant here 
+ *)
+let compare (x : Ident.t ) ( y : Ident.t) = 
+  let u = x.stamp - y.stamp in
+  if u = 0 then 
+     String.compare x.name y.name 
+  else u 
+
+let equal ( x : Ident.t) ( y : Ident.t) = 
+  if x.stamp <> 0 then x.stamp = y.stamp
+  else y.stamp = 0 && x.name = y.name
+   
+end
 module Ext_array : sig 
 #1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -58469,645 +59108,6 @@ let graph_check v =
   Int_vec_vec.fold_left (fun acc x -> Int_vec.length x :: acc ) [] v  
 
 end
-module Hash_set_gen
-= struct
-#1 "hash_set_gen.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
-
-type 'a t =
-  { mutable size: int;                        (* number of entries *)
-    mutable data: 'a list array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
-
-
-
-
-let create  initial_size =
-  let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s [] }
-
-let clear h =
-  h.size <- 0;
-  let len = Array.length h.data in
-  for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  []
-  done
-
-let reset h =
-  h.size <- 0;
-  h.data <- Array.make h.initial_size [ ]
-
-
-let copy h = { h with data = Array.copy h.data }
-
-let length h = h.size
-
-let iter f h =
-  let rec do_bucket = function
-    | [ ] ->
-      ()
-    | k ::  rest ->
-      f k ; do_bucket rest in
-  let d = h.data in
-  for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
-  done
-
-let fold f h init =
-  let rec do_bucket b accu =
-    match b with
-      [ ] ->
-      accu
-    | k ::  rest ->
-      do_bucket rest (f k  accu) in
-  let d = h.data in
-  let accu = ref init in
-  for i = 0 to Array.length d - 1 do
-    accu := do_bucket (Array.unsafe_get d i) !accu
-  done;
-  !accu
-
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize [ ] in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        [ ] -> ()
-      | key :: rest ->
-        let nidx = indexfun h key in
-        ndata.(nidx) <- key :: ndata.(nidx);
-        insert_bucket rest
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
-
-let elements set = 
-  fold  (fun k  acc ->  k :: acc) set []
-
-
-
-
-let stats h =
-  let mbl =
-    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
-  let histo = Array.make (mbl + 1) 0 in
-  Array.iter
-    (fun b ->
-       let l = List.length b in
-       histo.(l) <- histo.(l) + 1)
-    h.data;
-  {Hashtbl.num_bindings = h.size;
-   num_buckets = Array.length h.data;
-   max_bucket_length = mbl;
-   bucket_histogram = histo }
-
-let rec small_bucket_mem eq_key key lst =
-  match lst with 
-  | [] -> false 
-  | key1::rest -> 
-    eq_key key   key1 ||
-    match rest with 
-    | [] -> false 
-    | key2 :: rest -> 
-      eq_key key   key2 ||
-      match rest with 
-      | [] -> false 
-      | key3 :: rest -> 
-        eq_key key   key3 ||
-        small_bucket_mem eq_key key rest 
-
-let rec remove_bucket eq_key key (h : _ t) buckets = 
-  match buckets with 
-  | [ ] ->
-    [ ]
-  | k :: next ->
-    if  eq_key k   key
-    then begin h.size <- h.size - 1; next end
-    else k :: remove_bucket eq_key key h next    
-
-module type S =
-sig
-  type key
-  type t
-  val create: int ->  t
-  val clear : t -> unit
-  val reset : t -> unit
-  val copy: t -> t
-  val remove:  t -> key -> unit
-  val add :  t -> key -> unit
-  val check_add : t -> key -> bool
-  val mem :  t -> key -> bool
-  val iter: (key -> unit) ->  t -> unit
-  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
-  val length:  t -> int
-  val stats:  t -> Hashtbl.statistics
-  val elements : t -> key list 
-end
-
-end
-module String_hash_set : sig 
-#1 "string_hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Hash_set_gen.S with type key = string
-
-end = struct
-#1 "string_hash_set.ml"
-# 1 "ext/hash_set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 31
-type key = string 
-let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
-let eq_key = Ext_string.equal 
-type  t = key  Hash_set_gen.t 
-
-
-# 62
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
-let elements = Hash_set_gen.elements
-
-
-
-let remove (h : _ Hash_set_gen.t) key =  
-  let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
-
-
-
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
-
-let check_add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
-
-
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
-
-  
-
-end
-module Ext_ident : sig 
-#1 "ext_ident.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A wrapper around [Ident] module in compiler-libs*)
-
-val is_js : Ident.t -> bool
-
-val is_js_object : Ident.t -> bool
-
-(** create identifiers for predefined [js] global variables *)
-val create_js : string -> Ident.t
-
-val create : string -> Ident.t
-
-val create_js_module : string -> Ident.t 
-
-val make_js_object : Ident.t -> unit
-
-val reset : unit -> unit
-
-val gen_js :  ?name:string -> unit -> Ident.t
-
-val make_unused : unit -> Ident.t
-
-val is_unused_ident : Ident.t -> bool 
-
-(**
-   if name is not converted, the reference should be equal
-*)
-val convert : bool -> string -> string
-val property_no_need_convert : string -> bool 
-
-val undefined : Ident.t 
-val is_js_or_global : Ident.t -> bool
-val nil : Ident.t
-
-
-val compare : Ident.t -> Ident.t -> int
-val equal : Ident.t -> Ident.t -> bool 
-
-end = struct
-#1 "ext_ident.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let js_flag = 0b1000 (* check with ocaml compiler *)
-
-let js_module_flag = 0b1_0000 (* javascript external modules *)
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let js_object_flag = 0b10_0000 (* javascript object flags *)
-
-let is_js (i : Ident.t) = 
-  i.flags land js_flag <> 0 
-
-let is_js_or_global (i : Ident.t) = 
-  i.flags land (8 lor 1) <> 0 
-
-let is_js_module (i : Ident.t) =
-  i.flags land js_module_flag <> 0 
-
-let is_js_object (i : Ident.t) = 
-  i.flags land js_object_flag <> 0 
-
-let make_js_object (i : Ident.t) = 
-  i.flags <- i.flags lor js_object_flag 
-      
-(* It's a js function hard coded by js api, so when printing,
-   it should preserve the name 
- *)
-let create_js (name : string) : Ident.t  = 
-  { name = name; flags = js_flag ; stamp = 0}
-
-let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
-
-(* This is for a js exeternal module, we can change it when printing
-   for example
-   {[
-   var React$1 = require('react');
-   React$1.render(..)
-   ]}
-
-   Given a name, if duplicated, they should  have the same id
- *)
-let create_js_module (name : string) : Ident.t = 
-  let name = 
-    String.concat "" @@ List.map (String.capitalize ) @@ 
-    Ext_string.split name '-' in
-  (* TODO: if we do such transformation, we should avoid 
-      collision for example:
-      react-dom 
-      react--dom
-      check collision later
-   *)
-  match String_hashtbl.find_exn js_module_table name  with 
-  | exception Not_found -> 
-      let v = Ident.create name in
-      let ans = { v with flags = js_module_flag} in 
-      String_hashtbl.add js_module_table name ans;
-      ans
-  | v -> v 
-
-let create = Ident.create
-
-let gen_js ?(name="$js") () = create name 
-
-let reserved_words = 
-  [|
-    (* keywork *)
-    "break";
-    "case"; "catch"; "continue";
-    "debugger";"default";"delete";"do";
-    "else";
-    "finally";"for";"function";
-    "if"; "then"; "in";"instanceof";
-    "new";
-    "return";
-    "switch";
-    "this"; "throw"; "try"; "typeof";
-    "var"; "void"; "while"; "with";
-
-    (* reserved in ECMAScript 5 *)
-    "class"; "enum"; "export"; "extends"; "import"; "super";
-
-    "implements";"interface";
-    "let";
-    "package";"private";"protected";"public";
-    "static";
-    "yield";
-
-    (* other *)
-    "null";
-    "true";
-    "false";
-    "NaN";
-
-
-    "undefined";
-    "this";
-
-    (* also reserved in ECMAScript 3 *)
-    "abstract"; "boolean"; "byte"; "char"; "const"; "double";
-    "final"; "float"; "goto"; "int"; "long"; "native"; "short";
-    "synchronized"; 
-    (* "throws";  *)
-    (* seems to be fine, like nodejs [assert.throws] *)
-    "transient"; "volatile";
-
-    (* also reserved in ECMAScript 6 *)
-    "await";
-   
-   "event";
-   "location";
-   "window";
-   "document";
-   "eval";
-   "navigator";
-   (* "self"; *)
-   
-   "Array";
-   "Date";
-   "Math";
-   "JSON";
-   "Object";
-   "RegExp";
-   "String";
-   "Boolean";
-   "Number";
-
-   "Map"; (* es6*)
-   "Set";
-
-   "Infinity";
-   "isFinite";
-   
-   "ActiveXObject";
-   "XMLHttpRequest";
-   "XDomainRequest";
-   
-   "DOMException";
-   "Error";
-   "SyntaxError";
-   "arguments";
-   
-   "decodeURI";
-   "decodeURIComponent";
-   "encodeURI";
-   "encodeURIComponent";
-   "escape";
-   "unescape";
-
-   "isNaN";
-   "parseFloat";
-   "parseInt";
-   
-   (** reserved for commonjs *)   
-   "require";
-   "exports";
-   "module"
-  |]
-
-let reserved_map = 
-  let len = Array.length reserved_words in 
-  let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
-  for i = 0 to len - 1 do 
-    String_hash_set.add set reserved_words.(i);
-  done ;
-  set 
-
-
-
-
-
-(* TODO:
-    check name conflicts with javascript conventions
-    {[
-    Ext_ident.convert "^";;
-    - : string = "$caret"
-    ]}
- *)
-let convert keyword (name : string) = 
-   if keyword && String_hash_set.mem reserved_map name  then "$$" ^ name 
-   else 
-     let module E = struct exception Not_normal_letter of int end in
-     let len = String.length name  in
-     try
-       for i  = 0 to len - 1 do 
-         match String.unsafe_get name i with 
-         | 'a' .. 'z' | 'A' .. 'Z'
-         | '0' .. '9' | '_' | '$' -> ()
-         | _ -> raise (E.Not_normal_letter i)
-       done;
-       name
-     with E.Not_normal_letter i ->
-       String.sub name 0 i ^ 
-       (let buffer = Buffer.create len in 
-        for j = i to  len - 1 do 
-          let c = String.unsafe_get name j in
-          match c with 
-          | '*' -> Buffer.add_string buffer "$star"
-          | '\'' -> Buffer.add_string buffer "$prime"
-          | '!' -> Buffer.add_string buffer "$bang"
-          | '>' -> Buffer.add_string buffer "$great"
-          | '<' -> Buffer.add_string buffer "$less"
-          | '=' -> Buffer.add_string buffer "$eq"
-          | '+' -> Buffer.add_string buffer "$plus"
-          | '-' -> Buffer.add_string buffer "$neg"
-          | '@' -> Buffer.add_string buffer "$at"
-          | '^' -> Buffer.add_string buffer "$caret"
-          | '/' -> Buffer.add_string buffer "$slash"
-          | '|' -> Buffer.add_string buffer "$pipe"
-          | '.' -> Buffer.add_string buffer "$dot"
-          | '%' -> Buffer.add_string buffer "$percent"
-          | '~' -> Buffer.add_string buffer "$tilde"
-          | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
-          | _ -> Buffer.add_string buffer "$unknown"
-        done; Buffer.contents buffer)
-
-let property_no_need_convert s = 
-  s == convert false s 
-
-(* It is currently made a persistent ident to avoid fresh ids 
-    which would result in different signature files
-    - other solution: use lazy values
-*)
-let make_unused () = create "_"
-
-let is_unused_ident i = Ident.name i = "_"
-
-let reset () = 
-  String_hashtbl.clear js_module_table
-
-
-let undefined = create_js "undefined"
-let nil = create_js "null"
-
-(* Has to be total order, [x < y] 
-   and [x > y] should be consistent
-   flags are not relevant here 
- *)
-let compare (x : Ident.t ) ( y : Ident.t) = 
-  let u = x.stamp - y.stamp in
-  if u = 0 then 
-     String.compare x.name y.name 
-  else u 
-
-let equal ( x : Ident.t) ( y : Ident.t) = 
-  if x.stamp <> 0 then x.stamp = y.stamp
-  else y.stamp = 0 && x.name = y.name
-   
-end
 module Hash_set_ident_mask : sig 
 #1 "hash_set_ident_mask.mli"
 
@@ -59558,6 +59558,197 @@ let of_list2 ks vs =
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
 
+
+end
+module Ident_map : sig 
+#1 "ident_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+include Map_gen.S with type key = Ident.t
+end = struct
+#1 "ident_map.ml"
+
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
+
+
+  
+# 16
+  type key = Ident.t
+  let compare_key = Ext_ident.compare
+
+# 22
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
+
+
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add x data l) v d r
+    else
+      bal l v d (add x data r)
+
+
+let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, data (), Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  d , r, h)
+    else if c < 0 then
+      bal (adjust x data replace l) v d r
+    else
+      bal l v d (adjust x data replace r)
+
+
+let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then d
+    else find_exn x (if c < 0 then l else r)
+
+let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+  | Empty -> None 
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt x (if c < 0 then l else r)
+
+let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+  | Empty -> default  
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then  d
+    else find_default x   (if c < 0 then l else r) default
+
+let rec mem x (tree : _ Map_gen.t )   = match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    c = 0 || mem x (if c < 0 then l else r)
+
+let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove x l) v d r
+    else
+      bal l v d (remove x r)
+
+
+let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
+    else
+      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
+
+let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split v1 s2 in
+    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split v2 s1 in
+    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+  | _ ->
+    assert false
+
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split v1 s2 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    begin match  split v2 s1 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
+  | _ ->
+    assert false
+
+
+
+let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+
+let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
+
+let add_list (xs : _ list ) init = 
+  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+
+let of_list xs = add_list xs empty
+
+let of_array xs = 
+  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
 module Set_gen
@@ -62409,7 +62600,7 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
         hit e
     end;
   in hit l
-  
+
 let hit_mask (fv : Hash_set_ident_mask.t) l =
   let rec hit (l : t) =
     begin
@@ -62480,7 +62671,7 @@ let free_variables l =
       | Ltrywith(e1, exn, e2) ->
         free e1; free e2;
         fv := Ident_set.remove exn !fv
-        
+
       | Lfunction{body;params} ->
         free body;
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
@@ -62545,7 +62736,7 @@ let check file lam =
         Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
         success := false
       end        
-      in 
+  in 
   let def (id : Ident.t) =
     if Ident_hash_set.mem defined_variables id  then 
       begin 
@@ -62620,9 +62811,9 @@ let check file lam =
     end;
   in 
   begin 
-      iter lam; 
-      assert (!success) ; 
-      lam 
+    iter lam; 
+    assert (!success) ; 
+    lam 
   end      
 
 module Prim = struct 
@@ -63150,8 +63341,8 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
     Ordered_hash_map_local_ident.create len in 
   let mask = Hash_set_ident_mask.create len in   
   List.iter (fun (x,lam) -> 
-    Ordered_hash_map_local_ident.add domain x lam;
-    Hash_set_ident_mask.add_unmask mask x;
+      Ordered_hash_map_local_ident.add domain x lam;
+      Hash_set_ident_mask.add_unmask mask x;
     ) groups ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
   let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
@@ -63160,41 +63351,194 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
       let base_key =  node_vec.(key_index) in 
       ignore (hit_mask mask lam) ;
       mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  -> 
-      if hit then 
-      begin 
-        let key = Ordered_hash_map_local_ident.rank domain ident in 
-        Int_vec.push key base_key;
-      end
-      );
+          if hit then 
+            begin 
+              let key = Ordered_hash_map_local_ident.rank domain ident in 
+              Int_vec.push key base_key;
+            end
+        );
 
     ) ;
   domain, int_mapping , node_vec
 
 (** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
- let scc_bindings (groups : bindings) : bindings list = 
-   match groups with 
-   | [ _ ] -> [ groups ]
-   | _ -> 
+let scc_bindings (groups : bindings) : bindings list = 
+  match groups with 
+  | [ _ ] -> [ groups ]
+  | _ -> 
     let domain, int_mapping, node_vec = preprocess_deps groups in 
     let clusters = Ext_scc.graph node_vec in 
     if Int_vec_vec.length clusters <= 1 then [ groups]
     else 
-        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
-            let bindings =
-              Int_vec.map_into_list (fun i -> 
-                  let id = int_mapping.(i) in 
-                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
-                  (id,lam)
-                ) v  in 
-            match bindings with 
-            | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map_local_ident.rank domain id in    
-              if Int_vec_util.mem base_key node_vec.(base_key) then       
-                 bindings :: acc 
-              else  [(id, lam)] :: acc    
-            | _ ->  
+      Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+          let bindings =
+            Int_vec.map_into_list (fun i -> 
+                let id = int_mapping.(i) in 
+                let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
+                (id,lam)
+              ) v  in 
+          match bindings with 
+          | [ id,(Lfunction _ as lam) ] ->
+            let base_key = Ordered_hash_map_local_ident.rank domain id in    
+            if Int_vec_util.mem base_key node_vec.(base_key) then       
               bindings :: acc 
-          )  clusters []
+            else  [(id, lam)] :: acc    
+          | _ ->  
+            bindings :: acc 
+        )  clusters []
+
+
+(** we need check all use cases of parameter in case it is escaped 
+    - (-3) not exist 
+    - (-2) inconsistent 
+    - (-1) uninitialized
+    analysize all use cases of parameters
+*)
+let rec check_consistent_uncurry_callback (init : int Ident_hashtbl.t) l = 
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lapply {fn = Lvar id ; args; _} 
+        ->  begin match Ident_hashtbl.find_default init id (-3) with 
+            | -3 
+            | -2 -> 
+              Ext_log.dwarn __LOC__ "FUCK: inconstent %s/%d" id.name id.stamp;
+              () 
+            | -1 -> Ident_hashtbl.replace init id (List.length args)
+            | arity ->
+              let new_arity = List.length args in
+              if new_arity <> arity then 
+                Ident_hashtbl.replace init id (-2)
+              else ()  
+          end; List.iter hit args
+
+      | Lvar id -> 
+        () (* recursive functions make it hard to do escape anaylsis?
+           [map f xs] : [f] is not escape here
+        *)
+        (* begin match Ident_hashtbl.find_default init id (-3) with 
+          | -3 
+          | -2 -> 
+            Ext_log.dwarn __LOC__ "FUCK: inconstent %s/%d" id.name id.stamp;
+            ()
+          | -1  | _  -> Ident_hashtbl.replace init id (-2) (* escaped meaning inconsistent *)
+        end *)
+      | Lassign(id, e) ->
+        begin match Ident_hashtbl.find_default init id (-3) with 
+          | -3 
+          | -2 -> 
+            Ext_log.dwarn __LOC__ "FUCK: inconstent %s/%d" id.name id.stamp;
+            ()
+          | -1  | _  -> Ident_hashtbl.replace init id (-2) (* escaped meaning inconsistent *)
+        end
+      ; hit e
+      | Lapply{fn; args; _} ->
+        hit fn ; List.iter hit args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 ; hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 ; hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg ; hit body
+      | Lletrec(decl, body) ->
+        hit body ;
+        List.iter (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 ; hit e2 ; hit e3
+      | Lconst _ ->  ()
+      | Lprim {args; _} ->
+        List.iter hit args
+      | Lswitch(arg, sw) ->
+        hit arg ;
+        List.iter (fun (key, case) -> hit case) sw.sw_consts ;
+        List.iter (fun (key, case) -> hit case) sw.sw_blocks ;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ;
+        List.iter (fun (_,act) -> hit act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 ; hit e2 ; hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 ; hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 ; hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met ; hit obj ; List.iter hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
+
+
+let uncurry_callback (bindings : bindings) : bindings =
+  match bindings with 
+  | [ id, Lfunction { params ; body; arity; kind } ] -> 
+    let init  = Ident_hashtbl.create 0 in 
+    List.iter (fun param -> Ident_hashtbl.add init  param (-1)) params; 
+    check_consistent_uncurry_callback init body ;
+    let curried_map = Ident_hashtbl.fold (fun ident state acc  -> 
+        if state >= 0 then Ident_map.add ident state acc else acc  )  init Ident_map.empty in 
+    if Ident_map.is_empty curried_map then 
+    begin 
+      Ext_log.dwarn __LOC__ "FUCK: %s/%d" id.name id.stamp;
+      bindings
+      end
+    else       
+      let new_id = Ident.rename id in 
+      let rec rewrite lam = 
+        let lam = inner_map rewrite lam in 
+        match lam with 
+        | Lapply {fn = Lvar id2 as fn; args ; loc; status } -> 
+          if Ext_ident.equal id id2 then 
+            Lapply{fn = Lvar new_id ; args; loc ; status}
+          else   
+            begin match Ident_map.find_default id2 curried_map (-1) with 
+              | -1 -> lam 
+              | arity -> Lprim {primitive = (Pjs_fn_run arity ); args = (fn :: args) ; loc }
+            end 
+        | Lvar id2  -> 
+          if Ext_ident.equal id id2 then Lvar new_id  else lam
+        | Lassign (id2, e)
+          ->  (* won't happen in practice *)
+            if Ext_ident.equal id id2 then Lassign(new_id,e)  else lam
+        | _ -> lam  
+      in 
+      let body = rewrite body  in 
+      let new_params = List.map (fun x -> Ident.rename x ) params in 
+      [ new_id , Lfunction{params; body ; arity; kind}; 
+        id, Lfunction{params = new_params ; 
+          body = (Lapply {fn = Lvar new_id ;  loc = Location.none ; 
+            args = List.fold_right2 (fun (x : Ident.t) old_x acc -> 
+              match Ident_map.find_default old_x curried_map (-1) with 
+              | -1 -> Lvar x :: acc 
+              | arity -> Lprim{primitive = Pjs_fn_make arity ; args = [
+                let new_params = Ext_list.init arity (fun _ -> Ident.create "param") in 
+                Lfunction { params = new_params ; 
+                  body = Lapply{fn = Lvar x ;
+                     args = List.map (fun x -> Lvar x ) new_params;
+                     status = App_na; loc = Location.none
+                 }; arity ; kind }
+              ] ; loc = Location.none} :: acc 
+            ) new_params params [] ; status = App_ml_full});
+          arity ; 
+          kind;
+        }
+      ]
+        
+  | [ _ , _ ] 
+  | [ ] | _ :: _ :: _ ->  bindings 
+
 (* single binding, it does not make sense to do scc,
    we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
 *)
@@ -63204,7 +63548,12 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
     | [ (id,bind) ] ->
       if hit_any_variables (Ident_set.singleton id) bind 
       then 
-        lam  
+        match uncurry_callback groups with 
+        | [id1,lam1] -> 
+          lam  
+        | [id1,lam1; id2,lam2] -> 
+          letrec [id1,lam1] (let_ Strict id2 lam2 body)
+        | _ -> assert false
       else let_ Strict id bind body  
     | _ ->    
       let (domain, int_mapping, node_vec)  = preprocess_deps groups in 
@@ -63222,7 +63571,12 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
             | [ id,lam ] ->
               let base_key = Ordered_hash_map_local_ident.rank domain id in    
               if Int_vec_util.mem base_key node_vec.(base_key) then       
-                letrec bindings acc 
+                match uncurry_callback bindings with 
+                | [id,lam] -> 
+                  letrec bindings acc 
+                | [id,lam; id2,lam2] -> 
+                  letrec [id,lam] (let_ Strict id2 lam2 acc)
+                | _ -> assert false
               else  let_ Strict id lam acc    
             | _ ->  
               letrec bindings  acc 
@@ -67596,197 +67950,6 @@ let not_implemented ?comment (s : string) =
     } []
 
 end
-module Ident_map : sig 
-#1 "ident_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-include Map_gen.S with type key = Ident.t
-end = struct
-#1 "ident_map.ml"
-
-# 2 "ext/map.cppo.ml"
-(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
-
-  
-# 16
-  type key = Ident.t
-  let compare_key = Ext_ident.compare
-
-# 22
-type 'a t = (key,'a) Map_gen.t
-exception Duplicate_key of key 
-
-let empty = Map_gen.empty 
-let is_empty = Map_gen.is_empty
-let iter = Map_gen.iter
-let fold = Map_gen.fold
-let for_all = Map_gen.for_all 
-let exists = Map_gen.exists 
-let singleton = Map_gen.singleton 
-let cardinal = Map_gen.cardinal
-let bindings = Map_gen.bindings
-let keys = Map_gen.keys
-let choose = Map_gen.choose 
-let partition = Map_gen.partition 
-let filter = Map_gen.filter 
-let map = Map_gen.map 
-let mapi = Map_gen.mapi
-let bal = Map_gen.bal 
-let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
-
-
-let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
-  | Empty ->
-    Node(Empty, x, data, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, data, r, h)
-    else if c < 0 then
-      bal (add x data l) v d r
-    else
-      bal l v d (add x data r)
-
-
-let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
-  match tree with 
-  | Empty ->
-    Node(Empty, x, data (), Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, replace  d , r, h)
-    else if c < 0 then
-      bal (adjust x data replace l) v d r
-    else
-      bal l v d (adjust x data replace r)
-
-
-let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
-  | Empty ->
-    raise Not_found
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then d
-    else find_exn x (if c < 0 then l else r)
-
-let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
-  | Empty -> None 
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then Some d
-    else find_opt x (if c < 0 then l else r)
-
-let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
-  | Empty -> default  
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then  d
-    else find_default x   (if c < 0 then l else r) default
-
-let rec mem x (tree : _ Map_gen.t )   = match tree with 
-  | Empty ->
-    false
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
-let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
-  | Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Map_gen.merge l r
-    else if c < 0 then
-      bal (remove x l) v d r
-    else
-      bal l v d (remove x r)
-
-
-let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
-  | Empty ->
-    (Empty, None, Empty)
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then (l, Some d, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
-    else
-      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
-
-let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split v1 s2 in
-    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
-    let (l1, d1, r1) = split v2 s1 in
-    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
-  | _ ->
-    assert false
-
-let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    begin match split v1 s2 with 
-    | l2, None, r2 -> 
-      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
-    | _, Some _, _ ->
-      raise (Duplicate_key  v1)
-    end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
-    begin match  split v2 s1 with 
-    | (l1, None, r1) -> 
-      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
-    | (_, Some _, _) -> 
-      raise (Duplicate_key v2)
-    end
-  | _ ->
-    assert false
-
-
-
-let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
-
-let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
-
-let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
-
-let of_list xs = add_list xs empty
-
-let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
-
-end
 module Lam_analysis : sig 
 #1 "lam_analysis.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -68644,16 +68807,16 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
-  | Pinit_mod -> fprintf ppf "init_mod!"
-  | Pupdate_mod -> fprintf ppf "update_mod!"
+  | Pinit_mod -> fprintf ppf "*init_mod!"
+  | Pupdate_mod -> fprintf ppf "*update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
-  | Pjs_fn_run i -> fprintf ppf "js_fn_run_%i" i 
-  | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
-  | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
-  | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
-  | Pdebugger -> fprintf ppf "debugger"
+  | Pjs_fn_run i -> fprintf ppf "*js_fn_run_%i" i 
+  | Pjs_fn_make i -> fprintf ppf "*js_fn_make_%i" i
+  | Pjs_fn_method i -> fprintf ppf "*js_fn_method_%i" i 
+  | Pjs_fn_runmethod i -> fprintf ppf "*js_fn_runmethod_%i" i 
+  | Pdebugger -> fprintf ppf "*debugger"
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id                       
@@ -97438,7 +97601,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
     
-    Js_config.set_debug_file "rec_value_test.ml";
+    Js_config.set_debug_file "uncurry_call_back_test.ml";
     
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

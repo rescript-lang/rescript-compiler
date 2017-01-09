@@ -531,7 +531,7 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
         hit e
     end;
   in hit l
-  
+
 let hit_mask (fv : Hash_set_ident_mask.t) l =
   let rec hit (l : t) =
     begin
@@ -602,7 +602,7 @@ let free_variables l =
       | Ltrywith(e1, exn, e2) ->
         free e1; free e2;
         fv := Ident_set.remove exn !fv
-        
+
       | Lfunction{body;params} ->
         free body;
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
@@ -667,7 +667,7 @@ let check file lam =
         Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
         success := false
       end        
-      in 
+  in 
   let def (id : Ident.t) =
     if Ident_hash_set.mem defined_variables id  then 
       begin 
@@ -742,9 +742,9 @@ let check file lam =
     end;
   in 
   begin 
-      iter lam; 
-      assert (!success) ; 
-      lam 
+    iter lam; 
+    assert (!success) ; 
+    lam 
   end      
 
 module Prim = struct 
@@ -1272,8 +1272,8 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
     Ordered_hash_map_local_ident.create len in 
   let mask = Hash_set_ident_mask.create len in   
   List.iter (fun (x,lam) -> 
-    Ordered_hash_map_local_ident.add domain x lam;
-    Hash_set_ident_mask.add_unmask mask x;
+      Ordered_hash_map_local_ident.add domain x lam;
+      Hash_set_ident_mask.add_unmask mask x;
     ) groups ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
   let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
@@ -1282,41 +1282,194 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
       let base_key =  node_vec.(key_index) in 
       ignore (hit_mask mask lam) ;
       mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  -> 
-      if hit then 
-      begin 
-        let key = Ordered_hash_map_local_ident.rank domain ident in 
-        Int_vec.push key base_key;
-      end
-      );
+          if hit then 
+            begin 
+              let key = Ordered_hash_map_local_ident.rank domain ident in 
+              Int_vec.push key base_key;
+            end
+        );
 
     ) ;
   domain, int_mapping , node_vec
 
 (** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
- let scc_bindings (groups : bindings) : bindings list = 
-   match groups with 
-   | [ _ ] -> [ groups ]
-   | _ -> 
+let scc_bindings (groups : bindings) : bindings list = 
+  match groups with 
+  | [ _ ] -> [ groups ]
+  | _ -> 
     let domain, int_mapping, node_vec = preprocess_deps groups in 
     let clusters = Ext_scc.graph node_vec in 
     if Int_vec_vec.length clusters <= 1 then [ groups]
     else 
-        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
-            let bindings =
-              Int_vec.map_into_list (fun i -> 
-                  let id = int_mapping.(i) in 
-                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
-                  (id,lam)
-                ) v  in 
-            match bindings with 
-            | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map_local_ident.rank domain id in    
-              if Int_vec_util.mem base_key node_vec.(base_key) then       
-                 bindings :: acc 
-              else  [(id, lam)] :: acc    
-            | _ ->  
+      Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+          let bindings =
+            Int_vec.map_into_list (fun i -> 
+                let id = int_mapping.(i) in 
+                let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
+                (id,lam)
+              ) v  in 
+          match bindings with 
+          | [ id,(Lfunction _ as lam) ] ->
+            let base_key = Ordered_hash_map_local_ident.rank domain id in    
+            if Int_vec_util.mem base_key node_vec.(base_key) then       
               bindings :: acc 
-          )  clusters []
+            else  [(id, lam)] :: acc    
+          | _ ->  
+            bindings :: acc 
+        )  clusters []
+
+
+(** we need check all use cases of parameter in case it is escaped 
+    - (-3) not exist 
+    - (-2) inconsistent 
+    - (-1) uninitialized
+    analysize all use cases of parameters
+*)
+let rec check_consistent_uncurry_callback (init : int Ident_hashtbl.t) l = 
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lapply {fn = Lvar id ; args; _} 
+        ->  begin match Ident_hashtbl.find_default init id (-3) with 
+            | -3 
+            | -2 -> 
+              Ext_log.dwarn __LOC__ "FUCK: inconstent %s/%d" id.name id.stamp;
+              () 
+            | -1 -> Ident_hashtbl.replace init id (List.length args)
+            | arity ->
+              let new_arity = List.length args in
+              if new_arity <> arity then 
+                Ident_hashtbl.replace init id (-2)
+              else ()  
+          end; List.iter hit args
+
+      | Lvar id -> 
+        () (* recursive functions make it hard to do escape anaylsis?
+           [map f xs] : [f] is not escape here
+        *)
+        (* begin match Ident_hashtbl.find_default init id (-3) with 
+          | -3 
+          | -2 -> 
+            Ext_log.dwarn __LOC__ "FUCK: inconstent %s/%d" id.name id.stamp;
+            ()
+          | -1  | _  -> Ident_hashtbl.replace init id (-2) (* escaped meaning inconsistent *)
+        end *)
+      | Lassign(id, e) ->
+        begin match Ident_hashtbl.find_default init id (-3) with 
+          | -3 
+          | -2 -> 
+            Ext_log.dwarn __LOC__ "FUCK: inconstent %s/%d" id.name id.stamp;
+            ()
+          | -1  | _  -> Ident_hashtbl.replace init id (-2) (* escaped meaning inconsistent *)
+        end
+      ; hit e
+      | Lapply{fn; args; _} ->
+        hit fn ; List.iter hit args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 ; hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 ; hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg ; hit body
+      | Lletrec(decl, body) ->
+        hit body ;
+        List.iter (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 ; hit e2 ; hit e3
+      | Lconst _ ->  ()
+      | Lprim {args; _} ->
+        List.iter hit args
+      | Lswitch(arg, sw) ->
+        hit arg ;
+        List.iter (fun (key, case) -> hit case) sw.sw_consts ;
+        List.iter (fun (key, case) -> hit case) sw.sw_blocks ;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ;
+        List.iter (fun (_,act) -> hit act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 ; hit e2 ; hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 ; hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 ; hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met ; hit obj ; List.iter hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
+
+
+let uncurry_callback (bindings : bindings) : bindings =
+  match bindings with 
+  | [ id, Lfunction { params ; body; arity; kind } ] -> 
+    let init  = Ident_hashtbl.create 0 in 
+    List.iter (fun param -> Ident_hashtbl.add init  param (-1)) params; 
+    check_consistent_uncurry_callback init body ;
+    let curried_map = Ident_hashtbl.fold (fun ident state acc  -> 
+        if state >= 0 then Ident_map.add ident state acc else acc  )  init Ident_map.empty in 
+    if Ident_map.is_empty curried_map then 
+    begin 
+      Ext_log.dwarn __LOC__ "FUCK: %s/%d" id.name id.stamp;
+      bindings
+      end
+    else       
+      let new_id = Ident.rename id in 
+      let rec rewrite lam = 
+        let lam = inner_map rewrite lam in 
+        match lam with 
+        | Lapply {fn = Lvar id2 as fn; args ; loc; status } -> 
+          if Ext_ident.equal id id2 then 
+            Lapply{fn = Lvar new_id ; args; loc ; status}
+          else   
+            begin match Ident_map.find_default id2 curried_map (-1) with 
+              | -1 -> lam 
+              | arity -> Lprim {primitive = (Pjs_fn_run arity ); args = (fn :: args) ; loc }
+            end 
+        | Lvar id2  -> 
+          if Ext_ident.equal id id2 then Lvar new_id  else lam
+        | Lassign (id2, e)
+          ->  (* won't happen in practice *)
+            if Ext_ident.equal id id2 then Lassign(new_id,e)  else lam
+        | _ -> lam  
+      in 
+      let body = rewrite body  in 
+      let new_params = List.map (fun x -> Ident.rename x ) params in 
+      [ new_id , Lfunction{params; body ; arity; kind}; 
+        id, Lfunction{params = new_params ; 
+          body = (Lapply {fn = Lvar new_id ;  loc = Location.none ; 
+            args = List.fold_right2 (fun (x : Ident.t) old_x acc -> 
+              match Ident_map.find_default old_x curried_map (-1) with 
+              | -1 -> Lvar x :: acc 
+              | arity -> Lprim{primitive = Pjs_fn_make arity ; args = [
+                let new_params = Ext_list.init arity (fun _ -> Ident.create "param") in 
+                Lfunction { params = new_params ; 
+                  body = Lapply{fn = Lvar x ;
+                     args = List.map (fun x -> Lvar x ) new_params;
+                     status = App_na; loc = Location.none
+                 }; arity ; kind }
+              ] ; loc = Location.none} :: acc 
+            ) new_params params [] ; status = App_ml_full});
+          arity ; 
+          kind;
+        }
+      ]
+        
+  | [ _ , _ ] 
+  | [ ] | _ :: _ :: _ ->  bindings 
+
 (* single binding, it does not make sense to do scc,
    we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
 *)
@@ -1326,7 +1479,12 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
     | [ (id,bind) ] ->
       if hit_any_variables (Ident_set.singleton id) bind 
       then 
-        lam  
+        match uncurry_callback groups with 
+        | [id1,lam1] -> 
+          lam  
+        | [id1,lam1; id2,lam2] -> 
+          letrec [id1,lam1] (let_ Strict id2 lam2 body)
+        | _ -> assert false
       else let_ Strict id bind body  
     | _ ->    
       let (domain, int_mapping, node_vec)  = preprocess_deps groups in 
@@ -1344,7 +1502,12 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
             | [ id,lam ] ->
               let base_key = Ordered_hash_map_local_ident.rank domain id in    
               if Int_vec_util.mem base_key node_vec.(base_key) then       
-                letrec bindings acc 
+                match uncurry_callback bindings with 
+                | [id,lam] -> 
+                  letrec bindings acc 
+                | [id,lam; id2,lam2] -> 
+                  letrec [id,lam] (let_ Strict id2 lam2 acc)
+                | _ -> assert false
               else  let_ Strict id lam acc    
             | _ ->  
               letrec bindings  acc 

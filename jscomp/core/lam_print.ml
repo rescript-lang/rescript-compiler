@@ -100,16 +100,16 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_LOC -> "loc_LOC"
 
 let primitive ppf (prim : Lam.primitive) = match prim with 
-  | Pinit_mod -> fprintf ppf "init_mod!"
-  | Pupdate_mod -> fprintf ppf "update_mod!"
+  | Pinit_mod -> fprintf ppf "*init_mod!"
+  | Pupdate_mod -> fprintf ppf "*update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pjs_unsafe_downgrade (s,_loc) -> fprintf ppf "##%s" s 
-  | Pjs_fn_run i -> fprintf ppf "js_fn_run_%i" i 
-  | Pjs_fn_make i -> fprintf ppf "js_fn_make_%i" i
-  | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
-  | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
-  | Pdebugger -> fprintf ppf "debugger"
+  | Pjs_fn_run i -> fprintf ppf "*js_fn_run_%i" i 
+  | Pjs_fn_make i -> fprintf ppf "*js_fn_make_%i" i
+  | Pjs_fn_method i -> fprintf ppf "*js_fn_method_%i" i 
+  | Pjs_fn_runmethod i -> fprintf ppf "*js_fn_runmethod_%i" i 
+  | Pdebugger -> fprintf ppf "*debugger"
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id                       
