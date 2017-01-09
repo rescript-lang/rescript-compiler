@@ -10178,8 +10178,9 @@ val unsafe_string : bool ref
 val opaque : bool ref
 
  
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref
-val assume_no_mli : bool ref 
+val assume_no_mli : mli_status ref 
 
 
 end = struct
@@ -10301,8 +10302,9 @@ let keep_locs = ref false              (* -keep-locs *)
 let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
 
  
+type mli_status = Mli_na | Mli_exists | Mli_non_exists
 let no_implicit_current_dir = ref false
-let assume_no_mli = ref false 
+let assume_no_mli = ref Mli_na
 
 
 end
