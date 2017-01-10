@@ -27,7 +27,7 @@
 
 
 let reverse_range a i len =
-  if len=0 then ()
+  if len = 0 then ()
   else
     for k = 0 to (len-1)/2 do
       let t = Array.unsafe_get a (i+k) in

@@ -85,6 +85,13 @@ let translate  loc
     | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
     | _ -> assert false
     end
+  | Pnegint
+    -> 
+    begin match args with (* #977 *)
+    | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
+    | _ -> assert false
+    end
+    
   | Pnegbint Pnativeint
     -> 
     begin match args with
@@ -95,13 +102,7 @@ let translate  loc
     -> 
     Js_long.neg args 
 
-  | Pnegint
-    -> 
-    begin match args with
-    | [ e ] -> E.unchecked_int32_minus (E.zero_int_literal)  e 
-    | _ -> assert false
-    end
-
+  
   | Pnegfloat 
     -> 
     begin match args with 

@@ -25,7 +25,7 @@
 type action = 
   [
     `skip
-  | `print of (out_channel -> int -> unit)
+  | `print of (Pervasives.out_channel -> int -> unit)
   ]
 
 

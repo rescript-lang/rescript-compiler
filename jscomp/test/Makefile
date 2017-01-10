@@ -77,7 +77,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	gray_code_test alias_test\
 	flattern_order_test\
 	minimal_test\
-	gpr_1063_test
+	gpr_1063_test\
+	gpr_977_test
 
 
 
