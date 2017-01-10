@@ -204,6 +204,9 @@ let find ?(start=0) ~sub s =
   with Local_exit ->
     !i
 
+let contain_substring s sub = 
+  find s ~sub >= 0 
+
 
 let rfind ~sub s =
   let n = String.length sub in

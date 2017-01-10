@@ -143,6 +143,7 @@ OUNIT_TESTS_SRCS =  ounit_tests_util \
 	ounit_sexp_tests\
 	ounit_int_vec_tests\
 	ounit_ident_mask_tests\
+	ounit_cmd_tests\
 	ounit_tests_main
 OUNIT_TESTS_CMXS = $(addprefix ounit_tests/, $(addsuffix .cmx, $(OUNIT_TESTS_SRCS)))
 

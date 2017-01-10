@@ -323,6 +323,10 @@ function find($staropt$star, sub, s) {
   }
 }
 
+function contain_substring(s, sub) {
+  return +(find(/* None */0, sub, s) >= 0);
+}
+
 function rfind(sub, s) {
   var n = sub.length;
   var i = s.length - n | 0;
@@ -650,6 +654,7 @@ exports.repeat                          = repeat;
 exports.unsafe_is_sub                   = unsafe_is_sub;
 exports.Local_exit                      = Local_exit;
 exports.find                            = find;
+exports.contain_substring               = contain_substring;
 exports.rfind                           = rfind;
 exports.tail_from                       = tail_from;
 exports.digits_of_str                   = digits_of_str;

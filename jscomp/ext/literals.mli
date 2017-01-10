@@ -92,3 +92,5 @@ val suffix_js : string
 val commonjs : string 
 val amdjs : string 
 val goog : string 
+
+val unused_attribute : string 

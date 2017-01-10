@@ -57,4 +57,5 @@ let prerr_warning loc x =
     print_string_warning loc (to_string x) 
 
 let warn_unused_attribute loc txt =
-  print_string_warning loc ("Unused attribute " ^ txt ^ " \n" )
+  print_string_warning loc ( Literals.unused_attribute  ^ txt ^ " \n" );
+  Format.pp_print_flush warning_formatter ()

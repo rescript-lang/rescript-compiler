@@ -20119,6 +20119,8 @@ val suffix_js : string
 val commonjs : string 
 val amdjs : string 
 val goog : string 
+
+val unused_attribute : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20214,6 +20216,8 @@ let suffix_js = ".js"
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
 let goog = "goog"
+
+let unused_attribute = "Unused attribute " 
 end
 module Bs_pkg : sig 
 #1 "bs_pkg.mli"
@@ -21063,6 +21067,8 @@ val equal : string -> string -> bool
 
 val find : ?start:int -> sub:string -> string -> int
 
+val contain_substring : string -> string -> bool 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string
@@ -21302,6 +21308,9 @@ let find ?(start=0) ~sub s =
     -1
   with Local_exit ->
     !i
+
+let contain_substring s sub = 
+  find s ~sub >= 0 
 
 
 let rfind ~sub s =
@@ -25776,7 +25785,8 @@ let prerr_warning loc x =
     print_string_warning loc (to_string x) 
 
 let warn_unused_attribute loc txt =
-  print_string_warning loc ("Unused attribute " ^ txt ^ " \n" )
+  print_string_warning loc ( Literals.unused_attribute  ^ txt ^ " \n" );
+  Format.pp_print_flush warning_formatter ()
 
 end
 module Bs_ast_invariant
@@ -100017,7 +100027,7 @@ end = struct
    how it would work with other tools like merlin and ocamldep  *)
 
 (**
-1. extension point 
+   1. extension point 
    {[ 
      [%bs.raw{| blabla |}]
    ]}
@@ -100101,26 +100111,26 @@ let handle_class_type_field self
       (name, private_flag, virtual_flag, ty) 
     ->
     let no (ty : Parsetree.core_type) =
-        let ty = 
-          match ty.ptyp_desc with 
-          | Ptyp_arrow (label, args, body) 
-            ->
-            Ast_util.to_method_type
-              ty.ptyp_loc  self label args body
+      let ty = 
+        match ty.ptyp_desc with 
+        | Ptyp_arrow (label, args, body) 
+          ->
+          Ast_util.to_method_type
+            ty.ptyp_loc  self label args body
 
-          | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
-                              ptyp_loc})
-            ->
-            {ty with ptyp_desc = 
-                       Ptyp_poly(strs,             
-                                 Ast_util.to_method_type
-                                   ptyp_loc  self label args body  )}
-          | _ -> 
-            self.typ self ty
-        in 
-        {ctf with 
-         pctf_desc = 
-           Pctf_method (name , private_flag, virtual_flag, ty)}
+        | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
+                            ptyp_loc})
+          ->
+          {ty with ptyp_desc = 
+                     Ptyp_poly(strs,             
+                               Ast_util.to_method_type
+                                 ptyp_loc  self label args body  )}
+        | _ -> 
+          self.typ self ty
+      in 
+      {ctf with 
+       pctf_desc = 
+         Pctf_method (name , private_flag, virtual_flag, ty)}
     in
     let get ty name pctf_attributes =
       {ctf with 
@@ -100173,7 +100183,7 @@ let handle_core_type
         it will report error later when the label is not empty
      *)     
      ptyp_loc = loc
-   } ->
+    } ->
     begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
       | `Uncurry , ptyp_attributes ->
         Ast_util.to_uncurry_type loc self label args body 
@@ -100182,12 +100192,12 @@ let handle_core_type
       | `Method, ptyp_attributes ->
         Ast_util.to_method_type loc self label args body
       | `Nothing , _ -> 
-          Ast_mapper.default_mapper.typ self ty
+        Ast_mapper.default_mapper.typ self ty
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
     ptyp_loc = loc 
-    } -> 
+  } -> 
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
@@ -100234,7 +100244,7 @@ let handle_core_type
     let inner_type =
       { ty
         with ptyp_desc = Ptyp_object(new_methods, closed_flag);
-              } in 
+      } in 
     if !record_as_js_object then 
       Ast_comb.to_js_type loc inner_type          
     else inner_type
@@ -100294,15 +100304,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               Exp.constraint_ ~loc exp typ                
             | Some _ | None ->
               begin match payload with 
-              | PTyp _ -> 
-                Location.raise_errorf 
-                  ~loc "Illegal payload, expect an expression payload instead of type payload"              
-              | PPat _ ->
-                Location.raise_errorf 
-                  ~loc "Illegal payload, expect an expression payload instead of pattern  payload"        
-              | _ -> 
-                Location.raise_errorf 
-                  ~loc "Illegal payload"
+                | PTyp _ -> 
+                  Location.raise_errorf 
+                    ~loc "Illegal payload, expect an expression payload instead of type payload"              
+                | PPat _ ->
+                  Location.raise_errorf 
+                    ~loc "Illegal payload, expect an expression payload instead of pattern  payload"        
+                | _ -> 
+                  Location.raise_errorf 
+                    ~loc "Illegal payload"
               end
 
           end             
@@ -100312,35 +100322,35 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           -> {e with pexp_desc = Ast_util.handle_debugger loc payload}
         | Pexp_extension ({txt = ("bs.obj" | "obj"); loc},  payload)
           -> 
-            begin match payload with 
+          begin match payload with 
             | PStr [{pstr_desc = Pstr_eval (e,_)}]
               -> 
               Ext_ref.non_exn_protect record_as_js_object true
                 (fun () -> self.expr self e ) 
             | _ -> Location.raise_errorf ~loc "Expect an expression here"
-            end
+          end
         | Pexp_extension({txt ; loc} as lid, PTyp typ) 
           when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
           self.expr self @@ 
-            Ast_derive.dispatch_extension lid typ
-            
+          Ast_derive.dispatch_extension lid typ
+
         (** End rewriting *)
         | Pexp_fun ("", None, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
-          | `Nothing, _ 
-            -> Ast_mapper.default_mapper.expr self e 
-          |   `Uncurry, pexp_attributes
-            -> 
-            {e with 
-             pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
-             pexp_attributes}
-          | `Method , _
-            ->  Location.raise_errorf ~loc "bs.meth is not supported in function expression"
-          | `Meth_callback , pexp_attributes
-            -> 
-            {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;
-                    pexp_attributes }
+            | `Nothing, _ 
+              -> Ast_mapper.default_mapper.expr self e 
+            |   `Uncurry, pexp_attributes
+              -> 
+              {e with 
+               pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
+               pexp_attributes}
+            | `Method , _
+              ->  Location.raise_errorf ~loc "bs.meth is not supported in function expression"
+            | `Meth_callback , pexp_attributes
+              -> 
+              {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;
+                      pexp_attributes }
           end
         | Pexp_apply (fn, args  ) ->
           begin match fn with 
@@ -100371,8 +100381,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                    ("", {pexp_desc = Pexp_apply(
                         {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
                         args
-                      ) })
+                      ); pexp_attributes = attrs }
+                   (* we should warn when we discard attributes *)
+                   )
                   ] -> (* f##(paint 1 2 ) *)
+                  (* gpr#1063 foo##(bar##baz) we should rewrite (bar##baz) 
+                     first  before pattern match. 
+                     currently the pattern match is written in a top down style.
+                     Another corner case: f##(g a b [@bs])
+                  *)
+                  if attrs <> [] then 
+                    List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
+                        Bs_warnings.warn_unused_attribute loc txt 
+                      ) attrs;
                   {e with pexp_desc = Ast_util.method_apply loc self obj name args}
                 | [("", obj) ;
                    ("", 
@@ -100404,22 +100425,22 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                  Pexp_ident {txt = Lident  ("#=" )}
               } -> 
               begin match args with 
-              | ["", 
-                  {pexp_desc = 
-                     Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}}, 
-                                 ["", obj; 
-                                  "", {pexp_desc = Pexp_ident {txt = Lident name}}
-                                 ]                                 
-                                )}; 
-                 "", arg
-                ] -> 
-                 Exp.constraint_ ~loc
-                   { e with
-                     pexp_desc =
-                       Ast_util.method_apply loc self obj 
-                         (name ^ Literals.setter_suffix) ["", arg ]  }
-                   (Ast_literal.type_unit ~loc ())
-              | _ -> Ast_mapper.default_mapper.expr self e 
+                | ["", 
+                   {pexp_desc = 
+                      Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}}, 
+                                  ["", obj; 
+                                   "", {pexp_desc = Pexp_ident {txt = Lident name}}
+                                  ]                                 
+                                 )}; 
+                   "", arg
+                  ] -> 
+                  Exp.constraint_ ~loc
+                    { e with
+                      pexp_desc =
+                        Ast_util.method_apply loc self obj 
+                          (name ^ Literals.setter_suffix) ["", arg ]  }
+                    (Ast_literal.type_unit ~loc ())
+                | _ -> Ast_mapper.default_mapper.expr self e 
               end
             | _ -> 
 
@@ -100496,7 +100517,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                   ]}
                   Actually this is not going to happpen as below is an invalid syntax
                   {[class type x = int -> object
-                    end[@bs]]}
+                      end[@bs]]}
                *)
            end             
       );
@@ -100552,12 +100573,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               pval_type ; 
               pval_prim ;
               pval_attributes 
-                 }}
+             }}
 
       | _ -> Ast_mapper.default_mapper.signature_item self sigi
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
-        begin match str.pstr_desc with 
+      begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs) 
           -> 
           Ast_util.handle_raw_structure loc payload
@@ -100571,12 +100592,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               {str with 
                pstr_desc =
                  Pstr_type 
-                    (Ext_list.map_last (fun last tdcl -> 
-                         if last then 
-                           self.type_declaration self {tdcl with ptype_attributes}
-                         else 
-                           self.type_declaration self tdcl) tdcls)
-                   }
+                   (Ext_list.map_last (fun last tdcl -> 
+                        if last then 
+                          self.type_declaration self {tdcl with ptype_attributes}
+                        else 
+                          self.type_declaration self tdcl) tdcls)
+              }
               (self.structure self @@ Ast_derive.type_deriving_structure
                  tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
@@ -100609,9 +100630,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 pval_prim;
                 pval_attributes 
                }}
-          
+
         | _ -> Ast_mapper.default_mapper.structure_item self str 
-        end
+      end
     end
   }
 
@@ -100628,13 +100649,13 @@ let common_actions_table :
 let structural_config_table  = 
   String_map.of_list 
     (( "no_export" , 
-      (fun x -> 
-         no_export := (
-           match x with 
-           |Some e -> Ast_payload.assert_bool_lit e 
-           | None -> true)
-      ))
-      :: common_actions_table)
+       (fun x -> 
+          no_export := (
+            match x with 
+            |Some e -> Ast_payload.assert_bool_lit e 
+            | None -> true)
+       ))
+     :: common_actions_table)
 
 let signature_config_table : 
   (Parsetree.expression option -> unit) String_map.t= 

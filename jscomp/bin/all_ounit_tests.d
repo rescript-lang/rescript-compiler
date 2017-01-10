@@ -20,6 +20,9 @@ bin/all_ounit_tests.ml : ext/set_int.mli
 bin/all_ounit_tests.ml : ext/set_poly.ml
 bin/all_ounit_tests.ml : ext/set_poly.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_bal_tree_tests.ml
+bin/all_ounit_tests.ml : ext/literals.ml
+bin/all_ounit_tests.ml : ext/literals.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_cmd_tests.ml
 bin/all_ounit_tests.ml : ext/ext_util.ml
 bin/all_ounit_tests.ml : ext/ext_util.mli
 bin/all_ounit_tests.ml : ext/hash_set_gen.ml
@@ -67,8 +70,6 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_map_tests.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_ordered_hash_set_tests.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.ml
 bin/all_ounit_tests.ml : ext/ext_pervasives.mli
-bin/all_ounit_tests.ml : ext/literals.ml
-bin/all_ounit_tests.ml : ext/literals.mli
 bin/all_ounit_tests.ml : ext/ext_filename.ml
 bin/all_ounit_tests.ml : ext/ext_filename.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_path_tests.ml
