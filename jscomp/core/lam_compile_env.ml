@@ -239,7 +239,9 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
 
 (* TODO: [env] is not hard dependency *)
 
-let get_requried_modules env (extras : module_id list ) (hard_dependencies 
+let get_requried_modules env
+    (extras : module_id list ) 
+    (hard_dependencies 
   : _ Hash_set_poly.t) : module_id list =  
 
   let mem (x : Lam_module_ident.t) = 
