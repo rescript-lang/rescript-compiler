@@ -1530,7 +1530,7 @@ function top(_param) {
                   }
                   var stk$prime_000 = /* tuple */[
                     match[0],
-                    (-n << 3)
+                    ((-n | 0) << 3)
                   ];
                   var stk$prime = /* :: */[
                     stk$prime_000,

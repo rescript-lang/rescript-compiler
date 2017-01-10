@@ -335,7 +335,7 @@ external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
 
 let escaped s =
-  let n = ref 0 in
+  let n = Pervasives.ref 0 in
   for i = 0 to Bytes.length s - 1 do
     n := !n +
       (match Bytes.unsafe_get s i with
@@ -2813,7 +2813,7 @@ end = struct
 
 
 let reverse_range a i len =
-  if len=0 then ()
+  if len = 0 then ()
   else
     for k = 0 to (len-1)/2 do
       let t = Array.unsafe_get a (i+k) in
@@ -4573,7 +4573,7 @@ module Ext_file_pp : sig
 type action = 
   [
     `skip
-  | `print of (out_channel -> int -> unit)
+  | `print of (Pervasives.out_channel -> int -> unit)
   ]
 
 

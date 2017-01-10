@@ -128,7 +128,7 @@ event_ffi.cmj : ../stdlib/list.cmj ../runtime/js_unsafe.cmj \
 exception_raise_test.cmj : mt.cmj
 exception_value_test.cmj :
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
-ext_bytes.cmj : ../stdlib/bytes.cmj
+ext_bytes.cmj : ../stdlib/pervasives.cmj ../stdlib/bytes.cmj
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj literals.cmj \
     ../stdlib/list.cmj ../stdlib/lazy.cmj ../stdlib/filename.cmj \
     ext_string.cmj ext_pervasives.cmj
@@ -188,6 +188,8 @@ gpr_858_test.cmj : ../stdlib/list.cmj
 gpr_858_unit2_test.cmj :
 gpr_904_test.cmj : mt.cmj
 gpr_974_test.cmj : ../runtime/js.cmj
+gpr_977_test.cmj : ../stdlib/nativeint.cmj mt.cmj ../runtime/js.cmj \
+    ../stdlib/int32.cmj
 gray_code_test.cmj : ../stdlib/bytes.cmj
 guide_for_ext.cmj :
 hamming_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/lazy.cmj \

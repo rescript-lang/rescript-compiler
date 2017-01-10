@@ -23127,7 +23127,7 @@ external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
 
 let escaped s =
-  let n = ref 0 in
+  let n = Pervasives.ref 0 in
   for i = 0 to Bytes.length s - 1 do
     n := !n +
       (match Bytes.unsafe_get s i with

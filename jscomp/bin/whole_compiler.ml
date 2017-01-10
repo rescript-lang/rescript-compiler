@@ -20942,7 +20942,7 @@ external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
 
 let escaped s =
-  let n = ref 0 in
+  let n = Pervasives.ref 0 in
   for i = 0 to Bytes.length s - 1 do
     n := !n +
       (match Bytes.unsafe_get s i with
@@ -57204,7 +57204,7 @@ end = struct
 
 
 let reverse_range a i len =
-  if len=0 then ()
+  if len = 0 then ()
   else
     for k = 0 to (len-1)/2 do
       let t = Array.unsafe_get a (i+k) in
@@ -91657,6 +91657,13 @@ let translate  loc
     | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
     | _ -> assert false
     end
+  | Pnegint
+    -> 
+    begin match args with (* #977 *)
+    | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
+    | _ -> assert false
+    end
+    
   | Pnegbint Pnativeint
     -> 
     begin match args with
@@ -91667,13 +91674,7 @@ let translate  loc
     -> 
     Js_long.neg args 
 
-  | Pnegint
-    -> 
-    begin match args with
-    | [ e ] -> E.unchecked_int32_minus (E.zero_int_literal)  e 
-    | _ -> assert false
-    end
-
+  
   | Pnegfloat 
     -> 
     begin match args with 
