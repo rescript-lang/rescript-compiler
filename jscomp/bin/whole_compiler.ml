@@ -97325,8 +97325,6 @@ let compile  ~filename output_prefix env _sigs
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
     
-    |> Lam.check (Js_config.get_current_file () ) 
-    
   in
   (* Debug identifier table *)
   (* Lam_stats_util.pp_alias_tbl Format.err_formatter meta.alias_tbl; *)
@@ -97451,8 +97449,6 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-    
-    Js_config.set_debug_file "rec_value_test.ml";
     
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

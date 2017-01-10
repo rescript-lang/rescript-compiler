@@ -4,7 +4,7 @@ watchman watch-del .
 git clean -dfx . ../lib
 make clean
 make -j9 check
-make force-snapshotml
+BS_DEUBG=false make force-snapshotml
 make -j1 world
 
 
