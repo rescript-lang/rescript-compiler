@@ -349,6 +349,14 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 # To work around this problem, we should touch  a global stamp file , too complex to maintain..
 # Gave up, make can not handle delete/adding new files correctly
 # Let's make it still work and fail to build, delegating `make clean`
+# Actually we can not make it correct by including..
+# if we force it, then the initial build will fail
+# if we don't force it, then if we remove bin/bsb.d
+# The build will never be re-triggered -- ninja seems to have special support for this semantics 
+# if we move files around, it will cause file failure
+# Note the currently snapshot mode means if we don't
+# generate ml files it will not be included
+
 
 snapshotml:./bin/bspack.exe $(SNAPSHOT_SRCS)
 
@@ -357,35 +365,25 @@ force-snapshotml:
 	make snapshotml
 
 bin/bsppx.ml:./bin/bspack.exe
-	$< -bs-MD  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
-
+	BS_DEBUG=false $< -bs-MD  -prelude-str 'module Config = Config_bsppx'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
 
 bin/whole_compiler.ml:./bin/bspack.exe
-	$< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
+	BS_DEBUG=false $< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
 
 bin/bsdep.ml:./bin/bspack.exe
-	BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core  -bs-main Ocamldep -o $@
+	BS_DEBUG=false BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core  -bs-main Ocamldep -o $@
 
 bin/bsb_helper.ml:./bin/bspack.exe
-	$< -bs-MD   -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
-
+	BS_DEBUG=false $< -bs-MD   -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
 
 bin/bsb.ml:./bin/bspack.exe
-	$< -bs-MD -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
+	BS_DEBUG=false $< -bs-MD -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
-# Actually we can not make it correct by including..
-# if we force it, then the initial build will fail
-# if we don't force it, then if we remove bin/bsb.d
-# The build will never be re-triggered
-# if we move files around, it will cause file failure
-# Note the currently snapshot mode means if we don't
-# generate ml files it will not be included
 bin/bspp.ml:./bin/bspack.exe
-	BS_MIN_LEX_DEPS=true $< -bs-MD   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
-
+	BS_DEBUG=false BS_MIN_LEX_DEPS=true $< -bs-MD   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
 
 bin/js_compiler.ml:./bin/bspack.exe
-	BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
+	BS_DEBUG=false BS_COMPILER_IN_BROWSER=true bspack.exe -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I ext -I syntax -I depends -I common -I core
 
 bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD   -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
