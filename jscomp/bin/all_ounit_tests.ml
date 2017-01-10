@@ -4981,6 +4981,14 @@ module type S = sig
   val find_exn: 'a t -> key -> 'a
   val find_all: 'a t -> key -> 'a list
   val find_opt: 'a t -> key  -> 'a option
+  
+  (** return the key found in the hashtbl.
+    Use case: when you find the key existed in hashtbl, 
+    you want to use the one stored in the hashtbl. 
+    (they are semantically equivlanent, but may have other information different) 
+   *)
+  val find_key_opt: 'a t -> key -> key option 
+
   val find_default: 'a t -> key -> 'a -> 'a 
 
   val replace: 'a t -> key -> 'a -> unit
@@ -5124,6 +5132,23 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
             if eq key k3  then Some d3 else 
               small_bucket_opt eq key rest3 
 
+
+let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then Some k1 else 
+      match rest1 with
+      | Empty -> None 
+      | Cons(k2,d2,rest2) -> 
+        if eq key k2 then Some k2 else 
+          match rest2 with 
+          | Empty -> None 
+          | Cons(k3,d3,rest3) -> 
+            if eq key k3  then Some k3 else 
+              small_bucket_key_opt eq key rest3
+
+
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   match lst with 
   | Empty -> default 
@@ -5258,6 +5283,10 @@ let find_exn (h : _ t) key =
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
 let find_default (h : _ t) key default = 
   Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =

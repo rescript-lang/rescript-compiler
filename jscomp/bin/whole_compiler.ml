@@ -23528,6 +23528,14 @@ module type S = sig
   val find_exn: 'a t -> key -> 'a
   val find_all: 'a t -> key -> 'a list
   val find_opt: 'a t -> key  -> 'a option
+  
+  (** return the key found in the hashtbl.
+    Use case: when you find the key existed in hashtbl, 
+    you want to use the one stored in the hashtbl. 
+    (they are semantically equivlanent, but may have other information different) 
+   *)
+  val find_key_opt: 'a t -> key -> key option 
+
   val find_default: 'a t -> key -> 'a -> 'a 
 
   val replace: 'a t -> key -> 'a -> unit
@@ -23671,6 +23679,23 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
             if eq key k3  then Some d3 else 
               small_bucket_opt eq key rest3 
 
+
+let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then Some k1 else 
+      match rest1 with
+      | Empty -> None 
+      | Cons(k2,d2,rest2) -> 
+        if eq key k2 then Some k2 else 
+          match rest2 with 
+          | Empty -> None 
+          | Cons(k3,d3,rest3) -> 
+            if eq key k3  then Some k3 else 
+              small_bucket_key_opt eq key rest3
+
+
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   match lst with 
   | Empty -> default 
@@ -23805,6 +23830,10 @@ let find_exn (h : _ t) key =
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
 let find_default (h : _ t) key default = 
   Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
@@ -59525,6 +59554,10 @@ let find_exn (h : _ t) key =
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
 let find_default (h : _ t) key default = 
   Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
@@ -66097,7 +66130,7 @@ val runtime_var_vid : string -> string -> J.vident
 
 val ml_var_dot : ?comment:string -> Ident.t -> string -> t
 
-val external_var_dot : ?comment:string -> Ident.t -> string -> string option -> t
+val external_var_dot : ?comment:string ->  external_name:string -> ?dot:string -> Ident.t -> t
 
 
 
@@ -66389,17 +66422,15 @@ let runtime_var_vid  x  e1 : J.vident =
 let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =     
   {expression_desc = Var (Qualified(id, Ml, Some e)); comment }
 
-let external_var_dot ?comment (id : Ident.t) name fn : t = 
-  {expression_desc = Var (Qualified(id, External name,  fn)); comment }
-
 (** 
   module as a value 
    {[
      var http = require("http")
    ]}
 *)
-let external_module_as_var ?comment (id : Ident.t) name : t = 
-  {expression_desc = Var (Qualified(id, External name, None)); comment }
+let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t = 
+  {expression_desc = Var (Qualified(id, External name,  dot)); comment }
+
 
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
@@ -68251,6 +68282,138 @@ let safe_to_inline (lam : Lam.t) =
   | _ -> false
 
 end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Ideas are based on {!Hashtbl}, 
+    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
+    This module fixes the semantics of [add].
+    [remove] is not optimized since it is not used too much 
+*)
+
+
+
+
+
+module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
+
+
+end = struct
+#1 "hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 43
+module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
+type key = H.t 
+let eq_key = H.equal
+let key_index (h :  _ Hash_set_gen.t ) key =
+  (H.hash  key) land (Array.length h.data - 1)
+type t = key Hash_set_gen.t
+
+
+
+# 62
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+
+let remove (h : _ Hash_set_gen.t) key =  
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let check_add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i  (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+# 113
+end
+  
+
+end
 module Hashtbl_make : sig 
 #1 "hashtbl_make.mli"
 
@@ -68345,6 +68508,10 @@ let find_exn (h : _ t) key =
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
 let find_default (h : _ t) key default = 
   Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
@@ -68392,7 +68559,7 @@ let of_list2 ks vs =
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
 
-# 157
+# 161
 end
 
 end
@@ -68452,7 +68619,7 @@ val of_external : Ident.t -> string -> t
 val of_runtime : Ident.t -> t 
 
 module Hash : Hashtbl_gen.S with type key = t
-
+module Hash_set : Hash_set_gen.S with type key = t
 end = struct
 #1 "lam_module_ident.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -68506,19 +68673,36 @@ let name  x : string  =
   match (x.kind : J.kind) with 
   | Ml  | Runtime ->  x.id.name
   | External v -> v  
-  
-(* OCaml runtime written in JS *)
-type module_property = bool 
+
+let equal (x : t) y = 
+  match x.kind with 
+  | External x_kind-> 
+    begin match y.kind with 
+      | External y_kind -> 
+        x_kind = (y_kind : string)
+      | _ -> false 
+    end
+  | Ml -> y.kind = Ml && Ext_ident.equal x.id y.id 
+  | Runtime -> 
+    y.kind = Runtime  && Ext_ident.equal x.id y.id
+let hash (x : t) = 
+  match x.kind with 
+  | External x_kind -> Bs_hash_stubs.hash_string x_kind 
+  | Ml | Runtime -> 
+    let x_id = x.id in 
+    Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
 
 module Hash = Hashtbl_make.Make(struct 
     type nonrec t = t 
-    let hash x  = 
-      let x_id = x.id in 
-      Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
-    let equal (x : t) y = 
-      Ext_ident.equal x.id y.id && x.kind = y.kind
+    let hash   = hash
+    let equal  = equal 
   end)
 
+module Hash_set = Hash_set.Make( struct 
+    type nonrec t = t 
+    let hash   = hash
+    let equal  = equal     
+end)
 end
 module Lam_print : sig 
 #1 "lam_print.mli"
@@ -79219,13 +79403,23 @@ let reset () =
   Lam_module_ident.Hash.clear cached_tbl 
 
 (* FIXME: JS external instead *)
-let add_js_module ?id module_name = 
+let add_js_module ?id module_name : Ident.t 
+  = 
   let id = 
     match id with
     | None -> Ext_ident.create_js_module module_name 
     | Some id -> id in
-  Lam_module_ident.Hash.replace cached_tbl (Lam_module_ident.of_external id module_name) External;
-  id  
+   let lam_module_ident = 
+     Lam_module_ident.of_external id module_name in  
+   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
+   | None -> 
+    Lam_module_ident.Hash.add 
+     cached_tbl 
+     lam_module_ident
+     External;
+     id
+   | Some old_key -> old_key.id 
+      
 
 
 
@@ -79275,7 +79469,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
                 if Js_config.get_cross_module_inline () then
                   closed_lambda
                 else None
-              (* TODO shall we cache the arity ?*) 
+                (* TODO shall we cache the arity ?*) 
             } 
     | Some (Runtime _) -> assert false
     | Some External  -> assert false
@@ -79301,10 +79495,10 @@ let query_and_add_if_not_exist (type u)
           Config_util.find_cmj (Lam_module_ident.name oid ^ Js_config.cmj_ext) in           
         add_cached_tbl oid (Runtime (true,cmj_table)) ; 
         begin match env with 
-        | Has_env _ -> 
-          found {signature = []; pure = true}
-        | No_env -> 
-          found cmj_table
+          | Has_env _ -> 
+            found {signature = []; pure = true}
+          | No_env -> 
+            found cmj_table
         end
       | Ml 
         -> 
@@ -79329,11 +79523,11 @@ let query_and_add_if_not_exist (type u)
             we should assert false (but this in general should not happen)
         *)
         begin match env with 
-        | Has_env _ 
-          -> 
-          found {signature = []; pure = false}
-        | No_env -> 
-          found (Js_cmj_format.no_pure_dummy)
+          | Has_env _ 
+            -> 
+            found {signature = []; pure = false}
+          | No_env -> 
+            found (Js_cmj_format.no_pure_dummy)
         end
 
     end
@@ -79353,9 +79547,9 @@ let query_and_add_if_not_exist (type u)
     end
   | Some External -> 
     begin match env with 
-    | Has_env _ -> 
-      found {signature = []  ; pure  = false}
-    | No_env -> found Js_cmj_format.no_pure_dummy
+      | Has_env _ -> 
+        found {signature = []  ; pure  = false}
+      | No_env -> found Js_cmj_format.no_pure_dummy
     end
 
 (* Conservative interface *)
@@ -79365,7 +79559,7 @@ let is_pure id  =
     ~found:(fun x -> x.effect = None)
 
 
-    
+
 
 let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) = 
   query_and_add_if_not_exist id No_env
@@ -79375,8 +79569,10 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
 
 (* TODO: [env] is not hard dependency *)
 
-let get_requried_modules env (extras : module_id list ) (hard_dependencies 
-  : _ Hash_set_poly.t) : module_id list =  
+let get_requried_modules env
+    (extras : module_id list ) 
+    (hard_dependencies 
+     : _ Hash_set_poly.t) : module_id list =  
 
   let mem (x : Lam_module_ident.t) = 
     not (is_pure x ) || Hash_set_poly.mem hard_dependencies  x 
@@ -91205,6 +91401,7 @@ module E = Js_exp_make
 
 let handle_external 
     ({bundle ; bind_name} : Ast_external_attributes.external_module_name)
+    : Ident.t * string 
   =
   match bind_name with 
   | None -> 
@@ -91215,7 +91412,8 @@ let handle_external
     bundle
 
 let handle_external_opt 
-    (module_name : Ast_external_attributes.external_module_name option) = 
+    (module_name : Ast_external_attributes.external_module_name option) 
+    : (Ident.t * string) option = 
   match module_name with 
   | Some module_name -> Some (handle_external module_name) 
   | None -> None 
@@ -91369,12 +91567,12 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
       end
     | Js_module_as_var module_name -> 
       let (id, name) =  handle_external  module_name  in
-      E.external_var_dot id name None
+      E.external_var_dot id ~external_name:name 
 
     | Js_module_as_fn {external_module_name = module_name; splice} ->
       let fn =
         let (id, name) = handle_external  module_name  in
-        E.external_var_dot id name None           
+        E.external_var_dot id ~external_name:name 
       in           
       let args, eff = assemble_args_splice   call_loc ffi splice arg_types args in 
         (* TODO: fix in rest calling convention *)          
@@ -91388,7 +91586,7 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
     | Js_module_as_class module_name ->
       let fn =
         let (id,name) = handle_external  module_name in
-        E.external_var_dot id name None in           
+        E.external_var_dot id ~external_name:name  in           
       let args,eff = assemble_args arg_types args in 
         (* TODO: fix in rest calling convention *)   
       add_eff eff        
@@ -91418,7 +91616,7 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
       let fn =  
         match handle_external_opt module_name with 
         | Some (id,name) ->  
-          E.external_var_dot id name (Some fn)
+          E.external_var_dot id ~external_name:name ~dot:fn
 
         | None -> 
           (** TODO: check, no [@@bs.module], 
@@ -91452,7 +91650,7 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
         | "null", None -> E.nil 
         | "undefined", None -> E.undefined
         | _, Some(id,mod_name)
-          -> E.external_var_dot id mod_name (Some name)
+          -> E.external_var_dot id ~external_name:mod_name ~dot:name
         | _, None -> 
 
           E.var (Ext_ident.create_js name)
@@ -91510,7 +91708,8 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
 let translate loc cxt 
     ({prim_name ;  prim_native_name} 
      : Primitive.description) args  = 
-  if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
+  if Ast_external_attributes.is_bs_external_prefix prim_native_name
+   then 
     begin 
       match Ast_external_attributes.unsafe_from_string prim_native_name with 
       | Normal -> 
@@ -95265,6 +95464,10 @@ let find_exn (h : _ t) key =
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
 let find_default (h : _ t) key default = 
   Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =

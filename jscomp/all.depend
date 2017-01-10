@@ -246,7 +246,7 @@ core/js_number.cmi :
 core/js_cmj_datasets.cmi : ext/string_map.cmi core/js_cmj_format.cmi
 core/lam_exit_code.cmi : core/lam.cmi
 core/lam_module_ident.cmi : core/js_op.cmx common/js_config.cmi core/j.cmx \
-    ext/hashtbl_gen.cmx
+    ext/hashtbl_gen.cmx ext/hash_set_gen.cmx
 core/lam_compile_util.cmi : core/js_op.cmx
 core/lam_stats.cmi : core/lam_module_ident.cmi core/lam.cmi \
     ext/int_hash_set.cmi ext/ident_set.cmi ext/ident_hashtbl.cmi
@@ -350,8 +350,8 @@ core/lam_exit_code.cmx : core/lam.cmx core/lam_exit_code.cmi
 core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
     core/js_call_info.cmx ext/ident_set.cmx
 core/lam_module_ident.cmx : core/js_op.cmx common/js_config.cmx core/j.cmx \
-    ext/hashtbl_make.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
-    core/lam_module_ident.cmi
+    ext/hashtbl_make.cmx ext/hash_set.cmx ext/ext_ident.cmx \
+    stubs/bs_hash_stubs.cmx core/lam_module_ident.cmi
 core/lam_compile_util.cmx : core/js_op.cmx core/lam_compile_util.cmi
 core/lam_stats.cmx : core/lam_module_ident.cmx core/lam.cmx \
     ext/int_hash_set.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \

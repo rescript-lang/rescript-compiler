@@ -52,3 +52,4 @@ val of_external : Ident.t -> string -> t
 val of_runtime : Ident.t -> t 
 
 module Hash : Hashtbl_gen.S with type key = t
+module Hash_set : Hash_set_gen.S with type key = t

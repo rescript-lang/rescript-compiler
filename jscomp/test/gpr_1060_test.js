@@ -1,17 +1,15 @@
 'use strict';
 
-var Foo$dotreact = require("foo.react");
-var React        = require("react");
-var A            = require("react");
-var Foo          = require("foo.react");
+var A   = require("react");
+var Foo = require("foo.react");
 
 var v = A;
 
-var h = React.bool();
+var h = A.bool();
 
 var c = Foo;
 
-var d = Foo$dotreact.bar();
+var d = Foo.bar();
 
 exports.v = v;
 exports.h = h;

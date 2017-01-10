@@ -198,6 +198,8 @@ bin/whole_compiler.ml : ext/ident_map.ml
 bin/whole_compiler.ml : ext/ident_map.mli
 bin/whole_compiler.ml : core/lam_analysis.ml
 bin/whole_compiler.ml : core/lam_analysis.mli
+bin/whole_compiler.ml : ext/hash_set.ml
+bin/whole_compiler.ml : ext/hash_set.mli
 bin/whole_compiler.ml : ext/hashtbl_make.ml
 bin/whole_compiler.ml : ext/hashtbl_make.mli
 bin/whole_compiler.ml : core/lam_module_ident.ml
