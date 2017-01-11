@@ -25,7 +25,7 @@
 type t = Parsetree.core_type 
 
 
-
+val extract_option_type_exn : t -> t 
 val replace_result : t -> t -> t
 
 val is_unit : t -> bool 

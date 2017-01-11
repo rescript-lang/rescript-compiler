@@ -70,10 +70,12 @@ bin/bsdep.ml : syntax/ast_derive_projector.ml
 bin/bsdep.ml : syntax/ast_derive_projector.mli
 bin/bsdep.ml : syntax/ast_core_type.ml
 bin/bsdep.ml : syntax/ast_core_type.mli
-bin/bsdep.ml : common/bs_loc.ml
-bin/bsdep.ml : common/bs_loc.mli
 bin/bsdep.ml : ext/ext_pervasives.ml
 bin/bsdep.ml : ext/ext_pervasives.mli
+bin/bsdep.ml : syntax/ast_ffi_types.ml
+bin/bsdep.ml : syntax/ast_ffi_types.mli
+bin/bsdep.ml : common/bs_loc.ml
+bin/bsdep.ml : common/bs_loc.mli
 bin/bsdep.ml : ext/ext_filename.ml
 bin/bsdep.ml : ext/ext_filename.mli
 bin/bsdep.ml : common/js_config.ml

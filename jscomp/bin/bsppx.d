@@ -46,12 +46,14 @@ bin/bsppx.ml : syntax/ast_derive_projector.ml
 bin/bsppx.ml : syntax/ast_derive_projector.mli
 bin/bsppx.ml : syntax/ast_core_type.ml
 bin/bsppx.ml : syntax/ast_core_type.mli
-bin/bsppx.ml : common/bs_loc.ml
-bin/bsppx.ml : common/bs_loc.mli
 bin/bsppx.ml : common/bs_version.ml
 bin/bsppx.ml : common/bs_version.mli
 bin/bsppx.ml : ext/ext_pervasives.ml
 bin/bsppx.ml : ext/ext_pervasives.mli
+bin/bsppx.ml : syntax/ast_ffi_types.ml
+bin/bsppx.ml : syntax/ast_ffi_types.mli
+bin/bsppx.ml : common/bs_loc.ml
+bin/bsppx.ml : common/bs_loc.mli
 bin/bsppx.ml : ext/ext_filename.ml
 bin/bsppx.ml : ext/ext_filename.mli
 bin/bsppx.ml : common/js_config.ml
