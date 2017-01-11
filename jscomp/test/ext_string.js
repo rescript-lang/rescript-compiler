@@ -303,9 +303,10 @@ var Local_exit = Caml_exceptions.create("Ext_string.Local_exit");
 function find($staropt$star, sub, s) {
   var start = $staropt$star ? $staropt$star[0] : 0;
   var n = sub.length;
+  var s_len = s.length;
   var i = start;
   try {
-    while((i + n | 0) <= s.length) {
+    while((i + n | 0) <= s_len) {
       if (unsafe_is_sub(sub, 0, s, i, n)) {
         throw Local_exit;
       }
@@ -325,6 +326,34 @@ function find($staropt$star, sub, s) {
 
 function contain_substring(s, sub) {
   return +(find(/* None */0, sub, s) >= 0);
+}
+
+function non_overlap_count(sub, s) {
+  var sub_len = sub.length;
+  if (sub.length) {
+    var _acc = 0;
+    var _off = 0;
+    while(true) {
+      var off = _off;
+      var acc = _acc;
+      var i = find(/* Some */[off], sub, s);
+      if (i < 0) {
+        return acc;
+      }
+      else {
+        _off = i + sub_len | 0;
+        _acc = acc + 1 | 0;
+        continue ;
+        
+      }
+    };
+  }
+  else {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Ext_string.non_overlap_count"
+        ];
+  }
 }
 
 function rfind(sub, s) {
@@ -655,6 +684,7 @@ exports.unsafe_is_sub                   = unsafe_is_sub;
 exports.Local_exit                      = Local_exit;
 exports.find                            = find;
 exports.contain_substring               = contain_substring;
+exports.non_overlap_count               = non_overlap_count;
 exports.rfind                           = rfind;
 exports.tail_from                       = tail_from;
 exports.digits_of_str                   = digits_of_str;

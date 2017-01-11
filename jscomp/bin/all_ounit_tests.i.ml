@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 112 *) List.hd state.tests_planned
+  (* 116 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 224 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 232 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 224 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 232 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 224 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 232 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 224 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 232 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 336 *) was_successful t
+        (* 348 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 448 *) string_of_int n
+        (* 464 *) string_of_int n
     | Label s -> 
-        (* 672 *) s
+        (* 696 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 112 *) 1 
-    | TestLabel (_, t) -> (* 132 *) test_case_count t
+    | TestCase _ -> (* 116 *) 1 
+    | TestLabel (_, t) -> (* 136 *) test_case_count t
     | TestList l -> 
         (* 20 *) List.fold_left 
-          (fun c t -> (* 131 *) c + test_case_count t) 
+          (fun c t -> (* 135 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 224 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 232 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 20 *) let rec rfold_lefti cnt accup l = 
-    (* 151 *) match l with
+    (* 155 *) match l with
       | [] -> 
           (* 20 *) accup
 
       | h::t -> 
-          (* 131 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 135 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 674 *) match event_type with
+  (* 698 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 672 *) begin
+        (* 696 *) begin
           let string_of_result = 
             if verbose then
-              (* 336 *) function
-                | RSuccess _      -> (* 112 *) "ok\n"
+              (* 348 *) function
+                | RSuccess _      -> (* 116 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 336 *) function
-                | RSuccess _      -> (* 112 *) "."
+              (* 348 *) function
+                | RSuccess _      -> (* 116 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 336 *) match e with 
+              (* 348 *) match e with 
                 | EStart p -> 
-                    (* 112 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 116 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 112 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 116 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 112 *) string_of_result result
+                    (* 116 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 336 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 224 *) ""
-                | EResult result -> (* 112 *) string_of_result result
+              (* 348 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 232 *) ""
+                | EResult result -> (* 116 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 337 *) output_string chn (format_event true ev);
+       (* 349 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 337 *) print_string (format_event verbose ev);
+     (* 349 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 337 *) std_log ev; file_log ev; log ev),
+       (* 349 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,13 +705,13 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2005357 *) if not b then (* 0 *) assert_failure msg
+  (* 2005360 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 2001451 *) let get_error_string () =
+  (* 2001455 *) let get_error_string () =
     (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 112 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 116 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 20 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 112 *) try 
+    (* 116 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 112 *) (path, f) :: acc
+          (* 116 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 20 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 131 *) flatten_test 
+               (* 135 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 132 *) flatten_test ((Label label)::path) acc t
+          (* 136 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 112 *) let result = 
+    (* 116 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 113 *) match state.tests_planned with 
+    (* 117 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 112 *) let (path, f) = !global_chooser state in            
+          (* 116 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 6328 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 6786 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 336 *) log (OUnitLogger.TestEvent ev))
+         (* 348 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1342,7 +1342,7 @@ end = struct
 
 
 let reverse_range a i len =
-  (* 1 *) if len=0 then (* 0 *) ()
+  (* 1 *) if len = 0 then (* 0 *) ()
   else
     (* 1 *) for k = 0 to (len-1)/2 do
       (* 1 *) let t = Array.unsafe_get a (i+k) in
@@ -1549,7 +1549,7 @@ external char_code: char -> int = "%identity"
 external char_chr: int -> char = "%identity"
 
 let escaped s =
-  (* 0 *) let n = ref 0 in
+  (* 0 *) let n = Pervasives.ref 0 in
   for i = 0 to Bytes.length s - 1 do
     (* 0 *) n := !n +
       (match Bytes.unsafe_get s i with
@@ -1675,6 +1675,8 @@ val equal : string -> string -> bool
 val find : ?start:int -> sub:string -> string -> int
 
 val contain_substring : string -> string -> bool 
+
+val non_overlap_count : sub:string -> string -> int 
 
 val rfind : sub:string -> string -> int
 
@@ -1892,11 +1894,11 @@ let equal (x : string) y  = (* 0 *) x = y
 
 
 let unsafe_is_sub ~sub i s j ~len =
-  (* 52 *) let rec check k =
-    (* 95 *) if k = len
-    then (* 10 *) true
+  (* 523 *) let rec check k =
+    (* 655 *) if k = len
+    then (* 31 *) true
     else 
-      (* 85 *) String.unsafe_get sub (i+k) = 
+      (* 624 *) String.unsafe_get sub (i+k) = 
       String.unsafe_get s (j+k) && check (k+1)
   in
   j+len <= String.length s && check 0
@@ -1904,20 +1906,33 @@ let unsafe_is_sub ~sub i s j ~len =
 
 exception Local_exit 
 let find ?(start=0) ~sub s =
-  (* 9 *) let n = String.length sub in
+  (* 37 *) let n = String.length sub in
+  let s_len = String.length s in 
   let i = ref start in  
   try
-    while !i + n <= String.length s do
-      (* 44 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
-        (* 8 *) raise_notrace Local_exit;
+    while !i + n <= s_len do
+      (* 515 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
+        (* 29 *) raise_notrace Local_exit;
       incr i
     done;
     -1
   with Local_exit ->
-    (* 8 *) !i
+    (* 29 *) !i
 
 let contain_substring s sub = 
   (* 7 *) find s ~sub >= 0 
+
+(** TODO: optimize 
+  avoid nonterminating when string is empty 
+*)
+let non_overlap_count ~sub s = 
+  (* 7 *) let sub_len = String.length sub in 
+  let rec aux  acc off = 
+    (* 28 *) let i = find ~start:off ~sub s  in 
+    if i < 0 then (* 7 *) acc 
+    else (* 21 *) aux (acc + 1) (i + sub_len) in
+ if String.length sub = 0 then (* 0 *) invalid_arg "Ext_string.non_overlap_count"
+  else (* 7 *) aux 0 0  
 
 
 let rfind ~sub s =
@@ -3473,8 +3488,8 @@ let (//) = Filename.concat
 
 (** may nonterminate when [cwd] is '.' *)
 let rec unsafe_root_dir_aux cwd  = 
-    (* 2 *) if Sys.file_exists (cwd//Literals.bsconfig_json) then (* 1 *) cwd 
-    else (* 1 *) unsafe_root_dir_aux (Filename.dirname cwd)     
+  (* 2 *) if Sys.file_exists (cwd//Literals.bsconfig_json) then (* 1 *) cwd 
+  else (* 1 *) unsafe_root_dir_aux (Filename.dirname cwd)     
 
 let project_root = unsafe_root_dir_aux (Sys.getcwd ())
 let jscomp = project_root // "jscomp"
@@ -3487,7 +3502,7 @@ let stdlib_dir = jscomp // "stdlib"
 
 
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) = OUnit.assert_equal
 
@@ -3504,115 +3519,166 @@ let rec safe_dup fd =
   end
 
 let safe_close fd =
-  (* 8 *) try Unix.close fd with Unix.Unix_error(_,_,_) -> (* 0 *) ()
+  (* 14 *) try Unix.close fd with Unix.Unix_error(_,_,_) -> (* 0 *) ()
 
 
 type output = {
-    stderr : string ; 
-    stdout : string ;
-    exit_code : int 
+  stderr : string ; 
+  stdout : string ;
+  exit_code : int 
 }
 
 let perform command args = 
-    (* 4 *) let new_fd_in, new_fd_out = Unix.pipe () in 
-    let err_fd_in, err_fd_out = Unix.pipe () in 
-    match Unix.fork () with 
-    | 0 -> 
-        (* 0 *) begin try 
-            safe_close new_fd_in;  
-            safe_close err_fd_in;
-            Unix.dup2 err_fd_out Unix.stderr ; 
-            Unix.dup2 new_fd_out Unix.stdout; 
-            Unix.execv command args 
-        with _ -> 
-            (* 0 *) exit 127
-        end
-    | pid ->
-        (* when all the descriptors on a pipe's input are closed and the pipe is 
-            empty, a call to [read] on its output returns zero: end of file.
-           when all the descriptiors on a pipe's output are closed, a call to 
-           [write] on its input kills the writing process (EPIPE).
-        *)
-        (* 4 *) safe_close new_fd_out ; 
-        safe_close err_fd_out ; 
-        let in_chan = Unix.in_channel_of_descr new_fd_in in 
-        let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
-        let buf = Buffer.create 1024 in 
-        let err_buf = Buffer.create 1024 in 
-        (try 
-            while true do 
-                (* 22 *) Buffer.add_string buf (input_line in_chan );             
-                Buffer.add_char buf '\n'
-            done;
-        with
-        End_of_file -> (* 4 *) ()) ; 
-        (try 
-            while true do 
-                (* 97 *) Buffer.add_string err_buf (input_line err_in_chan );
-                Buffer.add_char err_buf '\n'
-            done;
-        with
-        End_of_file -> (* 4 *) ()) ; 
-        let exit_code = match snd @@ Unix.waitpid [] pid with 
-        | Unix.WEXITED exit_code -> (* 4 *) exit_code 
-        | Unix.WSIGNALED _signal_number 
-        | Unix.WSTOPPED _signal_number  -> (* 0 *) 127 in 
-            {
-                stdout = Buffer.contents buf ; 
-                stderr = Buffer.contents err_buf;
-                exit_code 
-            }
+  (* 7 *) let new_fd_in, new_fd_out = Unix.pipe () in 
+  let err_fd_in, err_fd_out = Unix.pipe () in 
+  match Unix.fork () with 
+  | 0 -> 
+    (* 0 *) begin try 
+        safe_close new_fd_in;  
+        safe_close err_fd_in;
+        Unix.dup2 err_fd_out Unix.stderr ; 
+        Unix.dup2 new_fd_out Unix.stdout; 
+        Unix.execv command args 
+      with _ -> 
+        (* 0 *) exit 127
+    end
+  | pid ->
+    (* when all the descriptors on a pipe's input are closed and the pipe is 
+        empty, a call to [read] on its output returns zero: end of file.
+       when all the descriptiors on a pipe's output are closed, a call to 
+       [write] on its input kills the writing process (EPIPE).
+    *)
+    (* 7 *) safe_close new_fd_out ; 
+    safe_close err_fd_out ; 
+    let in_chan = Unix.in_channel_of_descr new_fd_in in 
+    let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
+    let buf = Buffer.create 1024 in 
+    let err_buf = Buffer.create 1024 in 
+    (try 
+       while true do 
+         (* 65 *) Buffer.add_string buf (input_line in_chan );             
+         Buffer.add_char buf '\n'
+       done;
+     with
+       End_of_file -> (* 7 *) ()) ; 
+    (try 
+       while true do 
+         (* 100 *) Buffer.add_string err_buf (input_line err_in_chan );
+         Buffer.add_char err_buf '\n'
+       done;
+     with
+       End_of_file -> (* 7 *) ()) ; 
+    let exit_code = match snd @@ Unix.waitpid [] pid with 
+      | Unix.WEXITED exit_code -> (* 7 *) exit_code 
+      | Unix.WSIGNALED _signal_number 
+      | Unix.WSTOPPED _signal_number  -> (* 0 *) 127 in 
+    {
+      stdout = Buffer.contents buf ; 
+      stderr = Buffer.contents err_buf;
+      exit_code 
+    }
 
 
 let perform_bsc args = 
-    (* 4 *) perform bsc_exe 
-        (Array.append 
-        [|bsc_exe ; 
-            "-bs-package-name" ; "bs-platform"; 
-            "-bs-no-version-header"; 
-            "-bs-cross-module-opt";
-            "-w";
-            "-40";
-            "-I" ;
-            runtime_dir ; 
-            "-I"; 
-            others_dir ; 
-            "-I" ; 
-            stdlib_dir
-        |] args)
+  (* 7 *) perform bsc_exe 
+    (Array.append 
+       [|bsc_exe ; 
+         "-bs-package-name" ; "bs-platform"; 
+         "-bs-no-version-header"; 
+         "-bs-cross-module-opt";
+         "-w";
+         "-40";
+         "-I" ;
+         runtime_dir ; 
+         "-I"; 
+         others_dir ; 
+         "-I" ; 
+         stdlib_dir
+       |] args)
+
+let bsc_eval str = 
+  (* 4 *) perform_bsc [|"-bs-eval"; str|]        
+
 (* let output_of_exec_command command args =
     let readme, writeme = Unix.pipe () in 
     let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in 
     let in_chan = Unix.in_channel_of_descr readme *)
 
 let debug_output o = 
-    (* 0 *) Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
-        o.exit_code o.stdout o.stderr
+  (* 0 *) Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
+    o.exit_code o.stdout o.stderr
+
+let react = {|
+type u 
+
+external a : u = "react" [@@bs.module]
+
+external b : unit -> int = "bool" [@@bs.module "react"]
+
+let v = a
+let h = b ()
+
+|}        
+let foo_react = {|
+type bla
+
+
+external foo : bla = "foo.react" [@@bs.module]
+
+external bar : unit -> bla  = "bar" [@@bs.val] [@@bs.module "foo.react"]
+
+let c = foo 
+
+let d = bar ()
+
+|}
+
 
 let suites = 
-    __FILE__
-    >::: [
-        __LOC__ >:: begin fun _ -> 
-            (* 1 *) let v_output = perform_bsc  [| "-v" |] in 
-            OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
-            OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
-            Printf.printf "\n*>%s" v_output.stdout;
-            Printf.printf "\n*>%s" v_output.stderr ; 
-        end; 
-        __LOC__ >:: begin fun _ -> 
-            (* 1 *) let simple_quote = 
-                    perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
-            OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
-        end;
-        __LOC__ >:: begin fun _ -> 
-            (* 1 *) let should_be_warning = 
-                perform_bsc [|"-bs-eval"; {|let bla4 foo x y= foo##(method1 x y [@bs]) |}|] in 
-            (* debug_output should_be_warning; *)
-            OUnit.assert_bool __LOC__ (Ext_string.contain_substring
-             should_be_warning.stderr Literals.unused_attribute)
+  __FILE__
+  >::: [
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let v_output = perform_bsc  [| "-v" |] in 
+      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
+      OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
+      (* Printf.printf "\n*>%s" v_output.stdout; *)
+      (* Printf.printf "\n*>%s" v_output.stderr ; *)
+    end; 
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let simple_quote = 
+        perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
+      OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let should_be_warning = 
+        bsc_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in 
+      (* debug_output should_be_warning; *)
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring
+                                   should_be_warning.stderr Literals.unused_attribute)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let dedupe_require = 
+        bsc_eval (react ^ foo_react) in 
+      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
+                                   dedupe_require.stdout ~sub:"require" = 2
+                                )     
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let dedupe_require = 
+        bsc_eval react in 
+      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
+                                   dedupe_require.stdout ~sub:"require" = 1
+                                )     
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let dedupe_require = 
+        bsc_eval foo_react in 
+      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
+                                   dedupe_require.stdout ~sub:"require" = 1
+                                )     
+    end
 
-        end
-    ]
+  ]
 
 
 end
@@ -4981,6 +5047,14 @@ module type S = sig
   val find_exn: 'a t -> key -> 'a
   val find_all: 'a t -> key -> 'a list
   val find_opt: 'a t -> key  -> 'a option
+  
+  (** return the key found in the hashtbl.
+    Use case: when you find the key existed in hashtbl, 
+    you want to use the one stored in the hashtbl. 
+    (they are semantically equivlanent, but may have other information different) 
+   *)
+  val find_key_opt: 'a t -> key -> key option 
+
   val find_default: 'a t -> key -> 'a -> 'a 
 
   val replace: 'a t -> key -> 'a -> unit
@@ -5124,6 +5198,23 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
             (* 0 *) if eq key k3  then (* 0 *) Some d3 else 
               (* 0 *) small_bucket_opt eq key rest3 
 
+
+let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
+  (* 0 *) match lst with 
+  | Empty -> (* 0 *) None 
+  | Cons(k1,d1,rest1) -> 
+    (* 0 *) if eq  key k1 then (* 0 *) Some k1 else 
+      (* 0 *) match rest1 with
+      | Empty -> (* 0 *) None 
+      | Cons(k2,d2,rest2) -> 
+        (* 0 *) if eq key k2 then (* 0 *) Some k2 else 
+          (* 0 *) match rest2 with 
+          | Empty -> (* 0 *) None 
+          | Cons(k3,d3,rest3) -> 
+            (* 0 *) if eq key k3  then (* 0 *) Some k3 else 
+              (* 0 *) small_bucket_key_opt eq key rest3
+
+
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   (* 0 *) match lst with 
   | Empty -> (* 0 *) default 
@@ -5258,6 +5349,10 @@ let find_exn (h : _ t) key =
 
 let find_opt (h : _ t) key =
   (* 0 *) Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  (* 0 *) Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
 let find_default (h : _ t) key default = 
   (* 0 *) Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
@@ -11347,6 +11442,12 @@ let suites =
       Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) Ext_string.non_overlap_count ~sub:"0" "1000,000" =~ 6;
+      Ext_string.non_overlap_count ~sub:"0" "000000" =~ 6;
+      Ext_string.non_overlap_count ~sub:"00" "000000" =~ 3;
+      Ext_string.non_overlap_count ~sub:"00" "00000" =~ 2
     end;
     __LOC__ >:: begin fun _ -> 
       (* 1 *) OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");

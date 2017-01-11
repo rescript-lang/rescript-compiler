@@ -68,6 +68,12 @@ let suites =
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
     __LOC__ >:: begin fun _ -> 
+      Ext_string.non_overlap_count ~sub:"0" "1000,000" =~ 6;
+      Ext_string.non_overlap_count ~sub:"0" "000000" =~ 6;
+      Ext_string.non_overlap_count ~sub:"00" "000000" =~ 3;
+      Ext_string.non_overlap_count ~sub:"00" "00000" =~ 2
+    end;
+    __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "a");
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "b");

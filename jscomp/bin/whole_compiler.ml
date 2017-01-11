@@ -21069,6 +21069,8 @@ val find : ?start:int -> sub:string -> string -> int
 
 val contain_substring : string -> string -> bool 
 
+val non_overlap_count : sub:string -> string -> int 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string
@@ -21298,9 +21300,10 @@ let unsafe_is_sub ~sub i s j ~len =
 exception Local_exit 
 let find ?(start=0) ~sub s =
   let n = String.length sub in
+  let s_len = String.length s in 
   let i = ref start in  
   try
-    while !i + n <= String.length s do
+    while !i + n <= s_len do
       if unsafe_is_sub ~sub 0 s !i ~len:n then
         raise_notrace Local_exit;
       incr i
@@ -21311,6 +21314,18 @@ let find ?(start=0) ~sub s =
 
 let contain_substring s sub = 
   find s ~sub >= 0 
+
+(** TODO: optimize 
+  avoid nonterminating when string is empty 
+*)
+let non_overlap_count ~sub s = 
+  let sub_len = String.length sub in 
+  let rec aux  acc off = 
+    let i = find ~start:off ~sub s  in 
+    if i < 0 then acc 
+    else aux (acc + 1) (i + sub_len) in
+ if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
+  else aux 0 0  
 
 
 let rfind ~sub s =
