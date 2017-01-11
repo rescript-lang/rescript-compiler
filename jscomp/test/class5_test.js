@@ -1,11 +1,11 @@
 'use strict';
 
-var Pervasives     = require("../../lib/js/pervasives");
-var Mt             = require("./mt");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Mt             = require("./mt");
 var List           = require("../../lib/js/list");
+var Pervasives     = require("../../lib/js/pervasives");
 
 var shared = [
   "move",

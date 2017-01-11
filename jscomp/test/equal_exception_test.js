@@ -1,10 +1,10 @@
 'use strict';
 
-var Bytes                   = require("../../lib/js/bytes");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Mt                      = require("./mt");
 var Caml_bytes              = require("../../lib/js/caml_bytes");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Bytes                   = require("../../lib/js/bytes");
 
 var v = "gso";
 

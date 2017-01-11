@@ -1,9 +1,9 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Hashtbl                 = require("../../lib/js/hashtbl");
-var Pervasives              = require("../../lib/js/pervasives");
 var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Pervasives              = require("../../lib/js/pervasives");
 
 function Make(funarg) {
   var $$let = funarg[/* V */0];

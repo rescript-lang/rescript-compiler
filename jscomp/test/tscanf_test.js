@@ -1,22 +1,22 @@
 'use strict';
 
+var Printf                  = require("../../lib/js/printf");
+var Block                   = require("../../lib/js/block");
+var Caml_string             = require("../../lib/js/caml_string");
+var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt");
+var $$String                = require("../../lib/js/string");
+var Buffer                  = require("../../lib/js/buffer");
+var Testing                 = require("./testing");
+var Caml_format             = require("../../lib/js/caml_format");
+var Bytes                   = require("../../lib/js/bytes");
 var Caml_int64              = require("../../lib/js/caml_int64");
 var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Bytes                   = require("../../lib/js/bytes");
 var Pervasives              = require("../../lib/js/pervasives");
-var Caml_format             = require("../../lib/js/caml_format");
-var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Testing                 = require("./testing");
-var Mt_global               = require("./mt_global");
-var Curry                   = require("../../lib/js/curry");
-var Scanf                   = require("../../lib/js/scanf");
-var Printf                  = require("../../lib/js/printf");
-var Buffer                  = require("../../lib/js/buffer");
-var $$String                = require("../../lib/js/string");
 var List                    = require("../../lib/js/list");
-var Caml_string             = require("../../lib/js/caml_string");
+var Mt_global               = require("./mt_global");
+var Scanf                   = require("../../lib/js/scanf");
 
 var suites = [/* [] */0];
 

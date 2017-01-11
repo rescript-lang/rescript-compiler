@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt             = require("./mt");
 var Block          = require("../../lib/js/block");
 var Curry          = require("../../lib/js/curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
+var Mt             = require("./mt");
 
 function f(u) {
   return Curry.js2(5740587, 1, u, 32);

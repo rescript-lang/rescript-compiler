@@ -49,15 +49,33 @@ let name  x : string  =
   match (x.kind : J.kind) with 
   | Ml  | Runtime ->  x.id.name
   | External v -> v  
-  
-(* OCaml runtime written in JS *)
-type module_property = bool 
+
+let equal (x : t) y = 
+  match x.kind with 
+  | External x_kind-> 
+    begin match y.kind with 
+      | External y_kind -> 
+        x_kind = (y_kind : string)
+      | _ -> false 
+    end
+  | Ml -> y.kind = Ml && Ext_ident.equal x.id y.id 
+  | Runtime -> 
+    y.kind = Runtime  && Ext_ident.equal x.id y.id
+let hash (x : t) = 
+  match x.kind with 
+  | External x_kind -> Bs_hash_stubs.hash_string x_kind 
+  | Ml | Runtime -> 
+    let x_id = x.id in 
+    Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
 
 module Hash = Hashtbl_make.Make(struct 
     type nonrec t = t 
-    let hash x  = 
-      let x_id = x.id in 
-      Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
-    let equal (x : t) y = 
-      Ext_ident.equal x.id y.id && x.kind = y.kind
+    let hash   = hash
+    let equal  = equal 
   end)
+
+module Hash_set = Hash_set.Make( struct 
+    type nonrec t = t 
+    let hash   = hash
+    let equal  = equal     
+end)

@@ -1,11 +1,11 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Mt                      = require("./mt");
 var Block                   = require("../../lib/js/block");
-var List                    = require("../../lib/js/list");
 var Caml_string             = require("../../lib/js/caml_string");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt");
+var Caml_obj                = require("../../lib/js/caml_obj");
+var List                    = require("../../lib/js/list");
 
 function height(param) {
   if (param) {

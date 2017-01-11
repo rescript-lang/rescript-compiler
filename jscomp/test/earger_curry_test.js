@@ -1,10 +1,10 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Pervasives              = require("../../lib/js/pervasives");
-var Curry                   = require("../../lib/js/curry");
-var Caml_array              = require("../../lib/js/caml_array");
 var $$Array                 = require("../../lib/js/array");
+var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Caml_array              = require("../../lib/js/caml_array");
+var Pervasives              = require("../../lib/js/pervasives");
 
 function map(f, a) {
   var f$1 = Curry.__1(f);

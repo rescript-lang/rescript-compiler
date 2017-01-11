@@ -1,13 +1,13 @@
 'use strict';
 
+var Printf                  = require("../../lib/js/printf");
+var Block                   = require("../../lib/js/block");
+var Curry                   = require("../../lib/js/curry");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Mt_global               = require("./mt_global");
-var Curry                   = require("../../lib/js/curry");
-var Scanf                   = require("../../lib/js/scanf");
-var Printf                  = require("../../lib/js/printf");
 var List                    = require("../../lib/js/list");
+var Mt_global               = require("./mt_global");
+var Scanf                   = require("../../lib/js/scanf");
 
 var suites = [/* [] */0];
 

@@ -29,20 +29,26 @@
 module E = Js_exp_make
 
 
-
+(** 
+  [bind_name] is a hint to the compiler to generate 
+  better names for external module 
+  *)
 let handle_external 
     ({bundle ; bind_name} : Ast_external_attributes.external_module_name)
+    : Ident.t * string 
   =
   match bind_name with 
   | None -> 
     Lam_compile_env.add_js_module bundle , bundle
   | Some bind_name -> 
     Lam_compile_env.add_js_module 
-      ~id:(Ext_ident.create_js_module bind_name) bundle,
+      ~hint_name:bind_name
+      bundle,
     bundle
 
 let handle_external_opt 
-    (module_name : Ast_external_attributes.external_module_name option) = 
+    (module_name : Ast_external_attributes.external_module_name option) 
+    : (Ident.t * string) option = 
   match module_name with 
   | Some module_name -> Some (handle_external module_name) 
   | None -> None 
@@ -196,12 +202,12 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
       end
     | Js_module_as_var module_name -> 
       let (id, name) =  handle_external  module_name  in
-      E.external_var_dot id name None
+      E.external_var_dot id ~external_name:name 
 
     | Js_module_as_fn {external_module_name = module_name; splice} ->
       let fn =
         let (id, name) = handle_external  module_name  in
-        E.external_var_dot id name None           
+        E.external_var_dot id ~external_name:name 
       in           
       let args, eff = assemble_args_splice   call_loc ffi splice arg_types args in 
         (* TODO: fix in rest calling convention *)          
@@ -215,7 +221,7 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
     | Js_module_as_class module_name ->
       let fn =
         let (id,name) = handle_external  module_name in
-        E.external_var_dot id name None in           
+        E.external_var_dot id ~external_name:name  in           
       let args,eff = assemble_args arg_types args in 
         (* TODO: fix in rest calling convention *)   
       add_eff eff        
@@ -245,7 +251,7 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
       let fn =  
         match handle_external_opt module_name with 
         | Some (id,name) ->  
-          E.external_var_dot id name (Some fn)
+          E.external_var_dot id ~external_name:name ~dot:fn
 
         | None -> 
           (** TODO: check, no [@@bs.module], 
@@ -279,7 +285,7 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
         | "null", None -> E.nil 
         | "undefined", None -> E.undefined
         | _, Some(id,mod_name)
-          -> E.external_var_dot id mod_name (Some name)
+          -> E.external_var_dot id ~external_name:mod_name ~dot:name
         | _, None -> 
 
           E.var (Ext_ident.create_js name)
@@ -337,7 +343,8 @@ let translate_ffi call_loc (ffi : Ast_external_attributes.ffi ) prim_name
 let translate loc cxt 
     ({prim_name ;  prim_native_name} 
      : Primitive.description) args  = 
-  if Ast_external_attributes.is_bs_external_prefix prim_native_name then 
+  if Ast_external_attributes.is_bs_external_prefix prim_native_name
+   then 
     begin 
       match Ast_external_attributes.unsafe_from_string prim_native_name with 
       | Normal -> 

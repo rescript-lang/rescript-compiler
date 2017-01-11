@@ -1,21 +1,21 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Bytes                   = require("../../lib/js/bytes");
 var Filename                = require("../../lib/js/filename");
-var CamlinternalLazy        = require("../../lib/js/camlinternalLazy");
-var Caml_sys                = require("../../lib/js/caml_sys");
-var Pervasives              = require("../../lib/js/pervasives");
 var Block                   = require("../../lib/js/block");
-var Ext_string              = require("./ext_string");
-var Sys                     = require("../../lib/js/sys");
-var Curry                   = require("../../lib/js/curry");
-var Ext_pervasives          = require("./ext_pervasives");
-var $$String                = require("../../lib/js/string");
-var Format                  = require("../../lib/js/format");
-var List                    = require("../../lib/js/list");
 var Literals                = require("./literals");
 var Caml_string             = require("../../lib/js/caml_string");
+var Curry                   = require("../../lib/js/curry");
+var Sys                     = require("../../lib/js/sys");
+var Ext_string              = require("./ext_string");
+var Format                  = require("../../lib/js/format");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Ext_pervasives          = require("./ext_pervasives");
+var CamlinternalLazy        = require("../../lib/js/camlinternalLazy");
+var $$String                = require("../../lib/js/string");
+var Caml_sys                = require("../../lib/js/caml_sys");
+var Bytes                   = require("../../lib/js/bytes");
+var Pervasives              = require("../../lib/js/pervasives");
+var List                    = require("../../lib/js/list");
 
 var node_sep = "/";
 

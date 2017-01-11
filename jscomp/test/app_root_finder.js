@@ -1,8 +1,8 @@
 'use strict';
 
+var Fs                      = require("fs");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Path                    = require("path");
-var Fs                      = require("fs");
 
 var package_json = "package.json";
 

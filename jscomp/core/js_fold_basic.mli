@@ -33,4 +33,5 @@
 
 val depends_j : J.expression -> Ident_set.t -> Ident_set.t
 
-val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set_poly.t
+(** TODO: {!Ordered_hash_set} for better ordering *)
+val calculate_hard_dependencies : J.block -> Lam_module_ident.Hash_set.t

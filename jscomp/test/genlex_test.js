@@ -1,9 +1,9 @@
 'use strict';
 
-var Stream = require("../../lib/js/stream");
-var Mt     = require("./mt");
-var Block  = require("../../lib/js/block");
 var Genlex = require("../../lib/js/genlex");
+var Stream = require("../../lib/js/stream");
+var Block  = require("../../lib/js/block");
+var Mt     = require("./mt");
 var List   = require("../../lib/js/list");
 
 var lexer = Genlex.make_lexer(/* :: */[

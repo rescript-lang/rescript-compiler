@@ -71,7 +71,7 @@ val query_and_add_if_not_exist :
   'a t -> not_found:(unit -> 'b) ->
   found:('a -> 'b) -> 'b
 
-val add_js_module : ?id:Ident.t -> string  -> Ident.t 
+val add_js_module : ?hint_name:string -> string  -> Ident.t 
 (** add third party dependency *)
 
 (* The other dependencies are captured by querying 
@@ -90,7 +90,7 @@ val add_js_module : ?id:Ident.t -> string  -> Ident.t
 
 val reset : unit -> unit 
 
-val is_pure : Lam_module_ident.t -> bool
+val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.system -> Lam_module_ident.t -> 
@@ -103,5 +103,5 @@ val get_package_path_from_cmj :
 val get_requried_modules : 
   Env.t ->
   Lam_module_ident.t list ->
-  Lam_module_ident.t Hash_set_poly.t -> 
+  Lam_module_ident.Hash_set.t -> 
   Lam_module_ident.t list

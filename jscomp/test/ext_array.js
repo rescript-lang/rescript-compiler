@@ -1,9 +1,9 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Curry                   = require("../../lib/js/curry");
-var Caml_array              = require("../../lib/js/caml_array");
 var $$Array                 = require("../../lib/js/array");
+var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Caml_array              = require("../../lib/js/caml_array");
 var List                    = require("../../lib/js/list");
 
 function reverse_range(a, i, len) {

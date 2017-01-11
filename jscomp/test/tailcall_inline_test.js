@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt         = require("./mt");
 var Block      = require("../../lib/js/block");
-var Caml_array = require("../../lib/js/caml_array");
 var $$Array    = require("../../lib/js/array");
+var Mt         = require("./mt");
+var Caml_array = require("../../lib/js/caml_array");
 
 function f() {
   var f$1 = function (_acc, _n) {

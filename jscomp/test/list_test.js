@@ -1,10 +1,10 @@
 'use strict';
 
-var Caml_obj = require("../../lib/js/caml_obj");
-var Mt       = require("./mt");
 var Block    = require("../../lib/js/block");
 var $$Array  = require("../../lib/js/array");
+var Mt       = require("./mt");
 var List     = require("../../lib/js/list");
+var Caml_obj = require("../../lib/js/caml_obj");
 
 var list_suites_000 = /* tuple */[
   "length",

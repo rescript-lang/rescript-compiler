@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt                  = require("./mt");
-var Block               = require("../../lib/js/block");
 var Test_google_closure = require("./test_google_closure");
+var Block               = require("../../lib/js/block");
+var Mt                  = require("./mt");
 
 Mt.from_pair_suites("Closure", /* :: */[
       /* tuple */[

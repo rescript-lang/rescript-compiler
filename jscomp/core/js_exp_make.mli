@@ -79,7 +79,7 @@ val runtime_var_vid : string -> string -> J.vident
 
 val ml_var_dot : ?comment:string -> Ident.t -> string -> t
 
-val external_var_dot : ?comment:string -> Ident.t -> string -> string option -> t
+val external_var_dot : ?comment:string ->  external_name:string -> ?dot:string -> Ident.t -> t
 
 
 

@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt         = require("./mt");
+var $$Array    = require("../../lib/js/array");
 var Block      = require("../../lib/js/block");
 var Curry      = require("../../lib/js/curry");
+var Mt         = require("./mt");
 var Caml_array = require("../../lib/js/caml_array");
-var $$Array    = require("../../lib/js/array");
 
 function test() {
   var v = [0];

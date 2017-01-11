@@ -1,12 +1,12 @@
 'use strict';
 
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Mt                      = require("./mt");
 var Block                   = require("../../lib/js/block");
 var Curry                   = require("../../lib/js/curry");
 var CamlinternalOO          = require("../../lib/js/camlinternalOO");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Caml_obj                = require("../../lib/js/caml_obj");
 
 var shared = [
   "move",

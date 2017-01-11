@@ -1,12 +1,12 @@
 'use strict';
 
+var Block                   = require("../../lib/js/block");
+var Caml_module             = require("../../lib/js/caml_module");
+var Caml_string             = require("../../lib/js/caml_string");
+var Curry                   = require("../../lib/js/curry");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Caml_module             = require("../../lib/js/caml_module");
 var List                    = require("../../lib/js/list");
-var Caml_string             = require("../../lib/js/caml_string");
 
 var A = Caml_module.init_mod([
       "rec_module_test.ml",

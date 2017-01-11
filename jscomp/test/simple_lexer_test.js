@@ -1,12 +1,12 @@
 'use strict';
 
-var Bytes       = require("../../lib/js/bytes");
-var Mt          = require("./mt");
-var Lexing      = require("../../lib/js/lexing");
 var Block       = require("../../lib/js/block");
-var Curry       = require("../../lib/js/curry");
 var Caml_bytes  = require("../../lib/js/caml_bytes");
 var Caml_string = require("../../lib/js/caml_string");
+var Curry       = require("../../lib/js/curry");
+var Mt          = require("./mt");
+var Lexing      = require("../../lib/js/lexing");
+var Bytes       = require("../../lib/js/bytes");
 
 var __ocaml_lex_tables = /* record */[
   /* lex_base */"\0\0\xfd\xff\xfe\xff\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\x01\0\x04\0\x03\0\0\0\x06\0\0\0\xff\xff",

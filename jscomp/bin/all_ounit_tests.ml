@@ -1676,6 +1676,8 @@ val find : ?start:int -> sub:string -> string -> int
 
 val contain_substring : string -> string -> bool 
 
+val non_overlap_count : sub:string -> string -> int 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string
@@ -1905,9 +1907,10 @@ let unsafe_is_sub ~sub i s j ~len =
 exception Local_exit 
 let find ?(start=0) ~sub s =
   let n = String.length sub in
+  let s_len = String.length s in 
   let i = ref start in  
   try
-    while !i + n <= String.length s do
+    while !i + n <= s_len do
       if unsafe_is_sub ~sub 0 s !i ~len:n then
         raise_notrace Local_exit;
       incr i
@@ -1918,6 +1921,18 @@ let find ?(start=0) ~sub s =
 
 let contain_substring s sub = 
   find s ~sub >= 0 
+
+(** TODO: optimize 
+  avoid nonterminating when string is empty 
+*)
+let non_overlap_count ~sub s = 
+  let sub_len = String.length sub in 
+  let rec aux  acc off = 
+    let i = find ~start:off ~sub s  in 
+    if i < 0 then acc 
+    else aux (acc + 1) (i + sub_len) in
+ if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
+  else aux 0 0  
 
 
 let rfind ~sub s =
@@ -3473,8 +3488,8 @@ let (//) = Filename.concat
 
 (** may nonterminate when [cwd] is '.' *)
 let rec unsafe_root_dir_aux cwd  = 
-    if Sys.file_exists (cwd//Literals.bsconfig_json) then cwd 
-    else unsafe_root_dir_aux (Filename.dirname cwd)     
+  if Sys.file_exists (cwd//Literals.bsconfig_json) then cwd 
+  else unsafe_root_dir_aux (Filename.dirname cwd)     
 
 let project_root = unsafe_root_dir_aux (Sys.getcwd ())
 let jscomp = project_root // "jscomp"
@@ -3487,7 +3502,7 @@ let stdlib_dir = jscomp // "stdlib"
 
 
 let ((>::),
-    (>:::)) = OUnit.((>::),(>:::))
+     (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) = OUnit.assert_equal
 
@@ -3508,111 +3523,162 @@ let safe_close fd =
 
 
 type output = {
-    stderr : string ; 
-    stdout : string ;
-    exit_code : int 
+  stderr : string ; 
+  stdout : string ;
+  exit_code : int 
 }
 
 let perform command args = 
-    let new_fd_in, new_fd_out = Unix.pipe () in 
-    let err_fd_in, err_fd_out = Unix.pipe () in 
-    match Unix.fork () with 
-    | 0 -> 
-        begin try 
-            safe_close new_fd_in;  
-            safe_close err_fd_in;
-            Unix.dup2 err_fd_out Unix.stderr ; 
-            Unix.dup2 new_fd_out Unix.stdout; 
-            Unix.execv command args 
-        with _ -> 
-            exit 127
-        end
-    | pid ->
-        (* when all the descriptors on a pipe's input are closed and the pipe is 
-            empty, a call to [read] on its output returns zero: end of file.
-           when all the descriptiors on a pipe's output are closed, a call to 
-           [write] on its input kills the writing process (EPIPE).
-        *)
-        safe_close new_fd_out ; 
-        safe_close err_fd_out ; 
-        let in_chan = Unix.in_channel_of_descr new_fd_in in 
-        let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
-        let buf = Buffer.create 1024 in 
-        let err_buf = Buffer.create 1024 in 
-        (try 
-            while true do 
-                Buffer.add_string buf (input_line in_chan );             
-                Buffer.add_char buf '\n'
-            done;
-        with
-        End_of_file -> ()) ; 
-        (try 
-            while true do 
-                Buffer.add_string err_buf (input_line err_in_chan );
-                Buffer.add_char err_buf '\n'
-            done;
-        with
-        End_of_file -> ()) ; 
-        let exit_code = match snd @@ Unix.waitpid [] pid with 
-        | Unix.WEXITED exit_code -> exit_code 
-        | Unix.WSIGNALED _signal_number 
-        | Unix.WSTOPPED _signal_number  -> 127 in 
-            {
-                stdout = Buffer.contents buf ; 
-                stderr = Buffer.contents err_buf;
-                exit_code 
-            }
+  let new_fd_in, new_fd_out = Unix.pipe () in 
+  let err_fd_in, err_fd_out = Unix.pipe () in 
+  match Unix.fork () with 
+  | 0 -> 
+    begin try 
+        safe_close new_fd_in;  
+        safe_close err_fd_in;
+        Unix.dup2 err_fd_out Unix.stderr ; 
+        Unix.dup2 new_fd_out Unix.stdout; 
+        Unix.execv command args 
+      with _ -> 
+        exit 127
+    end
+  | pid ->
+    (* when all the descriptors on a pipe's input are closed and the pipe is 
+        empty, a call to [read] on its output returns zero: end of file.
+       when all the descriptiors on a pipe's output are closed, a call to 
+       [write] on its input kills the writing process (EPIPE).
+    *)
+    safe_close new_fd_out ; 
+    safe_close err_fd_out ; 
+    let in_chan = Unix.in_channel_of_descr new_fd_in in 
+    let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
+    let buf = Buffer.create 1024 in 
+    let err_buf = Buffer.create 1024 in 
+    (try 
+       while true do 
+         Buffer.add_string buf (input_line in_chan );             
+         Buffer.add_char buf '\n'
+       done;
+     with
+       End_of_file -> ()) ; 
+    (try 
+       while true do 
+         Buffer.add_string err_buf (input_line err_in_chan );
+         Buffer.add_char err_buf '\n'
+       done;
+     with
+       End_of_file -> ()) ; 
+    let exit_code = match snd @@ Unix.waitpid [] pid with 
+      | Unix.WEXITED exit_code -> exit_code 
+      | Unix.WSIGNALED _signal_number 
+      | Unix.WSTOPPED _signal_number  -> 127 in 
+    {
+      stdout = Buffer.contents buf ; 
+      stderr = Buffer.contents err_buf;
+      exit_code 
+    }
 
 
 let perform_bsc args = 
-    perform bsc_exe 
-        (Array.append 
-        [|bsc_exe ; 
-            "-bs-package-name" ; "bs-platform"; 
-            "-bs-no-version-header"; 
-            "-bs-cross-module-opt";
-            "-w";
-            "-40";
-            "-I" ;
-            runtime_dir ; 
-            "-I"; 
-            others_dir ; 
-            "-I" ; 
-            stdlib_dir
-        |] args)
+  perform bsc_exe 
+    (Array.append 
+       [|bsc_exe ; 
+         "-bs-package-name" ; "bs-platform"; 
+         "-bs-no-version-header"; 
+         "-bs-cross-module-opt";
+         "-w";
+         "-40";
+         "-I" ;
+         runtime_dir ; 
+         "-I"; 
+         others_dir ; 
+         "-I" ; 
+         stdlib_dir
+       |] args)
+
+let bsc_eval str = 
+  perform_bsc [|"-bs-eval"; str|]        
+
 (* let output_of_exec_command command args =
     let readme, writeme = Unix.pipe () in 
     let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in 
     let in_chan = Unix.in_channel_of_descr readme *)
 
 let debug_output o = 
-    Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
-        o.exit_code o.stdout o.stderr
+  Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
+    o.exit_code o.stdout o.stderr
+
+let react = {|
+type u 
+
+external a : u = "react" [@@bs.module]
+
+external b : unit -> int = "bool" [@@bs.module "react"]
+
+let v = a
+let h = b ()
+
+|}        
+let foo_react = {|
+type bla
+
+
+external foo : bla = "foo.react" [@@bs.module]
+
+external bar : unit -> bla  = "bar" [@@bs.val] [@@bs.module "foo.react"]
+
+let c = foo 
+
+let d = bar ()
+
+|}
+
 
 let suites = 
-    __FILE__
-    >::: [
-        __LOC__ >:: begin fun _ -> 
-            let v_output = perform_bsc  [| "-v" |] in 
-            OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
-            OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
-            (* Printf.printf "\n*>%s" v_output.stdout; *)
-            (* Printf.printf "\n*>%s" v_output.stderr ; *)
-        end; 
-        __LOC__ >:: begin fun _ -> 
-            let simple_quote = 
-                    perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
-            OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
-        end;
-        __LOC__ >:: begin fun _ -> 
-            let should_be_warning = 
-                perform_bsc [|"-bs-eval"; {|let bla4 foo x y= foo##(method1 x y [@bs]) |}|] in 
-            (* debug_output should_be_warning; *)
-            OUnit.assert_bool __LOC__ (Ext_string.contain_substring
-             should_be_warning.stderr Literals.unused_attribute)
+  __FILE__
+  >::: [
+    __LOC__ >:: begin fun _ -> 
+      let v_output = perform_bsc  [| "-v" |] in 
+      OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
+      OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
+      (* Printf.printf "\n*>%s" v_output.stdout; *)
+      (* Printf.printf "\n*>%s" v_output.stderr ; *)
+    end; 
+    __LOC__ >:: begin fun _ -> 
+      let simple_quote = 
+        perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
+      OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let should_be_warning = 
+        bsc_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in 
+      (* debug_output should_be_warning; *)
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring
+                                   should_be_warning.stderr Literals.unused_attribute)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let dedupe_require = 
+        bsc_eval (react ^ foo_react) in 
+      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
+                                   dedupe_require.stdout ~sub:"require" = 2
+                                )     
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let dedupe_require = 
+        bsc_eval react in 
+      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
+                                   dedupe_require.stdout ~sub:"require" = 1
+                                )     
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let dedupe_require = 
+        bsc_eval foo_react in 
+      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
+                                   dedupe_require.stdout ~sub:"require" = 1
+                                )     
+    end
 
-        end
-    ]
+  ]
 
 
 end
@@ -4981,6 +5047,14 @@ module type S = sig
   val find_exn: 'a t -> key -> 'a
   val find_all: 'a t -> key -> 'a list
   val find_opt: 'a t -> key  -> 'a option
+  
+  (** return the key found in the hashtbl.
+    Use case: when you find the key existed in hashtbl, 
+    you want to use the one stored in the hashtbl. 
+    (they are semantically equivlanent, but may have other information different) 
+   *)
+  val find_key_opt: 'a t -> key -> key option 
+
   val find_default: 'a t -> key -> 'a -> 'a 
 
   val replace: 'a t -> key -> 'a -> unit
@@ -5124,6 +5198,23 @@ let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
             if eq key k3  then Some d3 else 
               small_bucket_opt eq key rest3 
 
+
+let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
+  match lst with 
+  | Empty -> None 
+  | Cons(k1,d1,rest1) -> 
+    if eq  key k1 then Some k1 else 
+      match rest1 with
+      | Empty -> None 
+      | Cons(k2,d2,rest2) -> 
+        if eq key k2 then Some k2 else 
+          match rest2 with 
+          | Empty -> None 
+          | Cons(k3,d3,rest3) -> 
+            if eq key k3  then Some k3 else 
+              small_bucket_key_opt eq key rest3
+
+
 let rec small_bucket_default eq key default (lst : _ bucketlist) =
   match lst with 
   | Empty -> default 
@@ -5258,6 +5349,10 @@ let find_exn (h : _ t) key =
 
 let find_opt (h : _ t) key =
   Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
 let find_default (h : _ t) key default = 
   Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
 let find_all (h : _ t) key =
@@ -11347,6 +11442,12 @@ let suites =
       Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
+    end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_string.non_overlap_count ~sub:"0" "1000,000" =~ 6;
+      Ext_string.non_overlap_count ~sub:"0" "000000" =~ 6;
+      Ext_string.non_overlap_count ~sub:"00" "000000" =~ 3;
+      Ext_string.non_overlap_count ~sub:"00" "00000" =~ 2
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");

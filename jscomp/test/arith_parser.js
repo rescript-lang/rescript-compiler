@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Block                   = require("../../lib/js/block");
 var Parsing                 = require("../../lib/js/parsing");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var yytransl_const = /* array */[
   259,

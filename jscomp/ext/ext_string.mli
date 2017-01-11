@@ -83,6 +83,8 @@ val find : ?start:int -> sub:string -> string -> int
 
 val contain_substring : string -> string -> bool 
 
+val non_overlap_count : sub:string -> string -> int 
+
 val rfind : sub:string -> string -> int
 
 val tail_from : string -> int -> string

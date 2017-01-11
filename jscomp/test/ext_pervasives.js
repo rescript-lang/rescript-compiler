@@ -1,20 +1,20 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Obj                     = require("../../lib/js/obj");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Printf                  = require("../../lib/js/printf");
 var Caml_int32              = require("../../lib/js/caml_int32");
 var Arg                     = require("../../lib/js/arg");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var Printf                  = require("../../lib/js/printf");
 var $$Array                 = require("../../lib/js/array");
-var $$String                = require("../../lib/js/string");
-var Format                  = require("../../lib/js/format");
-var List                    = require("../../lib/js/list");
+var Block                   = require("../../lib/js/block");
 var Caml_string             = require("../../lib/js/caml_string");
+var Curry                   = require("../../lib/js/curry");
+var Obj                     = require("../../lib/js/obj");
+var Format                  = require("../../lib/js/format");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var $$String                = require("../../lib/js/string");
+var Pervasives              = require("../../lib/js/pervasives");
+var Caml_obj                = require("../../lib/js/caml_obj");
+var List                    = require("../../lib/js/list");
 
 function $$finally(v, action, f) {
   var exit = 0;

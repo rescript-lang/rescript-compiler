@@ -1,11 +1,11 @@
 'use strict';
 
+var Block                   = require("../../lib/js/block");
+var $$Array                 = require("../../lib/js/array");
+var Curry                   = require("../../lib/js/curry");
+var Format                  = require("../../lib/js/format");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Caml_obj                = require("../../lib/js/caml_obj");
-var Block                   = require("../../lib/js/block");
-var Curry                   = require("../../lib/js/curry");
-var $$Array                 = require("../../lib/js/array");
-var Format                  = require("../../lib/js/format");
 
 function sub(_tr, _k) {
   while(true) {

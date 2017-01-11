@@ -1,7 +1,7 @@
 'use strict';
 
-var Bytes       = require("../../lib/js/bytes");
 var Caml_string = require("../../lib/js/caml_string");
+var Bytes       = require("../../lib/js/bytes");
 
 function escaped(s) {
   var n = 0;

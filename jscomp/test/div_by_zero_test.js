@@ -1,9 +1,9 @@
 'use strict';
 
-var Caml_int64 = require("../../lib/js/caml_int64");
-var Mt         = require("./mt");
 var Caml_int32 = require("../../lib/js/caml_int32");
 var Block      = require("../../lib/js/block");
+var Mt         = require("./mt");
+var Caml_int64 = require("../../lib/js/caml_int64");
 
 var suites = [/* [] */0];
 

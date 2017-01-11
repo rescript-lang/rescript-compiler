@@ -1,8 +1,8 @@
 'use strict';
 
 var Caml_int32 = require("../../lib/js/caml_int32");
-var Curry      = require("../../lib/js/curry");
 var $$Array    = require("../../lib/js/array");
+var Curry      = require("../../lib/js/curry");
 
 function for_(x) {
   for(var i = 0 ,i_finish = (console.log("hi"), x.length); i <= i_finish; ++i){

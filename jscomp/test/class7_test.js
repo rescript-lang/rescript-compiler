@@ -1,12 +1,12 @@
 'use strict';
 
-var Caml_obj        = require("../../lib/js/caml_obj");
-var Caml_exceptions = require("../../lib/js/caml_exceptions");
-var Mt              = require("./mt");
 var Block           = require("../../lib/js/block");
 var Curry           = require("../../lib/js/curry");
 var CamlinternalOO  = require("../../lib/js/camlinternalOO");
 var Oo              = require("../../lib/js/oo");
+var Mt              = require("./mt");
+var Caml_exceptions = require("../../lib/js/caml_exceptions");
+var Caml_obj        = require("../../lib/js/caml_obj");
 
 var shared = ["copy"];
 

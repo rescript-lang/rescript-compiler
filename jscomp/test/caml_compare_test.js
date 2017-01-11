@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_obj = require("../../lib/js/caml_obj");
-var Mt       = require("./mt");
 var Block    = require("../../lib/js/block");
+var Mt       = require("./mt");
+var Caml_obj = require("../../lib/js/caml_obj");
 
 var suites_000 = /* tuple */[
   "option",

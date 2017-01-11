@@ -1,10 +1,10 @@
 'use strict';
 
 var Caml_int32 = require("../../lib/js/caml_int32");
+var $$Array    = require("../../lib/js/array");
 var Block      = require("../../lib/js/block");
 var Curry      = require("../../lib/js/curry");
 var Caml_array = require("../../lib/js/caml_array");
-var $$Array    = require("../../lib/js/array");
 var List       = require("../../lib/js/list");
 
 function for_3(x) {

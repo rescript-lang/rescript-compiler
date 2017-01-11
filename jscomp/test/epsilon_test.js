@@ -1,8 +1,8 @@
 'use strict';
 
-var Pervasives = require("../../lib/js/pervasives");
-var Mt         = require("./mt");
 var Block      = require("../../lib/js/block");
+var Mt         = require("./mt");
+var Pervasives = require("../../lib/js/pervasives");
 
 var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 

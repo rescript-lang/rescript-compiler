@@ -79,17 +79,15 @@ let runtime_var_vid  x  e1 : J.vident =
 let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =     
   {expression_desc = Var (Qualified(id, Ml, Some e)); comment }
 
-let external_var_dot ?comment (id : Ident.t) name fn : t = 
-  {expression_desc = Var (Qualified(id, External name,  fn)); comment }
-
 (** 
   module as a value 
    {[
      var http = require("http")
    ]}
 *)
-let external_module_as_var ?comment (id : Ident.t) name : t = 
-  {expression_desc = Var (Qualified(id, External name, None)); comment }
+let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t = 
+  {expression_desc = Var (Qualified(id, External name,  dot)); comment }
+
 
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}

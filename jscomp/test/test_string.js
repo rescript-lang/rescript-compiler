@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Caml_bytes              = require("../../lib/js/caml_bytes");
 var Caml_string             = require("../../lib/js/caml_string");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function f(param) {
   switch (param) {

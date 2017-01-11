@@ -1,10 +1,10 @@
 'use strict';
 
-var Caml_obj   = require("../../lib/js/caml_obj");
-var Mt         = require("./mt");
 var Block      = require("../../lib/js/block");
-var Caml_array = require("../../lib/js/caml_array");
 var $$Array    = require("../../lib/js/array");
+var Mt         = require("./mt");
+var Caml_array = require("../../lib/js/caml_array");
+var Caml_obj   = require("../../lib/js/caml_obj");
 var List       = require("../../lib/js/list");
 
 function is_sorted(x) {
