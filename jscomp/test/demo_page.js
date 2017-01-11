@@ -1,8 +1,8 @@
 'use strict';
 
+var ReactDom = require("react-dom");
 var Curry    = require("../../lib/js/curry");
 var React    = require("react");
-var ReactDom = require("react-dom");
 
 function fib(n) {
   if (n === 2 || n === 1) {

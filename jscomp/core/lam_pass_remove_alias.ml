@@ -261,8 +261,8 @@ let simplify_alias
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
 
     | Lsequence (Lprim {primitive = Pgetglobal (id); args = []}, l2)
-      when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) 
-      -> simpl l2
+      when Lam_compile_env.is_pure_module (Lam_module_ident.of_ml id) 
+      -> simpl l2 (** TODO: apply in the beginning *)
     | Lsequence(l1, l2)
       -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile(l1, l2)

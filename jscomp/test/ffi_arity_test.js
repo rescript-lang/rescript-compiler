@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt         = require("./mt");
 var Caml_int32 = require("../../lib/js/caml_int32");
 var Block      = require("../../lib/js/block");
 var Curry      = require("../../lib/js/curry");
+var Mt         = require("./mt");
 
 function f(v) {
   if (v % 2) {

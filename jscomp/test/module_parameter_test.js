@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt");
 var Block    = require("../../lib/js/block");
+var Mt       = require("./mt");
 var $$String = require("../../lib/js/string");
 
 function u(v) {

@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
 var Block = require("../../lib/js/block");
+var Mt    = require("./mt");
 
 var a = /* float array */[
   0,

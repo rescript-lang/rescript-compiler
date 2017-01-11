@@ -1,7 +1,7 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var List                    = require("../../lib/js/list");
 
 function Make(Ord) {

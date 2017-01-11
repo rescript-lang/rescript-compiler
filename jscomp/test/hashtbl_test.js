@@ -1,13 +1,13 @@
 'use strict';
 
-var Caml_obj   = require("../../lib/js/caml_obj");
-var Hashtbl    = require("../../lib/js/hashtbl");
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var MoreLabels = require("../../lib/js/moreLabels");
-var Curry      = require("../../lib/js/curry");
 var $$Array    = require("../../lib/js/array");
+var Block      = require("../../lib/js/block");
+var Hashtbl    = require("../../lib/js/hashtbl");
+var Curry      = require("../../lib/js/curry");
+var Mt         = require("./mt");
 var List       = require("../../lib/js/list");
+var Caml_obj   = require("../../lib/js/caml_obj");
+var MoreLabels = require("../../lib/js/moreLabels");
 
 function to_list(tbl) {
   return Hashtbl.fold(function (k, v, acc) {

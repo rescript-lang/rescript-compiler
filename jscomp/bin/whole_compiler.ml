@@ -63728,145 +63728,6 @@ let find_cmj file =
 
 
 end
-module Hash_set_poly : sig 
-#1 "hash_set_poly.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type   'a t 
-
-val create : int -> 'a t
-
-val clear : 'a t -> unit
-
-val reset : 'a t -> unit
-
-val copy : 'a t -> 'a t
-
-val add : 'a t -> 'a  -> unit
-val remove : 'a t -> 'a -> unit
-
-val mem : 'a t -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a t -> unit
-
-val elements : 'a t -> 'a list
-
-val length : 'a t -> int 
-
-val stats:  'a t -> Hashtbl.statistics
-
-end = struct
-#1 "hash_set_poly.ml"
-# 1 "ext/hash_set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 51
-external seeded_hash_param :
-  int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
-let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
-  seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
-let eq_key = (=)
-type  'a t = 'a Hash_set_gen.t 
-
-
-# 62
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
-let elements = Hash_set_gen.elements
-
-
-
-let remove (h : _ Hash_set_gen.t) key =  
-  let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
-
-
-
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
-
-let check_add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
-
-
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
-
-  
-
-end
 module Js_call_info : sig 
 #1 "js_call_info.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -79281,7 +79142,7 @@ val query_and_add_if_not_exist :
   'a t -> not_found:(unit -> 'b) ->
   found:('a -> 'b) -> 'b
 
-val add_js_module : ?id:Ident.t -> string  -> Ident.t 
+val add_js_module : ?hint_name:string -> string  -> Ident.t 
 (** add third party dependency *)
 
 (* The other dependencies are captured by querying 
@@ -79300,7 +79161,7 @@ val add_js_module : ?id:Ident.t -> string  -> Ident.t
 
 val reset : unit -> unit 
 
-val is_pure : Lam_module_ident.t -> bool
+val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.system -> Lam_module_ident.t -> 
@@ -79313,7 +79174,7 @@ val get_package_path_from_cmj :
 val get_requried_modules : 
   Env.t ->
   Lam_module_ident.t list ->
-  Lam_module_ident.t Hash_set_poly.t -> 
+  Lam_module_ident.Hash_set.t -> 
   Lam_module_ident.t list
 
 end = struct
@@ -79402,13 +79263,17 @@ let reset () =
   Translmod.reset ();
   Lam_module_ident.Hash.clear cached_tbl 
 
-(* FIXME: JS external instead *)
-let add_js_module ?id module_name : Ident.t 
+(** 
+  Any [id] put in the [cached_tbl] should be always valid,
+  since it is already used in the code gen, 
+  the older will have higher precedence
+*)
+let add_js_module ?hint_name module_name : Ident.t 
   = 
   let id = 
-    match id with
+    match hint_name with
     | None -> Ext_ident.create_js_module module_name 
-    | Some id -> id in
+    | Some hint_name -> Ext_ident.create_js_module hint_name in
    let lam_module_ident = 
      Lam_module_ident.of_external id module_name in  
    match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
@@ -79553,7 +79418,7 @@ let query_and_add_if_not_exist (type u)
     end
 
 (* Conservative interface *)
-let is_pure id  = 
+let is_pure_module id  = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> false) 
     ~found:(fun x -> x.effect = None)
@@ -79572,19 +79437,15 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
 let get_requried_modules env
     (extras : module_id list ) 
     (hard_dependencies 
-     : _ Hash_set_poly.t) : module_id list =  
-
-  let mem (x : Lam_module_ident.t) = 
-    not (is_pure x ) || Hash_set_poly.mem hard_dependencies  x 
-  in
+     : Lam_module_ident.Hash_set.t) : module_id list =  
   Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
-      if mem id 
-      then Hash_set_poly.add hard_dependencies id) cached_tbl ;
+      if not @@ is_pure_module id 
+      then Lam_module_ident.Hash_set.add hard_dependencies id) cached_tbl ;
   List.iter (fun id -> 
-      if mem id 
-      then Hash_set_poly.add hard_dependencies id
+      if not @@ is_pure_module  id 
+      then Lam_module_ident.Hash_set.add hard_dependencies id
     ) extras;
-  Hash_set_poly.elements hard_dependencies
+  Lam_module_ident.Hash_set.elements hard_dependencies
 
 end
 module Ext_pp : sig 
@@ -82467,7 +82328,8 @@ module Js_fold_basic : sig
 
 val depends_j : J.expression -> Ident_set.t -> Ident_set.t
 
-val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set_poly.t
+(** TODO: {!Ordered_hash_set} for better ordering *)
+val calculate_hard_dependencies : J.block -> Lam_module_ident.Hash_set.t
 
 end = struct
 #1 "js_fold_basic.ml"
@@ -82527,21 +82389,23 @@ class count_deps (add : Ident.t -> unit )  =
     method! ident x = add x ; self
   end
 
+let add_lam_module_ident = Lam_module_ident.Hash_set.add
+let create = Lam_module_ident.Hash_set.create
 class count_hard_dependencies = 
   object(self)
     inherit  Js_fold.fold as super
-    val hard_dependencies = Hash_set_poly.create 17
+    val hard_dependencies =  create 17
     method! vident vid = 
       match vid with 
       | Qualified (id,kind,_) ->
-          Hash_set_poly.add  hard_dependencies (Lam_module_ident.mk kind id); self
+          add_lam_module_ident  hard_dependencies (Lam_module_ident.mk kind id); self
       | Id id -> self
     method! expression x = 
       match  x with
       | {expression_desc = Call (_,_, {arity = NA}); _}
         (* see [Js_exp_make.runtime_var_dot] *)
         -> 
-        Hash_set_poly.add hard_dependencies 
+        add_lam_module_ident hard_dependencies 
           (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
@@ -82554,7 +82418,7 @@ class count_hard_dependencies =
             -> ()
           | _, _
             -> 
-            Hash_set_poly.add hard_dependencies 
+            add_lam_module_ident hard_dependencies 
               (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.block));
         end;
         super#expression x 
@@ -91398,7 +91262,10 @@ end = struct
 module E = Js_exp_make
 
 
-
+(** 
+  [bind_name] is a hint to the compiler to generate 
+  better names for external module 
+  *)
 let handle_external 
     ({bundle ; bind_name} : Ast_external_attributes.external_module_name)
     : Ident.t * string 
@@ -91408,7 +91275,8 @@ let handle_external
     Lam_compile_env.add_js_module bundle , bundle
   | Some bind_name -> 
     Lam_compile_env.add_js_module 
-      ~id:(Ext_ident.create_js_module bind_name) bundle,
+      ~hint_name:bind_name
+      bundle,
     bundle
 
 let handle_external_opt 
@@ -96928,8 +96796,8 @@ let simplify_alias
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
 
     | Lsequence (Lprim {primitive = Pgetglobal (id); args = []}, l2)
-      when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) 
-      -> simpl l2
+      when Lam_compile_env.is_pure_module (Lam_module_ident.of_ml id) 
+      -> simpl l2 (** TODO: apply in the beginning *)
     | Lsequence(l1, l2)
       -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile(l1, l2)

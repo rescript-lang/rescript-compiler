@@ -1,9 +1,9 @@
 'use strict';
 
-var Pervasives = require("../../lib/js/pervasives");
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
 var Int32      = require("../../lib/js/int32");
+var Block      = require("../../lib/js/block");
+var Mt         = require("./mt");
+var Pervasives = require("../../lib/js/pervasives");
 
 var suites = [/* [] */0];
 

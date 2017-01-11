@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt");
 var Block = require("../../lib/js/block");
+var Mt    = require("./mt");
 
 var keys = ( function (x){return Object.keys(x)});
 

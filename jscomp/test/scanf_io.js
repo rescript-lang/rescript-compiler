@@ -1,18 +1,18 @@
 'use strict';
 
-var Caml_io                 = require("../../lib/js/caml_io");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Bytes                   = require("../../lib/js/bytes");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Pervasives              = require("../../lib/js/pervasives");
-var Block                   = require("../../lib/js/block");
-var Digest                  = require("../../lib/js/digest");
-var Curry                   = require("../../lib/js/curry");
 var Printf                  = require("../../lib/js/printf");
-var Scanf                   = require("../../lib/js/scanf");
-var Buffer                  = require("../../lib/js/buffer");
-var List                    = require("../../lib/js/list");
+var Block                   = require("../../lib/js/block");
 var Caml_string             = require("../../lib/js/caml_string");
+var Curry                   = require("../../lib/js/curry");
+var Caml_io                 = require("../../lib/js/caml_io");
+var Digest                  = require("../../lib/js/digest");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Buffer                  = require("../../lib/js/buffer");
+var Bytes                   = require("../../lib/js/bytes");
+var List                    = require("../../lib/js/list");
+var Pervasives              = require("../../lib/js/pervasives");
+var Caml_obj                = require("../../lib/js/caml_obj");
+var Scanf                   = require("../../lib/js/scanf");
 
 var tscanf_data_file = "tscanf_data";
 

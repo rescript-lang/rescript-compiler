@@ -1,7 +1,7 @@
 'use strict';
 
-var A   = require("react");
 var Foo = require("foo.react");
+var A   = require("react");
 
 var v = A;
 

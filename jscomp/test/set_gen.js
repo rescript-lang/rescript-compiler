@@ -1,9 +1,9 @@
 'use strict';
 
+var Curry                   = require("../../lib/js/curry");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
 var Pervasives              = require("../../lib/js/pervasives");
-var Curry                   = require("../../lib/js/curry");
 var List                    = require("../../lib/js/list");
 
 function cons_enum(_s, _e) {

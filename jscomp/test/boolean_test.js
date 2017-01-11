@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt              = require("./mt");
 var Test_bool_equal = require("./test_bool_equal");
+var Mt              = require("./mt");
 
 Mt.from_suites("boolean", /* :: */[
       /* tuple */[

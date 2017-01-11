@@ -54,21 +54,23 @@ class count_deps (add : Ident.t -> unit )  =
     method! ident x = add x ; self
   end
 
+let add_lam_module_ident = Lam_module_ident.Hash_set.add
+let create = Lam_module_ident.Hash_set.create
 class count_hard_dependencies = 
   object(self)
     inherit  Js_fold.fold as super
-    val hard_dependencies = Hash_set_poly.create 17
+    val hard_dependencies =  create 17
     method! vident vid = 
       match vid with 
       | Qualified (id,kind,_) ->
-          Hash_set_poly.add  hard_dependencies (Lam_module_ident.mk kind id); self
+          add_lam_module_ident  hard_dependencies (Lam_module_ident.mk kind id); self
       | Id id -> self
     method! expression x = 
       match  x with
       | {expression_desc = Call (_,_, {arity = NA}); _}
         (* see [Js_exp_make.runtime_var_dot] *)
         -> 
-        Hash_set_poly.add hard_dependencies 
+        add_lam_module_ident hard_dependencies 
           (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
@@ -81,7 +83,7 @@ class count_hard_dependencies =
             -> ()
           | _, _
             -> 
-            Hash_set_poly.add hard_dependencies 
+            add_lam_module_ident hard_dependencies 
               (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.block));
         end;
         super#expression x 

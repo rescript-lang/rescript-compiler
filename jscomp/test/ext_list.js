@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Curry                   = require("../../lib/js/curry");
 var $$Array                 = require("../../lib/js/array");
+var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var List                    = require("../../lib/js/list");
 
 function filter_map(f, _xs) {

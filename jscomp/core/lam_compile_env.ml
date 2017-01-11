@@ -82,13 +82,17 @@ let reset () =
   Translmod.reset ();
   Lam_module_ident.Hash.clear cached_tbl 
 
-(* FIXME: JS external instead *)
-let add_js_module ?id module_name : Ident.t 
+(** 
+  Any [id] put in the [cached_tbl] should be always valid,
+  since it is already used in the code gen, 
+  the older will have higher precedence
+*)
+let add_js_module ?hint_name module_name : Ident.t 
   = 
   let id = 
-    match id with
+    match hint_name with
     | None -> Ext_ident.create_js_module module_name 
-    | Some id -> id in
+    | Some hint_name -> Ext_ident.create_js_module hint_name in
    let lam_module_ident = 
      Lam_module_ident.of_external id module_name in  
    match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
@@ -233,7 +237,7 @@ let query_and_add_if_not_exist (type u)
     end
 
 (* Conservative interface *)
-let is_pure id  = 
+let is_pure_module id  = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> false) 
     ~found:(fun x -> x.effect = None)
@@ -252,16 +256,12 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
 let get_requried_modules env
     (extras : module_id list ) 
     (hard_dependencies 
-     : _ Hash_set_poly.t) : module_id list =  
-
-  let mem (x : Lam_module_ident.t) = 
-    not (is_pure x ) || Hash_set_poly.mem hard_dependencies  x 
-  in
+     : Lam_module_ident.Hash_set.t) : module_id list =  
   Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
-      if mem id 
-      then Hash_set_poly.add hard_dependencies id) cached_tbl ;
+      if not @@ is_pure_module id 
+      then Lam_module_ident.Hash_set.add hard_dependencies id) cached_tbl ;
   List.iter (fun id -> 
-      if mem id 
-      then Hash_set_poly.add hard_dependencies id
+      if not @@ is_pure_module  id 
+      then Lam_module_ident.Hash_set.add hard_dependencies id
     ) extras;
-  Hash_set_poly.elements hard_dependencies
+  Lam_module_ident.Hash_set.elements hard_dependencies

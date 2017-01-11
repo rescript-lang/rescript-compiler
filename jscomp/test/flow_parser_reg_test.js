@@ -1,32 +1,32 @@
 'use strict';
 
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Bytes                   = require("../../lib/js/bytes");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Filename                = require("../../lib/js/filename");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Hashtbl                 = require("../../lib/js/hashtbl");
-var Caml_format             = require("../../lib/js/caml_format");
-var Mt                      = require("./mt");
-var Queue                   = require("../../lib/js/queue");
-var Block                   = require("../../lib/js/block");
-var Lexing                  = require("../../lib/js/lexing");
 var Char                    = require("../../lib/js/char");
-var Sys                     = require("../../lib/js/sys");
-var Curry                   = require("../../lib/js/curry");
 var Printf                  = require("../../lib/js/printf");
-var Caml_array              = require("../../lib/js/caml_array");
-var Caml_bytes              = require("../../lib/js/caml_bytes");
-var $$Array                 = require("../../lib/js/array");
 var Js_undefined            = require("../../lib/js/js_undefined");
-var Buffer                  = require("../../lib/js/buffer");
+var Filename                = require("../../lib/js/filename");
+var Block                   = require("../../lib/js/block");
+var $$Array                 = require("../../lib/js/array");
+var Caml_bytes              = require("../../lib/js/caml_bytes");
 var Caml_module             = require("../../lib/js/caml_module");
-var Path                    = require("path");
-var $$String                = require("../../lib/js/string");
 var Caml_string             = require("../../lib/js/caml_string");
-var List                    = require("../../lib/js/list");
+var Curry                   = require("../../lib/js/curry");
+var Sys                     = require("../../lib/js/sys");
+var Hashtbl                 = require("../../lib/js/hashtbl");
 var Fs                      = require("fs");
+var Queue                   = require("../../lib/js/queue");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var $$String                = require("../../lib/js/string");
+var Buffer                  = require("../../lib/js/buffer");
+var Lexing                  = require("../../lib/js/lexing");
+var Caml_array              = require("../../lib/js/caml_array");
+var Bytes                   = require("../../lib/js/bytes");
+var Caml_format             = require("../../lib/js/caml_format");
+var Pervasives              = require("../../lib/js/pervasives");
+var Caml_obj                = require("../../lib/js/caml_obj");
+var List                    = require("../../lib/js/list");
+var Path                    = require("path");
 
 var none = /* record */[
   /* source : None */0,

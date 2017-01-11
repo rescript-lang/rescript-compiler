@@ -1,9 +1,9 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Curry                   = require("../../lib/js/curry");
-var $$String                = require("../../lib/js/string");
 var Caml_string             = require("../../lib/js/caml_string");
+var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var $$String                = require("../../lib/js/string");
 var List                    = require("../../lib/js/list");
 
 function height(param) {

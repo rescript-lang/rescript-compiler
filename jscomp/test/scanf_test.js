@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt        = require("./mt");
 var Block     = require("../../lib/js/block");
-var Mt_global = require("./mt_global");
 var Curry     = require("../../lib/js/curry");
+var Mt        = require("./mt");
+var Mt_global = require("./mt_global");
 var Scanf     = require("../../lib/js/scanf");
 
 var suites = [/* [] */0];

@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt");
 var Block = require("../../lib/js/block");
 var Curry = require("../../lib/js/curry");
+var Mt    = require("./mt");
 
 function f(h, _) {
   console.log(3);

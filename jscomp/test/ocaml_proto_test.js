@@ -1,24 +1,24 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Bytes                   = require("../../lib/js/bytes");
-var Caml_obj                = require("../../lib/js/caml_obj");
-var Filename                = require("../../lib/js/filename");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Pervasives              = require("../../lib/js/pervasives");
-var Hashtbl                 = require("../../lib/js/hashtbl");
-var Caml_format             = require("../../lib/js/caml_format");
-var Mt                      = require("./mt");
-var Block                   = require("../../lib/js/block");
-var Lexing                  = require("../../lib/js/lexing");
-var Parsing                 = require("../../lib/js/parsing");
 var Char                    = require("../../lib/js/char");
-var Curry                   = require("../../lib/js/curry");
 var Printf                  = require("../../lib/js/printf");
-var Printexc                = require("../../lib/js/printexc");
-var $$String                = require("../../lib/js/string");
-var List                    = require("../../lib/js/list");
+var Filename                = require("../../lib/js/filename");
+var Block                   = require("../../lib/js/block");
 var Caml_string             = require("../../lib/js/caml_string");
+var Curry                   = require("../../lib/js/curry");
+var Hashtbl                 = require("../../lib/js/hashtbl");
+var Parsing                 = require("../../lib/js/parsing");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
+var Mt                      = require("./mt");
+var $$String                = require("../../lib/js/string");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Printexc                = require("../../lib/js/printexc");
+var Lexing                  = require("../../lib/js/lexing");
+var Caml_format             = require("../../lib/js/caml_format");
+var Bytes                   = require("../../lib/js/bytes");
+var List                    = require("../../lib/js/list");
+var Pervasives              = require("../../lib/js/pervasives");
+var Caml_obj                = require("../../lib/js/caml_obj");
 
 function field($staropt$star, label, number, type_, name) {
   var options = $staropt$star ? $staropt$star[0] : /* [] */0;

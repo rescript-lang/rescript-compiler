@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Mt_global  = require("./mt_global");
-var Curry      = require("../../lib/js/curry");
 var Printf     = require("../../lib/js/printf");
-var Int64      = require("../../lib/js/int64");
-var Caml_array = require("../../lib/js/caml_array");
+var Block      = require("../../lib/js/block");
+var Curry      = require("../../lib/js/curry");
+var Mt         = require("./mt");
 var Random     = require("../../lib/js/random");
+var Caml_array = require("../../lib/js/caml_array");
+var Mt_global  = require("./mt_global");
+var Int64      = require("../../lib/js/int64");
 
 var id = [0];
 

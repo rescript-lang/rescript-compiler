@@ -1,9 +1,9 @@
 'use strict';
 
-var Caml_int64  = require("../../lib/js/caml_int64");
-var Mt          = require("./mt");
 var Block       = require("../../lib/js/block");
 var Caml_string = require("../../lib/js/caml_string");
+var Mt          = require("./mt");
+var Caml_int64  = require("../../lib/js/caml_int64");
 
 Mt.from_pair_suites("string_get_set_test.ml", /* :: */[
       /* tuple */[

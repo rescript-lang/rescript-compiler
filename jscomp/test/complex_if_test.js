@@ -1,9 +1,9 @@
 'use strict';
 
-var Bytes       = require("../../lib/js/bytes");
-var Mt          = require("./mt");
 var Block       = require("../../lib/js/block");
 var Caml_string = require("../../lib/js/caml_string");
+var Mt          = require("./mt");
+var Bytes       = require("../../lib/js/bytes");
 
 function fib(n) {
   if (n !== 1 && n !== 23) {

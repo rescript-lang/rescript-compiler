@@ -1,13 +1,13 @@
 'use strict';
 
-var Caml_builtin_exceptions  = require("../../lib/js/caml_builtin_exceptions");
-var Caml_obj                 = require("../../lib/js/caml_obj");
+var Caml_string              = require("../../lib/js/caml_string");
+var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics");
+var Curry                    = require("../../lib/js/curry");
 var Caml_io                  = require("../../lib/js/caml_io");
+var Caml_builtin_exceptions  = require("../../lib/js/caml_builtin_exceptions");
 var Caml_exceptions          = require("../../lib/js/caml_exceptions");
 var Caml_format              = require("../../lib/js/caml_format");
-var Curry                    = require("../../lib/js/curry");
-var CamlinternalFormatBasics = require("../../lib/js/camlinternalFormatBasics");
-var Caml_string              = require("../../lib/js/caml_string");
+var Caml_obj                 = require("../../lib/js/caml_obj");
 
 function failwith(s) {
   throw [

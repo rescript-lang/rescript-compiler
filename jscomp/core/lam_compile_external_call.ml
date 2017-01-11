@@ -29,7 +29,10 @@
 module E = Js_exp_make
 
 
-
+(** 
+  [bind_name] is a hint to the compiler to generate 
+  better names for external module 
+  *)
 let handle_external 
     ({bundle ; bind_name} : Ast_external_attributes.external_module_name)
     : Ident.t * string 
@@ -39,7 +42,8 @@ let handle_external
     Lam_compile_env.add_js_module bundle , bundle
   | Some bind_name -> 
     Lam_compile_env.add_js_module 
-      ~id:(Ext_ident.create_js_module bind_name) bundle,
+      ~hint_name:bind_name
+      bundle,
     bundle
 
 let handle_external_opt 

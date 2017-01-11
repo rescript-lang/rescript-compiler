@@ -1,13 +1,13 @@
 'use strict';
 
 var Caml_float = require("../../lib/js/caml_float");
-var Pervasives = require("../../lib/js/pervasives");
-var Mt         = require("./mt");
-var Block      = require("../../lib/js/block");
-var Mt_global  = require("./mt_global");
-var Curry      = require("../../lib/js/curry");
 var Printf     = require("../../lib/js/printf");
 var $$Array    = require("../../lib/js/array");
+var Block      = require("../../lib/js/block");
+var Curry      = require("../../lib/js/curry");
+var Mt         = require("./mt");
+var Pervasives = require("../../lib/js/pervasives");
+var Mt_global  = require("./mt_global");
 
 var match_000 = [0];
 

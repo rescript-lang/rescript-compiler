@@ -1,9 +1,9 @@
 'use strict';
 
-var Pervasives = require("../../lib/js/pervasives");
-var Lexing     = require("../../lib/js/lexing");
 var Sys        = require("../../lib/js/sys");
 var Curry      = require("../../lib/js/curry");
+var Lexing     = require("../../lib/js/lexing");
+var Pervasives = require("../../lib/js/pervasives");
 
 var l = Sys.is_js ? function (prim) {
     console.log(prim);

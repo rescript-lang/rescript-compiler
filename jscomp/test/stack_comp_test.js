@@ -1,11 +1,11 @@
 'use strict';
 
-var Caml_obj  = require("../../lib/js/caml_obj");
-var Mt        = require("./mt");
-var Mt_global = require("./mt_global");
-var Curry     = require("../../lib/js/curry");
 var Stack     = require("../../lib/js/stack");
+var Curry     = require("../../lib/js/curry");
+var Mt        = require("./mt");
 var List      = require("../../lib/js/list");
+var Caml_obj  = require("../../lib/js/caml_obj");
+var Mt_global = require("./mt_global");
 
 var suites = [/* [] */0];
 

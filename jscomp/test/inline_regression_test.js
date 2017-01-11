@@ -1,11 +1,11 @@
 'use strict';
 
 var Filename    = require("../../lib/js/filename");
-var Mt          = require("./mt");
 var Block       = require("../../lib/js/block");
-var Curry       = require("../../lib/js/curry");
-var $$String    = require("../../lib/js/string");
 var Caml_string = require("../../lib/js/caml_string");
+var Curry       = require("../../lib/js/curry");
+var Mt          = require("./mt");
+var $$String    = require("../../lib/js/string");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
   if (name === "") {

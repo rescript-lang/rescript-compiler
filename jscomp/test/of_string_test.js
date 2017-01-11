@@ -1,8 +1,8 @@
 'use strict';
 
-var Pervasives = require("../../lib/js/pervasives");
-var Mt         = require("./mt");
 var Block      = require("../../lib/js/block");
+var Mt         = require("./mt");
+var Pervasives = require("../../lib/js/pervasives");
 
 var suites_000 = /* tuple */[
   "string_of_float_1",

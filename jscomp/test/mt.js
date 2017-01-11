@@ -1,10 +1,10 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Assert                  = require("assert");
-var Curry                   = require("../../lib/js/curry");
 var Process                 = require("process");
+var Assert                  = require("assert");
 var $$Array                 = require("../../lib/js/array");
+var Curry                   = require("../../lib/js/curry");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var List                    = require("../../lib/js/list");
 var Path                    = require("path");
 
@@ -98,4 +98,4 @@ function from_pair_suites(name, suites) {
 
 exports.from_suites      = from_suites;
 exports.from_pair_suites = from_pair_suites;
-/* assert Not a pure module */
+/* process Not a pure module */
