@@ -37,6 +37,19 @@ type arg_type =
   | Nothing
   | Ignore
 
+
+let extract_option_type_exn (ty : t) = 
+  begin match ty with
+    | {ptyp_desc =
+         Ptyp_constr({txt =
+                        Ldot (Lident "*predef*", "option") },
+                     [ty])}
+      ->                
+      ty
+    | _ -> assert false                 
+  end      
+
+  
 open Ast_helper
 
 let replace_result ty result = 
@@ -81,7 +94,7 @@ let from_labels ~loc arity labels
   : t =
   let tyvars = 
     ((Ext_list.init arity (fun i ->      
-           Typ.var ~loc ("a" ^ string_of_int i)))) in
+         Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc  
       (Typ.object_ ~loc

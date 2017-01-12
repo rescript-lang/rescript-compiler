@@ -206,8 +206,11 @@ COMMON_SRCS= bs_version js_config bs_pkg ext_log bs_loc  bs_warnings  lam_methna
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS=ast_derive_constructor ast_derive_util ast_exp ast_external ast_lift \
 	ast_literal ast_pat ast_payload ast_signature ast_structure bs_ast_iterator bs_ast_invariant \
-	ast_derive ast_comb ast_attributes ast_core_type ast_derive_dyn ast_derive_projector \
-	ast_external_attributes ast_util ppx_entry
+	ast_derive ast_comb ast_attributes ast_core_type ast_derive_dyn\
+	 ast_derive_projector \
+	 ast_ffi_types\
+	ast_external_attributes \
+	ast_util ppx_entry
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= depends_post_process bs_exception ast_extract binary_ast  
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
