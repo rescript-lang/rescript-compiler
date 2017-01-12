@@ -49,7 +49,9 @@ let extract_option_type_exn (ty : t) =
     | _ -> assert false                 
   end      
 
-  
+let is_any (ty : t) = 
+    match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
+
 open Ast_helper
 
 let replace_result ty result = 
