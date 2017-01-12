@@ -66,9 +66,10 @@ type arg_kind =
     arg_label : arg_label
   }
 
+type obj_create = arg_kind list
 
 type ffi = 
-  | Obj_create of arg_label list
+  (* | Obj_create of obj_create*)
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -83,6 +84,7 @@ type ffi =
 
 type t  = 
   | Ffi_bs of arg_kind list  * bool * ffi
+  | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 

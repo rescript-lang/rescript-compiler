@@ -55,13 +55,23 @@ let handle_external_opt
 
 type typ = Ast_core_type.t
 
-
-let ocaml_to_js_eff ({ Ast_ffi_types.arg_label;  arg_type = ty })
+(** The first return value is value, the second argument is side effect expressions 
+    Only the [unit] with no label will be ignored
+    When  we are passing a boxed value to external(optional), we need
+    unbox it in the first place.
+    Only [unit] type without label will be ignored
+*)
+let ocaml_to_js_eff 
+    ({ Ast_ffi_types.arg_label;  arg_type })
     (arg : J.expression) 
   : E.t list * E.t list  =
-  match ty with
+  let arg =
+    match arg_label with
+    | Optional label -> Js_of_lam_option.get_default_undefined arg 
+    | Label _ | Empty -> arg in 
+  match arg_type with
   | Unit ->  
-    [], 
+    (if arg_label = Empty then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
@@ -78,14 +88,13 @@ let ocaml_to_js_eff ({ Ast_ffi_types.arg_label;  arg_type = ty })
     Js_of_lam_variant.eval_as_event arg dispatches,[]
   | Int dispatches -> 
     [Js_of_lam_variant.eval_as_int arg dispatches],[]
-  | Nothing  | Array -> 
-    begin match arg_label with 
-      | Optional label -> [Js_of_lam_option.get_default_undefined arg]
-      | Label _ | Empty ->  [arg]  
-    end, []
+  | Nothing  | Array ->  [arg], []
 
+let fuse x xs =
+    if xs = [] then x  
+    else List.fold_left E.seq x xs 
 
-let assemble_args arg_types args : E.t list * E.t option  = 
+let assemble_args (arg_types : Ast_ffi_types.arg_kind list) args : E.t list * E.t option  = 
   let args, eff = 
     List.fold_right2 
       (fun arg_type arg (accs, effs) -> 
@@ -95,7 +104,7 @@ let assemble_args arg_types args : E.t list * E.t option  =
       ) arg_types args ([],[]) in
   args, begin match eff with 
     | [] -> None
-    | x::xs -> Some (List.fold_left (fun x y -> E.seq x y) x xs )
+    | x::xs -> Some (fuse x xs)
   end
 
 let add_eff eff e =
@@ -113,30 +122,41 @@ let add_eff eff e =
    ]}
    But the default to be undefined  seems reasonable 
 *)
-let assemble_args_obj labels args = 
+let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
+
   let map, eff  = 
     List.fold_right2
-      (fun label ( arg : J.expression) (accs, eff ) -> 
-         match (label : Ast_core_type.arg_label) with 
+      (fun ({arg_label; arg_type} as arg_kind : Ast_ffi_types.arg_kind) ( arg : J.expression) (accs, eff ) -> 
+         match arg_label with 
          | Empty ->  
            accs , 
            if Js_analyzer.no_side_effect_expression arg then eff 
            else arg :: eff 
          | Label label -> 
-           ( Js_op.Key label, arg) :: accs, eff  
+           let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+           begin match acc with 
+             | [ ] -> assert false
+             | x::xs -> 
+               (Js_op.Key label, fuse x xs ) :: accs , new_eff @ eff 
+           end (* evaluation order is undefined *)
          | Optional label -> 
            begin match arg.expression_desc with 
              | Number _ -> (*Invariant: None encoding*)
                accs, eff 
-             | _ ->  
-               ( Js_op.Key label, Js_of_lam_option.get_default_undefined arg) :: accs,
-               eff
+             | _ ->                 
+               let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+               begin match acc with 
+                 | [] -> assert false 
+                 | x::xs -> 
+                   (Js_op.Key label, fuse x xs)::accs , 
+                   new_eff @ eff 
+               end 
            end
       ) labels args ([], []) in
   match eff with
   | [] -> 
     E.obj map 
-  | x::xs -> E.seq (List.fold_left (fun x y -> E.seq x y) x xs) (E.obj map)
+  | x::xs -> E.seq (fuse x xs) (E.obj map)
 
 
 (* TODO: fix splice, 
@@ -182,7 +202,7 @@ let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
     arg_types result_type
     (args : J.expression list) = 
   match ffi with 
-  | Obj_create labels -> assemble_args_obj labels args 
+
   | Js_call{ external_module_name = module_name; 
              name = fn; splice = js_splice ; 
 
@@ -197,10 +217,10 @@ let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
     add_eff eff 
       (if result_type then 
 
-          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-        else 
-      E.call ~info:{arity=Full; call_info = Call_na} fn args)
-      
+         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+       else 
+         E.call ~info:{arity=Full; call_info = Call_na} fn args)
+
   | Js_module_as_var module_name -> 
     let (id, name) =  handle_external  module_name  in
     E.external_var_dot id ~external_name:name 
@@ -347,5 +367,6 @@ let translate loc cxt
   match Ast_ffi_types.from_string prim_native_name with 
   | Ffi_normal ->    
     Lam_dispatch_primitive.translate prim_name args 
+  | Ffi_obj_create labels -> assemble_args_obj labels args 
   | Ffi_bs (arg_types, result_type, ffi) -> 
     translate_ffi loc  ffi prim_name cxt arg_types result_type args 

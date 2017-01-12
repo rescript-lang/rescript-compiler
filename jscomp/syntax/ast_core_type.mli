@@ -26,6 +26,7 @@ type t = Parsetree.core_type
 
 
 val extract_option_type_exn : t -> t 
+val lift_option_type : t -> t 
 val is_any : t -> bool 
 val replace_result : t -> t -> t
 
@@ -66,3 +67,5 @@ val make_obj :
   loc:Location.t ->
   (string * Parsetree.attributes * t) list ->
   t
+
+val is_optional_label : string -> bool 

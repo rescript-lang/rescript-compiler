@@ -65,10 +65,10 @@ type arg_kind =
     arg_type : arg_type;
     arg_label : arg_label
   }
-
+type obj_create = arg_kind list
 
 type ffi = 
-  | Obj_create of arg_label list
+  (* | Obj_create of obj_create *)
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -99,14 +99,15 @@ let name_of_ffi ffi =
   | Js_global v 
     -> 
     Printf.sprintf "[@@bs.val] %S " v.name                    
-  | Obj_create _ -> 
-    Printf.sprintf "[@@bs.obj]"
+  (* | Obj_create _ -> 
+    Printf.sprintf "[@@bs.obj]" *)
 type t  = 
   | Ffi_bs of arg_kind list  * bool * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
      [return] means return value is unit or not, 
         [true] means is [unit]  
   *)
+  | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
@@ -172,7 +173,7 @@ let check_ffi ?loc ffi =
   | Js_set  name
   | Js_get name
     ->  valid_method_name ?loc name
-  | Obj_create _ -> ()
+  (* | Obj_create _ -> () *)
   | Js_get_index | Js_set_index 
     -> ()
 

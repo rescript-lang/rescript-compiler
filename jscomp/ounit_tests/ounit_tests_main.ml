@@ -35,7 +35,8 @@ let suites =
     Ounit_sexp_tests.suites;
     Ounit_int_vec_tests.suites;
     Ounit_ident_mask_tests.suites;
-    Ounit_cmd_tests.suites
+    Ounit_cmd_tests.suites;
+    Ounit_ffi_error_debug_test.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites

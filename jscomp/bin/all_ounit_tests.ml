@@ -3481,9 +3481,26 @@ let goog = "goog"
 
 let unused_attribute = "Unused attribute " 
 end
-module Ounit_cmd_tests
-= struct
-#1 "ounit_cmd_tests.ml"
+module Ounit_cmd_util : sig 
+#1 "ounit_cmd_util.mli"
+type output = {
+  stderr : string ; 
+  stdout : string ;
+  exit_code : int 
+}
+
+
+val perform : string -> string array -> output 
+
+
+val perform_bsc : string array -> output 
+
+
+val bsc_eval : string -> output 
+
+val debug_output : output -> unit 
+end = struct
+#1 "ounit_cmd_util.ml"
 let (//) = Filename.concat
 
 (** may nonterminate when [cwd] is '.' *)
@@ -3499,14 +3516,6 @@ let bsc_exe = bsc_bin // "bsc.exe"
 let runtime_dir = jscomp // "runtime"
 let others_dir = jscomp // "others"
 let stdlib_dir = jscomp // "stdlib"
-
-
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
-
-let (=~) = OUnit.assert_equal
-
-
 
 let rec safe_dup fd =
   let new_fd = Unix.dup fd in
@@ -3599,14 +3608,33 @@ let perform_bsc args =
 let bsc_eval str = 
   perform_bsc [|"-bs-eval"; str|]        
 
+  let debug_output o = 
+  Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
+    o.exit_code o.stdout o.stderr
+
+end
+module Ounit_cmd_tests
+= struct
+#1 "ounit_cmd_tests.ml"
+let (//) = Filename.concat
+
+
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+
+
+
 (* let output_of_exec_command command args =
     let readme, writeme = Unix.pipe () in 
     let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in 
     let in_chan = Unix.in_channel_of_descr readme *)
 
-let debug_output o = 
-  Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
-    o.exit_code o.stdout o.stderr
 
 let react = {|
 type u 
@@ -3632,6 +3660,9 @@ let c = foo
 let d = bar ()
 
 |}
+
+let perform_bsc = Ounit_cmd_util.perform_bsc
+let bsc_eval = Ounit_cmd_util.bsc_eval
 
 
 let suites = 
@@ -3681,6 +3712,50 @@ let suites =
   ]
 
 
+end
+module Ounit_ffi_error_debug_test
+= struct
+#1 "ounit_ffi_error_debug_test.ml"
+let (//) = Filename.concat
+
+
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let (=~) = OUnit.assert_equal
+
+
+
+
+let bsc_eval = Ounit_cmd_util.bsc_eval
+
+let debug_output = Ounit_cmd_util.debug_output
+
+
+let suites = 
+    __FILE__ 
+    >::: [
+        __LOC__ >:: begin fun _ -> 
+        let output = bsc_eval {|
+external err : 
+   hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
+   unit -> _ = "" [@@bs.obj]
+        |} in
+        OUnit.assert_bool __LOC__
+            (Ext_string.contain_substring output.stderr "hi_should_error")
+        end;
+        __LOC__ >:: begin fun _ -> 
+let output = bsc_eval {|
+    external err : 
+   ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
+   unit -> _ = "" [@@bs.obj]
+        |} in
+        OUnit.assert_bool __LOC__
+            (Ext_string.contain_substring output.stderr "hi_should_error")        
+        end
+    ]
 end
 module Ext_util : sig 
 #1 "ext_util.mli"
@@ -13024,7 +13099,8 @@ let suites =
     Ounit_sexp_tests.suites;
     Ounit_int_vec_tests.suites;
     Ounit_ident_mask_tests.suites;
-    Ounit_cmd_tests.suites
+    Ounit_cmd_tests.suites;
+    Ounit_ffi_error_debug_test.suites;
   ]
 let _ = 
   OUnit.run_test_tt_main suites
