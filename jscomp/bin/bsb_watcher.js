@@ -6,8 +6,8 @@ var path = require('path')
 
 /* This script is supposed to be running in project root directory
  * It matters since we need read .sourcedirs(location)
- * and its content are file/directories with regard to project root    
- */   
+ * and its content are file/directories with regard to project root
+ */
 // for column one based error message
 process.env.BS_VSCODE = 1
 var bsb_exe  = "bsb.exe"
@@ -20,7 +20,7 @@ var reasons_to_rebuild = [];
 /**
  * watchers are held so that we close it later
  */
-var watchers = [];  
+var watchers = [];
 
 function get_building_status() {
     return is_building;
@@ -33,7 +33,7 @@ function mark_is_building() {
 }
 var sourcedirs = path.join('lib', 'bs', '.sourcedirs')
 function watch_build(watch_files) {
-    // close and remove all unused watchers     
+    // close and remove all unused watchers
     watchers = watchers.filter(function(watcher){
         if(watcher.dir === bsconfig){
             return true;
@@ -59,7 +59,7 @@ function watch_build(watch_files) {
     }
     /*
     watchers = watch_files.map(function (dir) {
-        var watcher = fs.watch(dir)  
+        var watcher = fs.watch(dir)
         return  {dir : dir , watcher : watcher}
     })
     watchers.forEach(function (watcher) {
@@ -69,11 +69,7 @@ function watch_build(watch_files) {
     */
 };
 
-function build_finised_callback(err, stdout, stderr) {
-    // The stderr output is captured by ninja     
-    // and converted to stdout, so we have to dump everything
-    console.log(stdout);
-    console.log(stderr);
+function build_finished_callback() {
     console.log(">>>> Finish compiling")
     is_building = false;
     if (reasons_to_rebuild.length != 0) {
@@ -91,7 +87,9 @@ function build() {
     else {
         console.log(">>>> Start compiling");
         mark_is_building()
-        child_process.execFile(bsb, build_finised_callback)
+        child_process
+          .spawn(bsb, {stdio: 'inherit'})
+          .on('exit', build_finished_callback);
     }
 }
 function on_change(event, reason) {
@@ -105,12 +103,11 @@ function getWatchFiles(file) {
     } else {
         return []
     }
-    
+
 }
 
 
-// Initialization 
+// Initialization
 
 watchers.push({watcher : fs.watch(bsconfig,on_change) , dir : bsconfig});
 build();
-
