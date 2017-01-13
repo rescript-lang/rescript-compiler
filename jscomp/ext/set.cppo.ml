@@ -25,7 +25,7 @@
 
 #if defined TYPE_STRING 
 type elt = string
-let compare_elt = String.compare 
+let compare_elt = Ext_string.compare 
 type  t = elt Set_gen.t 
 #elif defined TYPE_IDENT
 type elt = Ident.t

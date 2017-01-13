@@ -461,6 +461,7 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
 end = struct
 #1 "ext_string.ml"
@@ -842,7 +843,7 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
-
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -1900,7 +1901,7 @@ end = struct
   
 # 10
   type key = string 
-  let compare_key = String.compare
+  let compare_key = Ext_string.compare
 
 # 22
 type 'a t = (key,'a) Map_gen.t

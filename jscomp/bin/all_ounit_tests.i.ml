@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 119 *) List.hd state.tests_planned
+  (* 122 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -98,22 +98,22 @@ let is_success =
 let is_failure = 
   function
     | RFailure _ -> (* 0 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 238 *) false
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 244 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 238 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 244 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 238 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 244 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 238 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 244 *) false
 
 let result_flavour = 
   function
@@ -145,7 +145,7 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 357 *) was_successful t
+        (* 366 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
@@ -155,22 +155,22 @@ let rec was_successful =
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 476 *) string_of_int n
+        (* 488 *) string_of_int n
     | Label s -> 
-        (* 714 *) s
+        (* 732 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 119 *) 1 
-    | TestLabel (_, t) -> (* 140 *) test_case_count t
+    | TestCase _ -> (* 122 *) 1 
+    | TestLabel (_, t) -> (* 143 *) test_case_count t
     | TestList l -> 
         (* 21 *) List.fold_left 
-          (fun c t -> (* 139 *) c + test_case_count t) 
+          (fun c t -> (* 142 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 238 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 244 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
   (* 0 *) let buff = Buffer.create 13 in
@@ -194,12 +194,12 @@ let mapi f l =
 
 let fold_lefti f accu l =
   (* 21 *) let rec rfold_lefti cnt accup l = 
-    (* 160 *) match l with
+    (* 163 *) match l with
       | [] -> 
           (* 21 *) accup
 
       | h::t -> 
-          (* 139 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 142 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,7 +217,7 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 716 *) match event_type with
+  (* 734 *) match event_type with
     | GlobalEvent e ->
         (* 2 *) begin
           match e with 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 714 *) begin
+        (* 732 *) begin
           let string_of_result = 
             if verbose then
-              (* 357 *) function
-                | RSuccess _      -> (* 119 *) "ok\n"
+              (* 366 *) function
+                | RSuccess _      -> (* 122 *) "ok\n"
                 | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 357 *) function
-                | RSuccess _      -> (* 119 *) "."
+              (* 366 *) function
+                | RSuccess _      -> (* 122 *) "."
                 | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 357 *) match e with 
+              (* 366 *) match e with 
                 | EStart p -> 
-                    (* 119 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 122 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 119 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 122 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 119 *) string_of_result result
+                    (* 122 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,21 +312,21 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 357 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 238 *) ""
-                | EResult result -> (* 119 *) string_of_result result
+              (* 366 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 244 *) ""
+                | EResult result -> (* 122 *) string_of_result result
         end
 
 let file_logger fn =
   (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 358 *) output_string chn (format_event true ev);
+       (* 367 *) output_string chn (format_event true ev);
        flush chn),
     (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
   (* 1 *) (fun ev -> 
-     (* 358 *) print_string (format_event verbose ev);
+     (* 367 *) print_string (format_event verbose ev);
      flush stdout),
   (fun () -> (* 1 *) ())
 
@@ -343,7 +343,7 @@ let create output_file_opt verbose (log,close) =
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 358 *) std_log ev; file_log ev; log ev),
+       (* 367 *) std_log ev; file_log ev; log ev),
     (fun () ->
        (* 1 *) std_close (); file_close (); close ())
 
@@ -705,7 +705,7 @@ let assert_failure msg =
   (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 2005363 *) if not b then (* 0 *) assert_failure msg
+  (* 2008880 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
@@ -951,7 +951,7 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 119 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>::) s f = (* 122 *) TestLabel(s, TestCase(f))  (* infix *)
 let (>:::) s l = (* 21 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
@@ -1087,7 +1087,7 @@ let maybe_backtrace = ""
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
   (* 1 *) let run_test_case f path =
-    (* 119 *) try 
+    (* 122 *) try 
       f ();
       RSuccess path
     with
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 119 *) (path, f) :: acc
+          (* 122 *) (path, f) :: acc
 
       | TestList (tests) ->
           (* 21 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 139 *) flatten_test 
+               (* 142 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 140 *) flatten_test ((Label label)::path) acc t
+          (* 143 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 119 *) let result = 
+    (* 122 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 120 *) match state.tests_planned with 
+    (* 123 *) match state.tests_planned with 
       | [] ->
           (* 1 *) state.results
       | _ ->
-          (* 119 *) let (path, f) = !global_chooser state in            
+          (* 122 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 7140 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 7503 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 357 *) log (OUnitLogger.TestEvent ev))
+         (* 366 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1709,6 +1709,7 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
 end = struct
 #1 "ext_string.ml"
@@ -2090,7 +2091,7 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
-
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 end
 module Ounit_array_tests
 = struct
@@ -2132,11 +2133,30 @@ end
 module Ounit_tests_util
 = struct
 #1 "ounit_tests_util.ml"
-let time description f  =
-  (* 0 *) let start = Unix.gettimeofday () in 
-  f ();
-  let finish = Unix.gettimeofday () in
-  Printf.printf "%s elapsed %f\n" description (finish -. start)  
+
+
+
+let time ?nums description  f  =
+  (* 2 *) match nums with 
+  | None -> 
+    (* 0 *) begin 
+      let start = Unix.gettimeofday () in 
+      ignore @@ f ();
+      let finish = Unix.gettimeofday () in
+      Printf.printf "\n%s elapsed %f\n" description (finish -. start) ;
+      flush stdout; 
+    end
+
+  | Some nums -> 
+    (* 2 *) begin 
+        let start = Unix.gettimeofday () in 
+        for i = 0 to nums - 1 do 
+          (* 20000000 *) ignore @@ f ();
+        done  ;
+      let finish = Unix.gettimeofday () in
+      Printf.printf "\n%s elapsed %f\n" description (finish -. start)  ;
+      flush stdout;
+    end
 
 end
 module Set_gen
@@ -4301,6 +4321,7 @@ external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
 
 external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
 
+external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" "noalloc";;
 end
 module Ordered_hash_set_gen
 = struct
@@ -5883,7 +5904,7 @@ let nil = create_js "null"
 let compare (x : Ident.t ) ( y : Ident.t) = 
   (* 0 *) let u = x.stamp - y.stamp in
   if u = 0 then 
-     (* 0 *) String.compare x.name y.name 
+     (* 0 *) Ext_string.compare x.name y.name 
   else (* 0 *) u 
 
 let equal ( x : Ident.t) ( y : Ident.t) = 
@@ -7294,7 +7315,7 @@ end = struct
   
 # 10
   type key = string 
-  let compare_key = String.compare
+  let compare_key = Ext_string.compare
 
 # 22
 type 'a t = (key,'a) Map_gen.t
@@ -9905,7 +9926,7 @@ let ((>::),
 
 let normalize = Ext_filename.normalize_absolute_path
 let (=~) x y = 
-  (* 2 *) OUnit.assert_equal ~cmp:(fun x y ->   (* 2 *) String.compare x y = 0) x y
+  (* 2 *) OUnit.assert_equal ~cmp:(fun x y ->   (* 2 *) Ext_string.compare x y = 0) x y
     
 let suites = 
   __FILE__ 
@@ -11458,6 +11479,19 @@ let suites =
         end;
     ]
 end
+module Ounit_data_random
+= struct
+#1 "ounit_data_random.ml"
+
+
+let min_int x y = 
+    (* 6002 *) if x < y then (* 0 *) x else (* 6002 *) y
+
+let random_string chars upper = 
+    (* 6002 *) let len = Array.length chars in 
+    let string_len = (Random.int (min_int upper len)) in
+    String.init string_len (fun i -> (* 8882 *) chars.(Random.int len ))
+end
 module Ounit_string_tests
 = struct
 #1 "ounit_string_tests.ml"
@@ -11619,7 +11653,56 @@ let suites =
         (not (Ext_string.no_slash "/ahgoh" ));
       OUnit.assert_bool __LOC__ 
         (not (Ext_string.no_slash "/ahgoh/" ));            
-    end
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let xx = "xxx" in 
+      let yy = "yy" in 
+      let z = (xx ^ yy) in 
+      let zz = (xx ^ yy ^ yy) in 
+      Ounit_tests_util.time ~nums:1000_0000 "fast length compare" begin fun _ -> 
+        (* 10000000 *) Bs_hash_stubs.string_length_based_compare z zz
+      end;
+      Ounit_tests_util.time ~nums:1000_0000 "slow length compare" begin fun _ -> 
+        (* 10000000 *) Ext_string.compare z zz
+      end
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) OUnit.assert_bool __LOC__ (Ext_string.compare "" ""  = 0);
+      OUnit.assert_bool __LOC__ (Ext_string.compare "0" "0"  = 0);
+      for i = 0 to 256 do 
+        (* 257 *) let a = String.init i (fun _ -> (* 32896 *) '0') in 
+        let b = String.init i (fun _ -> (* 32896 *) '0') in 
+        OUnit.assert_bool __LOC__ (Ext_string.compare a b = 0)
+      done ;
+      for i = 0 to 256 do 
+        (* 257 *) let a = String.init i (fun _ -> (* 32896 *) '0') in 
+        let b = String.init i (fun _ -> (* 32896 *) '0') ^ "\000"in 
+        OUnit.assert_bool __LOC__ (not @@ (Ext_string.compare a b = 0))
+      done ;
+      
+    end;
+    __LOC__ >:: begin fun _ -> 
+      (* 1 *) let slow_compare x y  = 
+        (* 3001 *) let x_len = String.length x  in 
+        let y_len = String.length y in 
+        if x_len = y_len then 
+          (* 773 *) String.compare x y 
+        else 
+          (* 2228 *) Pervasives.compare x_len y_len  in 
+       let same_sign x y =
+         (* 3001 *) if x = 0 then (* 260 *) y = 0 
+         else (* 2741 *) if x < 0 then (* 1414 *) y < 0 
+         else (* 1327 *) y > 0 in 
+       for i = 0 to 3000 do
+         (* 3001 *) let chars = [|'a';'b';'c';'d'|] in 
+         let x = Ounit_data_random.random_string chars 129 in 
+         let y = Ounit_data_random.random_string chars 129 in 
+         let a = Ext_string.compare  x y  in 
+         let b = slow_compare x y in 
+         if same_sign a b then (* 3001 *) OUnit.assert_bool __LOC__ true 
+         else (* 0 *) failwith ("incosistent " ^ x ^ " " ^ y ^ " " ^ string_of_int a ^ " " ^ string_of_int b)
+       done 
+    end 
   ]
 end
 module Ext_topsort : sig 

@@ -1,5 +1,6 @@
-#include <caml/hash.h>
-
+#include "caml/hash.h"
+#include "caml/mlvalues.h"
+#include <string.h>
 #define FINAL_MIX(h) \
   h ^= h >> 16; \
   h *= 0x85ebca6b; \
@@ -83,6 +84,83 @@ CAMLprim value caml_bs_hash_stamp_and_name(value d, value obj ){
 
 
 
+
+
+// https://github.com/ocaml/ocaml/pull/255/files
+#define Val_long_clang(x)     ((intnat) (((uintnat)(x) << 1)) + 1)
+
+CAMLprim value caml_string_length_based_compare(value s1, value s2)
+{
+  mlsize_t len1, len2;
+  mlsize_t temp;
+  int res;
+  if (s1 == s2) return Val_int(0);
+  
+  len1 = Wosize_val(s1);
+  temp = Bsize_wsize(len1) - 1 ;
+  len1 = temp - Byte(s1,temp);
+
+  len2 = Wosize_val(s2);
+  temp = Bsize_wsize(len2) - 1 ; 
+  len2 = temp - Byte(s2,temp);
+
+  if (len1 != len2) 
+  { 
+    if (len1 < len2 ) {
+      return Val_long_clang(-1);
+    } else {
+      return Val_long_clang(1);
+    }
+  }
+  else {
+    
+    res = memcmp(String_val(s1), String_val(s2), len1);
+    if(res < 0) return Val_long_clang(-1); 
+    if(res > 0) return Val_long_clang(1);
+    return Val_long_clang(0);
+    
+  }
+}
+
+
+/*
+CAMLprim value caml_fast_string_equal(value s1, value s2)
+{
+  mlsize_t sz1, sz2;
+  value * p1, * p2;
+  if(s1 == s2) return Val_true;
+  sz1 = Wosize_val(s1); // at least be 1 
+  sz2 = Wosize_val(s2);
+  if(sz1 != sz2) return Val_false;
+  p1 = Op_val(s1);
+  p2 = Op_val(s2);
+  
+  // unroll the loop 
+  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
+
+  if ( -- sz1 == 0) {return Val_true;};
+
+  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
+  
+  if ( -- sz1 == 0) {return Val_true;};
+
+  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
+
+  if ( -- sz1 == 0) {return Val_true; };
+
+  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
+  
+  if ( -- sz1 == 0) {return Val_true;}; 
+
+  do {
+    if(* (p1 ++) != * (p2++) ) return Val_false;
+  } while (-- sz1 > 0 );
+  return Val_true;
+  
+}
+*/
 /* local variables: */
-/* compile-command: "ocamlopt.opt -c hash_runtime.c" */
+/* compile-command: "ocamlopt.opt -c ext_basic_hash_stubs.c" */
 /* end: */
+
+

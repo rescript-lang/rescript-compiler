@@ -3,3 +3,21 @@
 #load "bs_hash.cma";;
 #load "ext.cma";;
 #directory "./ext";;
+#directory "./stubs";;
+
+let bench ?(times=10_000_000) f = 
+    let start = Sys.time () in 
+    for i = 0 to times - 1  do 
+        ignore @@ f ()
+    done;    
+    Printf.printf " -- %f elapsed \n" (Sys.time () -. start )
+
+let a = "xxx"
+let b = "yyy"
+let () = 
+    bench (fun _ -> String.compare a  "yyy"
+    
+    );
+    bench (fun _ -> 
+        Bs_hash_stubs.string_length_based_compare a   "yyy" 
+    )

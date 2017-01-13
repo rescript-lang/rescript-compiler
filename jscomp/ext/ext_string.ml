@@ -376,3 +376,4 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;

@@ -6,7 +6,7 @@
   
 # 10
   type key = string 
-  let compare_key = String.compare
+  let compare_key = Ext_string.compare
 
 # 22
 type 'a t = (key,'a) Map_gen.t

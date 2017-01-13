@@ -86,6 +86,7 @@ bin/all_ounit_tests.ml : ounit_tests/ounit_scc_tests.ml
 bin/all_ounit_tests.ml : ext/ext_sexp.ml
 bin/all_ounit_tests.ml : ext/ext_sexp.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_sexp_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_data_random.ml
 bin/all_ounit_tests.ml : ounit_tests/ounit_string_tests.ml
 bin/all_ounit_tests.ml : ext/ext_topsort.ml
 bin/all_ounit_tests.ml : ext/ext_topsort.mli
