@@ -3754,7 +3754,19 @@ let output = bsc_eval {|
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")        
+        end;
+        __LOC__ >:: begin fun _ -> 
+        let output = bsc_eval {|
+    external err : 
+   ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
+   unit -> unit = "" [@@bs.val]
+        |} in
+        OUnit.assert_bool __LOC__
+            (Ext_string.contain_substring output.stderr "hi_should_error")        
         end
+
+        
+
     ]
 end
 module Ext_util : sig 

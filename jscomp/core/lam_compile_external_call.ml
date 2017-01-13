@@ -59,7 +59,23 @@ type typ = Ast_core_type.t
     Only the [unit] with no label will be ignored
     When  we are passing a boxed value to external(optional), we need
     unbox it in the first place.
-    Only [unit] type without label will be ignored
+    
+    Note when optional value is not passed, the unboxed value would be 
+    [undefined], with the combination of `[@bs.int]` it would be still be 
+    [undefined], this by default is still correct..  
+    {[
+    (function () {
+        switch (undefined) {
+          case 97 : 
+              return "a";
+          case 98 : 
+              return "b";
+          
+        }
+      }()) === undefined
+     ]} 
+
+     This would not work with [NonNullString]
 *)
 let ocaml_to_js_eff 
     ({ Ast_ffi_types.arg_label;  arg_type })
@@ -70,7 +86,7 @@ let ocaml_to_js_eff
     | Optional label -> Js_of_lam_option.get_default_undefined arg 
     | Label _ | Empty -> arg in 
   match arg_type with
-  | Unit ->  
+  | Extern_unit ->  
     (if arg_label = Empty then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
@@ -193,7 +209,8 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   args,
   begin  match eff with
     | [] -> None 
-    | x::xs ->  Some (List.fold_left (fun x y -> E.seq x y) x xs)
+    | x::xs ->  
+      Some (fuse x xs) 
   end
 
 

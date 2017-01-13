@@ -41,7 +41,7 @@ type arg_type =
   | NonNullString of (int * string) list 
   | Int of (int * int ) list 
   | Array 
-  | Unit
+  | Extern_unit
   | Nothing
   | Ignore
 

@@ -186,8 +186,10 @@ let compile  ~filename output_prefix env _sigs
   let export_ident_sets = Ident_set.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
+#if BS_DEBUG then     
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) ;
+#end      
     Lam_compile_env.reset () ;
   in 
   let lam = Lam.convert export_ident_sets lam in 
@@ -367,7 +369,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "gpr_1060_test.ml";
+    Js_config.set_debug_file "gpr_1072.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

@@ -33,7 +33,7 @@ type arg_type =
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list 
   | Array 
-  | Unit
+  | Extern_unit
   | Nothing
   | Ignore
 
