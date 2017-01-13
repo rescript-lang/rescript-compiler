@@ -29,11 +29,11 @@ type arg_label =
   | Empty (* it will be ignored , side effect will be recorded *)
 
 type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list 
   | Array 
-  | Unit
+  | Extern_unit
   | Nothing
   | Ignore
 
@@ -49,7 +49,23 @@ let extract_option_type_exn (ty : t) =
     | _ -> assert false                 
   end      
 
-  
+let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
+let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
+
+
+let lift_option_type (ty:t) : t = 
+  {ptyp_desc =
+     Ptyp_constr(
+       {txt = predef_option;
+        loc = ty.ptyp_loc} 
+        , [ty]);
+        ptyp_loc = ty.ptyp_loc;
+      ptyp_attributes = []
+    }
+
+let is_any (ty : t) = 
+  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
+
 open Ast_helper
 
 let replace_result ty result = 
@@ -73,12 +89,12 @@ let is_array (ty : t) =
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
   | _ -> false 
 
-let is_optional l =
+let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
 
 let label_name l : arg_label =
   if l = "" then Empty else 
-  if is_optional l 
+  if is_optional_label l 
   then Optional (String.sub l 1 (String.length l - 1))
   else Label l
 

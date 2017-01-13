@@ -25,7 +25,9 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
-let eval (arg : J.expression) (dispatches : (int * string) list ) = 
+(* we need destruct [undefined] when input is optional *)
+let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t = 
+  if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) -> 
     begin match List.assoc (Int32.to_int i) dispatches with 
@@ -42,7 +44,8 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) =
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
 
-let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) = 
+(** invariant: optional is not allowed in this case *)
+let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t list  = 
   match arg.expression_desc with
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
@@ -75,7 +78,9 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
               }) dispatches))]
     ]
 
-let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) = 
+(* we need destruct [undefined] when input is optional *)
+let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  = 
+  if arg == E.undefined then E.undefined else 
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
     begin match  (List.assoc (Int32.to_int i) dispatches) with

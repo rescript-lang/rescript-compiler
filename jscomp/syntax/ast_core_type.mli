@@ -26,6 +26,8 @@ type t = Parsetree.core_type
 
 
 val extract_option_type_exn : t -> t 
+val lift_option_type : t -> t 
+val is_any : t -> bool 
 val replace_result : t -> t -> t
 
 val is_unit : t -> bool 
@@ -39,7 +41,7 @@ type arg_type =
   | NonNullString of (int * string) list 
   | Int of (int * int ) list 
   | Array 
-  | Unit
+  | Extern_unit
   | Nothing
   | Ignore
 
@@ -65,3 +67,5 @@ val make_obj :
   loc:Location.t ->
   (string * Parsetree.attributes * t) list ->
   t
+
+val is_optional_label : string -> bool 

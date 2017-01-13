@@ -22,7 +22,10 @@ bin/all_ounit_tests.ml : ext/set_poly.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_bal_tree_tests.ml
 bin/all_ounit_tests.ml : ext/literals.ml
 bin/all_ounit_tests.ml : ext/literals.mli
+bin/all_ounit_tests.ml : ounit_tests/ounit_cmd_util.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_cmd_util.mli
 bin/all_ounit_tests.ml : ounit_tests/ounit_cmd_tests.ml
+bin/all_ounit_tests.ml : ounit_tests/ounit_ffi_error_debug_test.ml
 bin/all_ounit_tests.ml : ext/ext_util.ml
 bin/all_ounit_tests.ml : ext/ext_util.mli
 bin/all_ounit_tests.ml : ext/hash_set_gen.ml

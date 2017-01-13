@@ -28,6 +28,7 @@ module Lid : sig
   type t = Longident.t 
   val val_unit : t 
   val type_unit : t 
+  val type_int : t 
   val js_fn : t 
   val js_meth : t 
   val js_meth_callback : t 
@@ -50,7 +51,7 @@ val val_unit : expression_lit
 val type_unit : core_type_lit
 
 val type_string : core_type_lit
-
+val type_int : core_type_lit 
 val type_any : core_type_lit
 
 val pat_unit : pattern_lit

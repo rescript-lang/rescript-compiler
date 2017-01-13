@@ -66576,6 +66576,8 @@ let dot ?comment (e0 : t)  (e1 : string) : t =
 
 
 let undefined  = var Ext_ident.undefined
+
+
 let nil = var Ext_ident.nil
 
 (** coupled with the runtime *)
@@ -87659,6 +87661,7 @@ module Lid : sig
   type t = Longident.t 
   val val_unit : t 
   val type_unit : t 
+  val type_int : t 
   val js_fn : t 
   val js_meth : t 
   val js_meth_callback : t 
@@ -87681,7 +87684,7 @@ val val_unit : expression_lit
 val type_unit : core_type_lit
 
 val type_string : core_type_lit
-
+val type_int : core_type_lit 
 val type_any : core_type_lit
 
 val pat_unit : pattern_lit
@@ -87720,6 +87723,7 @@ module Lid = struct
   let val_unit : t = Lident "()"
   let type_unit : t = Lident "unit"
   let type_string : t = Lident "string"
+  let type_int : t = Lident "int" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_fn = Longident.Ldot (Lident "Js", "fn")
@@ -87740,7 +87744,8 @@ module No_loc = struct
     Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
   let type_unit =   
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
-
+  let type_int = 
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))  
   let type_string =   
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
 
@@ -87772,6 +87777,12 @@ let type_string ?loc () =
   | None -> No_loc.type_string 
   | Some loc ->     
     Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_int ?loc () = 
+  match loc with 
+  | None -> No_loc.type_int
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_int; loc}, []))
 
 let type_any ?loc () = 
   match loc with 
@@ -87970,6 +87981,8 @@ type t = Parsetree.core_type
 
 
 val extract_option_type_exn : t -> t 
+val lift_option_type : t -> t 
+val is_any : t -> bool 
 val replace_result : t -> t -> t
 
 val is_unit : t -> bool 
@@ -87983,7 +87996,7 @@ type arg_type =
   | NonNullString of (int * string) list 
   | Int of (int * int ) list 
   | Array 
-  | Unit
+  | Extern_unit
   | Nothing
   | Ignore
 
@@ -88010,6 +88023,7 @@ val make_obj :
   (string * Parsetree.attributes * t) list ->
   t
 
+val is_optional_label : string -> bool 
 end = struct
 #1 "ast_core_type.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -88043,11 +88057,11 @@ type arg_label =
   | Empty (* it will be ignored , side effect will be recorded *)
 
 type arg_type = 
-  | NullString of (int * string) list 
-  | NonNullString of (int * string) list 
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list 
   | Array 
-  | Unit
+  | Extern_unit
   | Nothing
   | Ignore
 
@@ -88063,7 +88077,23 @@ let extract_option_type_exn (ty : t) =
     | _ -> assert false                 
   end      
 
-  
+let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
+let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
+
+
+let lift_option_type (ty:t) : t = 
+  {ptyp_desc =
+     Ptyp_constr(
+       {txt = predef_option;
+        loc = ty.ptyp_loc} 
+        , [ty]);
+        ptyp_loc = ty.ptyp_loc;
+      ptyp_attributes = []
+    }
+
+let is_any (ty : t) = 
+  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
+
 open Ast_helper
 
 let replace_result ty result = 
@@ -88087,12 +88117,12 @@ let is_array (ty : t) =
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
   | _ -> false 
 
-let is_optional l =
+let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
 
 let label_name l : arg_label =
   if l = "" then Empty else 
-  if is_optional l 
+  if is_optional_label l 
   then Optional (String.sub l 1 (String.length l - 1))
   else Label l
 
@@ -88194,9 +88224,10 @@ type arg_kind =
     arg_label : arg_label
   }
 
+type obj_create = arg_kind list
 
 type ffi = 
-  | Obj_create of arg_label list
+  (* | Obj_create of obj_create*)
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -88211,6 +88242,7 @@ type ffi =
 
 type t  = 
   | Ffi_bs of arg_kind list  * bool * ffi
+  | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
@@ -88294,10 +88326,10 @@ type arg_kind =
     arg_type : arg_type;
     arg_label : arg_label
   }
-
+type obj_create = arg_kind list
 
 type ffi = 
-  | Obj_create of arg_label list
+  (* | Obj_create of obj_create *)
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -88328,14 +88360,15 @@ let name_of_ffi ffi =
   | Js_global v 
     -> 
     Printf.sprintf "[@@bs.val] %S " v.name                    
-  | Obj_create _ -> 
-    Printf.sprintf "[@@bs.obj]"
+  (* | Obj_create _ -> 
+    Printf.sprintf "[@@bs.obj]" *)
 type t  = 
   | Ffi_bs of arg_kind list  * bool * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
      [return] means return value is unit or not, 
         [true] means is [unit]  
   *)
+  | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
@@ -88401,7 +88434,7 @@ let check_ffi ?loc ffi =
   | Js_set  name
   | Js_get name
     ->  valid_method_name ?loc name
-  | Obj_create _ -> ()
+  (* | Obj_create _ -> () *)
   | Js_get_index | Js_set_index 
     -> ()
 
@@ -88628,7 +88661,9 @@ end = struct
 module E = Js_exp_make
 module S = Js_stmt_make
 
-let eval (arg : J.expression) (dispatches : (int * string) list ) = 
+(* we need destruct [undefined] when input is optional *)
+let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t = 
+  if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) -> 
     begin match List.assoc (Int32.to_int i) dispatches with 
@@ -88645,7 +88680,8 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) =
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
 
-let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) = 
+(** invariant: optional is not allowed in this case *)
+let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t list  = 
   match arg.expression_desc with
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
@@ -88678,7 +88714,9 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
               }) dispatches))]
     ]
 
-let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) = 
+(* we need destruct [undefined] when input is optional *)
+let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  = 
+  if arg == E.undefined then E.undefined else 
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
     begin match  (List.assoc (Int32.to_int i) dispatches) with
@@ -89994,13 +90032,39 @@ let handle_external_opt
 
 type typ = Ast_core_type.t
 
+(** The first return value is value, the second argument is side effect expressions 
+    Only the [unit] with no label will be ignored
+    When  we are passing a boxed value to external(optional), we need
+    unbox it in the first place.
+    
+    Note when optional value is not passed, the unboxed value would be 
+    [undefined], with the combination of `[@bs.int]` it would be still be 
+    [undefined], this by default is still correct..  
+    {[
+    (function () {
+        switch (undefined) {
+          case 97 : 
+              return "a";
+          case 98 : 
+              return "b";
+          
+        }
+      }()) === undefined
+     ]} 
 
-let ocaml_to_js_eff ({ Ast_ffi_types.arg_label;  arg_type = ty })
+     This would not work with [NonNullString]
+*)
+let ocaml_to_js_eff 
+    ({ Ast_ffi_types.arg_label;  arg_type })
     (arg : J.expression) 
   : E.t list * E.t list  =
-  match ty with
-  | Unit ->  
-    [], 
+  let arg =
+    match arg_label with
+    | Optional label -> Js_of_lam_option.get_default_undefined arg 
+    | Label _ | Empty -> arg in 
+  match arg_type with
+  | Extern_unit ->  
+    (if arg_label = Empty then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
@@ -90017,14 +90081,13 @@ let ocaml_to_js_eff ({ Ast_ffi_types.arg_label;  arg_type = ty })
     Js_of_lam_variant.eval_as_event arg dispatches,[]
   | Int dispatches -> 
     [Js_of_lam_variant.eval_as_int arg dispatches],[]
-  | Nothing  | Array -> 
-    begin match arg_label with 
-      | Optional label -> [Js_of_lam_option.get_default_undefined arg]
-      | Label _ | Empty ->  [arg]  
-    end, []
+  | Nothing  | Array ->  [arg], []
 
+let fuse x xs =
+    if xs = [] then x  
+    else List.fold_left E.seq x xs 
 
-let assemble_args arg_types args : E.t list * E.t option  = 
+let assemble_args (arg_types : Ast_ffi_types.arg_kind list) args : E.t list * E.t option  = 
   let args, eff = 
     List.fold_right2 
       (fun arg_type arg (accs, effs) -> 
@@ -90034,7 +90097,7 @@ let assemble_args arg_types args : E.t list * E.t option  =
       ) arg_types args ([],[]) in
   args, begin match eff with 
     | [] -> None
-    | x::xs -> Some (List.fold_left (fun x y -> E.seq x y) x xs )
+    | x::xs -> Some (fuse x xs)
   end
 
 let add_eff eff e =
@@ -90052,30 +90115,41 @@ let add_eff eff e =
    ]}
    But the default to be undefined  seems reasonable 
 *)
-let assemble_args_obj labels args = 
+let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
+
   let map, eff  = 
     List.fold_right2
-      (fun label ( arg : J.expression) (accs, eff ) -> 
-         match (label : Ast_core_type.arg_label) with 
+      (fun ({arg_label; arg_type} as arg_kind : Ast_ffi_types.arg_kind) ( arg : J.expression) (accs, eff ) -> 
+         match arg_label with 
          | Empty ->  
            accs , 
            if Js_analyzer.no_side_effect_expression arg then eff 
            else arg :: eff 
          | Label label -> 
-           ( Js_op.Key label, arg) :: accs, eff  
+           let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+           begin match acc with 
+             | [ ] -> assert false
+             | x::xs -> 
+               (Js_op.Key label, fuse x xs ) :: accs , new_eff @ eff 
+           end (* evaluation order is undefined *)
          | Optional label -> 
            begin match arg.expression_desc with 
              | Number _ -> (*Invariant: None encoding*)
                accs, eff 
-             | _ ->  
-               ( Js_op.Key label, Js_of_lam_option.get_default_undefined arg) :: accs,
-               eff
+             | _ ->                 
+               let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+               begin match acc with 
+                 | [] -> assert false 
+                 | x::xs -> 
+                   (Js_op.Key label, fuse x xs)::accs , 
+                   new_eff @ eff 
+               end 
            end
       ) labels args ([], []) in
   match eff with
   | [] -> 
     E.obj map 
-  | x::xs -> E.seq (List.fold_left (fun x y -> E.seq x y) x xs) (E.obj map)
+  | x::xs -> E.seq (fuse x xs) (E.obj map)
 
 
 (* TODO: fix splice, 
@@ -90112,7 +90186,8 @@ let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t
   args,
   begin  match eff with
     | [] -> None 
-    | x::xs ->  Some (List.fold_left (fun x y -> E.seq x y) x xs)
+    | x::xs ->  
+      Some (fuse x xs) 
   end
 
 
@@ -90121,7 +90196,7 @@ let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
     arg_types result_type
     (args : J.expression list) = 
   match ffi with 
-  | Obj_create labels -> assemble_args_obj labels args 
+
   | Js_call{ external_module_name = module_name; 
              name = fn; splice = js_splice ; 
 
@@ -90136,10 +90211,10 @@ let translate_ffi call_loc (ffi : Ast_ffi_types.ffi ) prim_name
     add_eff eff 
       (if result_type then 
 
-          E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
-        else 
-      E.call ~info:{arity=Full; call_info = Call_na} fn args)
-      
+         E.seq (E.call ~info:{arity=Full; call_info = Call_na} fn args) E.unit
+       else 
+         E.call ~info:{arity=Full; call_info = Call_na} fn args)
+
   | Js_module_as_var module_name -> 
     let (id, name) =  handle_external  module_name  in
     E.external_var_dot id ~external_name:name 
@@ -90286,6 +90361,7 @@ let translate loc cxt
   match Ast_ffi_types.from_string prim_native_name with 
   | Ffi_normal ->    
     Lam_dispatch_primitive.translate prim_name args 
+  | Ffi_obj_create labels -> assemble_args_obj labels args 
   | Ffi_bs (arg_types, result_type, ffi) -> 
     translate_ffi loc  ffi prim_name cxt arg_types result_type args 
 
@@ -96117,8 +96193,7 @@ let compile  ~filename output_prefix env _sigs
   let export_ident_sets = Ident_set.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
-    export_idents |> List.iter 
-      (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) ;
+      
     Lam_compile_env.reset () ;
   in 
   let lam = Lam.convert export_ident_sets lam in 
@@ -98428,10 +98503,11 @@ end = struct
     ]}
     The result type would be [ hi:string ]
 *)
-let get_arg_type 
-    ({ptyp_desc; ptyp_attributes; ptyp_loc = loc} as ptyp : Ast_core_type.t) : 
+let get_arg_type ~nolabel optional 
+    (ptyp : Ast_core_type.t) : 
   Ast_core_type.arg_type * Ast_core_type.t  = 
-  match Ast_attributes.process_bs_string_int ptyp_attributes, ptyp_desc with 
+  let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
+  match Ast_attributes.process_bs_string_int ptyp.ptyp_attributes, ptyp.ptyp_desc with 
   | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
     -> 
     let case, result, row_fields  = 
@@ -98459,16 +98535,16 @@ let get_arg_type
                  `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
                  (tag :: row_fields)
              end
-           | _ -> Location.raise_errorf ~loc "Not a valid string type"
+           | _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
          ) row_fields (`Nothing, [], [])) in 
     (match case with 
-     | `Nothing -> Location.raise_errorf ~loc "Not a valid string type"
+     | `Nothing -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
      | `Null -> NullString result 
      | `NonNull -> NonNullString result) , 
     {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
                ptyp_attributes ;
     }
-  | (`String, _),  _ -> Location.raise_errorf ~loc "Not a valid string type"
+  | (`String, _),  _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
 
   | (`Ignore, ptyp_attributes), _  -> 
     (Ignore, {ptyp with ptyp_attributes})
@@ -98487,7 +98563,7 @@ let get_arg_type
                   i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
               end
 
-            | _ -> Location.raise_errorf ~loc "Not a valid string type"
+            | _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
          ) (0, [],[]) row_fields) in 
     Int (List.rev acc),
     {ptyp with 
@@ -98495,19 +98571,19 @@ let get_arg_type
      ptyp_attributes
     }
 
-  | (`Int, _), _ -> Location.raise_errorf ~loc "Not a valid string type"
+  | (`Int, _), _ -> Location.raise_errorf ~loc:ptyp.ptyp_loc "Not a valid string type"
   | (`Nothing, ptyp_attributes),  ptyp_desc ->
     begin match ptyp_desc with
       | Ptyp_constr ({txt = Lident "bool"}, [])
         -> 
-        Bs_warnings.prerr_warning loc Unsafe_ffi_bool_type;
+        Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_ffi_bool_type;
         Nothing
       | Ptyp_constr ({txt = Lident "unit"}, [])
-        -> Unit 
+        -> if nolabel then Extern_unit else  Nothing
       | Ptyp_constr ({txt = Lident "array"}, [_])
         -> Array
       | Ptyp_variant _ ->
-        Bs_warnings.prerr_warning loc Unsafe_poly_variant_type;
+        Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
         Nothing           
       | _ ->
         Nothing           
@@ -98643,7 +98719,7 @@ let process_external_attributes
     (init_st, []) prim_attributes 
 
 
-let list_of_arrow_clean_option_label (ty : Parsetree.core_type) = 
+let list_of_arrow (ty : Parsetree.core_type) = 
   let rec aux (ty : Parsetree.core_type) acc = 
     match ty.ptyp_desc with 
     | Ptyp_arrow(label,t1,t2) -> 
@@ -98652,6 +98728,7 @@ let list_of_arrow_clean_option_label (ty : Parsetree.core_type) =
       Location.raise_errorf ~loc:ty.ptyp_loc "Unhandled poly type"
     | return_type -> ty, List.rev acc
   in aux ty []
+
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before 
 *)
@@ -98666,43 +98743,18 @@ let handle_attributes
     else  `Nm_external prim_name  (* need check name *)
   in    
   let result_type, arg_types_ty =
-    list_of_arrow_clean_option_label type_annotation in
+    list_of_arrow type_annotation in
   let result_type_spec, new_result_type  = 
-    get_arg_type result_type in
+    get_arg_type ~nolabel:true false result_type in (* result type can not be labeled *)
   let (st, left_attrs) = 
     process_external_attributes 
       (arg_types_ty = [])
       prim_name_or_pval_prim pval_prim prim_attributes in 
 
-  let splice = st.splice in 
-  let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
-    List.fold_right 
-      (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
-         let arg_type, new_ty = get_arg_type ty in
-         (if i = 0 && splice  then
-            match arg_type with 
-            | Array  -> ()
-            | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
-         ({ Ast_ffi_types.arg_label = Ast_core_type.label_name label ; 
-            arg_type 
-          } :: arg_type_specs,
-          (label, new_ty,attr,loc) :: arg_types,
-          i + 1)
-      ) arg_types_ty 
-      (match st with
-       | {val_send_pipe = Some obj} ->      
-         let arg_type, new_ty = get_arg_type obj in 
-         [{ arg_label = Empty ; 
-            arg_type 
-          }],
-         ["", new_ty, [], obj.ptyp_loc]
-         ,0
-       | {val_send_pipe = None } -> [],[], 0) in 
 
-
-  let ffi = 
-    match st with 
-    | { mk_obj = true;
+  if st.mk_obj then 
+    begin match st with 
+      | {
         val_name = `Nm_na; 
         external_module_name = None ;
         module_as_val = None;
@@ -98714,314 +98766,385 @@ let handle_attributes
         set_name = `Nm_na ;
         get_name = `Nm_na ;
         get_index = false ;
-      } ->
-      if String.length prim_name <> 0 then 
-        Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-      Ast_ffi_types.Obj_create (List.map (function
-          | {Ast_ffi_types.arg_label = (Empty as l) ; arg_type = Unit  }
-            -> l 
-          | {arg_label = Empty ; arg_type = _ }
-            -> Location.raise_errorf ~loc "expect label, optional, or unit here"
-          | {arg_label = (Label _) ; arg_type = (Ignore | Unit) ; }
-            -> Empty
-          | {arg_label = Label name ; arg_type = (Nothing | Array)} -> 
-            Label (Lam_methname.translate ~loc name)            
-          | {arg_label = Label l ; arg_type = (NullString _ | NonNullString _ | Int _ ) }
-            -> Location.raise_errorf ~loc 
-                 "bs.obj label %s does not support such arg type" l
-          | {arg_label = Optional name ; arg_type = (Nothing | Array | Unit | Ignore)} 
-            -> Optional (Lam_methname.translate ~loc name)
-          | {arg_label = Optional l ; arg_type = (NullString _ | NonNullString _ | Int _)} 
-            -> Location.raise_errorf ~loc 
-                 "bs.obj optional %s does not support such arg type" l )
-          arg_type_specs)(* Need fetch label here, for better error message *)
-    | {mk_obj = true; _}
-      ->
-      Location.raise_errorf ~loc "conflict attributes found"                
-    | {set_index = true;
-
-       val_name = `Nm_na; 
-       external_module_name = None ;
-       module_as_val = None;
-       val_send = `Nm_na;
-       val_send_pipe = None;    
-       splice = false;
-       get_index = false;
-       new_name = `Nm_na;
-       call_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       mk_obj = false ; 
-
-      } 
-      ->
-      if String.length prim_name <> 0 then 
-        Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-      if arg_type_specs_length = 3 then 
-        Js_set_index
-      else 
-        Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
-
-    | {set_index = true; _}
-      ->
-      Location.raise_errorf ~loc "conflict attributes found"        
-
-    | {get_index = true;
-
-       val_name = `Nm_na; 
-       external_module_name = None ;
-       module_as_val = None;
-       val_send = `Nm_na;
-       val_send_pipe = None;    
-
-       splice = false;
-       new_name = `Nm_na;
-       call_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       mk_obj = false ; 
-      } ->
-      if String.length prim_name <> 0 then 
-        Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-      if arg_type_specs_length = 2 then 
-        Js_get_index
-      else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
-
-    | {get_index = true; _}
-      -> Location.raise_errorf ~loc "conflict attributes found"        
-    
-    
-     (*TODO: a better way to avoid breaking existing code,
-         we need tell the difference from 
-         {[
-           1. [@@bs.val "x"]
-           2. external x : .. "x" [@@bs.val ]
-           3. external x : .. ""  [@@bs.val]    ]}
-      *)         
-    | {module_as_val = Some external_module_name ;
-
-       get_index = false;
-       val_name ;
-       new_name ;
-
-       external_module_name = None ;
-       val_send = `Nm_na;
-       val_send_pipe = None;    
-       splice ;
-       call_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       mk_obj = false ;} ->
-      begin match arg_types_ty, new_name, val_name  with         
-        | [], `Nm_na,  _ -> Js_module_as_var external_module_name
-        | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
-        | _, #bundle_source, #bundle_source ->
-          Location.raise_errorf ~loc "conflict attributes found"
-        | _, (`Nm_val _ | `Nm_external _) , `Nm_na
-          -> Js_module_as_class external_module_name
-        | _, `Nm_payload _ , `Nm_na
-          ->
-          Location.raise_errorf ~loc
-            "conflict attributes found: (bs.new should not carry payload here)"
-
-      end
-    | {module_as_val = Some _}
-      -> Location.raise_errorf ~loc "conflict attributes found" 
-    | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
-       splice; 
-       external_module_name;
-
-       val_name = `Nm_na ;
-       module_as_val = None;
-       val_send = `Nm_na ;
-       val_send_pipe = None;    
-
-       set_index = false;
-       get_index = false;
-       new_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na 
       } -> 
-      Js_call {splice; name; external_module_name}
-    | {call_name = #bundle_source } 
-      -> Location.raise_errorf ~loc "conflict attributes found"
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+        let arg_kinds, new_arg_types_ty, result_types = 
+          List.fold_right 
+            (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) -> 
+               let arg_label = Ast_core_type.label_name label in 
+               let new_arg_label, new_ty, output_tys = 
+                 match arg_label with 
+                 | Empty -> 
+                   let arg_type, new_ty = get_arg_type ~nolabel:true false ty in 
+                   begin match arg_type with 
+                     | Extern_unit ->  { Ast_ffi_types. arg_label; arg_type }, new_ty, result_types
+                     | _ ->  
+                       Location.raise_errorf ~loc "expect label, optional, or unit here"
+                   end 
+                 | Label name -> 
+                   let arg_type, new_ty = get_arg_type ~nolabel:false false ty in 
+                   begin match arg_type with 
+                     | Ignore -> { arg_label = Empty ; arg_type }, new_ty, result_types
+                     
+                     | Nothing | Array -> 
+                       let s = (Lam_methname.translate ~loc name) in
+                       {arg_label = Label s ; arg_type }, new_ty, 
+                       ((name , [], new_ty) :: result_types)
+                     | Int _  -> 
+                      let s = Lam_methname.translate ~loc name in
+                      {arg_label = Label s; arg_type}, new_ty, ((name, [], Ast_literal.type_int ~loc ()) :: result_types)  
+                     | NullString _ -> 
+                      let s = Lam_methname.translate ~loc name in
+                      {arg_label = Label s; arg_type}, new_ty, 
+                      ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
+                     | Extern_unit -> assert false 
+                     | NonNullString _ 
+                       ->  
+                       Location.raise_errorf ~loc 
+                         "bs.obj label %s does not support such arg type" name
+                   end
+                 | Optional name -> 
+                   let arg_type, new_ty_extract = get_arg_type ~nolabel:false true ty in 
+                   let new_ty = Ast_core_type.lift_option_type new_ty_extract in 
+                   begin match arg_type with 
+                     | Ignore -> 
+                      {arg_label = Empty ; arg_type}, new_ty, result_types
+                     
+                     | Nothing | Array -> 
+                       let s = (Lam_methname.translate ~loc name) in 
+                       {arg_label = Optional s; arg_type}, new_ty, 
+                       ( (name, [], Ast_comb.to_undefined_type loc new_ty_extract) ::  result_types)
+                     | Int _  -> 
+                      let s = Lam_methname.translate ~loc name in 
+                      {arg_label = Optional s ; arg_type }, new_ty,
+                      ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)                      
+                     | NullString _  -> 
+                      let s = Lam_methname.translate ~loc name in 
+                      {arg_label = Optional s ; arg_type }, new_ty,
+                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)                      
+                     | Extern_unit   -> assert false 
+                     | NonNullString _ 
+                       ->  
+                       Location.raise_errorf ~loc
+                         "bs.obj label %s does not support such arg type" name                        
+                   end
+               in     
+               (
+                 new_arg_label::arg_labels,
+                 (label, new_ty,attr,loc) :: arg_types, 
+                 output_tys)) arg_types_ty 
+            ( [], [], []) in 
+        let result = 
+          if Ast_core_type.is_any  new_result_type then            
+            Ast_core_type.make_obj ~loc result_types 
+          else new_result_type 
+        in
+        begin 
+          (             
+            List.fold_right (fun (label,ty,attrs,loc) acc -> 
+                Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
+              ) new_arg_types_ty result
+          ) ,
+          prim_name,
+          Ffi_obj_create arg_kinds,
+          left_attrs
+        end
 
-    | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-       external_module_name;
+      | _ -> Location.raise_errorf ~loc "conflict attributes found [@@bs.obj]"  
 
-       call_name = `Nm_na ;
-       module_as_val = None;
-       val_send = `Nm_na ;
-       val_send_pipe = None;    
-       set_index = false;
-       get_index = false;
-       new_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na 
+    end  
 
-      } 
-      -> 
-      Js_global { name; external_module_name}
-    | {val_name = #bundle_source }
-      -> Location.raise_errorf ~loc "conflict attributes found"
-    | {splice ;
-       external_module_name = (Some _ as external_module_name);
+  else   
+    let splice = st.splice in 
+    let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
+      List.fold_right 
+        (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
+           let arg_label = Ast_core_type.label_name label in 
+           let arg_type, new_ty = 
+             match arg_label with 
+             | Optional _  -> 
+             
+              let arg_type , new_ty = get_arg_type ~nolabel:false true ty in 
+              begin match arg_type with 
+              | NonNullString _ -> 
+                (* ?x:([`x of int ] [@bs.string]) does not make sense *)
+                Location.raise_errorf 
+                  ~loc
+                     "[@@bs.string] does not work with optional when it has arities in label %s" label
+              | _ -> 
+                arg_type, Ast_core_type.lift_option_type new_ty end
+             | Label _ | Empty -> 
+              get_arg_type ~nolabel:(arg_label = Empty) false  ty in
+           (if i = 0 && splice  then
+              match arg_type with 
+              | Array  -> ()
+              | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
+           ({ Ast_ffi_types.arg_label  ; 
+              arg_type 
+            } :: arg_type_specs,
+            (label, new_ty,attr,loc) :: arg_types,
+            i + 1)
+        ) arg_types_ty 
+        (match st with
+         | {val_send_pipe = Some obj} ->      
+           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in 
+           [{ arg_label = Empty ; 
+              arg_type 
+            }],
+           ["", new_ty, [], obj.ptyp_loc]
+           ,0
+         | {val_send_pipe = None } -> [],[], 0) in 
 
-       val_name = `Nm_na ;         
-       call_name = `Nm_na ;
-       module_as_val = None;
-       val_send = `Nm_na ;
-       val_send_pipe = None;             
-       set_index = false;
-       get_index = false;
-       new_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
+    let ffi : Ast_ffi_types.ffi  = match st with           
+      | {set_index = true;
 
-      }
-      ->
-      let name = string_of_bundle_source prim_name_or_pval_prim in
-      if arg_type_specs_length  = 0 then
+         val_name = `Nm_na; 
+         external_module_name = None ;
+         module_as_val = None;
+         val_send = `Nm_na;
+         val_send_pipe = None;    
+         splice = false;
+         get_index = false;
+         new_name = `Nm_na;
+         call_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
+        } 
+        ->
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+        if arg_type_specs_length = 3 then 
+          Js_set_index
+        else 
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+
+      | {set_index = true; _}
+        ->
+        Location.raise_errorf ~loc "conflict attributes found"        
+
+      | {get_index = true;
+
+         val_name = `Nm_na; 
+         external_module_name = None ;
+         module_as_val = None;
+         val_send = `Nm_na;
+         val_send_pipe = None;    
+
+         splice = false;
+         new_name = `Nm_na;
+         call_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
+        } ->
+        if String.length prim_name <> 0 then 
+          Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+        if arg_type_specs_length = 2 then 
+          Js_get_index
+        else Location.raise_errorf ~loc "Ill defined attribute [@@bs.get_index] (arity of 2)"
+
+      | {get_index = true; _}
+        -> Location.raise_errorf ~loc "conflict attributes found"        
+
+
+
+      | {module_as_val = Some external_module_name ;
+
+         get_index = false;
+         val_name ;
+         new_name ;
+
+         external_module_name = None ;
+         val_send = `Nm_na;
+         val_send_pipe = None;    
+         splice ;
+         call_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
+         mk_obj = false ;} ->
+        begin match arg_types_ty, new_name, val_name  with         
+          | [], `Nm_na,  _ -> Js_module_as_var external_module_name
+          | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
+          | _, #bundle_source, #bundle_source ->
+            Location.raise_errorf ~loc "conflict attributes found"
+          | _, (`Nm_val _ | `Nm_external _) , `Nm_na
+            -> Js_module_as_class external_module_name
+          | _, `Nm_payload _ , `Nm_na
+            ->
+            Location.raise_errorf ~loc
+              "conflict attributes found: (bs.new should not carry payload here)"
+
+        end
+      | {module_as_val = Some _}
+        -> Location.raise_errorf ~loc "conflict attributes found" 
+      | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+         splice; 
+         external_module_name;
+
+         val_name = `Nm_na ;
+         module_as_val = None;
+         val_send = `Nm_na ;
+         val_send_pipe = None;    
+
+         set_index = false;
+         get_index = false;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na 
+        } -> 
+        Js_call {splice; name; external_module_name}
+      | {call_name = #bundle_source } 
+        -> Location.raise_errorf ~loc "conflict attributes found"
+
+      | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+         external_module_name;
+
+         call_name = `Nm_na ;
+         module_as_val = None;
+         val_send = `Nm_na ;
+         val_send_pipe = None;    
+         set_index = false;
+         get_index = false;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na 
+
+        } 
+        -> 
         Js_global { name; external_module_name}
-      else  Js_call {splice; name; external_module_name}                     
-    | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
-       splice;
-       val_send_pipe = None;
-       val_name = `Nm_na  ;
-       call_name = `Nm_na ;
-       module_as_val = None;
-       set_index = false;
-       get_index = false;
-       new_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       external_module_name = None ;
-      } -> 
-      if arg_type_specs_length > 0 then 
-        Js_send {splice ; name; pipe = false}
-      else 
-        Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
-    | {val_send = #bundle_source} 
-      -> Location.raise_errorf ~loc "conflict attributes found"
+      | {val_name = #bundle_source }
+        -> Location.raise_errorf ~loc "conflict attributes found"
+      | {splice ;
+         external_module_name = (Some _ as external_module_name);
 
-    | {val_send_pipe = Some typ; 
-       (* splice = (false as splice); *)
-       val_send = `Nm_na;
-       val_name = `Nm_na  ;
-       call_name = `Nm_na ;
-       module_as_val = None;
-       set_index = false;
-       get_index = false;
-       new_name = `Nm_na;
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       external_module_name = None ;
-      } -> 
-      (** can be one argument *)
-      Js_send {splice  ;
-               name = string_of_bundle_source prim_name_or_pval_prim;
-               pipe = true}
+         val_name = `Nm_na ;         
+         call_name = `Nm_na ;
+         module_as_val = None;
+         val_send = `Nm_na ;
+         val_send_pipe = None;             
+         set_index = false;
+         get_index = false;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
 
-    | {val_send_pipe = Some _ } 
-      -> Location.raise_errorf ~loc "conflict attributes found"
+        }
+        ->
+        let name = string_of_bundle_source prim_name_or_pval_prim in
+        if arg_type_specs_length  = 0 then
+          Js_global { name; external_module_name}
+        else  Js_call {splice; name; external_module_name}                     
+      | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name); 
+         splice;
+         val_send_pipe = None;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
+         module_as_val = None;
+         set_index = false;
+         get_index = false;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
+         external_module_name = None ;
+        } -> 
+        if arg_type_specs_length > 0 then 
+          Js_send {splice ; name; pipe = false}
+        else 
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+      | {val_send = #bundle_source} 
+        -> Location.raise_errorf ~loc "conflict attributes found"
 
-    | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-       external_module_name;
+      | {val_send_pipe = Some typ; 
+         (* splice = (false as splice); *)
+         val_send = `Nm_na;
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
+         module_as_val = None;
+         set_index = false;
+         get_index = false;
+         new_name = `Nm_na;
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
+         external_module_name = None ;
+        } -> 
+        (** can be one argument *)
+        Js_send {splice  ;
+                 name = string_of_bundle_source prim_name_or_pval_prim;
+                 pipe = true}
 
-       val_name = `Nm_na  ;
-       call_name = `Nm_na ;
-       module_as_val = None;
-       set_index = false;
-       get_index = false;
-       val_send = `Nm_na ;
-       val_send_pipe = None;             
-       set_name = `Nm_na ;
-       get_name = `Nm_na ;
-       splice 
-      } 
-      -> Js_new {name; external_module_name; splice}
-    | {new_name = #bundle_source }
-      -> Location.raise_errorf ~loc "conflict attributes found"
+      | {val_send_pipe = Some _ } 
+        -> Location.raise_errorf ~loc "conflict attributes found"
 
-    | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+      | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+         external_module_name;
 
-       val_name = `Nm_na  ;
-       call_name = `Nm_na ;
-       module_as_val = None;
-       set_index = false;
-       get_index = false;
-       val_send = `Nm_na ;
-       val_send_pipe = None;             
-       new_name = `Nm_na ;
-       get_name = `Nm_na ;
-       external_module_name = None
-      } 
-      -> 
-      if arg_type_specs_length = 2 then 
-        Js_set name 
-      else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
+         module_as_val = None;
+         set_index = false;
+         get_index = false;
+         val_send = `Nm_na ;
+         val_send_pipe = None;             
+         set_name = `Nm_na ;
+         get_name = `Nm_na ;
+         splice 
+        } 
+        -> Js_new {name; external_module_name; splice}
+      | {new_name = #bundle_source }
+        -> Location.raise_errorf ~loc "conflict attributes found"
 
-    | {set_name = #bundle_source}
-      -> Location.raise_errorf ~loc "conflict attributes found"
+      | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
 
-    | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
+         module_as_val = None;
+         set_index = false;
+         get_index = false;
+         val_send = `Nm_na ;
+         val_send_pipe = None;             
+         new_name = `Nm_na ;
+         get_name = `Nm_na ;
+         external_module_name = None
+        } 
+        -> 
+        if arg_type_specs_length = 2 then 
+          Js_set name 
+        else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
 
-       val_name = `Nm_na  ;
-       call_name = `Nm_na ;
-       module_as_val = None;
-       set_index = false;
-       get_index = false;
-       val_send = `Nm_na ;
-       val_send_pipe = None;             
-       new_name = `Nm_na ;
-       set_name = `Nm_na ;
-       external_module_name = None
-      }
-      ->
-      if arg_type_specs_length = 1 then  
-        Js_get name
-      else 
-        Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
-    | {get_name = #bundle_source}
-      -> Location.raise_errorf ~loc "conflict attributes found"
-    | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in
-  begin 
-    Ast_ffi_types.check_ffi ~loc ffi;
-    (match ffi, new_result_type with
-     | Obj_create arg_labels ,  {ptyp_desc = Ptyp_any; _}
-       ->
-       (* special case: 
-          {[ external f : int -> string -> _ = "" ]}
-       *)
-       let result =
-         Ast_core_type.make_obj ~loc (
-           List.fold_right2  
-             (fun arg (label : Ast_core_type.arg_label) acc ->
-                match arg, label with
-                | (_, ty, _,_), Label s
-                  -> (s , [], ty) :: acc                 
-                | (_, ty, _,_), Optional s
-                  ->
-                  (s, [], 
-                   Ast_comb.to_undefined_type loc @@ 
-                   Ast_core_type.extract_option_type_exn ty
-                  ) :: acc 
-                | (_, _, _,_), Empty -> acc                
-             ) arg_types_ty arg_labels [])  in
+      | {set_name = #bundle_source}
+        -> Location.raise_errorf ~loc "conflict attributes found"
 
-       List.fold_right (fun (label,ty,attrs,loc) acc -> 
-           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
-         ) new_arg_types_ty result 
+      | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
 
-     (* Ast_core_type.replace_result type_annotation result *)
-     | _  ->
-       List.fold_right (fun (label,ty,attrs,loc) acc -> 
-           Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
-         ) new_arg_types_ty new_result_type
-    ) ,
-    prim_name,
-    (Ffi_bs (arg_type_specs, result_type_spec = Unit ,  ffi)), left_attrs
-  end
+         val_name = `Nm_na  ;
+         call_name = `Nm_na ;
+         module_as_val = None;
+         set_index = false;
+         get_index = false;
+         val_send = `Nm_na ;
+         val_send_pipe = None;             
+         new_name = `Nm_na ;
+         set_name = `Nm_na ;
+         external_module_name = None
+        }
+        ->
+        if arg_type_specs_length = 1 then  
+          Js_get name
+        else 
+          Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+      | {get_name = #bundle_source}
+        -> Location.raise_errorf ~loc "conflict attributes found"
+      | _ ->  Location.raise_errorf ~loc "Illegal attribute found"  in 
+    begin 
+      Ast_ffi_types.check_ffi ~loc ffi;
+      (
+        List.fold_right (fun (label,ty,attrs,loc) acc -> 
+            Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
+          ) new_arg_types_ty new_result_type
+      ) ,
+      prim_name,
+      (Ffi_bs (arg_type_specs, result_type_spec = Extern_unit ,  ffi)), left_attrs
+    end
 
 let handle_attributes_as_string 
     pval_loc
@@ -99033,17 +99156,17 @@ let handle_attributes_as_string
 
 let pval_prim_of_labels labels = 
   let encoding = 
-    let (arg_kinds, vs) = 
+    let arg_kinds = 
       List.fold_right 
-        (fun {Asttypes.loc ; txt } (arg_kinds,v)
+        (fun {Asttypes.loc ; txt } arg_kinds
           ->
             let arg_label =  Ast_core_type.Label (Lam_methname.translate ~loc txt) in
             {Ast_ffi_types.arg_type = Nothing ; 
-             arg_label  } :: arg_kinds, arg_label :: v
+             arg_label  } :: arg_kinds
         )
-        labels ([],[]) in 
-    Ast_ffi_types.to_string @@
-    Ffi_bs (arg_kinds , false, Obj_create vs) in 
+        labels [] in 
+    Ast_ffi_types.to_string 
+      (Ffi_obj_create arg_kinds)   in 
   [""; encoding]
 
 
