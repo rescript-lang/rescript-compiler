@@ -1,5 +1,31 @@
 # Phony targets
 
+
+# collect file groups
+
+1. we need check integrity of files here?
+cases:
+one directory have two same files -- ignore, does not matter here?
+two directories ha
+
+# generate ninja fron file groups
+
+`Bsb_build_ui.file_group list`
+one directory, one kind --
+when we merge we will have two `dirs`
+
+do we allow duplicate modules?
+
+suppose :
+lib -> 0
+
+dev -> 1
+dev -> 2 
+dev -> 3 
+
+so that they can have same names
+
+
 .default
 All  output (not just js in case we support native build)
 

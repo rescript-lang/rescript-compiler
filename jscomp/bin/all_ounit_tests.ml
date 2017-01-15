@@ -1311,6 +1311,7 @@ val find_and_split :
 
 val exists : ('a -> bool) -> 'a array -> bool 
 
+val is_empty : 'a array -> bool 
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1475,6 +1476,9 @@ let exists p a =
     else loop (succ i) in
   loop 0
 
+
+let is_empty arr =
+  Array.length arr = 0
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"

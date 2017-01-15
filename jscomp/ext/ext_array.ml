@@ -159,3 +159,7 @@ let exists p a =
     else if p (Array.unsafe_get a i) then true
     else loop (succ i) in
   loop 0
+
+
+let is_empty arr =
+  Array.length arr = 0

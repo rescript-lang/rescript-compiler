@@ -266,6 +266,10 @@ function exists(p, a) {
   };
 }
 
+function is_empty(arr) {
+  return +(arr.length === 0);
+}
+
 exports.reverse_range    = reverse_range;
 exports.reverse_in_place = reverse_in_place;
 exports.reverse          = reverse;
@@ -280,4 +284,5 @@ exports.rfind_and_split  = rfind_and_split;
 exports.find_with_index  = find_with_index;
 exports.find_and_split   = find_and_split;
 exports.exists           = exists;
+exports.is_empty         = is_empty;
 /* No side effect */

@@ -31,6 +31,7 @@ let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
 
+let type_ = "type"
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -2797,6 +2798,7 @@ val find_and_split :
 
 val exists : ('a -> bool) -> 'a array -> bool 
 
+val is_empty : 'a array -> bool 
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2961,6 +2963,9 @@ let exists p a =
     else loop (succ i) in
   loop 0
 
+
+let is_empty arr =
+  Array.length arr = 0
 end
 module Ext_json : sig 
 #1 "ext_json.mli"
@@ -6181,13 +6186,15 @@ type public =
   | Export_set of String_set.t 
   | Export_none
     
+type dir_index = int 
 
 type  file_group = 
   { dir : string ;
     sources : Binary_cache.t ; 
     resources : string list ;
     bs_dependencies : string list;
-    public : public
+    public : public;
+    dir_index : dir_index; 
   } 
 
 type t = 
@@ -6196,14 +6203,19 @@ type t =
     globbed_dirs : string list ; 
   }
 
+val lib_dir_index : dir_index 
+
+val get_current_number_of_dev_groups : unit -> int 
 
 val parsing_source : 
-  string -> Ext_json.t String_map.t -> t
+  dir_index -> 
+  string -> Ext_json.t String_map.t -> t 
 
 (** entry is to the 
     [sources] in the schema
 *)
 val parsing_sources : 
+  dir_index -> 
   string -> 
   Ext_json.t array ->
   t 
@@ -6239,14 +6251,42 @@ type public =
   | Export_all 
   | Export_set of String_set.t 
   | Export_none
+  
+type dir_index = int 
+let lib_dir_index = 0
 
+let get_dev_index, get_current_number_of_dev_groups =
+  let dir_index = ref 0 in 
+  ((fun () -> incr dir_index ; !dir_index),
+  (fun _ -> !dir_index ))
+
+
+
+(** 
+0 : lib 
+1 : dev 1 
+2 : dev 2 
+*)  
 type  file_group = 
   { dir : string ;
     sources : Binary_cache.t ; 
     resources : string list ;
     bs_dependencies : string list ;
-    public : public
+    public : public ;
+    dir_index : dir_index 
   } 
+
+(**
+    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
+     we need add a new line in the end,
+     otherwise it will be idented twice
+ *)
+
+type t = 
+  { files :  file_group list ; 
+    intervals :  Ext_file_pp.interval list ;    
+    globbed_dirs : string list ; 
+  }
 
 let (//) = Ext_filename.combine
 
@@ -6283,7 +6323,7 @@ let print_arrays file_array oc offset  =
 
 
 let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
-  if Array.length s  = 0 then 
+  if  Ext_array.is_empty s  then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
       let dyn_file_array = String_vec.make (Array.length files_array) in 
@@ -6309,14 +6349,6 @@ let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_p
         | _ -> acc
       ) String_map.empty s
 
-(* we need add a new line in the end,
-   otherwise it will be idented twice
-*)
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
 
 let (++) 
     ({files = a; 
@@ -6335,8 +6367,8 @@ let (++)
 let empty = { files = []; intervals  = []; globbed_dirs = [];  }
 
 
-
-let rec parsing_source cwd (x : Ext_json.t String_map.t )
+(** [dir_index] can be inherited  *)
+let rec parsing_source (dir_index : int) cwd (x : Ext_json.t String_map.t )
   : t =
   let dir = ref cwd in
   let sources = ref String_map.empty in
@@ -6344,6 +6376,7 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   let bs_dependencies = ref [] in
   let public = ref Export_none in 
 
+  let current_dir_index = ref dir_index in 
   let update_queue = ref [] in 
   let globbed_dirs = ref [] in 
 
@@ -6352,6 +6385,11 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   let children_globbed_dirs = ref [] in 
   let () = 
     x 
+    |?  (Bsb_build_schemas.type_, 
+      `Str (fun s -> 
+        if Ext_string.equal s   "dev" then
+          current_dir_index := get_dev_index ()
+       ))
     |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Ext_filename.simple_convert_node_path_to_os_path s))
     |?  (Bsb_build_schemas.files ,
          `Arr_loc (fun s loc_start loc_end ->
@@ -6420,7 +6458,7 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
           Array.fold_left (fun  origin json ->
               match json with 
               | `Obj m -> 
-                parsing_source !dir  m  ++ origin
+                parsing_source !current_dir_index !dir  m  ++ origin
               | _ -> origin ) empty s in 
         children :=  res.files ; 
         children_update_queue := res.intervals;
@@ -6434,7 +6472,8 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
        sources = !sources; 
        resources = !resources;
        bs_dependencies = !bs_dependencies;
-       public = !public
+       public = !public;
+       dir_index = !current_dir_index;
       } 
       :: !children;
     intervals = !update_queue @ !children_update_queue ;
@@ -6442,11 +6481,11 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   } 
 
 
-let  parsing_sources cwd (file_groups : Ext_json.t array)  = 
+let  parsing_sources dir_index cwd (file_groups : Ext_json.t array)  = 
   Array.fold_left (fun  origin x ->
       match x with 
       | `Obj map ->  
-        parsing_source cwd map ++ origin
+        parsing_source dir_index cwd map ++ origin
       | _ -> origin
     ) empty  file_groups 
 
@@ -7617,7 +7656,7 @@ let output_ninja
     package_name
     ocamllex
     bs_external_includes
-    bs_file_groups
+    (bs_file_groups : Bsb_build_ui.file_group list)
     bsc_flags
     ppx_flags
     bs_dependencies
@@ -7625,7 +7664,7 @@ let output_ninja
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
-  let bs_groups, source_dirs,static_resources  =
+  let bs_groups  , source_dirs,static_resources  =
     List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
         String_map.merge (fun modname k1 k2 ->
             match k1 , k2 with
@@ -7637,7 +7676,8 @@ let output_ninja
             | None, Some v ->  Some v
           ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
       ) (String_map.empty,[],[]) bs_file_groups in
-  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
+  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) 
+    (bs_groups : Binary_cache.module_info String_map.t) ;
   let bsc_flags =
     String.concat " " bsc_flags
   in
@@ -8054,14 +8094,18 @@ let write_ninja_file bsc_dir cwd =
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
 
       |? (Bsb_build_schemas.sources, `Obj (fun x ->
-          let res : Bsb_build_ui.t =  Bsb_build_ui.parsing_source
+          let res : Bsb_build_ui.t =  
+            Bsb_build_ui.parsing_source
+              Bsb_build_ui.lib_dir_index
               Filename.current_dir_name x in
           handle_bsb_build_ui res
         ))
       |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
 
           let res : Bsb_build_ui.t  =
-            Bsb_build_ui.parsing_sources Filename.current_dir_name xs
+            Bsb_build_ui.parsing_sources 
+              Bsb_build_ui.lib_dir_index
+              Filename.current_dir_name xs
           in
           handle_bsb_build_ui res
         ))

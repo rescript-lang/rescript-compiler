@@ -27,3 +27,5 @@ let ninja = "ninja"
 let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
+
+let type_ = "type"

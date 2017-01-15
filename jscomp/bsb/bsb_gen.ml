@@ -34,7 +34,7 @@ let output_ninja
     package_name
     ocamllex
     bs_external_includes
-    bs_file_groups
+    (bs_file_groups : Bsb_build_ui.file_group list)
     bsc_flags
     ppx_flags
     bs_dependencies
@@ -42,7 +42,7 @@ let output_ninja
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
-  let bs_groups, source_dirs,static_resources  =
+  let bs_groups  , source_dirs,static_resources  =
     List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
         String_map.merge (fun modname k1 k2 ->
             match k1 , k2 with
@@ -54,7 +54,8 @@ let output_ninja
             | None, Some v ->  Some v
           ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
       ) (String_map.empty,[],[]) bs_file_groups in
-  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
+  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) 
+    (bs_groups : Binary_cache.module_info String_map.t) ;
   let bsc_flags =
     String.concat " " bsc_flags
   in

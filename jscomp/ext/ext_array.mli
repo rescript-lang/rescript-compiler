@@ -59,3 +59,5 @@ val find_and_split :
   'b -> 'a split
 
 val exists : ('a -> bool) -> 'a array -> bool 
+
+val is_empty : 'a array -> bool 

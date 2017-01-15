@@ -176,14 +176,18 @@ let write_ninja_file bsc_dir cwd =
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
 
       |? (Bsb_build_schemas.sources, `Obj (fun x ->
-          let res : Bsb_build_ui.t =  Bsb_build_ui.parsing_source
+          let res : Bsb_build_ui.t =  
+            Bsb_build_ui.parsing_source
+              Bsb_build_ui.lib_dir_index
               Filename.current_dir_name x in
           handle_bsb_build_ui res
         ))
       |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
 
           let res : Bsb_build_ui.t  =
-            Bsb_build_ui.parsing_sources Filename.current_dir_name xs
+            Bsb_build_ui.parsing_sources 
+              Bsb_build_ui.lib_dir_index
+              Filename.current_dir_name xs
           in
           handle_bsb_build_ui res
         ))
