@@ -5282,7 +5282,7 @@ end = struct
 
 # 27
 type elt = string
-let compare_elt = Ext_string.compare
+let compare_elt = Ext_string.compare 
 type  t = elt Set_gen.t 
 
 
