@@ -57202,6 +57202,8 @@ val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
+val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
+
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
 
@@ -57329,6 +57331,22 @@ let to_list_map f a =
          | None -> res) in
   tolist (Array.length a - 1) []
 
+
+(* TODO: What would happen if [f] raise, memory leak? *)
+let of_list_map f a = 
+  match a with 
+  | [] -> [||]
+  | h::tl -> 
+    let hd = f h in 
+    let len = List.length tl + 1 in 
+    let arr = Array.make len hd  in
+    let rec fill i = function
+    | [] -> arr 
+    | hd :: tl -> 
+      Array.unsafe_set arr i (f hd); 
+      fill (i + 1) tl in 
+    fill 1 tl
+  
 (**
 {[
 # rfind_with_index [|1;2;3|] (=) 2;;
@@ -69637,7 +69655,8 @@ val string_of_primitive : Lam.primitive -> string
 
 val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
 
-val get : Lam.t -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
+val field_flatten_get : 
+  Lam.t -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
 val add_required_module : Ident.t -> Lam_stats.meta -> unit
 
@@ -69946,7 +69965,7 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
       a temporary field 
 
    3. It would be nice that when the block is mutable, its 
-       mutable fields are explicit
+       mutable fields are explicit, since wen can not inline an mutable block access
 *)
 
 let element_of_lambda (lam : Lam.t) : Lam_stats.element = 
@@ -69960,12 +69979,12 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   | _ -> NA 
 
 let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind = 
-  xs 
-  |> List.map element_of_lambda 
-  |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
+  Lam_stats.ImmutableBlock( Ext_array.of_list_map (fun x -> 
+  element_of_lambda x ) xs , kind)
 
-let get lam v i tbl : Lam.t =
-  match (Ident_hashtbl.find_opt tbl v  : Lam_stats.kind option)   with 
+let field_flatten_get
+   lam v i (tbl : Lam_stats.kind Ident_hashtbl.t) : Lam.t =
+  match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
       ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
@@ -93046,6 +93065,7 @@ val pp_arities : Format.formatter -> Lam.function_arities -> unit
 
 val get_arity : Lam_stats.meta -> Lam.t -> Lam.function_arities
 
+val pp_ident_tbl : Format.formatter -> Lam_stats.ident_tbl -> unit  
 (* val dump_exports_arities : Lam_stats.meta -> unit *)
 
 
@@ -93113,6 +93133,31 @@ let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) =
   Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
     tbl
 
+
+let pp_kind fmt (kind : Lam_stats.kind) = 
+  match kind with 
+  | ImmutableBlock (arr,_) -> 
+    pp fmt "Imm(%d)" (Array.length arr)
+  | MutableBlock (arr) ->     
+    pp fmt "Mutable(%d)" (Array.length arr)
+  | Constant _  ->
+    pp fmt "Constant"
+  | Module id -> 
+    pp fmt "%s/%d" id.name id.stamp 
+  | Function _ -> 
+    pp fmt "function"
+  | Exception ->
+    pp fmt "Exception" 
+  | Parameter -> 
+    pp fmt "Parameter"  
+  | NA -> 
+    pp fmt "NA"
+
+let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
+    Ident.print k pp_kind v)
+    ident_tbl
+      
 let merge 
     ((n : int ), params as y)
     (x : Lam.function_arities) : Lam.function_arities = 
@@ -95426,12 +95471,21 @@ let simplify_alias
     | Lvar v ->
       begin match (Ident_hashtbl.find_opt meta.alias_tbl v) with
       | None -> lam
-      | Some v -> Lam.var v
+      | Some v -> Lam.var v 
+        (* This is wrong
+            currently alias table has info 
+            include -> Array
+
+            however, (field id Array/xx) 
+            does not result in a reduction, so we 
+            still pick the old one (field id include)
+            which makes dead code elimination wrong
+         *)
       end
       (* GLOBAL module needs to be propogated *)
     | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
            l ) -> 
-      (* This is detection of MODULE ALIAS 
+      (* This is detection of global MODULE inclusion
           we need track all global module aliases, when it's
           passed as a parameter(escaped), we need do the expansion
           since global module access is not the same as local module
@@ -95446,10 +95500,19 @@ let simplify_alias
             for the inner expression
         *)
       else v
-    | Lprim {primitive = Pfield (i,_); args =  [Lvar v]; _} -> 
+    | Lprim {primitive = (Pfield (i,_) as primitive); args =  [arg]; loc} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
-      Lam_util.get lam v  i meta.ident_tbl 
+      begin match  (* simpl*)  arg with 
+      | Lvar v ->    
+        Lam_util.field_flatten_get lam
+         v  i meta.ident_tbl 
+      | _ ->  
+        Lam.prim ~primitive ~args:[simpl arg] loc 
+      end
+    | Lprim {primitive; args; loc } 
+      -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
+      
     | Lifthenelse(Lvar id as l1, l2, l3) 
       -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl id with 
@@ -95484,9 +95547,7 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim {primitive; args; loc } 
-      -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
-
+ 
     (* complicated 
         1. inline this function
         2. ...
@@ -96249,12 +96310,6 @@ let compile  ~filename output_prefix env _sigs
     |> _d "simplify_lets"
     
   in
-  (* Debug identifier table *)
-  (* Lam_stats_util.pp_alias_tbl Format.err_formatter meta.alias_tbl; *)
-  (* Lam_stats_util.dump_exports_arities meta ; *)
-  (* Lam_stats_util.pp_arities_tbl Format.err_formatter meta.arities_tbl; *)
-
-  (* Dump for debugger *)
 
   let ({Lam_coercion.groups = rest } as coerced_input ) = 
     Lam_coercion.coerce_and_group_big_lambda  

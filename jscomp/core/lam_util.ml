@@ -258,7 +258,7 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
       a temporary field 
 
    3. It would be nice that when the block is mutable, its 
-       mutable fields are explicit
+       mutable fields are explicit, since wen can not inline an mutable block access
 *)
 
 let element_of_lambda (lam : Lam.t) : Lam_stats.element = 
@@ -272,12 +272,12 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   | _ -> NA 
 
 let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind = 
-  xs 
-  |> List.map element_of_lambda 
-  |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
+  Lam_stats.ImmutableBlock( Ext_array.of_list_map (fun x -> 
+  element_of_lambda x ) xs , kind)
 
-let get lam v i tbl : Lam.t =
-  match (Ident_hashtbl.find_opt tbl v  : Lam_stats.kind option)   with 
+let field_flatten_get
+   lam v i (tbl : Lam_stats.kind Ident_hashtbl.t) : Lam.t =
+  match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
       ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none

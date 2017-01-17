@@ -30,4 +30,9 @@ let suites =
         Ext_array.reverse [|1;2|] =~ [|2;1|];
         Ext_array.reverse [||] =~ [||]  
     end     ;
+    __LOC__ >:: begin fun _ -> 
+        Ext_array.of_list_map succ [] =~ [||];
+        Ext_array.of_list_map succ [1]  =~ [|2|];
+        Ext_array.of_list_map succ [1;2;3]  =~ [|2;3;4|];
+    end
     ]

@@ -39,12 +39,21 @@ let simplify_alias
     | Lvar v ->
       begin match (Ident_hashtbl.find_opt meta.alias_tbl v) with
       | None -> lam
-      | Some v -> Lam.var v
+      | Some v -> Lam.var v 
+        (* This is wrong
+            currently alias table has info 
+            include -> Array
+
+            however, (field id Array/xx) 
+            does not result in a reduction, so we 
+            still pick the old one (field id include)
+            which makes dead code elimination wrong
+         *)
       end
       (* GLOBAL module needs to be propogated *)
     | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
            l ) -> 
-      (* This is detection of MODULE ALIAS 
+      (* This is detection of global MODULE inclusion
           we need track all global module aliases, when it's
           passed as a parameter(escaped), we need do the expansion
           since global module access is not the same as local module
@@ -59,10 +68,19 @@ let simplify_alias
             for the inner expression
         *)
       else v
-    | Lprim {primitive = Pfield (i,_); args =  [Lvar v]; _} -> 
+    | Lprim {primitive = (Pfield (i,_) as primitive); args =  [arg]; loc} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
-      Lam_util.get lam v  i meta.ident_tbl 
+      begin match  (* simpl*)  arg with 
+      | Lvar v ->    
+        Lam_util.field_flatten_get lam
+         v  i meta.ident_tbl 
+      | _ ->  
+        Lam.prim ~primitive ~args:[simpl arg] loc 
+      end
+    | Lprim {primitive; args; loc } 
+      -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
+      
     | Lifthenelse(Lvar id as l1, l2, l3) 
       -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl id with 
@@ -97,9 +115,7 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim {primitive; args; loc } 
-      -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
-
+ 
     (* complicated 
         1. inline this function
         2. ...

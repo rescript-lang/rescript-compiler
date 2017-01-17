@@ -2781,6 +2781,8 @@ val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
+val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
+
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
 
@@ -2908,6 +2910,22 @@ let to_list_map f a =
          | None -> res) in
   tolist (Array.length a - 1) []
 
+
+(* TODO: What would happen if [f] raise, memory leak? *)
+let of_list_map f a = 
+  match a with 
+  | [] -> [||]
+  | h::tl -> 
+    let hd = f h in 
+    let len = List.length tl + 1 in 
+    let arr = Array.make len hd  in
+    let rec fill i = function
+    | [] -> arr 
+    | hd :: tl -> 
+      Array.unsafe_set arr i (f hd); 
+      fill (i + 1) tl in 
+    fill 1 tl
+  
 (**
 {[
 # rfind_with_index [|1;2;3|] (=) 2;;
