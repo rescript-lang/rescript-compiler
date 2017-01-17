@@ -123,42 +123,7 @@ CAMLprim value caml_string_length_based_compare(value s1, value s2)
 }
 
 
-/*
-CAMLprim value caml_fast_string_equal(value s1, value s2)
-{
-  mlsize_t sz1, sz2;
-  value * p1, * p2;
-  if(s1 == s2) return Val_true;
-  sz1 = Wosize_val(s1); // at least be 1 
-  sz2 = Wosize_val(s2);
-  if(sz1 != sz2) return Val_false;
-  p1 = Op_val(s1);
-  p2 = Op_val(s2);
-  
-  // unroll the loop 
-  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
 
-  if ( -- sz1 == 0) {return Val_true;};
-
-  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
-  
-  if ( -- sz1 == 0) {return Val_true;};
-
-  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
-
-  if ( -- sz1 == 0) {return Val_true; };
-
-  if (* (p1++) != * (p2 ++) ) {return Val_false;} ;
-  
-  if ( -- sz1 == 0) {return Val_true;}; 
-
-  do {
-    if(* (p1 ++) != * (p2++) ) return Val_false;
-  } while (-- sz1 > 0 );
-  return Val_true;
-  
-}
-*/
 /* local variables: */
 /* compile-command: "ocamlopt.opt -c ext_basic_hash_stubs.c" */
 /* end: */

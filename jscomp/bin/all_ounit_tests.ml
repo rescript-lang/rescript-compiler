@@ -11657,15 +11657,19 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ (Ext_string.compare "" ""  = 0);
       OUnit.assert_bool __LOC__ (Ext_string.compare "0" "0"  = 0);
+      OUnit.assert_bool __LOC__ (Ext_string.compare "" "acd" < 0);
+      OUnit.assert_bool __LOC__ (Ext_string.compare  "acd" "" > 0);
       for i = 0 to 256 do 
         let a = String.init i (fun _ -> '0') in 
         let b = String.init i (fun _ -> '0') in 
+        OUnit.assert_bool __LOC__ (Ext_string.compare  b a = 0);
         OUnit.assert_bool __LOC__ (Ext_string.compare a b = 0)
       done ;
       for i = 0 to 256 do 
         let a = String.init i (fun _ -> '0') in 
         let b = String.init i (fun _ -> '0') ^ "\000"in 
-        OUnit.assert_bool __LOC__ (not @@ (Ext_string.compare a b = 0))
+        OUnit.assert_bool __LOC__ (Ext_string.compare a b < 0);
+        OUnit.assert_bool __LOC__ (Ext_string.compare  b a  > 0)
       done ;
       
     end;
