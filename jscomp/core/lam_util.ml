@@ -173,7 +173,7 @@ let refine_let
   | None , _, _ -> 
     Lam.let_ Strict param arg  l
 
-let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
+let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_stats.kind) (let_kind : Lambda.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
@@ -253,13 +253,13 @@ let field_flatten_get
       ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
   | Some (ImmutableBlock (arr, _)) -> 
     begin match arr.(i) with 
-      | NA -> lam 
+      | NA -> lam ()
       | SimpleForm l -> l
     end
   | Some (Constant (Const_block (_,_,ls))) -> 
     Lam.const (List.nth  ls i)
   | Some _
-  | None -> lam 
+  | None -> lam ()
 
 
 (* TODO: check that if label belongs to a different 

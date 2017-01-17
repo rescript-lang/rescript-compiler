@@ -26,6 +26,20 @@ var N = 0;
 
 var v = List.length;
 
+var N0 = 0;
+
+var N1 = 0;
+
+var N2 = 0;
+
+var N3 = 0;
+
+var N4 = 0;
+
+var N5 = 0;
+
+var N6 = 0;
+
 var length = List.length;
 
 var hd = List.hd;
@@ -119,6 +133,13 @@ exports.v            = v;
 exports.Make         = Make;
 exports.X            = X;
 exports.U            = U;
+exports.N0           = N0;
+exports.N1           = N1;
+exports.N2           = N2;
+exports.N3           = N3;
+exports.N4           = N4;
+exports.N5           = N5;
+exports.N6           = N6;
 exports.length       = length;
 exports.hd           = hd;
 exports.tl           = tl;

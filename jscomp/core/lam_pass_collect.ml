@@ -90,12 +90,12 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
       
     | Lprim {primitive = Pgetglobal v; args = []; _} 
       -> 
-        Lam_util.alias meta  ident v (Module  v) kind; 
+        Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 
     | Lvar v 
       -> 
         (
          (* if Ident.global v then  *)
-         Lam_util.alias meta  ident v NA kind
+         Lam_util.alias_ident_or_global meta  ident v NA kind
            (* enven for not subsitution, it still propogate some properties *)
            (* else () *)
         )
