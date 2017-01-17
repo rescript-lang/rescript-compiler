@@ -3,6 +3,8 @@
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var List                    = require("../../lib/js/list");
 
+var a0 = Caml_builtin_exceptions.not_found;
+
 var b = List.length(/* :: */[
       1,
       /* :: */[
@@ -59,17 +61,15 @@ var List$1 = /* module */[
   /* length */3
 ];
 
-var a0 = Caml_builtin_exceptions.not_found;
+var a1 = a0;
 
-var a1 = Caml_builtin_exceptions.not_found;
+var a2 = a0;
 
-var a2 = Caml_builtin_exceptions.not_found;
+var a3 = a0;
 
-var a3 = Caml_builtin_exceptions.not_found;
+var a4 = a0;
 
-var a4 = Caml_builtin_exceptions.not_found;
-
-var a5 = Caml_builtin_exceptions.not_found;
+var a5 = a0;
 
 exports.a0   = a0;
 exports.a1   = a1;

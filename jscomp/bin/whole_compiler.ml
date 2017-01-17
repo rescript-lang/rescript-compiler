@@ -64529,7 +64529,7 @@ let not_ loc x  : t =
 
 let may_depend = Lam_module_ident.Hash_set.add 
 
-(** drop Lseq (L)*)
+(** drop Lseq (List! ) etc *)
 let rec drop_global_marker (lam : t) =
   match lam with 
   | Lsequence(Lprim{primitive=Pgetglobal id; args = []}, rest) ->
@@ -64803,7 +64803,7 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
 type required_modules = Lam_module_ident.Hash_set.t
 
 
-let convert exports lam = 
+let convert exports lam : _ * _  = 
   let alias = Ident_hashtbl.create 64 in 
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
   let rec
@@ -64811,15 +64811,10 @@ let convert exports lam =
     match lam with 
     | Lvar x -> 
       let var = Ident_hashtbl.find_default alias x x in
-      if var == x then 
-        Lvar var 
-      else 
-      if Ident.is_predef_exn var then 
-        Lprim {primitive = Pglobal_exception var;args = []; loc= Location.none }        
-      else if Ident.persistent var then 
+      if Ident.persistent var then 
         Lprim {primitive = Pgetglobal var; args = []; loc = Location.none}
-      else Lvar var   
-
+      else       
+        Lvar var       
     | Lconst x -> 
       Lconst x 
     | Lapply (fn,args,loc) 
@@ -64902,13 +64897,11 @@ let convert exports lam =
           if Ident_set.mem id exports then 
             Llet(kind, id, Lvar new_u, aux body)
           else aux body   
-        | _ ,  Lprim (Pgetglobal u,[], _) 
+        | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
           ->         
-          Ident_hashtbl.add alias id u;
-          if not @@ Ident.is_predef_exn u then
-          begin 
-            may_depend may_depends (Lam_module_ident.of_ml u)
-          end;  
+          Ident_hashtbl.add alias id u;          
+          may_depend may_depends (Lam_module_ident.of_ml u);
+
           if Ident_set.mem id exports then 
             Llet(kind, id, Lvar u, aux body)
           else aux body   
