@@ -107,5 +107,5 @@ type meta = {
       for sure it's not a function, there is no need to count them
    *)
 
-  mutable required_modules : Lam_module_ident.t list ;
+
 }

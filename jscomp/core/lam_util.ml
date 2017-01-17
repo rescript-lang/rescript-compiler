@@ -34,46 +34,16 @@ let string_of_lambda = Format.asprintf "%a" Lam_print.lambda
 let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
-(* TODO: not very efficient .. *)
-(* exception Cyclic  *)
-
-(* let toplogical (get_deps : Ident.t -> Ident_set.t) (libs : Ident.t list) : Ident.t list = *)
-(*   let rec aux acc later todo round_progress = *)
-(*     match todo, later with *)
-(*     | [], [] ->  acc *)
-(*     | [], _ -> *)
-(*       if round_progress *)
-(*       then aux acc todo later false *)
-(*       else raise Cyclic *)
-(*     | x::xs, _ -> *)
-(*       if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x) *)
-(*       then aux (x::acc) later xs true *)
-(*       else aux acc (x::later) xs round_progress *)
-(*   in *)
-(*   let starts, todo = List.partition (fun lib -> Ident_set.is_empty @@ get_deps lib) libs in *)
-(*   aux starts [] todo false *)
-
-(* let sort_dag_args  param_args = *)
-(*   let todos = Ident_map.keys param_args  in *)
-(*   let idents = Ident_set.of_list  todos in *)
-(*   let dependencies  : Ident_set.t Ident_map.t =  *)
-(*     Ident_map.mapi (fun param arg -> Js_fold_basic.depends_j arg idents) param_args in *)
-(*   try   *)
-(*     Some (toplogical (fun k -> Ident_map.find_exn k dependencies) todos) *)
-(*   with Cyclic -> None  *)
 
 
 
-let add_required_module (x : Ident.t) (meta : Lam_stats.meta) = 
-  meta.required_modules <- Lam_module_ident.of_ml x :: meta.required_modules 
 
+(*
 let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) = 
-  let required_modules = 
-    List.map 
-      (fun x -> Lam_module_ident.of_ml x)  x
-    @ meta.required_modules in
-  meta.required_modules <- required_modules
-
+  let meta_require_modules = meta.required_modules in
+  List.iter (fun x -> add meta_require_modules (Lam_module_ident.of_ml x)) x 
+*)
+  
 (* Apply a substitution to a lambda-term.
    Assumes that the bound variables of the lambda-term do not
    belong to the domain of the substitution.

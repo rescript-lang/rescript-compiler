@@ -24,6 +24,12 @@ end
 module M = F (Offset)
 
 let () = M.test (Offset.M.Set.singleton "42")
+(* 
+  here we assume value access does not have side effect 
+  however, the module should be included 
+  since it may contain side effect unless we 
+  analyze it does not have side effect
+*)
 let v = Pr6726.Test.v
 
 let suites :  Mt.pair_suites ref  = ref []

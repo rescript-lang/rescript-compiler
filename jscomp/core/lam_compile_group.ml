@@ -192,7 +192,7 @@ let compile  ~filename output_prefix env _sigs
 #end      
     Lam_compile_env.reset () ;
   in 
-  let lam = Lam.convert export_ident_sets lam in 
+  let lam, may_required_modules = Lam.convert export_ident_sets lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
@@ -330,9 +330,8 @@ let compile  ~filename output_prefix env _sigs
   |> _j "shake"
   |> ( fun (js:  J.program) -> 
       let external_module_ids = 
-        Lam_compile_env.get_requried_modules  
-          meta.env
-          meta.required_modules  
+        Lam_compile_env.get_required_modules  
+          may_required_modules  
           (Js_fold_basic.calculate_hard_dependencies js.block)
         |>
         (fun x ->
@@ -371,7 +370,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "arrayLabels.ml";
+    Js_config.set_debug_file "exception_alias.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 

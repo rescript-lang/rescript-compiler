@@ -531,7 +531,7 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
         hit e
     end;
   in hit l
-  
+
 let hit_mask (fv : Hash_set_ident_mask.t) l =
   let rec hit (l : t) =
     begin
@@ -602,7 +602,7 @@ let free_variables l =
       | Ltrywith(e1, exn, e2) ->
         free e1; free e2;
         fv := Ident_set.remove exn !fv
-        
+
       | Lfunction{body;params} ->
         free body;
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
@@ -667,7 +667,7 @@ let check file lam =
         Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
         success := false
       end        
-      in 
+  in 
   let def (id : Ident.t) =
     if Ident_hash_set.mem defined_variables id  then 
       begin 
@@ -742,9 +742,9 @@ let check file lam =
     end;
   in 
   begin 
-      iter lam; 
-      assert (!success) ; 
-      lam 
+    iter lam; 
+    assert (!success) ; 
+    lam 
   end      
 
 module Prim = struct 
@@ -1087,7 +1087,17 @@ let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t =
 let not_ loc x  : t = 
   prim ~primitive:Pnot ~args:[x] loc
 
-let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t = 
+let may_depend = Lam_module_ident.Hash_set.add 
+
+(** drop Lseq (List! ) etc *)
+let rec drop_global_marker (lam : t) =
+  match lam with 
+  | Lsequence(Lprim{primitive=Pgetglobal id; args = []}, rest) ->
+     drop_global_marker rest
+  | _ -> lam
+
+   
+let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t = 
   match p with 
   | Pint_as_pointer 
   | Pidentity ->  
@@ -1116,14 +1126,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t =
     end
   | Ploc loc -> assert false (* already compiled away here*)
   | Pgetglobal id ->
-    if Ident.is_predef_exn id then
-      prim ~primitive:(Pglobal_exception id) ~args loc       
-    else       
-      prim ~primitive:(Pgetglobal id) ~args loc
+    assert false 
   | Psetglobal id -> 
     (* we discard [Psetglobal] in the beginning*)
     begin match args with 
-      | [biglambda] -> biglambda
+      | [biglambda] -> 
+        drop_global_marker biglambda 
       | _ -> assert false 
     end
   (* prim ~primitive:(Psetglobal id) ~args loc *)
@@ -1272,8 +1280,8 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
     Ordered_hash_map_local_ident.create len in 
   let mask = Hash_set_ident_mask.create len in   
   List.iter (fun (x,lam) -> 
-    Ordered_hash_map_local_ident.add domain x lam;
-    Hash_set_ident_mask.add_unmask mask x;
+      Ordered_hash_map_local_ident.add domain x lam;
+      Hash_set_ident_mask.add_unmask mask x;
     ) groups ;
   let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
   let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
@@ -1282,41 +1290,41 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
       let base_key =  node_vec.(key_index) in 
       ignore (hit_mask mask lam) ;
       mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  -> 
-      if hit then 
-      begin 
-        let key = Ordered_hash_map_local_ident.rank domain ident in 
-        Int_vec.push key base_key;
-      end
-      );
+          if hit then 
+            begin 
+              let key = Ordered_hash_map_local_ident.rank domain ident in 
+              Int_vec.push key base_key;
+            end
+        );
 
     ) ;
   domain, int_mapping , node_vec
 
 (** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
- let scc_bindings (groups : bindings) : bindings list = 
-   match groups with 
-   | [ _ ] -> [ groups ]
-   | _ -> 
+let scc_bindings (groups : bindings) : bindings list = 
+  match groups with 
+  | [ _ ] -> [ groups ]
+  | _ -> 
     let domain, int_mapping, node_vec = preprocess_deps groups in 
     let clusters = Ext_scc.graph node_vec in 
     if Int_vec_vec.length clusters <= 1 then [ groups]
     else 
-        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
-            let bindings =
-              Int_vec.map_into_list (fun i -> 
-                  let id = int_mapping.(i) in 
-                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
-                  (id,lam)
-                ) v  in 
-            match bindings with 
-            | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map_local_ident.rank domain id in    
-              if Int_vec_util.mem base_key node_vec.(base_key) then       
-                 bindings :: acc 
-              else  [(id, lam)] :: acc    
-            | _ ->  
+      Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+          let bindings =
+            Int_vec.map_into_list (fun i -> 
+                let id = int_mapping.(i) in 
+                let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
+                (id,lam)
+              ) v  in 
+          match bindings with 
+          | [ id,(Lfunction _ as lam) ] ->
+            let base_key = Ordered_hash_map_local_ident.rank domain id in    
+            if Int_vec_util.mem base_key node_vec.(base_key) then       
               bindings :: acc 
-          )  clusters []
+            else  [(id, lam)] :: acc    
+          | _ ->  
+            bindings :: acc 
+        )  clusters []
 (* single binding, it does not make sense to do scc,
    we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
 *)
@@ -1351,12 +1359,27 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
           )  clusters body 
   end
 
+
+type required_modules = Lam_module_ident.Hash_set.t
+
+
 let convert exports lam = 
   let alias = Ident_hashtbl.create 64 in 
+  let may_depends = Lam_module_ident.Hash_set.create 0 in 
   let rec
     aux (lam : Lambda.lambda) : t = 
     match lam with 
-    | Lvar x -> Lvar (Ident_hashtbl.find_default alias x x)
+    | Lvar x -> 
+      let var = Ident_hashtbl.find_default alias x x in
+      if var == x then 
+        Lvar var 
+      else 
+      if Ident.is_predef_exn var then 
+        Lprim {primitive = Pglobal_exception var;args = []; loc= Location.none }        
+      else if Ident.persistent var then 
+        Lprim {primitive = Pgetglobal var; args = []; loc = Location.none}
+      else Lvar var   
+
     | Lconst x -> 
       Lconst x 
     | Lapply (fn,args,loc) 
@@ -1410,28 +1433,45 @@ let convert exports lam =
             ~body:(aux body)
     | Llet (kind,id,e,body) 
       ->
-      begin match kind, e with 
-        | Alias , Lvar u ->
-          (* we should not remove it immediately, since we have to be careful 
-             where it is used, it can be [exported], [Lvar] or [Lassign] etc 
-             The other common mistake is that 
-             {[
-               let x = y (* elimiated x/y*)
-               let u = x  (* eliminated u/x *)
-             ]}
+      (* we should not remove it immediately, since we have to be careful 
+         where it is used, it can be [exported], [Lvar] or [Lassign] etc 
+         The other common mistake is that 
+         {[
+           let x = y (* elimiated x/y*)
+           let u = x  (* eliminated u/x *)
+         ]}
 
-             however, [x] is already eliminated 
-             To improve the algorithm
-             {[
-               let x = y (* x/y *)
-               let u = x (* u/y *)
-             ]}
-             This looks more correct, but lets be conservative here
-          *)          
-          Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
+         however, [x] is already eliminated 
+         To improve the algorithm
+         {[
+           let x = y (* x/y *)
+           let u = x (* u/y *)
+         ]}
+         This looks more correct, but lets be conservative here
+
+         global module inclusion {[ include List ]}
+         will cause code like {[ let include =a Pgetglobal (list)]}
+
+         when [u] is global, it can not be bound again, 
+         it should always be the leaf 
+      *)
+      begin match kind, e with 
+        | Alias , (Lvar u ) ->
+          let new_u = (Ident_hashtbl.find_default alias u u) in
+          Ident_hashtbl.add alias id new_u ;
+          if Ident_set.mem id exports then 
+            Llet(kind, id, Lvar new_u, aux body)
+          else aux body   
+        | _ ,  Lprim (Pgetglobal u,[], _) 
+          ->         
+          Ident_hashtbl.add alias id u;
+          if not @@ Ident.is_predef_exn u then
+          begin 
+            may_depend may_depends (Lam_module_ident.of_ml u)
+          end;  
           if Ident_set.mem id exports then 
             Llet(kind, id, Lvar u, aux body)
-          else aux body 
+          else aux body   
 
         | _, _ -> Llet(kind,id,aux e, aux body)
       end
@@ -1443,8 +1483,20 @@ let convert exports lam =
       scc bindings lam body  
     (* inlining will affect how mututal recursive behave *)
     | Lprim (primitive,args, loc) 
-      -> aux_primitive loc primitive args 
-    (* Lprim {primitive ; args = List.map aux args } *)
+      -> 
+      let args = (List.map aux args) in
+      begin match primitive with 
+      | Pgetglobal id -> 
+        if Ident.is_predef_exn id then 
+          Lprim {primitive = Pglobal_exception id; args ; loc}
+        else 
+        begin 
+          may_depend may_depends (Lam_module_ident.of_ml id);
+          Lprim {primitive = Pgetglobal id ; args ; loc }
+        end  
+      | _ ->       
+        lam_prim ~primitive ~args loc 
+      end
     | Lswitch (e,s) -> 
       Lswitch (aux e, aux_switch s)
     | Lstringswitch (e, cases, default,_) -> 
@@ -1489,8 +1541,6 @@ let convert exports lam =
     | Levent (e, event) -> aux e 
     | Lifused (id, e) -> 
       Lifused(id, aux e) (* TODO: remove it ASAP *)
-  and aux_primitive loc (primitive : Lambda.primitive) args = 
-    lam_prim ~primitive ~args:(List.map aux args) loc
   and aux_switch (s : Lambda.lambda_switch) : switch = 
     { sw_numconsts = s.sw_numconsts ; 
       sw_consts = List.map (fun (i, lam) -> i, aux lam) s.sw_consts;
@@ -1501,6 +1551,6 @@ let convert exports lam =
         | None -> None 
         | Some a -> Some (aux a)
     }  in 
-  aux lam 
+  aux lam , may_depends
 
 

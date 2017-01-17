@@ -83,9 +83,9 @@ let reset () =
   Lam_module_ident.Hash.clear cached_tbl 
 
 (** 
-  Any [id] put in the [cached_tbl] should be always valid,
-  since it is already used in the code gen, 
-  the older will have higher precedence
+   Any [id] put in the [cached_tbl] should be always valid,
+   since it is already used in the code gen, 
+   the older will have higher precedence
 *)
 let add_js_module ?hint_name module_name : Ident.t 
   = 
@@ -93,17 +93,17 @@ let add_js_module ?hint_name module_name : Ident.t
     match hint_name with
     | None -> Ext_ident.create_js_module module_name 
     | Some hint_name -> Ext_ident.create_js_module hint_name in
-   let lam_module_ident = 
-     Lam_module_ident.of_external id module_name in  
-   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
-   | None -> 
+  let lam_module_ident = 
+    Lam_module_ident.of_external id module_name in  
+  match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
+  | None -> 
     Lam_module_ident.Hash.add 
-     cached_tbl 
-     lam_module_ident
-     External;
-     id
-   | Some old_key -> old_key.id 
-      
+      cached_tbl 
+      lam_module_ident
+      External;
+    id
+  | Some old_key -> old_key.id 
+
 
 
 
@@ -251,17 +251,22 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
     ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
 
 
-(* TODO: [env] is not hard dependency *)
 
-let get_requried_modules env
-    (extras : module_id list ) 
+let add = Lam_module_ident.Hash_set.add
+
+
+
+
+
+let get_required_modules 
+    extras 
     (hard_dependencies 
      : Lam_module_ident.Hash_set.t) : module_id list =  
   Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
       if not @@ is_pure_module id 
-      then Lam_module_ident.Hash_set.add hard_dependencies id) cached_tbl ;
-  List.iter (fun id -> 
-      if not @@ is_pure_module  id 
-      then Lam_module_ident.Hash_set.add hard_dependencies id
+      then add  hard_dependencies id) cached_tbl ;
+ Lam_module_ident.Hash_set.iter (fun (id  : module_id)  -> 
+      (if not @@ is_pure_module  id 
+      then add hard_dependencies id : unit)
     ) extras;
   Lam_module_ident.Hash_set.elements hard_dependencies

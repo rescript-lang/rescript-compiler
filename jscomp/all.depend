@@ -234,7 +234,9 @@ core/type_util.cmi :
 core/bs_conditional_initial.cmi :
 core/ocaml_options.cmi :
 core/ocaml_parse.cmi :
-core/lam.cmi : ext/ident_set.cmi
+core/lam_module_ident.cmi : core/js_op.cmx common/js_config.cmi core/j.cmx \
+    ext/hashtbl_gen.cmx ext/hash_set_gen.cmx
+core/lam.cmi : core/lam_module_ident.cmi ext/ident_set.cmi
 core/lam_print.cmi : core/lam.cmi
 core/lam_beta_reduce_util.cmi : core/lam.cmi
 core/lam_inline_util.cmi : core/lam.cmi
@@ -248,11 +250,9 @@ core/js_closure.cmi : ext/ident_set.cmi
 core/js_number.cmi :
 core/js_cmj_datasets.cmi : ext/string_map.cmi core/js_cmj_format.cmi
 core/lam_exit_code.cmi : core/lam.cmi
-core/lam_module_ident.cmi : core/js_op.cmx common/js_config.cmi core/j.cmx \
-    ext/hashtbl_gen.cmx ext/hash_set_gen.cmx
 core/lam_compile_util.cmi : core/js_op.cmx
-core/lam_stats.cmi : core/lam_module_ident.cmi core/lam.cmi \
-    ext/int_hash_set.cmi ext/ident_set.cmi ext/ident_hashtbl.cmi
+core/lam_stats.cmi : core/lam.cmi ext/int_hash_set.cmi ext/ident_set.cmi \
+    ext/ident_hashtbl.cmi
 core/config_util.cmi : core/js_cmj_format.cmi
 core/lam_compile_defs.cmi : core/lam_stats.cmi core/j.cmx ext/ident_map.cmi
 core/js_fold_basic.cmi : core/lam_module_ident.cmi core/j.cmx \
@@ -327,12 +327,16 @@ core/bs_conditional_initial.cmx : common/bs_version.cmx \
 core/ocaml_options.cmx : common/bs_version.cmx core/ocaml_options.cmi
 core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
     core/ocaml_parse.cmi
+core/js_op.cmx :
+core/lam_module_ident.cmx : core/js_op.cmx common/js_config.cmx core/j.cmx \
+    ext/hashtbl_make.cmx ext/hash_set.cmx ext/ext_ident.cmx \
+    stubs/bs_hash_stubs.cmx core/lam_module_ident.cmi
 core/lam.cmx : ext/ordered_hash_map_local_ident.cmx \
-    core/ocaml_stdlib_slots.cmx ext/literals.cmx common/js_config.cmx \
-    ext/int_vec_vec.cmx ext/int_vec_util.cmx ext/int_vec.cmx \
-    ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ident_hash_set.cmx \
-    ext/hash_set_ident_mask.cmx ext/ext_string.cmx ext/ext_scc.cmx \
-    core/lam.cmi
+    core/ocaml_stdlib_slots.cmx ext/literals.cmx core/lam_module_ident.cmx \
+    common/js_config.cmx ext/int_vec_vec.cmx ext/int_vec_util.cmx \
+    ext/int_vec.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
+    ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx ext/ext_string.cmx \
+    ext/ext_scc.cmx core/lam.cmi
 core/lam_print.cmx : core/lam.cmx core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_beta_reduce_util.cmi
@@ -345,20 +349,15 @@ core/js_cmj_format.cmx : ext/string_map.cmx core/lam.cmx \
 core/js_fun_env.cmx : ext/ident_set.cmx ext/ext_list.cmx core/js_fun_env.cmi
 core/js_call_info.cmx : core/js_call_info.cmi
 core/js_closure.cmx : ext/ident_set.cmx core/js_closure.cmi
-core/js_op.cmx :
 core/js_number.cmx : core/js_number.cmi
 core/js_cmj_datasets.cmx : ext/string_map.cmx core/js_cmj_format.cmx \
     core/js_cmj_datasets.cmi
 core/lam_exit_code.cmx : core/lam.cmx core/lam_exit_code.cmi
 core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
     core/js_call_info.cmx ext/ident_set.cmx
-core/lam_module_ident.cmx : core/js_op.cmx common/js_config.cmx core/j.cmx \
-    ext/hashtbl_make.cmx ext/hash_set.cmx ext/ext_ident.cmx \
-    stubs/bs_hash_stubs.cmx core/lam_module_ident.cmi
 core/lam_compile_util.cmx : core/js_op.cmx core/lam_compile_util.cmi
-core/lam_stats.cmx : core/lam_module_ident.cmx core/lam.cmx \
-    ext/int_hash_set.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
-    core/lam_stats.cmi
+core/lam_stats.cmx : core/lam.cmx ext/int_hash_set.cmx ext/ident_set.cmx \
+    ext/ident_hashtbl.cmx core/lam_stats.cmi
 core/config_util.cmx : core/js_cmj_format.cmx depends/bs_exception.cmx \
     core/config_util.cmi
 core/lam_compile_defs.cmx : core/lam_stats.cmx core/j.cmx ext/ident_map.cmx \
@@ -403,10 +402,9 @@ core/lam_compile_const.cmx : core/lam_compile_util.cmx \
     core/lam_compile_const.cmi
 core/lam_inner.cmx : core/lam.cmx core/lam_inner.cmi
 core/lam_util.cmx : ext/literals.cmx core/lam_stats.cmx core/lam_print.cmx \
-    core/lam_module_ident.cmx core/lam_analysis.cmx core/lam.cmx \
-    common/js_config.cmx ext/ident_set.cmx ext/ident_map.cmx \
-    ext/ident_hashtbl.cmx ext/ext_list.cmx ext/ext_filename.cmx \
-    ext/ext_array.cmx core/lam_util.cmi
+    core/lam_analysis.cmx core/lam.cmx common/js_config.cmx ext/ident_set.cmx \
+    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
+    ext/ext_filename.cmx ext/ext_array.cmx core/lam_util.cmi
 core/lam_group.cmx : core/lam_print.cmx core/lam.cmx core/lam_group.cmi
 core/lam_pass_deep_flatten.cmx : core/lam_util.cmx core/lam_group.cmx \
     core/lam.cmx core/js_number.cmx ext/ident_set.cmx \

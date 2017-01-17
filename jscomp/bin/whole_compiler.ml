@@ -60419,6 +60419,679 @@ let mem key (x : Int_vec.t) =
     unsafe_mem_aux internal_array 0 key (len - 1)
     
 end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Ideas are based on {!Hashtbl}, 
+    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
+    This module fixes the semantics of [add].
+    [remove] is not optimized since it is not used too much 
+*)
+
+
+
+
+
+module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
+(** A naive t implementation on top of [hashtbl], the value is [unit]*)
+
+
+end = struct
+#1 "hash_set.ml"
+# 1 "ext/hash_set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 43
+module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
+type key = H.t 
+let eq_key = H.equal
+let key_index (h :  _ Hash_set_gen.t ) key =
+  (H.hash  key) land (Array.length h.data - 1)
+type t = key Hash_set_gen.t
+
+
+
+# 62
+let create = Hash_set_gen.create
+let clear = Hash_set_gen.clear
+let reset = Hash_set_gen.reset
+let copy = Hash_set_gen.copy
+let iter = Hash_set_gen.iter
+let fold = Hash_set_gen.fold
+let length = Hash_set_gen.length
+let stats = Hash_set_gen.stats
+let elements = Hash_set_gen.elements
+
+
+
+let remove (h : _ Hash_set_gen.t) key =  
+  let i = key_index h key in
+  let h_data = h.data in
+  let old_h_size = h.size in 
+  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
+  if old_h_size <> h.size then  
+    Array.unsafe_set h_data i new_bucket
+
+
+
+let add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in 
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
+    end
+
+let check_add (h : _ Hash_set_gen.t) key =
+  let i = key_index h key  in 
+  let h_data = h.data in  
+  let old_bucket = (Array.unsafe_get h_data i) in
+  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
+    begin 
+      Array.unsafe_set h_data i  (key :: old_bucket);
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
+      true 
+    end
+  else false 
+
+
+let mem (h :  _ Hash_set_gen.t) key =
+  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+
+# 113
+end
+  
+
+end
+module Hashtbl_make : sig 
+#1 "hashtbl_make.mli"
+
+
+module Make (Key : Hashtbl.HashedType) : Hashtbl_gen.S with type key = Key.t
+
+end = struct
+#1 "hashtbl_make.ml"
+# 22 "ext/hashtbl.cppo.ml"
+module Make (Key : Hashtbl.HashedType) = struct 
+  type key = Key.t 
+  type 'a t = (key, 'a)  Hashtbl_gen.t 
+  let key_index (h : _ t ) (key : key) =
+    (Key.hash  key ) land (Array.length h.data - 1)
+  let eq_key = Key.equal   
+
+
+# 33
+type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
+let create = Hashtbl_gen.create
+let clear = Hashtbl_gen.clear
+let reset = Hashtbl_gen.reset
+let copy = Hashtbl_gen.copy
+let iter = Hashtbl_gen.iter
+let fold = Hashtbl_gen.fold
+let length = Hashtbl_gen.length
+let stats = Hashtbl_gen.stats
+
+
+
+let add (h : _ t) key info =
+  let i = key_index h key in
+  let h_data = h.data in   
+  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
+  h.size <- h.size + 1;
+  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
+
+(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
+let modify_or_init (h : _ t) key modf default =
+  let rec find_bucket (bucketlist : _ bucketlist)  =
+    match bucketlist with
+    | Cons(k,i,next) ->
+      if eq_key k key then begin modf i; false end
+      else find_bucket next 
+    | Empty -> true in
+  let i = key_index h key in 
+  let h_data = h.data in 
+  if find_bucket (Array.unsafe_get h_data i) then
+    begin 
+      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
+    end
+
+
+let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
+  match bucketlist with  
+  | Empty ->
+    Empty
+  | Cons(k, i, next) ->
+    if eq_key k key 
+    then begin h.size <- h.size - 1; next end
+    else Cons(k, i, remove_bucket key h next) 
+
+let remove (h : _ t ) key =
+  let i = key_index h key in
+  let h_data = h.data in 
+  let old_h_szie = h.size in 
+  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
+  if old_h_szie <> h.size then 
+    Array.unsafe_set h_data i  new_bucket
+
+let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
+  | Empty ->
+    raise Not_found
+  | Cons(k, d, rest) ->
+    if eq_key key k then d else find_rec key rest
+
+let find_exn (h : _ t) key =
+  match Array.unsafe_get h.data (key_index h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+    if eq_key key k1 then d1 else
+      match rest1 with
+      | Empty -> raise Not_found
+      | Cons(k2, d2, rest2) ->
+        if eq_key key k2 then d2 else
+          match rest2 with
+          | Empty -> raise Not_found
+          | Cons(k3, d3, rest3) ->
+            if eq_key key k3  then d3 else find_rec key rest3
+
+let find_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+
+let find_key_opt (h : _ t) key =
+  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
+  
+let find_default (h : _ t) key default = 
+  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
+let find_all (h : _ t) key =
+  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+    | Empty ->
+      []
+    | Cons(k, d, rest) ->
+      if eq_key k key 
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket (Array.unsafe_get h.data (key_index h key))
+
+let replace h key info =
+  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
+    | Empty ->
+      raise_notrace Not_found
+    | Cons(k, i, next) ->
+      if eq_key k key
+      then Cons(key, info, next)
+      else Cons(k, i, replace_bucket next) in
+  let i = key_index h key in
+  let h_data = h.data in 
+  let l = Array.unsafe_get h_data i in
+  try
+    Array.unsafe_set h_data i  (replace_bucket l)
+  with Not_found ->
+    begin 
+      Array.unsafe_set h_data i (Cons(key, info, l));
+      h.size <- h.size + 1;
+      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
+    end 
+
+let mem (h : _ t) key =
+  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
+    | Empty ->
+      false
+    | Cons(k, d, rest) ->
+      eq_key k key  || mem_in_bucket rest in
+  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
+
+
+let of_list2 ks vs = 
+  let len = List.length ks in 
+  let map = create len in 
+  List.iter2 (fun k v -> add map k v) ks vs ; 
+  map
+
+# 161
+end
+
+end
+module Js_call_info : sig 
+#1 "js_call_info.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Type for collecting call site information, used in JS IR *) 
+
+type arity = 
+  | Full 
+  | NA 
+
+
+type call_info = 
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na 
+  (* either from [@@bs.val] or not available, 
+     such calls does not follow such rules
+     {[ fun x y -> f x y === f ]} when [f] is an atom     
+  *) 
+
+
+type t = { 
+  call_info : call_info;
+  arity : arity;
+
+}
+
+val dummy : t
+val builtin_runtime_call : t
+
+val ml_full_call : t 
+
+end = struct
+#1 "js_call_info.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type arity = 
+  | Full 
+  | NA 
+
+type call_info = 
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na 
+  (* either from [@@bs.val] or not available, 
+     such calls does not follow such rules
+     {[ fun x y -> (f x y) === f ]} when [f] is an atom     
+
+  *) 
+
+type t = { 
+  call_info : call_info;
+  arity : arity
+}
+
+let dummy = { arity = NA; call_info = Call_na }
+
+let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
+
+let ml_full_call = {arity = Full; call_info = Call_ml}
+
+end
+module Js_closure : sig 
+#1 "js_closure.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Define a type used in JS IR to help convert lexical scope to JS [var] 
+    based scope convention
+ *)
+
+type t = {
+  mutable outer_loop_mutable_values :  Ident_set.t 
+}
+
+val empty : unit -> t
+
+val get_lexical_scope : t -> Ident_set.t
+
+val set_lexical_scope : t -> Ident_set.t -> unit
+
+end = struct
+#1 "js_closure.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type t = {
+  mutable outer_loop_mutable_values :  Ident_set.t ;
+}
+
+let empty () = {
+  outer_loop_mutable_values  = Ident_set.empty
+}
+
+let set_lexical_scope t v = t.outer_loop_mutable_values <- v 
+
+let get_lexical_scope t = t.outer_loop_mutable_values 
+
+end
+module Js_fun_env : sig 
+#1 "js_fun_env.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Define type t used in JS IR to collect some meta data for a function, like its closures, etc 
+  *)
+
+type t 
+
+val empty :  ?immutable_mask:bool array  -> int -> t
+
+val is_tailcalled : t -> bool
+
+val is_empty : t -> bool 
+
+val set_unbounded :  t -> Ident_set.t -> unit
+
+
+
+val set_lexical_scope : t -> Ident_set.t -> unit
+
+val get_lexical_scope : t -> Ident_set.t
+
+val to_string : t -> string
+
+val mark_unused : t -> int -> unit 
+
+val get_unused : t -> int -> bool
+
+val get_mutable_params : Ident.t list -> t -> Ident.t list
+
+val get_unbounded : t -> Ident_set.t
+
+val get_length : t -> int
+
+end = struct
+#1 "js_fun_env.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(* Make it mutable so that we can do
+   in-place change without constructing a new one
+  -- however, it's a design choice -- to be reviewed later
+*)
+
+type immutable_mask = 
+  | All_immutable_and_no_tail_call 
+     (** iff not tailcalled 
+         if tailcalled, in theory, it does not need change params, 
+         for example
+         {[
+         let rec f  (n : int ref) = 
+            if !n > 0 then decr n; print_endline "hi"
+            else  f n
+         ]}
+         in this case, we still create [Immutable_mask], 
+         since the inline behavior is slightly different
+      *)
+  | Immutable_mask of bool array
+
+type t = { 
+  mutable unbounded : Ident_set.t;
+  mutable bound_loop_mutable_values : Ident_set.t; 
+  used_mask : bool array;
+  immutable_mask : immutable_mask; 
+}
+(** Invariant: unused param has to be immutable *)
+
+let empty ?immutable_mask n = { 
+  unbounded =  Ident_set.empty ;
+  used_mask = Array.make n false;
+  immutable_mask = 
+    (match immutable_mask with 
+     | Some x -> Immutable_mask x 
+     | None -> All_immutable_and_no_tail_call
+    );
+  bound_loop_mutable_values =Ident_set.empty;
+}
+
+let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
+
+let mark_unused  t i = 
+  t.used_mask.(i) <- true
+
+let get_unused t i = 
+  t.used_mask.(i)
+
+let get_length t = Array.length t.used_mask
+
+let to_string env =  
+  String.concat "," 
+    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
+       (Ident_set.elements  env.unbounded ))
+
+let get_mutable_params (params : Ident.t list) (x : t ) = 
+  match x.immutable_mask with 
+  | All_immutable_and_no_tail_call -> []
+  | Immutable_mask xs -> 
+      Ext_list.filter_mapi 
+        (fun i p -> if not xs.(i) then Some p else None)  params
+
+
+let get_unbounded t = t.unbounded
+
+let set_unbounded env v = 
+  (* Ext_log.err "%s -- set @." (to_string env); *)
+  (* if Ident_set.is_empty env.bound then *)
+  env.unbounded <- v 
+ (* else assert false *)
+
+let set_lexical_scope env bound_loop_mutable_values = 
+  env.bound_loop_mutable_values <- bound_loop_mutable_values
+
+let get_lexical_scope env =  
+  env.bound_loop_mutable_values
+
+(* TODO:  can be refined if it 
+    only enclose toplevel variables 
+ *)
+let is_empty t = Ident_set.is_empty t.unbounded
+
+end
 module Lambda : sig 
 #1 "lambda.mli"
 (***********************************************************************)
@@ -61331,2830 +62004,6 @@ let reset () =
   raise_count := 0
 
 end
-module Ocaml_stdlib_slots
-= struct
-#1 "ocaml_stdlib_slots.ml"
-
-(* Generated by scripts/gen_slots.ml, should be updated everytime when we upgrade the compiler *)
-let pervasives = [| "invalid_arg";"failwith";"Exit";"min";"max";"abs";"max_int";"min_int";"lnot";"infinity";"neg_infinity";"nan";"max_float";"min_float";"epsilon_float";"^";"char_of_int";"string_of_bool";"bool_of_string";"string_of_int";"string_of_float";"@";"stdin";"stdout";"stderr";"print_char";"print_string";"print_bytes";"print_int";"print_float";"print_endline";"print_newline";"prerr_char";"prerr_string";"prerr_bytes";"prerr_int";"prerr_float";"prerr_endline";"prerr_newline";"read_line";"read_int";"read_float";"open_out";"open_out_bin";"open_out_gen";"flush";"flush_all";"output_char";"output_string";"output_bytes";"output";"output_substring";"output_byte";"output_binary_int";"output_value";"seek_out";"pos_out";"out_channel_length";"close_out";"close_out_noerr";"set_binary_mode_out";"open_in";"open_in_bin";"open_in_gen";"input_char";"input_line";"input";"really_input";"really_input_string";"input_byte";"input_binary_int";"input_value";"seek_in";"pos_in";"in_channel_length";"close_in";"close_in_noerr";"set_binary_mode_in";"LargeFile";"string_of_format";"^^";"exit";"at_exit";"valid_float_lexem";"unsafe_really_input";"do_at_exit" |]
-let camlinternalOO = [| "public_method_label";"new_method";"new_variable";"new_methods_variables";"get_variable";"get_variables";"get_method_label";"get_method_labels";"get_method";"set_method";"set_methods";"narrow";"widen";"add_initializer";"dummy_table";"create_table";"init_class";"inherits";"make_class";"make_class_store";"dummy_class";"copy";"create_object";"create_object_opt";"run_initializers";"run_initializers_opt";"create_object_and_run_initializers";"lookup_tables";"params";"stats" |]
-let camlinternalMod = [| "init_mod";"update_mod" |]
-let string = [| "make";"init";"copy";"sub";"fill";"blit";"concat";"iter";"iteri";"map";"mapi";"trim";"escaped";"index";"rindex";"index_from";"rindex_from";"contains";"contains_from";"rcontains_from";"uppercase";"lowercase";"capitalize";"uncapitalize";"compare" |]
-let array = [| "init";"make_matrix";"create_matrix";"append";"concat";"sub";"copy";"fill";"blit";"to_list";"of_list";"iter";"map";"iteri";"mapi";"fold_left";"fold_right";"sort";"stable_sort";"fast_sort" |]
-let list = [| "length";"hd";"tl";"nth";"rev";"append";"rev_append";"concat";"flatten";"iter";"iteri";"map";"mapi";"rev_map";"fold_left";"fold_right";"iter2";"map2";"rev_map2";"fold_left2";"fold_right2";"for_all";"exists";"for_all2";"exists2";"mem";"memq";"find";"filter";"find_all";"partition";"assoc";"assq";"mem_assoc";"mem_assq";"remove_assoc";"remove_assq";"split";"combine";"sort";"stable_sort";"fast_sort";"sort_uniq";"merge" |]
-    
-
-end
-module Ordered_hash_map_gen
-= struct
-#1 "ordered_hash_map_gen.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* does not support [remove], 
-    so that the adding order is strict and continous  
- *)
-
-module type S =
-sig
-  type key
-  type 'value t
-  val create: int ->  'value t
-  val clear : 'vaulue t -> unit
-  val reset : 'value t -> unit
-  val copy: 'value t -> 'value t
-  val add : 'value t -> key -> 'value -> unit
-  val mem : 'value t -> key -> bool
-  val rank : 'value t -> key -> int (* -1 if not found*)
-  val find_value : 'value t -> key -> 'value (* raise if not found*)
-  val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
-  val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b
-  val length:  'value t -> int
-  val stats: 'value t -> Hashtbl.statistics
-  val elements : 'value t -> key list 
-  val choose : 'value t -> key 
-  val to_sorted_array: 'value t -> key array
-end
-
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
-type ('a,'b) bucket = 
-  | Empty 
-  | Cons of 'a * int * 'b  * ('a,'b) bucket
-
-type ('a,'b) t =
-  { mutable size: int;                        (* number of entries *)
-    mutable data: ('a,'b) bucket array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
-
-
-
-
-let create  initial_size =
-  let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; data = Array.make s Empty }
-
-let clear h =
-  h.size <- 0;
-  let len = Array.length h.data in
-  for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  Empty
-  done
-
-let reset h =
-  h.size <- 0;
-  h.data <- Array.make h.initial_size Empty
-
-
-let copy h = { h with data = Array.copy h.data }
-
-let length h = h.size
-
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize Empty in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons(key,info,data,rest) ->
-        let nidx = indexfun h key in
-        ndata.(nidx) <- Cons(key,info,data, ndata.(nidx));
-        insert_bucket rest
-    in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
-
-let iter f h =
-  let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons(k ,i, value, rest) ->
-      f k value i; do_bucket rest in
-  let d = h.data in
-  for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
-  done
-
-let choose h = 
-  let rec aux arr offset len = 
-    if offset >= len then raise Not_found
-    else 
-      match Array.unsafe_get arr offset with 
-      | Empty -> aux arr (offset + 1) len 
-      | Cons (k,_,_,rest) -> k 
-  in
-  aux h.data 0 (Array.length h.data)
-
-let to_sorted_array h = 
-  if h.size = 0 then [||]
-  else 
-    let v = choose h in 
-    let arr = Array.make h.size v in
-    iter (fun k _ i -> Array.unsafe_set arr i k) h;
-    arr 
-
-let fold f h init =
-  let rec do_bucket b accu =
-    match b with
-      Empty ->
-      accu
-    | Cons( k , i,  value, rest) ->
-      do_bucket rest (f k  value i  accu) in
-  let d = h.data in
-  let accu = ref init in
-  for i = 0 to Array.length d - 1 do
-    accu := do_bucket (Array.unsafe_get d i) !accu
-  done;
-  !accu
-
-let elements set = 
-  fold  (fun k  _  _ acc  ->  k :: acc) set []
-
-
-let rec bucket_length acc (x : _ bucket) = 
-  match x with 
-  | Empty -> 0
-  | Cons(_,_,_,rest) -> bucket_length (acc + 1) rest  
-
-let stats h =
-  let mbl =
-    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
-  let histo = Array.make (mbl + 1) 0 in
-  Array.iter
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    h.data;
-  { Hashtbl.num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
-
-
-
-end
-module Ordered_hash_map_local_ident : sig 
-#1 "ordered_hash_map_local_ident.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(** Hash algorithm only hash 
-    stamp, this makes sense when  all identifiers are local (no global)
-*)
-include Ordered_hash_map_gen.S with type key = Ident.t
-
-end = struct
-#1 "ordered_hash_map_local_ident.ml"
-  
-# 10 "ext/ordered_hash_map.cppo.ml"
-  type key = Ident.t
-  type   'value t = (key,'value) Ordered_hash_map_gen.t
-  let key_index (h : _ t) (key : key) =
-    (Bs_hash_stubs.hash_int  key.stamp) land (Array.length h.data - 1)
-  let equal_key = Ext_ident.equal
-
-
-# 20
-open Ordered_hash_map_gen
-
-let create = create
-let clear = clear
-let reset = reset
-let copy = copy
-let iter = iter
-let fold = fold
-let length = length
-let stats = stats
-let elements = elements
-let choose = choose
-let to_sorted_array = to_sorted_array
-
-
-
-let rec small_bucket_mem key lst =
-  match lst with 
-  | Empty -> false 
-  | Cons(key1,_, _, rest) -> 
-    equal_key key key1 ||
-    match rest with 
-    | Empty -> false 
-    | Cons(key2 , _,_, rest) -> 
-      equal_key key  key2 ||
-      match rest with 
-      | Empty -> false 
-      | Cons(key3,_, _, rest) -> 
-        equal_key key  key3 ||
-        small_bucket_mem key rest 
-
-let rec small_bucket_rank key lst =
-  match lst with 
-  | Empty -> -1
-  | Cons(key1,i,_, rest) -> 
-    if equal_key key key1 then i 
-    else match rest with 
-      | Empty -> -1 
-      | Cons(key2,i2, _, rest) -> 
-        if equal_key key  key2 then i2 else
-          match rest with 
-          | Empty -> -1 
-          | Cons(key3,i3, _, rest) -> 
-            if equal_key key  key3 then i3 else
-              small_bucket_rank key rest 
-let rec small_bucket_find_value  key (lst : (_,_) bucket)   =
-  match lst with 
-  | Empty -> raise Not_found
-  | Cons(key1,_,value, rest) -> 
-    if equal_key key  key1 then value 
-    else match rest with 
-      | Empty -> raise Not_found 
-      | Cons(key2,_,value, rest) -> 
-        if equal_key key  key2 then value else
-          match rest with 
-          | Empty -> raise Not_found 
-          | Cons(key3, _ , value, rest) -> 
-            if equal_key key  key3 then value else
-              small_bucket_find_value key rest 
-
-let add h key value =
-  let i = key_index h key  in 
-  if not (small_bucket_mem key  h.data.(i)) then 
-    begin 
-      h.data.(i) <- Cons(key,h.size, value, h.data.(i));
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then resize key_index h
-    end
-
-let mem h key =
-  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
-let rank h key = 
-  small_bucket_rank key(Array.unsafe_get h.data (key_index h key))  
-
-let find_value h key =
-  small_bucket_find_value key (Array.unsafe_get h.data (key_index h key))
-
-
-
-
-
-
-
-
-
-
-
-
-
-end
-module Lam : sig 
-#1 "lam.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type array_kind = Lambda.array_kind
-type boxed_integer = Lambda.boxed_integer
-type comparison = Lambda.comparison 
-type bigarray_kind = Lambda.bigarray_kind
-type bigarray_layout = Lambda.bigarray_layout
-type compile_time_constant = Lambda.compile_time_constant
-
-type tag_info = Lambda.tag_info
-type mutable_flag = Asttypes.mutable_flag
-type field_dbg_info = Lambda.field_dbg_info 
-type set_field_dbg_info = Lambda.set_field_dbg_info
-
-type ident = Ident.t
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  (** when the first argument is true, it is for sure 
-
-      approximation sound but not complete 
-      the last one means it can take any params later, 
-      for an exception: it is (Determin (true,[], true))
-   *)
-  | NA 
-
-type primitive = 
-  | Pbytes_to_string
-  | Pbytes_of_string
-  | Pgetglobal of ident
-  (* | Psetglobal of ident *)
-  | Pglobal_exception of ident             
-  | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
-  | Pfield of int * Lambda.field_dbg_info
-  | Psetfield of int * bool * Lambda.set_field_dbg_info
-  | Pfloatfield of int * Lambda.field_dbg_info
-  | Psetfloatfield of int * Lambda.set_field_dbg_info
-  | Pduprecord of Types.record_representation * int
-  | Plazyforce
-  | Pccall of  Primitive.description
-  | Praise 
-  | Psequand | Psequor | Pnot
-  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
-  | Pandint | Porint | Pxorint
-  | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lambda.comparison
-  | Poffsetint of int
-  | Poffsetref of int
-  | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
-  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
-  | Pfloatcomp of Lambda.comparison
-  | Pstringlength 
-  | Pstringrefu 
-  | Pstringrefs
-  | Pstringadd    
-  | Pbyteslength
-  | Pbytesrefu
-  | Pbytessetu 
-  | Pbytesrefs
-  | Pbytessets
-  (* Array operations *)
-  | Pmakearray of array_kind
-  | Parraylength of array_kind
-  | Parrayrefu of array_kind
-  | Parraysetu of array_kind
-  | Parrayrefs of array_kind
-  | Parraysets of array_kind
-  (* Test if the argument is a block or an immediate integer *)
-  | Pisint
-  (* Test if the (integer) argument is outside an interval *)
-  | Pisout
-  (* Bitvect operations *)
-  | Pbittest
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of boxed_integer
-  | Pintofbint of boxed_integer
-  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
-  | Pnegbint of boxed_integer
-  | Paddbint of boxed_integer
-  | Psubbint of boxed_integer
-  | Pmulbint of boxed_integer
-  | Pdivbint of boxed_integer
-  | Pmodbint of boxed_integer
-  | Pandbint of boxed_integer
-  | Porbint of boxed_integer
-  | Pxorbint of boxed_integer
-  | Plslbint of boxed_integer
-  | Plsrbint of boxed_integer
-  | Pasrbint of boxed_integer
-  | Pbintcomp of boxed_integer * comparison
-  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
-  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
-  (* size of the nth dimension of a big array *)
-  | Pbigarraydim of int
-  (* load/set 16,32,64 bits from a string: (unsafe)*)
-  | Pstring_load_16 of bool
-  | Pstring_load_32 of bool
-  | Pstring_load_64 of bool
-  | Pstring_set_16 of bool
-  | Pstring_set_32 of bool
-  | Pstring_set_64 of bool
-  (* load/set 16,32,64 bits from a
-     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
-  | Pbigstring_load_16 of bool
-  | Pbigstring_load_32 of bool
-  | Pbigstring_load_64 of bool
-  | Pbigstring_set_16 of bool
-  | Pbigstring_set_32 of bool
-  | Pbigstring_set_64 of bool
-  (* Compile time constants *)
-  | Pctconst of compile_time_constant
-  (* byte swap *)
-  | Pbswap16
-  | Pbbswap of boxed_integer
-  (* Integer to external pointer *)
-
-  | Pdebugger
-  | Pjs_unsafe_downgrade of string * Location.t
-  | Pinit_mod
-  | Pupdate_mod
-  | Pjs_fn_make of int 
-  | Pjs_fn_run of int 
-  | Pjs_fn_method of int 
-  | Pjs_fn_runmethod of int 
-
-type switch  =
-  { sw_numconsts: int;
-    sw_consts: (int * t) list;
-    sw_numblocks: int;
-    sw_blocks: (int * t) list;
-    sw_failaction : t option}
-and apply_status =
-  | App_na
-  | App_ml_full
-  | App_js_full      
-and apply_info = private
-  { fn : t ; 
-    args : t list ; 
-    loc : Location.t;
-    status : apply_status
-  }
-
-and prim_info = private
-  { primitive : primitive ; 
-    args : t list ; 
-    loc : Location.t 
-  }
-and function_info = private
-  { arity : int ; 
-   kind : Lambda.function_kind ; 
-   params : ident list ;
-   body : t 
-  }
-and  t =  private
-  | Lvar of ident
-  | Lconst of Lambda.structured_constant
-  | Lapply of apply_info
-  | Lfunction of function_info
-  | Llet of Lambda.let_kind * ident * t * t
-  | Lletrec of (ident * t) list * t
-  | Lprim of prim_info
-  | Lswitch of t * switch
-  | Lstringswitch of t * (string * t) list * t option
-  | Lstaticraise of int * t list
-  | Lstaticcatch of t * (int * ident list) * t
-  | Ltrywith of t * ident * t
-  | Lifthenelse of t * t * t
-  | Lsequence of t * t
-  | Lwhile of t * t
-  | Lfor of ident * t * t * Asttypes.direction_flag * t
-  | Lassign of ident * t
-  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-  | Lifused of ident * t
-  (* | Levent of t * Lambda.lambda_event 
-     [Levent] in the branch hurt pattern match, 
-     we should use record for trivial debugger info
-  *)
-
-
-module Prim : sig 
-  type t = primitive
-  val js_is_nil : t
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
-
-
-type binop = t -> t -> t 
-
-type triop = t -> t -> t -> t 
-
-type unop = t ->  t
-
-val inner_map : (t -> t) -> t -> t
-val inner_iter : (t -> unit) -> t -> unit 
-val free_variables : t -> Ident_set.t
-val hit_any_variables : Ident_set.t -> t -> bool
-val check : string -> t -> t 
-type bindings = (Ident.t * t) list
-
-val scc_bindings : bindings -> bindings list 
-val scc : bindings -> t -> t  -> t 
-
-val var : ident -> t
-val const : Lambda.structured_constant -> t
-
-val apply : t -> t list -> Location.t -> apply_status -> t
-val function_ : 
-  arity:int ->
-  kind:Lambda.function_kind -> params:ident list -> body:t -> t
-
-val let_ : Lambda.let_kind -> ident -> t -> t -> t
-val letrec : (ident * t) list -> t -> t
-val if_ : triop
-val switch : t -> switch  -> t 
-val stringswitch : t -> (string * t) list -> t option -> t 
-
-val true_ : t 
-val false_ : t 
-val unit : t 
-
-val sequor : binop
-val sequand : binop
-val not_ : Location.t ->  unop
-val seq : binop
-val while_ : binop
-val event : t -> Lambda.lambda_event -> t  
-val try_ : t -> ident -> t  -> t 
-val ifused : ident -> t -> t
-val assign : ident -> t -> t 
-
-val send : 
-  Lambda.meth_kind ->
-  t -> t -> t list -> 
-  Location.t -> t 
-
-val prim : primitive:primitive -> args:t list -> Location.t  ->  t
-
-val staticcatch : 
-  t -> int * ident list -> t -> t
-
-val staticraise : 
-  int -> t list -> t
-
-val for_ : 
-  ident ->
-  t  ->
-  t -> Asttypes.direction_flag -> t -> t 
-
-
-
-
-(** In this pass we also synchronized aliases so that 
-    {[
-      let a1 = a0 in 
-      let a2 = a1 in 
-      let a3 = a2 in 
-      let a4 = a3 in 
-    ]}
-    converted to 
-    {[
-      let a1 = a0 in 
-      let a2 = a0 in 
-      let a3 = a0 in 
-      let a4 = a0 in 
-    ]}
-    we dont eliminate unused let bindings to leave it for {!Lam_pass_lets_dce}
-    we should remove all those let aliases, otherwise, it will be
-    pushed into alias table again
- *)
-val convert :  Ident_set.t -> Lambda.lambda -> t 
-
-
-
-end = struct
-#1 "lam.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type array_kind = Lambda.array_kind
-type boxed_integer = Lambda.boxed_integer
-type comparison = Lambda.comparison 
-type bigarray_kind = Lambda.bigarray_kind
-type bigarray_layout = Lambda.bigarray_layout
-type compile_time_constant = Lambda.compile_time_constant
-
-type tag_info = Lambda.tag_info
-type mutable_flag = Asttypes.mutable_flag
-type field_dbg_info = Lambda.field_dbg_info 
-type set_field_dbg_info = Lambda.set_field_dbg_info
-
-type ident = Ident.t
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  | NA 
-
-type primitive = 
-  | Pbytes_to_string
-  | Pbytes_of_string
-  (* Globals *)
-  | Pgetglobal of ident
-  (* | Psetglobal of ident *)
-  | Pglobal_exception of ident       
-  (* Operations on heap blocks *)
-  | Pmakeblock of int * tag_info * mutable_flag
-  | Pfield of int * field_dbg_info
-  | Psetfield of int * bool * set_field_dbg_info
-  (* could have field info at least for record *)
-  | Pfloatfield of int * field_dbg_info
-  | Psetfloatfield of int * set_field_dbg_info
-  | Pduprecord of Types.record_representation * int
-  (* Force lazy values *)
-  | Plazyforce
-  (* External call *)
-  | Pccall of  Primitive.description
-  (* Exceptions *)
-  | Praise
-  (* Boolean operations *)
-  | Psequand | Psequor | Pnot
-  (* Integer operations *)
-  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
-  | Pandint | Porint | Pxorint
-  | Plslint | Plsrint | Pasrint
-  | Pintcomp of comparison
-  | Poffsetint of int
-  | Poffsetref of int
-  (* Float operations *)
-  | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
-  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
-  | Pfloatcomp of comparison
-  (* String operations *)
-  | Pstringlength 
-  | Pstringrefu 
-  | Pstringrefs
-  | Pstringadd  
-  | Pbyteslength
-  | Pbytesrefu
-  | Pbytessetu 
-  | Pbytesrefs
-  | Pbytessets
-  (* Array operations *)
-  | Pmakearray of array_kind
-  | Parraylength of array_kind
-  | Parrayrefu of array_kind
-  | Parraysetu of array_kind
-  | Parrayrefs of array_kind
-  | Parraysets of array_kind
-  (* Test if the argument is a block or an immediate integer *)
-  | Pisint
-  (* Test if the (integer) argument is outside an interval *)
-  | Pisout
-  (* Bitvect operations *)
-  | Pbittest
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of boxed_integer
-  | Pintofbint of boxed_integer
-  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
-  | Pnegbint of boxed_integer
-  | Paddbint of boxed_integer
-  | Psubbint of boxed_integer
-  | Pmulbint of boxed_integer
-  | Pdivbint of boxed_integer
-  | Pmodbint of boxed_integer
-  | Pandbint of boxed_integer
-  | Porbint of boxed_integer
-  | Pxorbint of boxed_integer
-  | Plslbint of boxed_integer
-  | Plsrbint of boxed_integer
-  | Pasrbint of boxed_integer
-  | Pbintcomp of boxed_integer * comparison
-  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
-  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
-  (* size of the nth dimension of a big array *)
-  | Pbigarraydim of int
-  (* load/set 16,32,64 bits from a string: (unsafe)*)
-  | Pstring_load_16 of bool
-  | Pstring_load_32 of bool
-  | Pstring_load_64 of bool
-  | Pstring_set_16 of bool
-  | Pstring_set_32 of bool
-  | Pstring_set_64 of bool
-  (* load/set 16,32,64 bits from a
-     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
-  | Pbigstring_load_16 of bool
-  | Pbigstring_load_32 of bool
-  | Pbigstring_load_64 of bool
-  | Pbigstring_set_16 of bool
-  | Pbigstring_set_32 of bool
-  | Pbigstring_set_64 of bool
-  (* Compile time constants *)
-  | Pctconst of compile_time_constant
-  (* byte swap *)
-  | Pbswap16
-  | Pbbswap of boxed_integer
-  (* Integer to external pointer *)
-
-  | Pdebugger 
-  | Pjs_unsafe_downgrade of string * Location.t
-  | Pinit_mod
-  | Pupdate_mod
-  | Pjs_fn_make of int 
-  | Pjs_fn_run of int 
-  | Pjs_fn_method of int 
-  | Pjs_fn_runmethod of int
-
-type apply_status =
-  | App_na
-  | App_ml_full
-  | App_js_full    
-module Types = struct 
-  type switch = 
-    { sw_numconsts: int;
-      sw_consts: (int * t) list;
-      sw_numblocks: int;
-      sw_blocks: (int * t) list;
-      sw_failaction : t option}
-  and prim_info = 
-    { primitive : primitive ; 
-      args : t list ;
-      loc : Location.t;
-    }
-  and apply_info = 
-    { fn : t ; 
-      args : t list ; 
-      loc : Location.t;
-      status : apply_status
-    }
-  and function_info = 
-    { arity : int ; 
-      kind : Lambda.function_kind ; 
-      params : ident list ;
-      body : t 
-    }
-  and t = 
-    | Lvar of ident
-    | Lconst of Lambda.structured_constant
-    | Lapply of apply_info
-    | Lfunction of function_info
-    | Llet of Lambda.let_kind * ident * t * t
-    | Lletrec of (ident * t) list * t
-    | Lprim of prim_info
-    | Lswitch of t * switch
-    | Lstringswitch of t * (string * t) list * t option
-    | Lstaticraise of int * t list
-    | Lstaticcatch of t * (int * ident list) * t
-    | Ltrywith of t * ident * t
-    | Lifthenelse of t * t * t
-    | Lsequence of t * t
-    | Lwhile of t * t
-    | Lfor of ident * t * t * Asttypes.direction_flag * t
-    | Lassign of ident * t
-    | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-    | Lifused of ident * t
-      (* | Levent of t * Lambda.lambda_event 
-         [Levent] in the branch hurt pattern match, 
-         we should use record for trivial debugger info
-      *)
-end 
-
-module X = struct 
-  type switch
-    = Types.switch
-    =
-      { sw_numconsts: int;
-        sw_consts: (int * t) list;
-        sw_numblocks: int;
-        sw_blocks: (int * t) list;
-        sw_failaction : t option}
-  and prim_info
-    =  Types.prim_info
-    =
-      { primitive : primitive ; 
-        args : t list ;
-        loc : Location.t;
-      }
-  and apply_info
-    = Types.apply_info
-    =
-      { fn : t ; 
-        args : t list ; 
-        loc : Location.t;
-        status : apply_status
-      }
-
-  and function_info
-    = Types.function_info
-    =
-      { arity : int ; 
-        kind : Lambda.function_kind ; 
-        params : ident list ;
-        body : t 
-      }
-  and t
-    = Types.t
-    =
-      | Lvar of ident
-      | Lconst of Lambda.structured_constant
-      | Lapply of apply_info
-      | Lfunction of function_info
-      | Llet of Lambda.let_kind * ident * t * t
-      | Lletrec of (ident * t) list * t
-      | Lprim of prim_info
-      | Lswitch of t * switch
-      | Lstringswitch of t * (string * t) list * t option
-      | Lstaticraise of int * t list
-      | Lstaticcatch of t * (int * ident list) * t
-      | Ltrywith of t * ident * t
-      | Lifthenelse of t * t * t
-      | Lsequence of t * t
-      | Lwhile of t * t
-      | Lfor of ident * t * t * Asttypes.direction_flag * t
-      | Lassign of ident * t
-      | Lsend of Lambda.meth_kind * t * t * t list * Location.t
-      | Lifused of ident * t
-end
-include Types 
-(** apply [f] to direct successor which has type [Lam.t] *)
-let inner_map (f : t -> X.t ) (l : t) : X.t = 
-  match l  with 
-  | Lvar (_ : ident)
-  | Lconst (_ : Lambda.structured_constant) -> 
-    ( (* Obj.magic *) l : X.t)
-  | Lapply ({fn; args; loc; status} )  ->
-    let fn = f fn in
-    let args = List.map f args in 
-    Lapply { fn ; args; loc; status }
-  | Lfunction({body; arity; kind; params } ) ->
-    let body = f body in 
-    Lfunction {body; arity; kind ; params}
-  | Llet(str, id, arg, body) ->
-    let arg = f arg in let body =  f body in
-    Llet(str,id,arg,body)
-  | Lletrec(decl, body) ->
-    let body = f body in 
-    let decl = List.map (fun (id, exp) -> id, f exp) decl in 
-    Lletrec(decl,body)
-  | Lprim {args; primitive ; loc}  ->
-    let args = List.map f args in 
-    Lprim { args; primitive; loc}
-  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
-    let arg = f arg in 
-    let sw_consts = List.map (fun (key, case) -> key , f case) sw_consts in 
-    let sw_blocks = List.map (fun (key, case) -> key, f case) sw_blocks in 
-    let sw_failaction = begin match sw_failaction with
-      | None -> None
-      | Some a -> Some (f a)
-    end in
-    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
-  | Lstringswitch (arg,cases,default) ->
-    let arg = f arg  in 
-    let cases = List.map (fun (k,act) -> k,f act) cases  in
-    let default = begin match default with 
-      | None -> None
-      | Some a -> Some (f a) 
-    end in 
-    Lstringswitch(arg,cases,default)
-  | Lstaticraise (id,args) ->
-    let args = List.map f args in 
-    Lstaticraise(id,args)
-  | Lstaticcatch(e1, vars , e2) ->
-    let e1 = f e1 in 
-    let e2 = f e2 in 
-    Lstaticcatch(e1, vars, e2)
-  | Ltrywith(e1, exn, e2) ->
-    let e1  = f e1 in 
-    let e2 =  f e2 in 
-    Ltrywith(e1,exn,e2)
-  | Lifthenelse(e1, e2, e3) ->
-    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
-    Lifthenelse(e1,e2,e3)
-  | Lsequence(e1, e2) ->
-    let e1 = f e1 in let e2 =  f e2 in 
-    Lsequence(e1,e2)
-  | Lwhile(e1, e2) ->
-    let e1 = f e1 in let e2 =  f e2 in 
-    Lwhile(e1,e2)
-  | Lfor(v, e1, e2, dir, e3) ->
-    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
-    Lfor(v,e1,e2,dir,e3)
-  | Lassign(id, e) ->
-    let e = f e in 
-    Lassign(id,e)
-  | Lsend (k, met, obj, args, loc) ->
-    let met = f met in 
-    let obj = f obj in 
-    let args = List.map f args in 
-    Lsend(k,met,obj,args,loc)
-
-  | Lifused (v, e) ->
-    let e = f e in 
-    Lifused(v,e)
-
-let inner_iter (f : t -> unit ) (l : t) : unit = 
-  match l  with 
-  | Lvar (_ : ident)
-  | Lconst (_ : Lambda.structured_constant) ->  ()
-  | Lapply ({fn; args; loc; status} )  ->
-    f fn;
-    List.iter f args 
-  | Lfunction({body; arity; kind; params } ) ->
-    f body
-  | Llet(str, id, arg, body) ->
-    f arg ;
-    f body;
-  | Lletrec(decl, body) ->
-    f body;
-    List.iter (fun (id, exp) ->  f exp) decl
-  | Lprim {args; primitive ; loc}  ->
-    List.iter f args;
-  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
-    f arg;
-    List.iter (fun (key, case) -> f case) sw_consts;
-    List.iter (fun (key, case) ->  f case) sw_blocks ;
-    begin match sw_failaction with
-      | None -> ()
-      | Some a ->  f a
-    end 
-  | Lstringswitch (arg,cases,default) ->
-    f arg;
-    List.iter (fun (k,act) -> f act) cases  ;
-    begin match default with 
-      | None -> ()
-      | Some a -> f a
-    end
-  | Lstaticraise (id,args) ->
-    List.iter f args;
-  | Lstaticcatch(e1, vars , e2) ->
-    f e1;
-    f e2
-  | Ltrywith(e1, exn, e2) ->
-    f e1;
-    f e2 
-  | Lifthenelse(e1, e2, e3) ->
-    f e1;  f e2 ;  f e3
-  | Lsequence(e1, e2) ->
-    f e1 ;  f e2
-  | Lwhile(e1, e2) ->
-    f e1 ;  f e2 
-  | Lfor(v, e1, e2, dir, e3) ->
-    f e1 ;  f e2;  f e3 
-  | Lassign(id, e) ->
-    f e 
-  | Lsend (k, met, obj, args, loc) ->
-    f met; f obj; List.iter f args 
-  | Lifused (v, e) ->
-    f e 
-
-
-(*
-let add_list lst set = 
-    List.fold_left (fun acc x -> Ident_set.add x acc) set lst 
-let free_variables l =
-  let rec free bounded acc (l : t) =
-      match (l : t) with 
-      | Lvar id ->
-        if Ident_set.mem id bounded then acc 
-        else Ident_set.add id acc 
-      | Lconst _ -> acc
-      | Lapply{fn; args; _} ->
-        let acc = free bounded  acc fn in
-        List.fold_left (fun acc arg -> free bounded acc arg) acc args  
-      | Lfunction{body;params} ->
-        let bounded = add_list params bounded in  
-        free bounded acc  body        
-      | Llet(str, id, arg, body) ->        
-        let acc = free bounded acc  arg in
-        let bounded =  Ident_set.add id bounded in 
-        free bounded acc body
-      | Lletrec(decl, body) ->
-        let bounded = 
-          List.fold_left (fun acc (x,_) -> Ident_set.add x acc) bounded decl
-        in
-        let acc = List.fold_left (fun acc (_,exp) -> free bounded acc exp ) acc decl in
-        free bounded acc body          
-      | Lprim {args; _} ->
-        List.fold_left (fun acc arg -> free bounded acc arg) acc args         
-      | Lswitch(arg, {sw_consts; sw_blocks; sw_failaction}) ->
-        let acc = free bounded acc arg in 
-        let acc = List.fold_left 
-          (fun acc (key, case) -> free  bounded acc case) acc sw_consts in 
-        let acc = 
-          List.fold_left 
-          (fun acc (key, case) -> free bounded acc  case) acc sw_blocks in 
-        begin match sw_failaction with 
-          | None -> acc 
-          | Some a -> free bounded acc a  
-        end
-      | Lstringswitch (arg,cases,default) ->
-        let acc = free bounded acc arg  in 
-        let acc = List.fold_left (fun acc  (_,act) -> free bounded acc act) acc cases  in
-        begin match default with 
-          | None -> acc 
-          | Some a -> free bounded acc a  
-        end
-      | Lstaticraise (_,args) ->
-        List.fold_left (fun acc arg -> free bounded acc arg) acc args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        let acc = free  bounded acc e1 in
-        let bounded = add_list vars bounded in 
-        free bounded acc e2                 
-      | Ltrywith(e1, exn, e2) ->
-        let acc = free  bounded acc e1 in
-        let bounded = Ident_set.add exn bounded in  
-        free  bounded acc e2          
-      | Lifthenelse(e1, e2, e3) ->
-        let acc = free  bounded acc e1 in 
-        let acc = free  bounded acc e2 in 
-        free bounded acc e3
-      | Lwhile(e1, e2) 
-      | Lsequence(e1, e2) ->
-        let acc = free bounded acc e1 in 
-        free bounded acc e2
-      | Lfor(v, e1, e2, dir, e3) ->
-
-        let acc = free  bounded acc e1 in 
-        let acc = free  bounded acc e2 in
-        let bounded = Ident_set.add v bounded in 
-        free bounded acc e3
-      | Lassign(id, e) ->
-        let acc = free bounded acc  e in 
-        if Ident_set.mem id bounded then acc 
-        else Ident_set.add id acc 
-      | Lsend (k, met, obj, args, _) ->
-        let acc = free bounded acc met in
-        let acc = free bounded acc obj in
-        List.fold_left (fun ac arg -> free bounded acc arg) acc args            
-      | Lifused (v, e) ->
-        free bounded acc e
-  in free Ident_set.empty Ident_set.empty l
-*)  
-
-let hit_any_variables (fv : Ident_set.t) l : bool  =
-  let rec hit (l : t) =
-    begin
-      match (l : t) with 
-      | Lvar id -> Ident_set.mem id fv 
-      | Lassign(id, e) ->
-        Ident_set.mem id fv || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
-        hit e1 || hit e2
-      | Lfunction{body;params} ->
-        hit body;
-      | Llet(str, id, arg, body) ->
-        hit arg || hit body
-      | Lletrec(decl, body) ->
-        hit body ||
-        List.exists (fun (id, exp) -> hit exp) decl
-      | Lfor(v, e1, e2, dir, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lconst _ -> false 
-      | Lapply{fn; args; _} ->
-        hit fn || List.exists hit args
-      | Lprim {args; _} ->
-        List.exists hit args
-      | Lswitch(arg, sw) ->
-        hit arg ||
-        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
-        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
-        begin match sw.sw_failaction with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstringswitch (arg,cases,default) ->
-        hit arg ||
-        List.exists (fun (_,act) -> hit act) cases ||
-        begin match default with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstaticraise (_,args) ->
-        List.exists hit args
-      | Lifthenelse(e1, e2, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lsequence(e1, e2) ->
-        hit e1 || hit e2
-      | Lwhile(e1, e2) ->
-        hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj || List.exists hit args 
-      | Lifused (v, e) ->
-        hit e
-    end;
-  in hit l
-  
-let hit_mask (fv : Hash_set_ident_mask.t) l =
-  let rec hit (l : t) =
-    begin
-      match (l : t) with 
-      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id fv 
-      | Lassign(id, e) ->
-        Hash_set_ident_mask.mask_check_all_hit id fv || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
-        hit e1 || hit e2
-      | Lfunction{body;params} ->
-        hit body;
-      | Llet(str, id, arg, body) ->
-        hit arg || hit body
-      | Lletrec(decl, body) ->
-        hit body ||
-        List.exists (fun (id, exp) -> hit exp) decl
-      | Lfor(v, e1, e2, dir, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lconst _ -> false 
-      | Lapply{fn; args; _} ->
-        hit fn || List.exists hit args
-      | Lprim {args; _} ->
-        List.exists hit args
-      | Lswitch(arg, sw) ->
-        hit arg ||
-        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
-        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
-        begin match sw.sw_failaction with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstringswitch (arg,cases,default) ->
-        hit arg ||
-        List.exists (fun (_,act) -> hit act) cases ||
-        begin match default with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstaticraise (_,args) ->
-        List.exists hit args
-      | Lifthenelse(e1, e2, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lsequence(e1, e2) ->
-        hit e1 || hit e2
-      | Lwhile(e1, e2) ->
-        hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj || List.exists hit args 
-      | Lifused (v, e) ->
-        hit e
-    end;
-  in hit l
-
-let free_variables l =
-  let fv = ref Ident_set.empty in
-  let rec free (l : t) =
-    begin
-      match (l : t) with 
-      | Lvar id -> fv := Ident_set.add id !fv
-      | Lassign(id, e) ->
-        free e;
-        fv := Ident_set.add id !fv        
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        free e1; free e2;
-        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
-      | Ltrywith(e1, exn, e2) ->
-        free e1; free e2;
-        fv := Ident_set.remove exn !fv
-        
-      | Lfunction{body;params} ->
-        free body;
-        List.iter (fun param -> fv := Ident_set.remove param !fv) params
-      | Llet(str, id, arg, body) ->
-        free arg; free body;
-        fv := Ident_set.remove id !fv
-      | Lletrec(decl, body) ->
-        free body;
-        List.iter (fun (id, exp) -> free exp) decl;
-        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
-      | Lfor(v, e1, e2, dir, e3) ->
-        free e1; free e2; free e3;
-        fv := Ident_set.remove v !fv
-      | Lconst _ -> ()
-      | Lapply{fn; args; _} ->
-        free fn; List.iter free args
-      | Lprim {args; _} ->
-        List.iter free args
-      | Lswitch(arg, sw) ->
-        free arg;
-        List.iter (fun (key, case) -> free case) sw.sw_consts;
-        List.iter (fun (key, case) -> free case) sw.sw_blocks;
-        begin match sw.sw_failaction with 
-          | None -> ()
-          | Some a -> free a 
-        end
-      | Lstringswitch (arg,cases,default) ->
-        free arg ;
-        List.iter (fun (_,act) -> free act) cases ;
-        begin match default with 
-          | None -> ()
-          | Some a -> free a 
-        end
-      | Lstaticraise (_,args) ->
-        List.iter free args
-      | Lifthenelse(e1, e2, e3) ->
-        free e1; free e2; free e3
-      | Lsequence(e1, e2) ->
-        free e1; free e2
-      | Lwhile(e1, e2) ->
-        free e1; free e2
-      | Lsend (k, met, obj, args, _) ->
-        free met; free obj; List.iter free args 
-      | Lifused (v, e) ->
-        free e
-    end;
-  in free l; 
-  !fv
-
-
-(**
-   checks  
-   1. variables are not bound twice 
-   2. all variables are of right scope 
-*)
-let check file lam = 
-  let defined_variables = Ident_hash_set.create 1000 in 
-  let success = ref true in 
-  let use (id : Ident.t)  = 
-    if not @@ Ident_hash_set.mem defined_variables id  then 
-      begin 
-        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
-        success := false
-      end        
-      in 
-  let def (id : Ident.t) =
-    if Ident_hash_set.mem defined_variables id  then 
-      begin 
-        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
-        success := false 
-      end
-    else Ident_hash_set.add defined_variables id 
-  in 
-  let rec iter (l : t) =
-    begin
-      match (l : t) with 
-        Lvar id -> use id 
-      | Lconst _ -> ()
-      | Lapply{fn; args; _} ->
-        iter fn; List.iter iter args
-      | Lfunction{body;params} ->
-        List.iter def params;
-        iter body
-      | Llet(str, id, arg, body) ->
-        iter arg;
-        def id;
-        iter body
-      | Lletrec(decl, body) ->
-        List.iter (fun (id, exp) ->  def id) decl;
-        List.iter (fun (id, exp) -> iter exp) decl;
-        iter body
-      | Lprim {args; _} ->
-        List.iter iter args
-      | Lswitch(arg, sw) ->
-        iter arg;
-        List.iter (fun (key, case) -> iter case) sw.sw_consts;
-        List.iter (fun (key, case) -> iter case) sw.sw_blocks;
-        begin match sw.sw_failaction with 
-          | None -> ()
-          | Some a -> iter a 
-        end
-      | Lstringswitch (arg,cases,default) ->
-        iter arg ;
-        List.iter (fun (_,act) -> iter act) cases ;
-        begin match default with 
-          | None -> ()
-          | Some a -> iter a 
-        end
-      | Lstaticraise (_,args) ->
-        List.iter iter args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        iter e1; 
-        List.iter def vars;
-        iter e2
-      | Ltrywith(e1, exn, e2) ->
-        iter e1; 
-        def exn; 
-        iter e2
-      | Lifthenelse(e1, e2, e3) ->
-        iter e1; iter e2; iter e3
-      | Lsequence(e1, e2) ->
-        iter e1; iter e2
-      | Lwhile(e1, e2) ->
-        iter e1; iter e2
-      | Lfor(v, e1, e2, dir, e3) ->
-        iter e1; iter e2; 
-        def v; 
-        iter e3;
-      | Lassign(id, e) ->
-        use id ; 
-        iter e
-      | Lsend (k, met, obj, args, _) ->
-        iter met; iter obj; 
-        List.iter iter args
-      | Lifused (v, e) ->
-        iter e
-    end;
-  in 
-  begin 
-      iter lam; 
-      assert (!success) ; 
-      lam 
-  end      
-
-module Prim = struct 
-  type t = primitive
-  let mk name arity = 
-    Pccall {prim_name = name ; 
-            prim_native_name = "" ;
-            prim_alloc = false;
-            prim_native_float = false;
-            prim_arity = arity;
-
-           }
-  let js_is_nil : t = 
-    mk "js_is_nil" 1 
-  let js_is_undef : t = 
-    mk "js_is_undef" 1 
-  let js_is_nil_undef : t  = 
-    mk "js_is_nil_undef" 1 
-end
-
-
-
-
-
-type binop = t -> t -> t 
-
-type triop = t -> t -> t -> t 
-
-type unop = t -> t 
-
-
-let var id : t = Lvar id
-let const ct : t = Lconst ct 
-let apply fn args loc status : t = 
-  Lapply { fn; args;  loc  ;
-           status }
-let function_ ~arity ~kind ~params ~body : t = 
-  Lfunction { arity; kind; params ; body}
-
-let let_ kind id e body :  t 
-  = Llet (kind,id,e,body)
-let letrec bindings body : t = 
-  Lletrec(bindings,body)
-
-let if_ (a : t) (b : t) c = 
-  match a with
-  | Lconst v ->
-    begin match v with
-      | Const_pointer (x, _)  | Const_base(Const_int x)
-        ->
-        if x <> 0 then b else c
-      | Const_base (Const_char x) ->
-        if Char.code x <> 0 then b else c
-      | Const_base (Const_int32 x) ->
-        if x <> 0l then b else c
-      | Const_base (Const_int64 x) ->
-        if x <> 0L then b else c
-      | Const_base (Const_nativeint x) ->
-        if x <> 0n then b else c
-      | Const_base (Const_string _ | Const_float _ ) -> b
-      | Const_block _
-      | Const_float_array _
-      | Const_immstring _ -> b
-    end
-  | _ ->  Lifthenelse (a,b,c)
-
-let switch lam (lam_switch : switch) : t =
-  match lam with
-  | Lconst ((Const_pointer (i,_) | Const_base (Const_int i)))
-    ->
-    begin try List.assoc i lam_switch.sw_consts
-      with  Not_found ->
-      match lam_switch.sw_failaction with
-      | Some x -> x
-      | None -> assert false
-    end
-  | Lconst (Const_block (i,_,_)) ->
-    begin try List.assoc i lam_switch.sw_blocks
-      with  Not_found ->
-      match lam_switch.sw_failaction with
-      | Some x -> x
-      | None -> assert false
-    end
-  | _ -> 
-    Lswitch(lam,lam_switch)
-
-let stringswitch (lam : t) cases default : t = 
-  match lam with
-  | Lconst (Const_base (Const_string (a,_))) ->
-    begin
-      try List.assoc a cases with Not_found ->
-        begin
-          match default with
-          | Some x -> x
-          | None -> assert false
-        end
-    end
-  | _ -> Lstringswitch(lam, cases, default)
-
-
-let true_ : t =
-  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
-
-let false_ : t =
-  Lconst (Const_pointer( 0, Pt_constructor "false"))
-
-let unit : t = 
-  Lconst (Const_pointer( 0, Pt_constructor "()"))
-
-let assert_false_unit : t = 
-  Lconst (Const_pointer( 0, Pt_constructor "impossible branch"))
-
-(** [l || r ] *)
-let sequor l r = if_ l true_ r 
-
-(** [l && r ] *)
-let sequand l r = if_ l r false_
-
-let seq a b : t = 
-  Lsequence (a, b)
-
-let while_ a b : t  = 
-  Lwhile(a,b)
-
-let try_  body id  handler : t = 
-  Ltrywith(body,id,handler)
-
-let for_ v e1 e2 dir e3 : t  = 
-  Lfor(v,e1,e2,dir,e3)
-
-let event l (_event : Lambda.lambda_event) = l 
-
-let ifused v l : t  = 
-  Lifused (v,l)
-
-let assign v l : t = Lassign(v,l)
-
-let send u m o ll v : t = 
-  Lsend(u, m, o, ll, v)
-
-let staticcatch  a b c : t = Lstaticcatch(a,b,c)
-
-let staticraise a b : t = Lstaticraise(a,b)
-
-let comparison (cmp : Lambda.comparison) a b : bool = 
-  match cmp with 
-  | Ceq -> a = b 
-  | Cneq -> a <> b 
-  | Cgt -> a > b 
-  | Cle -> a <= b 
-  | Clt -> a < b 
-  | Cge -> a >= b 
-
-module Lift = struct 
-  let int i : t =
-    Lconst (Const_base (Const_int i))
-
-
-  let int32 i : t =
-    Lconst (Const_base (Const_int32 i))
-
-  let bool b = if b then true_ else false_
-
-  (* ATTENTION: [float, nativeint] constant propogaton is not done
-     yet , due to cross platform problem
-  *) 
-  let float b  : t = 
-    Lconst (Const_base (Const_float b))
-
-  let nativeint b : t = 
-    Lconst (Const_base (Const_nativeint b))
-
-  let int32 b : t = 
-    Lconst (Const_base (Const_int32 b))
-
-  let int64 b : t =
-    Lconst (Const_base (Const_int64 b))
-  let string b : t =
-    Lconst (Const_base (Const_string (b, None)))
-  let char b : t =
-    Lconst (Const_base (Const_char b))    
-end
-
-let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t = 
-  let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
-  match ll with 
-  | [Lconst a] -> 
-    begin match prim, a  with 
-      | Pnegint, (Const_base (Const_int a))
-        -> Lift.int (- a)
-      (* | Pfloatofint, (Const_base (Const_int a)) *)
-      (*   -> Lift.float (float_of_int a) *)
-      | Pintoffloat, (Const_base (Const_float a))
-        -> 
-        Lift.int (int_of_float (float_of_string a))
-      (* | Pnegfloat -> Lift.float (-. a) *)
-      (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, (Const_base (Const_string (a,_)) ) 
-        -> 
-        Lift.int (String.length a)
-      (* | Pnegbint Pnativeint, (Const_base (Const_nativeint i)) *)
-      (*   ->   *)
-      (*   Lift.nativeint (Nativeint.neg i) *)
-      | Pnegbint Pint32, (Const_base (Const_int32 a))
-        -> 
-        Lift.int32 (Int32.neg a)
-      | Pnegbint Pint64, (Const_base (Const_int64 a))
-        -> 
-        Lift.int64 (Int64.neg a)
-      | Pnot , Const_pointer (a,_) 
-        -> Lift.bool (a = 0 )
-      | _ -> default ()
-    end
-
-
-  | [Lconst a ; Lconst b] -> 
-    begin match prim, a, b  with 
-      | Pbintcomp(_, cmp), Const_base (Const_int32 a), Const_base (Const_int32 b)
-        -> Lift.bool (comparison cmp a b)
-      | Pbintcomp(_, cmp), Const_base (Const_int64 a), Const_base (Const_int64 b)
-        -> Lift.bool (comparison cmp a b)
-      | Pbintcomp(_, cmp), Const_base (Const_nativeint a), Const_base (Const_nativeint b)
-        -> Lift.bool (comparison cmp a b)
-      | Pfloatcomp  cmp, Const_base (Const_nativeint a), Const_base (Const_nativeint b)
-        -> Lift.bool (comparison cmp a b)
-      | Pintcomp cmp ,
-        (Const_base (Const_int a) | Const_pointer (a,_)),
-        (Const_base (Const_int b) | Const_pointer (b,_))
-        -> Lift.bool (comparison cmp a b)
-      | (Paddint
-        | Psubint
-        | Pmulint
-        | Pdivint
-        | Pmodint
-        | Pandint
-        | Porint
-        | Pxorint
-        | Plslint
-        | Plsrint
-        | Pasrint),Const_base (Const_int a),  Const_base (Const_int b)
-        ->
-        (* WE SHOULD keep it as [int], to preserve types *)
-        let aa,bb = Int32.of_int a, Int32.of_int  b in 
-        let int_ v = Lift.int (Int32.to_int v ) in 
-        begin match prim with 
-          | Paddint -> int_ (Int32.add aa bb)
-          | Psubint -> int_ (Int32.sub aa bb)
-          | Pmulint -> int_ (Int32.mul aa  bb)
-          | Pdivint -> 
-            if bb = 0l then default ()
-            else int_ (Int32.div aa bb)
-          | Pmodint ->
-            if bb = 0l then default ()
-            else int_ (Int32.rem aa bb)
-          | Pandint -> int_ (Int32.logand aa bb)
-          | Porint -> int_ (Int32.logor aa bb)
-          | Pxorint -> int_ (Int32.logxor aa bb)
-          | Plslint -> int_ (Int32.shift_left  aa b )
-          | Plsrint -> int_ (Int32.shift_right_logical aa  b)
-          | Pasrint -> int_ (Int32.shift_right aa b)
-          | _ -> default ()
-        end
-      | (Paddbint Pint32
-        | Psubbint Pint32
-        | Pmulbint Pint32
-        | Pdivbint Pint32
-        | Pmodbint Pint32
-        | Pandbint Pint32
-        | Porbint Pint32
-        | Pxorbint Pint32
-        ), Const_base (Const_int32 aa),  Const_base (Const_int32 bb)
-        -> 
-        begin match prim with 
-          | Paddbint _  -> Lift.int32 (Int32.add aa bb)
-          | Psubbint _  -> Lift.int32 (Int32.sub aa bb)
-          | Pmulbint _ -> Lift.int32 (Int32.mul aa  bb)
-          | Pdivbint _ ->  (try Lift.int32 (Int32.div aa  bb) with _  -> default ())
-          | Pmodbint _ -> (try Lift.int32 (Int32.rem aa  bb) with _ -> default ())
-          | Pandbint _ -> Lift.int32 (Int32.logand aa bb)
-          | Porbint _ -> Lift.int32 (Int32.logor aa bb)
-          | Pxorbint _ -> Lift.int32 (Int32.logxor aa bb)
-          | _ -> default ()
-        end
-      | Plslbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
-        -> Lift.int32 (Int32.shift_left  aa b )
-      | Plsrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
-        -> Lift.int32 (Int32.shift_right_logical  aa b )
-      | Pasrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
-        -> Lift.int32 (Int32.shift_right  aa b )
-
-      | (Paddbint Pint64
-        | Psubbint Pint64
-        | Pmulbint Pint64
-        | Pdivbint Pint64
-        | Pmodbint Pint64
-        | Pandbint Pint64
-        | Porbint Pint64
-        | Pxorbint Pint64
-        ), Const_base (Const_int64 aa),  Const_base (Const_int64 bb)
-        -> 
-        begin match prim with 
-          | Paddbint _  -> Lift.int64 (Int64.add aa bb)
-          | Psubbint _  -> Lift.int64 (Int64.sub aa bb)
-          | Pmulbint _ -> Lift.int64 (Int64.mul aa  bb)
-          | Pdivbint _ -> (try Lift.int64 (Int64.div aa  bb) with _ -> default ())
-          | Pmodbint _ -> (try Lift.int64 (Int64.rem aa  bb) with _ -> default ())
-          | Pandbint _ -> Lift.int64 (Int64.logand aa bb)
-          | Porbint _ -> Lift.int64 (Int64.logor aa bb)
-          | Pxorbint _ -> Lift.int64 (Int64.logxor aa bb)
-          | _ -> default ()
-        end
-      | Plslbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
-        -> Lift.int64 (Int64.shift_left  aa b )
-      | Plsrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
-        -> Lift.int64 (Int64.shift_right_logical  aa b )
-      | Pasrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
-        -> Lift.int64 (Int64.shift_right  aa b )
-      | Psequand, Const_pointer (a, _), Const_pointer( b, _)
-        -> 
-        Lift.bool (a = 1 && b = 1)
-      | Psequor, Const_pointer (a, _), Const_pointer( b, _)
-        -> 
-        Lift.bool (a = 1 || b = 1)
-      | Pstringadd, Const_base(Const_string (a, None)),
-        Const_base (Const_string (b,None))
-        ->
-        Lift.string (a ^ b)
-      | (Pstringrefs | Pstringrefu), Const_base(Const_string(a,None)),
-        (Const_base(Const_int b)| Const_pointer (b,_))
-        ->
-        begin try Lift.char (String.get a b)
-          with  _ -> default ()
-        end                       
-      | _ -> default ()
-    end
-
-  | _ -> default ()
-
-
-let not_ loc x  : t = 
-  prim ~primitive:Pnot ~args:[x] loc
-
-let lam_prim ~primitive:( p : Lambda.primitive) ~args loc  : t = 
-  match p with 
-  | Pint_as_pointer 
-  | Pidentity ->  
-    begin match args with [x] -> x | _ -> assert false end
-  | Pbytes_to_string 
-    -> prim ~primitive:Pbytes_to_string ~args loc
-  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
-  | Pignore -> (* Pignore means return unit, it is not an nop *)
-    begin match args with [x] -> seq x unit | _ -> assert false end
-  | Prevapply 
-    -> 
-    begin match args with 
-      | [x ; Lapply{fn; args}]
-        -> apply fn (args @[x]) loc App_na
-      | [x; f] ->  apply f [x] loc App_na
-      | _ -> assert false 
-    end
-
-  | Pdirapply ->
-    begin match args with 
-      | [Lapply{fn ; args }; x ] 
-        -> 
-        apply fn (args @ [x]) loc App_na
-      | [f;x] -> apply f [x] loc App_na
-      | _ -> assert false 
-    end
-  | Ploc loc -> assert false (* already compiled away here*)
-  | Pgetglobal id ->
-    if Ident.is_predef_exn id then
-      prim ~primitive:(Pglobal_exception id) ~args loc       
-    else       
-      prim ~primitive:(Pgetglobal id) ~args loc
-  | Psetglobal id -> 
-    (* we discard [Psetglobal] in the beginning*)
-    begin match args with 
-      | [biglambda] -> biglambda
-      | _ -> assert false 
-    end
-  (* prim ~primitive:(Psetglobal id) ~args loc *)
-  | Pmakeblock (tag,info, mutable_flag) 
-    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-  | Pfield (id,info) 
-    -> prim ~primitive:(Pfield (id,info)) ~args loc
-
-  | Psetfield (id,b,info)
-    -> prim ~primitive:(Psetfield (id,b,info)) ~args loc
-
-  | Pfloatfield (id,info)
-    -> prim ~primitive:(Pfloatfield (id,info)) ~args loc
-  | Psetfloatfield (id,info) 
-    -> prim ~primitive:(Psetfloatfield (id,info)) ~args loc
-  | Pduprecord (repr,i) 
-    -> prim ~primitive:(Pduprecord(repr,i)) ~args loc
-  | Plazyforce -> prim ~primitive:Plazyforce ~args loc
-
-  | Pccall a -> 
-    let prim_name = a.prim_name in
-    if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
-      prim ~primitive:(Pccall a ) ~args loc else 
-    if prim_name =  Literals.js_debugger then 
-      prim ~primitive:Pdebugger ~args loc else 
-    if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
-      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
-    if prim_name = Literals.js_fn_mk then 
-      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
-    if prim_name = Literals.js_fn_method then 
-      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
-    if prim_name = Literals.js_fn_runmethod then 
-      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
-    else
-      prim ~primitive:(Pccall a) ~args loc
-  | Praise _ ->
-    if Js_config.get_no_any_assert () then 
-      begin match args with 
-        | [Lprim {primitive = Pmakeblock (0, _, _) ; 
-                  args = [ 
-                    Lprim {primitive = Pglobal_exception ({name = "Assert_failure"} as id); args =  []}; 
-                    _
-                  ]
-                 } ] when Ident.global id
-          -> assert_false_unit
-        | _ -> prim ~primitive:Praise ~args loc 
-      end
-    else prim ~primitive:Praise ~args loc 
-  | Psequand -> prim ~primitive:Psequand ~args loc
-  | Psequor -> prim ~primitive:Psequor ~args loc
-  | Pnot -> prim ~primitive:Pnot ~args loc 
-  | Pnegint -> prim ~primitive:Pnegint ~args  loc 
-  | Paddint -> prim ~primitive:Paddint ~args loc 
-  | Psubint -> prim ~primitive:Psubint ~args loc 
-  | Pmulint -> prim ~primitive:Pmulint ~args loc 
-  | Pdivint -> prim ~primitive:Pdivint ~args loc 
-  | Pmodint -> prim ~primitive:Pmodint ~args loc 
-  | Pandint -> prim ~primitive:Pandint ~args loc 
-  | Porint -> prim ~primitive:Porint ~args loc 
-  | Pxorint -> prim ~primitive:Pxorint ~args loc 
-  | Plslint -> prim ~primitive:Plslint ~args loc 
-  | Plsrint -> prim ~primitive:Plsrint ~args loc 
-  | Pasrint -> prim ~primitive:Pasrint ~args loc 
-  | Pstringlength -> prim ~primitive:Pstringlength ~args loc 
-  | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc 
-  | Pstringsetu 
-  | Pstringsets -> assert false
-  | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc 
-
-  | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc 
-  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args loc
-  | Pbytessetu -> prim ~primitive:Pbytessetu ~args  loc 
-  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args loc 
-  | Pbytessets -> prim ~primitive:Pbytessets ~args loc 
-  | Pisint -> prim ~primitive:Pisint ~args loc 
-  | Pisout -> prim ~primitive:Pisout ~args loc 
-  | Pbittest -> prim ~primitive:Pbittest ~args loc 
-  | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
-  | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc 
-  | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc 
-  | Pabsfloat -> prim ~primitive:Pabsfloat ~args loc 
-  | Paddfloat -> prim ~primitive:Paddfloat ~args loc 
-  | Psubfloat -> prim ~primitive:Psubfloat ~args loc 
-  | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc 
-  | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc 
-
-  | Pbswap16 -> prim ~primitive:Pbswap16 ~args loc 
-  | Pintcomp x -> prim ~primitive:(Pintcomp x)  ~args loc 
-  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc 
-  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
-  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc 
-  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args  loc 
-  | Parraylength x -> prim ~primitive:(Parraylength x) ~args loc
-  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args loc
-  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args loc 
-  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args loc 
-  | Parraysets x -> prim ~primitive:(Parraysets x) ~args loc 
-  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args loc 
-  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args loc 
-  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args loc 
-  | Paddbint x -> prim ~primitive:(Paddbint x) ~args loc 
-  | Psubbint x -> prim ~primitive:(Psubbint x) ~args loc 
-  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args loc 
-  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args loc 
-  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args loc 
-  | Pandbint x -> prim ~primitive:(Pandbint x) ~args loc 
-  | Porbint x -> prim ~primitive:(Porbint x) ~args loc 
-  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args loc 
-  | Plslbint x -> prim ~primitive:(Plslbint x) ~args loc 
-  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args loc 
-  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args loc 
-  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args loc 
-  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args loc 
-  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args loc 
-  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args loc 
-  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args loc 
-  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args loc 
-  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args loc 
-  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args loc 
-  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args loc 
-  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args loc 
-  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args loc 
-  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args loc 
-  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args loc 
-  | Pctconst x ->
-    begin match x with
-      | Word_size ->
-        Lift.int 32 (* TODO: documentation*)        
-      | _ -> prim ~primitive:(Pctconst x) ~args loc          
-    end
-
-  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args loc 
-  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args loc 
-  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc 
-  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc 
-  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc 
-
-
-
-type bindings = (Ident.t * t) list
-
-
-let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   = 
-  let len = List.length groups in 
-  let domain : _ Ordered_hash_map_local_ident.t = 
-    Ordered_hash_map_local_ident.create len in 
-  let mask = Hash_set_ident_mask.create len in   
-  List.iter (fun (x,lam) -> 
-    Ordered_hash_map_local_ident.add domain x lam;
-    Hash_set_ident_mask.add_unmask mask x;
-    ) groups ;
-  let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
-  let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
-  domain
-  |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
-      let base_key =  node_vec.(key_index) in 
-      ignore (hit_mask mask lam) ;
-      mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  -> 
-      if hit then 
-      begin 
-        let key = Ordered_hash_map_local_ident.rank domain ident in 
-        Int_vec.push key base_key;
-      end
-      );
-
-    ) ;
-  domain, int_mapping , node_vec
-
-(** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
- let scc_bindings (groups : bindings) : bindings list = 
-   match groups with 
-   | [ _ ] -> [ groups ]
-   | _ -> 
-    let domain, int_mapping, node_vec = preprocess_deps groups in 
-    let clusters = Ext_scc.graph node_vec in 
-    if Int_vec_vec.length clusters <= 1 then [ groups]
-    else 
-        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
-            let bindings =
-              Int_vec.map_into_list (fun i -> 
-                  let id = int_mapping.(i) in 
-                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
-                  (id,lam)
-                ) v  in 
-            match bindings with 
-            | [ id,(Lfunction _ as lam) ] ->
-              let base_key = Ordered_hash_map_local_ident.rank domain id in    
-              if Int_vec_util.mem base_key node_vec.(base_key) then       
-                 bindings :: acc 
-              else  [(id, lam)] :: acc    
-            | _ ->  
-              bindings :: acc 
-          )  clusters []
-(* single binding, it does not make sense to do scc,
-   we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
-*)
-let scc  (groups :  bindings)  ( lam : t) ( body : t)
-  =     
-  begin match groups with 
-    | [ (id,bind) ] ->
-      if hit_any_variables (Ident_set.singleton id) bind 
-      then 
-        lam  
-      else let_ Strict id bind body  
-    | _ ->    
-      let (domain, int_mapping, node_vec)  = preprocess_deps groups in 
-      let clusters = Ext_scc.graph node_vec in 
-      if Int_vec_vec.length clusters <= 1 then lam 
-      else          
-        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
-            let bindings =
-              Int_vec.map_into_list (fun i -> 
-                  let id = int_mapping.(i) in 
-                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
-                  (id,lam)
-                ) v  in 
-            match bindings with 
-            | [ id,lam ] ->
-              let base_key = Ordered_hash_map_local_ident.rank domain id in    
-              if Int_vec_util.mem base_key node_vec.(base_key) then       
-                letrec bindings acc 
-              else  let_ Strict id lam acc    
-            | _ ->  
-              letrec bindings  acc 
-          )  clusters body 
-  end
-
-let convert exports lam = 
-  let alias = Ident_hashtbl.create 64 in 
-  let rec
-    aux (lam : Lambda.lambda) : t = 
-    match lam with 
-    | Lvar x -> Lvar (Ident_hashtbl.find_default alias x x)
-    | Lconst x -> 
-      Lconst x 
-    | Lapply (fn,args,loc) 
-      ->  
-      begin match fn with 
-        | Lprim (
-            Pfield (id, _),
-            [
-              Lprim (
-                Pgetglobal { name = "CamlinternalMod" },
-                _,_
-              )
-            ],loc
-          ) -> (* replace all {!CamlinternalMod} function *)
-          let args = List.map aux args in
-          begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
-            | "init_mod" ,  [_loc ; shape]  -> 
-              begin match shape with 
-                | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
-                  -> unit  (* see {!Translmod.init_shape}*)
-                | _ ->  prim ~primitive:Pinit_mod ~args loc 
-              end
-            | "update_mod", [shape ;  _obj1; _obj2] -> 
-              (* here array access will have side effect .. *)
-              begin match shape with 
-                | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
-                  -> unit (* see {!Translmod.init_shape}*)
-                | _ -> prim ~primitive:Pupdate_mod ~args loc
-              end
-            | _ -> assert false
-          end
-
-        | Lprim ( Pfield (id, _),
-                  [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
-                )
-          ->
-          let args = List.map aux args in
-          begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
-            | "^", [ l; r ] 
-              ->
-              prim ~primitive:Pstringadd ~args:[l;r] loc 
-            | _ ->  apply (aux fn) args loc  App_na
-          end
-        | _ -> 
-          apply (aux fn) (List.map aux args) 
-            loc App_na
-      end
-    | Lfunction (kind,  params,body)
-      ->  function_ 
-            ~arity:(List.length params) ~kind ~params 
-            ~body:(aux body)
-    | Llet (kind,id,e,body) 
-      ->
-      begin match kind, e with 
-        | Alias , Lvar u ->
-          (* we should not remove it immediately, since we have to be careful 
-             where it is used, it can be [exported], [Lvar] or [Lassign] etc 
-             The other common mistake is that 
-             {[
-               let x = y (* elimiated x/y*)
-               let u = x  (* eliminated u/x *)
-             ]}
-
-             however, [x] is already eliminated 
-             To improve the algorithm
-             {[
-               let x = y (* x/y *)
-               let u = x (* u/y *)
-             ]}
-             This looks more correct, but lets be conservative here
-          *)          
-          Ident_hashtbl.add alias id (Ident_hashtbl.find_default alias u u);
-          if Ident_set.mem id exports then 
-            Llet(kind, id, Lvar u, aux body)
-          else aux body 
-
-        | _, _ -> Llet(kind,id,aux e, aux body)
-      end
-    | Lletrec (bindings,body)
-      -> 
-      let bindings = List.map (fun (id, e) -> id, aux e) bindings in
-      let body = aux body in 
-      let lam = Lletrec (bindings, body) in 
-      scc bindings lam body  
-    (* inlining will affect how mututal recursive behave *)
-    | Lprim (primitive,args, loc) 
-      -> aux_primitive loc primitive args 
-    (* Lprim {primitive ; args = List.map aux args } *)
-    | Lswitch (e,s) -> 
-      Lswitch (aux e, aux_switch s)
-    | Lstringswitch (e, cases, default,_) -> 
-      Lstringswitch (aux e, List.map (fun (x, b) -> x, aux b ) cases, 
-                     match default with 
-                     | None -> None
-                     | Some x -> Some (aux x)
-                    )    
-
-    | Lstaticraise (id, args) -> 
-      Lstaticraise (id, List.map aux args)
-    | Lstaticcatch (b, (i, ids), handler) -> 
-      Lstaticcatch (aux b, (i,ids), aux handler)
-    | Ltrywith (b, id, handler) -> 
-      Ltrywith (aux b, id, aux handler)
-    | Lifthenelse (b,then_,else_) -> 
-      Lifthenelse (aux b, aux then_, aux else_)
-    | Lsequence (a,b) 
-      -> Lsequence (aux a, aux b)
-    | Lwhile (b,body) -> 
-      Lwhile (aux b, aux body)
-    | Lfor (id, from_, to_, dir, loop) -> 
-      Lfor (id, aux from_, aux to_, dir, aux loop)
-    | Lassign (id, body) -> 
-      Lassign (id, aux body)    
-    | Lsend (kind, a,b,ls, loc) -> 
-      (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
-      begin match aux b with 
-        | Lprim {primitive =  Pccall {prim_name };  args; loc}
-          when prim_name = Literals.js_unsafe_downgrade
-          -> 
-          begin match kind, ls with 
-            | Public (Some name), [] -> 
-              prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
-                ~args loc 
-            | _ -> assert false 
-          end
-        | b ->     
-          (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
-          Lsend(kind, aux a,  b, List.map aux ls, loc )
-      end
-    | Levent (e, event) -> aux e 
-    | Lifused (id, e) -> 
-      Lifused(id, aux e) (* TODO: remove it ASAP *)
-  and aux_primitive loc (primitive : Lambda.primitive) args = 
-    lam_prim ~primitive ~args:(List.map aux args) loc
-  and aux_switch (s : Lambda.lambda_switch) : switch = 
-    { sw_numconsts = s.sw_numconsts ; 
-      sw_consts = List.map (fun (i, lam) -> i, aux lam) s.sw_consts;
-      sw_numblocks = s.sw_numblocks;
-      sw_blocks = List.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
-      sw_failaction = 
-        match s.sw_failaction with 
-        | None -> None 
-        | Some a -> Some (aux a)
-    }  in 
-  aux lam 
-
-
-
-end
-module Js_cmj_format : sig 
-#1 "js_cmj_format.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Define intemediate format to be serialized for cross module optimization
- *)
-
-(** In this module, 
-    currently only arity information is  exported, 
-
-    Short term: constant literals are also exported 
-
-    Long term:
-    Benefit? since Google Closure Compiler already did such huge amount of work
-    TODO: simple expression, literal small function  can be stored, 
-    but what would happen if small function captures other environment
-    for example 
-
-    {[
-      let f  = fun x -> g x 
-    ]}
-
-    {[
-      let f = g 
-    ]}
-*)
-
-type cmj_value = {
-  arity : Lam.function_arities ;
-  closed_lambda : Lam.t option ; 
-  (* Either constant or closed functor *)
-}
-
-type effect = string option
-
-
-
-type t = {
-  values : cmj_value String_map.t;
-  effect : effect;
-  (* goog_package : string option; *)
-  npm_package_path : Js_config.packages_info;
-}
-
-val pure_dummy : t
-val no_pure_dummy : t
-
-
-val from_file : string -> t
-val from_string : string -> t
-
-val to_file : string -> t -> unit
-
-end = struct
-#1 "js_cmj_format.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(* TODO: add a magic number *)
-type cmj_value = {
-  arity : Lam.function_arities ;
-  closed_lambda : Lam.t option ; 
-  (** Either constant or closed functor *)
-}
-
-type effect = string option
-
-
-
-(** we don't force people to use package *)
-
-type t = {
-  values : cmj_value String_map.t;
-  effect : effect;
-  npm_package_path : Js_config.packages_info ;
-}
-
-let cmj_magic_number =  "BUCKLE20160510"
-let cmj_magic_number_length = 
-  String.length cmj_magic_number
-
-let pure_dummy = 
-  {
-    values = String_map.empty;
-    effect = None;
-    npm_package_path = Empty;
-  }
-
-let no_pure_dummy = 
-  {
-    values = String_map.empty;
-    effect = Some "";
-    npm_package_path = Empty;  
-  }
-
-
-
-let from_file name : t =
-  let ic = open_in_bin name in 
-  let buffer = really_input_string ic cmj_magic_number_length in 
-  if buffer <> cmj_magic_number then
-    Ext_pervasives.failwithf ~loc:__LOC__ 
-      "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
-        __LOC__
-  else 
-    let v  : t = input_value ic in 
-    close_in ic ;
-    v 
-
-
-let from_string s : t = 
-  let magic_number = String.sub s 0 cmj_magic_number_length in 
-  if magic_number = cmj_magic_number then 
-    Marshal.from_string s  cmj_magic_number_length
-  else 
-    Ext_pervasives.failwithf ~loc:__LOC__ 
-      "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
-        __LOC__
-
-let to_file name (v : t) = 
-  let oc = open_out_bin name in 
-  output_string oc cmj_magic_number;
-  output_value oc v;
-  close_out oc 
-
-end
-module Config_util : sig 
-#1 "config_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** A simple wrapper around [Config] module in compiler-libs, so that the search path
-    is the same
-*)
-
-
-val find_opt : string -> string option
-(** [find filename] Input is a file name, output is absolute path *)
-
-
-val find_cmj : string -> Js_cmj_format.t
-
-end = struct
-#1 "config_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-let find_in_path_uncap path name =
-  let uname = String.uncapitalize name in
-  let rec try_dir = function
-    | [] -> None
-    | dir::rem ->      
-      let ufullname = Filename.concat dir uname in
-      if Sys.file_exists ufullname then Some ufullname
-      else 
-        let fullname = Filename.concat dir name   in
-        if Sys.file_exists fullname then Some fullname
-        else try_dir rem
-  in try_dir path
-
-
-
-(* ATTENTION: lazy to wait [Config.load_path] populated *)
-let find_opt file =  find_in_path_uncap !Config.load_path file 
-
-
-
-
-(* strategy:
-   If not installed, use the distributed [cmj] files, 
-   make sure that the distributed files are platform independent
-*)
-let find_cmj file = 
-  match find_opt file with
-  | Some f
-    -> 
-    Js_cmj_format.from_file f             
-  | None -> 
-    (* ONLY read the stored cmj data in browser environment *)
-
-        Bs_exception.error (Cmj_not_found file)
-        
-
-
-
-end
-module Js_call_info : sig 
-#1 "js_call_info.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Type for collecting call site information, used in JS IR *) 
-
-type arity = 
-  | Full 
-  | NA 
-
-
-type call_info = 
-  | Call_ml (* called by plain ocaml expression *)
-  | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.val] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> f x y === f ]} when [f] is an atom     
-  *) 
-
-
-type t = { 
-  call_info : call_info;
-  arity : arity;
-
-}
-
-val dummy : t
-val builtin_runtime_call : t
-
-val ml_full_call : t 
-
-end = struct
-#1 "js_call_info.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type arity = 
-  | Full 
-  | NA 
-
-type call_info = 
-  | Call_ml (* called by plain ocaml expression *)
-  | Call_builtin_runtime (* built-in externals *)
-  | Call_na 
-  (* either from [@@bs.val] or not available, 
-     such calls does not follow such rules
-     {[ fun x y -> (f x y) === f ]} when [f] is an atom     
-
-  *) 
-
-type t = { 
-  call_info : call_info;
-  arity : arity
-}
-
-let dummy = { arity = NA; call_info = Call_na }
-
-let builtin_runtime_call = {arity = Full; call_info = Call_builtin_runtime}
-
-let ml_full_call = {arity = Full; call_info = Call_ml}
-
-end
-module Js_closure : sig 
-#1 "js_closure.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Define a type used in JS IR to help convert lexical scope to JS [var] 
-    based scope convention
- *)
-
-type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t 
-}
-
-val empty : unit -> t
-
-val get_lexical_scope : t -> Ident_set.t
-
-val set_lexical_scope : t -> Ident_set.t -> unit
-
-end = struct
-#1 "js_closure.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type t = {
-  mutable outer_loop_mutable_values :  Ident_set.t ;
-}
-
-let empty () = {
-  outer_loop_mutable_values  = Ident_set.empty
-}
-
-let set_lexical_scope t v = t.outer_loop_mutable_values <- v 
-
-let get_lexical_scope t = t.outer_loop_mutable_values 
-
-end
-module Js_fun_env : sig 
-#1 "js_fun_env.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Define type t used in JS IR to collect some meta data for a function, like its closures, etc 
-  *)
-
-type t 
-
-val empty :  ?immutable_mask:bool array  -> int -> t
-
-val is_tailcalled : t -> bool
-
-val is_empty : t -> bool 
-
-val set_unbounded :  t -> Ident_set.t -> unit
-
-
-
-val set_lexical_scope : t -> Ident_set.t -> unit
-
-val get_lexical_scope : t -> Ident_set.t
-
-val to_string : t -> string
-
-val mark_unused : t -> int -> unit 
-
-val get_unused : t -> int -> bool
-
-val get_mutable_params : Ident.t list -> t -> Ident.t list
-
-val get_unbounded : t -> Ident_set.t
-
-val get_length : t -> int
-
-end = struct
-#1 "js_fun_env.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(* Make it mutable so that we can do
-   in-place change without constructing a new one
-  -- however, it's a design choice -- to be reviewed later
-*)
-
-type immutable_mask = 
-  | All_immutable_and_no_tail_call 
-     (** iff not tailcalled 
-         if tailcalled, in theory, it does not need change params, 
-         for example
-         {[
-         let rec f  (n : int ref) = 
-            if !n > 0 then decr n; print_endline "hi"
-            else  f n
-         ]}
-         in this case, we still create [Immutable_mask], 
-         since the inline behavior is slightly different
-      *)
-  | Immutable_mask of bool array
-
-type t = { 
-  mutable unbounded : Ident_set.t;
-  mutable bound_loop_mutable_values : Ident_set.t; 
-  used_mask : bool array;
-  immutable_mask : immutable_mask; 
-}
-(** Invariant: unused param has to be immutable *)
-
-let empty ?immutable_mask n = { 
-  unbounded =  Ident_set.empty ;
-  used_mask = Array.make n false;
-  immutable_mask = 
-    (match immutable_mask with 
-     | Some x -> Immutable_mask x 
-     | None -> All_immutable_and_no_tail_call
-    );
-  bound_loop_mutable_values =Ident_set.empty;
-}
-
-let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
-
-let mark_unused  t i = 
-  t.used_mask.(i) <- true
-
-let get_unused t i = 
-  t.used_mask.(i)
-
-let get_length t = Array.length t.used_mask
-
-let to_string env =  
-  String.concat "," 
-    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
-       (Ident_set.elements  env.unbounded ))
-
-let get_mutable_params (params : Ident.t list) (x : t ) = 
-  match x.immutable_mask with 
-  | All_immutable_and_no_tail_call -> []
-  | Immutable_mask xs -> 
-      Ext_list.filter_mapi 
-        (fun i p -> if not xs.(i) then Some p else None)  params
-
-
-let get_unbounded t = t.unbounded
-
-let set_unbounded env v = 
-  (* Ext_log.err "%s -- set @." (to_string env); *)
-  (* if Ident_set.is_empty env.bound then *)
-  env.unbounded <- v 
- (* else assert false *)
-
-let set_lexical_scope env bound_loop_mutable_values = 
-  env.bound_loop_mutable_values <- bound_loop_mutable_values
-
-let get_lexical_scope env =  
-  env.bound_loop_mutable_values
-
-(* TODO:  can be refined if it 
-    only enclose toplevel variables 
- *)
-let is_empty t = Ident_set.is_empty t.unbounded
-
-end
 module Js_op
 = struct
 #1 "js_op.ml"
@@ -64819,6 +62668,2629 @@ and deps_program =
     modules : required_modules ;
     side_effect : string option (* None: no, Some reason  *)
   }
+
+end
+module Lam_module_ident : sig 
+#1 "lam_module_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+
+
+(** A type for qualified identifiers in Lambda IR 
+ *)
+
+type t = Js_op.module_id = private { id : Ident.t ; kind : Js_op.kind }
+
+type system = Js_config.module_system 
+
+val id : t -> Ident.t 
+
+val name : t -> string
+
+val mk : J.kind -> Ident.t -> t
+
+val of_ml : Ident.t -> t
+
+val of_external : Ident.t -> string -> t
+
+val of_runtime : Ident.t -> t 
+
+module Hash : Hashtbl_gen.S with type key = t
+module Hash_set : Hash_set_gen.S with type key = t
+end = struct
+#1 "lam_module_ident.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+
+type t = Js_op.module_id = 
+  { id : Ident.t ; kind : Js_op.kind }
+
+type system = Js_config.module_system 
+
+let id x = x.id 
+
+let of_ml id = { id ; kind =  Ml}
+
+let of_external id name =  {id ; kind = External name}
+
+let of_runtime id = { id ; kind = Runtime }
+
+let mk kind id = {id; kind}
+
+let name  x : string  = 
+  match (x.kind : J.kind) with 
+  | Ml  | Runtime ->  x.id.name
+  | External v -> v  
+
+let equal (x : t) y = 
+  match x.kind with 
+  | External x_kind-> 
+    begin match y.kind with 
+      | External y_kind -> 
+        x_kind = (y_kind : string)
+      | _ -> false 
+    end
+  | Ml -> y.kind = Ml && Ext_ident.equal x.id y.id 
+  | Runtime -> 
+    y.kind = Runtime  && Ext_ident.equal x.id y.id
+let hash (x : t) = 
+  match x.kind with 
+  | External x_kind -> Bs_hash_stubs.hash_string x_kind 
+  | Ml | Runtime -> 
+    let x_id = x.id in 
+    Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
+
+module Hash = Hashtbl_make.Make(struct 
+    type nonrec t = t 
+    let hash   = hash
+    let equal  = equal 
+  end)
+
+module Hash_set = Hash_set.Make( struct 
+    type nonrec t = t 
+    let hash   = hash
+    let equal  = equal     
+end)
+end
+module Ocaml_stdlib_slots
+= struct
+#1 "ocaml_stdlib_slots.ml"
+
+(* Generated by scripts/gen_slots.ml, should be updated everytime when we upgrade the compiler *)
+let pervasives = [| "invalid_arg";"failwith";"Exit";"min";"max";"abs";"max_int";"min_int";"lnot";"infinity";"neg_infinity";"nan";"max_float";"min_float";"epsilon_float";"^";"char_of_int";"string_of_bool";"bool_of_string";"string_of_int";"string_of_float";"@";"stdin";"stdout";"stderr";"print_char";"print_string";"print_bytes";"print_int";"print_float";"print_endline";"print_newline";"prerr_char";"prerr_string";"prerr_bytes";"prerr_int";"prerr_float";"prerr_endline";"prerr_newline";"read_line";"read_int";"read_float";"open_out";"open_out_bin";"open_out_gen";"flush";"flush_all";"output_char";"output_string";"output_bytes";"output";"output_substring";"output_byte";"output_binary_int";"output_value";"seek_out";"pos_out";"out_channel_length";"close_out";"close_out_noerr";"set_binary_mode_out";"open_in";"open_in_bin";"open_in_gen";"input_char";"input_line";"input";"really_input";"really_input_string";"input_byte";"input_binary_int";"input_value";"seek_in";"pos_in";"in_channel_length";"close_in";"close_in_noerr";"set_binary_mode_in";"LargeFile";"string_of_format";"^^";"exit";"at_exit";"valid_float_lexem";"unsafe_really_input";"do_at_exit" |]
+let camlinternalOO = [| "public_method_label";"new_method";"new_variable";"new_methods_variables";"get_variable";"get_variables";"get_method_label";"get_method_labels";"get_method";"set_method";"set_methods";"narrow";"widen";"add_initializer";"dummy_table";"create_table";"init_class";"inherits";"make_class";"make_class_store";"dummy_class";"copy";"create_object";"create_object_opt";"run_initializers";"run_initializers_opt";"create_object_and_run_initializers";"lookup_tables";"params";"stats" |]
+let camlinternalMod = [| "init_mod";"update_mod" |]
+let string = [| "make";"init";"copy";"sub";"fill";"blit";"concat";"iter";"iteri";"map";"mapi";"trim";"escaped";"index";"rindex";"index_from";"rindex_from";"contains";"contains_from";"rcontains_from";"uppercase";"lowercase";"capitalize";"uncapitalize";"compare" |]
+let array = [| "init";"make_matrix";"create_matrix";"append";"concat";"sub";"copy";"fill";"blit";"to_list";"of_list";"iter";"map";"iteri";"mapi";"fold_left";"fold_right";"sort";"stable_sort";"fast_sort" |]
+let list = [| "length";"hd";"tl";"nth";"rev";"append";"rev_append";"concat";"flatten";"iter";"iteri";"map";"mapi";"rev_map";"fold_left";"fold_right";"iter2";"map2";"rev_map2";"fold_left2";"fold_right2";"for_all";"exists";"for_all2";"exists2";"mem";"memq";"find";"filter";"find_all";"partition";"assoc";"assq";"mem_assoc";"mem_assq";"remove_assoc";"remove_assq";"split";"combine";"sort";"stable_sort";"fast_sort";"sort_uniq";"merge" |]
+    
+
+end
+module Ordered_hash_map_gen
+= struct
+#1 "ordered_hash_map_gen.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* does not support [remove], 
+    so that the adding order is strict and continous  
+ *)
+
+module type S =
+sig
+  type key
+  type 'value t
+  val create: int ->  'value t
+  val clear : 'vaulue t -> unit
+  val reset : 'value t -> unit
+  val copy: 'value t -> 'value t
+  val add : 'value t -> key -> 'value -> unit
+  val mem : 'value t -> key -> bool
+  val rank : 'value t -> key -> int (* -1 if not found*)
+  val find_value : 'value t -> key -> 'value (* raise if not found*)
+  val iter: (key -> 'value -> int -> unit) ->  'value t -> unit
+  val fold: (key -> 'value -> int -> 'b -> 'b) ->  'value t -> 'b -> 'b
+  val length:  'value t -> int
+  val stats: 'value t -> Hashtbl.statistics
+  val elements : 'value t -> key list 
+  val choose : 'value t -> key 
+  val to_sorted_array: 'value t -> key array
+end
+
+(* We do dynamic hashing, and resize the table and rehash the elements
+   when buckets become too long. *)
+type ('a,'b) bucket = 
+  | Empty 
+  | Cons of 'a * int * 'b  * ('a,'b) bucket
+
+type ('a,'b) t =
+  { mutable size: int;                        (* number of entries *)
+    mutable data: ('a,'b) bucket array;  (* the buckets *)
+    initial_size: int;                        (* initial array size *)
+  }
+
+
+
+
+let create  initial_size =
+  let s = Ext_util.power_2_above 16 initial_size in
+  { initial_size = s; size = 0; data = Array.make s Empty }
+
+let clear h =
+  h.size <- 0;
+  let len = Array.length h.data in
+  for i = 0 to len - 1 do
+    Array.unsafe_set h.data i  Empty
+  done
+
+let reset h =
+  h.size <- 0;
+  h.data <- Array.make h.initial_size Empty
+
+
+let copy h = { h with data = Array.copy h.data }
+
+let length h = h.size
+
+let resize indexfun h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if nsize < Sys.max_array_length then begin
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons(key,info,data,rest) ->
+        let nidx = indexfun h key in
+        ndata.(nidx) <- Cons(key,info,data, ndata.(nidx));
+        insert_bucket rest
+    in
+    for i = 0 to osize - 1 do
+      insert_bucket (Array.unsafe_get odata i)
+    done
+  end
+
+let iter f h =
+  let rec do_bucket = function
+    | Empty ->
+      ()
+    | Cons(k ,i, value, rest) ->
+      f k value i; do_bucket rest in
+  let d = h.data in
+  for i = 0 to Array.length d - 1 do
+    do_bucket (Array.unsafe_get d i)
+  done
+
+let choose h = 
+  let rec aux arr offset len = 
+    if offset >= len then raise Not_found
+    else 
+      match Array.unsafe_get arr offset with 
+      | Empty -> aux arr (offset + 1) len 
+      | Cons (k,_,_,rest) -> k 
+  in
+  aux h.data 0 (Array.length h.data)
+
+let to_sorted_array h = 
+  if h.size = 0 then [||]
+  else 
+    let v = choose h in 
+    let arr = Array.make h.size v in
+    iter (fun k _ i -> Array.unsafe_set arr i k) h;
+    arr 
+
+let fold f h init =
+  let rec do_bucket b accu =
+    match b with
+      Empty ->
+      accu
+    | Cons( k , i,  value, rest) ->
+      do_bucket rest (f k  value i  accu) in
+  let d = h.data in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket (Array.unsafe_get d i) !accu
+  done;
+  !accu
+
+let elements set = 
+  fold  (fun k  _  _ acc  ->  k :: acc) set []
+
+
+let rec bucket_length acc (x : _ bucket) = 
+  match x with 
+  | Empty -> 0
+  | Cons(_,_,_,rest) -> bucket_length (acc + 1) rest  
+
+let stats h =
+  let mbl =
+    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
+  let histo = Array.make (mbl + 1) 0 in
+  Array.iter
+    (fun b ->
+       let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
+    h.data;
+  { Hashtbl.num_bindings = h.size;
+    num_buckets = Array.length h.data;
+    max_bucket_length = mbl;
+    bucket_histogram = histo }
+
+
+
+end
+module Ordered_hash_map_local_ident : sig 
+#1 "ordered_hash_map_local_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(** Hash algorithm only hash 
+    stamp, this makes sense when  all identifiers are local (no global)
+*)
+include Ordered_hash_map_gen.S with type key = Ident.t
+
+end = struct
+#1 "ordered_hash_map_local_ident.ml"
+  
+# 10 "ext/ordered_hash_map.cppo.ml"
+  type key = Ident.t
+  type   'value t = (key,'value) Ordered_hash_map_gen.t
+  let key_index (h : _ t) (key : key) =
+    (Bs_hash_stubs.hash_int  key.stamp) land (Array.length h.data - 1)
+  let equal_key = Ext_ident.equal
+
+
+# 20
+open Ordered_hash_map_gen
+
+let create = create
+let clear = clear
+let reset = reset
+let copy = copy
+let iter = iter
+let fold = fold
+let length = length
+let stats = stats
+let elements = elements
+let choose = choose
+let to_sorted_array = to_sorted_array
+
+
+
+let rec small_bucket_mem key lst =
+  match lst with 
+  | Empty -> false 
+  | Cons(key1,_, _, rest) -> 
+    equal_key key key1 ||
+    match rest with 
+    | Empty -> false 
+    | Cons(key2 , _,_, rest) -> 
+      equal_key key  key2 ||
+      match rest with 
+      | Empty -> false 
+      | Cons(key3,_, _, rest) -> 
+        equal_key key  key3 ||
+        small_bucket_mem key rest 
+
+let rec small_bucket_rank key lst =
+  match lst with 
+  | Empty -> -1
+  | Cons(key1,i,_, rest) -> 
+    if equal_key key key1 then i 
+    else match rest with 
+      | Empty -> -1 
+      | Cons(key2,i2, _, rest) -> 
+        if equal_key key  key2 then i2 else
+          match rest with 
+          | Empty -> -1 
+          | Cons(key3,i3, _, rest) -> 
+            if equal_key key  key3 then i3 else
+              small_bucket_rank key rest 
+let rec small_bucket_find_value  key (lst : (_,_) bucket)   =
+  match lst with 
+  | Empty -> raise Not_found
+  | Cons(key1,_,value, rest) -> 
+    if equal_key key  key1 then value 
+    else match rest with 
+      | Empty -> raise Not_found 
+      | Cons(key2,_,value, rest) -> 
+        if equal_key key  key2 then value else
+          match rest with 
+          | Empty -> raise Not_found 
+          | Cons(key3, _ , value, rest) -> 
+            if equal_key key  key3 then value else
+              small_bucket_find_value key rest 
+
+let add h key value =
+  let i = key_index h key  in 
+  if not (small_bucket_mem key  h.data.(i)) then 
+    begin 
+      h.data.(i) <- Cons(key,h.size, value, h.data.(i));
+      h.size <- h.size + 1 ;
+      if h.size > Array.length h.data lsl 1 then resize key_index h
+    end
+
+let mem h key =
+  small_bucket_mem key (Array.unsafe_get h.data (key_index h key)) 
+let rank h key = 
+  small_bucket_rank key(Array.unsafe_get h.data (key_index h key))  
+
+let find_value h key =
+  small_bucket_find_value key (Array.unsafe_get h.data (key_index h key))
+
+
+
+
+
+
+
+
+
+
+
+
+
+end
+module Lam : sig 
+#1 "lam.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type array_kind = Lambda.array_kind
+type boxed_integer = Lambda.boxed_integer
+type comparison = Lambda.comparison 
+type bigarray_kind = Lambda.bigarray_kind
+type bigarray_layout = Lambda.bigarray_layout
+type compile_time_constant = Lambda.compile_time_constant
+
+type tag_info = Lambda.tag_info
+type mutable_flag = Asttypes.mutable_flag
+type field_dbg_info = Lambda.field_dbg_info 
+type set_field_dbg_info = Lambda.set_field_dbg_info
+
+type ident = Ident.t
+
+type function_arities = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+  (** when the first argument is true, it is for sure 
+
+      approximation sound but not complete 
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))
+   *)
+  | NA 
+
+type primitive = 
+  | Pbytes_to_string
+  | Pbytes_of_string
+  | Pgetglobal of ident
+  (* | Psetglobal of ident *)
+  | Pglobal_exception of ident             
+  | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
+  | Pfield of int * Lambda.field_dbg_info
+  | Psetfield of int * bool * Lambda.set_field_dbg_info
+  | Pfloatfield of int * Lambda.field_dbg_info
+  | Psetfloatfield of int * Lambda.set_field_dbg_info
+  | Pduprecord of Types.record_representation * int
+  | Plazyforce
+  | Pccall of  Primitive.description
+  | Praise 
+  | Psequand | Psequor | Pnot
+  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of Lambda.comparison
+  | Poffsetint of int
+  | Poffsetref of int
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of Lambda.comparison
+  | Pstringlength 
+  | Pstringrefu 
+  | Pstringrefs
+  | Pstringadd    
+  | Pbyteslength
+  | Pbytesrefu
+  | Pbytessetu 
+  | Pbytesrefs
+  | Pbytessets
+  (* Array operations *)
+  | Pmakearray of array_kind
+  | Parraylength of array_kind
+  | Parrayrefu of array_kind
+  | Parraysetu of array_kind
+  | Parrayrefs of array_kind
+  | Parraysets of array_kind
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  (* Bitvect operations *)
+  | Pbittest
+  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of boxed_integer
+  | Pmodbint of boxed_integer
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
+  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  (* size of the nth dimension of a big array *)
+  | Pbigarraydim of int
+  (* load/set 16,32,64 bits from a string: (unsafe)*)
+  | Pstring_load_16 of bool
+  | Pstring_load_32 of bool
+  | Pstring_load_64 of bool
+  | Pstring_set_16 of bool
+  | Pstring_set_32 of bool
+  | Pstring_set_64 of bool
+  (* load/set 16,32,64 bits from a
+     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+  | Pbigstring_load_16 of bool
+  | Pbigstring_load_32 of bool
+  | Pbigstring_load_64 of bool
+  | Pbigstring_set_16 of bool
+  | Pbigstring_set_32 of bool
+  | Pbigstring_set_64 of bool
+  (* Compile time constants *)
+  | Pctconst of compile_time_constant
+  (* byte swap *)
+  | Pbswap16
+  | Pbbswap of boxed_integer
+  (* Integer to external pointer *)
+
+  | Pdebugger
+  | Pjs_unsafe_downgrade of string * Location.t
+  | Pinit_mod
+  | Pupdate_mod
+  | Pjs_fn_make of int 
+  | Pjs_fn_run of int 
+  | Pjs_fn_method of int 
+  | Pjs_fn_runmethod of int 
+
+type switch  =
+  { sw_numconsts: int;
+    sw_consts: (int * t) list;
+    sw_numblocks: int;
+    sw_blocks: (int * t) list;
+    sw_failaction : t option}
+and apply_status =
+  | App_na
+  | App_ml_full
+  | App_js_full      
+and apply_info = private
+  { fn : t ; 
+    args : t list ; 
+    loc : Location.t;
+    status : apply_status
+  }
+
+and prim_info = private
+  { primitive : primitive ; 
+    args : t list ; 
+    loc : Location.t 
+  }
+and function_info = private
+  { arity : int ; 
+   kind : Lambda.function_kind ; 
+   params : ident list ;
+   body : t 
+  }
+and  t =  private
+  | Lvar of ident
+  | Lconst of Lambda.structured_constant
+  | Lapply of apply_info
+  | Lfunction of function_info
+  | Llet of Lambda.let_kind * ident * t * t
+  | Lletrec of (ident * t) list * t
+  | Lprim of prim_info
+  | Lswitch of t * switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * ident list) * t
+  | Ltrywith of t * ident * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of ident * t * t * Asttypes.direction_flag * t
+  | Lassign of ident * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Lifused of ident * t
+  (* | Levent of t * Lambda.lambda_event 
+     [Levent] in the branch hurt pattern match, 
+     we should use record for trivial debugger info
+  *)
+
+
+module Prim : sig 
+  type t = primitive
+  val js_is_nil : t
+  val js_is_undef : t 
+  val js_is_nil_undef : t 
+end
+
+
+type binop = t -> t -> t 
+
+type triop = t -> t -> t -> t 
+
+type unop = t ->  t
+
+val inner_map : (t -> t) -> t -> t
+val inner_iter : (t -> unit) -> t -> unit 
+val free_variables : t -> Ident_set.t
+val hit_any_variables : Ident_set.t -> t -> bool
+val check : string -> t -> t 
+type bindings = (Ident.t * t) list
+
+val scc_bindings : bindings -> bindings list 
+val scc : bindings -> t -> t  -> t 
+
+val var : ident -> t
+val const : Lambda.structured_constant -> t
+
+val apply : t -> t list -> Location.t -> apply_status -> t
+val function_ : 
+  arity:int ->
+  kind:Lambda.function_kind -> params:ident list -> body:t -> t
+
+val let_ : Lambda.let_kind -> ident -> t -> t -> t
+val letrec : (ident * t) list -> t -> t
+val if_ : triop
+val switch : t -> switch  -> t 
+val stringswitch : t -> (string * t) list -> t option -> t 
+
+val true_ : t 
+val false_ : t 
+val unit : t 
+
+val sequor : binop
+val sequand : binop
+val not_ : Location.t ->  unop
+val seq : binop
+val while_ : binop
+val event : t -> Lambda.lambda_event -> t  
+val try_ : t -> ident -> t  -> t 
+val ifused : ident -> t -> t
+val assign : ident -> t -> t 
+
+val send : 
+  Lambda.meth_kind ->
+  t -> t -> t list -> 
+  Location.t -> t 
+
+val prim : primitive:primitive -> args:t list -> Location.t  ->  t
+
+val staticcatch : 
+  t -> int * ident list -> t -> t
+
+val staticraise : 
+  int -> t list -> t
+
+val for_ : 
+  ident ->
+  t  ->
+  t -> Asttypes.direction_flag -> t -> t 
+
+
+
+
+(** In this pass we also synchronized aliases so that 
+    {[
+      let a1 = a0 in 
+      let a2 = a1 in 
+      let a3 = a2 in 
+      let a4 = a3 in 
+    ]}
+    converted to 
+    {[
+      let a1 = a0 in 
+      let a2 = a0 in 
+      let a3 = a0 in 
+      let a4 = a0 in 
+    ]}
+    we dont eliminate unused let bindings to leave it for {!Lam_pass_lets_dce}
+    we should remove all those let aliases, otherwise, it will be
+    pushed into alias table again
+ *)
+val convert :  Ident_set.t -> Lambda.lambda -> t * Lam_module_ident.Hash_set.t
+
+
+
+end = struct
+#1 "lam.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type array_kind = Lambda.array_kind
+type boxed_integer = Lambda.boxed_integer
+type comparison = Lambda.comparison 
+type bigarray_kind = Lambda.bigarray_kind
+type bigarray_layout = Lambda.bigarray_layout
+type compile_time_constant = Lambda.compile_time_constant
+
+type tag_info = Lambda.tag_info
+type mutable_flag = Asttypes.mutable_flag
+type field_dbg_info = Lambda.field_dbg_info 
+type set_field_dbg_info = Lambda.set_field_dbg_info
+
+type ident = Ident.t
+
+type function_arities = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+  | NA 
+
+type primitive = 
+  | Pbytes_to_string
+  | Pbytes_of_string
+  (* Globals *)
+  | Pgetglobal of ident
+  (* | Psetglobal of ident *)
+  | Pglobal_exception of ident       
+  (* Operations on heap blocks *)
+  | Pmakeblock of int * tag_info * mutable_flag
+  | Pfield of int * field_dbg_info
+  | Psetfield of int * bool * set_field_dbg_info
+  (* could have field info at least for record *)
+  | Pfloatfield of int * field_dbg_info
+  | Psetfloatfield of int * set_field_dbg_info
+  | Pduprecord of Types.record_representation * int
+  (* Force lazy values *)
+  | Plazyforce
+  (* External call *)
+  | Pccall of  Primitive.description
+  (* Exceptions *)
+  | Praise
+  (* Boolean operations *)
+  | Psequand | Psequor | Pnot
+  (* Integer operations *)
+  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of comparison
+  | Poffsetint of int
+  | Poffsetref of int
+  (* Float operations *)
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of comparison
+  (* String operations *)
+  | Pstringlength 
+  | Pstringrefu 
+  | Pstringrefs
+  | Pstringadd  
+  | Pbyteslength
+  | Pbytesrefu
+  | Pbytessetu 
+  | Pbytesrefs
+  | Pbytessets
+  (* Array operations *)
+  | Pmakearray of array_kind
+  | Parraylength of array_kind
+  | Parrayrefu of array_kind
+  | Parraysetu of array_kind
+  | Parrayrefs of array_kind
+  | Parraysets of array_kind
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  (* Bitvect operations *)
+  | Pbittest
+  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of boxed_integer
+  | Pmodbint of boxed_integer
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
+  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  (* size of the nth dimension of a big array *)
+  | Pbigarraydim of int
+  (* load/set 16,32,64 bits from a string: (unsafe)*)
+  | Pstring_load_16 of bool
+  | Pstring_load_32 of bool
+  | Pstring_load_64 of bool
+  | Pstring_set_16 of bool
+  | Pstring_set_32 of bool
+  | Pstring_set_64 of bool
+  (* load/set 16,32,64 bits from a
+     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
+  | Pbigstring_load_16 of bool
+  | Pbigstring_load_32 of bool
+  | Pbigstring_load_64 of bool
+  | Pbigstring_set_16 of bool
+  | Pbigstring_set_32 of bool
+  | Pbigstring_set_64 of bool
+  (* Compile time constants *)
+  | Pctconst of compile_time_constant
+  (* byte swap *)
+  | Pbswap16
+  | Pbbswap of boxed_integer
+  (* Integer to external pointer *)
+
+  | Pdebugger 
+  | Pjs_unsafe_downgrade of string * Location.t
+  | Pinit_mod
+  | Pupdate_mod
+  | Pjs_fn_make of int 
+  | Pjs_fn_run of int 
+  | Pjs_fn_method of int 
+  | Pjs_fn_runmethod of int
+
+type apply_status =
+  | App_na
+  | App_ml_full
+  | App_js_full    
+module Types = struct 
+  type switch = 
+    { sw_numconsts: int;
+      sw_consts: (int * t) list;
+      sw_numblocks: int;
+      sw_blocks: (int * t) list;
+      sw_failaction : t option}
+  and prim_info = 
+    { primitive : primitive ; 
+      args : t list ;
+      loc : Location.t;
+    }
+  and apply_info = 
+    { fn : t ; 
+      args : t list ; 
+      loc : Location.t;
+      status : apply_status
+    }
+  and function_info = 
+    { arity : int ; 
+      kind : Lambda.function_kind ; 
+      params : ident list ;
+      body : t 
+    }
+  and t = 
+    | Lvar of ident
+    | Lconst of Lambda.structured_constant
+    | Lapply of apply_info
+    | Lfunction of function_info
+    | Llet of Lambda.let_kind * ident * t * t
+    | Lletrec of (ident * t) list * t
+    | Lprim of prim_info
+    | Lswitch of t * switch
+    | Lstringswitch of t * (string * t) list * t option
+    | Lstaticraise of int * t list
+    | Lstaticcatch of t * (int * ident list) * t
+    | Ltrywith of t * ident * t
+    | Lifthenelse of t * t * t
+    | Lsequence of t * t
+    | Lwhile of t * t
+    | Lfor of ident * t * t * Asttypes.direction_flag * t
+    | Lassign of ident * t
+    | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+    | Lifused of ident * t
+      (* | Levent of t * Lambda.lambda_event 
+         [Levent] in the branch hurt pattern match, 
+         we should use record for trivial debugger info
+      *)
+end 
+
+module X = struct 
+  type switch
+    = Types.switch
+    =
+      { sw_numconsts: int;
+        sw_consts: (int * t) list;
+        sw_numblocks: int;
+        sw_blocks: (int * t) list;
+        sw_failaction : t option}
+  and prim_info
+    =  Types.prim_info
+    =
+      { primitive : primitive ; 
+        args : t list ;
+        loc : Location.t;
+      }
+  and apply_info
+    = Types.apply_info
+    =
+      { fn : t ; 
+        args : t list ; 
+        loc : Location.t;
+        status : apply_status
+      }
+
+  and function_info
+    = Types.function_info
+    =
+      { arity : int ; 
+        kind : Lambda.function_kind ; 
+        params : ident list ;
+        body : t 
+      }
+  and t
+    = Types.t
+    =
+      | Lvar of ident
+      | Lconst of Lambda.structured_constant
+      | Lapply of apply_info
+      | Lfunction of function_info
+      | Llet of Lambda.let_kind * ident * t * t
+      | Lletrec of (ident * t) list * t
+      | Lprim of prim_info
+      | Lswitch of t * switch
+      | Lstringswitch of t * (string * t) list * t option
+      | Lstaticraise of int * t list
+      | Lstaticcatch of t * (int * ident list) * t
+      | Ltrywith of t * ident * t
+      | Lifthenelse of t * t * t
+      | Lsequence of t * t
+      | Lwhile of t * t
+      | Lfor of ident * t * t * Asttypes.direction_flag * t
+      | Lassign of ident * t
+      | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+      | Lifused of ident * t
+end
+include Types 
+(** apply [f] to direct successor which has type [Lam.t] *)
+let inner_map (f : t -> X.t ) (l : t) : X.t = 
+  match l  with 
+  | Lvar (_ : ident)
+  | Lconst (_ : Lambda.structured_constant) -> 
+    ( (* Obj.magic *) l : X.t)
+  | Lapply ({fn; args; loc; status} )  ->
+    let fn = f fn in
+    let args = List.map f args in 
+    Lapply { fn ; args; loc; status }
+  | Lfunction({body; arity; kind; params } ) ->
+    let body = f body in 
+    Lfunction {body; arity; kind ; params}
+  | Llet(str, id, arg, body) ->
+    let arg = f arg in let body =  f body in
+    Llet(str,id,arg,body)
+  | Lletrec(decl, body) ->
+    let body = f body in 
+    let decl = List.map (fun (id, exp) -> id, f exp) decl in 
+    Lletrec(decl,body)
+  | Lprim {args; primitive ; loc}  ->
+    let args = List.map f args in 
+    Lprim { args; primitive; loc}
+  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
+    let arg = f arg in 
+    let sw_consts = List.map (fun (key, case) -> key , f case) sw_consts in 
+    let sw_blocks = List.map (fun (key, case) -> key, f case) sw_blocks in 
+    let sw_failaction = begin match sw_failaction with
+      | None -> None
+      | Some a -> Some (f a)
+    end in
+    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
+  | Lstringswitch (arg,cases,default) ->
+    let arg = f arg  in 
+    let cases = List.map (fun (k,act) -> k,f act) cases  in
+    let default = begin match default with 
+      | None -> None
+      | Some a -> Some (f a) 
+    end in 
+    Lstringswitch(arg,cases,default)
+  | Lstaticraise (id,args) ->
+    let args = List.map f args in 
+    Lstaticraise(id,args)
+  | Lstaticcatch(e1, vars , e2) ->
+    let e1 = f e1 in 
+    let e2 = f e2 in 
+    Lstaticcatch(e1, vars, e2)
+  | Ltrywith(e1, exn, e2) ->
+    let e1  = f e1 in 
+    let e2 =  f e2 in 
+    Ltrywith(e1,exn,e2)
+  | Lifthenelse(e1, e2, e3) ->
+    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+    Lifthenelse(e1,e2,e3)
+  | Lsequence(e1, e2) ->
+    let e1 = f e1 in let e2 =  f e2 in 
+    Lsequence(e1,e2)
+  | Lwhile(e1, e2) ->
+    let e1 = f e1 in let e2 =  f e2 in 
+    Lwhile(e1,e2)
+  | Lfor(v, e1, e2, dir, e3) ->
+    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in 
+    Lfor(v,e1,e2,dir,e3)
+  | Lassign(id, e) ->
+    let e = f e in 
+    Lassign(id,e)
+  | Lsend (k, met, obj, args, loc) ->
+    let met = f met in 
+    let obj = f obj in 
+    let args = List.map f args in 
+    Lsend(k,met,obj,args,loc)
+
+  | Lifused (v, e) ->
+    let e = f e in 
+    Lifused(v,e)
+
+let inner_iter (f : t -> unit ) (l : t) : unit = 
+  match l  with 
+  | Lvar (_ : ident)
+  | Lconst (_ : Lambda.structured_constant) ->  ()
+  | Lapply ({fn; args; loc; status} )  ->
+    f fn;
+    List.iter f args 
+  | Lfunction({body; arity; kind; params } ) ->
+    f body
+  | Llet(str, id, arg, body) ->
+    f arg ;
+    f body;
+  | Lletrec(decl, body) ->
+    f body;
+    List.iter (fun (id, exp) ->  f exp) decl
+  | Lprim {args; primitive ; loc}  ->
+    List.iter f args;
+  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
+    f arg;
+    List.iter (fun (key, case) -> f case) sw_consts;
+    List.iter (fun (key, case) ->  f case) sw_blocks ;
+    begin match sw_failaction with
+      | None -> ()
+      | Some a ->  f a
+    end 
+  | Lstringswitch (arg,cases,default) ->
+    f arg;
+    List.iter (fun (k,act) -> f act) cases  ;
+    begin match default with 
+      | None -> ()
+      | Some a -> f a
+    end
+  | Lstaticraise (id,args) ->
+    List.iter f args;
+  | Lstaticcatch(e1, vars , e2) ->
+    f e1;
+    f e2
+  | Ltrywith(e1, exn, e2) ->
+    f e1;
+    f e2 
+  | Lifthenelse(e1, e2, e3) ->
+    f e1;  f e2 ;  f e3
+  | Lsequence(e1, e2) ->
+    f e1 ;  f e2
+  | Lwhile(e1, e2) ->
+    f e1 ;  f e2 
+  | Lfor(v, e1, e2, dir, e3) ->
+    f e1 ;  f e2;  f e3 
+  | Lassign(id, e) ->
+    f e 
+  | Lsend (k, met, obj, args, loc) ->
+    f met; f obj; List.iter f args 
+  | Lifused (v, e) ->
+    f e 
+
+
+(*
+let add_list lst set = 
+    List.fold_left (fun acc x -> Ident_set.add x acc) set lst 
+let free_variables l =
+  let rec free bounded acc (l : t) =
+      match (l : t) with 
+      | Lvar id ->
+        if Ident_set.mem id bounded then acc 
+        else Ident_set.add id acc 
+      | Lconst _ -> acc
+      | Lapply{fn; args; _} ->
+        let acc = free bounded  acc fn in
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args  
+      | Lfunction{body;params} ->
+        let bounded = add_list params bounded in  
+        free bounded acc  body        
+      | Llet(str, id, arg, body) ->        
+        let acc = free bounded acc  arg in
+        let bounded =  Ident_set.add id bounded in 
+        free bounded acc body
+      | Lletrec(decl, body) ->
+        let bounded = 
+          List.fold_left (fun acc (x,_) -> Ident_set.add x acc) bounded decl
+        in
+        let acc = List.fold_left (fun acc (_,exp) -> free bounded acc exp ) acc decl in
+        free bounded acc body          
+      | Lprim {args; _} ->
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args         
+      | Lswitch(arg, {sw_consts; sw_blocks; sw_failaction}) ->
+        let acc = free bounded acc arg in 
+        let acc = List.fold_left 
+          (fun acc (key, case) -> free  bounded acc case) acc sw_consts in 
+        let acc = 
+          List.fold_left 
+          (fun acc (key, case) -> free bounded acc  case) acc sw_blocks in 
+        begin match sw_failaction with 
+          | None -> acc 
+          | Some a -> free bounded acc a  
+        end
+      | Lstringswitch (arg,cases,default) ->
+        let acc = free bounded acc arg  in 
+        let acc = List.fold_left (fun acc  (_,act) -> free bounded acc act) acc cases  in
+        begin match default with 
+          | None -> acc 
+          | Some a -> free bounded acc a  
+        end
+      | Lstaticraise (_,args) ->
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        let acc = free  bounded acc e1 in
+        let bounded = add_list vars bounded in 
+        free bounded acc e2                 
+      | Ltrywith(e1, exn, e2) ->
+        let acc = free  bounded acc e1 in
+        let bounded = Ident_set.add exn bounded in  
+        free  bounded acc e2          
+      | Lifthenelse(e1, e2, e3) ->
+        let acc = free  bounded acc e1 in 
+        let acc = free  bounded acc e2 in 
+        free bounded acc e3
+      | Lwhile(e1, e2) 
+      | Lsequence(e1, e2) ->
+        let acc = free bounded acc e1 in 
+        free bounded acc e2
+      | Lfor(v, e1, e2, dir, e3) ->
+
+        let acc = free  bounded acc e1 in 
+        let acc = free  bounded acc e2 in
+        let bounded = Ident_set.add v bounded in 
+        free bounded acc e3
+      | Lassign(id, e) ->
+        let acc = free bounded acc  e in 
+        if Ident_set.mem id bounded then acc 
+        else Ident_set.add id acc 
+      | Lsend (k, met, obj, args, _) ->
+        let acc = free bounded acc met in
+        let acc = free bounded acc obj in
+        List.fold_left (fun ac arg -> free bounded acc arg) acc args            
+      | Lifused (v, e) ->
+        free bounded acc e
+  in free Ident_set.empty Ident_set.empty l
+*)  
+
+let hit_any_variables (fv : Ident_set.t) l : bool  =
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id -> Ident_set.mem id fv 
+      | Lassign(id, e) ->
+        Ident_set.mem id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        List.exists (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false 
+      | Lapply{fn; args; _} ->
+        hit fn || List.exists hit args
+      | Lprim {args; _} ->
+        List.exists hit args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
+        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
+        begin match sw.sw_failaction with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        List.exists (fun (_,act) -> hit act) cases ||
+        begin match default with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.exists hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || List.exists hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
+
+let hit_mask (fv : Hash_set_ident_mask.t) l =
+  let rec hit (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id fv 
+      | Lassign(id, e) ->
+        Hash_set_ident_mask.mask_check_all_hit id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        List.exists (fun (id, exp) -> hit exp) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false 
+      | Lapply{fn; args; _} ->
+        hit fn || List.exists hit args
+      | Lprim {args; _} ->
+        List.exists hit args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
+        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
+        begin match sw.sw_failaction with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        List.exists (fun (_,act) -> hit act) cases ||
+        begin match default with 
+          | None -> false
+          | Some a -> hit a 
+        end
+      | Lstaticraise (_,args) ->
+        List.exists hit args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || List.exists hit args 
+      | Lifused (v, e) ->
+        hit e
+    end;
+  in hit l
+
+let free_variables l =
+  let fv = ref Ident_set.empty in
+  let rec free (l : t) =
+    begin
+      match (l : t) with 
+      | Lvar id -> fv := Ident_set.add id !fv
+      | Lassign(id, e) ->
+        free e;
+        fv := Ident_set.add id !fv        
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        free e1; free e2;
+        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      | Ltrywith(e1, exn, e2) ->
+        free e1; free e2;
+        fv := Ident_set.remove exn !fv
+
+      | Lfunction{body;params} ->
+        free body;
+        List.iter (fun param -> fv := Ident_set.remove param !fv) params
+      | Llet(str, id, arg, body) ->
+        free arg; free body;
+        fv := Ident_set.remove id !fv
+      | Lletrec(decl, body) ->
+        free body;
+        List.iter (fun (id, exp) -> free exp) decl;
+        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        free e1; free e2; free e3;
+        fv := Ident_set.remove v !fv
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        free fn; List.iter free args
+      | Lprim {args; _} ->
+        List.iter free args
+      | Lswitch(arg, sw) ->
+        free arg;
+        List.iter (fun (key, case) -> free case) sw.sw_consts;
+        List.iter (fun (key, case) -> free case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        free arg ;
+        List.iter (fun (_,act) -> free act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> free a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter free args
+      | Lifthenelse(e1, e2, e3) ->
+        free e1; free e2; free e3
+      | Lsequence(e1, e2) ->
+        free e1; free e2
+      | Lwhile(e1, e2) ->
+        free e1; free e2
+      | Lsend (k, met, obj, args, _) ->
+        free met; free obj; List.iter free args 
+      | Lifused (v, e) ->
+        free e
+    end;
+  in free l; 
+  !fv
+
+
+(**
+   checks  
+   1. variables are not bound twice 
+   2. all variables are of right scope 
+*)
+let check file lam = 
+  let defined_variables = Ident_hash_set.create 1000 in 
+  let success = ref true in 
+  let use (id : Ident.t)  = 
+    if not @@ Ident_hash_set.mem defined_variables id  then 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d used before defined in %s\n" id.name id.stamp file ;
+        success := false
+      end        
+  in 
+  let def (id : Ident.t) =
+    if Ident_hash_set.mem defined_variables id  then 
+      begin 
+        Format.fprintf Format.err_formatter "\n[SANITY]:%s/%d bound twice in %s\n" id.name id.stamp  file ;
+        success := false 
+      end
+    else Ident_hash_set.add defined_variables id 
+  in 
+  let rec iter (l : t) =
+    begin
+      match (l : t) with 
+        Lvar id -> use id 
+      | Lconst _ -> ()
+      | Lapply{fn; args; _} ->
+        iter fn; List.iter iter args
+      | Lfunction{body;params} ->
+        List.iter def params;
+        iter body
+      | Llet(str, id, arg, body) ->
+        iter arg;
+        def id;
+        iter body
+      | Lletrec(decl, body) ->
+        List.iter (fun (id, exp) ->  def id) decl;
+        List.iter (fun (id, exp) -> iter exp) decl;
+        iter body
+      | Lprim {args; _} ->
+        List.iter iter args
+      | Lswitch(arg, sw) ->
+        iter arg;
+        List.iter (fun (key, case) -> iter case) sw.sw_consts;
+        List.iter (fun (key, case) -> iter case) sw.sw_blocks;
+        begin match sw.sw_failaction with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstringswitch (arg,cases,default) ->
+        iter arg ;
+        List.iter (fun (_,act) -> iter act) cases ;
+        begin match default with 
+          | None -> ()
+          | Some a -> iter a 
+        end
+      | Lstaticraise (_,args) ->
+        List.iter iter args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        iter e1; 
+        List.iter def vars;
+        iter e2
+      | Ltrywith(e1, exn, e2) ->
+        iter e1; 
+        def exn; 
+        iter e2
+      | Lifthenelse(e1, e2, e3) ->
+        iter e1; iter e2; iter e3
+      | Lsequence(e1, e2) ->
+        iter e1; iter e2
+      | Lwhile(e1, e2) ->
+        iter e1; iter e2
+      | Lfor(v, e1, e2, dir, e3) ->
+        iter e1; iter e2; 
+        def v; 
+        iter e3;
+      | Lassign(id, e) ->
+        use id ; 
+        iter e
+      | Lsend (k, met, obj, args, _) ->
+        iter met; iter obj; 
+        List.iter iter args
+      | Lifused (v, e) ->
+        iter e
+    end;
+  in 
+  begin 
+    iter lam; 
+    assert (!success) ; 
+    lam 
+  end      
+
+module Prim = struct 
+  type t = primitive
+  let mk name arity = 
+    Pccall {prim_name = name ; 
+            prim_native_name = "" ;
+            prim_alloc = false;
+            prim_native_float = false;
+            prim_arity = arity;
+
+           }
+  let js_is_nil : t = 
+    mk "js_is_nil" 1 
+  let js_is_undef : t = 
+    mk "js_is_undef" 1 
+  let js_is_nil_undef : t  = 
+    mk "js_is_nil_undef" 1 
+end
+
+
+
+
+
+type binop = t -> t -> t 
+
+type triop = t -> t -> t -> t 
+
+type unop = t -> t 
+
+
+let var id : t = Lvar id
+let const ct : t = Lconst ct 
+let apply fn args loc status : t = 
+  Lapply { fn; args;  loc  ;
+           status }
+let function_ ~arity ~kind ~params ~body : t = 
+  Lfunction { arity; kind; params ; body}
+
+let let_ kind id e body :  t 
+  = Llet (kind,id,e,body)
+let letrec bindings body : t = 
+  Lletrec(bindings,body)
+
+let if_ (a : t) (b : t) c = 
+  match a with
+  | Lconst v ->
+    begin match v with
+      | Const_pointer (x, _)  | Const_base(Const_int x)
+        ->
+        if x <> 0 then b else c
+      | Const_base (Const_char x) ->
+        if Char.code x <> 0 then b else c
+      | Const_base (Const_int32 x) ->
+        if x <> 0l then b else c
+      | Const_base (Const_int64 x) ->
+        if x <> 0L then b else c
+      | Const_base (Const_nativeint x) ->
+        if x <> 0n then b else c
+      | Const_base (Const_string _ | Const_float _ ) -> b
+      | Const_block _
+      | Const_float_array _
+      | Const_immstring _ -> b
+    end
+  | _ ->  Lifthenelse (a,b,c)
+
+let switch lam (lam_switch : switch) : t =
+  match lam with
+  | Lconst ((Const_pointer (i,_) | Const_base (Const_int i)))
+    ->
+    begin try List.assoc i lam_switch.sw_consts
+      with  Not_found ->
+      match lam_switch.sw_failaction with
+      | Some x -> x
+      | None -> assert false
+    end
+  | Lconst (Const_block (i,_,_)) ->
+    begin try List.assoc i lam_switch.sw_blocks
+      with  Not_found ->
+      match lam_switch.sw_failaction with
+      | Some x -> x
+      | None -> assert false
+    end
+  | _ -> 
+    Lswitch(lam,lam_switch)
+
+let stringswitch (lam : t) cases default : t = 
+  match lam with
+  | Lconst (Const_base (Const_string (a,_))) ->
+    begin
+      try List.assoc a cases with Not_found ->
+        begin
+          match default with
+          | Some x -> x
+          | None -> assert false
+        end
+    end
+  | _ -> Lstringswitch(lam, cases, default)
+
+
+let true_ : t =
+  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
+
+let false_ : t =
+  Lconst (Const_pointer( 0, Pt_constructor "false"))
+
+let unit : t = 
+  Lconst (Const_pointer( 0, Pt_constructor "()"))
+
+let assert_false_unit : t = 
+  Lconst (Const_pointer( 0, Pt_constructor "impossible branch"))
+
+(** [l || r ] *)
+let sequor l r = if_ l true_ r 
+
+(** [l && r ] *)
+let sequand l r = if_ l r false_
+
+let seq a b : t = 
+  Lsequence (a, b)
+
+let while_ a b : t  = 
+  Lwhile(a,b)
+
+let try_  body id  handler : t = 
+  Ltrywith(body,id,handler)
+
+let for_ v e1 e2 dir e3 : t  = 
+  Lfor(v,e1,e2,dir,e3)
+
+let event l (_event : Lambda.lambda_event) = l 
+
+let ifused v l : t  = 
+  Lifused (v,l)
+
+let assign v l : t = Lassign(v,l)
+
+let send u m o ll v : t = 
+  Lsend(u, m, o, ll, v)
+
+let staticcatch  a b c : t = Lstaticcatch(a,b,c)
+
+let staticraise a b : t = Lstaticraise(a,b)
+
+let comparison (cmp : Lambda.comparison) a b : bool = 
+  match cmp with 
+  | Ceq -> a = b 
+  | Cneq -> a <> b 
+  | Cgt -> a > b 
+  | Cle -> a <= b 
+  | Clt -> a < b 
+  | Cge -> a >= b 
+
+module Lift = struct 
+  let int i : t =
+    Lconst (Const_base (Const_int i))
+
+
+  let int32 i : t =
+    Lconst (Const_base (Const_int32 i))
+
+  let bool b = if b then true_ else false_
+
+  (* ATTENTION: [float, nativeint] constant propogaton is not done
+     yet , due to cross platform problem
+  *) 
+  let float b  : t = 
+    Lconst (Const_base (Const_float b))
+
+  let nativeint b : t = 
+    Lconst (Const_base (Const_nativeint b))
+
+  let int32 b : t = 
+    Lconst (Const_base (Const_int32 b))
+
+  let int64 b : t =
+    Lconst (Const_base (Const_int64 b))
+  let string b : t =
+    Lconst (Const_base (Const_string (b, None)))
+  let char b : t =
+    Lconst (Const_base (Const_char b))    
+end
+
+let prim ~primitive:(prim : Prim.t) ~args:(ll : t list) loc  : t = 
+  let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
+  match ll with 
+  | [Lconst a] -> 
+    begin match prim, a  with 
+      | Pnegint, (Const_base (Const_int a))
+        -> Lift.int (- a)
+      (* | Pfloatofint, (Const_base (Const_int a)) *)
+      (*   -> Lift.float (float_of_int a) *)
+      | Pintoffloat, (Const_base (Const_float a))
+        -> 
+        Lift.int (int_of_float (float_of_string a))
+      (* | Pnegfloat -> Lift.float (-. a) *)
+      (* | Pabsfloat -> Lift.float (abs_float a) *)
+      | Pstringlength, (Const_base (Const_string (a,_)) ) 
+        -> 
+        Lift.int (String.length a)
+      (* | Pnegbint Pnativeint, (Const_base (Const_nativeint i)) *)
+      (*   ->   *)
+      (*   Lift.nativeint (Nativeint.neg i) *)
+      | Pnegbint Pint32, (Const_base (Const_int32 a))
+        -> 
+        Lift.int32 (Int32.neg a)
+      | Pnegbint Pint64, (Const_base (Const_int64 a))
+        -> 
+        Lift.int64 (Int64.neg a)
+      | Pnot , Const_pointer (a,_) 
+        -> Lift.bool (a = 0 )
+      | _ -> default ()
+    end
+
+
+  | [Lconst a ; Lconst b] -> 
+    begin match prim, a, b  with 
+      | Pbintcomp(_, cmp), Const_base (Const_int32 a), Const_base (Const_int32 b)
+        -> Lift.bool (comparison cmp a b)
+      | Pbintcomp(_, cmp), Const_base (Const_int64 a), Const_base (Const_int64 b)
+        -> Lift.bool (comparison cmp a b)
+      | Pbintcomp(_, cmp), Const_base (Const_nativeint a), Const_base (Const_nativeint b)
+        -> Lift.bool (comparison cmp a b)
+      | Pfloatcomp  cmp, Const_base (Const_nativeint a), Const_base (Const_nativeint b)
+        -> Lift.bool (comparison cmp a b)
+      | Pintcomp cmp ,
+        (Const_base (Const_int a) | Const_pointer (a,_)),
+        (Const_base (Const_int b) | Const_pointer (b,_))
+        -> Lift.bool (comparison cmp a b)
+      | (Paddint
+        | Psubint
+        | Pmulint
+        | Pdivint
+        | Pmodint
+        | Pandint
+        | Porint
+        | Pxorint
+        | Plslint
+        | Plsrint
+        | Pasrint),Const_base (Const_int a),  Const_base (Const_int b)
+        ->
+        (* WE SHOULD keep it as [int], to preserve types *)
+        let aa,bb = Int32.of_int a, Int32.of_int  b in 
+        let int_ v = Lift.int (Int32.to_int v ) in 
+        begin match prim with 
+          | Paddint -> int_ (Int32.add aa bb)
+          | Psubint -> int_ (Int32.sub aa bb)
+          | Pmulint -> int_ (Int32.mul aa  bb)
+          | Pdivint -> 
+            if bb = 0l then default ()
+            else int_ (Int32.div aa bb)
+          | Pmodint ->
+            if bb = 0l then default ()
+            else int_ (Int32.rem aa bb)
+          | Pandint -> int_ (Int32.logand aa bb)
+          | Porint -> int_ (Int32.logor aa bb)
+          | Pxorint -> int_ (Int32.logxor aa bb)
+          | Plslint -> int_ (Int32.shift_left  aa b )
+          | Plsrint -> int_ (Int32.shift_right_logical aa  b)
+          | Pasrint -> int_ (Int32.shift_right aa b)
+          | _ -> default ()
+        end
+      | (Paddbint Pint32
+        | Psubbint Pint32
+        | Pmulbint Pint32
+        | Pdivbint Pint32
+        | Pmodbint Pint32
+        | Pandbint Pint32
+        | Porbint Pint32
+        | Pxorbint Pint32
+        ), Const_base (Const_int32 aa),  Const_base (Const_int32 bb)
+        -> 
+        begin match prim with 
+          | Paddbint _  -> Lift.int32 (Int32.add aa bb)
+          | Psubbint _  -> Lift.int32 (Int32.sub aa bb)
+          | Pmulbint _ -> Lift.int32 (Int32.mul aa  bb)
+          | Pdivbint _ ->  (try Lift.int32 (Int32.div aa  bb) with _  -> default ())
+          | Pmodbint _ -> (try Lift.int32 (Int32.rem aa  bb) with _ -> default ())
+          | Pandbint _ -> Lift.int32 (Int32.logand aa bb)
+          | Porbint _ -> Lift.int32 (Int32.logor aa bb)
+          | Pxorbint _ -> Lift.int32 (Int32.logxor aa bb)
+          | _ -> default ()
+        end
+      | Plslbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+        -> Lift.int32 (Int32.shift_left  aa b )
+      | Plsrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+        -> Lift.int32 (Int32.shift_right_logical  aa b )
+      | Pasrbint Pint32, Const_base (Const_int32 aa), Const_base (Const_int b)
+        -> Lift.int32 (Int32.shift_right  aa b )
+
+      | (Paddbint Pint64
+        | Psubbint Pint64
+        | Pmulbint Pint64
+        | Pdivbint Pint64
+        | Pmodbint Pint64
+        | Pandbint Pint64
+        | Porbint Pint64
+        | Pxorbint Pint64
+        ), Const_base (Const_int64 aa),  Const_base (Const_int64 bb)
+        -> 
+        begin match prim with 
+          | Paddbint _  -> Lift.int64 (Int64.add aa bb)
+          | Psubbint _  -> Lift.int64 (Int64.sub aa bb)
+          | Pmulbint _ -> Lift.int64 (Int64.mul aa  bb)
+          | Pdivbint _ -> (try Lift.int64 (Int64.div aa  bb) with _ -> default ())
+          | Pmodbint _ -> (try Lift.int64 (Int64.rem aa  bb) with _ -> default ())
+          | Pandbint _ -> Lift.int64 (Int64.logand aa bb)
+          | Porbint _ -> Lift.int64 (Int64.logor aa bb)
+          | Pxorbint _ -> Lift.int64 (Int64.logxor aa bb)
+          | _ -> default ()
+        end
+      | Plslbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+        -> Lift.int64 (Int64.shift_left  aa b )
+      | Plsrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+        -> Lift.int64 (Int64.shift_right_logical  aa b )
+      | Pasrbint Pint64, Const_base (Const_int64 aa), Const_base (Const_int b)
+        -> Lift.int64 (Int64.shift_right  aa b )
+      | Psequand, Const_pointer (a, _), Const_pointer( b, _)
+        -> 
+        Lift.bool (a = 1 && b = 1)
+      | Psequor, Const_pointer (a, _), Const_pointer( b, _)
+        -> 
+        Lift.bool (a = 1 || b = 1)
+      | Pstringadd, Const_base(Const_string (a, None)),
+        Const_base (Const_string (b,None))
+        ->
+        Lift.string (a ^ b)
+      | (Pstringrefs | Pstringrefu), Const_base(Const_string(a,None)),
+        (Const_base(Const_int b)| Const_pointer (b,_))
+        ->
+        begin try Lift.char (String.get a b)
+          with  _ -> default ()
+        end                       
+      | _ -> default ()
+    end
+
+  | _ -> default ()
+
+
+let not_ loc x  : t = 
+  prim ~primitive:Pnot ~args:[x] loc
+
+let may_depend = Lam_module_ident.Hash_set.add 
+
+(** drop Lseq (L)*)
+let rec drop_global_marker (lam : t) =
+  match lam with 
+  | Lsequence(Lprim{primitive=Pgetglobal id; args = []}, rest) ->
+     drop_global_marker rest
+  | _ -> lam
+
+   
+let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t = 
+  match p with 
+  | Pint_as_pointer 
+  | Pidentity ->  
+    begin match args with [x] -> x | _ -> assert false end
+  | Pbytes_to_string 
+    -> prim ~primitive:Pbytes_to_string ~args loc
+  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
+  | Pignore -> (* Pignore means return unit, it is not an nop *)
+    begin match args with [x] -> seq x unit | _ -> assert false end
+  | Prevapply 
+    -> 
+    begin match args with 
+      | [x ; Lapply{fn; args}]
+        -> apply fn (args @[x]) loc App_na
+      | [x; f] ->  apply f [x] loc App_na
+      | _ -> assert false 
+    end
+
+  | Pdirapply ->
+    begin match args with 
+      | [Lapply{fn ; args }; x ] 
+        -> 
+        apply fn (args @ [x]) loc App_na
+      | [f;x] -> apply f [x] loc App_na
+      | _ -> assert false 
+    end
+  | Ploc loc -> assert false (* already compiled away here*)
+  | Pgetglobal id ->
+    assert false 
+  | Psetglobal id -> 
+    (* we discard [Psetglobal] in the beginning*)
+    begin match args with 
+      | [biglambda] -> 
+        drop_global_marker biglambda 
+      | _ -> assert false 
+    end
+  (* prim ~primitive:(Psetglobal id) ~args loc *)
+  | Pmakeblock (tag,info, mutable_flag) 
+    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+  | Pfield (id,info) 
+    -> prim ~primitive:(Pfield (id,info)) ~args loc
+
+  | Psetfield (id,b,info)
+    -> prim ~primitive:(Psetfield (id,b,info)) ~args loc
+
+  | Pfloatfield (id,info)
+    -> prim ~primitive:(Pfloatfield (id,info)) ~args loc
+  | Psetfloatfield (id,info) 
+    -> prim ~primitive:(Psetfloatfield (id,info)) ~args loc
+  | Pduprecord (repr,i) 
+    -> prim ~primitive:(Pduprecord(repr,i)) ~args loc
+  | Plazyforce -> prim ~primitive:Plazyforce ~args loc
+
+  | Pccall a -> 
+    let prim_name = a.prim_name in
+    if Pervasives.not @@ Ext_string.starts_with prim_name "js_" then 
+      prim ~primitive:(Pccall a ) ~args loc else 
+    if prim_name =  Literals.js_debugger then 
+      prim ~primitive:Pdebugger ~args loc else 
+    if prim_name =  Literals.js_fn_run || prim_name = Literals.js_method_run then
+      prim ~primitive:(Pjs_fn_run (int_of_string a.prim_native_name)) ~args loc else 
+    if prim_name = Literals.js_fn_mk then 
+      prim ~primitive:(Pjs_fn_make (int_of_string a.prim_native_name)) ~args loc else                
+    if prim_name = Literals.js_fn_method then 
+      prim ~primitive:(Pjs_fn_method (int_of_string a.prim_native_name)) ~args loc else
+    if prim_name = Literals.js_fn_runmethod then 
+      prim ~primitive:(Pjs_fn_runmethod (int_of_string a.prim_native_name)) ~args loc 
+    else
+      prim ~primitive:(Pccall a) ~args loc
+  | Praise _ ->
+    if Js_config.get_no_any_assert () then 
+      begin match args with 
+        | [Lprim {primitive = Pmakeblock (0, _, _) ; 
+                  args = [ 
+                    Lprim {primitive = Pglobal_exception ({name = "Assert_failure"} as id); args =  []}; 
+                    _
+                  ]
+                 } ] when Ident.global id
+          -> assert_false_unit
+        | _ -> prim ~primitive:Praise ~args loc 
+      end
+    else prim ~primitive:Praise ~args loc 
+  | Psequand -> prim ~primitive:Psequand ~args loc
+  | Psequor -> prim ~primitive:Psequor ~args loc
+  | Pnot -> prim ~primitive:Pnot ~args loc 
+  | Pnegint -> prim ~primitive:Pnegint ~args  loc 
+  | Paddint -> prim ~primitive:Paddint ~args loc 
+  | Psubint -> prim ~primitive:Psubint ~args loc 
+  | Pmulint -> prim ~primitive:Pmulint ~args loc 
+  | Pdivint -> prim ~primitive:Pdivint ~args loc 
+  | Pmodint -> prim ~primitive:Pmodint ~args loc 
+  | Pandint -> prim ~primitive:Pandint ~args loc 
+  | Porint -> prim ~primitive:Porint ~args loc 
+  | Pxorint -> prim ~primitive:Pxorint ~args loc 
+  | Plslint -> prim ~primitive:Plslint ~args loc 
+  | Plsrint -> prim ~primitive:Plsrint ~args loc 
+  | Pasrint -> prim ~primitive:Pasrint ~args loc 
+  | Pstringlength -> prim ~primitive:Pstringlength ~args loc 
+  | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc 
+  | Pstringsetu 
+  | Pstringsets -> assert false
+  | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc 
+
+  | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc 
+  | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args loc
+  | Pbytessetu -> prim ~primitive:Pbytessetu ~args  loc 
+  | Pbytesrefs -> prim ~primitive:Pbytesrefs ~args loc 
+  | Pbytessets -> prim ~primitive:Pbytessets ~args loc 
+  | Pisint -> prim ~primitive:Pisint ~args loc 
+  | Pisout -> prim ~primitive:Pisout ~args loc 
+  | Pbittest -> prim ~primitive:Pbittest ~args loc 
+  | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
+  | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc 
+  | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc 
+  | Pabsfloat -> prim ~primitive:Pabsfloat ~args loc 
+  | Paddfloat -> prim ~primitive:Paddfloat ~args loc 
+  | Psubfloat -> prim ~primitive:Psubfloat ~args loc 
+  | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc 
+  | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc 
+
+  | Pbswap16 -> prim ~primitive:Pbswap16 ~args loc 
+  | Pintcomp x -> prim ~primitive:(Pintcomp x)  ~args loc 
+  | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc 
+  | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
+  | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc 
+  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args  loc 
+  | Parraylength x -> prim ~primitive:(Parraylength x) ~args loc
+  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args loc
+  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args loc 
+  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args loc 
+  | Parraysets x -> prim ~primitive:(Parraysets x) ~args loc 
+  | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args loc 
+  | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args loc 
+  | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args loc 
+  | Paddbint x -> prim ~primitive:(Paddbint x) ~args loc 
+  | Psubbint x -> prim ~primitive:(Psubbint x) ~args loc 
+  | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args loc 
+  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args loc 
+  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args loc 
+  | Pandbint x -> prim ~primitive:(Pandbint x) ~args loc 
+  | Porbint x -> prim ~primitive:(Porbint x) ~args loc 
+  | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args loc 
+  | Plslbint x -> prim ~primitive:(Plslbint x) ~args loc 
+  | Plsrbint x -> prim ~primitive:(Plsrbint x) ~args loc 
+  | Pasrbint x -> prim ~primitive:(Pasrbint x) ~args loc 
+  | Pbigarraydim x -> prim ~primitive:(Pbigarraydim x) ~args loc 
+  | Pstring_load_16 x -> prim ~primitive:(Pstring_load_16 x) ~args loc 
+  | Pstring_load_32 x -> prim ~primitive:(Pstring_load_32 x) ~args loc 
+  | Pstring_load_64 x -> prim ~primitive:(Pstring_load_64 x) ~args loc 
+  | Pstring_set_16 x -> prim ~primitive:(Pstring_set_16 x) ~args loc 
+  | Pstring_set_32 x -> prim ~primitive:(Pstring_set_32 x) ~args loc 
+  | Pstring_set_64 x -> prim ~primitive:(Pstring_set_64 x) ~args loc 
+  | Pbigstring_load_16 x -> prim ~primitive:(Pbigstring_load_16 x) ~args loc 
+  | Pbigstring_load_32 x -> prim ~primitive:(Pbigstring_load_32 x) ~args loc 
+  | Pbigstring_load_64 x -> prim ~primitive:(Pbigstring_load_64 x) ~args loc 
+  | Pbigstring_set_16 x -> prim ~primitive:(Pbigstring_set_16 x) ~args loc 
+  | Pbigstring_set_32 x -> prim ~primitive:(Pbigstring_set_32 x) ~args loc 
+  | Pbigstring_set_64 x -> prim ~primitive:(Pbigstring_set_64 x) ~args loc 
+  | Pctconst x ->
+    begin match x with
+      | Word_size ->
+        Lift.int 32 (* TODO: documentation*)        
+      | _ -> prim ~primitive:(Pctconst x) ~args loc          
+    end
+
+  | Pbbswap x -> prim ~primitive:(Pbbswap x) ~args loc 
+  | Pcvtbint (a,b) -> prim ~primitive:(Pcvtbint (a,b)) ~args loc 
+  | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc 
+  | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc 
+  | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc 
+
+
+
+type bindings = (Ident.t * t) list
+
+
+let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   = 
+  let len = List.length groups in 
+  let domain : _ Ordered_hash_map_local_ident.t = 
+    Ordered_hash_map_local_ident.create len in 
+  let mask = Hash_set_ident_mask.create len in   
+  List.iter (fun (x,lam) -> 
+      Ordered_hash_map_local_ident.add domain x lam;
+      Hash_set_ident_mask.add_unmask mask x;
+    ) groups ;
+  let int_mapping = Ordered_hash_map_local_ident.to_sorted_array domain in 
+  let node_vec = Array.make (Array.length int_mapping) (Int_vec.empty ()) in
+  domain
+  |> Ordered_hash_map_local_ident.iter ( fun id lam key_index ->        
+      let base_key =  node_vec.(key_index) in 
+      ignore (hit_mask mask lam) ;
+      mask |> Hash_set_ident_mask.iter_and_unmask (fun ident hit  -> 
+          if hit then 
+            begin 
+              let key = Ordered_hash_map_local_ident.rank domain ident in 
+              Int_vec.push key base_key;
+            end
+        );
+
+    ) ;
+  domain, int_mapping , node_vec
+
+(** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
+let scc_bindings (groups : bindings) : bindings list = 
+  match groups with 
+  | [ _ ] -> [ groups ]
+  | _ -> 
+    let domain, int_mapping, node_vec = preprocess_deps groups in 
+    let clusters = Ext_scc.graph node_vec in 
+    if Int_vec_vec.length clusters <= 1 then [ groups]
+    else 
+      Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+          let bindings =
+            Int_vec.map_into_list (fun i -> 
+                let id = int_mapping.(i) in 
+                let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
+                (id,lam)
+              ) v  in 
+          match bindings with 
+          | [ id,(Lfunction _ as lam) ] ->
+            let base_key = Ordered_hash_map_local_ident.rank domain id in    
+            if Int_vec_util.mem base_key node_vec.(base_key) then       
+              bindings :: acc 
+            else  [(id, lam)] :: acc    
+          | _ ->  
+            bindings :: acc 
+        )  clusters []
+(* single binding, it does not make sense to do scc,
+   we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
+*)
+let scc  (groups :  bindings)  ( lam : t) ( body : t)
+  =     
+  begin match groups with 
+    | [ (id,bind) ] ->
+      if hit_any_variables (Ident_set.singleton id) bind 
+      then 
+        lam  
+      else let_ Strict id bind body  
+    | _ ->    
+      let (domain, int_mapping, node_vec)  = preprocess_deps groups in 
+      let clusters = Ext_scc.graph node_vec in 
+      if Int_vec_vec.length clusters <= 1 then lam 
+      else          
+        Int_vec_vec.fold_right (fun  (v : Int_vec.t) acc ->
+            let bindings =
+              Int_vec.map_into_list (fun i -> 
+                  let id = int_mapping.(i) in 
+                  let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
+                  (id,lam)
+                ) v  in 
+            match bindings with 
+            | [ id,lam ] ->
+              let base_key = Ordered_hash_map_local_ident.rank domain id in    
+              if Int_vec_util.mem base_key node_vec.(base_key) then       
+                letrec bindings acc 
+              else  let_ Strict id lam acc    
+            | _ ->  
+              letrec bindings  acc 
+          )  clusters body 
+  end
+
+
+type required_modules = Lam_module_ident.Hash_set.t
+
+
+let convert exports lam = 
+  let alias = Ident_hashtbl.create 64 in 
+  let may_depends = Lam_module_ident.Hash_set.create 0 in 
+  let rec
+    aux (lam : Lambda.lambda) : t = 
+    match lam with 
+    | Lvar x -> 
+      let var = Ident_hashtbl.find_default alias x x in
+      if var == x then 
+        Lvar var 
+      else 
+      if Ident.is_predef_exn var then 
+        Lprim {primitive = Pglobal_exception var;args = []; loc= Location.none }        
+      else if Ident.persistent var then 
+        Lprim {primitive = Pgetglobal var; args = []; loc = Location.none}
+      else Lvar var   
+
+    | Lconst x -> 
+      Lconst x 
+    | Lapply (fn,args,loc) 
+      ->  
+      begin match fn with 
+        | Lprim (
+            Pfield (id, _),
+            [
+              Lprim (
+                Pgetglobal { name = "CamlinternalMod" },
+                _,_
+              )
+            ],loc
+          ) -> (* replace all {!CamlinternalMod} function *)
+          let args = List.map aux args in
+          begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
+            | "init_mod" ,  [_loc ; shape]  -> 
+              begin match shape with 
+                | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
+                  -> unit  (* see {!Translmod.init_shape}*)
+                | _ ->  prim ~primitive:Pinit_mod ~args loc 
+              end
+            | "update_mod", [shape ;  _obj1; _obj2] -> 
+              (* here array access will have side effect .. *)
+              begin match shape with 
+                | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
+                  -> unit (* see {!Translmod.init_shape}*)
+                | _ -> prim ~primitive:Pupdate_mod ~args loc
+              end
+            | _ -> assert false
+          end
+
+        | Lprim ( Pfield (id, _),
+                  [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
+                )
+          ->
+          let args = List.map aux args in
+          begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
+            | "^", [ l; r ] 
+              ->
+              prim ~primitive:Pstringadd ~args:[l;r] loc 
+            | _ ->  apply (aux fn) args loc  App_na
+          end
+        | _ -> 
+          apply (aux fn) (List.map aux args) 
+            loc App_na
+      end
+    | Lfunction (kind,  params,body)
+      ->  function_ 
+            ~arity:(List.length params) ~kind ~params 
+            ~body:(aux body)
+    | Llet (kind,id,e,body) 
+      ->
+      (* we should not remove it immediately, since we have to be careful 
+         where it is used, it can be [exported], [Lvar] or [Lassign] etc 
+         The other common mistake is that 
+         {[
+           let x = y (* elimiated x/y*)
+           let u = x  (* eliminated u/x *)
+         ]}
+
+         however, [x] is already eliminated 
+         To improve the algorithm
+         {[
+           let x = y (* x/y *)
+           let u = x (* u/y *)
+         ]}
+         This looks more correct, but lets be conservative here
+
+         global module inclusion {[ include List ]}
+         will cause code like {[ let include =a Pgetglobal (list)]}
+
+         when [u] is global, it can not be bound again, 
+         it should always be the leaf 
+      *)
+      begin match kind, e with 
+        | Alias , (Lvar u ) ->
+          let new_u = (Ident_hashtbl.find_default alias u u) in
+          Ident_hashtbl.add alias id new_u ;
+          if Ident_set.mem id exports then 
+            Llet(kind, id, Lvar new_u, aux body)
+          else aux body   
+        | _ ,  Lprim (Pgetglobal u,[], _) 
+          ->         
+          Ident_hashtbl.add alias id u;
+          if not @@ Ident.is_predef_exn u then
+          begin 
+            may_depend may_depends (Lam_module_ident.of_ml u)
+          end;  
+          if Ident_set.mem id exports then 
+            Llet(kind, id, Lvar u, aux body)
+          else aux body   
+
+        | _, _ -> Llet(kind,id,aux e, aux body)
+      end
+    | Lletrec (bindings,body)
+      -> 
+      let bindings = List.map (fun (id, e) -> id, aux e) bindings in
+      let body = aux body in 
+      let lam = Lletrec (bindings, body) in 
+      scc bindings lam body  
+    (* inlining will affect how mututal recursive behave *)
+    | Lprim (primitive,args, loc) 
+      -> 
+      let args = (List.map aux args) in
+      begin match primitive with 
+      | Pgetglobal id -> 
+        if Ident.is_predef_exn id then 
+          Lprim {primitive = Pglobal_exception id; args ; loc}
+        else 
+        begin 
+          may_depend may_depends (Lam_module_ident.of_ml id);
+          Lprim {primitive = Pgetglobal id ; args ; loc }
+        end  
+      | _ ->       
+        lam_prim ~primitive ~args loc 
+      end
+    | Lswitch (e,s) -> 
+      Lswitch (aux e, aux_switch s)
+    | Lstringswitch (e, cases, default,_) -> 
+      Lstringswitch (aux e, List.map (fun (x, b) -> x, aux b ) cases, 
+                     match default with 
+                     | None -> None
+                     | Some x -> Some (aux x)
+                    )    
+
+    | Lstaticraise (id, args) -> 
+      Lstaticraise (id, List.map aux args)
+    | Lstaticcatch (b, (i, ids), handler) -> 
+      Lstaticcatch (aux b, (i,ids), aux handler)
+    | Ltrywith (b, id, handler) -> 
+      Ltrywith (aux b, id, aux handler)
+    | Lifthenelse (b,then_,else_) -> 
+      Lifthenelse (aux b, aux then_, aux else_)
+    | Lsequence (a,b) 
+      -> Lsequence (aux a, aux b)
+    | Lwhile (b,body) -> 
+      Lwhile (aux b, aux body)
+    | Lfor (id, from_, to_, dir, loop) -> 
+      Lfor (id, aux from_, aux to_, dir, aux loop)
+    | Lassign (id, body) -> 
+      Lassign (id, aux body)    
+    | Lsend (kind, a,b,ls, loc) -> 
+      (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
+      begin match aux b with 
+        | Lprim {primitive =  Pccall {prim_name };  args; loc}
+          when prim_name = Literals.js_unsafe_downgrade
+          -> 
+          begin match kind, ls with 
+            | Public (Some name), [] -> 
+              prim ~primitive:(Pjs_unsafe_downgrade (name,loc)) 
+                ~args loc 
+            | _ -> assert false 
+          end
+        | b ->     
+          (* Format.fprintf Format.err_formatter "weird: %d@." (Obj.tag (Obj.repr b));  *)
+          Lsend(kind, aux a,  b, List.map aux ls, loc )
+      end
+    | Levent (e, event) -> aux e 
+    | Lifused (id, e) -> 
+      Lifused(id, aux e) (* TODO: remove it ASAP *)
+  and aux_switch (s : Lambda.lambda_switch) : switch = 
+    { sw_numconsts = s.sw_numconsts ; 
+      sw_consts = List.map (fun (i, lam) -> i, aux lam) s.sw_consts;
+      sw_numblocks = s.sw_numblocks;
+      sw_blocks = List.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
+      sw_failaction = 
+        match s.sw_failaction with 
+        | None -> None 
+        | Some a -> Some (aux a)
+    }  in 
+  aux lam , may_depends
+
+
+
+end
+module Js_cmj_format : sig 
+#1 "js_cmj_format.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Define intemediate format to be serialized for cross module optimization
+ *)
+
+(** In this module, 
+    currently only arity information is  exported, 
+
+    Short term: constant literals are also exported 
+
+    Long term:
+    Benefit? since Google Closure Compiler already did such huge amount of work
+    TODO: simple expression, literal small function  can be stored, 
+    but what would happen if small function captures other environment
+    for example 
+
+    {[
+      let f  = fun x -> g x 
+    ]}
+
+    {[
+      let f = g 
+    ]}
+*)
+
+type cmj_value = {
+  arity : Lam.function_arities ;
+  closed_lambda : Lam.t option ; 
+  (* Either constant or closed functor *)
+}
+
+type effect = string option
+
+
+
+type t = {
+  values : cmj_value String_map.t;
+  effect : effect;
+  (* goog_package : string option; *)
+  npm_package_path : Js_config.packages_info;
+}
+
+val pure_dummy : t
+val no_pure_dummy : t
+
+
+val from_file : string -> t
+val from_string : string -> t
+
+val to_file : string -> t -> unit
+
+end = struct
+#1 "js_cmj_format.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(* TODO: add a magic number *)
+type cmj_value = {
+  arity : Lam.function_arities ;
+  closed_lambda : Lam.t option ; 
+  (** Either constant or closed functor *)
+}
+
+type effect = string option
+
+
+
+(** we don't force people to use package *)
+
+type t = {
+  values : cmj_value String_map.t;
+  effect : effect;
+  npm_package_path : Js_config.packages_info ;
+}
+
+let cmj_magic_number =  "BUCKLE20160510"
+let cmj_magic_number_length = 
+  String.length cmj_magic_number
+
+let pure_dummy = 
+  {
+    values = String_map.empty;
+    effect = None;
+    npm_package_path = Empty;
+  }
+
+let no_pure_dummy = 
+  {
+    values = String_map.empty;
+    effect = Some "";
+    npm_package_path = Empty;  
+  }
+
+
+
+let from_file name : t =
+  let ic = open_in_bin name in 
+  let buffer = really_input_string ic cmj_magic_number_length in 
+  if buffer <> cmj_magic_number then
+    Ext_pervasives.failwithf ~loc:__LOC__ 
+      "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
+        __LOC__
+  else 
+    let v  : t = input_value ic in 
+    close_in ic ;
+    v 
+
+
+let from_string s : t = 
+  let magic_number = String.sub s 0 cmj_magic_number_length in 
+  if magic_number = cmj_magic_number then 
+    Marshal.from_string s  cmj_magic_number_length
+  else 
+    Ext_pervasives.failwithf ~loc:__LOC__ 
+      "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
+        __LOC__
+
+let to_file name (v : t) = 
+  let oc = open_out_bin name in 
+  output_string oc cmj_magic_number;
+  output_value oc v;
+  close_out oc 
+
+end
+module Config_util : sig 
+#1 "config_util.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A simple wrapper around [Config] module in compiler-libs, so that the search path
+    is the same
+*)
+
+
+val find_opt : string -> string option
+(** [find filename] Input is a file name, output is absolute path *)
+
+
+val find_cmj : string -> Js_cmj_format.t
+
+end = struct
+#1 "config_util.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+let find_in_path_uncap path name =
+  let uname = String.uncapitalize name in
+  let rec try_dir = function
+    | [] -> None
+    | dir::rem ->      
+      let ufullname = Filename.concat dir uname in
+      if Sys.file_exists ufullname then Some ufullname
+      else 
+        let fullname = Filename.concat dir name   in
+        if Sys.file_exists fullname then Some fullname
+        else try_dir rem
+  in try_dir path
+
+
+
+(* ATTENTION: lazy to wait [Config.load_path] populated *)
+let find_opt file =  find_in_path_uncap !Config.load_path file 
+
+
+
+
+(* strategy:
+   If not installed, use the distributed [cmj] files, 
+   make sure that the distributed files are platform independent
+*)
+let find_cmj file = 
+  match find_opt file with
+  | Some f
+    -> 
+    Js_cmj_format.from_file f             
+  | None -> 
+    (* ONLY read the stored cmj data in browser environment *)
+
+        Bs_exception.error (Cmj_not_found file)
+        
+
+
 
 end
 module Js_fold
@@ -68180,428 +68652,6 @@ let safe_to_inline (lam : Lam.t) =
   | _ -> false
 
 end
-module Hash_set : sig 
-#1 "hash_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Ideas are based on {!Hashtbl}, 
-    however, {!Hashtbl.add} does not really optimize and has a bad semantics for {!Hash_set}, 
-    This module fixes the semantics of [add].
-    [remove] is not optimized since it is not used too much 
-*)
-
-
-
-
-
-module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
-(** A naive t implementation on top of [hashtbl], the value is [unit]*)
-
-
-end = struct
-#1 "hash_set.ml"
-# 1 "ext/hash_set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 43
-module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
-type key = H.t 
-let eq_key = H.equal
-let key_index (h :  _ Hash_set_gen.t ) key =
-  (H.hash  key) land (Array.length h.data - 1)
-type t = key Hash_set_gen.t
-
-
-
-# 62
-let create = Hash_set_gen.create
-let clear = Hash_set_gen.clear
-let reset = Hash_set_gen.reset
-let copy = Hash_set_gen.copy
-let iter = Hash_set_gen.iter
-let fold = Hash_set_gen.fold
-let length = Hash_set_gen.length
-let stats = Hash_set_gen.stats
-let elements = Hash_set_gen.elements
-
-
-
-let remove (h : _ Hash_set_gen.t) key =  
-  let i = key_index h key in
-  let h_data = h.data in
-  let old_h_size = h.size in 
-  let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
-  if old_h_size <> h.size then  
-    Array.unsafe_set h_data i new_bucket
-
-
-
-let add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in 
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h
-    end
-
-let check_add (h : _ Hash_set_gen.t) key =
-  let i = key_index h key  in 
-  let h_data = h.data in  
-  let old_bucket = (Array.unsafe_get h_data i) in
-  if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    begin 
-      Array.unsafe_set h_data i  (key :: old_bucket);
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hash_set_gen.resize key_index h;
-      true 
-    end
-  else false 
-
-
-let mem (h :  _ Hash_set_gen.t) key =
-  Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
-
-# 113
-end
-  
-
-end
-module Hashtbl_make : sig 
-#1 "hashtbl_make.mli"
-
-
-module Make (Key : Hashtbl.HashedType) : Hashtbl_gen.S with type key = Key.t
-
-end = struct
-#1 "hashtbl_make.ml"
-# 22 "ext/hashtbl.cppo.ml"
-module Make (Key : Hashtbl.HashedType) = struct 
-  type key = Key.t 
-  type 'a t = (key, 'a)  Hashtbl_gen.t 
-  let key_index (h : _ t ) (key : key) =
-    (Key.hash  key ) land (Array.length h.data - 1)
-  let eq_key = Key.equal   
-
-
-# 33
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
-let create = Hashtbl_gen.create
-let clear = Hashtbl_gen.clear
-let reset = Hashtbl_gen.reset
-let copy = Hashtbl_gen.copy
-let iter = Hashtbl_gen.iter
-let fold = Hashtbl_gen.fold
-let length = Hashtbl_gen.length
-let stats = Hashtbl_gen.stats
-
-
-
-let add (h : _ t) key info =
-  let i = key_index h key in
-  let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
-  h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
-
-(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let modify_or_init (h : _ t) key modf default =
-  let rec find_bucket (bucketlist : _ bucketlist)  =
-    match bucketlist with
-    | Cons(k,i,next) ->
-      if eq_key k key then begin modf i; false end
-      else find_bucket next 
-    | Empty -> true in
-  let i = key_index h key in 
-  let h_data = h.data in 
-  if find_bucket (Array.unsafe_get h_data i) then
-    begin 
-      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
-    end
-
-
-let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
-  match bucketlist with  
-  | Empty ->
-    Empty
-  | Cons(k, i, next) ->
-    if eq_key k key 
-    then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket key h next) 
-
-let remove (h : _ t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  let old_h_szie = h.size in 
-  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
-  if old_h_szie <> h.size then 
-    Array.unsafe_set h_data i  new_bucket
-
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
-  | Empty ->
-    raise Not_found
-  | Cons(k, d, rest) ->
-    if eq_key key k then d else find_rec key rest
-
-let find_exn (h : _ t) key =
-  match Array.unsafe_get h.data (key_index h key) with
-  | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
-    if eq_key key k1 then d1 else
-      match rest1 with
-      | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
-        if eq_key key k2 then d2 else
-          match rest2 with
-          | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
-            if eq_key key k3  then d3 else find_rec key rest3
-
-let find_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-
-let find_key_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-  
-let find_default (h : _ t) key default = 
-  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
-let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      []
-    | Cons(k, d, rest) ->
-      if eq_key k key 
-      then d :: find_in_bucket rest
-      else find_in_bucket rest in
-  find_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-let replace h key info =
-  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
-    | Empty ->
-      raise_notrace Not_found
-    | Cons(k, i, next) ->
-      if eq_key k key
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
-  let i = key_index h key in
-  let h_data = h.data in 
-  let l = Array.unsafe_get h_data i in
-  try
-    Array.unsafe_set h_data i  (replace_bucket l)
-  with Not_found ->
-    begin 
-      Array.unsafe_set h_data i (Cons(key, info, l));
-      h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
-    end 
-
-let mem (h : _ t) key =
-  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      false
-    | Cons(k, d, rest) ->
-      eq_key k key  || mem_in_bucket rest in
-  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-
-let of_list2 ks vs = 
-  let len = List.length ks in 
-  let map = create len in 
-  List.iter2 (fun k v -> add map k v) ks vs ; 
-  map
-
-# 161
-end
-
-end
-module Lam_module_ident : sig 
-#1 "lam_module_ident.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-
-
-(** A type for qualified identifiers in Lambda IR 
- *)
-
-type t = Js_op.module_id = private { id : Ident.t ; kind : Js_op.kind }
-
-type system = Js_config.module_system 
-
-val id : t -> Ident.t 
-
-val name : t -> string
-
-val mk : J.kind -> Ident.t -> t
-
-val of_ml : Ident.t -> t
-
-val of_external : Ident.t -> string -> t
-
-val of_runtime : Ident.t -> t 
-
-module Hash : Hashtbl_gen.S with type key = t
-module Hash_set : Hash_set_gen.S with type key = t
-end = struct
-#1 "lam_module_ident.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-
-type t = Js_op.module_id = 
-  { id : Ident.t ; kind : Js_op.kind }
-
-type system = Js_config.module_system 
-
-let id x = x.id 
-
-let of_ml id = { id ; kind =  Ml}
-
-let of_external id name =  {id ; kind = External name}
-
-let of_runtime id = { id ; kind = Runtime }
-
-let mk kind id = {id; kind}
-
-let name  x : string  = 
-  match (x.kind : J.kind) with 
-  | Ml  | Runtime ->  x.id.name
-  | External v -> v  
-
-let equal (x : t) y = 
-  match x.kind with 
-  | External x_kind-> 
-    begin match y.kind with 
-      | External y_kind -> 
-        x_kind = (y_kind : string)
-      | _ -> false 
-    end
-  | Ml -> y.kind = Ml && Ext_ident.equal x.id y.id 
-  | Runtime -> 
-    y.kind = Runtime  && Ext_ident.equal x.id y.id
-let hash (x : t) = 
-  match x.kind with 
-  | External x_kind -> Bs_hash_stubs.hash_string x_kind 
-  | Ml | Runtime -> 
-    let x_id = x.id in 
-    Bs_hash_stubs.hash_stamp_and_name x_id.stamp x_id.name 
-
-module Hash = Hashtbl_make.Make(struct 
-    type nonrec t = t 
-    let hash   = hash
-    let equal  = equal 
-  end)
-
-module Hash_set = Hash_set.Make( struct 
-    type nonrec t = t 
-    let hash   = hash
-    let equal  = equal     
-end)
-end
 module Lam_print : sig 
 #1 "lam_print.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -69479,7 +69529,7 @@ type meta = {
       for sure it's not a function, there is no need to count them
    *)
 
-  mutable required_modules : Lam_module_ident.t list ;
+
 }
 
 end = struct
@@ -69610,8 +69660,7 @@ type meta = {
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
   *)
-  (** required modules completed by [alias_pass] *)
-  mutable required_modules : Lam_module_ident.t list ;
+  
 }
 
 
@@ -69658,9 +69707,9 @@ val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.k
 val field_flatten_get : 
   Lam.t -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
-val add_required_module : Ident.t -> Lam_stats.meta -> unit
 
-val add_required_modules : Ident.t list -> Lam_stats.meta -> unit
+
+
 
 val alias : Lam_stats.meta ->
   Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
@@ -69741,46 +69790,16 @@ let string_of_lambda = Format.asprintf "%a" Lam_print.lambda
 let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
-(* TODO: not very efficient .. *)
-(* exception Cyclic  *)
-
-(* let toplogical (get_deps : Ident.t -> Ident_set.t) (libs : Ident.t list) : Ident.t list = *)
-(*   let rec aux acc later todo round_progress = *)
-(*     match todo, later with *)
-(*     | [], [] ->  acc *)
-(*     | [], _ -> *)
-(*       if round_progress *)
-(*       then aux acc todo later false *)
-(*       else raise Cyclic *)
-(*     | x::xs, _ -> *)
-(*       if Ident_set.for_all (fun dep -> x == dep || List.mem dep acc) (get_deps x) *)
-(*       then aux (x::acc) later xs true *)
-(*       else aux acc (x::later) xs round_progress *)
-(*   in *)
-(*   let starts, todo = List.partition (fun lib -> Ident_set.is_empty @@ get_deps lib) libs in *)
-(*   aux starts [] todo false *)
-
-(* let sort_dag_args  param_args = *)
-(*   let todos = Ident_map.keys param_args  in *)
-(*   let idents = Ident_set.of_list  todos in *)
-(*   let dependencies  : Ident_set.t Ident_map.t =  *)
-(*     Ident_map.mapi (fun param arg -> Js_fold_basic.depends_j arg idents) param_args in *)
-(*   try   *)
-(*     Some (toplogical (fun k -> Ident_map.find_exn k dependencies) todos) *)
-(*   with Cyclic -> None  *)
 
 
 
-let add_required_module (x : Ident.t) (meta : Lam_stats.meta) = 
-  meta.required_modules <- Lam_module_ident.of_ml x :: meta.required_modules 
 
+(*
 let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) = 
-  let required_modules = 
-    List.map 
-      (fun x -> Lam_module_ident.of_ml x)  x
-    @ meta.required_modules in
-  meta.required_modules <- required_modules
-
+  let meta_require_modules = meta.required_modules in
+  List.iter (fun x -> add meta_require_modules (Lam_module_ident.of_ml x)) x 
+*)
+  
 (* Apply a substitution to a lambda-term.
    Assumes that the bound variables of the lambda-term do not
    belong to the domain of the substitution.
@@ -79208,10 +79227,11 @@ val get_package_path_from_cmj :
 
 (* The second argument is mostly from [runtime] modules 
     will change the input [hard_dependencies]
+    [get_required_modules extra hard_dependencies]
+    [extra] maybe removed if it is pure and not in [hard_dependencies]
 *)
-val get_requried_modules : 
-  Env.t ->
-  Lam_module_ident.t list ->
+val get_required_modules : 
+  Lam_module_ident.Hash_set.t  ->
   Lam_module_ident.Hash_set.t -> 
   Lam_module_ident.t list
 
@@ -79302,9 +79322,9 @@ let reset () =
   Lam_module_ident.Hash.clear cached_tbl 
 
 (** 
-  Any [id] put in the [cached_tbl] should be always valid,
-  since it is already used in the code gen, 
-  the older will have higher precedence
+   Any [id] put in the [cached_tbl] should be always valid,
+   since it is already used in the code gen, 
+   the older will have higher precedence
 *)
 let add_js_module ?hint_name module_name : Ident.t 
   = 
@@ -79312,17 +79332,17 @@ let add_js_module ?hint_name module_name : Ident.t
     match hint_name with
     | None -> Ext_ident.create_js_module module_name 
     | Some hint_name -> Ext_ident.create_js_module hint_name in
-   let lam_module_ident = 
-     Lam_module_ident.of_external id module_name in  
-   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
-   | None -> 
+  let lam_module_ident = 
+    Lam_module_ident.of_external id module_name in  
+  match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
+  | None -> 
     Lam_module_ident.Hash.add 
-     cached_tbl 
-     lam_module_ident
-     External;
-     id
-   | Some old_key -> old_key.id 
-      
+      cached_tbl 
+      lam_module_ident
+      External;
+    id
+  | Some old_key -> old_key.id 
+
 
 
 
@@ -79470,18 +79490,23 @@ let get_package_path_from_cmj module_system ( id : Lam_module_ident.t) =
     ~found:(fun x -> Js_config.query_package_infos x.npm_package_path module_system)
 
 
-(* TODO: [env] is not hard dependency *)
 
-let get_requried_modules env
-    (extras : module_id list ) 
+let add = Lam_module_ident.Hash_set.add
+
+
+
+
+
+let get_required_modules 
+    extras 
     (hard_dependencies 
      : Lam_module_ident.Hash_set.t) : module_id list =  
   Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
       if not @@ is_pure_module id 
-      then Lam_module_ident.Hash_set.add hard_dependencies id) cached_tbl ;
-  List.iter (fun id -> 
-      if not @@ is_pure_module  id 
-      then Lam_module_ident.Hash_set.add hard_dependencies id
+      then add  hard_dependencies id) cached_tbl ;
+ Lam_module_ident.Hash_set.iter (fun (id  : module_id)  -> 
+      (if not @@ is_pure_module  id 
+      then add hard_dependencies id : unit)
     ) extras;
   Lam_module_ident.Hash_set.elements hard_dependencies
 
@@ -93687,14 +93712,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
       
     | Lprim {primitive = Pgetglobal v; args = []; _} 
       -> 
-      begin 
         Lam_util.alias meta  ident v (Module  v) kind; 
-        begin match kind with 
-          | Alias -> ()
-          | Strict | StrictOpt | Variable -> 
-            Lam_util.add_required_module v meta
-        end;
-      end
     | Lvar v 
       -> 
         (
@@ -93792,7 +93810,6 @@ let count_alias_globals
      ident_tbl = Ident_hashtbl.create 31;
      exit_codes = Int_hash_set.create 31 ;
      exports =  export_idents;
-     required_modules = [] ;
      filename;
      env;
      export_idents = export_sets;
@@ -96259,7 +96276,7 @@ let compile  ~filename output_prefix env _sigs
       
     Lam_compile_env.reset () ;
   in 
-  let lam = Lam.convert export_ident_sets lam in 
+  let lam, may_required_modules = Lam.convert export_ident_sets lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
@@ -96387,9 +96404,8 @@ let compile  ~filename output_prefix env _sigs
   |> _j "shake"
   |> ( fun (js:  J.program) -> 
       let external_module_ids = 
-        Lam_compile_env.get_requried_modules  
-          meta.env
-          meta.required_modules  
+        Lam_compile_env.get_required_modules  
+          may_required_modules  
           (Js_fold_basic.calculate_hard_dependencies js.block)
         |>
         (fun x ->
