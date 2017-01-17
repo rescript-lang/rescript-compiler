@@ -99,9 +99,10 @@ val get_package_path_from_cmj :
 
 (* The second argument is mostly from [runtime] modules 
     will change the input [hard_dependencies]
+    [get_required_modules extra hard_dependencies]
+    [extra] maybe removed if it is pure and not in [hard_dependencies]
 *)
-val get_requried_modules : 
-  Env.t ->
-  Lam_module_ident.t list ->
+val get_required_modules : 
+  Lam_module_ident.Hash_set.t  ->
   Lam_module_ident.Hash_set.t -> 
   Lam_module_ident.t list

@@ -90,14 +90,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
       
     | Lprim {primitive = Pgetglobal v; args = []; _} 
       -> 
-      begin 
         Lam_util.alias meta  ident v (Module  v) kind; 
-        begin match kind with 
-          | Alias -> ()
-          | Strict | StrictOpt | Variable -> 
-            Lam_util.add_required_module v meta
-        end;
-      end
     | Lvar v 
       -> 
         (
@@ -195,7 +188,6 @@ let count_alias_globals
      ident_tbl = Ident_hashtbl.create 31;
      exit_codes = Int_hash_set.create 31 ;
      exports =  export_idents;
-     required_modules = [] ;
      filename;
      env;
      export_idents = export_sets;

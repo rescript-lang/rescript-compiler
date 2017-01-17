@@ -292,6 +292,6 @@ val for_ :
     we should remove all those let aliases, otherwise, it will be
     pushed into alias table again
  *)
-val convert :  Ident_set.t -> Lambda.lambda -> t 
+val convert :  Ident_set.t -> Lambda.lambda -> t * Lam_module_ident.Hash_set.t
 
 

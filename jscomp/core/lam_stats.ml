@@ -124,7 +124,6 @@ type meta = {
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
   *)
-  (** required modules completed by [alias_pass] *)
-  mutable required_modules : Lam_module_ident.t list ;
+  
 }
 

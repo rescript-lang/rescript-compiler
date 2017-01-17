@@ -85,8 +85,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	side_effect\
 	side_effect_free\
 	include_side_effect_free\
-	include_side_effect
-
+	include_side_effect\
+	exception_alias
 
 
 

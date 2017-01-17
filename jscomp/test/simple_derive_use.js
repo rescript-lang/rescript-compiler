@@ -1,7 +1,8 @@
 'use strict';
 
+var Simple_derive_test = require("./simple_derive_test");
 
 var hh = 3;
 
 exports.hh = hh;
-/* No side effect */
+/* Simple_derive_test Not a pure module */
