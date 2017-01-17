@@ -59,6 +59,31 @@ let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) =
   Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
     tbl
 
+
+let pp_kind fmt (kind : Lam_stats.kind) = 
+  match kind with 
+  | ImmutableBlock (arr,_) -> 
+    pp fmt "Imm(%d)" (Array.length arr)
+  | MutableBlock (arr) ->     
+    pp fmt "Mutable(%d)" (Array.length arr)
+  | Constant _  ->
+    pp fmt "Constant"
+  | Module id -> 
+    pp fmt "%s/%d" id.name id.stamp 
+  | Function _ -> 
+    pp fmt "function"
+  | Exception ->
+    pp fmt "Exception" 
+  | Parameter -> 
+    pp fmt "Parameter"  
+  | NA -> 
+    pp fmt "NA"
+
+let pp_ident_tbl fmt (ident_tbl : Lam_stats.ident_tbl) = 
+  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
+    Ident.print k pp_kind v)
+    ident_tbl
+      
 let merge 
     ((n : int ), params as y)
     (x : Lam.function_arities) : Lam.function_arities = 

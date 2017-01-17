@@ -79,7 +79,13 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	minimal_test\
 	gpr_1063_test\
 	gpr_977_test\
-	gpr_1072
+	gpr_1072\
+	submodule\
+	submodule_call\
+	side_effect\
+	side_effect_free\
+	include_side_effect_free\
+	include_side_effect
 
 
 

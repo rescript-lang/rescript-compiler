@@ -176,6 +176,34 @@ function to_list_map(f, a) {
   };
 }
 
+function of_list_map(f, a) {
+  if (a) {
+    var tl = a[1];
+    var hd = Curry._1(f, a[0]);
+    var len = List.length(tl) + 1 | 0;
+    var arr = Caml_array.caml_make_vect(len, hd);
+    var _i = 1;
+    var _param = tl;
+    while(true) {
+      var param = _param;
+      var i = _i;
+      if (param) {
+        arr[i] = Curry._1(f, param[0]);
+        _param = param[1];
+        _i = i + 1 | 0;
+        continue ;
+        
+      }
+      else {
+        return arr;
+      }
+    };
+  }
+  else {
+    return /* array */[];
+  }
+}
+
 function rfind_with_index(arr, cmp, v) {
   var len = arr.length;
   var _i = len - 1 | 0;
@@ -275,6 +303,7 @@ exports.filter_map       = filter_map;
 exports.range            = range;
 exports.map2i            = map2i;
 exports.to_list_map      = to_list_map;
+exports.of_list_map      = of_list_map;
 exports.rfind_with_index = rfind_with_index;
 exports.rfind_and_split  = rfind_and_split;
 exports.find_with_index  = find_with_index;

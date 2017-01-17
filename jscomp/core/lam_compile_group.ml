@@ -242,15 +242,17 @@ let compile  ~filename output_prefix env _sigs
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
 #if BS_DEBUG then    
-    |> Lam.check (Js_config.get_current_file () ) 
+    |> (fun lam -> 
+       let () = 
+        Ext_log.dwarn __LOC__
+        "[@Alias_table:@ %a@]@." Lam_stats_util.pp_alias_tbl meta.alias_tbl;
+        Ext_log.dwarn __LOC__
+        "[@Ident_table:@ %a@]@." Lam_stats_util.pp_ident_tbl meta.ident_tbl;
+        in 
+      Lam.check (Js_config.get_current_file ()) lam
+    ) 
 #end    
   in
-  (* Debug identifier table *)
-  (* Lam_stats_util.pp_alias_tbl Format.err_formatter meta.alias_tbl; *)
-  (* Lam_stats_util.dump_exports_arities meta ; *)
-  (* Lam_stats_util.pp_arities_tbl Format.err_formatter meta.arities_tbl; *)
-
-  (* Dump for debugger *)
 
   let ({Lam_coercion.groups = rest } as coerced_input ) = 
     Lam_coercion.coerce_and_group_big_lambda  
@@ -369,7 +371,7 @@ let lambda_as_module
   begin 
     Js_config.set_current_file filename ;  
 #if BS_DEBUG then    
-    Js_config.set_debug_file "gpr_1072.ml";
+    Js_config.set_debug_file "arrayLabels.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let (//) = Filename.concat in 
