@@ -21102,6 +21102,7 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 
 end = struct
 #1 "ext_string.ml"
@@ -21483,7 +21484,7 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
-
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -23431,6 +23432,7 @@ external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
 
 external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
 
+external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" "noalloc";;
 end
 module Ext_util : sig 
 #1 "ext_util.mli"
@@ -24318,7 +24320,7 @@ end = struct
   
 # 10
   type key = string 
-  let compare_key = String.compare
+  let compare_key = Ext_string.compare
 
 # 22
 type 'a t = (key,'a) Map_gen.t
@@ -59158,7 +59160,7 @@ let nil = create_js "null"
 let compare (x : Ident.t ) ( y : Ident.t) = 
   let u = x.stamp - y.stamp in
   if u = 0 then 
-     String.compare x.name y.name 
+     Ext_string.compare x.name y.name 
   else u 
 
 let equal ( x : Ident.t) ( y : Ident.t) = 
@@ -96339,7 +96341,7 @@ let compile  ~filename output_prefix env _sigs
            if !Js_config.sort_imports then
              Ext_list.sort_via_array
                (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
-                  String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+                  Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
                ) x
            else
              x

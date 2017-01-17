@@ -156,5 +156,46 @@ let suites =
         (not (Ext_string.no_slash "/ahgoh" ));
       OUnit.assert_bool __LOC__ 
         (not (Ext_string.no_slash "/ahgoh/" ));            
-    end
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ (Ext_string.compare "" ""  = 0);
+      OUnit.assert_bool __LOC__ (Ext_string.compare "0" "0"  = 0);
+      OUnit.assert_bool __LOC__ (Ext_string.compare "" "acd" < 0);
+      OUnit.assert_bool __LOC__ (Ext_string.compare  "acd" "" > 0);
+      for i = 0 to 256 do 
+        let a = String.init i (fun _ -> '0') in 
+        let b = String.init i (fun _ -> '0') in 
+        OUnit.assert_bool __LOC__ (Ext_string.compare  b a = 0);
+        OUnit.assert_bool __LOC__ (Ext_string.compare a b = 0)
+      done ;
+      for i = 0 to 256 do 
+        let a = String.init i (fun _ -> '0') in 
+        let b = String.init i (fun _ -> '0') ^ "\000"in 
+        OUnit.assert_bool __LOC__ (Ext_string.compare a b < 0);
+        OUnit.assert_bool __LOC__ (Ext_string.compare  b a  > 0)
+      done ;
+      
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let slow_compare x y  = 
+        let x_len = String.length x  in 
+        let y_len = String.length y in 
+        if x_len = y_len then 
+          String.compare x y 
+        else 
+          Pervasives.compare x_len y_len  in 
+       let same_sign x y =
+         if x = 0 then y = 0 
+         else if x < 0 then y < 0 
+         else y > 0 in 
+       for i = 0 to 3000 do
+         let chars = [|'a';'b';'c';'d'|] in 
+         let x = Ounit_data_random.random_string chars 129 in 
+         let y = Ounit_data_random.random_string chars 129 in 
+         let a = Ext_string.compare  x y  in 
+         let b = slow_compare x y in 
+         if same_sign a b then OUnit.assert_bool __LOC__ true 
+         else failwith ("incosistent " ^ x ^ " " ^ y ^ " " ^ string_of_int a ^ " " ^ string_of_int b)
+       done 
+    end 
   ]

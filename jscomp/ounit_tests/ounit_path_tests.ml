@@ -4,7 +4,7 @@ let ((>::),
 
 let normalize = Ext_filename.normalize_absolute_path
 let (=~) x y = 
-  OUnit.assert_equal ~cmp:(fun x y ->   String.compare x y = 0) x y
+  OUnit.assert_equal ~cmp:(fun x y ->   Ext_string.equal x y ) x y
     
 let suites = 
   __FILE__ 

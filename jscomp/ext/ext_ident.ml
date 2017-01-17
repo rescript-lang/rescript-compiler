@@ -272,7 +272,7 @@ let nil = create_js "null"
 let compare (x : Ident.t ) ( y : Ident.t) = 
   let u = x.stamp - y.stamp in
   if u = 0 then 
-     String.compare x.name y.name 
+     Ext_string.compare x.name y.name 
   else u 
 
 let equal ( x : Ident.t) ( y : Ident.t) = 

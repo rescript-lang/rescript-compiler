@@ -9,3 +9,5 @@ external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_na
 external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
 
 external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
+
+external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" "noalloc";;

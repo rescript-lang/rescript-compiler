@@ -8,7 +8,7 @@ module Make(Ord: Map.OrderedType) = struct
   let compare_key = Ord.compare 
 #elif defined TYPE_STRING
   type key = string 
-  let compare_key = String.compare
+  let compare_key = Ext_string.compare
 #elif defined TYPE_INT
   type key = int
   let compare_key = Ext_int.compare

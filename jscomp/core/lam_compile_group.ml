@@ -337,7 +337,7 @@ let compile  ~filename output_prefix env _sigs
            if !Js_config.sort_imports then
              Ext_list.sort_via_array
                (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
-                  String.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
+                  Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
                ) x
            else
              x

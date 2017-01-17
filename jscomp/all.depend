@@ -57,8 +57,8 @@ ext/ordered_hash_map_local_ident.cmx : ext/ordered_hash_map_gen.cmx \
     ext/ordered_hash_map_local_ident.cmi
 ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
 ext/literals.cmx : ext/literals.cmi
-ext/string_map.cmx : ext/map_gen.cmx ext/string_map.cmi
-ext/string_set.cmx : ext/set_gen.cmx ext/string_set.cmi
+ext/string_map.cmx : ext/map_gen.cmx ext/ext_string.cmx ext/string_map.cmi
+ext/string_set.cmx : ext/set_gen.cmx ext/ext_string.cmx ext/string_set.cmi
 ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
 ext/set_poly.cmx : ext/set_gen.cmx ext/set_poly.cmi
 ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
@@ -543,8 +543,9 @@ core/lam_compile_group.cmx : core/lam_util.cmx core/lam_stats_export.cmx \
     core/js_pass_flatten.cmx core/js_pass_debug.cmx core/js_output.cmx \
     core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump.cmx \
     common/js_config.cmx core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx \
-    ext/ext_pervasives.cmx common/ext_log.cmx ext/ext_list.cmx \
-    ext/ext_ident.cmx ext/ext_filename.cmx core/lam_compile_group.cmi
+    ext/ext_string.cmx ext/ext_pervasives.cmx common/ext_log.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx ext/ext_filename.cmx \
+    core/lam_compile_group.cmi
 core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
     core/lam_compile_group.cmx core/lam_compile_env.cmx common/js_config.cmx \
     ext/ext_pervasives.cmx common/ext_log.cmx syntax/bs_ast_invariant.cmx \
@@ -590,7 +591,8 @@ ounit_tests/ounit_array_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
 ounit_tests/ounit_list_test.cmx : ounit/oUnit.cmx ext/ext_list.cmx
 ounit_tests/ounit_bal_tree_tests.cmx : ext/set_poly.cmx ext/set_int.cmx \
     ext/set_gen.cmx ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx
-ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_filename.cmx
+ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
+    ext/ext_filename.cmx
 ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \
     ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx
 ounit_tests/ounit_hash_stubs_test.cmx : ounit_tests/ounit_tests_util.cmx \
@@ -609,7 +611,9 @@ ounit_tests/ounit_ordered_hash_set_tests.cmx : \
     ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/ext_util.cmx
 ounit_tests/ounit_vec_test.cmx : ext/set_int.cmx ounit/oUnit.cmx \
     ext/int_vec.cmx ext/ext_json.cmx
-ounit_tests/ounit_string_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx
+ounit_tests/ounit_data_random.cmx :
+ounit_tests/ounit_string_tests.cmx : ounit_tests/ounit_data_random.cmx \
+    ounit/oUnit.cmx ext/ext_string.cmx
 ounit_tests/ounit_topsort_tests.cmx : ext/set_int.cmx ounit/oUnit.cmx \
     ext/int_vec.cmx ext/ext_topsort.cmx
 ounit_tests/ounit_sexp_tests.cmx : ounit/oUnit.cmx ext/ext_sexp.cmx

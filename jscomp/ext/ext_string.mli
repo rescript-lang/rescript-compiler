@@ -116,3 +116,4 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
+external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;

@@ -6,27 +6,27 @@ ifndef EXE
 endif
 NATIVE=ocamlopt.opt$(EXE)
 
-OCAMLOPT_FLAGS= -inline 1000 -w -a ../stubs/ext_basic_hash_stubs.c
+OCAMLOPT_FLAGS= -g -inline 1000 -w -a ../stubs/ext_basic_hash_stubs.c
 
 bsppx.exe: config_bsppx.mli config_bsppx.ml bsppx.mli bsppx.ml
-	$(NATIVE) -g -inline 1000 -linkall -w -a $^ -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
 bspp.exe:  bspp.mli bspp.ml
-	$(NATIVE) -g -inline 1000 -linkall -w -a $^ -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
 bsdep.exe: config_bsdep.mli config_bsdep.ml bsdep.mli bsdep.ml
-	$(NATIVE) -g -inline 1000 -linkall -w -a $^ -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
 bsb.exe:  bsb.mli bsb.ml
-	$(NATIVE) -g -inline 1000  -linkall unix.cmxa str.cmxa -w -a $^ -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa str.cmxa $^ -o $@
 
 bsb_helper.exe:  bsb_helper.mli bsb_helper.ml
-	$(NATIVE) -g -inline 1000  -linkall unix.cmxa str.cmxa -w -a $^ -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa str.cmxa -w -a $^ -o $@
 
 config_whole_compiler.ml:config_whole_compiler.mlp ../config.js
 	node ../config.js
 bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli whole_compiler.ml
-	$(NATIVE) -w -a ../stubs/ext_basic_hash_stubs.c $^  -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) $^  -o $@
 
 bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa  $^ -o $@
