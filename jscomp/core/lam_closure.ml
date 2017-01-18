@@ -76,6 +76,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     | Lprim {args ; _} -> 
       (* Check: can top be propoaged for all primitives *)
       List.iter (iter top) args
+    | Lam.Lglobal_module _ -> ()
     | Lfunction{ params; body} ->
       local_add_list params;
       iter no_substitute body 

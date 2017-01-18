@@ -55,7 +55,9 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
                      | Const_nativeint _ )
                  | Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
-                       args = [Lprim {primitive = Pgetglobal _;  _}]}
+                       args = [ 
+                         Lglobal_module _
+                       ]}
               ) 
           (* Const_int64 is no longer primitive
              Note for some constant which is not 
@@ -189,6 +191,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | _ -> 
           Lam.prim ~primitive ~args:[l';r'] loc 
       end    
+    | Lglobal_module _ -> lam    
     | Lprim {primitive; args; loc} 
       -> Lam.prim ~primitive ~args:(List.map simplif args) loc
     | Lswitch(l, sw) ->

@@ -87,8 +87,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null_undefined ls )
-      
-    | Lprim {primitive = Pgetglobal v; args = []; _} 
+    | Lglobal_module v  
       -> 
         Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 
     | Lvar v 
@@ -143,6 +142,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lletrec (bindings, body) -> 
         List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
         collect body
+    | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter collect  args
     | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
         collect  l;

@@ -32,6 +32,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lvar _ 
   | Lconst _ 
   | Lfunction _ -> true
+  | Lam.Lglobal_module _ -> true 
+    (* we record side effect in the global level, 
+      this expression itself is side effect free
+    *)
   | Lprim {primitive;  args; _} -> 
     List.for_all no_side_effects args && 
     (
@@ -69,10 +73,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
       | Pbytes_to_string 
       | Pbytes_of_string 
-      
-
-
-      | Pgetglobal _
       | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
@@ -237,11 +237,12 @@ let rec size (lam : Lam.t) =
     | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
     | Lletrec _ -> really_big ()
     | Lprim{primitive = Pfield _; 
-            args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
+            args =  [ Lglobal_module _]
            ;  _}
       -> 1
     | Lprim {primitive = Praise ; args =  [l ];  _} 
       -> size l
+    | Lam.Lglobal_module _ -> 1       
     | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 
@@ -336,34 +337,52 @@ let ok_to_inline ~body params args =
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
 *)
-let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
-  match (l1, l2) with
-  | Lvar i1, Lvar i2 -> Ident.same i1 i2
-  | Lconst c1, Lconst c2 -> c1 = c2 (* *)
-  | Lapply {fn = l1; args = args1; _}, Lapply {fn = l2; args = args2; _} ->
+let rec 
+  eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
+  match l1 with 
+  | Lglobal_module i1 -> 
+    begin match l2 with  Lglobal_module i2 -> Ident.same i1  i2  | _ -> false end
+  | Lvar i1 -> 
+    begin match l2 with  Lvar i2 ->  Ident.same i1 i2 | _ -> false end 
+  | Lconst c1 -> 
+    begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
+  | Lapply {fn = l1; args = args1; _} -> 
+    begin match l2 with Lapply {fn = l2; args = args2; _} ->
     eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
-  | Lfunction _ , Lfunction _ -> false (* TODO -- simple functions ?*)
-  | Lassign(v0,l0), Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
-  | Lstaticraise(id,ls), Lstaticraise(id1,ls1) -> 
-    id = id1 && List.for_all2 eq_lambda ls ls1 
-  | Llet (_,_,_,_), Llet (_,_,_,_) -> false 
-  | Lletrec _, Lletrec _ -> false 
-  | Lprim {primitive = p; args = ls; } ,
-    Lprim {primitive = p1; args = ls1} -> 
-    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
-  | Lswitch _, Lswitch _ -> false  
-  | Lstringswitch _ , Lstringswitch _ -> false 
-  | Lstaticcatch _, Lstaticcatch _ -> false 
-  | Ltrywith _, Ltrywith _ -> false 
-  | Lifthenelse (a,b,c), Lifthenelse (a0,b0,c0) ->
+    |_ -> false end 
+  | Lifthenelse (a,b,c) -> 
+    begin match l2 with  Lifthenelse (a0,b0,c0) ->
     eq_lambda a a0 && eq_lambda b b0 && eq_lambda c c0
-  | Lsequence (a,b), Lsequence (a0,b0) ->
+    | _ -> false end 
+  | Lsequence (a,b) -> 
+    begin match l2 with Lsequence (a0,b0) ->
     eq_lambda a a0 && eq_lambda b b0
-  | Lwhile (p,b) , Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
-  | Lfor (_,_,_,_,_), Lfor (_,_,_,_,_) -> false
-  | Lsend _, Lsend _ -> false
-  | Lifused _, Lifused _ -> false 
-  |  _,  _ -> false 
+    | _ -> false end 
+  | Lwhile (p,b) -> 
+    begin match l2 with  Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
+    | _ -> false end   
+  | Lassign(v0,l0) -> 
+    begin match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
+    | _ -> false end 
+  | Lstaticraise(id,ls) -> 
+    begin match l2 with  Lstaticraise(id1,ls1) -> 
+    (id : int) = id1 && List.for_all2 eq_lambda ls ls1 
+    | _ -> false end 
+  | Lprim {primitive = p; args = ls; } -> 
+    begin match l2 with 
+    Lprim {primitive = p1; args = ls1} ->
+    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+    | _ -> false end 
+  | Lfunction _  
+  | Llet (_,_,_,_)
+  | Lletrec _
+  | Lswitch _ 
+  | Lstringswitch _ 
+  | Lstaticcatch _ 
+  | Ltrywith _ 
+  | Lfor (_,_,_,_,_) 
+  | Lsend _
+  | Lifused _ -> false    
 and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
   match p, p1 with 
   | Pccall {prim_name = n0 ; 

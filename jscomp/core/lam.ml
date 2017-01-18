@@ -43,9 +43,6 @@ type function_arities =
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  (* Globals *)
-  | Pgetglobal of ident
-  (* | Psetglobal of ident *)
   | Pglobal_exception of ident       
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag
@@ -181,6 +178,7 @@ module Types = struct
     }
   and t = 
     | Lvar of ident
+    | Lglobal_module of ident
     | Lconst of Lambda.structured_constant
     | Lapply of apply_info
     | Lfunction of function_info
@@ -242,6 +240,7 @@ module X = struct
     = Types.t
     =
       | Lvar of ident
+      | Lglobal_module of ident 
       | Lconst of Lambda.structured_constant
       | Lapply of apply_info
       | Lfunction of function_info
@@ -282,9 +281,11 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let body = f body in 
     let decl = List.map (fun (id, exp) -> id, f exp) decl in 
     Lletrec(decl,body)
+  | Lglobal_module _ -> (l : X.t)      
   | Lprim {args; primitive ; loc}  ->
     let args = List.map f args in 
     Lprim { args; primitive; loc}
+
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
     let arg = f arg in 
     let sw_consts = List.map (fun (key, case) -> key , f case) sw_consts in 
@@ -341,7 +342,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
 let inner_iter (f : t -> unit ) (l : t) : unit = 
   match l  with 
   | Lvar (_ : ident)
-  | Lconst (_ : Lambda.structured_constant) ->  ()
+  | Lconst (_ : Lambda.structured_constant) -> ()
   | Lapply ({fn; args; loc; status} )  ->
     f fn;
     List.iter f args 
@@ -353,6 +354,8 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lletrec(decl, body) ->
     f body;
     List.iter (fun (id, exp) ->  f exp) decl
+  | Lglobal_module (_ )
+    ->  ()    
   | Lprim {args; primitive ; loc}  ->
     List.iter f args;
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
@@ -481,7 +484,7 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
   let rec hit (l : t) =
     begin
       match (l : t) with 
-      | Lvar id -> Ident_set.mem id fv 
+      | Lvar id -> Ident_set.mem id fv       
       | Lassign(id, e) ->
         Ident_set.mem id fv || hit e
       | Lstaticcatch(e1, (_,vars), e2) ->
@@ -500,6 +503,8 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
       | Lconst _ -> false 
       | Lapply{fn; args; _} ->
         hit fn || List.exists hit args
+      | Lglobal_module _  (* global persistent module, play safe *)
+        -> false        
       | Lprim {args; _} ->
         List.exists hit args
       | Lswitch(arg, sw) ->
@@ -555,6 +560,8 @@ let hit_mask (fv : Hash_set_ident_mask.t) l =
       | Lconst _ -> false 
       | Lapply{fn; args; _} ->
         hit fn || List.exists hit args
+      | Lglobal_module id (* playsafe *)        
+        -> false
       | Lprim {args; _} ->
         List.exists hit args
       | Lswitch(arg, sw) ->
@@ -602,7 +609,6 @@ let free_variables l =
       | Ltrywith(e1, exn, e2) ->
         free e1; free e2;
         fv := Ident_set.remove exn !fv
-
       | Lfunction{body;params} ->
         free body;
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
@@ -619,6 +625,10 @@ let free_variables l =
       | Lconst _ -> ()
       | Lapply{fn; args; _} ->
         free fn; List.iter free args
+      | Lglobal_module _ -> () 
+        (* according to the existing semantics: 
+          [primitive] is not counted
+        *)        
       | Lprim {args; _} ->
         List.iter free args
       | Lswitch(arg, sw) ->
@@ -679,7 +689,10 @@ let check file lam =
   let rec iter (l : t) =
     begin
       match (l : t) with 
-        Lvar id -> use id 
+      | Lvar id -> use id 
+      | Lglobal_module _ -> ()
+      | Lprim {args; _} ->
+        List.iter iter args
       | Lconst _ -> ()
       | Lapply{fn; args; _} ->
         iter fn; List.iter iter args
@@ -694,8 +707,7 @@ let check file lam =
         List.iter (fun (id, exp) ->  def id) decl;
         List.iter (fun (id, exp) -> iter exp) decl;
         iter body
-      | Lprim {args; _} ->
-        List.iter iter args
+   
       | Lswitch(arg, sw) ->
         iter arg;
         List.iter (fun (key, case) -> iter case) sw.sw_consts;
@@ -777,6 +789,7 @@ type unop = t -> t
 
 
 let var id : t = Lvar id
+let global_module id = Lglobal_module id 
 let const ct : t = Lconst ct 
 let apply fn args loc status : t = 
   Lapply { fn; args;  loc  ;
@@ -1092,7 +1105,7 @@ let may_depend = Lam_module_ident.Hash_set.add
 (** drop Lseq (List! ) etc *)
 let rec drop_global_marker (lam : t) =
   match lam with 
-  | Lsequence(Lprim{primitive=Pgetglobal id; args = []}, rest) ->
+  | Lsequence (Lglobal_module id, rest) -> 
      drop_global_marker rest
   | _ -> lam
 
@@ -1372,7 +1385,7 @@ let convert exports lam : _ * _  =
     | Lvar x -> 
       let var = Ident_hashtbl.find_default alias x x in
       if Ident.persistent var then 
-        Lprim {primitive = Pgetglobal var; args = []; loc = Location.none}
+        Lglobal_module var 
       else       
         Lvar var       
     | Lconst x -> 
@@ -1445,7 +1458,7 @@ let convert exports lam : _ * _  =
          This looks more correct, but lets be conservative here
 
          global module inclusion {[ include List ]}
-         will cause code like {[ let include =a Pgetglobal (list)]}
+         will cause code like {[ let include =a Lglobal_module (list)]}
 
          when [u] is global, it can not be bound again, 
          it should always be the leaf 
@@ -1485,7 +1498,8 @@ let convert exports lam : _ * _  =
         else 
         begin 
           may_depend may_depends (Lam_module_ident.of_ml id);
-          Lprim {primitive = Pgetglobal id ; args ; loc }
+          assert (args = []);
+          Lglobal_module id 
         end  
       | _ ->       
         lam_prim ~primitive ~args loc 

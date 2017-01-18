@@ -216,6 +216,7 @@ let deep_flatten
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+    | Lglobal_module _ -> lam 
     | Lprim {primitive ; args; loc }
       -> 
       let args = List.map aux args in

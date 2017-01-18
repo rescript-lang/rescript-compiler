@@ -52,10 +52,7 @@ let query_lambda id env =
                    List.mapi (fun i _ -> 
                        Lam.prim
                          ~primitive:(Pfield (i, Lambda.Fld_na)) 
-                         ~args:[
-                           Lam.prim 
-                             ~primitive:(Pgetglobal id)
-                             ~args:[] Location.none (* FIXME*)] Location.none)
+                         ~args:[ Lam.global_module id  ] Location.none)
                      sigs) Location.none (* FIXME*))
 
 

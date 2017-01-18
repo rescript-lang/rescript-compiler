@@ -45,7 +45,7 @@ let rec dump_summary fmt (x : Env.summary) =
     Printtyp.value_description id fmt value_description
   | _ -> ()
 
-(** Used in [Pgetglobal] *)
+(** Used in [ Lglobal_module] *)
 let get_name  (serializable_sigs : Types.signature) (pos : int) = 
   Ident.name @@ Type_int_to_string.name_of_signature_item @@ List.nth  serializable_sigs  pos
 

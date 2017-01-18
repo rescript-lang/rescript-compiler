@@ -41,6 +41,7 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
   | Lletrec (binding,body) ->
     List.exists (fun (_, l) -> has_exit_code exits l ) binding ||
     has_exit_code exits body    
+  | Lam.Lglobal_module _ -> false
   | Lprim {args; _} 
     -> List.exists (fun x -> has_exit_code exits x) args
   | Lswitch (l,lam_switch) 

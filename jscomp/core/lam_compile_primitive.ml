@@ -480,14 +480,6 @@ let translate  loc
             E.runtime_call Js_config.string "get" args          
       | _ -> assert false
       end
-    
-  | Pgetglobal i   -> 
-    (* TODO -- check args, case by case -- 
-        1. include Array --> let include  = Array 
-        2. get exception
-    *)
-    Lam_compile_global.get_exp (i,env,true)
-  
     (** only when Lapply -> expand = true*)
   | Praise  -> assert false (* handled before here *)
 

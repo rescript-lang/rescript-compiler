@@ -84,6 +84,7 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
     | Lletrec(bindings, body) ->
       List.iter (fun (_, l) -> count l) bindings;
       count body
+    | Lglobal_module _ -> ()
     | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
@@ -252,6 +253,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
       Lam.letrec
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
+    | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc} -> 
       let args = List.map simplif args in
       Lam.prim ~primitive ~args loc
