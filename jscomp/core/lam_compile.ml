@@ -163,7 +163,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           List.fold_right 
             (fun (x : Lam.t) (args_code, args)  ->
                match x with 
-               | Lprim {primitive = Pgetglobal i; args =  [];_ } -> 
+               | Lglobal_module i -> 
                  (* when module is passed as an argument - unpack to an array
                      for the function, generative module or functor can be a function,
                      however it can not be global -- global can only module
@@ -508,7 +508,7 @@ and
     (* External function calll *)
     | Lapply{ fn = 
                 Lprim{primitive = Pfield (n,_); 
-                      args = [ Lprim {primitive = Pgetglobal id; args = []}];_};
+                      args = [  Lglobal_module id];_};
              args = args_lambda;
              status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
@@ -526,7 +526,7 @@ and
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
           List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match x with             
-              | Lprim {primitive = Pgetglobal ident; args =  []} -> 
+              | Lglobal_module ident -> 
                 (* when module is passed as an argument - unpack to an array
                     for the function, generative module or functor can be a function, 
                     however it can not be global -- global can only module 
@@ -657,8 +657,8 @@ and
       Js_output.handle_name_tail st should_return lam (Lam_compile_const.translate c)
 
     | Lprim {primitive = Pfield (n,_); 
-             args = [ Lprim {primitive = Pgetglobal id; args = [] ; _}]; _} 
-      -> (* should be before Pgetglobal *)
+             args = [ Lglobal_module id ]; _} 
+      -> (* should be before Lglobal_global *)
         get_exp_with_index cxt lam  (id,n, env)
 
     | Lprim {primitive = Praise ; args =  [ e ]; _} -> 
@@ -944,6 +944,14 @@ and
               end
           | _ -> assert false 
         end
+    | Lglobal_module i -> 
+      (* introduced by 
+         1. {[ include Array --> let include  = Array  ]}
+         2. inline functor application
+      *)
+      let exp = Lam_compile_global.get_exp (i,env,true) in 
+      Js_output.handle_block_return st should_return lam [] exp 
+
     | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
@@ -1576,7 +1584,8 @@ and
         (met :: obj :: args) 
         |> Ext_list.split_map (fun (x : Lam.t) -> 
             match x with 
-            | Lprim {primitive = Pgetglobal i; args =  []} -> 
+            | Lglobal_module i 
+             -> 
               [], Lam_compile_global.get_exp  (i, env, true)
             | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
               (* nullary external call*)

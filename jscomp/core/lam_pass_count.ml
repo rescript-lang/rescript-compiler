@@ -126,7 +126,7 @@ let collect_occurs  lam : occ_tbl =
       (* Lalias-bound variables are never assigned, so don't increase
          this ident's refcount *)
       count bv l
-
+    | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter (count bv ) args
     | Lletrec(bindings, body) ->
       List.iter (fun (v, l) -> count bv l) bindings;

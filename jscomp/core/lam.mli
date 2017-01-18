@@ -49,9 +49,7 @@ type function_arities =
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pgetglobal of ident
-  (* | Psetglobal of ident *)
-  | Pglobal_exception of ident             
+  | Pglobal_exception of ident 
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int * bool * Lambda.set_field_dbg_info
@@ -177,6 +175,7 @@ and function_info = private
   }
 and  t =  private
   | Lvar of ident
+  | Lglobal_module of ident
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
   | Lfunction of function_info
@@ -226,6 +225,7 @@ val scc_bindings : bindings -> bindings list
 val scc : bindings -> t -> t  -> t 
 
 val var : ident -> t
+val global_module : ident -> t 
 val const : Lambda.structured_constant -> t
 
 val apply : t -> t list -> Location.t -> apply_status -> t

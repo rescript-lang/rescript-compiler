@@ -41,7 +41,7 @@ let simplify_alias
       | None -> lam
       | Some v ->
         if Ident.persistent v then 
-          Lam.prim ~primitive:(Pgetglobal v) ~args:[] Location.none
+          Lam.global_module v 
         else 
          Lam.var v 
         (* This is wrong
@@ -55,8 +55,8 @@ let simplify_alias
          *)
       end
       (* GLOBAL module needs to be propogated *)
-    | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
-           l ) -> 
+    | Llet (kind, k, (Lglobal_module i as g), l )
+           -> 
       (* This is detection of global MODULE inclusion
           we need track all global module aliases, when it's
           passed as a parameter(escaped), we need do the expansion
@@ -76,10 +76,11 @@ let simplify_alias
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
       begin match  simpl  arg with 
-      | Lprim {primitive = Pgetglobal g; args= []} ->    
+      | Lglobal_module g 
+      ->    
         Lam.prim 
           ~primitive:(Pfield(i,Lambda.Fld_na))
-          ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none]
+          ~args:[Lam.global_module g ]
           loc
       | Lvar v as l-> 
         Lam_util.field_flatten_get (fun _ -> Lam.prim ~primitive ~args:[l] loc )
@@ -87,6 +88,7 @@ let simplify_alias
       | _ ->  
         Lam.prim ~primitive ~args:[simpl arg] loc 
       end
+    | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc } 
       -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
       
@@ -135,7 +137,7 @@ let simplify_alias
     *)      
     | Lapply{fn = 
                Lprim {primitive = Pfield (index, _) ;
-                      args = [Lprim {primitive = Pgetglobal ident; args =  []}];
+                      args = [ Lglobal_module ident ];
                       _} as l1;
              args; loc ; status} ->
       begin
@@ -284,10 +286,6 @@ let simplify_alias
     | Lstaticcatch (l1, ids, l2) -> 
       Lam.staticcatch (simpl  l1) ids (simpl  l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
-
-    | Lsequence (Lprim {primitive = Pgetglobal (id); args = []}, l2)
-      when Lam_compile_env.is_pure_module (Lam_module_ident.of_ml id) 
-      -> simpl l2 (** TODO: apply in the beginning *)
     | Lsequence(l1, l2)
       -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile(l1, l2)

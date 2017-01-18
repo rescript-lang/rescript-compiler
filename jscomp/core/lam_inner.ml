@@ -36,6 +36,7 @@ let iter f l =
   | Lletrec(decl, body) ->
       f body;
       List.iter (fun (id, exp) -> f exp) decl
+  | Lam.Lglobal_module _ -> ()     
   | Lprim {args; _} ->
       List.iter f args
   | Lswitch(arg, sw) ->

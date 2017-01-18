@@ -115,6 +115,7 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lprim {primitive; args ; loc} ->
       (* here it makes sure that global vars are not rebound *)      
       Lam.prim ~primitive ~args:(List.map aux  args) loc
+    | Lglobal_module _ -> lam 
     | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 
@@ -228,7 +229,8 @@ let propogate_beta_reduce
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim {primitive = Pgetglobal ident;  args = [];  _} -> 
+         | Lglobal_module ident   
+         -> 
            (* It's not completeness, its to make it sound.. 
               Pass global module as an argument
            *)
@@ -253,8 +255,8 @@ let propogate_beta_reduce_with_map
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
-         | Lprim {primitive = Pgetglobal ident; args = []}
-           (* TODO: we can pass Global, but you also need keep track of it*)
+         | Lglobal_module ident 
+            (* We can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
@@ -288,7 +290,8 @@ let propogate_beta_reduce_with_map
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim {primitive = Pgetglobal ident; args =  []} -> 
+          | Lglobal_module ident 
+          -> 
            (* It's not completeness, its to make it sound.. *)
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)

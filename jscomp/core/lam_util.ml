@@ -66,6 +66,7 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Lam.letrec (List.map subst_decl decl) (subst body)
     | Lprim { primitive ; args; loc} -> 
       Lam.prim ~primitive ~args:(List.map subst args) loc
+    | Lam.Lglobal_module _ -> x  
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -137,7 +138,7 @@ let refine_let
   | (Some (Strict | StrictOpt ) | None ),
     ( Lvar _    | Lconst  _ | 
       Lprim {primitive = Pfield _ ;  
-             args = [Lprim {primitive = Pgetglobal _ ; args =  []; _}]; _}) , _ ->
+             args = [ Lglobal_module _ ]; _}) , _ ->
     (* (match arg with  *)
     (* | Lconst _ ->  *)
     (*     Ext_log.err "@[%a %s@]@."  *)
@@ -236,7 +237,7 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   | Lvar _ 
   | Lconst _ 
   | Lprim {primitive = Pfield _ ; 
-           args =  [ Lprim { primitive = Pgetglobal _; args =  []; _}];
+           args =  [ Lglobal_module _ ];
            _} -> SimpleForm lam
   (* | Lfunction _  *)
   | _ -> NA 
@@ -250,7 +251,7 @@ let field_flatten_get
   match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
-      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
+      ~args:[ Lam.global_module g ] Location.none
   | Some (ImmutableBlock (arr, _)) -> 
     begin match arr.(i) with 
       | NA -> lam ()
@@ -339,7 +340,7 @@ let eta_conversion n loc status fn args =
       | Lvar _
       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
       | Lprim {primitive = Pfield _;
-               args =  [Lprim {primitive = Pgetglobal _; _}]; _ }
+               args =  [ Lglobal_module _ ]; _ }
       | Lfunction _ 
         ->
         (lam :: acc, bind)

@@ -63189,9 +63189,7 @@ type function_arities =
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  | Pgetglobal of ident
-  (* | Psetglobal of ident *)
-  | Pglobal_exception of ident             
+  | Pglobal_exception of ident 
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int * bool * Lambda.set_field_dbg_info
@@ -63317,6 +63315,7 @@ and function_info = private
   }
 and  t =  private
   | Lvar of ident
+  | Lglobal_module of ident
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
   | Lfunction of function_info
@@ -63366,6 +63365,7 @@ val scc_bindings : bindings -> bindings list
 val scc : bindings -> t -> t  -> t 
 
 val var : ident -> t
+val global_module : ident -> t 
 val const : Lambda.structured_constant -> t
 
 val apply : t -> t list -> Location.t -> apply_status -> t
@@ -63483,9 +63483,6 @@ type function_arities =
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
-  (* Globals *)
-  | Pgetglobal of ident
-  (* | Psetglobal of ident *)
   | Pglobal_exception of ident       
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag
@@ -63621,6 +63618,7 @@ module Types = struct
     }
   and t = 
     | Lvar of ident
+    | Lglobal_module of ident
     | Lconst of Lambda.structured_constant
     | Lapply of apply_info
     | Lfunction of function_info
@@ -63682,6 +63680,7 @@ module X = struct
     = Types.t
     =
       | Lvar of ident
+      | Lglobal_module of ident 
       | Lconst of Lambda.structured_constant
       | Lapply of apply_info
       | Lfunction of function_info
@@ -63722,9 +63721,11 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let body = f body in 
     let decl = List.map (fun (id, exp) -> id, f exp) decl in 
     Lletrec(decl,body)
+  | Lglobal_module _ -> (l : X.t)      
   | Lprim {args; primitive ; loc}  ->
     let args = List.map f args in 
     Lprim { args; primitive; loc}
+
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
     let arg = f arg in 
     let sw_consts = List.map (fun (key, case) -> key , f case) sw_consts in 
@@ -63781,7 +63782,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
 let inner_iter (f : t -> unit ) (l : t) : unit = 
   match l  with 
   | Lvar (_ : ident)
-  | Lconst (_ : Lambda.structured_constant) ->  ()
+  | Lconst (_ : Lambda.structured_constant) -> ()
   | Lapply ({fn; args; loc; status} )  ->
     f fn;
     List.iter f args 
@@ -63793,6 +63794,8 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lletrec(decl, body) ->
     f body;
     List.iter (fun (id, exp) ->  f exp) decl
+  | Lglobal_module (_ )
+    ->  ()    
   | Lprim {args; primitive ; loc}  ->
     List.iter f args;
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
@@ -63921,7 +63924,7 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
   let rec hit (l : t) =
     begin
       match (l : t) with 
-      | Lvar id -> Ident_set.mem id fv 
+      | Lvar id -> Ident_set.mem id fv       
       | Lassign(id, e) ->
         Ident_set.mem id fv || hit e
       | Lstaticcatch(e1, (_,vars), e2) ->
@@ -63940,6 +63943,8 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
       | Lconst _ -> false 
       | Lapply{fn; args; _} ->
         hit fn || List.exists hit args
+      | Lglobal_module _  (* global persistent module, play safe *)
+        -> false        
       | Lprim {args; _} ->
         List.exists hit args
       | Lswitch(arg, sw) ->
@@ -63995,6 +64000,8 @@ let hit_mask (fv : Hash_set_ident_mask.t) l =
       | Lconst _ -> false 
       | Lapply{fn; args; _} ->
         hit fn || List.exists hit args
+      | Lglobal_module id (* playsafe *)        
+        -> false
       | Lprim {args; _} ->
         List.exists hit args
       | Lswitch(arg, sw) ->
@@ -64042,7 +64049,6 @@ let free_variables l =
       | Ltrywith(e1, exn, e2) ->
         free e1; free e2;
         fv := Ident_set.remove exn !fv
-
       | Lfunction{body;params} ->
         free body;
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
@@ -64059,6 +64065,10 @@ let free_variables l =
       | Lconst _ -> ()
       | Lapply{fn; args; _} ->
         free fn; List.iter free args
+      | Lglobal_module _ -> () 
+        (* according to the existing semantics: 
+          [primitive] is not counted
+        *)        
       | Lprim {args; _} ->
         List.iter free args
       | Lswitch(arg, sw) ->
@@ -64119,7 +64129,10 @@ let check file lam =
   let rec iter (l : t) =
     begin
       match (l : t) with 
-        Lvar id -> use id 
+      | Lvar id -> use id 
+      | Lglobal_module _ -> ()
+      | Lprim {args; _} ->
+        List.iter iter args
       | Lconst _ -> ()
       | Lapply{fn; args; _} ->
         iter fn; List.iter iter args
@@ -64134,8 +64147,7 @@ let check file lam =
         List.iter (fun (id, exp) ->  def id) decl;
         List.iter (fun (id, exp) -> iter exp) decl;
         iter body
-      | Lprim {args; _} ->
-        List.iter iter args
+   
       | Lswitch(arg, sw) ->
         iter arg;
         List.iter (fun (key, case) -> iter case) sw.sw_consts;
@@ -64217,6 +64229,7 @@ type unop = t -> t
 
 
 let var id : t = Lvar id
+let global_module id = Lglobal_module id 
 let const ct : t = Lconst ct 
 let apply fn args loc status : t = 
   Lapply { fn; args;  loc  ;
@@ -64532,7 +64545,7 @@ let may_depend = Lam_module_ident.Hash_set.add
 (** drop Lseq (List! ) etc *)
 let rec drop_global_marker (lam : t) =
   match lam with 
-  | Lsequence(Lprim{primitive=Pgetglobal id; args = []}, rest) ->
+  | Lsequence (Lglobal_module id, rest) -> 
      drop_global_marker rest
   | _ -> lam
 
@@ -64812,7 +64825,7 @@ let convert exports lam : _ * _  =
     | Lvar x -> 
       let var = Ident_hashtbl.find_default alias x x in
       if Ident.persistent var then 
-        Lprim {primitive = Pgetglobal var; args = []; loc = Location.none}
+        Lglobal_module var 
       else       
         Lvar var       
     | Lconst x -> 
@@ -64885,7 +64898,7 @@ let convert exports lam : _ * _  =
          This looks more correct, but lets be conservative here
 
          global module inclusion {[ include List ]}
-         will cause code like {[ let include =a Pgetglobal (list)]}
+         will cause code like {[ let include =a Lglobal_module (list)]}
 
          when [u] is global, it can not be bound again, 
          it should always be the leaf 
@@ -64925,7 +64938,8 @@ let convert exports lam : _ * _  =
         else 
         begin 
           may_depend may_depends (Lam_module_ident.of_ml id);
-          Lprim {primitive = Pgetglobal id ; args ; loc }
+          assert (args = []);
+          Lglobal_module id 
         end  
       | _ ->       
         lam_prim ~primitive ~args loc 
@@ -68282,6 +68296,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lvar _ 
   | Lconst _ 
   | Lfunction _ -> true
+  | Lam.Lglobal_module _ -> true 
+    (* we record side effect in the global level, 
+      this expression itself is side effect free
+    *)
   | Lprim {primitive;  args; _} -> 
     List.for_all no_side_effects args && 
     (
@@ -68319,10 +68337,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
 
       | Pbytes_to_string 
       | Pbytes_of_string 
-      
-
-
-      | Pgetglobal _
       | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
@@ -68487,11 +68501,12 @@ let rec size (lam : Lam.t) =
     | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
     | Lletrec _ -> really_big ()
     | Lprim{primitive = Pfield _; 
-            args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
+            args =  [ Lglobal_module _]
            ;  _}
       -> 1
     | Lprim {primitive = Praise ; args =  [l ];  _} 
       -> size l
+    | Lam.Lglobal_module _ -> 1       
     | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 
@@ -68586,34 +68601,52 @@ let ok_to_inline ~body params args =
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
 *)
-let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
-  match (l1, l2) with
-  | Lvar i1, Lvar i2 -> Ident.same i1 i2
-  | Lconst c1, Lconst c2 -> c1 = c2 (* *)
-  | Lapply {fn = l1; args = args1; _}, Lapply {fn = l2; args = args2; _} ->
+let rec 
+  eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
+  match l1 with 
+  | Lglobal_module i1 -> 
+    begin match l2 with  Lglobal_module i2 -> Ident.same i1  i2  | _ -> false end
+  | Lvar i1 -> 
+    begin match l2 with  Lvar i2 ->  Ident.same i1 i2 | _ -> false end 
+  | Lconst c1 -> 
+    begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
+  | Lapply {fn = l1; args = args1; _} -> 
+    begin match l2 with Lapply {fn = l2; args = args2; _} ->
     eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
-  | Lfunction _ , Lfunction _ -> false (* TODO -- simple functions ?*)
-  | Lassign(v0,l0), Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
-  | Lstaticraise(id,ls), Lstaticraise(id1,ls1) -> 
-    id = id1 && List.for_all2 eq_lambda ls ls1 
-  | Llet (_,_,_,_), Llet (_,_,_,_) -> false 
-  | Lletrec _, Lletrec _ -> false 
-  | Lprim {primitive = p; args = ls; } ,
-    Lprim {primitive = p1; args = ls1} -> 
-    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
-  | Lswitch _, Lswitch _ -> false  
-  | Lstringswitch _ , Lstringswitch _ -> false 
-  | Lstaticcatch _, Lstaticcatch _ -> false 
-  | Ltrywith _, Ltrywith _ -> false 
-  | Lifthenelse (a,b,c), Lifthenelse (a0,b0,c0) ->
+    |_ -> false end 
+  | Lifthenelse (a,b,c) -> 
+    begin match l2 with  Lifthenelse (a0,b0,c0) ->
     eq_lambda a a0 && eq_lambda b b0 && eq_lambda c c0
-  | Lsequence (a,b), Lsequence (a0,b0) ->
+    | _ -> false end 
+  | Lsequence (a,b) -> 
+    begin match l2 with Lsequence (a0,b0) ->
     eq_lambda a a0 && eq_lambda b b0
-  | Lwhile (p,b) , Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
-  | Lfor (_,_,_,_,_), Lfor (_,_,_,_,_) -> false
-  | Lsend _, Lsend _ -> false
-  | Lifused _, Lifused _ -> false 
-  |  _,  _ -> false 
+    | _ -> false end 
+  | Lwhile (p,b) -> 
+    begin match l2 with  Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
+    | _ -> false end   
+  | Lassign(v0,l0) -> 
+    begin match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
+    | _ -> false end 
+  | Lstaticraise(id,ls) -> 
+    begin match l2 with  Lstaticraise(id1,ls1) -> 
+    (id : int) = id1 && List.for_all2 eq_lambda ls ls1 
+    | _ -> false end 
+  | Lprim {primitive = p; args = ls; } -> 
+    begin match l2 with 
+    Lprim {primitive = p1; args = ls1} ->
+    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+    | _ -> false end 
+  | Lfunction _  
+  | Llet (_,_,_,_)
+  | Lletrec _
+  | Lswitch _ 
+  | Lstringswitch _ 
+  | Lstaticcatch _ 
+  | Ltrywith _ 
+  | Lfor (_,_,_,_,_) 
+  | Lsend _
+  | Lifused _ -> false    
 and eq_primitive (p : Lam.primitive) (p1 : Lam.primitive) = 
   match p, p1 with 
   | Pccall {prim_name = n0 ; 
@@ -68793,7 +68826,6 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
-  | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id                       
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
@@ -69025,6 +69057,8 @@ let lambda use_env env ppf v  =
   let rec lam ppf (l : Lam.t) = match l with 
   | Lvar id ->
       Ident.print ppf id
+  | Lam.Lglobal_module id -> 
+    fprintf ppf "global %a" Ident.print id
   | Lconst cst ->
       struct_const ppf cst
   | Lapply { fn; args; } ->
@@ -69060,13 +69094,13 @@ let lambda use_env env ppf v  =
       fprintf ppf ")@ %a)@]"  lam body
   | Lprim { 
       primitive = Pfield (n,_); 
-      args = [ Lprim { primitive = Pgetglobal id; args = [] ; _}]
+      args = [ Lglobal_module id ]
       ;  _} when use_env ->
       fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
 
   | Lprim { 
       primitive  = Psetfield (n,_,_); 
-      args = [ Lprim { primitive = Pgetglobal id; args = [];  _} ;
+      args = [ Lglobal_module id  ;
                e ]
       ;  _} when use_env  ->
       fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
@@ -69815,6 +69849,7 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Lam.letrec (List.map subst_decl decl) (subst body)
     | Lprim { primitive ; args; loc} -> 
       Lam.prim ~primitive ~args:(List.map subst args) loc
+    | Lam.Lglobal_module _ -> x  
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -69886,7 +69921,7 @@ let refine_let
   | (Some (Strict | StrictOpt ) | None ),
     ( Lvar _    | Lconst  _ | 
       Lprim {primitive = Pfield _ ;  
-             args = [Lprim {primitive = Pgetglobal _ ; args =  []; _}]; _}) , _ ->
+             args = [ Lglobal_module _ ]; _}) , _ ->
     (* (match arg with  *)
     (* | Lconst _ ->  *)
     (*     Ext_log.err "@[%a %s@]@."  *)
@@ -69985,7 +70020,7 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   | Lvar _ 
   | Lconst _ 
   | Lprim {primitive = Pfield _ ; 
-           args =  [ Lprim { primitive = Pgetglobal _; args =  []; _}];
+           args =  [ Lglobal_module _ ];
            _} -> SimpleForm lam
   (* | Lfunction _  *)
   | _ -> NA 
@@ -69999,7 +70034,7 @@ let field_flatten_get
   match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
-      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
+      ~args:[ Lam.global_module g ] Location.none
   | Some (ImmutableBlock (arr, _)) -> 
     begin match arr.(i) with 
       | NA -> lam ()
@@ -70086,7 +70121,7 @@ let eta_conversion n loc status fn args =
       | Lvar _
       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
       | Lprim {primitive = Pfield _;
-               args =  [Lprim {primitive = Pgetglobal _; _}]; _ }
+               args =  [ Lglobal_module _ ]; _ }
       | Lfunction _ 
         ->
         (lam :: acc, bind)
@@ -79101,7 +79136,7 @@ let rec dump_summary fmt (x : Env.summary) =
     Printtyp.value_description id fmt value_description
   | _ -> ()
 
-(** Used in [Pgetglobal] *)
+(** Used in [ Lglobal_module] *)
 let get_name  (serializable_sigs : Types.signature) (pos : int) = 
   Ident.name @@ Type_int_to_string.name_of_signature_item @@ List.nth  serializable_sigs  pos
 
@@ -86049,6 +86084,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     | Lprim {args ; _} -> 
       (* Check: can top be propoaged for all primitives *)
       List.iter (iter top) args
+    | Lam.Lglobal_module _ -> ()
     | Lfunction{ params; body} ->
       local_add_list params;
       iter no_substitute body 
@@ -86310,10 +86346,7 @@ let query_lambda id env =
                    List.mapi (fun i _ -> 
                        Lam.prim
                          ~primitive:(Pfield (i, Lambda.Fld_na)) 
-                         ~args:[
-                           Lam.prim 
-                             ~primitive:(Pgetglobal id)
-                             ~args:[] Location.none (* FIXME*)] Location.none)
+                         ~args:[ Lam.global_module id  ] Location.none)
                      sigs) Location.none (* FIXME*))
 
 
@@ -86551,6 +86584,7 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lprim {primitive; args ; loc} ->
       (* here it makes sure that global vars are not rebound *)      
       Lam.prim ~primitive ~args:(List.map aux  args) loc
+    | Lglobal_module _ -> lam 
     | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 
@@ -86664,7 +86698,8 @@ let propogate_beta_reduce
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim {primitive = Pgetglobal ident;  args = [];  _} -> 
+         | Lglobal_module ident   
+         -> 
            (* It's not completeness, its to make it sound.. 
               Pass global module as an argument
            *)
@@ -86689,8 +86724,8 @@ let propogate_beta_reduce_with_map
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
-         | Lprim {primitive = Pgetglobal ident; args = []}
-           (* TODO: we can pass Global, but you also need keep track of it*)
+         | Lglobal_module ident 
+            (* We can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
@@ -86724,7 +86759,8 @@ let propogate_beta_reduce_with_map
                Ident_hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim {primitive = Pgetglobal ident; args =  []} -> 
+          | Lglobal_module ident 
+          -> 
            (* It's not completeness, its to make it sound.. *)
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
@@ -90932,14 +90968,6 @@ let translate  loc
             E.runtime_call Js_config.string "get" args          
       | _ -> assert false
       end
-    
-  | Pgetglobal i   -> 
-    (* TODO -- check args, case by case -- 
-        1. include Array --> let include  = Array 
-        2. get exception
-    *)
-    Lam_compile_global.get_exp (i,env,true)
-  
     (** only when Lapply -> expand = true*)
   | Praise  -> assert false (* handled before here *)
 
@@ -91206,6 +91234,7 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
   | Lletrec (binding,body) ->
     List.exists (fun (_, l) -> has_exit_code exits l ) binding ||
     has_exit_code exits body    
+  | Lam.Lglobal_module _ -> false
   | Lprim {args; _} 
     -> List.exists (fun x -> has_exit_code exits x) args
   | Lswitch (l,lam_switch) 
@@ -91550,7 +91579,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           List.fold_right 
             (fun (x : Lam.t) (args_code, args)  ->
                match x with 
-               | Lprim {primitive = Pgetglobal i; args =  [];_ } -> 
+               | Lglobal_module i -> 
                  (* when module is passed as an argument - unpack to an array
                      for the function, generative module or functor can be a function,
                      however it can not be global -- global can only module
@@ -91895,7 +91924,7 @@ and
     (* External function calll *)
     | Lapply{ fn = 
                 Lprim{primitive = Pfield (n,_); 
-                      args = [ Lprim {primitive = Pgetglobal id; args = []}];_};
+                      args = [  Lglobal_module id];_};
              args = args_lambda;
              status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
@@ -91913,7 +91942,7 @@ and
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
           List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match x with             
-              | Lprim {primitive = Pgetglobal ident; args =  []} -> 
+              | Lglobal_module ident -> 
                 (* when module is passed as an argument - unpack to an array
                     for the function, generative module or functor can be a function, 
                     however it can not be global -- global can only module 
@@ -92044,8 +92073,8 @@ and
       Js_output.handle_name_tail st should_return lam (Lam_compile_const.translate c)
 
     | Lprim {primitive = Pfield (n,_); 
-             args = [ Lprim {primitive = Pgetglobal id; args = [] ; _}]; _} 
-      -> (* should be before Pgetglobal *)
+             args = [ Lglobal_module id ]; _} 
+      -> (* should be before Lglobal_global *)
         get_exp_with_index cxt lam  (id,n, env)
 
     | Lprim {primitive = Praise ; args =  [ e ]; _} -> 
@@ -92331,6 +92360,14 @@ and
               end
           | _ -> assert false 
         end
+    | Lglobal_module i -> 
+      (* introduced by 
+         1. {[ include Array --> let include  = Array  ]}
+         2. inline functor application
+      *)
+      let exp = Lam_compile_global.get_exp (i,env,true) in 
+      Js_output.handle_block_return st should_return lam [] exp 
+
     | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
@@ -92963,7 +93000,8 @@ and
         (met :: obj :: args) 
         |> Ext_list.split_map (fun (x : Lam.t) -> 
             match x with 
-            | Lprim {primitive = Pgetglobal i; args =  []} -> 
+            | Lglobal_module i 
+             -> 
               [], Lam_compile_global.get_exp  (i, env, true)
             | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
               (* nullary external call*)
@@ -93220,13 +93258,14 @@ let rec get_arity
   (*     | None -> NA *)
   (*   end *)
   | Lprim {primitive = Pfield (n,_); 
-           args =  [Lprim {primitive = Pgetglobal id; args = []; _}]; _} ->
+           args =  [ Lglobal_module id  ]; _} ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
       ~found:(fun x -> x.arity )
   | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
   | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
   | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
+  | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
   | Lprim _  -> Determin(true,[] ,false)
   (* shall we handle primitive in a direct way, 
       since we know all the information
@@ -93464,6 +93503,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
     | Lletrec (bindings, body) ->
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
+    | Lglobal_module _ -> lam 
     | Lprim {primitive; args ; loc} -> 
       Lam.prim ~primitive ~args:(List.map simpl  args) loc
     | Lfunction {arity; kind; params; body = l} ->
@@ -93702,8 +93742,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null_undefined ls )
-      
-    | Lprim {primitive = Pgetglobal v; args = []; _} 
+    | Lglobal_module v  
       -> 
         Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 
     | Lvar v 
@@ -93758,6 +93797,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lletrec (bindings, body) -> 
         List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
         collect body
+    | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter collect  args
     | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
         collect  l;
@@ -94060,6 +94100,7 @@ let deep_flatten
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+    | Lglobal_module _ -> lam 
     | Lprim {primitive ; args; loc }
       -> 
       let args = List.map aux args in
@@ -94408,6 +94449,7 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
     | Lletrec(bindings, body) ->
       List.iter (fun (_, l) -> count l) bindings;
       count body
+    | Lglobal_module _ -> ()
     | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
@@ -94576,6 +94618,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
       Lam.letrec
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
+    | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc} -> 
       let args = List.map simplif args in
       Lam.prim ~primitive ~args loc
@@ -94787,7 +94830,7 @@ let collect_occurs  lam : occ_tbl =
       (* Lalias-bound variables are never assigned, so don't increase
          this ident's refcount *)
       count bv l
-
+    | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter (count bv ) args
     | Lletrec(bindings, body) ->
       List.iter (fun (v, l) -> count bv l) bindings;
@@ -94964,6 +95007,7 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.letrec
       (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
       (eliminate_ref id e2)
+  | Lam.Lglobal_module _ -> lam     
   | Lprim {primitive ; args ; loc} ->
     Lam.prim  ~primitive ~args:(List.map (eliminate_ref id) args) loc
   | Lswitch(e, sw) ->
@@ -95113,7 +95157,9 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
                      | Const_nativeint _ )
                  | Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
-                       args = [Lprim {primitive = Pgetglobal _;  _}]}
+                       args = [ 
+                         Lglobal_module _
+                       ]}
               ) 
           (* Const_int64 is no longer primitive
              Note for some constant which is not 
@@ -95247,6 +95293,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
         | _ -> 
           Lam.prim ~primitive ~args:[l';r'] loc 
       end    
+    | Lglobal_module _ -> lam    
     | Lprim {primitive; args; loc} 
       -> Lam.prim ~primitive ~args:(List.map simplif args) loc
     | Lswitch(l, sw) ->
@@ -95485,7 +95532,7 @@ let simplify_alias
       | None -> lam
       | Some v ->
         if Ident.persistent v then 
-          Lam.prim ~primitive:(Pgetglobal v) ~args:[] Location.none
+          Lam.global_module v 
         else 
          Lam.var v 
         (* This is wrong
@@ -95499,8 +95546,8 @@ let simplify_alias
          *)
       end
       (* GLOBAL module needs to be propogated *)
-    | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
-           l ) -> 
+    | Llet (kind, k, (Lglobal_module i as g), l )
+           -> 
       (* This is detection of global MODULE inclusion
           we need track all global module aliases, when it's
           passed as a parameter(escaped), we need do the expansion
@@ -95520,10 +95567,11 @@ let simplify_alias
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
       begin match  simpl  arg with 
-      | Lprim {primitive = Pgetglobal g; args= []} ->    
+      | Lglobal_module g 
+      ->    
         Lam.prim 
           ~primitive:(Pfield(i,Lambda.Fld_na))
-          ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none]
+          ~args:[Lam.global_module g ]
           loc
       | Lvar v as l-> 
         Lam_util.field_flatten_get (fun _ -> Lam.prim ~primitive ~args:[l] loc )
@@ -95531,6 +95579,7 @@ let simplify_alias
       | _ ->  
         Lam.prim ~primitive ~args:[simpl arg] loc 
       end
+    | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc } 
       -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
       
@@ -95579,7 +95628,7 @@ let simplify_alias
     *)      
     | Lapply{fn = 
                Lprim {primitive = Pfield (index, _) ;
-                      args = [Lprim {primitive = Pgetglobal ident; args =  []}];
+                      args = [ Lglobal_module ident ];
                       _} as l1;
              args; loc ; status} ->
       begin
@@ -95728,10 +95777,6 @@ let simplify_alias
     | Lstaticcatch (l1, ids, l2) -> 
       Lam.staticcatch (simpl  l1) ids (simpl  l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
-
-    | Lsequence (Lprim {primitive = Pgetglobal (id); args = []}, l2)
-      when Lam_compile_env.is_pure_module (Lam_module_ident.of_ml id) 
-      -> simpl l2 (** TODO: apply in the beginning *)
     | Lsequence(l1, l2)
       -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile(l1, l2)

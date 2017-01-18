@@ -72,6 +72,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
     | Lletrec (bindings, body) ->
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
+    | Lglobal_module _ -> lam 
     | Lprim {primitive; args ; loc} -> 
       Lam.prim ~primitive ~args:(List.map simpl  args) loc
     | Lfunction {arity; kind; params; body = l} ->

@@ -110,7 +110,6 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_method i -> fprintf ppf "js_fn_method_%i" i 
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
-  | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id                       
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
@@ -342,6 +341,8 @@ let lambda use_env env ppf v  =
   let rec lam ppf (l : Lam.t) = match l with 
   | Lvar id ->
       Ident.print ppf id
+  | Lam.Lglobal_module id -> 
+    fprintf ppf "global %a" Ident.print id
   | Lconst cst ->
       struct_const ppf cst
   | Lapply { fn; args; } ->
@@ -377,13 +378,13 @@ let lambda use_env env ppf v  =
       fprintf ppf ")@ %a)@]"  lam body
   | Lprim { 
       primitive = Pfield (n,_); 
-      args = [ Lprim { primitive = Pgetglobal id; args = [] ; _}]
+      args = [ Lglobal_module id ]
       ;  _} when use_env ->
       fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
 
   | Lprim { 
       primitive  = Psetfield (n,_,_); 
-      args = [ Lprim { primitive = Pgetglobal id; args = [];  _} ;
+      args = [ Lglobal_module id  ;
                e ]
       ;  _} when use_env  ->
       fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
