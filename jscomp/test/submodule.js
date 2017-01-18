@@ -1,6 +1,5 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
 
 console.log(2);
 
@@ -58,9 +57,9 @@ var v1 = a1(1, 2);
 
 var v2 = a2(1, 2);
 
-var v3 = Curry._2(/* a3 */a3, 1, 2);
+var v3 = a3(1, 2);
 
-var v4 = Curry._2(/* A4 */A4[/* a4 */0], 1, 2);
+var v4 = a4(1, 2);
 
 var v0 = 4;
 

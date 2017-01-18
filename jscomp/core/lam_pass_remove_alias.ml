@@ -39,7 +39,11 @@ let simplify_alias
     | Lvar v ->
       begin match (Ident_hashtbl.find_opt meta.alias_tbl v) with
       | None -> lam
-      | Some v -> Lam.var v 
+      | Some v ->
+        if Ident.persistent v then 
+          Lam.prim ~primitive:(Pgetglobal v) ~args:[] Location.none
+        else 
+         Lam.var v 
         (* This is wrong
             currently alias table has info 
             include -> Array
@@ -59,21 +63,26 @@ let simplify_alias
           since global module access is not the same as local module
           TODO: 
           since we aliased k, so it's safe to remove it?
+          no, we should not shake away code just by [Ident_set.mem k meta.export_idents ]
+          in that case, we should provide strong guarantee that all [k] will be substitued
       *)
       let v = simpl l in
-      if Ident_set.mem k meta.export_idents 
-      then 
-        Lam.let_ kind k g v
+      Lam.let_ kind k g v
         (* in this case it is preserved, but will still be simplified 
             for the inner expression
         *)
-      else v
+      
     | Lprim {primitive = (Pfield (i,_) as primitive); args =  [arg]; loc} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
-      begin match  (* simpl*)  arg with 
-      | Lvar v ->    
-        Lam_util.field_flatten_get lam
+      begin match  simpl  arg with 
+      | Lprim {primitive = Pgetglobal g; args= []} ->    
+        Lam.prim 
+          ~primitive:(Pfield(i,Lambda.Fld_na))
+          ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none]
+          loc
+      | Lvar v as l-> 
+        Lam_util.field_flatten_get (fun _ -> Lam.prim ~primitive ~args:[l] loc )
          v  i meta.ident_tbl 
       | _ ->  
         Lam.prim ~primitive ~args:[simpl arg] loc 
@@ -296,3 +305,5 @@ let simplify_alias
     | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam
+
+

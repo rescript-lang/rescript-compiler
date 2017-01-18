@@ -69698,13 +69698,13 @@ val string_of_primitive : Lam.primitive -> string
 val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
 
 val field_flatten_get : 
-  Lam.t -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
+  (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
 
 
 
 
-val alias : Lam_stats.meta ->
+val alias_ident_or_global : Lam_stats.meta ->
   Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
 
 
@@ -69922,7 +69922,7 @@ let refine_let
   | None , _, _ -> 
     Lam.let_ Strict param arg  l
 
-let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
+let alias_ident_or_global (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_stats.kind) (let_kind : Lambda.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
@@ -70002,13 +70002,13 @@ let field_flatten_get
       ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none] Location.none
   | Some (ImmutableBlock (arr, _)) -> 
     begin match arr.(i) with 
-      | NA -> lam 
+      | NA -> lam ()
       | SimpleForm l -> l
     end
   | Some (Constant (Const_block (_,_,ls))) -> 
     Lam.const (List.nth  ls i)
   | Some _
-  | None -> lam 
+  | None -> lam ()
 
 
 (* TODO: check that if label belongs to a different 
@@ -93705,12 +93705,12 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
       
     | Lprim {primitive = Pgetglobal v; args = []; _} 
       -> 
-        Lam_util.alias meta  ident v (Module  v) kind; 
+        Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 
     | Lvar v 
       -> 
         (
          (* if Ident.global v then  *)
-         Lam_util.alias meta  ident v NA kind
+         Lam_util.alias_ident_or_global meta  ident v NA kind
            (* enven for not subsitution, it still propogate some properties *)
            (* else () *)
         )
@@ -95438,6 +95438,8 @@ val simplify_alias :
   Lam.t ->
   Lam.t
 
+
+
 end = struct
 #1 "lam_pass_remove_alias.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -95481,7 +95483,11 @@ let simplify_alias
     | Lvar v ->
       begin match (Ident_hashtbl.find_opt meta.alias_tbl v) with
       | None -> lam
-      | Some v -> Lam.var v 
+      | Some v ->
+        if Ident.persistent v then 
+          Lam.prim ~primitive:(Pgetglobal v) ~args:[] Location.none
+        else 
+         Lam.var v 
         (* This is wrong
             currently alias table has info 
             include -> Array
@@ -95501,21 +95507,26 @@ let simplify_alias
           since global module access is not the same as local module
           TODO: 
           since we aliased k, so it's safe to remove it?
+          no, we should not shake away code just by [Ident_set.mem k meta.export_idents ]
+          in that case, we should provide strong guarantee that all [k] will be substitued
       *)
       let v = simpl l in
-      if Ident_set.mem k meta.export_idents 
-      then 
-        Lam.let_ kind k g v
+      Lam.let_ kind k g v
         (* in this case it is preserved, but will still be simplified 
             for the inner expression
         *)
-      else v
+      
     | Lprim {primitive = (Pfield (i,_) as primitive); args =  [arg]; loc} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
-      begin match  (* simpl*)  arg with 
-      | Lvar v ->    
-        Lam_util.field_flatten_get lam
+      begin match  simpl  arg with 
+      | Lprim {primitive = Pgetglobal g; args= []} ->    
+        Lam.prim 
+          ~primitive:(Pfield(i,Lambda.Fld_na))
+          ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] Location.none]
+          loc
+      | Lvar v as l-> 
+        Lam_util.field_flatten_get (fun _ -> Lam.prim ~primitive ~args:[l] loc )
          v  i meta.ident_tbl 
       | _ ->  
         Lam.prim ~primitive ~args:[simpl arg] loc 
@@ -95738,6 +95749,8 @@ let simplify_alias
     | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam
+
+
 
 end
 module Ext_option : sig 

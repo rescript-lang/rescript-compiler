@@ -36,13 +36,13 @@ val string_of_primitive : Lam.primitive -> string
 val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
 
 val field_flatten_get : 
-  Lam.t -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
+  (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
 
 
 
 
-val alias : Lam_stats.meta ->
+val alias_ident_or_global : Lam_stats.meta ->
   Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
 
 
