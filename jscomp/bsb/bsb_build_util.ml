@@ -93,3 +93,5 @@ let get_list_string s =
     ) s   
 
 
+let string_of_bsb_dev_include i = 
+  "bsc_group_" ^ string_of_int i ^ "includes"

@@ -176,14 +176,18 @@ let write_ninja_file bsc_dir cwd =
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
 
       |? (Bsb_build_schemas.sources, `Obj (fun x ->
-          let res : Bsb_build_ui.t =  Bsb_build_ui.parsing_source
+          let res : Bsb_build_ui.t =  
+            Bsb_build_ui.parsing_source
+              Bsb_build_ui.lib_dir_index
               Filename.current_dir_name x in
           handle_bsb_build_ui res
         ))
       |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
 
           let res : Bsb_build_ui.t  =
-            Bsb_build_ui.parsing_sources Filename.current_dir_name xs
+            Bsb_build_ui.parsing_sources 
+              Bsb_build_ui.lib_dir_index
+              Filename.current_dir_name xs
           in
           handle_bsb_build_ui res
         ))
@@ -249,41 +253,52 @@ let watch () =
        bsb_watcher
     |]
 
+let no_dev = "-no-dev"
+let regen = "-regen"
+let separator = "--"
+
 let build_bs_deps ()   = 
     let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
     Bsb_default.walk_all_deps true cwd 
-    (fun top cwd -> Bsb_unix.run_command_execv (not top)
-      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe  |]})
+    (fun top cwd -> 
+      if top then 
+        Bsb_unix.run_command_execv false { cmd = bsb_exe ; cwd ; args = [|bsb_exe ; regen ; separator|]}
+      else 
+        Bsb_unix.run_command_execv true
+        {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; no_dev; regen; separator |]})
 
 let clean_bs_deps () = 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
     Bsb_default.walk_all_deps true cwd 
     (fun top cwd -> Bsb_unix.run_command_execv (not top)
-      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; "--" ; "-t" ; "clean"|]})
+      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; separator; "-t" ; "clean"|]})
 let annoymous filename =
   String_vec.push  filename targets
+
 
 
 
 let bsb_main_flags =
   [
     "-w", Arg.Unit watch,
-    " watch mode" ;
+    " Watch mode" ;
+    no_dev, Arg.Unit (fun _ -> Bsb_config.no_dev := true), 
+    " (experimental)Build dev dependencies in make-world and dev group";
+    " -no-dev", Arg.Set Bsb_config.no_dev, 
+    " (experimental)Don't build dev directories(internal for -make-world)" ; 
     (*    "-init", Arg.Unit create_bs_config ,
           " Create an simple bsconfig.json"
           ;
     *)   
-     "-regen", Arg.Set force_regenerate,
-          " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+     regen, Arg.Set force_regenerate,
+     " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
     "-clean-world", Arg.Unit clean_bs_deps,
-    " clean all bs dependencies";
+    " Clean all bs dependencies";
     "-make-world", Arg.Unit build_bs_deps,
-    " build all dependencies and itself "
-    (*"-exec", Arg.Set exec,
-      " Also run the JS files passsed" ;*)
+    " Build all dependencies and itself "
   ]
 
 let regenerate_ninja cwd bsc_dir forced =
@@ -356,7 +371,7 @@ let () =
     else 
       "ninja" 
     in 
-  try
+  (* try *)
     (* see discussion #929 *)
     if Array.length Sys.argv <= 1 then
       begin
@@ -383,6 +398,7 @@ let () =
             ninja_command ninja ninja_args
           end
       end
-  with x ->
+  (*with x ->
     prerr_endline @@ Printexc.to_string x ;
-    exit 2
+    exit 2*)
+  (* with [try, with], there is no stacktrace anymore .. *)  

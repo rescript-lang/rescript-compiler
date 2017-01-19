@@ -6,7 +6,7 @@ ifndef EXE
 endif
 NATIVE=ocamlopt.opt$(EXE)
 
-OCAMLOPT_FLAGS= -g -inline 1000 -w -a ../stubs/ext_basic_hash_stubs.c
+OCAMLOPT_FLAGS= -inline 1000 -g -w -a ../stubs/ext_basic_hash_stubs.c
 
 bsppx.exe: config_bsppx.mli config_bsppx.ml bsppx.mli bsppx.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@

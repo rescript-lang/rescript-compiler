@@ -24,13 +24,17 @@
 
 
 let output_prefix = ref None
+let dev_group = ref 0
 let annoymous other = ()
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
 let () =
     Arg.parse [
-    "-bs-oprefix", Arg.String (fun x -> output_prefix := Some x),
+    "-oprefix", Arg.String (fun x -> output_prefix := Some x),
     " Set output prefix for -bs-MD (internal use)";
-    "-bs-bin-MD", Arg.String (fun x -> Depends_post_process.handle_bin_depfile !output_prefix x),
-    " Generate dep file for ninja format(from .ml[i]deps)";
+    "-g", Arg.Int (fun i -> dev_group := i ), 
+    " Set the dev group (default to be 0)"
+    ;
+    "-MD", Arg.String (fun x -> Depends_post_process.handle_bin_depfile !output_prefix x !dev_group ),
+    " (internnal)Generate dep file for ninja format(from .ml[i]deps)";
 
     ] annoymous usage

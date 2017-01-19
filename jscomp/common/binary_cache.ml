@@ -40,23 +40,45 @@ type module_info =
     mll : string option ;
   }
 
+
+type file_group_rouces = module_info String_map.t 
+
 type t = 
-      module_info String_map.t 
+      module_info String_map.t array
+(** indexed by the group *)
 
+let module_info_magic_number = "BSBUILD20161019"
 
-let module_info_magic_number = "BSBUILD20161012"
+let dir_of_module_info (x : module_info)
+  = 
+  match x with 
+  | { mli; ml; mll} -> 
+    begin match mli with 
+    | Mli s | Rei s -> 
+      Filename.dirname s 
+    | Mli_empty -> 
+      begin match ml with 
+      | Ml s | Re s -> 
+        Filename.dirname s 
+      | Ml_empty -> 
+        begin match mll with 
+        | None -> ""
+        | Some s -> Filename.dirname s 
+        end 
+      end
+    end
 
-let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
+let write_build_cache bsbuild (bs_files : t)  = 
   let oc = open_out_bin bsbuild in 
   output_string oc module_info_magic_number ;
   output_value oc bs_files ;
   close_out oc 
 
-let read_build_cache bsbuild : module_info String_map.t = 
+let read_build_cache bsbuild : t = 
   let ic = open_in_bin bsbuild in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
-  let data : module_info String_map.t = input_value ic in 
+  let data : t = input_value ic in 
   close_in ic ;
   data 
 
@@ -75,7 +97,7 @@ let adjust_module_info x suffix name =
   | ".mll" -> {x with mll = Some name}
   | _ -> failwith ("don't know what to do with " ^ name)
 
-let map_update ?dir (map : t)  name : t  = 
+let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 
   let prefix   = 
     match dir with
     | None -> fun x ->  x
@@ -86,4 +108,4 @@ let map_update ?dir (map : t)  name : t  =
     module_name 
     (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
     (fun v -> (adjust_module_info v suffix (prefix name )))
-    map 
+    map

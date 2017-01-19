@@ -255,7 +255,7 @@ BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util \
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
-MAINS_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
+MAIN_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
 ounit.cmxa: $(OUNIT_CMXS)
 	ocamlopt.opt -a $^ -o $@

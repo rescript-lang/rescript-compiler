@@ -27,3 +27,12 @@ let ninja = "ninja"
 let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
+
+let type_ = "type"
+let dev = "dev"
+
+let export_all = "all"
+let export_none = "none"
+
+let bsb_dir_group = "bsb_dir_group"
+let bsc_lib_includes = "bsc_lib_includes"

@@ -70,7 +70,8 @@ val phony  :
   ?order_only_deps:string list ->
   inputs:string list -> output:string -> out_channel -> unit
 
-val output_kvs : (string * string) list -> out_channel -> unit
+val output_kv : string ->  string -> out_channel -> unit 
+val output_kvs : (string * string) array -> out_channel -> unit
 
 type info = {
   all_config_deps : string list  ;

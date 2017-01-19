@@ -103,7 +103,7 @@ module Rules = struct
 
   let build_bin_deps =
     define
-      ~command:"${bsdep}  -bs-bin-MD ${in}"
+      ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
       "build_deps"
 
   let reload =
@@ -133,10 +133,19 @@ module Rules = struct
   (**************************************)
   (* below are rules not local any more *)
   (**************************************)
+  
+  (* [bsc_lib_includes] are fixed for libs 
+     [bsc_extra_includes] are for app test etc 
+     it wil be 
+     {[
+       bsc_extra_includes = ${bsc_group_1_includes}
+     ]}
+     where [bsc_group_1_includes] will be pre-calcuated 
+  *)
   let build_cmj_js =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
       ~depfile:"${in}.d"
       "build_cmj_only"
@@ -144,13 +153,13 @@ module Rules = struct
   let build_cmj_cmi_js =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
       ~depfile:"${in}.d"
       "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
   let build_cmi =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c  ${in}"
+                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
       ~depfile:"${in}.d"
       "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 end
@@ -253,7 +262,7 @@ let output_kv key value oc  =
   output_string oc "\n"
 
 let output_kvs kvs oc =
-  List.iter (fun (k,v) -> output_kv k v oc) kvs
+  Array.iter (fun (k,v) -> output_kv k v oc) kvs
 
 
 
@@ -281,7 +290,7 @@ let (++) (us : info) (vs : info) =
 
 
 
-let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
+let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       bs_dependencies
@@ -319,7 +328,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
         let package_flags =
-          [ "bs_package_flags",
+          ( "bs_package_flags",
             `Append 
             (String_set.fold (fun s acc ->
               acc ^ " -bs-package-output " ^ s ^ ":" ^
@@ -330,7 +339,13 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                 else   
                   (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
                ) package_specs "")              
-          ]
+          ) ::
+          (if group.dir_index = 0 then [] else 
+            [("bsc_extra_includes", 
+            `Overwrite
+              ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+            )]
+           )
         in
 
         match bs_dependencies with
@@ -370,7 +385,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               oc
               ~output:output_mlastd
               ~input:output_mlast
-              ~rule:Rules.build_bin_deps ;
+              ~rule:Rules.build_bin_deps
+              ?shadows:(if group.dir_index = 0 then None else Some ["group", `Overwrite (string_of_int group.dir_index)])
+              ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
                 Rules.build_cmj_cmi_js, [output_cmi], []
@@ -420,7 +437,10 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           output_build oc
             ~output:output_mliastd
             ~input:output_mliast
-            ~rule:Rules.build_bin_deps  ;
+            ~rule:Rules.build_bin_deps
+            ?shadows:(if group.dir_index = 0 then None 
+              else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+          ;
           output_build oc
             ~shadows
             ~output:output_cmi
