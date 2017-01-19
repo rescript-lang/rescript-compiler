@@ -252,15 +252,15 @@ let watch () =
 let build_bs_deps ()   = 
     let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
-    Bsb_default.walk_all_deps cwd 
-    (fun cwd -> Bsb_unix.run_command_execv 
+    Bsb_default.walk_all_deps true cwd 
+    (fun top cwd -> Bsb_unix.run_command_execv (not top)
       {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe  |]})
 
 let clean_bs_deps () = 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
-    Bsb_default.walk_all_deps cwd 
-    (fun cwd -> Bsb_unix.run_command_execv 
+    Bsb_default.walk_all_deps true cwd 
+    (fun top cwd -> Bsb_unix.run_command_execv (not top)
       {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; "--" ; "-t" ; "clean"|]})
 let annoymous filename =
   String_vec.push  filename targets

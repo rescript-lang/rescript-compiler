@@ -656,6 +656,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_contributing_to_code_bsb_exe_code">Contributing to <code>bsb.exe</code></a></li>
 <li><a href="#_contributing_to_code_bsc_exe_code">Contributing to <code>bsc.exe</code></a></li>
 <li><a href="#_contributing_to_the_runtime">Contributing to the runtime</a></li>
+<li><a href="#_contributing_to_the_documentation">Contributing to the documentation</a></li>
 </ul>
 </li>
 <li><a href="#_comparisons">Comparisons</a>
@@ -4440,15 +4441,14 @@ We might encode it as buffer  in NodeJS.
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>'a Js.Null.t</code></p></td>
 <td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p>either <code>'a</code> or <code>null</code></p>
+<p>either <code>'a</code> or <code>null</code>. <code>Js.Null.empty</code> represents <code>null</code> too.</p>
 </div>
 <div class="listingblock">
 <div class="title">Js.Null module</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">to_opt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">option</span>
-
+<span class="tok-k">val</span> <span class="tok-n">from_opt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">option</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>
 <span class="tok-k">val</span> <span class="tok-n">return</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>
-
 <span class="tok-k">val</span> <span class="tok-n">test</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span></code></pre>
 </div>
 </div></div></td>
@@ -4456,21 +4456,15 @@ We might encode it as buffer  in NodeJS.
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>'a Js.Undefined.t</code></p></td>
 <td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p>either <code>'a</code> or <code>undefined</code></p>
-</div>
-<div class="listingblock">
-<div class="title">Js.Undefined</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">val</span> <span class="tok-n">to_opt</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">option</span>
-<span class="tok-k">val</span> <span class="tok-n">return</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-o">-&gt;</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span>
-<span class="tok-k">val</span> <span class="tok-n">test</span> <span class="tok-o">:</span> <span class="tok-k">&#39;</span><span class="tok-n">a</span> <span class="tok-n">t</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">bool</span></code></pre>
-</div>
+<p>either <code>'a</code> or <code>undefined</code>.
+Same operations as <code>'a Js.Null.t</code>.</p>
 </div></div></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>'a Js.Null_undefined.t</code></p></td>
 <td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p>either <code>'a</code>, <code>null</code> or <code>undef</code></p>
+<p>either <code>'a</code>, <code>null</code> or <code>undef</code>.
+Same operations as <code>'a Js.Null.t</code>.</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -4728,6 +4722,12 @@ the compiler you modified.</p>
 </div>
 <div class="paragraph">
 <p><code>npm run cover</code></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_contributing_to_the_documentation"><a class="anchor" href="#_contributing_to_the_documentation"></a>Contributing to the documentation</h3>
+<div class="paragraph">
+<p>You&#8217;ll need <a href="http://asciidoctor.org/">Asciidoctor</a> installed. Modify the section you want in <code>site/docsource/</code>, then run <code>site/docsource/build.sh</code>.</p>
 </div>
 </div>
 </div>

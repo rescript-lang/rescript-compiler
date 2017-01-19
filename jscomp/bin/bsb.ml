@@ -6673,7 +6673,7 @@ val set_package_specs_from_array : Ext_json.t array -> unit
 val get_generate_merlin : unit -> bool 
 val set_generate_merlin : bool -> unit 
 
-val walk_all_deps : string -> (string -> unit) -> unit 
+val walk_all_deps : bool -> string -> (bool -> string -> unit) -> unit 
 end = struct
 #1 "bsb_default.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6738,7 +6738,7 @@ let (|?)  m (key, cb) =
   TODO: check duplicate package name 
    ?use path as identity?
 *)
-let rec walk_all_deps dir cb =   
+let rec walk_all_deps top dir cb =   
   let bsconfig_json =  (dir // Literals.bsconfig_json) in 
   match Ext_json.parse_json_from_file bsconfig_json with 
   | `Obj map ->
@@ -6753,13 +6753,13 @@ let rec walk_all_deps dir cb =
             begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with 
             | None -> failwith (new_package ^ " not found as dependency of " ^ bsconfig_json )
             | Some package_dir  -> 
-              walk_all_deps package_dir cb  ;              
+              walk_all_deps  false package_dir cb  ;              
             end;            
           | _ -> () (* TODO: add a log framework, warning here *)
           end 
       )))
     |> ignore ;
-    cb dir 
+    cb top dir 
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
 
@@ -7759,9 +7759,9 @@ type command =
 *)
 val run_commands : command list -> unit 
 
-val run_command_execv : command -> unit 
+val run_command_execv : bool ->  command -> unit 
 
-val run_command_execvp : command -> unit 
+(* val run_command_execvp : command -> unit *)
 end = struct
 #1 "bsb_unix.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7855,7 +7855,7 @@ let run_command_execvp cmd =
           exit 2 
         end
 
-let run_command_execv cmd =
+let run_command_execv fail_exit cmd =
   match Unix.fork () with 
   | 0 -> 
     print_endline ( "* Entering " ^ cmd.cwd);
@@ -7875,8 +7875,9 @@ let run_command_execv cmd =
         if eid <> 0 then 
           begin 
             prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
-            exit eid
-          end
+            if fail_exit then exit eid    
+          end;
+        
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
         begin 
           prerr_endline (cmd.cmd ^ " interrupted");
@@ -8149,15 +8150,15 @@ let watch () =
 let build_bs_deps ()   = 
     let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
-    Bsb_default.walk_all_deps cwd 
-    (fun cwd -> Bsb_unix.run_command_execv 
+    Bsb_default.walk_all_deps true cwd 
+    (fun top cwd -> Bsb_unix.run_command_execv (not top)
       {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe  |]})
 
 let clean_bs_deps () = 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
-    Bsb_default.walk_all_deps cwd 
-    (fun cwd -> Bsb_unix.run_command_execv 
+    Bsb_default.walk_all_deps true cwd 
+    (fun top cwd -> Bsb_unix.run_command_execv (not top)
       {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; "--" ; "-t" ; "clean"|]})
 let annoymous filename =
   String_vec.push  filename targets

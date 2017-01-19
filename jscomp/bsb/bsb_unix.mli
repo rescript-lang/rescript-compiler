@@ -35,6 +35,6 @@ type command =
 *)
 val run_commands : command list -> unit 
 
-val run_command_execv : command -> unit 
+val run_command_execv : bool ->  command -> unit 
 
-val run_command_execvp : command -> unit 
+(* val run_command_execvp : command -> unit *)

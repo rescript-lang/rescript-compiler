@@ -89,7 +89,7 @@ let run_command_execvp cmd =
           exit 2 
         end
 
-let run_command_execv cmd =
+let run_command_execv fail_exit cmd =
   match Unix.fork () with 
   | 0 -> 
     print_endline ( "* Entering " ^ cmd.cwd);
@@ -109,8 +109,9 @@ let run_command_execv cmd =
         if eid <> 0 then 
           begin 
             prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
-            exit eid
-          end
+            if fail_exit then exit eid    
+          end;
+        
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
         begin 
           prerr_endline (cmd.cmd ^ " interrupted");
