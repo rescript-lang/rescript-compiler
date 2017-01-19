@@ -1,8 +1,8 @@
 
 ## Runtime representation
 
-Below is a description of how OCaml values are encoded in JavaScript, 
-the *internal* description means **users should not rely on its actual 
+Below is a description of how OCaml values are encoded in JavaScript,
+the *internal* description means **users should not rely on its actual
 encoding (and it is subject to change)**. We recommend that you write
 setter/getter functions to manipulate safely OCaml values from JavaScript.
 
@@ -80,7 +80,7 @@ Simple Variants: (Variants with only one non-nullary constructor)
 [source,ocaml]
 --------------
 type tree =
-  \| Leaf 
+  \| Leaf
   \| Node of int * tree * tree
 (* Leaf --> 0 *)
 (* Node(a,b,c) --> [a,b,c]*)
@@ -90,7 +90,7 @@ Complex Variants: (Variants with more than one non-nullary constructor)
 
 [source,ocaml]
 -------------
-type u = 
+type u =
      \| A of string
      \| B of int
 (* A a -->  [a].tag=0 -- tag 0 assignment is optional *)
@@ -123,29 +123,22 @@ For example:
 val Js.to_bool: Js.boolean -> bool
 -----
 
-| `'a Js.Null.t` a| either `'a` or `null`
+| `'a Js.Null.t` a| either `'a` or `null`. `Js.Null.empty` represents `null` too.
 
 [source,ocaml]
 .Js.Null module
 --------------
 val to_opt : 'a t -> 'a option
-
-val return : 'a -> 'a t
-
-val test : 'a t -> bool
---------------
-
-| `'a Js.Undefined.t` a| either `'a` or `undefined`
-
-[source,ocaml]
-.Js.Undefined
---------------
-val to_opt : 'a t -> 'a option
+val from_opt : 'a option -> 'a t
 val return : 'a -> 'a t
 val test : 'a t -> bool
 --------------
 
-|`'a Js.Null_undefined.t` a| either `'a`, `null` or `undef`
+| `'a Js.Undefined.t` a| either `'a` or `undefined`.
+Same operations as `'a Js.Null.t`.
+
+|`'a Js.Null_undefined.t` a| either `'a`, `null` or `undef`.
+Same operations as `'a Js.Null.t`.
 |==============
 
 NOTE: `Js.to_opt` is optimized when the `option` is not escaped

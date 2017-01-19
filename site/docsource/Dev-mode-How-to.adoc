@@ -113,3 +113,7 @@ Suppose you have mocha installed, if not, try `npm install mocha`
 * See the coverage
 
 `npm run cover`
+
+### Contributing to the documentation
+
+You'll need http://asciidoctor.org/[Asciidoctor] installed. Modify the section you want in `site/docsource/`, then run `site/docsource/build.sh`.
