@@ -65,4 +65,4 @@ val set_package_specs_from_array : Ext_json.t array -> unit
 val get_generate_merlin : unit -> bool 
 val set_generate_merlin : bool -> unit 
 
-val walk_all_deps : string -> (string -> unit) -> unit 
+val walk_all_deps : bool -> string -> (bool -> string -> unit) -> unit 

@@ -60,7 +60,7 @@ let (|?)  m (key, cb) =
   TODO: check duplicate package name 
    ?use path as identity?
 *)
-let rec walk_all_deps dir cb =   
+let rec walk_all_deps top dir cb =   
   let bsconfig_json =  (dir // Literals.bsconfig_json) in 
   match Ext_json.parse_json_from_file bsconfig_json with 
   | `Obj map ->
@@ -75,13 +75,13 @@ let rec walk_all_deps dir cb =
             begin match Bs_pkg.resolve_bs_package ~cwd:dir new_package with 
             | None -> failwith (new_package ^ " not found as dependency of " ^ bsconfig_json )
             | Some package_dir  -> 
-              walk_all_deps package_dir cb  ;              
+              walk_all_deps  false package_dir cb  ;              
             end;            
           | _ -> () (* TODO: add a log framework, warning here *)
           end 
       )))
     |> ignore ;
-    cb dir 
+    cb top dir 
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
 
