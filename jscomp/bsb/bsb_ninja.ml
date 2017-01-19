@@ -258,17 +258,25 @@ let output_kvs kvs oc =
 
 
 let (//) = Ext_filename.combine
-type info = string list  * string list
 
-let zero : info = ([],[])
+type info = 
+  { all_config_deps : string list  ;
+    all_installs :  string list}
+
+let zero : info = 
+  { all_config_deps = [] ; 
+    all_installs = []
+  }
 
 let (++) (us : info) (vs : info) =
   if us == zero then vs else
   if vs == zero then us
   else
-    let (xs,ys) = us in
-    let (xxs,yys) = vs in
-    (xs @ xxs, ys @ yys)
+    {
+      all_config_deps  = us.all_config_deps @ vs.all_config_deps
+      ;
+      all_installs = us.all_installs @ vs.all_installs
+     }
 
 
 
@@ -283,7 +291,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  =
+    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input : info =
       let filename_sans_extension = Filename.chop_extension input in
       let input = Bsb_config.proj_rel input in
       let output_file_sans_extension = filename_sans_extension in
@@ -396,7 +404,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                         ~rule:Rules.copy_resources
                   )
               end;
-            ([output_mlastd] , [output_cmi])
+              {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
+            
           end
         | `Mli
         | `Rei ->
@@ -427,8 +436,12 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                 ~input:output_cmi
                 ~rule:Rules.copy_resources
             end;
-          ([output_mliastd] ,
-           [output_cmi]  )
+            {
+              all_config_deps = [output_mliastd];
+              all_installs = [output_cmi] ; 
+              
+            }
+          
       end
     in
     begin match module_info.ml with

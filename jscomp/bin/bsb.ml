@@ -7080,7 +7080,14 @@ val phony  :
 
 val output_kvs : (string * string) list -> out_channel -> unit
 
-type info = string list  * string list 
+type info = {
+  all_config_deps : string list  ;
+  all_installs :  string list 
+}
+
+val zero : info 
+
+
 val handle_file_groups : out_channel ->
   package_specs:Bsb_default.package_specs ->  
   js_post_build_cmd:string option -> 
@@ -7349,17 +7356,25 @@ let output_kvs kvs oc =
 
 
 let (//) = Ext_filename.combine
-type info = string list  * string list
 
-let zero : info = ([],[])
+type info = 
+  { all_config_deps : string list  ;
+    all_installs :  string list}
+
+let zero : info = 
+  { all_config_deps = [] ; 
+    all_installs = []
+  }
 
 let (++) (us : info) (vs : info) =
   if us == zero then vs else
   if vs == zero then us
   else
-    let (xs,ys) = us in
-    let (xxs,yys) = vs in
-    (xs @ xxs, ys @ yys)
+    {
+      all_config_deps  = us.all_config_deps @ vs.all_config_deps
+      ;
+      all_installs = us.all_installs @ vs.all_installs
+     }
 
 
 
@@ -7374,7 +7389,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  =
+    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input : info =
       let filename_sans_extension = Filename.chop_extension input in
       let input = Bsb_config.proj_rel input in
       let output_file_sans_extension = filename_sans_extension in
@@ -7487,7 +7502,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                         ~rule:Rules.copy_resources
                   )
               end;
-            ([output_mlastd] , [output_cmi])
+              {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
+            
           end
         | `Mli
         | `Rei ->
@@ -7518,8 +7534,12 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                 ~input:output_cmi
                 ~rule:Rules.copy_resources
             end;
-          ([output_mliastd] ,
-           [output_cmi]  )
+            {
+              all_config_deps = [output_mliastd];
+              all_installs = [output_cmi] ; 
+              
+            }
+          
       end
     in
     begin match module_info.ml with
@@ -7626,6 +7646,10 @@ end = struct
 
 let (//) = Ext_filename.combine
 
+(* we need copy package.json into [_build] since it does affect build output 
+   it is a bad idea to copy package.json which requires to copy js files
+*)
+
 let output_ninja
     ~builddir
     ~cwd
@@ -7697,23 +7721,16 @@ let output_ninja
 
         ]
     in
-    let all_deps, all_cmis =
+    let all_info =
       Bsb_ninja.handle_file_groups oc       
-        ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
-    let all_deps =
-      (* we need copy package.json into [_build] since it does affect build output *)
-      (* 
-         it is a bad idea to copy package.json which requires to copy js files
-      *)
-      static_resources
-      |> List.fold_left (fun all_deps x ->
-          Bsb_ninja.output_build oc
+        ~js_post_build_cmd  ~package_specs bs_file_groups Bsb_ninja.zero  in
+    let () = 
+      List.iter (fun x -> Bsb_ninja.output_build oc
             ~output:x
             ~input:(Bsb_config.proj_rel x)
-            ~rule:Bsb_ninja.Rules.copy_resources;
-          x:: all_deps
-        ) all_deps in
-    Bsb_ninja.phony oc ~order_only_deps:all_deps
+            ~rule:Bsb_ninja.Rules.copy_resources) static_resources in     
+    
+    Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ;
     close_out oc;

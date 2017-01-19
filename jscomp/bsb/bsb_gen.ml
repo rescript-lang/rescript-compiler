@@ -24,6 +24,10 @@
 
 let (//) = Ext_filename.combine
 
+(* we need copy package.json into [_build] since it does affect build output 
+   it is a bad idea to copy package.json which requires to copy js files
+*)
+
 let output_ninja
     ~builddir
     ~cwd
@@ -95,23 +99,15 @@ let output_ninja
 
         ]
     in
-    let all_deps, all_cmis =
+    let all_info =
       Bsb_ninja.handle_file_groups oc       
-        ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
-    let all_deps =
-      (* we need copy package.json into [_build] since it does affect build output *)
-      (* 
-         it is a bad idea to copy package.json which requires to copy js files
-      *)
-      static_resources
-      |> List.fold_left (fun all_deps x ->
-          Bsb_ninja.output_build oc
+        ~js_post_build_cmd  ~package_specs bs_file_groups Bsb_ninja.zero  in
+    let () = 
+      List.iter (fun x -> Bsb_ninja.output_build oc
             ~output:x
             ~input:(Bsb_config.proj_rel x)
-            ~rule:Bsb_ninja.Rules.copy_resources;
-          x:: all_deps
-        ) all_deps in
-    Bsb_ninja.phony oc ~order_only_deps:all_deps
+            ~rule:Bsb_ninja.Rules.copy_resources) static_resources in         
+    Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ;
     close_out oc;
