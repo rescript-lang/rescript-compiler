@@ -13,17 +13,19 @@ files with the extension `.cmj` which are later used for cross module
 inlining, arity inference and other information.
 ======
 
-=== Build with bsb 
+=== BuckleScript build system: `bsb`
 
-BuckleScript proivdes a native build tool using https://github.com/ninja-build/ninja/releases[ninja], 
-it is designed for fast feedback loop (typically 100ms feedback loop). 
+BuckleScript proivdes a native build tool on top of Google's  https://github.com/ninja-build/ninja/releases[ninja-build], 
+it is designed for fast feedback loop (typically 100ms feedback loop) and works cross platform. 
 
-[NOTE]
+[INFO]
 ======
-Currently user needs install ninja first (version >= 1.7.1)
+Currently for non-Windows users, they needs install ninja first (version >= 1.7.1),
+please don't be confused with the npm ninja, 
+we are using Google's https://github.com/ninja-build/ninja/releases[ninja-build].
 ======
 
-It is a schema based build tool, the schema is 
+`bsb` can be running in any subdirectory, it is a schema based build tool, the schema is 
 http://bloomberg.github.io/bucklescript/docson/#build-schema.json[available]
 
 The build system is installed as `bsb.exe` in `bs-platform/bin/bsb.exe`, due to a known issue in npm, 
@@ -86,7 +88,79 @@ bsb -w
 --------------------
 
 
+
+
+
+==== Build with other BuckleScript dependencies
+
+List your dependency in `bs-dependencies` and install it via `npm install` as below:
+
+.bsconfig.json
+[source,js]
+-----------
+{
+    "name": "bs-string",
+    "version": "0.1.3",
+    "bs-dependencies": [
+        "bs-mocha" // <1>
+    ],
+    "sources": [
+       .. .
+    ],
+    "generate-merlin" : true // <2>
+}
+-----------
+<1> Yet another BuckleScript dependency
+<2> bsb will generate merlin file for you
+
+.package.json
+[source,js]
+-----------
+{
+ "dependencies": {
+    "bs-mocha": "0.1.5"
+    },
+  ...
+}
+-----------
+
+After your `npm install`, 
+[source,sh]
+----------
+bsb -clean-world // <1>
+bsb -make-world // <2>
+----------
+<1> Clean the binary artifact of current build and your dependency
+<2> Build dependencies and lib itself
+
+
+==== Mark your directory as dev only
+
+
+Note sometimes, you have directories which are just tests that you don't need your dependent 
+to build  in that case you can mark it as dev only
+
+.bsconfig.json
+[source,js]
+-----------
+{
+        "sources" : {
+                "dir" : "test",
+                "type" : "dev" // <1>
+        }
+}
+-----------
+<1> directory `test` is in dev mode, it will not be built when used as a dependency
+
+
+
 === Build using Make
+[WARNING]
+========
+`bsb` is officialy recommended build system, this section is listed here only for people who 
+are curious about how the build works
+========
+
 BuckleScript distribution has `bsdep.exe` which has the same interface as `ocamldep`
 
 Here is a simple Makefile to get started:
