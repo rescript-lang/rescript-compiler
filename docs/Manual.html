@@ -632,7 +632,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_build_system_support">Build system support</a>
 <ul class="sectlevel2">
-<li><a href="#_build_with_bsb">Build with bsb</a></li>
+<li><a href="#_bucklescript_build_system_code_bsb_code">BuckleScript build system: <code>bsb</code></a>
+<ul class="sectlevel3">
+<li><a href="#_build_with_other_bucklescript_dependencies">Build with other BuckleScript dependencies</a></li>
+<li><a href="#_mark_your_directory_as_dev_only">Mark your directory as dev only</a></li>
+</ul>
+</li>
 <li><a href="#_build_using_make">Build using Make</a></li>
 </ul>
 </li>
@@ -3769,27 +3774,22 @@ inlining, arity inference and other information.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_build_with_bsb"><a class="anchor" href="#_build_with_bsb"></a>Build with bsb</h3>
+<h3 id="_bucklescript_build_system_code_bsb_code"><a class="anchor" href="#_bucklescript_build_system_code_bsb_code"></a>BuckleScript build system: <code>bsb</code></h3>
 <div class="paragraph">
-<p>BuckleScript proivdes a native build tool using <a href="https://github.com/ninja-build/ninja/releases">ninja</a>,
-it is designed for fast feedback loop (typically 100ms feedback loop).</p>
+<p>BuckleScript proivdes a native build tool on top of Google&#8217;s  <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>,
+it is designed for fast feedback loop (typically 100ms feedback loop) and works cross platform.</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
+<div class="exampleblock">
+<div class="content">
 <div class="paragraph">
-<p>Currently user needs install ninja first (version &gt;= 1.7.1)</p>
+<p>Currently for non-Windows users, they needs install ninja first (version &gt;= 1.7.1),
+please don&#8217;t be confused with the npm ninja,
+we are using Google&#8217;s <a href="https://github.com/ninja-build/ninja/releases">ninja-build</a>.</p>
 </div>
-</td>
-</tr>
-</table>
+</div>
 </div>
 <div class="paragraph">
-<p>It is a schema based build tool, the schema is
+<p><code>bsb</code> can be running in any subdirectory, it is a schema based build tool, the schema is
 <a href="http://bloomberg.github.io/bucklescript/docson/#build-schema.json">available</a></p>
 </div>
 <div class="paragraph">
@@ -3870,9 +3870,111 @@ and delegate the hard work to <code>ninja</code>.</p>
 <pre class="pygments highlight"><code data-lang="sh">bsb -w</code></pre>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_build_with_other_bucklescript_dependencies"><a class="anchor" href="#_build_with_other_bucklescript_dependencies"></a>Build with other BuckleScript dependencies</h4>
+<div class="paragraph">
+<p>List your dependency in <code>bs-dependencies</code> and install it via <code>npm install</code> as below:</p>
+</div>
+<div class="listingblock">
+<div class="title">bsconfig.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+    <span class="tok-s2">&quot;name&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;bs-string&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;version&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.3&quot;</span><span class="tok-p">,</span>
+    <span class="tok-s2">&quot;bs-dependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+        <span class="tok-s2">&quot;bs-mocha&quot;</span> <b class="conum">(1)</b>
+    <span class="tok-p">],</span>
+    <span class="tok-s2">&quot;sources&quot;</span><span class="tok-o">:</span> <span class="tok-p">[</span>
+       <span class="tok-p">..</span> <span class="tok-p">.</span>
+    <span class="tok-p">],</span>
+    <span class="tok-s2">&quot;generate-merlin&quot;</span> <span class="tok-o">:</span> <span class="tok-kc">true</span> <b class="conum">(2)</b>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Yet another BuckleScript dependency</p>
+</li>
+<li>
+<p>bsb will generate merlin file for you</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">package.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+ <span class="tok-s2">&quot;dependencies&quot;</span><span class="tok-o">:</span> <span class="tok-p">{</span>
+    <span class="tok-s2">&quot;bs-mocha&quot;</span><span class="tok-o">:</span> <span class="tok-s2">&quot;0.1.5&quot;</span>
+    <span class="tok-p">},</span>
+  <span class="tok-p">...</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After your <code>npm install</code>,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">bsb -clean-world <b class="conum">(1)</b>
+bsb -make-world <b class="conum">(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Clean the binary artifact of current build and your dependency</p>
+</li>
+<li>
+<p>Build dependencies and lib itself</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_mark_your_directory_as_dev_only"><a class="anchor" href="#_mark_your_directory_as_dev_only"></a>Mark your directory as dev only</h4>
+<div class="paragraph">
+<p>Note sometimes, you have directories which are just tests that you don&#8217;t need your dependent
+to build  in that case you can mark it as dev only</p>
+</div>
+<div class="listingblock">
+<div class="title">bsconfig.json</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-p">{</span>
+        <span class="tok-s2">&quot;sources&quot;</span> <span class="tok-o">:</span> <span class="tok-p">{</span>
+                <span class="tok-s2">&quot;dir&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;test&quot;</span><span class="tok-p">,</span>
+                <span class="tok-s2">&quot;type&quot;</span> <span class="tok-o">:</span> <span class="tok-s2">&quot;dev&quot;</span> <b class="conum">(1)</b>
+        <span class="tok-p">}</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>directory <code>test</code> is in dev mode, it will not be built when used as a dependency</p>
+</li>
+</ol>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_build_using_make"><a class="anchor" href="#_build_using_make"></a>Build using Make</h3>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><code>bsb</code> is officialy recommended build system, this section is listed here only for people who
+are curious about how the build works</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>BuckleScript distribution has <code>bsdep.exe</code> which has the same interface as <code>ocamldep</code></p>
 </div>
