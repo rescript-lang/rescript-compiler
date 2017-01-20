@@ -70,9 +70,17 @@ val phony  :
   ?order_only_deps:string list ->
   inputs:string list -> output:string -> out_channel -> unit
 
-val output_kvs : (string * string) list -> out_channel -> unit
+val output_kv : string ->  string -> out_channel -> unit 
+val output_kvs : (string * string) array -> out_channel -> unit
 
-type info = string list  * string list 
+type info = {
+  all_config_deps : string list  ;
+  all_installs :  string list 
+}
+
+val zero : info 
+
+
 val handle_file_groups : out_channel ->
   package_specs:Bsb_default.package_specs ->  
   js_post_build_cmd:string option -> 

@@ -1,0 +1,15 @@
+####{BSB GENERATED: NO EDIT
+S /Users/hzhang295/git/bucklescript/jscomp/bin/../lib/ocaml
+B /Users/hzhang295/git/bucklescript/jscomp/bin/../lib/ocaml
+FLG -ppx /Users/hzhang295/git/bucklescript/jscomp/bin/bsppx.exe
+
+FLG -w -40-30 -w +a
+S jscomp/test/
+B lib/bs/jscomp/test/
+
+S jscomp/test/glob
+B lib/bs/jscomp/test/glob
+
+S jscomp/test/acyc
+B lib/bs/jscomp/test/acyc
+####BSB GENERATED: NO EDIT}

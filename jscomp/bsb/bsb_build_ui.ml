@@ -26,14 +26,42 @@ type public =
   | Export_all 
   | Export_set of String_set.t 
   | Export_none
+  
+type dir_index = int 
+let lib_dir_index = 0
 
+let get_dev_index, get_current_number_of_dev_groups =
+  let dir_index = ref 0 in 
+  ((fun () -> incr dir_index ; !dir_index),
+  (fun _ -> !dir_index ))
+
+
+
+(** 
+0 : lib 
+1 : dev 1 
+2 : dev 2 
+*)  
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.t ; 
+    sources : Binary_cache.file_group_rouces; 
     resources : string list ;
     bs_dependencies : string list ;
-    public : public
+    public : public ;
+    dir_index : dir_index 
   } 
+
+(**
+    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
+     we need add a new line in the end,
+     otherwise it will be idented twice
+ *)
+
+type t = 
+  { files :  file_group list ; 
+    intervals :  Ext_file_pp.interval list ;    
+    globbed_dirs : string list ; 
+  }
 
 let (//) = Ext_filename.combine
 
@@ -69,8 +97,8 @@ let print_arrays file_array oc offset  =
 
 
 
-let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
-  if Array.length s  = 0 then 
+let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * _ =  
+  if  Ext_array.is_empty s  then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
       let dyn_file_array = String_vec.make (Array.length files_array) in 
@@ -96,41 +124,42 @@ let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_p
         | _ -> acc
       ) String_map.empty s
 
-(* we need add a new line in the end,
-   otherwise it will be idented twice
-*)
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-let (++) 
-    ({files = a; 
-      intervals = b; 
-      globbed_dirs;
-     } : t)
-    ({files = c; intervals = d; globbed_dirs = dirs2; 
-     })
-  : t 
-  = 
-  {files = a@c; 
-   intervals =  b@d ;
-   globbed_dirs = globbed_dirs @ dirs2;
-  }
 
 let empty = { files = []; intervals  = []; globbed_dirs = [];  }
 
 
 
-let rec parsing_source cwd (x : Ext_json.t String_map.t )
-  : t =
+let (++) (u : t)  (v : t)  = 
+  if u == empty then v 
+  else if v == empty then u 
+  else 
+  {
+    files = u.files @ v.files ; 
+    intervals = u.intervals @ v.intervals ; 
+    globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
+  }
+
+
+(** [dir_index] can be inherited  *)
+let rec parsing_source (dir_index : int) cwd (x : Ext_json.t String_map.t )
+  : t  =
   let dir = ref cwd in
   let sources = ref String_map.empty in
   let resources = ref [] in 
   let bs_dependencies = ref [] in
   let public = ref Export_none in 
 
+  let current_dir_index = ref dir_index in 
+  (** Get the real [dir_index] *)
+  let () = 
+    x |?  (Bsb_build_schemas.type_, 
+      `Str (fun s -> 
+        if Ext_string.equal s   Bsb_build_schemas.dev then
+          current_dir_index := get_dev_index ()
+       )) |> ignore  in 
+  let current_dir_index = !current_dir_index in 
+  if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty
+  else 
   let update_queue = ref [] in 
   let globbed_dirs = ref [] in 
 
@@ -138,7 +167,7 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   let children_update_queue = ref [] in 
   let children_globbed_dirs = ref [] in 
   let () = 
-    x 
+    x     
     |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Ext_filename.simple_convert_node_path_to_os_path s))
     |?  (Bsb_build_schemas.files ,
          `Arr_loc (fun s loc_start loc_end ->
@@ -195,8 +224,8 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
              resources := get_list_string s
            ))
     |? (Bsb_build_schemas.public, `Str (fun s -> 
-        if s = "all" then public := Export_all else 
-        if s = "none" then public := Export_none else 
+        if s = Bsb_build_schemas.export_all then public := Export_all else 
+        if s = Bsb_build_schemas.export_none then public := Export_none else 
           failwith ("invalid str for" ^ s )
       ))
     |? (Bsb_build_schemas.public, `Arr (fun s -> 
@@ -207,7 +236,7 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
           Array.fold_left (fun  origin json ->
               match json with 
               | `Obj m -> 
-                parsing_source !dir  m  ++ origin
+                parsing_source current_dir_index !dir  m  ++ origin
               | _ -> origin ) empty s in 
         children :=  res.files ; 
         children_update_queue := res.intervals;
@@ -221,7 +250,8 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
        sources = !sources; 
        resources = !resources;
        bs_dependencies = !bs_dependencies;
-       public = !public
+       public = !public;
+       dir_index = current_dir_index;
       } 
       :: !children;
     intervals = !update_queue @ !children_update_queue ;
@@ -229,11 +259,11 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   } 
 
 
-let  parsing_sources cwd (file_groups : Ext_json.t array)  = 
+let  parsing_sources dir_index cwd (file_groups : Ext_json.t array)  = 
   Array.fold_left (fun  origin x ->
       match x with 
       | `Obj map ->  
-        parsing_source cwd map ++ origin
+        parsing_source dir_index cwd map ++ origin
       | _ -> origin
     ) empty  file_groups 
 

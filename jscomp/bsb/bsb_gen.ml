@@ -24,6 +24,23 @@
 
 let (//) = Ext_filename.combine
 
+(* we need copy package.json into [_build] since it does affect build output 
+   it is a bad idea to copy package.json which requires to copy js files
+*)
+
+let merge_module_info_map acc sources = 
+  String_map.merge (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        failwith ("conflict files found: " ^ modname ^ "in ("   
+                  ^  Binary_cache.dir_of_module_info a ^ " " ^ Binary_cache.dir_of_module_info b ^  " )")
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    ) acc  sources 
+
+
 let output_ninja
     ~builddir
     ~cwd
@@ -34,7 +51,7 @@ let output_ninja
     package_name
     ocamllex
     bs_external_includes
-    bs_file_groups
+    (bs_file_groups : Bsb_build_ui.file_group list)
     bsc_flags
     ppx_flags
     bs_dependencies
@@ -42,25 +59,7 @@ let output_ninja
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
-  let bs_groups, source_dirs,static_resources  =
-    List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
-        String_map.merge (fun modname k1 k2 ->
-            match k1 , k2 with
-            | None , None ->
-              assert false
-            | Some a, Some b  ->
-              failwith ("conflict files found: " ^ modname)
-            | Some v, None  -> Some v
-            | None, Some v ->  Some v
-          ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
-      ) (String_map.empty,[],[]) bs_file_groups in
-  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
-  let bsc_flags =
-    String.concat " " bsc_flags
-  in
-  let bsc_includes =
-    Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  )
-  in
+  let bsc_flags =  String.concat " " bsc_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =
@@ -71,47 +70,62 @@ let output_ninja
         | Some x -> 
           output_string oc ("-bs-package-name "  ^ x  )
       end;
-      output_string oc "\n"
-    in
-    let bs_package_includes =
-      Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in
-
-    let () =
-      oc
-      |>
+      output_string oc "\n";
       Bsb_ninja.output_kvs
-        [
-          "src_root_dir", cwd (* TODO: need check its integrity*);
-
+        [|
+          "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
           "bsdep", bsdep;
           "ocamllex", ocamllex;
-          "bsc_includes", bsc_includes ;
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
-          "bs_package_includes", bs_package_includes;
+          "bs_package_includes", (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies);
           "refmt", refmt;
-          (* "builddir", builddir; we should not have it set, since it's correct here *)
-
-        ]
+          Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
+        |] oc ;
     in
-    let all_deps, all_cmis =
+    let  static_resources = 
+      let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in 
+      if number_of_dev_groups = 0 then 
+        let bs_groups, source_dirs,static_resources  =
+          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
+              merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
+            ) (String_map.empty,[],[]) bs_file_groups in
+        Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) [|bs_groups|] ; 
+        Bsb_ninja.output_kv
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  ))  oc ;
+        static_resources
+      else 
+        let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in 
+        let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in 
+        let static_resources = 
+          List.fold_left (fun acc_resources  ({Bsb_build_ui.sources; dir; resources; dir_index})  -> 
+              bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
+              source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
+              (List.map (fun x -> dir//x) resources) @ resources     
+            ) [] bs_file_groups in 
+        (* Make sure [sources] does not have files in [lib] we have to check later *)
+        let lib = bs_groups.(0) in 
+        Bsb_ninja.output_kv 
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs.(0))) oc ;
+        for i = 1 to number_of_dev_groups  do 
+          let c = bs_groups.(i) in             
+          String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
+          Bsb_ninja.output_kv (Bsb_build_util.string_of_bsb_dev_include i)            
+            (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc 
+        done  ;
+        Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ; 
+        static_resources;
+    in     
+    let all_info =
       Bsb_ninja.handle_file_groups oc       
-        ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
-    let all_deps =
-      (* we need copy package.json into [_build] since it does affect build output *)
-      (* 
-         it is a bad idea to copy package.json which requires to copy js files
-      *)
-      static_resources
-      |> List.fold_left (fun all_deps x ->
-          Bsb_ninja.output_build oc
-            ~output:x
-            ~input:(Bsb_config.proj_rel x)
-            ~rule:Bsb_ninja.Rules.copy_resources;
-          x:: all_deps
-        ) all_deps in
-    Bsb_ninja.phony oc ~order_only_deps:all_deps
+        ~js_post_build_cmd  ~package_specs bs_file_groups Bsb_ninja.zero  in
+    let () = 
+      List.iter (fun x -> Bsb_ninja.output_build oc
+                    ~output:x
+                    ~input:(Bsb_config.proj_rel x)
+                    ~rule:Bsb_ninja.Rules.copy_resources) static_resources in         
+    Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ;
     close_out oc;

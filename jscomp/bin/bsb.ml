@@ -31,6 +31,14 @@ let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
 
+let type_ = "type"
+let dev = "dev"
+
+let export_all = "all"
+let export_none = "none"
+
+let bsb_dir_group = "bsb_dir_group"
+let bsc_lib_includes = "bsc_lib_includes"
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -2132,8 +2140,13 @@ type module_info =
     mll : string option 
   }
 
+type file_group_rouces = module_info String_map.t 
+
 type t =
-  module_info String_map.t 
+  module_info String_map.t array
+
+val dir_of_module_info : module_info -> string
+
 val write_build_cache : string -> t -> unit
 
 val read_build_cache : string -> t
@@ -2147,7 +2160,8 @@ val bsbuild_cache : string
 (** if not added, it is guaranteed the reference equality will 
     be held
 *)
-val map_update : ?dir:string -> t -> string -> t
+val map_update : 
+  ?dir:string -> file_group_rouces ->  string -> file_group_rouces
 
 end = struct
 #1 "binary_cache.ml"
@@ -2193,23 +2207,45 @@ type module_info =
     mll : string option ;
   }
 
+
+type file_group_rouces = module_info String_map.t 
+
 type t = 
-      module_info String_map.t 
+      module_info String_map.t array
+(** indexed by the group *)
 
+let module_info_magic_number = "BSBUILD20161019"
 
-let module_info_magic_number = "BSBUILD20161012"
+let dir_of_module_info (x : module_info)
+  = 
+  match x with 
+  | { mli; ml; mll} -> 
+    begin match mli with 
+    | Mli s | Rei s -> 
+      Filename.dirname s 
+    | Mli_empty -> 
+      begin match ml with 
+      | Ml s | Re s -> 
+        Filename.dirname s 
+      | Ml_empty -> 
+        begin match mll with 
+        | None -> ""
+        | Some s -> Filename.dirname s 
+        end 
+      end
+    end
 
-let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
+let write_build_cache bsbuild (bs_files : t)  = 
   let oc = open_out_bin bsbuild in 
   output_string oc module_info_magic_number ;
   output_value oc bs_files ;
   close_out oc 
 
-let read_build_cache bsbuild : module_info String_map.t = 
+let read_build_cache bsbuild : t = 
   let ic = open_in_bin bsbuild in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
-  let data : module_info String_map.t = input_value ic in 
+  let data : t = input_value ic in 
   close_in ic ;
   data 
 
@@ -2228,7 +2264,7 @@ let adjust_module_info x suffix name =
   | ".mll" -> {x with mll = Some name}
   | _ -> failwith ("don't know what to do with " ^ name)
 
-let map_update ?dir (map : t)  name : t  = 
+let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 
   let prefix   = 
     match dir with
     | None -> fun x ->  x
@@ -2239,7 +2275,7 @@ let map_update ?dir (map : t)  name : t  =
     module_name 
     (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
     (fun v -> (adjust_module_info v suffix (prefix name )))
-    map 
+    map
 
 end
 module Js_config : sig 
@@ -2686,6 +2722,7 @@ val lib_bs : string
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
 
+val no_dev: bool ref 
 end = struct
 #1 "bsb_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2732,7 +2769,7 @@ let proj_rel path = lazy_src_root_dir // path
     of bsb in configuration time
 *)
 
-
+let no_dev = ref false 
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -2800,6 +2837,7 @@ val find_and_split :
 
 val exists : ('a -> bool) -> 'a array -> bool 
 
+val is_empty : 'a array -> bool 
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2980,6 +3018,9 @@ let exists p a =
     else loop (succ i) in
   loop 0
 
+
+let is_empty arr =
+  Array.length arr = 0
 end
 module Ext_json : sig 
 #1 "ext_json.mli"
@@ -4353,6 +4394,7 @@ val get_bsc_bsdep : string -> string * string
 val get_bsc_dir : string -> string                               
 val get_list_string : Ext_json.t array -> string list
 
+val string_of_bsb_dev_include : int -> string 
 end = struct
 #1 "bsb_build_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4449,8 +4491,18 @@ let get_list_string s =
       | _ -> None
     ) s   
 
-
-
+let bsc_group_1_includes = "bsc_group_1_includes"
+let bsc_group_2_includes = "bsc_group_2_includes"
+let bsc_group_3_includes = "bsc_group_3_includes"
+let bsc_group_4_includes = "bsc_group_4_includes"
+let string_of_bsb_dev_include i = 
+  match i with 
+  | 1 -> bsc_group_1_includes 
+  | 2 -> bsc_group_2_includes
+  | 3 -> bsc_group_3_includes
+  | 4 -> bsc_group_4_includes
+  | _ -> 
+    "bsc_group_" ^ string_of_int i ^ "_includes"
 end
 module Bsb_dir : sig 
 #1 "bsb_dir.mli"
@@ -6200,13 +6252,15 @@ type public =
   | Export_set of String_set.t 
   | Export_none
     
+type dir_index = int 
 
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.t ; 
+    sources : Binary_cache.file_group_rouces ; 
     resources : string list ;
     bs_dependencies : string list;
-    public : public
+    public : public;
+    dir_index : dir_index; 
   } 
 
 type t = 
@@ -6215,14 +6269,19 @@ type t =
     globbed_dirs : string list ; 
   }
 
+val lib_dir_index : dir_index 
+
+val get_current_number_of_dev_groups : unit -> int 
 
 val parsing_source : 
-  string -> Ext_json.t String_map.t -> t
+  dir_index -> 
+  string -> Ext_json.t String_map.t -> t 
 
 (** entry is to the 
     [sources] in the schema
 *)
 val parsing_sources : 
+  dir_index -> 
   string -> 
   Ext_json.t array ->
   t 
@@ -6258,14 +6317,42 @@ type public =
   | Export_all 
   | Export_set of String_set.t 
   | Export_none
+  
+type dir_index = int 
+let lib_dir_index = 0
 
+let get_dev_index, get_current_number_of_dev_groups =
+  let dir_index = ref 0 in 
+  ((fun () -> incr dir_index ; !dir_index),
+  (fun _ -> !dir_index ))
+
+
+
+(** 
+0 : lib 
+1 : dev 1 
+2 : dev 2 
+*)  
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.t ; 
+    sources : Binary_cache.file_group_rouces; 
     resources : string list ;
     bs_dependencies : string list ;
-    public : public
+    public : public ;
+    dir_index : dir_index 
   } 
+
+(**
+    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
+     we need add a new line in the end,
+     otherwise it will be idented twice
+ *)
+
+type t = 
+  { files :  file_group list ; 
+    intervals :  Ext_file_pp.interval list ;    
+    globbed_dirs : string list ; 
+  }
 
 let (//) = Ext_filename.combine
 
@@ -6301,8 +6388,8 @@ let print_arrays file_array oc offset  =
 
 
 
-let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * Binary_cache.t =  
-  if Array.length s  = 0 then 
+let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_pp.interval list * _ =  
+  if  Ext_array.is_empty s  then 
     begin 
       let files_array = Bsb_dir.readdir dir  in 
       let dyn_file_array = String_vec.make (Array.length files_array) in 
@@ -6328,41 +6415,42 @@ let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_p
         | _ -> acc
       ) String_map.empty s
 
-(* we need add a new line in the end,
-   otherwise it will be idented twice
-*)
-type t = 
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-  }
-
-let (++) 
-    ({files = a; 
-      intervals = b; 
-      globbed_dirs;
-     } : t)
-    ({files = c; intervals = d; globbed_dirs = dirs2; 
-     })
-  : t 
-  = 
-  {files = a@c; 
-   intervals =  b@d ;
-   globbed_dirs = globbed_dirs @ dirs2;
-  }
 
 let empty = { files = []; intervals  = []; globbed_dirs = [];  }
 
 
 
-let rec parsing_source cwd (x : Ext_json.t String_map.t )
-  : t =
+let (++) (u : t)  (v : t)  = 
+  if u == empty then v 
+  else if v == empty then u 
+  else 
+  {
+    files = u.files @ v.files ; 
+    intervals = u.intervals @ v.intervals ; 
+    globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
+  }
+
+
+(** [dir_index] can be inherited  *)
+let rec parsing_source (dir_index : int) cwd (x : Ext_json.t String_map.t )
+  : t  =
   let dir = ref cwd in
   let sources = ref String_map.empty in
   let resources = ref [] in 
   let bs_dependencies = ref [] in
   let public = ref Export_none in 
 
+  let current_dir_index = ref dir_index in 
+  (** Get the real [dir_index] *)
+  let () = 
+    x |?  (Bsb_build_schemas.type_, 
+      `Str (fun s -> 
+        if Ext_string.equal s   Bsb_build_schemas.dev then
+          current_dir_index := get_dev_index ()
+       )) |> ignore  in 
+  let current_dir_index = !current_dir_index in 
+  if !Bsb_config.no_dev && current_dir_index <> lib_dir_index then empty
+  else 
   let update_queue = ref [] in 
   let globbed_dirs = ref [] in 
 
@@ -6370,7 +6458,7 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   let children_update_queue = ref [] in 
   let children_globbed_dirs = ref [] in 
   let () = 
-    x 
+    x     
     |?  (Bsb_build_schemas.dir, `Str (fun s -> dir := cwd // Ext_filename.simple_convert_node_path_to_os_path s))
     |?  (Bsb_build_schemas.files ,
          `Arr_loc (fun s loc_start loc_end ->
@@ -6427,8 +6515,8 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
              resources := get_list_string s
            ))
     |? (Bsb_build_schemas.public, `Str (fun s -> 
-        if s = "all" then public := Export_all else 
-        if s = "none" then public := Export_none else 
+        if s = Bsb_build_schemas.export_all then public := Export_all else 
+        if s = Bsb_build_schemas.export_none then public := Export_none else 
           failwith ("invalid str for" ^ s )
       ))
     |? (Bsb_build_schemas.public, `Arr (fun s -> 
@@ -6439,7 +6527,7 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
           Array.fold_left (fun  origin json ->
               match json with 
               | `Obj m -> 
-                parsing_source !dir  m  ++ origin
+                parsing_source current_dir_index !dir  m  ++ origin
               | _ -> origin ) empty s in 
         children :=  res.files ; 
         children_update_queue := res.intervals;
@@ -6453,7 +6541,8 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
        sources = !sources; 
        resources = !resources;
        bs_dependencies = !bs_dependencies;
-       public = !public
+       public = !public;
+       dir_index = current_dir_index;
       } 
       :: !children;
     intervals = !update_queue @ !children_update_queue ;
@@ -6461,11 +6550,11 @@ let rec parsing_source cwd (x : Ext_json.t String_map.t )
   } 
 
 
-let  parsing_sources cwd (file_groups : Ext_json.t array)  = 
+let  parsing_sources dir_index cwd (file_groups : Ext_json.t array)  = 
   Array.fold_left (fun  origin x ->
       match x with 
       | `Obj map ->  
-        parsing_source cwd map ++ origin
+        parsing_source dir_index cwd map ++ origin
       | _ -> origin
     ) empty  file_groups 
 
@@ -6957,7 +7046,7 @@ type t =
 
 
 let magic_number = "BS_DEP_INFOS_20161116"
-let bsb_version = "20160109+dev"
+let bsb_version = "20160119+dev"
 
 let write (fname : string)  (x : t) = 
   let oc = open_out_bin fname in 
@@ -7078,9 +7167,17 @@ val phony  :
   ?order_only_deps:string list ->
   inputs:string list -> output:string -> out_channel -> unit
 
-val output_kvs : (string * string) list -> out_channel -> unit
+val output_kv : string ->  string -> out_channel -> unit 
+val output_kvs : (string * string) array -> out_channel -> unit
 
-type info = string list  * string list 
+type info = {
+  all_config_deps : string list  ;
+  all_installs :  string list 
+}
+
+val zero : info 
+
+
 val handle_file_groups : out_channel ->
   package_specs:Bsb_default.package_specs ->  
   js_post_build_cmd:string option -> 
@@ -7194,7 +7291,7 @@ module Rules = struct
 
   let build_bin_deps =
     define
-      ~command:"${bsdep}  -bs-bin-MD ${in}"
+      ~command:"${bsdep} -g ${bsb_dir_group} -MD ${in}"
       "build_deps"
 
   let reload =
@@ -7224,10 +7321,19 @@ module Rules = struct
   (**************************************)
   (* below are rules not local any more *)
   (**************************************)
+  
+  (* [bsc_lib_includes] are fixed for libs 
+     [bsc_extra_includes] are for app test etc 
+     it wil be 
+     {[
+       bsc_extra_includes = ${bsc_group_1_includes}
+     ]}
+     where [bsc_group_1_includes] will be pre-calcuated 
+  *)
   let build_cmj_js =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
 
       ~depfile:"${in}.d"
       "build_cmj_only"
@@ -7235,13 +7341,13 @@ module Rules = struct
   let build_cmj_cmi_js =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
+                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${in} -c  ${in} ${postbuild}"
       ~depfile:"${in}.d"
       "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
   let build_cmi =
     define
       ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-                ${bs_package_includes} ${bsc_includes} ${bsc_flags} -o ${out} -c  ${in}"
+                ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
       ~depfile:"${in}.d"
       "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 end
@@ -7344,27 +7450,35 @@ let output_kv key value oc  =
   output_string oc "\n"
 
 let output_kvs kvs oc =
-  List.iter (fun (k,v) -> output_kv k v oc) kvs
+  Array.iter (fun (k,v) -> output_kv k v oc) kvs
 
 
 
 let (//) = Ext_filename.combine
-type info = string list  * string list
 
-let zero : info = ([],[])
+type info = 
+  { all_config_deps : string list  ;
+    all_installs :  string list}
+
+let zero : info = 
+  { all_config_deps = [] ; 
+    all_installs = []
+  }
 
 let (++) (us : info) (vs : info) =
   if us == zero then vs else
   if vs == zero then us
   else
-    let (xs,ys) = us in
-    let (xxs,yys) = vs in
-    (xs @ xxs, ys @ yys)
+    {
+      all_config_deps  = us.all_config_deps @ vs.all_config_deps
+      ;
+      all_installs = us.all_installs @ vs.all_installs
+     }
 
 
 
 
-let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) =
+let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_build_ui.file_group) : info =
   let handle_module_info  oc  module_name
       ( module_info : Binary_cache.module_info)
       bs_dependencies
@@ -7374,7 +7488,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       | Export_all -> true
       | Export_none -> false
       | Export_set set ->  String_set.mem module_name set in
-    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input  =
+    let emit_build (kind : [`Ml | `Mll | `Re | `Mli | `Rei ])  input : info =
       let filename_sans_extension = Filename.chop_extension input in
       let input = Bsb_config.proj_rel input in
       let output_file_sans_extension = filename_sans_extension in
@@ -7402,7 +7516,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
       let shadows =
         let package_flags =
-          [ "bs_package_flags",
+          ( "bs_package_flags",
             `Append 
             (String_set.fold (fun s acc ->
               acc ^ " -bs-package-output " ^ s ^ ":" ^
@@ -7413,7 +7527,13 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                 else   
                   (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
                ) package_specs "")              
-          ]
+          ) ::
+          (if group.dir_index = 0 then [] else 
+            [("bsc_extra_includes", 
+            `Overwrite
+              ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+            )]
+           )
         in
 
         match bs_dependencies with
@@ -7453,7 +7573,9 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               oc
               ~output:output_mlastd
               ~input:output_mlast
-              ~rule:Rules.build_bin_deps ;
+              ~rule:Rules.build_bin_deps
+              ?shadows:(if group.dir_index = 0 then None else Some ["group", `Overwrite (string_of_int group.dir_index)])
+              ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
                 Rules.build_cmj_cmi_js, [output_cmi], []
@@ -7487,7 +7609,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                         ~rule:Rules.copy_resources
                   )
               end;
-            ([output_mlastd] , [output_cmi])
+              {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
+            
           end
         | `Mli
         | `Rei ->
@@ -7502,7 +7625,10 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           output_build oc
             ~output:output_mliastd
             ~input:output_mliast
-            ~rule:Rules.build_bin_deps  ;
+            ~rule:Rules.build_bin_deps
+            ?shadows:(if group.dir_index = 0 then None 
+              else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+          ;
           output_build oc
             ~shadows
             ~output:output_cmi
@@ -7518,8 +7644,12 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
                 ~input:output_cmi
                 ~rule:Rules.copy_resources
             end;
-          ([output_mliastd] ,
-           [output_cmi]  )
+            {
+              all_config_deps = [output_mliastd];
+              all_installs = [output_cmi] ; 
+              
+            }
+          
       end
     in
     begin match module_info.ml with
@@ -7626,6 +7756,23 @@ end = struct
 
 let (//) = Ext_filename.combine
 
+(* we need copy package.json into [_build] since it does affect build output 
+   it is a bad idea to copy package.json which requires to copy js files
+*)
+
+let merge_module_info_map acc sources = 
+  String_map.merge (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        failwith ("conflict files found: " ^ modname ^ "in ("   
+                  ^  Binary_cache.dir_of_module_info a ^ " " ^ Binary_cache.dir_of_module_info b ^  " )")
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    ) acc  sources 
+
+
 let output_ninja
     ~builddir
     ~cwd
@@ -7636,7 +7783,7 @@ let output_ninja
     package_name
     ocamllex
     bs_external_includes
-    bs_file_groups
+    (bs_file_groups : Bsb_build_ui.file_group list)
     bsc_flags
     ppx_flags
     bs_dependencies
@@ -7644,25 +7791,7 @@ let output_ninja
 
   =
   let ppx_flags = Bsb_build_util.flag_concat "-ppx" ppx_flags in
-  let bs_groups, source_dirs,static_resources  =
-    List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
-        String_map.merge (fun modname k1 k2 ->
-            match k1 , k2 with
-            | None , None ->
-              assert false
-            | Some a, Some b  ->
-              failwith ("conflict files found: " ^ modname)
-            | Some v, None  -> Some v
-            | None, Some v ->  Some v
-          ) acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
-      ) (String_map.empty,[],[]) bs_file_groups in
-  Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ;
-  let bsc_flags =
-    String.concat " " bsc_flags
-  in
-  let bsc_includes =
-    Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  )
-  in
+  let bsc_flags =  String.concat " " bsc_flags in
   let oc = open_out_bin (builddir // Literals.build_ninja) in
   begin
     let () =
@@ -7673,47 +7802,62 @@ let output_ninja
         | Some x -> 
           output_string oc ("-bs-package-name "  ^ x  )
       end;
-      output_string oc "\n"
-    in
-    let bs_package_includes =
-      Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies in
-
-    let () =
-      oc
-      |>
+      output_string oc "\n";
       Bsb_ninja.output_kvs
-        [
-          "src_root_dir", cwd (* TODO: need check its integrity*);
-
+        [|
+          "src_root_dir", cwd (* TODO: need check its integrity -- allow relocate or not? *);
           "bsc", bsc ;
           "bsdep", bsdep;
           "ocamllex", ocamllex;
-          "bsc_includes", bsc_includes ;
           "bsc_flags", bsc_flags ;
           "ppx_flags", ppx_flags;
-          "bs_package_includes", bs_package_includes;
+          "bs_package_includes", (Bsb_build_util.flag_concat "-bs-package-include" bs_dependencies);
           "refmt", refmt;
-          (* "builddir", builddir; we should not have it set, since it's correct here *)
-
-        ]
+          Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
+        |] oc ;
     in
-    let all_deps, all_cmis =
+    let  static_resources = 
+      let number_of_dev_groups = Bsb_build_ui.get_current_number_of_dev_groups () in 
+      if number_of_dev_groups = 0 then 
+        let bs_groups, source_dirs,static_resources  =
+          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_build_ui.sources ; dir; resources }) ->
+              merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
+            ) (String_map.empty,[],[]) bs_file_groups in
+        Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) [|bs_groups|] ; 
+        Bsb_ninja.output_kv
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs  ))  oc ;
+        static_resources
+      else 
+        let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in 
+        let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in 
+        let static_resources = 
+          List.fold_left (fun acc_resources  ({Bsb_build_ui.sources; dir; resources; dir_index})  -> 
+              bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
+              source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
+              (List.map (fun x -> dir//x) resources) @ resources     
+            ) [] bs_file_groups in 
+        (* Make sure [sources] does not have files in [lib] we have to check later *)
+        let lib = bs_groups.(0) in 
+        Bsb_ninja.output_kv 
+          Bsb_build_schemas.bsc_lib_includes (Bsb_build_util.flag_concat "-I" @@ (bs_external_includes @ source_dirs.(0))) oc ;
+        for i = 1 to number_of_dev_groups  do 
+          let c = bs_groups.(i) in             
+          String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
+          Bsb_ninja.output_kv (Bsb_build_util.string_of_bsb_dev_include i)            
+            (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc 
+        done  ;
+        Binary_cache.write_build_cache (builddir // Binary_cache.bsbuild_cache) bs_groups ; 
+        static_resources;
+    in     
+    let all_info =
       Bsb_ninja.handle_file_groups oc       
-        ~js_post_build_cmd  ~package_specs bs_file_groups ([],[]) in
-    let all_deps =
-      (* we need copy package.json into [_build] since it does affect build output *)
-      (* 
-         it is a bad idea to copy package.json which requires to copy js files
-      *)
-      static_resources
-      |> List.fold_left (fun all_deps x ->
-          Bsb_ninja.output_build oc
-            ~output:x
-            ~input:(Bsb_config.proj_rel x)
-            ~rule:Bsb_ninja.Rules.copy_resources;
-          x:: all_deps
-        ) all_deps in
-    Bsb_ninja.phony oc ~order_only_deps:all_deps
+        ~js_post_build_cmd  ~package_specs bs_file_groups Bsb_ninja.zero  in
+    let () = 
+      List.iter (fun x -> Bsb_ninja.output_build oc
+                    ~output:x
+                    ~input:(Bsb_config.proj_rel x)
+                    ~rule:Bsb_ninja.Rules.copy_resources) static_resources in         
+    Bsb_ninja.phony oc ~order_only_deps:(static_resources @ all_info.all_config_deps)
       ~inputs:[]
       ~output:Literals.build_ninja ;
     close_out oc;
@@ -8074,14 +8218,18 @@ let write_ninja_file bsc_dir cwd =
       |? (Bsb_build_schemas.refmt, `Str (Bsb_default.set_refmt ~cwd))
 
       |? (Bsb_build_schemas.sources, `Obj (fun x ->
-          let res : Bsb_build_ui.t =  Bsb_build_ui.parsing_source
+          let res : Bsb_build_ui.t =  
+            Bsb_build_ui.parsing_source
+              Bsb_build_ui.lib_dir_index
               Filename.current_dir_name x in
           handle_bsb_build_ui res
         ))
       |?  (Bsb_build_schemas.sources, `Arr (fun xs ->
 
           let res : Bsb_build_ui.t  =
-            Bsb_build_ui.parsing_sources Filename.current_dir_name xs
+            Bsb_build_ui.parsing_sources 
+              Bsb_build_ui.lib_dir_index
+              Filename.current_dir_name xs
           in
           handle_bsb_build_ui res
         ))
@@ -8147,41 +8295,52 @@ let watch () =
        bsb_watcher
     |]
 
+let no_dev = "-no-dev"
+let regen = "-regen"
+let separator = "--"
+
 let build_bs_deps ()   = 
     let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
     Bsb_default.walk_all_deps true cwd 
-    (fun top cwd -> Bsb_unix.run_command_execv (not top)
-      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe  |]})
+    (fun top cwd -> 
+      if top then 
+        Bsb_unix.run_command_execv false { cmd = bsb_exe ; cwd ; args = [|bsb_exe ; regen ; separator|]}
+      else 
+        Bsb_unix.run_command_execv true
+        {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; no_dev; regen; separator |]})
 
 let clean_bs_deps () = 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
     Bsb_default.walk_all_deps true cwd 
     (fun top cwd -> Bsb_unix.run_command_execv (not top)
-      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; "--" ; "-t" ; "clean"|]})
+      {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; separator; "-t" ; "clean"|]})
 let annoymous filename =
   String_vec.push  filename targets
+
 
 
 
 let bsb_main_flags =
   [
     "-w", Arg.Unit watch,
-    " watch mode" ;
+    " Watch mode" ;
+    no_dev, Arg.Unit (fun _ -> Bsb_config.no_dev := true), 
+    " (experimental)Build dev dependencies in make-world and dev group";
+    " -no-dev", Arg.Set Bsb_config.no_dev, 
+    " (experimental)Don't build dev directories(internal for -make-world)" ; 
     (*    "-init", Arg.Unit create_bs_config ,
           " Create an simple bsconfig.json"
           ;
     *)   
-     "-regen", Arg.Set force_regenerate,
-          " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
+     regen, Arg.Set force_regenerate,
+     " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
     "-clean-world", Arg.Unit clean_bs_deps,
-    " clean all bs dependencies";
+    " Clean all bs dependencies";
     "-make-world", Arg.Unit build_bs_deps,
-    " build all dependencies and itself "
-    (*"-exec", Arg.Set exec,
-      " Also run the JS files passsed" ;*)
+    " Build all dependencies and itself "
   ]
 
 let regenerate_ninja cwd bsc_dir forced =
@@ -8254,7 +8413,7 @@ let () =
     else 
       "ninja" 
     in 
-  try
+  (* try *)
     (* see discussion #929 *)
     if Array.length Sys.argv <= 1 then
       begin
@@ -8281,8 +8440,8 @@ let () =
             ninja_command ninja ninja_args
           end
       end
-  with x ->
+  (*with x ->
     prerr_endline @@ Printexc.to_string x ;
-    exit 2
-
+    exit 2*)
+  (* with [try, with], there is no stacktrace anymore .. *)  
 end

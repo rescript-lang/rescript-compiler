@@ -2098,8 +2098,13 @@ type module_info =
     mll : string option 
   }
 
+type file_group_rouces = module_info String_map.t 
+
 type t =
-  module_info String_map.t 
+  module_info String_map.t array
+
+val dir_of_module_info : module_info -> string
+
 val write_build_cache : string -> t -> unit
 
 val read_build_cache : string -> t
@@ -2113,7 +2118,8 @@ val bsbuild_cache : string
 (** if not added, it is guaranteed the reference equality will 
     be held
 *)
-val map_update : ?dir:string -> t -> string -> t
+val map_update : 
+  ?dir:string -> file_group_rouces ->  string -> file_group_rouces
 
 end = struct
 #1 "binary_cache.ml"
@@ -2159,23 +2165,45 @@ type module_info =
     mll : string option ;
   }
 
+
+type file_group_rouces = module_info String_map.t 
+
 type t = 
-      module_info String_map.t 
+      module_info String_map.t array
+(** indexed by the group *)
 
+let module_info_magic_number = "BSBUILD20161019"
 
-let module_info_magic_number = "BSBUILD20161012"
+let dir_of_module_info (x : module_info)
+  = 
+  match x with 
+  | { mli; ml; mll} -> 
+    begin match mli with 
+    | Mli s | Rei s -> 
+      Filename.dirname s 
+    | Mli_empty -> 
+      begin match ml with 
+      | Ml s | Re s -> 
+        Filename.dirname s 
+      | Ml_empty -> 
+        begin match mll with 
+        | None -> ""
+        | Some s -> Filename.dirname s 
+        end 
+      end
+    end
 
-let write_build_cache bsbuild (bs_files : module_info String_map.t)  = 
+let write_build_cache bsbuild (bs_files : t)  = 
   let oc = open_out_bin bsbuild in 
   output_string oc module_info_magic_number ;
   output_value oc bs_files ;
   close_out oc 
 
-let read_build_cache bsbuild : module_info String_map.t = 
+let read_build_cache bsbuild : t = 
   let ic = open_in_bin bsbuild in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
-  let data : module_info String_map.t = input_value ic in 
+  let data : t = input_value ic in 
   close_in ic ;
   data 
 
@@ -2194,7 +2222,7 @@ let adjust_module_info x suffix name =
   | ".mll" -> {x with mll = Some name}
   | _ -> failwith ("don't know what to do with " ^ name)
 
-let map_update ?dir (map : t)  name : t  = 
+let map_update ?dir (map : file_group_rouces)  name : file_group_rouces  = 
   let prefix   = 
     match dir with
     | None -> fun x ->  x
@@ -2205,7 +2233,7 @@ let map_update ?dir (map : t)  name : t  =
     module_name 
     (fun _ -> (adjust_module_info empty_module_info suffix (prefix name )))
     (fun v -> (adjust_module_info v suffix (prefix name )))
-    map 
+    map
 
 end
 module Depends_post_process : sig 
@@ -2235,7 +2263,7 @@ module Depends_post_process : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val handle_bin_depfile : 
-  string option -> string -> unit
+  string option -> string -> int ->  unit
 
 end = struct
 #1 "depends_post_process.ml"
@@ -2292,9 +2320,9 @@ let read_deps fn =
 
 
 (* TODO: Don't touch the .d file if nothing changed *)
-let handle_bin_depfile oprefix  (fn : string) : unit = 
+let handle_bin_depfile oprefix  (fn : string) index : unit = 
   let op_concat s = match oprefix with None -> s | Some v -> v // s in 
-  let data =
+  let data : Binary_cache.t  =
     Binary_cache.read_build_cache (op_concat  Binary_cache.bsbuild_cache) in 
   let set = read_deps fn in 
   match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
@@ -2303,24 +2331,40 @@ let handle_bin_depfile oprefix  (fn : string) : unit =
     let (files, len) = 
       Array.fold_left
         (fun ((acc, len) as v) k  -> 
-           match String_map.find_exn k data with
-           | {ml = Ml s | Re s  } 
-           | {mll = Some s } 
+           match String_map.find_opt k data.(0) with
+           | Some ({ml = Ml s | Re s  } | {mll = Some s }) 
              -> 
              let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
              in (new_file :: acc , len + String.length new_file + length_space)
-           | {mli = Mli s | Rei s } -> 
+           | Some {mli = Mli s | Rei s } -> 
              let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
              (new_file :: acc , len + String.length new_file + length_space)
-           | _ -> assert false
-           | exception Not_found -> v
+           | Some _ -> assert false
+           | None  -> 
+             if index = 0 then v 
+             else 
+               begin match String_map.find_opt k data.(index) with 
+                 | Some ({ml = Ml s | Re s  } | {mll = Some s }) 
+                   -> 
+                   let new_file = op_concat @@ Filename.chop_extension s ^ Literals.suffix_cmj  
+                   in (new_file :: acc , len + String.length new_file + length_space)
+                 | Some {mli = Mli s | Rei s } -> 
+                   let new_file =  op_concat @@   Filename.chop_extension s ^ Literals.suffix_cmi in
+                   (new_file :: acc , len + String.length new_file + length_space)
+                 | Some _ -> assert false
+                 | None -> 
+                   v
+               end
         )  ([],String.length dependent_file) set in
-    let deps = Ext_string.unsafe_concat_with_length len
-        space
-        (dependent_file :: files)
-    in 
-    let output = input_file ^ Literals.suffix_mlastd in
-    Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
+
+    let output = input_file ^ Literals.suffix_mlastd in        
+    if files = [] then 
+      close_out (open_out_bin output)
+    else 
+      let deps = Ext_string.unsafe_concat_with_length len
+          space
+          (dependent_file :: files) in 
+      Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
 
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
@@ -2329,20 +2373,34 @@ let handle_bin_depfile oprefix  (fn : string) : unit =
         let (files, len) = 
           Array.fold_left
             (fun ((acc, len) as v) k ->
-               match String_map.find_exn k data with 
-               | { ml = Ml f | Re f  }
-               | { mll = Some f }
-               | { mli = Mli f | Rei f } -> 
+               match String_map.find_opt k data.(0) with 
+               | Some ({ ml = Ml f | Re f  }
+                      | { mll = Some f }
+                      | { mli = Mli f | Rei f }) -> 
                  let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
                  (new_file :: acc , len + String.length new_file + length_space)
-               | _ -> assert false
-               | exception Not_found -> v
+               | Some _ -> assert false
+               | None -> 
+                 if index = 0 then v 
+                 else 
+                   begin  match String_map.find_opt k data.(index) with 
+                     | Some ({ ml = Ml f | Re f  }
+                            | { mll = Some f }
+                            | { mli = Mli f | Rei f }) -> 
+                       let new_file = (op_concat @@ Filename.chop_extension f ^ Literals.suffix_cmi) in
+                       (new_file :: acc , len + String.length new_file + length_space)
+                     | Some _ -> assert false
+                     | None -> v
+                   end
+
             )   ([], String.length dependent_file) set in 
-        let deps = Ext_string.unsafe_concat_with_length len
-            space 
-            (dependent_file :: files)  in 
         let output = input_file ^ Literals.suffix_mliastd in
-        Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
+        if files = [] then close_out (open_out_bin output)            
+        else 
+          let deps = Ext_string.unsafe_concat_with_length len
+              space 
+              (dependent_file :: files)  in 
+          Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
     end
@@ -2402,14 +2460,18 @@ end = struct
 
 
 let output_prefix = ref None
+let dev_group = ref 0
 let annoymous other = ()
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
 let () =
     Arg.parse [
-    "-bs-oprefix", Arg.String (fun x -> output_prefix := Some x),
+    "-oprefix", Arg.String (fun x -> output_prefix := Some x),
     " Set output prefix for -bs-MD (internal use)";
-    "-bs-bin-MD", Arg.String (fun x -> Depends_post_process.handle_bin_depfile !output_prefix x),
-    " Generate dep file for ninja format(from .ml[i]deps)";
+    "-g", Arg.Int (fun i -> dev_group := i ), 
+    " Set the dev group (default to be 0)"
+    ;
+    "-MD", Arg.String (fun x -> Depends_post_process.handle_bin_depfile !output_prefix x !dev_group ),
+    " (internnal)Generate dep file for ninja format(from .ml[i]deps)";
 
     ] annoymous usage
 

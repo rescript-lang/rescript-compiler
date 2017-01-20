@@ -39,8 +39,13 @@ type module_info =
     mll : string option 
   }
 
+type file_group_rouces = module_info String_map.t 
+
 type t =
-  module_info String_map.t 
+  module_info String_map.t array
+
+val dir_of_module_info : module_info -> string
+
 val write_build_cache : string -> t -> unit
 
 val read_build_cache : string -> t
@@ -54,4 +59,5 @@ val bsbuild_cache : string
 (** if not added, it is guaranteed the reference equality will 
     be held
 *)
-val map_update : ?dir:string -> t -> string -> t
+val map_update : 
+  ?dir:string -> file_group_rouces ->  string -> file_group_rouces

@@ -51,6 +51,9 @@
                 "ppx-specs": {
                     "$ref": "#/definitions/ppx-specs"
                 },
+                "type" : {
+                    "enum" : ["dev", "lib"]
+                },
                 "files": {
                     "oneOf": [
                         {

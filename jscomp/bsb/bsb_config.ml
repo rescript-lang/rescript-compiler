@@ -42,3 +42,4 @@ let proj_rel path = lazy_src_root_dir // path
     of bsb in configuration time
 *)
 
+let no_dev = ref false 

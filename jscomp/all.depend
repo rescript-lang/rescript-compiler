@@ -642,9 +642,9 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
 bsb/bsb_build_schemas.cmx :
 bsb/bsb_build_ui.cmx : ext/string_vec.cmx ext/string_set.cmx \
     ext/string_map.cmx ext/ext_string.cmx ext/ext_json.cmx \
-    ext/ext_filename.cmx ext/ext_file_pp.cmx bsb/bsb_dir.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
-    bsb/bsb_build_ui.cmi
+    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
+    bsb/bsb_dir.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_schemas.cmx common/binary_cache.cmx bsb/bsb_build_ui.cmi
 bsb/bsb_build_util.cmx : ext/ext_string.cmx ext/ext_list.cmx \
     ext/ext_json.cmx ext/ext_filename.cmx ext/ext_array.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_util.cmi
@@ -657,7 +657,8 @@ bsb/bsb_dep_infos.cmx : bsb/bsb_dep_infos.cmi
 bsb/bsb_dir.cmx : bsb/bsb_dir.cmi
 bsb/bsb_gen.cmx : ext/string_map.cmx ext/literals.cmx ext/ext_filename.cmx \
     bsb/bsb_ninja.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
-    bsb/bsb_build_ui.cmx common/binary_cache.cmx bsb/bsb_gen.cmi
+    bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
+    bsb/bsb_gen.cmi
 bsb/bsb_helper_main.cmx : depends/depends_post_process.cmx \
     bsb/bsb_helper_main.cmi
 bsb/bsb_main.cmx : ext/string_vec.cmx ext/literals.cmx ext/ext_string.cmx \
@@ -667,7 +668,8 @@ bsb/bsb_main.cmx : ext/string_vec.cmx ext/literals.cmx ext/ext_string.cmx \
     bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx bsb/bsb_main.cmi
 bsb/bsb_ninja.cmx : ext/string_set.cmx ext/string_map.cmx ext/literals.cmx \
     ext/ext_filename.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
-    bsb/bsb_build_ui.cmx common/binary_cache.cmx bsb/bsb_ninja.cmi
+    bsb/bsb_build_ui.cmx bsb/bsb_build_schemas.cmx common/binary_cache.cmx \
+    bsb/bsb_ninja.cmi
 bsb/bsb_unix.cmx : bsb/bsb_unix.cmi
 bsb/bsb_build_ui.cmi : ext/string_set.cmi ext/string_map.cmi \
     ext/ext_json.cmi ext/ext_file_pp.cmi common/binary_cache.cmi

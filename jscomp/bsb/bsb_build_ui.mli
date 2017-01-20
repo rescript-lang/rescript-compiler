@@ -27,13 +27,15 @@ type public =
   | Export_set of String_set.t 
   | Export_none
     
+type dir_index = int 
 
 type  file_group = 
   { dir : string ;
-    sources : Binary_cache.t ; 
+    sources : Binary_cache.file_group_rouces ; 
     resources : string list ;
     bs_dependencies : string list;
-    public : public
+    public : public;
+    dir_index : dir_index; 
   } 
 
 type t = 
@@ -42,14 +44,19 @@ type t =
     globbed_dirs : string list ; 
   }
 
+val lib_dir_index : dir_index 
+
+val get_current_number_of_dev_groups : unit -> int 
 
 val parsing_source : 
-  string -> Ext_json.t String_map.t -> t
+  dir_index -> 
+  string -> Ext_json.t String_map.t -> t 
 
 (** entry is to the 
     [sources] in the schema
 *)
 val parsing_sources : 
+  dir_index -> 
   string -> 
   Ext_json.t array ->
   t 

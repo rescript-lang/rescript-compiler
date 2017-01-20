@@ -31,3 +31,5 @@ val proj_rel : string -> string
 val lib_bs : string
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
+
+val no_dev: bool ref 
