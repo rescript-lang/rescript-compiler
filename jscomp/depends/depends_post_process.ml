@@ -87,12 +87,15 @@ let handle_bin_depfile oprefix  (fn : string) index : unit =
                    v
                end
         )  ([],String.length dependent_file) set in
-    let deps = Ext_string.unsafe_concat_with_length len
-        space
-        (dependent_file :: files)
-    in 
-    let output = input_file ^ Literals.suffix_mlastd in
-    Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
+
+    let output = input_file ^ Literals.suffix_mlastd in        
+    if files = [] then 
+      close_out (open_out_bin output)
+    else 
+      let deps = Ext_string.unsafe_concat_with_length len
+          space
+          (dependent_file :: files) in 
+      Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
 
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
@@ -122,11 +125,13 @@ let handle_bin_depfile oprefix  (fn : string) index : unit =
                    end
 
             )   ([], String.length dependent_file) set in 
-        let deps = Ext_string.unsafe_concat_with_length len
-            space 
-            (dependent_file :: files)  in 
         let output = input_file ^ Literals.suffix_mliastd in
-        Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
+        if files = [] then close_out (open_out_bin output)            
+        else 
+          let deps = Ext_string.unsafe_concat_with_length len
+              space 
+              (dependent_file :: files)  in 
+          Ext_pervasives.with_file_as_chan output  (fun v -> output_string v deps)
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
     end
