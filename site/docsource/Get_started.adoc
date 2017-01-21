@@ -10,7 +10,7 @@
 .bsconfig.json
 ----
 {
-    "name" : "helo",
+    "name" : "hello",
     "sources" : { "dir" :  "src"}
 }
 ----
@@ -47,7 +47,7 @@ let () =
 ----
 npm run build
 ----
- 
+
 Now you should see a file called `lib/js/src/main_entry.js` generated as below:
 [source,js]
 .lib/js/src/main_entry.js
