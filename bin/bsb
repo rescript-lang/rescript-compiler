@@ -6,21 +6,33 @@ var fs = require('fs')
 var bsconfig = 'bsconfig.json'
 var bsb_exe = __filename + ".exe"
 var delegate_args = process.argv.slice(2)
-
-if(fs.existsSync(bsconfig)){
-    child_process.execFileSync(bsb_exe, delegate_args, {stdio:'inherit'})
+// function uncaughtHandler(err){
+//          console.error('command failed')         
+// }
+// process.on('uncaughtException',uncaughtHandler)
+if (fs.existsSync(bsconfig)) {
+    try {
+        child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
+    } catch (e) {
+        console.error('Error happend when running command', bsb_exe, 'with args', delete_args)
+    }
 } else {
     var path = require('path')
     var last_dir = process.cwd()
-    var search_dir = last_dir 
-    do{
+    var search_dir = last_dir
+    do {
         last_dir = search_dir
-        search_dir = path.dirname(last_dir)        
-    }while(!fs.existsSync(path.join(search_dir,bsconfig)) && (search_dir.length !== search_dir.length))
-    if(search_dir.length === last_dir.length){
+        search_dir = path.dirname(last_dir)
+    } while (!fs.existsSync(path.join(search_dir, bsconfig)) && (search_dir.length !== last_dir.length))
+    if (search_dir.length === last_dir.length) {
         console.error('bsconfig.json not found in current directory and its parent')
         process.exit(2)
-    }else{
-        child_process.execFileSync(bsb_exe, delegate_args, {stdio:'inherit', cwd: search_dir} )
-    } 
+    } else {
+        console.log("Root project : " ,  search_dir)
+        try {
+            child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit', cwd: search_dir })
+        } catch (e) {
+            console.error('Error happend when running command', bsb_exe, 'with args', delete_args)
+        }
+    }
 }
