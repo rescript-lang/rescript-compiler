@@ -58,7 +58,14 @@ type js_module_as_fn =
   }
 
 type arg_type = Ast_core_type.arg_type
-type arg_label = Ast_core_type.arg_label
+type arg_label = 
+  | Label of string 
+  | Label_int_lit of string * int 
+  | Label_string_lit of string * string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+  | Empty_int_lit of int 
+  | Empty_string_lit of string 
 
 type arg_kind = 
   {
