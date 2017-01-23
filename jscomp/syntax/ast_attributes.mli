@@ -52,6 +52,11 @@ val process_bs_string_as :
 val process_bs_int_as : 
   t -> int option * t 
 
+val process_bs_string_or_int_as : 
+    t ->
+    [ `Int of int | `Str of string ] option *
+    (string Asttypes.loc * Parsetree.payload) list
+
 
 val process_derive_type : 
   t -> derive_attr * t 

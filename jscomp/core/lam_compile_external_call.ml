@@ -59,21 +59,21 @@ type typ = Ast_core_type.t
     Only the [unit] with no label will be ignored
     When  we are passing a boxed value to external(optional), we need
     unbox it in the first place.
-    
+
     Note when optional value is not passed, the unboxed value would be 
     [undefined], with the combination of `[@bs.int]` it would be still be 
     [undefined], this by default is still correct..  
     {[
-    (function () {
-        switch (undefined) {
-          case 97 : 
-              return "a";
-          case 98 : 
-              return "b";
-          
-        }
-      }()) === undefined
-     ]} 
+      (function () {
+           switch (undefined) {
+             case 97 : 
+               return "a";
+             case 98 : 
+               return "b";
+
+           }
+         }()) === undefined
+    ]} 
 
      This would not work with [NonNullString]
 *)
@@ -84,8 +84,10 @@ let ocaml_to_js_eff
   let arg =
     match arg_label with
     | Optional label -> Js_of_lam_option.get_default_undefined arg 
-    | Label _ | Empty -> arg in 
+    | Label _ | Empty -> arg 
+    | Label_int_lit _ | Label_string_lit _ | Empty_int_lit _ | Empty_string_lit _  -> assert false in 
   match arg_type with
+  | Arg_int_lit _ | Arg_string_lit _ -> assert false 
   | Extern_unit ->  
     (if arg_label = Empty then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
@@ -107,17 +109,70 @@ let ocaml_to_js_eff
   | Nothing  | Array ->  [arg], []
 
 let fuse x xs =
-    if xs = [] then x  
-    else List.fold_left E.seq x xs 
+  if xs = [] then x  
+  else List.fold_left E.seq x xs 
 
-let assemble_args (arg_types : Ast_ffi_types.arg_kind list) args : E.t list * E.t option  = 
-  let args, eff = 
+(*      accs, 
+      if Js_analyzer.no_side_effect_expression arg then eff else arg::eff 
+    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
+      -> 
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+      begin match acc with 
+        | [ ] -> assert false
+        | x::xs -> 
+           fuse x xs  :: accs , new_eff @ eff 
+      end (* evaluation order is undefined *)
+
+    | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
+      -> 
+      let (accs, eff) as r = aux labels args  in 
+      begin match arg.expression_desc with 
+        | Number _ -> (*Invariant: None encoding*)
+          r
+        | _ ->                 
+          let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+          begin match acc with 
+            | [] -> assert false 
+            | x::xs -> 
+              ( fuse x xs)::accs , 
+              new_eff @ eff 
+          end 
+      end
+
+     *)
+  (* let args, eff = 
     List.fold_right2 
       (fun arg_type arg (accs, effs) -> 
          match ocaml_to_js_eff arg_type arg with
          | acc, eff  -> 
            acc @ accs , eff @ effs 
-      ) arg_types args ([],[]) in
+      ) arg_types args ([],[]) in *)     
+let assemble_args (arg_types : Ast_ffi_types.arg_kind list) args : E.t list * E.t option  = 
+    let rec aux labels args = 
+    match labels, args with 
+    | [] , [] -> [], []
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Empty_int_lit i } :: labels  , args 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Label_int_lit (_,i)} :: labels  , args -> 
+      let accs, eff = aux labels args in 
+      E.int (Int32.of_int i) ::accs, eff 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Label_string_lit(_,i)} :: labels , args 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Empty_string_lit i} :: labels , args
+      -> 
+      let accs, eff = aux labels args in 
+      E.str i :: accs, eff
+    
+    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
+      ->  
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+      acc @ accs, new_eff @ eff
+    | {Ast_ffi_types.arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | [],  _ :: _  -> assert false      
+
+  in 
+  let args, eff = aux arg_types args in
+
   args, begin match eff with 
     | [] -> None
     | x::xs -> Some (fuse x xs)
@@ -138,9 +193,7 @@ let add_eff eff e =
    ]}
    But the default to be undefined  seems reasonable 
 *)
-let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
-
-  let map, eff  = 
+  (* let map, eff  = 
     List.fold_right2
       (fun ({arg_label; arg_type} as arg_kind : Ast_ffi_types.arg_kind) ( arg : J.expression) (accs, eff ) -> 
          match arg_label with 
@@ -168,7 +221,56 @@ let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expressio
                    new_eff @ eff 
                end 
            end
-      ) labels args ([], []) in
+      ) labels args ([], []) in *)      
+let assemble_args_obj (labels : Ast_ffi_types.arg_kind list) (args : J.expression list) = 
+  let rec aux labels args = 
+    match labels, args with 
+    | [] , [] -> [], []
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Label_int_lit (label,i)} :: labels  , args -> 
+      let accs, eff = aux labels args in 
+      (Js_op.Key label, E.int (Int32.of_int i) )::accs, eff 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Label_string_lit(label,i)} :: labels , args 
+      -> 
+      let accs, eff = aux labels args in 
+      (Js_op.Key label, E.str i) :: accs, eff
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Empty_int_lit i } :: rest  , args -> assert false 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Empty_string_lit i} :: rest , args -> assert false 
+    | {arg_label = Empty }::labels, arg::args 
+      ->  
+      let accs, eff = aux labels args in 
+      accs, 
+      if Js_analyzer.no_side_effect_expression arg then eff else arg::eff 
+    | ({arg_label = Label label  } as arg_kind)::labels, arg::args 
+      -> 
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+      begin match acc with 
+        | [ ] -> assert false
+        | x::xs -> 
+          (Js_op.Key label, fuse x xs ) :: accs , new_eff @ eff 
+      end (* evaluation order is undefined *)
+
+    | ({arg_label = Optional label } as arg_kind)::labels, arg::args 
+      -> 
+      let (accs, eff) as r = aux labels args  in 
+      begin match arg.expression_desc with 
+        | Number _ -> (*Invariant: None encoding*)
+          r
+        | _ ->                 
+          let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+          begin match acc with 
+            | [] -> assert false 
+            | x::xs -> 
+              (Js_op.Key label, fuse x xs)::accs , 
+              new_eff @ eff 
+          end 
+      end
+
+    | {Ast_ffi_types.arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | [],  _ :: _  -> assert false 
+  in 
+  let map, eff = aux labels args in 
+
   match eff with
   | [] -> 
     E.obj map 
@@ -202,10 +304,33 @@ let ocaml_to_js ~js_splice:(js_splice : bool) call_loc ffi
     ocaml_to_js_eff arg_ty arg 
 
 let assemble_args_splice call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let args, eff = 
+     let rec aux labels args = 
+    match labels, args with 
+    | [] , [] -> [], []
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Empty_int_lit i } :: labels  , args 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Label_int_lit (_,i)} :: labels  , args -> 
+      let accs, eff = aux labels args in 
+      E.int (Int32.of_int i) ::accs, eff 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Label_string_lit(_,i)} :: labels , args 
+    | {Ast_ffi_types.arg_label = Ast_ffi_types.Empty_string_lit i} :: labels , args
+      -> 
+      let accs, eff = aux labels args in 
+      E.str i :: accs, eff
+    
+    | ({arg_label = Empty | Label _ | Optional _ } as arg_kind) ::labels, arg::args 
+      ->  
+      let accs, eff = aux labels args in 
+      let acc, new_eff = ocaml_to_js call_loc ffi ~js_splice (args = []) arg_kind arg in 
+      acc @ accs, new_eff @ eff
+    | {Ast_ffi_types.arg_label = Empty | Label _ | Optional _  } :: _ , [] -> assert false 
+    | [],  _ :: _  -> assert false      
+
+  in 
+  let args, eff = aux arg_types args  in 
+  (* let args, eff = 
     Ext_list.fold_right2_last (fun last arg_ty arg (accs, effs)  -> 
         let (acc,eff) = ocaml_to_js call_loc ffi  ~js_splice last arg_ty arg  in acc @ accs, eff @ effs
-      ) arg_types args ([], []) in
+      ) arg_types args ([], []) in *)
   args,
   begin  match eff with
     | [] -> None 

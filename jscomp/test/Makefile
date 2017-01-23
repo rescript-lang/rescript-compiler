@@ -86,8 +86,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	side_effect_free\
 	include_side_effect_free\
 	include_side_effect\
-	exception_alias
-
+	exception_alias\
+	prepend_data_ffi\
 
 
 SOURCE_LIST :=  $(OTHERS) 

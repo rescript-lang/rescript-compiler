@@ -122,8 +122,8 @@ external mk6: ?x:unit -> y:int -> unit -> _ = "" [@@bs.obj]
 let v_mk6 : < x : unit Js.Undefined.t ; y : int > Js.t = mk6 ~y:3 ()
 
 let v_mk6_1 = mk6 ~x:() ~y:3 ()
-
-external mk :  ?x_ignore:([`a|`b] [@bs.int]) -> unit -> _ = "" [@@bs.val]
+type mk
+external mk :  ?x_ignore:([`a|`b] [@bs.int]) -> unit -> _ = "" [@@bs.obj]
 
 
 
