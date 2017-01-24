@@ -155,6 +155,9 @@ let buckle_script_flags =
    " only check syntax"
   )
   ::
+  ("-bs-no-bin-annot", Arg.Clear Clflags.binary_annotations, 
+   " disable binary annotations (by default on)")
+  ::
   ("-bs-eval", 
    Arg.String set_eval_string, 
    " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
@@ -258,6 +261,7 @@ let buckle_script_flags =
 let _ = 
   Clflags.unsafe_string := false;
   Clflags.debug := true;
+  Clflags.binary_annotations := true; 
   Bs_conditional_initial.setup_env ();
   try
     Compenv.readenv ppf Before_args;
