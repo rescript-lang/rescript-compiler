@@ -167,8 +167,8 @@ syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
     syntax/ast_signature.cmx syntax/ast_payload.cmx syntax/ast_derive.cmi
 syntax/ast_comb.cmx : ext/ext_list.cmx syntax/ast_literal.cmx \
     syntax/ast_comb.cmi
-syntax/ast_attributes.cmx : ext/ext_string.cmx syntax/ast_payload.cmx \
-    syntax/ast_attributes.cmi
+syntax/ast_attributes.cmx : ext/ext_string.cmx common/bs_warnings.cmx \
+    syntax/ast_payload.cmx syntax/ast_attributes.cmi
 syntax/ast_core_type.cmx : ext/ext_list.cmx syntax/ast_comb.cmx \
     syntax/ast_core_type.cmi
 syntax/ast_derive_dyn.cmx : syntax/ast_structure.cmx \
@@ -190,12 +190,12 @@ syntax/ast_util.cmx : ext/literals.cmx ext/ext_list.cmx \
     syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
     syntax/ast_util.cmi
 syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_ref.cmx ext/ext_list.cmx \
-    common/bs_warnings.cmx syntax/ast_util.cmx syntax/ast_structure.cmx \
-    syntax/ast_signature.cmx syntax/ast_payload.cmx syntax/ast_literal.cmx \
-    syntax/ast_external_attributes.cmx syntax/ast_derive_projector.cmx \
-    syntax/ast_derive_dyn.cmx syntax/ast_derive.cmx syntax/ast_comb.cmx \
-    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
+    ext/ext_string.cmx ext/ext_ref.cmx ext/ext_list.cmx syntax/ast_util.cmx \
+    syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
+    syntax/ast_literal.cmx syntax/ast_external_attributes.cmx \
+    syntax/ast_derive_projector.cmx syntax/ast_derive_dyn.cmx \
+    syntax/ast_derive.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
+    syntax/ppx_entry.cmi
 syntax/ast_exp.cmi :
 syntax/ast_external.cmi :
 syntax/ast_lift.cmi :
@@ -487,7 +487,7 @@ core/lam_compile_external_call.cmx : core/lam_dispatch_primitive.cmx \
     core/lam_compile_env.cmx core/lam_compile_defs.cmx core/js_op.cmx \
     core/js_of_lam_variant.cmx core/js_of_lam_option.cmx core/js_exp_make.cmx \
     core/js_arr.cmx core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx \
-    ext/ext_ident.cmx syntax/ast_ffi_types.cmx syntax/ast_core_type.cmx \
+    ext/ext_ident.cmx syntax/ast_ffi_types.cmx \
     core/lam_compile_external_call.cmi
 core/lam_compile_primitive.cmx : core/lam_util.cmx \
     core/lam_compile_external_call.cmx core/lam_compile_defs.cmx core/lam.cmx \

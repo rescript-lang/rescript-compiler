@@ -13322,7 +13322,7 @@ module Flow_parser_js
  *
  *)
 
-external createRegex : string -> string -> _ = "RegExp" [@@bs.new]
+external createRegex : string -> string -> 'a = "RegExp" [@@bs.new]
 
 module JsTranslator : sig
   val translation_errors: (Loc.t * Parse_error.t) list ref
@@ -13351,7 +13351,7 @@ end = struct
     regexp
 end
 
-external throw : _ -> _ = "throw" [@@bs.val]
+external throw : 'a -> 'b = "throw" [@@bs.val]
 
 (* let parse_options jsopts = Parser_env.(
   let opts = default_parse_options in
@@ -13384,9 +13384,9 @@ external throw : _ -> _ = "throw" [@@bs.val]
   opts
 ) *)
 
-external setRetErrors : _ -> string -> _ -> unit = "" [@@bs.set_index]
-external setEName : _ -> string -> _ -> unit = "" [@@bs.set_index]
-external newError : _ -> _ = "Error" [@@bs.new]
+external setRetErrors : 'a -> string -> 'b -> unit = "" [@@bs.set_index]
+external setEName : 'a -> string -> 'b -> unit = "" [@@bs.set_index]
+external newError : 'a -> 'b = "Error" [@@bs.new]
 
 let parse content options =
   (* let parse_options = Some (parse_options options) in *)
