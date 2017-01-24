@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_int32 = require("../../lib/js/caml_int32");
-var Curry      = require("../../lib/js/curry");
 var List       = require("../../lib/js/list");
+var Curry      = require("../../lib/js/curry");
+var Caml_int32 = require("../../lib/js/caml_int32");
 
 function h0(x) {
   return x();

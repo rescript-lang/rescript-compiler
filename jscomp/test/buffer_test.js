@@ -1,10 +1,10 @@
 'use strict';
 
-var Block      = require("../../lib/js/block");
-var Caml_bytes = require("../../lib/js/caml_bytes");
 var Mt         = require("./mt");
-var Buffer     = require("../../lib/js/buffer");
+var Block      = require("../../lib/js/block");
 var Bytes      = require("../../lib/js/bytes");
+var Buffer     = require("../../lib/js/buffer");
+var Caml_bytes = require("../../lib/js/caml_bytes");
 
 var v = "gso";
 

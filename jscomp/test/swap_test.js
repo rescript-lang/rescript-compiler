@@ -1,15 +1,15 @@
 'use strict';
 
-var Printf     = require("../../lib/js/printf");
-var Caml_int32 = require("../../lib/js/caml_int32");
-var Block      = require("../../lib/js/block");
+var Mt         = require("./mt");
+var List       = require("../../lib/js/list");
 var $$Array    = require("../../lib/js/array");
+var Block      = require("../../lib/js/block");
 var Curry      = require("../../lib/js/curry");
 var Format     = require("../../lib/js/format");
-var Mt         = require("./mt");
-var Caml_int64 = require("../../lib/js/caml_int64");
+var Printf     = require("../../lib/js/printf");
 var Caml_obj   = require("../../lib/js/caml_obj");
-var List       = require("../../lib/js/list");
+var Caml_int32 = require("../../lib/js/caml_int32");
+var Caml_int64 = require("../../lib/js/caml_int64");
 var Pervasives = require("../../lib/js/pervasives");
 
 var tests_16 = Caml_obj.caml_obj_dup(/* array */[

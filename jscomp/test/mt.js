@@ -1,12 +1,12 @@
 'use strict';
 
-var Process                 = require("process");
-var Assert                  = require("assert");
-var $$Array                 = require("../../lib/js/array");
-var Curry                   = require("../../lib/js/curry");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var List                    = require("../../lib/js/list");
 var Path                    = require("path");
+var $$Array                 = require("../../lib/js/array");
+var Curry                   = require("../../lib/js/curry");
+var Assert                  = require("assert");
+var Process                 = require("process");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function is_mocha() {
   var match = $$Array.to_list(Process.argv);
@@ -98,4 +98,4 @@ function from_pair_suites(name, suites) {
 
 exports.from_suites      = from_suites;
 exports.from_pair_suites = from_pair_suites;
-/* process Not a pure module */
+/* path Not a pure module */

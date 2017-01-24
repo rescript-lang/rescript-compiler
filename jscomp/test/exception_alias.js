@@ -1,7 +1,7 @@
 'use strict';
 
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var List                    = require("../../lib/js/list");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var a0 = Caml_builtin_exceptions.not_found;
 

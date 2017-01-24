@@ -3,8 +3,8 @@
 var Block       = require("../../lib/js/block");
 var Curry       = require("../../lib/js/curry");
 var Lexing      = require("../../lib/js/lexing");
-var Caml_format = require("../../lib/js/caml_format");
 var Pervasives  = require("../../lib/js/pervasives");
+var Caml_format = require("../../lib/js/caml_format");
 
 var __ocaml_lex_tables = /* record */[
   /* lex_base */"\0\0\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff:\0\x85\0\xff\xff",

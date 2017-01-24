@@ -1,9 +1,9 @@
 'use strict';
 
-var Block                   = require("../../lib/js/block");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Mt                      = require("./mt");
+var Block                   = require("../../lib/js/block");
 var Js_json                 = require("../../lib/js/js_json");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var suites = [/* [] */0];
 

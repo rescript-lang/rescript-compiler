@@ -1,15 +1,15 @@
 'use strict';
 
+var Mt                      = require("./mt");
+var List                    = require("../../lib/js/list");
 var Block                   = require("../../lib/js/block");
 var Curry                   = require("../../lib/js/curry");
-var Arith_syntax            = require("./arith_syntax");
-var Arith_lexer             = require("./arith_lexer");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Mt                      = require("./mt");
-var Arith_parser            = require("./arith_parser");
-var Number_lexer            = require("./number_lexer");
 var Lexing                  = require("../../lib/js/lexing");
-var List                    = require("../../lib/js/list");
+var Arith_lexer             = require("./arith_lexer");
+var Arith_parser            = require("./arith_parser");
+var Arith_syntax            = require("./arith_syntax");
+var Number_lexer            = require("./number_lexer");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function get_tokens(lex, str) {
   var buf = Lexing.from_string(str);

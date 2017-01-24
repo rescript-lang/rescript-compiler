@@ -1,10 +1,10 @@
 'use strict';
 
-var Printf = require("../../lib/js/printf");
+var Mt     = require("./mt");
 var Block  = require("../../lib/js/block");
 var Curry  = require("../../lib/js/curry");
 var Format = require("../../lib/js/format");
-var Mt     = require("./mt");
+var Printf = require("../../lib/js/printf");
 
 function print_pair(fmt, param) {
   return Curry._2(Format.fprintf(fmt, /* Format */[

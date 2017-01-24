@@ -1,8 +1,8 @@
 'use strict';
 
+var Mt       = require("./mt");
 var Block    = require("../../lib/js/block");
 var Ext_list = require("./ext_list");
-var Mt       = require("./mt");
 
 var suites_000 = /* tuple */[
   "drop",

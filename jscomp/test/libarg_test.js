@@ -1,12 +1,12 @@
 'use strict';
 
-var Printf   = require("../../lib/js/printf");
+var Mt       = require("./mt");
 var Arg      = require("../../lib/js/arg");
+var List     = require("../../lib/js/list");
 var Block    = require("../../lib/js/block");
 var Curry    = require("../../lib/js/curry");
-var Mt       = require("./mt");
+var Printf   = require("../../lib/js/printf");
 var Caml_obj = require("../../lib/js/caml_obj");
-var List     = require("../../lib/js/list");
 
 var current = [0];
 

@@ -1,12 +1,12 @@
 'use strict';
 
-var Block                   = require("../../lib/js/block");
-var Stream                  = require("../../lib/js/stream");
-var Caml_bytes              = require("../../lib/js/caml_bytes");
-var Curry                   = require("../../lib/js/curry");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Mt                      = require("./mt");
 var List                    = require("../../lib/js/list");
+var Block                   = require("../../lib/js/block");
+var Curry                   = require("../../lib/js/curry");
+var Stream                  = require("../../lib/js/stream");
+var Caml_bytes              = require("../../lib/js/caml_bytes");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function classify(chr) {
   if (chr & 128) {

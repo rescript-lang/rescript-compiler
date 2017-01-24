@@ -1,9 +1,9 @@
 'use strict';
 
+var Mt         = require("./mt");
 var Block      = require("../../lib/js/block");
 var Curry      = require("../../lib/js/curry");
 var Format     = require("../../lib/js/format");
-var Mt         = require("./mt");
 var Pervasives = require("../../lib/js/pervasives");
 
 var suites = [/* [] */0];

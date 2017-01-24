@@ -1,8 +1,8 @@
 'use strict';
 
-var Block      = require("../../lib/js/block");
-var $$Array    = require("../../lib/js/array");
 var Mt         = require("./mt");
+var $$Array    = require("../../lib/js/array");
+var Block      = require("../../lib/js/block");
 var Caml_array = require("../../lib/js/caml_array");
 
 function f() {

@@ -1,8 +1,8 @@
 'use strict';
 
+var Caml_obj                = require("../../lib/js/caml_obj");
 var Js_primitive            = require("../../lib/js/js_primitive");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Caml_obj                = require("../../lib/js/caml_obj");
 
 if (!Caml_obj.caml_equal(Js_primitive.js_from_nullable_def(""), /* Some */[""])) {
   throw [

@@ -1,12 +1,12 @@
 'use strict';
 
-var Hashtbl                 = require("../../lib/js/hashtbl");
+var List                    = require("../../lib/js/list");
 var Curry                   = require("../../lib/js/curry");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Caml_format             = require("../../lib/js/caml_format");
+var Hashtbl                 = require("../../lib/js/hashtbl");
 var Caml_obj                = require("../../lib/js/caml_obj");
 var Pervasives              = require("../../lib/js/pervasives");
-var List                    = require("../../lib/js/list");
+var Caml_format             = require("../../lib/js/caml_format");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var equal = Caml_obj.caml_equal;
 

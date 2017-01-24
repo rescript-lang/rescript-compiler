@@ -1,9 +1,9 @@
 'use strict';
 
-var Block                   = require("../../lib/js/block");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Mt                      = require("./mt");
+var Block                   = require("../../lib/js/block");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var Str = Caml_exceptions.create("Extensible_variant_test.Str");
 

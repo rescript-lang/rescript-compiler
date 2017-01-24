@@ -1,22 +1,22 @@
 'use strict';
 
-var Char                    = require("../../lib/js/char");
-var Printf                  = require("../../lib/js/printf");
-var Caml_int32              = require("../../lib/js/caml_int32");
-var Block                   = require("../../lib/js/block");
-var Caml_bytes              = require("../../lib/js/caml_bytes");
-var Caml_string             = require("../../lib/js/caml_string");
-var Curry                   = require("../../lib/js/curry");
 var Sys                     = require("../../lib/js/sys");
-var Format                  = require("../../lib/js/format");
-var Caml_io                 = require("../../lib/js/caml_io");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Printexc                = require("../../lib/js/printexc");
-var $$String                = require("../../lib/js/string");
-var Buffer                  = require("../../lib/js/buffer");
-var Bytes                   = require("../../lib/js/bytes");
-var Pervasives              = require("../../lib/js/pervasives");
+var Char                    = require("../../lib/js/char");
 var List                    = require("../../lib/js/list");
+var Block                   = require("../../lib/js/block");
+var Bytes                   = require("../../lib/js/bytes");
+var Curry                   = require("../../lib/js/curry");
+var Buffer                  = require("../../lib/js/buffer");
+var Format                  = require("../../lib/js/format");
+var Printf                  = require("../../lib/js/printf");
+var $$String                = require("../../lib/js/string");
+var Caml_io                 = require("../../lib/js/caml_io");
+var Printexc                = require("../../lib/js/printexc");
+var Caml_bytes              = require("../../lib/js/caml_bytes");
+var Caml_int32              = require("../../lib/js/caml_int32");
+var Pervasives              = require("../../lib/js/pervasives");
+var Caml_string             = require("../../lib/js/caml_string");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function _with_in(filename, f) {
   var ic = Pervasives.open_in_bin(filename);

@@ -163,7 +163,12 @@ let buckle_script_flags =
   (
     "-bs-sort-imports",
     Arg.Set Js_config.sort_imports,
-    " Sort the imports by lexical order so the output will be more stable"
+    " Sort the imports by lexical order so the output will be more stable (default false)"
+  )
+  ::
+  ( "-bs-no-sort-imports", 
+    Arg.Clear Js_config.sort_imports,
+    " No sort (see -bs-sort-imports)"
   )
   ::
   ("-bs-better-errors",

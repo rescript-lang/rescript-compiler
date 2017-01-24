@@ -1,8 +1,8 @@
 'use strict';
 
+var Mt       = require("./mt");
 var Block    = require("../../lib/js/block");
 var Js_types = require("../../lib/js/js_types");
-var Mt       = require("./mt");
 
 function string_or_number(x) {
   var match = Js_types.reify_type(x);

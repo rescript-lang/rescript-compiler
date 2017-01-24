@@ -1,10 +1,10 @@
 'use strict';
 
+var Mt                      = require("./mt");
 var Block                   = require("../../lib/js/block");
 var Curry                   = require("../../lib/js/curry");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Mt                      = require("./mt");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var Local = Caml_exceptions.create("Exception_raise_test.Local");
 

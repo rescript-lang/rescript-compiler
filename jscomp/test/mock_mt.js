@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
 var List  = require("../../lib/js/list");
+var Curry = require("../../lib/js/curry");
 
 function from_pair_suites(name, suites) {
   console.log(/* tuple */[

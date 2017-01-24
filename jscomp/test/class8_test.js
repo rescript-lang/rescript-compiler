@@ -1,11 +1,11 @@
 'use strict';
 
+var Mt              = require("./mt");
 var Block           = require("../../lib/js/block");
 var Curry           = require("../../lib/js/curry");
-var CamlinternalOO  = require("../../lib/js/camlinternalOO");
-var Mt              = require("./mt");
-var Caml_exceptions = require("../../lib/js/caml_exceptions");
 var Caml_obj        = require("../../lib/js/caml_obj");
+var CamlinternalOO  = require("../../lib/js/camlinternalOO");
+var Caml_exceptions = require("../../lib/js/caml_exceptions");
 
 var shared = [
   "leq",

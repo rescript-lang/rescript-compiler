@@ -1,16 +1,16 @@
 'use strict';
 
-var Int32      = require("../../lib/js/int32");
-var Ext_array  = require("./ext_array");
-var Block      = require("../../lib/js/block");
-var $$Array    = require("../../lib/js/array");
-var Curry      = require("../../lib/js/curry");
-var Format     = require("../../lib/js/format");
 var Mt         = require("./mt");
-var Caml_int64 = require("../../lib/js/caml_int64");
-var Caml_obj   = require("../../lib/js/caml_obj");
-var Pervasives = require("../../lib/js/pervasives");
+var $$Array    = require("../../lib/js/array");
+var Block      = require("../../lib/js/block");
+var Curry      = require("../../lib/js/curry");
+var Int32      = require("../../lib/js/int32");
 var Int64      = require("../../lib/js/int64");
+var Format     = require("../../lib/js/format");
+var Caml_obj   = require("../../lib/js/caml_obj");
+var Ext_array  = require("./ext_array");
+var Caml_int64 = require("../../lib/js/caml_int64");
+var Pervasives = require("../../lib/js/pervasives");
 
 function f(u, v) {
   return +(u > v);

@@ -1,9 +1,9 @@
 'use strict';
 
+var Mt         = require("./mt");
 var $$Array    = require("../../lib/js/array");
 var Block      = require("../../lib/js/block");
 var Queue      = require("../../lib/js/queue");
-var Mt         = require("./mt");
 var Caml_array = require("../../lib/js/caml_array");
 
 function to_array(q) {
