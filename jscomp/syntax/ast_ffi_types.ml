@@ -56,10 +56,31 @@ type js_module_as_fn =
   { external_module_name : external_module_name;
     splice : bool 
   }
+  
+(** TODO: information between [arg_type] and [arg_label] are duplicated, 
+  design a more compact representation so that it is also easy to seralize by hand
+*)  
+type arg_type = Ast_core_type.arg_type =
+  | NullString of (int * string) list (* `a does not have any value*)
+  | NonNullString of (int * string) list (* `a of int *)
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+  (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  | Array 
+  | Extern_unit
+  | Nothing
+  | Ignore
 
-type arg_type = Ast_core_type.arg_type
-type arg_label = Ast_core_type.arg_label
-
+type arg_label = 
+  | Label of string 
+  | Label_int_lit of string * int 
+  | Label_string_lit of string * string 
+  | Optional of string 
+  | Empty (* it will be ignored , side effect will be recorded *)
+  | Empty_int_lit of int 
+  | Empty_string_lit of string 
+(**TODO: maybe we can merge [arg_label] and [arg_type] *)
 type arg_kind = 
   {
     arg_type : arg_type;
@@ -99,12 +120,12 @@ let name_of_ffi ffi =
   | Js_global v 
     -> 
     Printf.sprintf "[@@bs.val] %S " v.name                    
-  (* | Obj_create _ -> 
-    Printf.sprintf "[@@bs.obj]" *)
+(* | Obj_create _ -> 
+   Printf.sprintf "[@@bs.obj]" *)
 type t  = 
   | Ffi_bs of arg_kind list  * bool * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
-     [return] means return value is unit or not, 
+       [return] means return value is unit or not, 
         [true] means is [unit]  
   *)
   | Ffi_obj_create of obj_create
@@ -195,7 +216,7 @@ let bs_prefix_length = String.length bs_prefix
     Solution:
     1. fixed length 
     2. non-prefix approach
- *)
+*)
 let bs_external = bs_prefix ^ Bs_version.version 
 
 
@@ -208,16 +229,15 @@ let to_string  t =
 
 (* TODO:  better error message when version mismatch *)
 let from_string s : t = 
-    let s_len = String.length s in 
-    if s_len >= bs_prefix_length &&
-         String.unsafe_get s 0 = 'B' &&
-        String.unsafe_get s 1 = 'S' &&
-        String.unsafe_get s 2 = ':' then 
-        if Ext_string.starts_with s bs_external then 
-            Marshal.from_string s bs_external_length 
-         else 
-            Ext_pervasives.failwithf 
-                ~loc:__LOC__
-                "compiler version mismatch, please do a clean build"
-    else Ffi_normal    
-    
+  let s_len = String.length s in 
+  if s_len >= bs_prefix_length &&
+     String.unsafe_get s 0 = 'B' &&
+     String.unsafe_get s 1 = 'S' &&
+     String.unsafe_get s 2 = ':' then 
+    if Ext_string.starts_with s bs_external then 
+      Marshal.from_string s bs_external_length 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "compiler version mismatch, please do a clean build"
+  else Ffi_normal    

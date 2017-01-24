@@ -110,7 +110,9 @@ var v_mk6_1 = {
   y: 3
 };
 
-var mk_u = mk(0);
+var mk_u = {
+  x: 0
+};
 
 var v_mk7_000 = {
   y: 3

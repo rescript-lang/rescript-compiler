@@ -394,10 +394,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                      currently the pattern match is written in a top down style.
                      Another corner case: f##(g a b [@bs])
                   *)
-                  if attrs <> [] then 
-                    List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
-                        Bs_warnings.warn_unused_attribute loc txt 
-                      ) attrs;
+                  Ast_attributes.warn_unused_attributes attrs ;  
                   {e with pexp_desc = Ast_util.method_apply loc self obj name args}
                 | [("", obj) ;
                    ("", 

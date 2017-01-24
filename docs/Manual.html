@@ -541,13 +541,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_splice_calling_convention_bs_splice">Splice calling convention: bs.splice</a></li>
-<li><a href="#_special_types_on_external_declarations_bs_string_bs_int_bs_ignore">Special types on external declarations: bs.string, bs.int, bs.ignore</a>
+<li><a href="#_special_types_on_external_declarations_bs_string_bs_int_bs_ignore_bs_as">Special types on external declarations: bs.string, bs.int, bs.ignore, bs.as</a>
 <ul class="sectlevel3">
 <li><a href="#_using_polymorphic_variant_to_model_enums_and_string_types">Using polymorphic variant to model enums and string types</a></li>
 <li><a href="#_using_polymorphic_variant_to_model_event_listener">Using polymorphic variant to model event listener</a></li>
 <li><a href="#_phantom_arguments_and_ad_hoc_polyrmophism">Phantom Arguments and ad-hoc polyrmophism</a></li>
 </ul>
 </li>
+<li><a href="#_fixed_arguments">Fixed Arguments</a></li>
 <li><a href="#_binding_to_nodejs_special_variables_bs_node">Binding to NodeJS special variables: bs.node</a></li>
 <li><a href="#_binding_to_callbacks_high_order_function">Binding to callbacks (high-order function)</a>
 <ul class="sectlevel3">
@@ -1717,7 +1718,7 @@ the compiler will emit an error message</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_special_types_on_external_declarations_bs_string_bs_int_bs_ignore"><a class="anchor" href="#_special_types_on_external_declarations_bs_string_bs_int_bs_ignore"></a>Special types on external declarations: bs.string, bs.int, bs.ignore</h3>
+<h3 id="_special_types_on_external_declarations_bs_string_bs_int_bs_ignore_bs_as"><a class="anchor" href="#_special_types_on_external_declarations_bs_string_bs_int_bs_ignore_bs_as"></a>Special types on external declarations: bs.string, bs.int, bs.ignore, bs.as</h3>
 <div class="sect3">
 <h4 id="_using_polymorphic_variant_to_model_enums_and_string_types"><a class="anchor" href="#_using_polymorphic_variant_to_model_enums_and_string_types"></a>Using polymorphic variant to model enums and string types</h4>
 <div class="paragraph">
@@ -1917,6 +1918,85 @@ still be recorded.</p>
 <span class="tok-k">let</span> <span class="tok-n">add2</span> <span class="tok-n">k</span> <span class="tok-n">x</span> <span class="tok-n">y</span> <span class="tok-o">=</span>
   <span class="tok-n">add_dyn</span> <span class="tok-n">k</span> <span class="tok-o">(</span><span class="tok-n">string_of_kind</span> <span class="tok-n">k</span><span class="tok-o">)</span> <span class="tok-n">x</span> <span class="tok-n">y</span></code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_fixed_arguments"><a class="anchor" href="#_fixed_arguments"></a>Fixed Arguments</h3>
+<div class="paragraph">
+<p>Contrary to the Phantom arguments, <code>_[@bs.as]</code> is introduced to attach the const
+data.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">process_on_exit</span> <span class="tok-o">:</span> <span class="tok-o">(_</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;exit&quot;</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span><span class="tok-o">)</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span>
+  <span class="tok-s2">&quot;process.on&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">val</span><span class="tok-o">]</span>
+
+<span class="tok-k">let</span> <span class="tok-bp">()</span> <span class="tok-o">=</span>
+    <span class="tok-n">process_on_exit</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">exit_code</span> <span class="tok-o">-&gt;</span>
+        <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span><span class="tok-o">(</span> <span class="tok-s2">&quot;error code: &quot;</span> <span class="tok-o">^</span> <span class="tok-n">string_of_int</span> <span class="tok-n">exit_code</span> <span class="tok-o">))</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-nx">process</span><span class="tok-p">.</span><span class="tok-nx">on</span><span class="tok-p">(</span><span class="tok-s2">&quot;exit&quot;</span><span class="tok-p">,</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">exit_code</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+      <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-s2">&quot;error code: &quot;</span> <span class="tok-o">+</span> <span class="tok-nx">exit_code</span><span class="tok-p">);</span>
+      <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-p">});</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It can also be used in combination with other attributes, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">process</span>
+
+<span class="tok-k">external</span> <span class="tok-n">on_exit</span> <span class="tok-o">:</span>  <span class="tok-o">(_</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;exit&quot;</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-o">(</span><span class="tok-kt">int</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span><span class="tok-o">)</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">=</span>
+    <span class="tok-s2">&quot;on&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">send</span><span class="tok-o">.</span><span class="tok-n">pipe</span><span class="tok-o">:</span> <span class="tok-n">process</span><span class="tok-o">]</span>
+<span class="tok-k">let</span> <span class="tok-n">register</span> <span class="tok-o">(</span><span class="tok-n">p</span> <span class="tok-o">:</span> <span class="tok-n">process</span><span class="tok-o">)</span> <span class="tok-o">=</span>
+        <span class="tok-n">p</span> <span class="tok-o">|&gt;</span> <span class="tok-n">on_exit</span> <span class="tok-o">(</span><span class="tok-k">fun</span> <span class="tok-n">i</span> <span class="tok-o">-&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">log</span> <span class="tok-n">i</span> <span class="tok-o">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">function</span> <span class="tok-nx">register</span><span class="tok-p">(</span><span class="tok-nx">p</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+  <span class="tok-k">return</span> <span class="tok-nx">p</span><span class="tok-p">.</span><span class="tok-nx">on</span><span class="tok-p">(</span><span class="tok-s2">&quot;exit&quot;</span><span class="tok-p">,</span> <span class="tok-kd">function</span> <span class="tok-p">(</span><span class="tok-nx">i</span><span class="tok-p">)</span> <span class="tok-p">{</span>
+              <span class="tok-nx">console</span><span class="tok-p">.</span><span class="tok-nx">log</span><span class="tok-p">(</span><span class="tok-nx">i</span><span class="tok-p">);</span>
+              <span class="tok-k">return</span> <span class="tok-cm">/* () */</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+            <span class="tok-p">});</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Input</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">external</span> <span class="tok-n">io_config</span> <span class="tok-o">:</span>
+    <span class="tok-n">stdio</span><span class="tok-o">:(</span> <span class="tok-o">_</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;inherit&quot;</span><span class="tok-o">])</span> <span class="tok-o">-&gt;</span> <span class="tok-n">cwd</span><span class="tok-o">:</span><span class="tok-kt">string</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-o">_</span>  <span class="tok-o">=</span> <span class="tok-s2">&quot;&quot;</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">obj</span><span class="tok-o">]</span>
+
+<span class="tok-k">let</span> <span class="tok-n">config</span> <span class="tok-o">=</span> <span class="tok-n">io_config</span> <span class="tok-o">~</span><span class="tok-n">cwd</span><span class="tok-o">:</span><span class="tok-s2">&quot;.&quot;</span> <span class="tok-bp">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="js"><span class="tok-kd">var</span> <span class="tok-nx">config</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+  <span class="tok-nx">stdio</span><span class="tok-o">:</span> <span class="tok-s2">&quot;inherit&quot;</span><span class="tok-p">,</span>
+  <span class="tok-nx">cwd</span><span class="tok-o">:</span> <span class="tok-s2">&quot;.&quot;</span>
+<span class="tok-p">};</span></code></pre>
 </div>
 </div>
 </div>

@@ -306,6 +306,7 @@ ppx_this_obj_test.cmj : mt.cmj
 pq_test.cmj :
 pr6726.cmj :
 pr_regression_test.cmj : mt.cmj
+prepend_data_ffi.cmj : ../runtime/js.cmj
 primitive_reg_test.cmj :
 print_alpha_test.cmj : mt.cmj ../runtime/js.cmj
 printf_sim.cmj : ../stdlib/printf.cmj

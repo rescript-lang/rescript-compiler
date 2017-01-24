@@ -201,6 +201,27 @@ let process_bs_int_as  attrs =
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
+let process_bs_string_or_int_as attrs = 
+  List.fold_left 
+    (fun (st, attrs)
+      (({txt ; loc}, payload ) as attr : attr)  ->
+      match  txt, st  with
+      | "bs.as", None
+        ->
+        begin match Ast_payload.is_single_int payload with 
+          | None -> 
+            begin match Ast_payload.is_single_string payload with 
+            | None -> 
+              Location.raise_errorf ~loc "expect int or string literal "
+            | Some s -> (Some (`Str s), attrs)
+            end
+          | Some   v->  (Some (`Int v), attrs)  
+        end
+      | "bs.as",  _ 
+        -> 
+          Location.raise_errorf ~loc "duplicated bs.as "
+      | _ , _ -> (st, attr::attrs) 
+    ) (None, []) attrs
 
 let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
@@ -211,3 +232,8 @@ let bs_method : attr
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
 
+let warn_unused_attributes attrs = 
+  if attrs <> [] then 
+    List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
+        Bs_warnings.warn_unused_attribute loc txt 
+      ) attrs

@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type t = Parsetree.core_type 
+
 type arg_label =
   | Label of string 
   | Optional of string 
@@ -31,7 +32,10 @@ type arg_label =
 type arg_type = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
-  | Int of (int * int ) list 
+  | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
+  | Arg_int_lit of int 
+  | Arg_string_lit of string 
+    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
   | Extern_unit
   | Nothing
@@ -88,6 +92,9 @@ let is_array (ty : t) =
   match ty.ptyp_desc with 
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
   | _ -> false 
+
+
+
 
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
