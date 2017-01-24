@@ -6758,6 +6758,8 @@ val set_ninja : cwd:string -> string -> unit
 type package_specs = String_set.t
 val get_package_specs : unit -> package_specs
 val set_package_specs_from_array : Ext_json.t array -> unit  
+val internal_override_package_specs : string -> unit 
+
 
 val get_generate_merlin : unit -> bool 
 val set_generate_merlin : bool -> unit 
@@ -6923,10 +6925,12 @@ let set_ninja ~cwd p  =
 type package_specs = String_set.t
 
 let package_specs = ref (String_set.singleton Literals.commonjs)
+let package_specs_overriden = ref false 
 
 let get_package_specs () = !package_specs
 
 let set_package_specs_from_array arr = 
+    if not  !package_specs_overriden then 
     let new_package_specs = 
       arr 
       |> get_list_string
@@ -6938,6 +6942,22 @@ let set_package_specs_from_array arr =
           v
         ) String_set.empty in 
    package_specs := new_package_specs
+
+
+
+
+let internal_override_package_specs str = 
+  package_specs_overriden := true ; 
+  let lst = Ext_string.split ~keep_empty:false str ',' in 
+  package_specs := 
+    List.fold_left (fun acc x -> 
+          let v = 
+            if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
+            else   
+              failwith ("Unkonwn package spec" ^ x) in 
+          v
+    ) String_set.empty lst 
+
 
 let generate_merlin = ref false
 
@@ -8281,8 +8301,7 @@ let targets = String_vec.make 5
 
 let cwd = Sys.getcwd ()
 
-let create_bs_config () =
-  ()
+
 let watch () =
   let bsb_watcher =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
@@ -8299,16 +8318,17 @@ let no_dev = "-no-dev"
 let regen = "-regen"
 let separator = "--"
 
-let build_bs_deps ()   = 
+
+let internal_package_specs = "-internal-package-specs"
+let build_bs_deps package_specs   = 
     let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
     let bsb_exe = bsc_dir // "bsb.exe" in 
     Bsb_default.walk_all_deps true cwd 
     (fun top cwd -> 
-      if top then 
-        Bsb_unix.run_command_execv false { cmd = bsb_exe ; cwd ; args = [|bsb_exe ; regen ; separator|]}
-      else 
+    if not top then 
         Bsb_unix.run_command_execv true
-        {cmd = bsb_exe; cwd = cwd; args  = [| bsb_exe ; no_dev; regen; separator |]})
+        {cmd = bsb_exe; cwd = cwd; args  = 
+          [| bsb_exe ; no_dev; internal_package_specs; package_specs; regen; separator |]})
 
 let clean_bs_deps () = 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
@@ -8319,31 +8339,31 @@ let clean_bs_deps () =
 let annoymous filename =
   String_vec.push  filename targets
 
+let watch_mode = ref false 
+let make_world = ref false 
 
-
-
+    
 let bsb_main_flags =
   [
-    "-w", Arg.Unit watch,
+    "-w", Arg.Set watch_mode,
     " Watch mode" ;
-    no_dev, Arg.Unit (fun _ -> Bsb_config.no_dev := true), 
-    " (experimental)Build dev dependencies in make-world and dev group";
-    " -no-dev", Arg.Set Bsb_config.no_dev, 
-    " (experimental)Don't build dev directories(internal for -make-world)" ; 
-    (*    "-init", Arg.Unit create_bs_config ,
-          " Create an simple bsconfig.json"
-          ;
-    *)   
-     regen, Arg.Set force_regenerate,
+    no_dev, Arg.Set Bsb_config.no_dev, 
+    " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
+    regen, Arg.Set force_regenerate,
      " Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
+    internal_package_specs, Arg.String Bsb_default.internal_override_package_specs, 
+    " (internal)Overide package specs (in combination with -regen)"; 
     "-clean-world", Arg.Unit clean_bs_deps,
     " Clean all bs dependencies";
-    "-make-world", Arg.Unit build_bs_deps,
+    "-make-world", Arg.Set make_world,
     " Build all dependencies and itself "
   ]
 
-let regenerate_ninja cwd bsc_dir forced =
+(** Regenerate ninja file and return None if we dont need regenerate 
+  otherwise return some info 
+*)
+let regenerate_ninja cwd bsc_dir forced : Bsb_default.package_specs option =
   let output_deps = Bsb_config.lib_bs // bsdeps in
   let reason =
     if forced then "Regenerating ninja (triggered by command line -regen)"
@@ -8361,9 +8381,11 @@ let regenerate_ninja cwd bsc_dir forced =
              stamp = (Unix.stat x).st_mtime
            }
         )
-      |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x))
-
+      |> (fun x -> Bsb_dep_infos.store ~cwd output_deps (Array.of_list x));
+      Some (Bsb_default.get_package_specs ())
+      (* This makes sense since we did parse the json file *)
     end
+  else None   
 
 let ninja_error_message = "ninja (required for bsb build system) is not installed, \n\
 please visit https://github.com/ninja-build/ninja to have it installed\n"
@@ -8417,7 +8439,7 @@ let () =
     (* see discussion #929 *)
     if Array.length Sys.argv <= 1 then
       begin
-        regenerate_ninja cwd bsc_dir false;
+        ignore (regenerate_ninja cwd bsc_dir false);
         ninja_command ninja [||]
       end
     else
@@ -8427,17 +8449,54 @@ let () =
           ->
           begin
             Arg.parse bsb_main_flags annoymous usage;
-            regenerate_ninja cwd bsc_dir !force_regenerate;
-            (* String_vec.iter (fun s -> print_endline s) targets; *)
+            let deps = regenerate_ninja cwd bsc_dir !force_regenerate in 
+            (* [-make-world] should never be combined with [-package-specs] *)
+            if !make_world then
+             let deps = 
+                match deps with 
+                | None -> 
+                  let json = Ext_json.parse_json_from_file Literals.bsconfig_json in 
+                  begin match json with 
+                  | `Obj map -> 
+                     map 
+                     |? (Bsb_build_schemas.package_specs, 
+                     `Arr Bsb_default.set_package_specs_from_array)
+                     |> ignore ;
+                     Bsb_default.get_package_specs ()
+                  | _ -> assert false
+                  end 
+                | Some spec -> spec in                               
+              build_bs_deps (  String_set.fold 
+              (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty ) ;  
+            if  !watch_mode then 
+                watch ()
             (* ninja is not triggered in this case *)
           end
         | `Split (bsb_args,ninja_args)
           ->
           begin
             Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
-            (* String_vec.iter (fun s -> print_endline s) targets; *)
-            regenerate_ninja cwd bsc_dir !force_regenerate;
-            ninja_command ninja ninja_args
+            let deps = (regenerate_ninja cwd bsc_dir !force_regenerate) in 
+            (* [-make-world] should never be combined with [-package-specs] *)
+            if !make_world then 
+              let deps = 
+                match deps with 
+                | None -> 
+                  let json = Ext_json.parse_json_from_file Literals.bsconfig_json in 
+                  begin match json with 
+                  | `Obj map -> 
+                     map 
+                     |? (Bsb_build_schemas.package_specs, 
+                     `Arr Bsb_default.set_package_specs_from_array)
+                     |> ignore ;
+                     Bsb_default.get_package_specs ()
+                  | _ -> assert false
+                  end 
+                | Some spec -> spec in                               
+              build_bs_deps (  String_set.fold 
+              (fun k acc -> k ^ "," ^ acc ) deps Ext_string.empty ) ;   
+            if !watch_mode then watch ()  
+            else ninja_command ninja ninja_args
           end
       end
   (*with x ->

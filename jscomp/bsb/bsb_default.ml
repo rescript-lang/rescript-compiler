@@ -156,10 +156,12 @@ let set_ninja ~cwd p  =
 type package_specs = String_set.t
 
 let package_specs = ref (String_set.singleton Literals.commonjs)
+let package_specs_overriden = ref false 
 
 let get_package_specs () = !package_specs
 
 let set_package_specs_from_array arr = 
+    if not  !package_specs_overriden then 
     let new_package_specs = 
       arr 
       |> get_list_string
@@ -171,6 +173,22 @@ let set_package_specs_from_array arr =
           v
         ) String_set.empty in 
    package_specs := new_package_specs
+
+
+
+
+let internal_override_package_specs str = 
+  package_specs_overriden := true ; 
+  let lst = Ext_string.split ~keep_empty:false str ',' in 
+  package_specs := 
+    List.fold_left (fun acc x -> 
+          let v = 
+            if x = Literals.amdjs || x = Literals.commonjs || x = Literals.goog   then String_set.add x acc
+            else   
+              failwith ("Unkonwn package spec" ^ x) in 
+          v
+    ) String_set.empty lst 
+
 
 let generate_merlin = ref false
 
