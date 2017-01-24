@@ -241,7 +241,7 @@ the compiler will emit an error message
 ======
 
 
-### Special types on external declarations: bs.string, bs.int, bs.ignore
+### Special types on external declarations: bs.string, bs.int, bs.ignore, bs.as
 
 #### Using polymorphic variant to model enums and string types
 There are several patterns heavily used in existing JavaScript codebase, for example,
@@ -379,6 +379,74 @@ external add_dyn : ('a kind [@bs.ignore]) -> string ->  'a -> 'a -> 'a = ""
 let add2 k x y =
   add_dyn k (string_of_kind k) x y
 -------------
+
+### Fixed Arguments
+
+Contrary to the Phantom arguments, `_[@bs.as]` is introduced to attach the const 
+data.
+
+For example:
+
+[source,ocaml]
+--------------
+external process_on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit =
+  "process.on" [@@bs.val]
+
+let () = 
+    process_on_exit (fun exit_code -> 
+        Js.log( "error code: " ^ string_of_int exit_code ))      
+--------------
+
+Output
+[source,js]
+-----------
+process.on("exit", function (exit_code) {
+      console.log("error code: " + exit_code);
+      return /* () */0;
+    });
+-----------
+
+It can also be used in combination with other attributes, for example:
+
+[source,ocaml]
+--------------
+type process
+
+external on_exit :  (_ [@bs.as "exit"]) -> (int -> unit) -> unit = 
+    "on" [@@bs.send.pipe: process]
+let register (p : process) = 
+        p |> on_exit (fun i -> Js.log i )
+
+--------------
+
+Output
+[source,js]
+-----------
+function register(p) {
+  return p.on("exit", function (i) {
+              console.log(i);
+              return /* () */0;
+            });
+}
+-----------
+
+Input
+[source,ocaml]
+--------------
+external io_config : 
+    stdio:( _ [@bs.as "inherit"]) -> cwd:string -> unit -> _  = "" [@@bs.obj]
+
+let config = io_config ~cwd:"." ()   
+--------------
+
+Output
+[source,js]
+-----------
+var config = {
+  stdio: "inherit",
+  cwd: "."
+};
+-----------
 
 ### Binding to NodeJS special variables: bs.node
 

@@ -30,21 +30,41 @@ process.on(function (i) {
 xx(3, 3, "xxx", "a", "b");
 
 function f(x) {
-  x.xx(91, /* int array */[
+  x.xx(104, /* int array */[
         1,
         2,
         3
       ]);
-  x.xx(92, 3, "xxx", /* int array */[
+  x.xx(105, 3, "xxx", /* int array */[
         1,
         2,
         3
       ]);
-  x.xx(93, 3, "xxx", 1, 2, 3);
-  return x.xx(94, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
+  x.xx(106, 3, "xxx", 1, 2, 3);
+  x.xx(107, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
+  return x.xx(108, 3, "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
 }
 
-exports.v1 = v1;
-exports.v2 = v2;
-exports.f  = f;
+process.on("exit", function (exit_code) {
+      console.log("error code: " + exit_code);
+      return /* () */0;
+    });
+
+function register(p) {
+  return p.on("exit", function (i) {
+              console.log(i);
+              return /* () */0;
+            });
+}
+
+var config = {
+  stdio: "inherit",
+  cwd: "."
+};
+
+exports.v1       = v1;
+exports.v2       = v2;
+exports.f        = f;
+exports.register = register;
+exports.config   = config;
 /* v1 Not a pure module */

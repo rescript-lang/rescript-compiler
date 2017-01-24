@@ -84,6 +84,19 @@ external on_exit_slice4 :
     "xx" [@@bs.send.pipe: t] [@@bs.splice]
 
 
+external on_exit_slice5 : 
+    int 
+    -> (_ [@bs.as 3]) 
+    -> (_ [@bs.as "xxx"]) 
+    -> ([`a|`b|`c] [@bs.int])
+    -> (_ [@bs.as "yyy"]) 
+    -> ([`a|`b|`c] [@bs.string])
+    -> int array
+    -> unit 
+    = 
+    "xx" [@@bs.send.pipe: t] [@@bs.splice]
+
+
 (**
  TODO: bs.send conflicts with bs.val: better error message
 *)
@@ -91,4 +104,26 @@ let f (x : t) =
     x |> on_exit_slice1 __LINE__ [|1;2;3|];
     x |> on_exit_slice2 __LINE__ [|1;2;3|];
     x |> on_exit_slice3 __LINE__ [|1;2;3|];
-    x |> on_exit_slice4 __LINE__ `a `b [|1;2;3;4;5|]
+    x |> on_exit_slice4 __LINE__ `a `b [|1;2;3;4;5|];
+    x |> on_exit_slice5 __LINE__ `a `b [|1;2;3;4;5|]
+
+external process_on_exit : (_ [@bs.as "exit"]) -> (int -> unit) -> unit =
+  "process.on" [@@bs.val]
+
+let () = 
+    process_on_exit (fun exit_code -> 
+        Js.log( "error code: " ^ string_of_int exit_code ))      
+
+
+type process
+
+external on_exit :  (_ [@bs.as "exit"]) -> (int -> unit) -> unit = 
+    "on" [@@bs.send.pipe: process]
+let register (p : process) = 
+        p |> on_exit (fun i -> Js.log i )
+
+
+external io_config : 
+    stdio:( _ [@bs.as "inherit"]) -> cwd:string -> unit -> _  = "" [@@bs.obj]
+
+let config = io_config ~cwd:"." ()   
