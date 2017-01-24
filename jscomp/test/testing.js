@@ -1,13 +1,13 @@
 'use strict';
 
-var Printf                  = require("../../lib/js/printf");
 var Block                   = require("../../lib/js/block");
 var Curry                   = require("../../lib/js/curry");
-var Caml_io                 = require("../../lib/js/caml_io");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Pervasives              = require("../../lib/js/pervasives");
-var Caml_obj                = require("../../lib/js/caml_obj");
 var Scanf                   = require("../../lib/js/scanf");
+var Printf                  = require("../../lib/js/printf");
+var Caml_io                 = require("../../lib/js/caml_io");
+var Caml_obj                = require("../../lib/js/caml_obj");
+var Pervasives              = require("../../lib/js/pervasives");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 var all_tests_ok = [/* true */1];
 

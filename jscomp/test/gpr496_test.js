@@ -1,7 +1,7 @@
 'use strict';
 
-var Block    = require("../../lib/js/block");
 var Mt       = require("./mt");
+var Block    = require("../../lib/js/block");
 var Caml_obj = require("../../lib/js/caml_obj");
 
 var suites = [/* [] */0];

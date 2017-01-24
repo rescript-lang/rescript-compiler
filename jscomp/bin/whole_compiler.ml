@@ -22316,7 +22316,7 @@ let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
-let sort_imports = ref false
+let sort_imports = ref true
 let dump_js = ref false
 
 let is_windows =
@@ -105788,7 +105788,12 @@ let buckle_script_flags =
   (
     "-bs-sort-imports",
     Arg.Set Js_config.sort_imports,
-    " Sort the imports by lexical order so the output will be more stable"
+    " Sort the imports by lexical order so the output will be more stable (default false)"
+  )
+  ::
+  ( "-bs-no-sort-imports", 
+    Arg.Clear Js_config.sort_imports,
+    " No sort (see -bs-sort-imports)"
   )
   ::
   ("-bs-better-errors",

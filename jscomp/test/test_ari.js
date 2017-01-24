@@ -1,9 +1,9 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
 var U     = require("U");
 var VV    = require("VV");
 var List  = require("../../lib/js/list");
+var Curry = require("../../lib/js/curry");
 
 function f(x) {
   return function (param) {

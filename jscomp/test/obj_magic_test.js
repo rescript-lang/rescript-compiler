@@ -1,8 +1,8 @@
 'use strict';
 
-var Block = require("../../lib/js/block");
-var Obj   = require("../../lib/js/obj");
 var Mt    = require("./mt");
+var Obj   = require("../../lib/js/obj");
+var Block = require("../../lib/js/block");
 
 var empty_backtrace = Block.__(Obj.abstract_tag, []);
 

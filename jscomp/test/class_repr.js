@@ -1,8 +1,8 @@
 'use strict';
 
+var Oo             = require("../../lib/js/oo");
 var Curry          = require("../../lib/js/curry");
 var CamlinternalOO = require("../../lib/js/camlinternalOO");
-var Oo             = require("../../lib/js/oo");
 
 function x_init($$class) {
   var x = CamlinternalOO.new_variable($$class, "x");

@@ -1,10 +1,10 @@
 'use strict';
 
+var Mt          = require("./mt");
+var Block       = require("../../lib/js/block");
 var Int32       = require("../../lib/js/int32");
 var Caml_int32  = require("../../lib/js/caml_int32");
-var Block       = require("../../lib/js/block");
 var Caml_string = require("../../lib/js/caml_string");
-var Mt          = require("./mt");
 
 function hash_variant(s) {
   var accu = 0;

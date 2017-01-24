@@ -1,8 +1,8 @@
 'use strict';
 
 var Curry                   = require("../../lib/js/curry");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 var Caml_obj                = require("../../lib/js/caml_obj");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function height(param) {
   if (param) {

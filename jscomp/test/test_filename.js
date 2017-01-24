@@ -1,7 +1,7 @@
 'use strict';
 
-var Filename = require("../../lib/js/filename");
 var List     = require("../../lib/js/list");
+var Filename = require("../../lib/js/filename");
 
 var u = Filename.chop_extension;
 

@@ -24927,7 +24927,7 @@ let set_no_any_assert () = no_any_assert := true
 let get_no_any_assert () = !no_any_assert
 
 let better_errors = ref false
-let sort_imports = ref false
+let sort_imports = ref true
 let dump_js = ref false
 
 let is_windows =

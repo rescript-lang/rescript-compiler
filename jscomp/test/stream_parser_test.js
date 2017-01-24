@@ -1,12 +1,12 @@
 'use strict';
 
-var Caml_int32      = require("../../lib/js/caml_int32");
+var Mt              = require("./mt");
 var Block           = require("../../lib/js/block");
-var Genlex          = require("../../lib/js/genlex");
-var Stream          = require("../../lib/js/stream");
 var Curry           = require("../../lib/js/curry");
 var Queue           = require("../../lib/js/queue");
-var Mt              = require("./mt");
+var Genlex          = require("../../lib/js/genlex");
+var Stream          = require("../../lib/js/stream");
+var Caml_int32      = require("../../lib/js/caml_int32");
 var Caml_exceptions = require("../../lib/js/caml_exceptions");
 
 var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");

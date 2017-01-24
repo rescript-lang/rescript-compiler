@@ -1,7 +1,7 @@
 'use strict';
 
-var Caml_int32 = require("../../lib/js/caml_int32");
 var Bigarray   = require("../../lib/js/bigarray");
+var Caml_int32 = require("../../lib/js/caml_int32");
 
 function sum() {
   var result = 0;

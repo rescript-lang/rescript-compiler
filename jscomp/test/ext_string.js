@@ -1,14 +1,14 @@
 'use strict';
 
+var List                    = require("../../lib/js/list");
+var Bytes                   = require("../../lib/js/bytes");
+var Curry                   = require("../../lib/js/curry");
+var $$String                = require("../../lib/js/string");
+var Ext_bytes               = require("./ext_bytes");
 var Caml_int32              = require("../../lib/js/caml_int32");
 var Caml_string             = require("../../lib/js/caml_string");
-var Curry                   = require("../../lib/js/curry");
-var Ext_bytes               = require("./ext_bytes");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var $$String                = require("../../lib/js/string");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Bytes                   = require("../../lib/js/bytes");
-var List                    = require("../../lib/js/list");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function split_by($staropt$star, is_delim, str) {
   var keep_empty = $staropt$star ? $staropt$star[0] : /* false */0;

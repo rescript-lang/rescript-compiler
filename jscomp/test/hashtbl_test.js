@@ -1,11 +1,11 @@
 'use strict';
 
-var $$Array    = require("../../lib/js/array");
-var Block      = require("../../lib/js/block");
-var Hashtbl    = require("../../lib/js/hashtbl");
-var Curry      = require("../../lib/js/curry");
 var Mt         = require("./mt");
 var List       = require("../../lib/js/list");
+var $$Array    = require("../../lib/js/array");
+var Block      = require("../../lib/js/block");
+var Curry      = require("../../lib/js/curry");
+var Hashtbl    = require("../../lib/js/hashtbl");
 var Caml_obj   = require("../../lib/js/caml_obj");
 var MoreLabels = require("../../lib/js/moreLabels");
 

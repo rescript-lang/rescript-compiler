@@ -1,15 +1,15 @@
 'use strict';
 
-var Printf      = require("../../lib/js/printf");
-var Ext_array   = require("./ext_array");
-var Block       = require("../../lib/js/block");
+var Mt          = require("./mt");
 var $$Array     = require("../../lib/js/array");
-var Caml_string = require("../../lib/js/caml_string");
+var Block       = require("../../lib/js/block");
+var Bytes       = require("../../lib/js/bytes");
 var Curry       = require("../../lib/js/curry");
 var Digest      = require("../../lib/js/digest");
-var Mt          = require("./mt");
-var Bytes       = require("../../lib/js/bytes");
+var Printf      = require("../../lib/js/printf");
+var Ext_array   = require("./ext_array");
 var Pervasives  = require("../../lib/js/pervasives");
+var Caml_string = require("../../lib/js/caml_string");
 
 function f(x) {
   return Digest.to_hex(Digest.string(x));

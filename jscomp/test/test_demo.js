@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry");
 var List  = require("../../lib/js/list");
+var Curry = require("../../lib/js/curry");
 
 function fib(n) {
   if (n === 2 || n === 1) {

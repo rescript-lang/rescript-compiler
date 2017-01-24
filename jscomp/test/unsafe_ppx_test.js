@@ -1,10 +1,10 @@
 'use strict';
 
+var Mt          = require("./mt");
 var Block       = require("../../lib/js/block");
 var Curry       = require("../../lib/js/curry");
-var Mt          = require("./mt");
-var Ffi_js_test = require("./ffi_js_test");
 var Pervasives  = require("../../lib/js/pervasives");
+var Ffi_js_test = require("./ffi_js_test");
 
 var x = ("\x01\x02\x03");
 

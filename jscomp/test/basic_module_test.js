@@ -1,9 +1,9 @@
 'use strict';
 
-var Pr6726    = require("./pr6726");
-var Offset    = require("./offset");
-var Curry     = require("../../lib/js/curry");
 var Mt        = require("./mt");
+var Curry     = require("../../lib/js/curry");
+var Offset    = require("./offset");
+var Pr6726    = require("./pr6726");
 var Mt_global = require("./mt_global");
 
 var count = [0];

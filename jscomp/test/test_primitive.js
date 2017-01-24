@@ -1,8 +1,8 @@
 'use strict';
 
 var Curry            = require("../../lib/js/curry");
-var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
 var Pervasives       = require("../../lib/js/pervasives");
+var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
 
 function a4(prim) {
   return [

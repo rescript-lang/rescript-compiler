@@ -1,12 +1,12 @@
 'use strict';
 
+var Mt          = require("./mt");
 var Char        = require("../../lib/js/char");
 var $$Array     = require("../../lib/js/array");
-var Caml_string = require("../../lib/js/caml_string");
-var Hashtbl     = require("../../lib/js/hashtbl");
-var Mt          = require("./mt");
 var Bytes       = require("../../lib/js/bytes");
+var Hashtbl     = require("../../lib/js/hashtbl");
 var Mt_global   = require("./mt_global");
+var Caml_string = require("../../lib/js/caml_string");
 
 var suites = [/* [] */0];
 

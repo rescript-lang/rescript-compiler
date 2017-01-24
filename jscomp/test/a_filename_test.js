@@ -1,9 +1,9 @@
 'use strict';
 
-var Block        = require("../../lib/js/block");
-var $$Array      = require("../../lib/js/array");
-var Ext_filename = require("./ext_filename");
 var Mt           = require("./mt");
+var $$Array      = require("../../lib/js/array");
+var Block        = require("../../lib/js/block");
+var Ext_filename = require("./ext_filename");
 
 var suites = [/* [] */0];
 

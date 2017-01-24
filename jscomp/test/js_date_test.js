@@ -1,7 +1,7 @@
 'use strict';
 
-var Block = require("../../lib/js/block");
 var Mt    = require("./mt");
+var Block = require("../../lib/js/block");
 
 var d = new Date(2016, 2);
 

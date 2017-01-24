@@ -1,8 +1,8 @@
 'use strict';
 
-var Printf = require("../../lib/js/printf");
 var Block  = require("../../lib/js/block");
 var Curry  = require("../../lib/js/curry");
+var Printf = require("../../lib/js/printf");
 
 console.error(Curry._2(Printf.sprintf(/* Format */[
               /* Int */Block.__(4, [

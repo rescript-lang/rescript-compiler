@@ -1,13 +1,13 @@
 'use strict';
 
-var Int32      = require("../../lib/js/int32");
-var Caml_int32 = require("../../lib/js/caml_int32");
-var Ext_array  = require("./ext_array");
+var Mt         = require("./mt");
 var $$Array    = require("../../lib/js/array");
 var Block      = require("../../lib/js/block");
 var Curry      = require("../../lib/js/curry");
+var Int32      = require("../../lib/js/int32");
 var Format     = require("../../lib/js/format");
-var Mt         = require("./mt");
+var Ext_array  = require("./ext_array");
+var Caml_int32 = require("../../lib/js/caml_int32");
 var Pervasives = require("../../lib/js/pervasives");
 
 function f(x) {

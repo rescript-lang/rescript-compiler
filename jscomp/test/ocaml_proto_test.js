@@ -1,24 +1,24 @@
 'use strict';
 
+var Mt                      = require("./mt");
 var Char                    = require("../../lib/js/char");
-var Printf                  = require("../../lib/js/printf");
-var Filename                = require("../../lib/js/filename");
+var List                    = require("../../lib/js/list");
 var Block                   = require("../../lib/js/block");
-var Caml_string             = require("../../lib/js/caml_string");
+var Bytes                   = require("../../lib/js/bytes");
 var Curry                   = require("../../lib/js/curry");
+var Lexing                  = require("../../lib/js/lexing");
+var Printf                  = require("../../lib/js/printf");
+var $$String                = require("../../lib/js/string");
 var Hashtbl                 = require("../../lib/js/hashtbl");
 var Parsing                 = require("../../lib/js/parsing");
-var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
-var Mt                      = require("./mt");
-var $$String                = require("../../lib/js/string");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions");
-var Printexc                = require("../../lib/js/printexc");
-var Lexing                  = require("../../lib/js/lexing");
-var Caml_format             = require("../../lib/js/caml_format");
-var Bytes                   = require("../../lib/js/bytes");
-var List                    = require("../../lib/js/list");
-var Pervasives              = require("../../lib/js/pervasives");
 var Caml_obj                = require("../../lib/js/caml_obj");
+var Filename                = require("../../lib/js/filename");
+var Printexc                = require("../../lib/js/printexc");
+var Pervasives              = require("../../lib/js/pervasives");
+var Caml_format             = require("../../lib/js/caml_format");
+var Caml_string             = require("../../lib/js/caml_string");
+var Caml_exceptions         = require("../../lib/js/caml_exceptions");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions");
 
 function field($staropt$star, label, number, type_, name) {
   var options = $staropt$star ? $staropt$star[0] : /* [] */0;

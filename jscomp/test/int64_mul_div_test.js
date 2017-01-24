@@ -1,15 +1,15 @@
 'use strict';
 
-var Printf      = require("../../lib/js/printf");
-var Block       = require("../../lib/js/block");
-var $$Array     = require("../../lib/js/array");
-var Curry       = require("../../lib/js/curry");
 var Mt          = require("./mt");
-var Caml_int64  = require("../../lib/js/caml_int64");
-var Caml_format = require("../../lib/js/caml_format");
-var Caml_obj    = require("../../lib/js/caml_obj");
 var List        = require("../../lib/js/list");
+var $$Array     = require("../../lib/js/array");
+var Block       = require("../../lib/js/block");
+var Curry       = require("../../lib/js/curry");
+var Printf      = require("../../lib/js/printf");
+var Caml_obj    = require("../../lib/js/caml_obj");
+var Caml_int64  = require("../../lib/js/caml_int64");
 var Pervasives  = require("../../lib/js/pervasives");
+var Caml_format = require("../../lib/js/caml_format");
 
 function commutative_mul(result, a, b) {
   return /* Eq */Block.__(0, [

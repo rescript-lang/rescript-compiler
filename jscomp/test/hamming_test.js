@@ -1,14 +1,14 @@
 'use strict';
 
-var Printf           = require("../../lib/js/printf");
+var Mt               = require("./mt");
 var Block            = require("../../lib/js/block");
 var Curry            = require("../../lib/js/curry");
-var Mt               = require("./mt");
-var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
 var Buffer           = require("../../lib/js/buffer");
+var Printf           = require("../../lib/js/printf");
+var Caml_obj         = require("../../lib/js/caml_obj");
 var Caml_int64       = require("../../lib/js/caml_int64");
 var Caml_format      = require("../../lib/js/caml_format");
-var Caml_obj         = require("../../lib/js/caml_obj");
+var CamlinternalLazy = require("../../lib/js/camlinternalLazy");
 
 var n0 = /* int64 */[
   /* hi */0,
