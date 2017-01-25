@@ -259,6 +259,7 @@ let separator = "--"
 
 
 let internal_package_specs = "-internal-package-specs"
+let internal_install = "-internal-install"    
 let build_bs_deps package_specs   = 
   let bsc_dir = Bsb_build_util.get_bsc_dir cwd in 
   let bsb_exe = bsc_dir // "bsb.exe" in 
@@ -266,8 +267,10 @@ let build_bs_deps package_specs   =
     (fun top cwd -> 
        if not top then 
          Bsb_unix.run_command_execv true
-           {cmd = bsb_exe; cwd = cwd; args  = 
-                                        [| bsb_exe ; no_dev; internal_package_specs; package_specs; regen; separator |]})
+           {cmd = bsb_exe; 
+            cwd = cwd; 
+            args  = 
+              [| bsb_exe ; internal_install ; no_dev; internal_package_specs; package_specs; regen; separator |]})
 
 let annoymous filename =
   String_vec.push  filename targets
@@ -279,7 +282,7 @@ let lib_bs = "lib" // "bs"
 let lib_amdjs = "lib" // "amdjs"
 let lib_goog = "lib" // "goog"
 let lib_js = "lib" // "js"
-
+let lib_ocaml = "lib" // "ocaml" (* installed binary artifacts *)
 let clean_bs_garbage cwd = 
   print_string "Doing cleaning in ";
   print_endline cwd; 
@@ -291,7 +294,8 @@ let clean_bs_garbage cwd =
     aux lib_bs ; 
     aux lib_amdjs ; 
     aux lib_goog;
-    aux lib_js    
+    aux lib_js ;
+    aux lib_ocaml   
   with 
     e -> 
     prerr_endline ("Failed to clean due to " ^ Printexc.to_string e)
@@ -300,10 +304,16 @@ let clean_bs_deps () =
   Bsb_default.walk_all_deps true cwd  (fun top cwd -> 
       clean_bs_garbage cwd 
     )
+
+
+
+
 let bsb_main_flags =
   [
     "-w", Arg.Set watch_mode,
     " Watch mode" ;
+    internal_install, Arg.Set Bsb_config.install,
+    " (internal)Install public interface or not, when make-world it will install(in combination with -regen to make sure it has effect)"; 
     no_dev, Arg.Set Bsb_config.no_dev, 
     " (internal)Build dev dependencies in make-world and dev group(in combination with -regen)";
     regen, Arg.Set force_regenerate,
@@ -448,9 +458,9 @@ let () =
             (* don't regenerate files when we only run [bsb -clean-world] *)
             let deps = regenerate_ninja cwd bsc_dir !force_regenerate in 
             make_world_deps deps ;  
-          if  !watch_mode then 
-            watch ()
-            (* ninja is not triggered in this case *)
+            if  !watch_mode then 
+              watch ()
+              (* ninja is not triggered in this case *)
         end
       | `Split (bsb_args,ninja_args)
         ->

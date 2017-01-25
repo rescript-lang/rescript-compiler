@@ -33,3 +33,6 @@ val lib_bs : string
 val rev_lib_bs_prefix : string -> string
 
 val no_dev: bool ref 
+
+(** default not install, only when -make-world, its dependencies will be installed  *)
+val install : bool ref 

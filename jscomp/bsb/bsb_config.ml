@@ -43,3 +43,5 @@ let proj_rel path = lazy_src_root_dir // path
 *)
 
 let no_dev = ref false 
+
+let install = ref false 
