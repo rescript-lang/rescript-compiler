@@ -251,8 +251,10 @@ OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 		 js_main
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config bsb_build_schemas bsb_build_util \
-	bsb_dep_infos bsb_dir bsb_ninja \
-	bsb_build_ui bsb_default bsb_gen\
+	bsb_dir bsb_ninja \
+	bsb_build_ui bsb_default\
+	bsb_dep_infos\
+	 bsb_gen\
 	bsb_unix
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))

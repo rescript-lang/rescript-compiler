@@ -177,7 +177,7 @@
         },
         "ppx-flags": {
             "$ref": "#/definitions/ppx-specs",
-            "description": "TODO: ppx flags"
+            "description": "syntax is package_name/binary, for example: reason/reactjs_jsx_ppx.native"
         },
         "bsc-flags": {
             "$ref": "#/definitions/stringArray",
@@ -185,7 +185,7 @@
         },
         "package-specs": {
             "$ref": "#/definitions/package-specs",
-            "description": "TODO: currently only support commonjs"
+            "description": "currently support commonjs, amdjs and google module"
         },
         "ocamllex": {
             "type": "string",
@@ -201,11 +201,11 @@
         },
         "refmt": {
             "type": "string",
-            "description": "Path to refmt"
+            "description": "Path to refmt for Reason syntax, for example: reason/refmt_impl.native"
         },
         "bs-external-includes": {
             "$ref": "#/definitions/stringArray",
-            "description": "external include directories, which will be applied -I to all compilation units, it is not needed in most cases"
+            "description": "external include directories, which will be applied -I to all compilation units, it is *not needed* in most cases"
         },
         "sources": {
             "oneOf": [
@@ -213,10 +213,12 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/sourceItem"
-                    }
+                    },
+                    "description" : "A list of source items"
                 },
                 {
-                    "$ref": "#/definitions/sourceItem"
+                    "$ref": "#/definitions/sourceItem",
+                    "description": "A single source item"
                 }
             ]
         },
