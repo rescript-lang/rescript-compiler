@@ -296,6 +296,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       bs_dependencies
       info  =
     let installable =
+      !Bsb_config.install &&
       match group.public with
       | Export_all -> true
       | Export_none -> false
