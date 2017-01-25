@@ -6964,7 +6964,7 @@ let internal_override_package_specs str =
     ) String_set.empty lst 
 
 
-let generate_merlin = ref false
+let generate_merlin = ref true
 
 let get_generate_merlin () = !generate_merlin 
 
@@ -7291,7 +7291,7 @@ module Rules = struct
             print_rule oc ~description ?depfile ?restat ~command name; 
             self.used <- true
           end ;
-          self.rule_name
+        self.rule_name
     } in self
 
 
@@ -7346,7 +7346,7 @@ module Rules = struct
   (**************************************)
   (* below are rules not local any more *)
   (**************************************)
-  
+
   (* [bsc_lib_includes] are fixed for libs 
      [bsc_extra_includes] are for app test etc 
      it wil be 
@@ -7394,10 +7394,10 @@ let output_build
   output_string oc output ;
   outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s  );
   begin match implicit_outputs with 
-  | [] -> ()
-  | _ ->
-    output_string oc " | ";
-    implicit_outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s)
+    | [] -> ()
+    | _ ->
+      output_string oc " | ";
+      implicit_outputs |> List.iter (fun s -> output_string oc " " ; output_string oc s)
   end;
   output_string oc " : ";
   output_string oc rule;
@@ -7441,12 +7441,12 @@ let output_build
             output_string oc s ; output_string oc "\n"
         ) xs
   end;
-begin match restat with
-| None -> ()
-| Some () ->
-  output_string oc " " ;
-  output_string oc "restat = 1 \n"
-end
+  begin match restat with
+    | None -> ()
+    | Some () ->
+      output_string oc " " ;
+      output_string oc "restat = 1 \n"
+  end
 
 
 let phony ?(order_only_deps=[]) ~inputs ~output oc =
@@ -7496,9 +7496,9 @@ let (++) (us : info) (vs : info) =
   else
     {
       all_config_deps  = us.all_config_deps @ vs.all_config_deps
-      ;
+    ;
       all_installs = us.all_installs @ vs.all_installs
-     }
+    }
 
 
 
@@ -7527,16 +7527,16 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
       let output_cmj =  output_file_sans_extension ^ Literals.suffix_cmj in
       let output_js =
         String_set.fold (fun s acc ->
-          let prefix  = 
+            let prefix  = 
               if s = Literals.commonjs then
                 Bsb_config.common_js_prefix
               else if s = Literals.amdjs then 
                 Bsb_config.amd_js_prefix 
               else Bsb_config.goog_prefix    
             in 
-          (Bsb_config.proj_rel @@ prefix  
-          output_file_sans_extension ^ Literals.suffix_js) :: acc 
-        ) package_specs []
+            (Bsb_config.proj_rel @@ prefix  
+               output_file_sans_extension ^ Literals.suffix_js) :: acc 
+          ) package_specs []
       in
       (* let output_mldeps = output_file_sans_extension ^ Literals.suffix_mldeps in  *)
       (* let output_mlideps = output_file_sans_extension ^ Literals.suffix_mlideps in  *)
@@ -7544,22 +7544,22 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
         let package_flags =
           ( "bs_package_flags",
             `Append 
-            (String_set.fold (fun s acc ->
-              acc ^ " -bs-package-output " ^ s ^ ":" ^
-                if s = Literals.amdjs then
-                  (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
-                else if s = Literals.commonjs then
-                  (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
-                else   
-                  (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
-               ) package_specs "")              
+              (String_set.fold (fun s acc ->
+                   acc ^ " -bs-package-output " ^ s ^ ":" ^
+                   if s = Literals.amdjs then
+                     (Bsb_config.amd_js_prefix @@ Filename.dirname output_cmi)
+                   else if s = Literals.commonjs then
+                     (Bsb_config.common_js_prefix @@ Filename.dirname output_cmi)
+                   else   
+                     (Bsb_config.goog_prefix @@ Filename.dirname output_cmi)
+                 ) package_specs "")              
           ) ::
           (if group.dir_index = 0 then [] else 
-            [("bsc_extra_includes", 
-            `Overwrite
-              ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
-            )]
-           )
+             [("bsc_extra_includes", 
+               `Overwrite
+                 ("${" ^ Bsb_build_util.string_of_bsb_dev_include group.dir_index ^ "}")
+              )]
+          )
         in
 
         match bs_dependencies with
@@ -7577,6 +7577,17 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
           ~output:output_ml
           ~input
           ~rule: Rules.build_ml_from_mll ;
+      let install_files files  =     
+        files 
+        |> List.iter
+          (
+            fun x ->
+              output_build oc
+                ~output:(Bsb_config.proj_rel @@
+                         Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
+                ~input:x
+                ~rule:Rules.copy_resources
+          ) in 
       begin match kind with
         | `Mll
         | `Ml
@@ -7601,7 +7612,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
               ?shadows:(if group.dir_index = 0 then None else Some ["group", `Overwrite (string_of_int group.dir_index)])
-              ;
+            ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
                 Rules.build_cmj_cmi_js, [output_cmi], []
@@ -7613,7 +7624,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               | None -> shadows 
               | Some cmd -> 
                 ("postbuild", 
-                `Overwrite ("&& " ^ cmd ^ " " ^ String.concat " " output_js)) :: shadows
+                 `Overwrite ("&& " ^ cmd ^ " " ^ String.concat " " output_js)) :: shadows
             in 
             output_build oc
               ~output:output_cmj
@@ -7623,20 +7634,10 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~implicit_deps:deps
               ~rule:rule_name ;
             if installable then
-              begin
-                output_cmj :: cm_outputs
-                |> List.iter
-                  (
-                    fun x ->
-                      output_build oc
-                        ~output:(Bsb_config.proj_rel @@
-                                 Bsb_config.ocaml_bin_install_prefix @@ Filename.basename x)
-                        ~input:x
-                        ~rule:Rules.copy_resources
-                  )
-              end;
-              {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
-            
+              install_files (input::output_cmj :: cm_outputs)
+            ;
+            {all_config_deps = [output_mlastd]; all_installs = [output_cmi];  }
+
           end
         | `Mli
         | `Rei ->
@@ -7653,7 +7654,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             ~input:output_mliast
             ~rule:Rules.build_bin_deps
             ?shadows:(if group.dir_index = 0 then None 
-              else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
+                      else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
           ;
           output_build oc
             ~shadows
@@ -7662,20 +7663,13 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
             (* ~implicit_deps:[output_mliastd] *)
             ~rule:Rules.build_cmi;
           if installable then
-            begin
-              output_build oc
-                ~output:(Bsb_config.proj_rel @@
-                         Bsb_config.ocaml_bin_install_prefix @@
-                         Filename.basename output_cmi)
-                ~input:output_cmi
-                ~rule:Rules.copy_resources
-            end;
-            {
-              all_config_deps = [output_mliastd];
-              all_installs = [output_cmi] ; 
-              
-            }
-          
+            install_files [output_cmi; input];
+          {
+            all_config_deps = [output_mliastd];
+            all_installs = [output_cmi] ; 
+
+          }
+
       end
     in
     begin match module_info.ml with
@@ -7707,7 +7701,7 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
 
 
 let handle_file_groups oc ~package_specs ~js_post_build_cmd (file_groups  :  Bsb_build_ui.file_group list) st =
-      List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd ) st  file_groups
+  List.fold_left (handle_file_group oc ~package_specs ~js_post_build_cmd ) st  file_groups
 
 end
 module Bsb_gen : sig 

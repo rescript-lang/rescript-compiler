@@ -190,7 +190,7 @@ let internal_override_package_specs str =
     ) String_set.empty lst 
 
 
-let generate_merlin = ref false
+let generate_merlin = ref true
 
 let get_generate_merlin () = !generate_merlin 
 
