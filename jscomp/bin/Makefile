@@ -31,5 +31,7 @@ bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli 
 bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa  $^ -o $@
 
+bsdoc.exe: config_bsdep.mli config_bsdep.ml  bsdoc.mli bsdoc.ml
+	$(NATIVE) -g -w -a unix.cmxa dynlink.cmxa str.cmxa $^ -o $@
 
-all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe
+all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe bsdoc.exe
