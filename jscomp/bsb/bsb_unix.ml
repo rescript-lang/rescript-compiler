@@ -111,12 +111,40 @@ let run_command_execv fail_exit cmd =
             prerr_endline ("* Failure : " ^ cmd.cmd ^ "\n* Location: " ^ cmd.cwd);
             if fail_exit then exit eid    
           end;
-        
+
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
         begin 
           prerr_endline (cmd.cmd ^ " interrupted");
           exit 2 
         end        
+
+(** it assume you have permissions, so always catch it to fail 
+    gracefully
+*)
+let rec remove_dirs_recursive cwd roots = 
+  Array.iter 
+    (fun root -> 
+       let cur = Filename.concat cwd root in 
+       if Sys.is_directory cur then 
+         begin       
+           remove_dirs_recursive cur (Sys.readdir cur); 
+           Unix.rmdir cur ; 
+         end
+       else 
+         Sys.remove cur
+    )
+    roots        
+
+let rec remove_dir_recursive dir = 
+  if Sys.is_directory dir then 
+    begin 
+      let files = Sys.readdir dir in 
+      for i = 0 to Array.length files - 1 do 
+        remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
+      done ;
+      Unix.rmdir dir 
+    end
+  else Sys.remove dir 
 (*  
 let () = 
   run_commands 
