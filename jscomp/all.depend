@@ -4,10 +4,11 @@ ext/ext_int.cmx : ext/ext_int.cmi
 ext/ext_array.cmx : ext/ext_array.cmi
 ext/ext_bytes.cmx : ext/ext_bytes.cmi
 ext/ext_char.cmx : ext/ext_char.cmi
-ext/vec_gen.cmx : ext/ext_array.cmx
-ext/resize_array.cmx : ext/vec_gen.cmx ext/resize_array.cmi
+ext/vec_gen.cmx :
+ext/resize_array.cmx : ext/vec_gen.cmx ext/ext_array.cmx \
+    stubs/bs_hash_stubs.cmx ext/resize_array.cmi
 ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
-ext/int_vec.cmx : ext/vec_gen.cmx ext/int_vec.cmi
+ext/int_vec.cmx : ext/ext_array.cmx stubs/bs_hash_stubs.cmx ext/int_vec.cmi
 ext/int_vec_util.cmx : ext/int_vec.cmx ext/int_vec_util.cmi
 ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
     ext/int_vec_vec.cmi

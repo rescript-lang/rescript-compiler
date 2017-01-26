@@ -63,6 +63,12 @@ let suites =
         (* only string matters here *)
         hash {stamp = 0 ; name = "Pervasives"; flags = 0} =~ Bs_hash_stubs.hash_string "Pervasives";
         hash {stamp = 0 ; name = "UU"; flags = 0} =~ Bs_hash_stubs.hash_string "UU";
+      end;
+      __LOC__ >:: begin fun _ -> 
+        let v = Array.init 20 (fun i -> i) in 
+        let u = Array.init 30 (fun i ->   (0-i)  ) in  
+        Bs_hash_stubs.int_unsafe_blit 
+         v 0 u 10 20 ; 
+        OUnit.assert_equal u (Array.init 30 (fun i -> if i < 10 then -i else i - 10)) 
       end
-      
     ]

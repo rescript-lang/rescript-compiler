@@ -5536,9 +5536,6 @@ module Vec_gen
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-external unsafe_blit :
-  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
-
 
 module type ResizeType = 
 sig 
@@ -5601,10 +5598,79 @@ sig
   val exists : (elt -> bool) -> t -> bool
   val sub : t -> int -> int  -> t 
 end
+
+
+end
+module Resize_array : sig 
+#1 "resize_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+module Make ( Resize : Vec_gen.ResizeType) : Vec_gen.S with type elt = Resize.t 
+
+
+
+end = struct
+#1 "resize_array.ml"
+# 1 "ext/vec.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+# 25
+external unsafe_blit : 
+    'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
+module Make ( Resize :  Vec_gen.ResizeType) = struct
+  type elt = Resize.t 
+
+  let null = Resize.null 
+  
+
+# 41
 external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
-type 'a t = {
-  mutable arr : 'a array ;
+type  t = {
+  mutable arr : elt array ;
   mutable len : int ;  
 }
 
@@ -5641,7 +5707,7 @@ let reset d =
    in case we operate on the whole array
 *)
 let to_list d =
-  let rec loop d_arr idx accum =
+  let rec loop (d_arr : elt array) idx accum =
     if idx < 0 then accum else loop d_arr (idx - 1) (Array.unsafe_get d_arr idx :: accum)
   in
   loop d.arr (d.len - 1) []
@@ -5674,6 +5740,7 @@ let copy src =
     len ;
     arr = unsafe_sub src.arr 0 len ;
   }
+
 (* FIXME *)
 let reverse_in_place src = 
   Ext_array.reverse_range src.arr 0 src.len 
@@ -5684,9 +5751,9 @@ let reverse_in_place src =
 (* {!Array.sub} is not enough for error checking, it 
    may contain some garbage
  *)
-let sub (src : _ t) start len =
+let sub (src : t) start len =
   let src_len = src.len in 
-  if len < 0 || start > src_len - len then invalid_arg "Vec_gen.sub"
+  if len < 0 || start > src_len - len then invalid_arg "Vec.sub"
   else 
   { len ; 
     arr = unsafe_sub src.arr start len }
@@ -5756,14 +5823,14 @@ let mapi f src =
     }
 
 let fold_left f x a =
-  let rec loop a_len a_arr idx x =
+  let rec loop a_len (a_arr : elt array) idx x =
     if idx >= a_len then x else 
       loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
   in
   loop a.len a.arr 0 x
 
 let fold_right f a x =
-  let rec loop a_arr idx x =
+  let rec loop (a_arr : elt array) idx x =
     if idx < 0 then x
     else loop a_arr (idx - 1) (f (Array.unsafe_get a_arr idx) x)
   in
@@ -5859,108 +5926,9 @@ let init len f =
       arr 
     }
 
-end
-module Resize_array : sig 
-#1 "resize_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-module Make ( Resize : Vec_gen.ResizeType) : Vec_gen.S with type elt = Resize.t 
 
 
-
-end = struct
-#1 "resize_array.ml"
-# 1 "ext/vec.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-# 28
-module Make ( Resize : Vec_gen.ResizeType) = struct
-  type elt = Resize.t 
-  type nonrec t = elt Vec_gen.t
-  let null = Resize.null 
-  
-# 39
-  let length = Vec_gen.length 
-  let compact = Vec_gen.compact 
-  let singleton = Vec_gen.singleton
-  let empty = Vec_gen.empty 
-  let is_empty = Vec_gen.is_empty 
-  let reset = Vec_gen.reset 
-  let to_list = Vec_gen.to_list 
-  let of_list = Vec_gen.of_list 
-  let to_array = Vec_gen.to_array
-  let of_array = Vec_gen.of_array 
-  let of_sub_array = Vec_gen.of_sub_array 
-  let unsafe_internal_array = Vec_gen.unsafe_internal_array 
-  let copy = Vec_gen.copy 
-  let reverse_in_place = Vec_gen.reverse_in_place 
-  let sub = Vec_gen.sub 
-  let iter = Vec_gen.iter 
-  let iteri = Vec_gen.iteri 
-  let iter_range = Vec_gen.iter_range 
-  let iteri_range = Vec_gen.iteri_range  
-  let filter = Vec_gen.filter 
-  let fold_right = Vec_gen.fold_right 
-  let fold_left = Vec_gen.fold_left 
-  let map_into_list = Vec_gen.map_into_list 
-  let map_into_array = Vec_gen.map_into_array 
-  let mapi = Vec_gen.mapi 
-  let equal = Vec_gen.equal 
-  let get = Vec_gen.get 
-  let exists = Vec_gen.exists 
-  let capacity = Vec_gen.capacity 
-  let last = Vec_gen.last 
-  let unsafe_get = Vec_gen.unsafe_get 
-  let map = Vec_gen.map 
-  let init = Vec_gen.init 
-
-  let make initsize : _ Vec_gen.t =
+  let make initsize : t =
     if initsize < 0 then invalid_arg  "Resize_array.make" ;
     {
 
@@ -5970,17 +5938,17 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
 
 
 
-  let reserve (d : _ Vec_gen.t ) s = 
+  let reserve (d : t ) s = 
     let d_len = d.len in 
     let d_arr = d.arr in 
     if s < d_len || s < Array.length d_arr then ()
     else 
       let new_capacity = min Sys.max_array_length s in 
       let new_d_arr = Array.make new_capacity null in 
-      Vec_gen.unsafe_blit d_arr 0 new_d_arr 0 d_len;
+       unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : _ Vec_gen.t) =
+  let push v (d : t) =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -6000,100 +5968,100 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
             in
             let new_d_arr = Array.make new_capacity null in 
             d.arr <- new_d_arr;
-            Vec_gen.unsafe_blit d_arr 0 new_d_arr 0 d_len ;
+             unsafe_blit d_arr 0 new_d_arr 0 d_len ;
           end;
         d.len <- d_len + 1;
         Array.unsafe_set d.arr d_len v
       end
 
 (** delete element at offset [idx], will raise exception when have invalid input *)
-  let delete (d : _ Vec_gen.t) idx =
+  let delete (d : t) idx =
     let d_len = d.len in 
     if idx < 0 || idx >= d_len then invalid_arg "Resize_array.delete" ;
     let arr = d.arr in 
-    Vec_gen.unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
+     unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
     let idx = d_len - 1 in 
     d.len <- idx
     
-# 129
+# 358
     ;
     Array.unsafe_set arr idx  null
     
-# 133
+# 362
 (** pop the last element, a specialized version of [delete] *)
-  let pop (d : _ Vec_gen.t) = 
+  let pop (d : t) = 
     let idx  = d.len - 1  in
     if idx < 0 then invalid_arg "Resize_array.pop";
     d.len <- idx
     
-# 140
+# 369
     ;    
     Array.unsafe_set d.arr idx null
   
-# 144
+# 373
 (** pop and return the last element *)  
-  let get_last_and_pop (d : _ Vec_gen.t) = 
+  let get_last_and_pop (d : t) = 
     let idx  = d.len - 1  in
     if idx < 0 then invalid_arg "Resize_array.get_last_and_pop";
     let last = Array.unsafe_get d.arr idx in 
     d.len <- idx 
     
-# 152
+# 381
     ;
     Array.unsafe_set d.arr idx null
     
-# 155
+# 384
     ;
     last 
 
 (** delete elements start from [idx] with length [len] *)
-  let delete_range (d : _ Vec_gen.t) idx len =
+  let delete_range (d : t) idx len =
     let d_len = d.len in 
     if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Resize_array.delete_range"  ;
     let arr = d.arr in 
-    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
+     unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len
     
-# 167
+# 396
     ;
     for i = d_len - len to d_len - 1 do
       Array.unsafe_set arr i null
     done
 
-# 173
+# 402
 (** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
-  let get_and_delete_range (d : _ Vec_gen.t) idx len : _ Vec_gen.t = 
+  let get_and_delete_range (d : t) idx len : t = 
     let d_len = d.len in 
     if len < 0 || idx < 0 || idx + len > d_len then invalid_arg  "Resize_array.get_and_delete_range"  ;
     let arr = d.arr in 
-    let value = Vec_gen.unsafe_sub arr idx len in
-    Vec_gen.unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
+    let value =  unsafe_sub arr idx len in
+     unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len; 
     
-# 183
+# 412
     for i = d_len - len to d_len - 1 do
       Array.unsafe_set arr i null
     done;
     
-# 187
+# 416
     {len = len ; arr = value}
 
 
   (** Below are simple wrapper around normal Array operations *)  
 
-  let clear (d : _ Vec_gen.t ) =
+  let clear (d : t ) =
     
-# 195
+# 424
     for i = 0 to d.len - 1 do 
       Array.unsafe_set d.arr i null
     done;
     
-# 199
+# 428
     d.len <- 0
 
 
 
-  let inplace_filter f (d : _ Vec_gen.t) : unit = 
+  let inplace_filter f (d : t) : unit = 
     let d_arr = d.arr in     
     let d_len = d.len in
     let p = ref 0 in
@@ -6109,12 +6077,12 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
     done ;
     let last = !p  in 
     
-# 222
+# 451
     delete_range d last  (d_len - last)
 
   
-# 225
-  let inplace_filter_from start f (d : _ Vec_gen.t) : unit = 
+# 454
+  let inplace_filter_from start f (d : t) : unit = 
     if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
     let d_arr = d.arr in     
     let d_len = d.len in
@@ -6131,13 +6099,13 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
     done ;
     let last = !p  in 
     
-# 244
+# 473
     delete_range d last  (d_len - last)
 
 
-# 248
+# 477
 (** inplace filter the elements and accumulate the non-filtered elements *)
-  let inplace_filter_with  f ~cb_no acc (d : _ Vec_gen.t)  = 
+  let inplace_filter_with  f ~cb_no acc (d : t)  = 
     let d_arr = d.arr in     
     let p = ref 0 in
     let d_len = d.len in
@@ -6156,15 +6124,15 @@ module Make ( Resize : Vec_gen.ResizeType) = struct
     done ;
     let last = !p  in 
     
-# 271
+# 500
     delete_range d last  (d_len - last)
     
-# 273
+# 502
     ; !acc 
 
 
 
-# 278
+# 507
 end
 
 end

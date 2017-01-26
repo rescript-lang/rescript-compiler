@@ -385,13 +385,13 @@ bin/whole_compiler.ml:./bin/bspack.exe
 	BS_DEBUG=false $< -bs-MD -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Js_main -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/typing/ -I ../ocaml/bytecomp/ -I ../ocaml/driver/ -I stubs -I ext -I syntax -I depends -I common -I core
 
 bin/bsdep.ml:./bin/bspack.exe
-	BS_DEBUG=false BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core  -bs-main Ocamldep -o $@
+	BS_DEBUG=false BS_OCAMLDEP=true $< -bs-MD  -prelude-str 'module Config = Config_bsdep'  -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing/ -I ../ocaml/driver -I ../ocaml/tools -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
 
 bin/bsb_helper.ml:./bin/bspack.exe
-	BS_DEBUG=false $< -bs-MD   -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
+	BS_DEBUG=false $< -bs-MD   -I stubs -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
 
 bin/bsb.ml:./bin/bspack.exe
-	BS_DEBUG=false $< -bs-MD -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
+	BS_DEBUG=false $< -bs-MD -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
 
 bin/bspp.ml:./bin/bspack.exe
 	BS_DEBUG=false BS_MIN_LEX_DEPS=true $< -bs-MD   -bs-exclude-I config -I ../ocaml/utils/ -I ../ocaml/parsing?parser  -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
