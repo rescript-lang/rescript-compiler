@@ -12,4 +12,16 @@ B lib/bs/jscomp/test/glob
 
 S jscomp/test/acyc
 B lib/bs/jscomp/test/acyc
+
+S jscomp/test/yy
+B lib/bs/jscomp/test/yy
+
+S jscomp/test/xx
+B lib/bs/jscomp/test/xx
+
+S jscomp/test/xx/fake_2
+B lib/bs/jscomp/test/xx/fake_2
+
+S jscomp/test/xx/fake_1
+B lib/bs/jscomp/test/xx/fake_1
 ####BSB GENERATED: NO EDIT}
