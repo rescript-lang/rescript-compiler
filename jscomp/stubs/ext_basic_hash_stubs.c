@@ -51,13 +51,22 @@ CAMLprim value caml_bs_hash_string_and_small_int(value obj, value d){
 
 CAMLprim value caml_bs_hash_small_int(value d){
   uint32 h = 0; 
-  intnat stamp = Long_val(d);
+  intnat stamp = Long_val(d); // FIXME: unused value
   MIX(h,d);
   FINAL_MIX(h);
   return Val_int(h & 0x3FFFFFFFU);
 }
 
-
+CAMLprim value caml_int_array_blit(
+  value a1, value ofs1, 
+  value a2, value ofs2,
+  value n)
+  {
+     memmove(&Field(a2, Long_val(ofs2)),
+            &Field(a1, Long_val(ofs1)),
+            Long_val(n) * sizeof(value));
+    return Val_unit;
+  }
 /*
  * http://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
  * https://en.wikipedia.org/wiki/MurmurHash
@@ -121,6 +130,8 @@ CAMLprim value caml_string_length_based_compare(value s1, value s2)
     
   }
 }
+
+
 
 
 

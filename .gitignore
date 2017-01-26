@@ -24,6 +24,7 @@ _build
 *.jsx
 *.lambda
 *.rawlambda
+*.s
 *.o
 *.lam
 *.0.js
