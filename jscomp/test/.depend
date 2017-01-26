@@ -173,6 +173,7 @@ for_side_effect_test.cmj : mt.cmj
 format_regression.cmj :
 format_test.cmj : mt.cmj ../stdlib/format.cmj
 fs_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj
+gbk.cmj : ../runtime/js.cmj
 genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/genlex.cmj
 global_exception_regression_test.cmj : mt.cmj
