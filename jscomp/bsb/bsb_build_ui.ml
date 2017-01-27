@@ -104,11 +104,11 @@ let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_p
       let dyn_file_array = String_vec.make (Array.length files_array) in 
       let files  =
         Array.fold_left (fun acc name -> 
-            let new_acc = Binary_cache.map_update ~dir acc name in 
-            if new_acc != acc then (* reference in-equality *)
-              String_vec.push name  dyn_file_array ;
-            new_acc
-
+          if Ext_string.is_valid_source_name name then begin 
+            let new_acc = Binary_cache.map_update ~dir acc name  in 
+            String_vec.push name dyn_file_array ;
+            new_acc 
+          end else acc 
           ) String_map.empty files_array in 
       [{Ext_file_pp.loc_start ;
         loc_end; action = (`print (print_arrays dyn_file_array))}],
@@ -235,7 +235,7 @@ let rec parsing_source (dir_index : int) cwd (x : Ext_json.t String_map.t )
         let res  = 
           Array.fold_left (fun  origin json ->
               match json with 
-              | `Obj m -> 
+              | `Obj m -> (* could also be a string *)
                 parsing_source current_dir_index !dir  m  ++ origin
               | _ -> origin ) empty s in 
         children :=  res.files ; 

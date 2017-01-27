@@ -448,27 +448,37 @@ let () =
     end
   else
     begin
-      match Ext_array.find_and_split Sys.argv Ext_string.equal "--" with
+      match Ext_array.find_and_split Sys.argv Ext_string.equal separator with
       | `No_split
         ->
         begin
           Arg.parse bsb_main_flags annoymous usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          if !make_world then begin
-            (* don't regenerate files when we only run [bsb -clean-world] *)
-            let deps = regenerate_ninja cwd bsc_dir !force_regenerate in
-            make_world_deps deps
+          begin match !make_world, !force_regenerate with 
+            | false, false -> ()
+            | make_world, force_regenerate -> 
+              (* don't regenerate files when we only run [bsb -clean-world] *)
+              let deps = regenerate_ninja cwd bsc_dir force_regenerate in
+              if make_world then begin
+                make_world_deps deps
+              end;
           end;
           if !watch_mode then begin
             watch ()
-            (* ninja is not triggered in this case *)
+            (* ninja is not triggered in this case 
+               There are several cases we wish ninja will not be triggered.
+               [bsb -clean-world]
+               [bsb -regen ]
+            *)
+          end else if !make_world then begin 
+            ninja_command ninja [||]  
           end
         end
       | `Split (bsb_args,ninja_args)
-        ->
+        -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
-          let deps = (regenerate_ninja cwd bsc_dir !force_regenerate) in
+          let deps = regenerate_ninja cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
             make_world_deps deps ;
