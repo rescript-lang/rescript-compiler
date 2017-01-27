@@ -454,10 +454,14 @@ let () =
         begin
           Arg.parse bsb_main_flags annoymous usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          if !make_world then begin
-            (* don't regenerate files when we only run [bsb -clean-world] *)
-            let deps = regenerate_ninja cwd bsc_dir !force_regenerate in
-            make_world_deps deps
+          begin match !make_world, !force_regenerate with 
+            | false, false -> ()
+            | make_world, force_regenerate -> 
+              (* don't regenerate files when we only run [bsb -clean-world] *)
+              let deps = regenerate_ninja cwd bsc_dir force_regenerate in
+              if make_world then begin
+                make_world_deps deps
+              end;
           end;
           if !watch_mode then begin
             watch ()
