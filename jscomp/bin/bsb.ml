@@ -6368,11 +6368,11 @@ let  handle_list_files dir (s : Ext_json.t array) loc_start loc_end : Ext_file_p
       let dyn_file_array = String_vec.make (Array.length files_array) in 
       let files  =
         Array.fold_left (fun acc name -> 
-            let new_acc = Binary_cache.map_update ~dir acc name in 
-            if new_acc != acc then (* reference in-equality *)
-              String_vec.push name  dyn_file_array ;
-            new_acc
-
+          if Ext_string.is_valid_source_name name then begin 
+            let new_acc = Binary_cache.map_update ~dir acc name  in 
+            String_vec.push name dyn_file_array ;
+            new_acc 
+          end else acc 
           ) String_map.empty files_array in 
       [{Ext_file_pp.loc_start ;
         loc_end; action = (`print (print_arrays dyn_file_array))}],
@@ -6499,7 +6499,7 @@ let rec parsing_source (dir_index : int) cwd (x : Ext_json.t String_map.t )
         let res  = 
           Array.fold_left (fun  origin json ->
               match json with 
-              | `Obj m -> 
+              | `Obj m -> (* could also be a string *)
                 parsing_source current_dir_index !dir  m  ++ origin
               | _ -> origin ) empty s in 
         children :=  res.files ; 
@@ -7579,7 +7579,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None else Some ["group", `Overwrite (string_of_int group.dir_index)])
+              ?shadows:(if group.dir_index = 0 then None 
+                else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
             ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
@@ -8510,27 +8511,37 @@ let () =
     end
   else
     begin
-      match Ext_array.find_and_split Sys.argv Ext_string.equal "--" with
+      match Ext_array.find_and_split Sys.argv Ext_string.equal separator with
       | `No_split
         ->
         begin
           Arg.parse bsb_main_flags annoymous usage;
           (* [-make-world] should never be combined with [-package-specs] *)
-          if !make_world then begin
-            (* don't regenerate files when we only run [bsb -clean-world] *)
-            let deps = regenerate_ninja cwd bsc_dir !force_regenerate in
-            make_world_deps deps
+          begin match !make_world, !force_regenerate with 
+            | false, false -> ()
+            | make_world, force_regenerate -> 
+              (* don't regenerate files when we only run [bsb -clean-world] *)
+              let deps = regenerate_ninja cwd bsc_dir force_regenerate in
+              if make_world then begin
+                make_world_deps deps
+              end;
           end;
           if !watch_mode then begin
             watch ()
-            (* ninja is not triggered in this case *)
+            (* ninja is not triggered in this case 
+               There are several cases we wish ninja will not be triggered.
+               [bsb -clean-world]
+               [bsb -regen ]
+            *)
+          end else if !make_world then begin 
+            ninja_command ninja [||]  
           end
         end
       | `Split (bsb_args,ninja_args)
-        ->
+        -> (* -make-world all dependencies fall into this category *)
         begin
           Arg.parse_argv bsb_args bsb_main_flags annoymous usage ;
-          let deps = (regenerate_ninja cwd bsc_dir !force_regenerate) in
+          let deps = regenerate_ninja cwd bsc_dir !force_regenerate in
           (* [-make-world] should never be combined with [-package-specs] *)
           if !make_world then
             make_world_deps deps ;

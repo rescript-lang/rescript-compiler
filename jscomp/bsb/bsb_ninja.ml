@@ -398,7 +398,8 @@ let handle_file_group oc ~package_specs ~js_post_build_cmd  acc (group: Bsb_buil
               ~output:output_mlastd
               ~input:output_mlast
               ~rule:Rules.build_bin_deps
-              ?shadows:(if group.dir_index = 0 then None else Some ["group", `Overwrite (string_of_int group.dir_index)])
+              ?shadows:(if group.dir_index = 0 then None 
+                else Some [Bsb_build_schemas.bsb_dir_group, `Overwrite (string_of_int group.dir_index)])
             ;
             let rule_name , cm_outputs, deps =
               if module_info.mli = Mli_empty then
