@@ -5,12 +5,15 @@ ifndef EXE
 	EXE := # empty
 endif
 NATIVE=ocamlopt.opt$(EXE)
-
-OCAMLOPT_FLAGS= -inline 1000 -g -w -a ../stubs/ext_basic_hash_stubs.c
-
+BSC_FLAGS= -w -a -I ../runtime -I ../stdlib -bs-files
+BSC=./bsc.exe
+OCAMLOPT_FLAGS= -g -w -a ../stubs/ext_basic_hash_stubs.c
+# -inline 1000 makes size too large
+# TODO: make sure it can be bootstrapped, at least is a very good
+# test case of our optimizations 
 bsppx.exe: config_bsppx.mli config_bsppx.ml bsppx.mli bsppx.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
-
+	
 bspp.exe:  bspp.mli bspp.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
 
@@ -31,5 +34,7 @@ bsc.exe: config_whole_compiler.mli config_whole_compiler.ml  whole_compiler.mli 
 bspack.exe: config_bspack.mli config_bspack.ml bspack.mli bspack.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa  $^ -o $@
 
+bspack.js:	config_bspack.mli config_bspack.ml bspack.mli bspack.ml
+	$(BSC) $(BSC_FLAGS) $^
 
 all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe
