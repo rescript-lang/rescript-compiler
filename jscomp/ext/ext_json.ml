@@ -691,6 +691,7 @@ type callback =
   | `Arr_loc of (t array -> Lexing.position -> Lexing.position -> unit)
   | `Null of (unit -> unit)
   | `Not_found of (unit -> unit)
+  | `Id of (t -> unit )
   ]
 
 let test   ?(fail=(fun () -> ())) key 
@@ -700,7 +701,7 @@ let test   ?(fail=(fun () -> ())) key
        | exception Not_found  ->
         begin match cb with `Not_found f ->  f ()
         | _ -> fail ()
-        end
+        end      
        | `True, `Bool cb -> cb true
        | `False, `Bool cb  -> cb false 
        | `Flo s , `Flo cb  -> cb s 
@@ -711,6 +712,7 @@ let test   ?(fail=(fun () -> ())) key
        | `Null, `Null cb  -> cb ()
        | `Str {str = s }, `Str cb  -> cb s 
        | `Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+       |  any  , `Id  cb -> cb any
        | _, _ -> fail () 
      end;
      m
@@ -729,4 +731,4 @@ let query path (json : t ) =
       end
   in aux [] path json
 
-# 733 "ext/ext_json.ml"
+# 735 "ext/ext_json.ml"

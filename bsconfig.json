@@ -45,16 +45,9 @@
                     "a4_a5.ml",
                     "x.ml"
                 ]
-            },
-            {
-                "dir": "glob",
-                "files": {
-                    "slow-re": "glob.*\\.mli?",
-                    "excludes": [
-                        "glob_test_u.ml"
-                    ]
-                }
             }
+            , "glob"
+    
         ],
         "files": [
             // "ppx_lwt.ml",

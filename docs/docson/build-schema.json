@@ -35,15 +35,22 @@
                 "$ref": "#/definitions/single-ppx-spec"
             }
         },
+        "bs-dependency" : {
+            "type" : "string",
+            "title": "dependency"
+         },
         "bs-dependencies": {
             "type": "array",
             "items": {
-                "type": "string"
+                "$ref": "#/definitions/bs-dependency"
             },
             "description": "Bucklescript package dependencies"
         },
         "sourceItem": {
             "title": "sourceItem",
+            "oneOf" : [ 
+                {
+                "type" : "object",
             "properties": {
                 "dir": {
                     "type": "string"
@@ -93,15 +100,18 @@
                         {
                             "enum": [
                                 "all"
-                            ]
+                            ],
+                            "description": "All modules in this directory"
                         },
                         {
                             "type": "array",
                             "items": {
                                 "type": "string"
-                            }
+                            },
+                            "description": "Selected modules, for example, [Module_a, Module_b] "
                         }
-                    ]
+                    ],
+                    "description": "default: export all modules by default, it is recommended for library developers to hide some interfaces"
                 },
                 "resources": {
                     "type": "array",
@@ -110,10 +120,8 @@
                     }
                 },
                 "subdirs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/sourceItem"
-                    }
+                   "$ref" : "#/definitions/sources",
+                   "description": "nested specifications inside"
                 },
                 "group": {
                     "oneOf": [
@@ -132,7 +140,8 @@
                                 }
                             }
                         }
-                    ]
+                    ],
+                    "description": "Not implemented yet"
                 },
                 "internal-depends": {
                     "type": "array",
@@ -145,6 +154,29 @@
             "required": [
                 "dir"
             ]
+            },
+            {
+                "title": "single non nested directory",
+                "type" : "string",
+                "description": "directory name (no nested)"
+            }
+            ]
+        },
+        "sources" : {
+             "oneOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sourceItem"
+                    },
+                    "description" : "A list of source items"
+                },
+                {
+                    "$ref": "#/definitions/sourceItem",
+                    "description": "A single source item"
+                }
+            ],
+            "description": "can be either a single sourceItem or an array of sourceItems, sourceItem can be either a single string(non nested directory) or an detailed object config"
         },
         "stringArray": {
             "type": "array",
@@ -208,24 +240,13 @@
             "description": "external include directories, which will be applied -I to all compilation units, it is *not needed* in most cases"
         },
         "sources": {
-            "oneOf": [
-                {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/sourceItem"
-                    },
-                    "description" : "A list of source items"
-                },
-                {
-                    "$ref": "#/definitions/sourceItem",
-                    "description": "A single source item"
-                }
-            ]
+          "$ref" : "#/definitions/sources",
+          "description": "specication of where source code is "
         },
         
         "generate-merlin": {
             "type": "boolean",
-            "description": "default false (generate .merlin)"
+            "description": "default true (generate .merlin)"
         }
     },
     "additionalProperties": false,
